@@ -29,7 +29,7 @@ author = '\n'.join([
   'Ellen Herrick',
   'Nina Ranns',
   'Caleb Sunstrum',
-  'Wyatt Childers'
+  'Wyatt Childers',
   'Christof Meerwald'
 ])
 
@@ -66,6 +66,9 @@ highlight_language = 'cpp'
 # a list of builtin themes.
 #
 html_theme = 'shibuya'
+
+# Where the published documentation lives; used for canonical links.
+html_baseurl = 'https://edgcpp.org/compiler/'
 
 html_theme_options = {
   'light_logo': '_static/doc-logo-light.png',
