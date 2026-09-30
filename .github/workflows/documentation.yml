@@ -3,13 +3,16 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
-# Build the Sphinx documentation in doc/ with warnings treated as errors.
-# Pushes to main in edgcpp/compiler also publish the HTML to GitHub Pages,
-# which serves it at https://edgcpp.org/compiler/ (the org site's custom
-# domain applies to every project site in the edgcpp org).
+# Build the Sphinx documentation in doc/ with warnings treated as errors, so
+# documentation changes stay publishable.
 #
-# This requires the repository's Pages source to be set to "GitHub Actions"
-# (Settings > Pages > Build and deployment > Source).
+# The documentation is published by the edgcpp/edgcpp.github.io site
+# workflow, not from here: it builds the release tag into
+# https://edgcpp.org/doc/ and main into https://edgcpp.org/dev/doc/.  After a
+# push to main passes the build, this asks that workflow to run so the
+# development documentation is updated.  That needs the SITE_DISPATCH_TOKEN
+# secret: a fine-grained token for edgcpp/edgcpp.github.io only, with
+# "Actions: Read and write" permission.
 
 name: Documentation
 
@@ -29,11 +32,9 @@ on:
 permissions:
   contents: read
 
-# Supersede queued runs for the same ref, but let an in-progress deployment
-# to Pages finish rather than cancelling it partway through.
 concurrency:
   group: documentation-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -54,34 +55,28 @@ jobs:
       - name: Install Sphinx
         run: python -m pip install -r doc/requirements.txt
 
+      # The published site uses the dirhtml builder, so check that one.
       - name: Build HTML
-        run: make -C doc html SPHINXOPTS="-W --keep-going"
+        run: make -C doc dirhtml SPHINXOPTS="-W --keep-going"
 
-      - name: Upload Pages artifact
-        if: >
-          github.repository == 'edgcpp/compiler' &&
-          github.event_name != 'pull_request' &&
-          github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: doc/build/html
-
-  deploy:
-    name: Deploy to GitHub Pages
+  publish-dev:
+    name: Publish development documentation
     needs: build
     if: >
       github.repository == 'edgcpp/compiler' &&
       github.event_name != 'pull_request' &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 5
     steps:
-      - name: Deploy documentation
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: Trigger the edgcpp.org site build
+        env:
+          GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::SITE_DISPATCH_TOKEN is not set, so" \
+              "https://edgcpp.org/dev/doc/ was not updated."
+            exit 0
+          fi
+          gh workflow run build_and_deploy.yml \
+            --repo edgcpp/edgcpp.github.io --ref develop

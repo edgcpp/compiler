@@ -22,7 +22,8 @@ development tools.
 
 ## Documentation
 
-See the documentation on: https://edgcpp.org/compiler/.
+See the documentation on: https://edgcpp.org/doc/.  Documentation for the
+current development branch (`main`) is on: https://edgcpp.org/dev/doc/.
 
 > [!NOTE]
 >

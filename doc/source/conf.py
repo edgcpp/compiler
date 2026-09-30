@@ -67,9 +67,6 @@ highlight_language = 'cpp'
 #
 html_theme = 'shibuya'
 
-# Where the published documentation lives; used for canonical links.
-html_baseurl = 'https://edgcpp.org/compiler/'
-
 html_theme_options = {
   'light_logo': '_static/doc-logo-light.png',
   'dark_logo': '_static/doc-logo-dark.png'
