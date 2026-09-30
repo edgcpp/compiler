@@ -53,7 +53,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure linux-gcc-debug
         env:
@@ -69,7 +69,7 @@ jobs:
       # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
       # lib_<target>). lib_src is build-only and omitted.
       - name: Upload build products
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-linux-gcc-debug
           path: |
@@ -94,7 +94,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure linux-i686-gcc-debug
         env:
@@ -107,7 +107,7 @@ jobs:
         run: cmake --build build/gcc-i686
 
       - name: Upload build products
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-linux-i686-gcc-debug
           path: |
@@ -143,10 +143,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download linux-gcc-debug build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: build-linux-gcc-debug
           # upload-artifact strips the shared build/gcc/ prefix, leaving
@@ -178,7 +178,7 @@ jobs:
 
       - name: Upload partial elist, elog, and .rt.tar.gz results
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.config }}
           path: |
@@ -211,10 +211,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download linux-i686-gcc-debug build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: build-linux-i686-gcc-debug
           # upload-artifact strips the shared build/gcc-i686/ prefix, leaving
@@ -246,7 +246,7 @@ jobs:
 
       - name: Upload partial elist, elog, and .rt.tar.gz results
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.config }}
           path: |
@@ -271,14 +271,14 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Download partial test-result artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: test-results-*
           path: aggregated-test-results
           merge-multiple: true
 
       - name: Upload elist, elog, and .rt.tar.gz results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-all
           path: aggregated-test-results/

@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Ninja
         run: choco install ninja -y
@@ -35,7 +35,7 @@ jobs:
 
       - name: Cache SoftFloat
         id: cache-softfloat
-        uses: actions/cache@v4
+        uses: actions/cache@v7
         with:
           path: softfloat
           key: softfloat-msvc-win-${{ steps.softfloat-pin.outputs.commit }}
@@ -157,7 +157,7 @@ jobs:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure linux-gcc-release
         env:
@@ -182,7 +182,7 @@ jobs:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure linux-gcc-debug
         env:
@@ -207,7 +207,7 @@ jobs:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure linux-clang-release
         env:
@@ -232,7 +232,7 @@ jobs:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure linux-clang-debug
         env:
