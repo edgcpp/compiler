@@ -22,7 +22,7 @@ development tools.
 
 ## Documentation
 
-See the documentation on: https://edgcpp.org/doc/.
+See the documentation on: https://edgcpp.org/compiler/.
 
 > [!NOTE]
 >
