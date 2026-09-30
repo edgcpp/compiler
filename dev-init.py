@@ -231,7 +231,7 @@ async def check_edg_python() -> InitResult:
         'then open a new terminal window or tab.'
       )
     else:
-      if shutil.which('direnv'):
+      if not shutil.which('direnv'):
         find_edgy.add_failure_commentary(
           'Consider installing direnv; otherwise, add:'
         )
