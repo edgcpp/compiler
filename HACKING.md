@@ -55,6 +55,13 @@ and additionally provides direct access to tools like `edgy`, `cmake`, and
 
 ## Native
 
+When configuring natively, CMake selects the macro configuration
+(`EDG_MACRO_CONF`), `EDG_BASE`, and the runtime libraries (`EDG_CPP_RT_LIBS`)
+that match the host platform, compiler, and build type, so a plain configure
+(such as an IDE's default CMake profile) behaves like the corresponding preset.
+Setting any of these explicitly (e.g., with `export EDG_BASE=...` or
+`-DEDG_MACRO_CONF=...`) overrides the automatic selection.
+
 ### Linux
 
 To get started with Linux-native development, make sure `g++` and `cmake` are
@@ -71,7 +78,6 @@ It should then be possible to follow the build proceedure above with the
 `edg-docker-test` (from the EDG project directory):
 
 ```
-export EDG_BASE="$PWD/bases/docker/dev-env/gcc"
 export EDG_GCC_INCL_SCRAPE=$(edg-scrape-compiler gcc --lang c++ includes)
 export EDG_GCC_CINCL_SCRAPE=$(edg-scrape-compiler gcc --lang c includes)
 export EDG_GCC_VER_SCRAPE=$(edg-scrape-compiler gcc version)
@@ -108,7 +114,6 @@ It should then be possible to follow the build proceedure above with the
 `edg-docker-test` process (from the EDG project directory):
 
 ```
-export EDG_BASE="$PWD/bases/cmake-native/macos-arm/clang"
 export EDG_CLANG_INCL_SCRAPE=$(edg-scrape-compiler clang --lang c++ includes)
 export EDG_CLANG_CINCL_SCRAPE=$(edg-scrape-compiler clang --lang c includes)
 export EDG_CLANG_VER_SCRAPE=$(edg-scrape-compiler clang version)
