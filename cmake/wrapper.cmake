@@ -24,6 +24,14 @@ string(JOIN "\n" lazy_static_env
   "export EDG_PRELINK_PATH=\"\${EDG_PRELINK_PATH:-${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/edg_prelink}\""
   "export ECCP=\"\${ECCP:-${CMAKE_SOURCE_DIR}/util/eccp.sh}\"")
 
+# Default EDG_BASE (without overriding an explicit setting) so that eccp works
+# without it being set.
+if(NOT EDG_RESOLVED_BASE STREQUAL "")
+  set(base_env "export EDG_BASE=\"\${EDG_BASE:-${EDG_RESOLVED_BASE}}\"")
+  string(APPEND static_env "\n${base_env}")
+  string(APPEND lazy_static_env "\n${base_env}")
+endif()
+
 FILE(WRITE ${CMAKE_BINARY_DIR}/environment.sh "${static_env}\n")
 FILE(WRITE ${CMAKE_BINARY_DIR}/.envrc
      "${static_env}\nsource_env \"${CMAKE_SOURCE_DIR}/.envrc\"\n")

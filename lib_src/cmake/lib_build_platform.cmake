@@ -5,7 +5,7 @@
 
 # Define and expand an EDG_CPP_RT_LIBS cache variable storing the list of
 # enabled edg-cpp-rt libraries.
-set(EDG_CPP_RT_LIBS "" CACHE STRING
+set(EDG_CPP_RT_LIBS "${EDG_HOST_CPP_RT_LIBS}" CACHE STRING
     "The EDG C++ runtime libs to include in the default target")
 set(EXPANDED_CPP_RT_LIBS $CACHE{EDG_CPP_RT_LIBS})
 separate_arguments(EXPANDED_CPP_RT_LIBS)

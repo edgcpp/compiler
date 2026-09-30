@@ -89,9 +89,22 @@ set(EDG_EAGER_REBUILD_LIB FALSE CACHE BOOL
 # Support for 32-bit build
 set(32BIT_BUILD FALSE CACHE BOOL "Build cpfe as a 32-bit executable")
 
+# Detect the defaults (macro configuration, EDG_BASE, etc.) for this host and
+# compiler, used when a configuration doesn't specify them.
+include(${CMAKE_SOURCE_DIR}/cmake/host-defaults.cmake)
+detect_host_defaults()
+
 # Include and initialize supporting logic for EDG cmake macro configurations.
 include(${CMAKE_SOURCE_DIR}/cmake/macro-conf.cmake)
 init_macro_configuration_support()
+
+# Resolve EDG_BASE, preferring the environment over the host default.  The
+# result is exported by environment.sh for use by eccp.
+if(NOT "$ENV{EDG_BASE}" STREQUAL "")
+  set(EDG_RESOLVED_BASE "$ENV{EDG_BASE}")
+else()
+  set(EDG_RESOLVED_BASE "${EDG_HOST_BASE}")
+endif()
 
 add_subdirectory(util)
 add_subdirectory(src)
@@ -100,8 +113,13 @@ if($CACHE{EDG_BUILD_LIB})
   if(NOT WIN32)
     add_subdirectory(lib_src)
     # Check edg_eccp_config/EDG_BASE setup
-    message(STATUS "Checking for edg_eccp_config in \"$ENV{EDG_BASE}\".")
-    if(NOT DEFINED ENV{EDG_BASE} OR NOT EXISTS $ENV{EDG_BASE}/edg_eccp_config)
+    message(STATUS
+            "Checking for edg_eccp_config in \"${EDG_RESOLVED_BASE}\".")
+    if(EDG_RESOLVED_BASE STREQUAL "")
+      message(FATAL_ERROR
+              "There is no default EDG_BASE for this host and compiler; "
+              "please set EDG_BASE to a folder with an \"edg_eccp_config\".")
+    elseif(NOT EXISTS "${EDG_RESOLVED_BASE}/edg_eccp_config")
       message(FATAL_ERROR
               "Please set EDG_BASE to a folder with an \"edg_eccp_config\".")
     endif()

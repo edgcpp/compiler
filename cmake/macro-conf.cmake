@@ -26,6 +26,43 @@ function(init_macro_configuration_support)
 
   set(EDG_MACRO_CONF ${default}
       CACHE STRING "The debug macro configuration to use")
+
+  # An empty macro configuration selects the one matching the host platform,
+  # compiler, and build type.  The selections are exported as
+  # EDG_EFFECTIVE_MACRO_CONF (single-configuration generators) or
+  # EDG_EFFECTIVE_DEBUG_MACRO_CONF and EDG_EFFECTIVE_RELEASE_MACRO_CONF
+  # (multi-configuration generators).
+  if(CMAKE_CONFIGURATION_TYPES)
+    resolve_macro_configuration(debug_conf "$CACHE{EDG_DEBUG_MACRO_CONF}"
+                                "Debug")
+    resolve_macro_configuration(release_conf
+                                "$CACHE{EDG_RELEASE_MACRO_CONF}" "Release")
+    set(EDG_EFFECTIVE_DEBUG_MACRO_CONF "${debug_conf}" PARENT_SCOPE)
+    set(EDG_EFFECTIVE_RELEASE_MACRO_CONF "${release_conf}" PARENT_SCOPE)
+  else()
+    resolve_macro_configuration(conf "$CACHE{EDG_MACRO_CONF}"
+                                "${CMAKE_BUILD_TYPE}")
+    set(EDG_EFFECTIVE_MACRO_CONF "${conf}" PARENT_SCOPE)
+  endif()
+endfunction()
+
+function(resolve_macro_configuration result_var macro_conf build_type)
+  # Set result_var to macro_conf, or, if that's empty, to the host's macro
+  # configuration for build_type.
+  set(result "${macro_conf}")
+  if(result STREQUAL "")
+    host_macro_configuration(result "${build_type}")
+    if(result STREQUAL "")
+      message(WARNING
+              "No macro configuration matches this host, compiler, and "
+              "build type \"${build_type}\"; set EDG_MACRO_CONF or use a "
+              "preset from CMakePresets.json.")
+    else()
+      message(STATUS "Auto-selected macro configuration \"${result}\" for "
+                     "build type \"${build_type}\".")
+    endif()
+  endif()
+  set(${result_var} "${result}" PARENT_SCOPE)
 endfunction()
 
 function(process_macro_configuration_setup target macro_conf)
@@ -124,17 +161,17 @@ function(macro_configuration_to_compile_definitions target)
   if(CMAKE_CONFIGURATION_TYPES)
     # Capture the definitions for a debug configuration.
     configure_definitions_as_values("${target}"
-                                     "$CACHE{EDG_DEBUG_MACRO_CONF}")
+                                     "${EDG_EFFECTIVE_DEBUG_MACRO_CONF}")
     set(debug_args "${configured_cmakedef_definitions}")
     # Capture the definitions for a release configuration.
     configure_definitions_as_values("${target}"
-                                     "$CACHE{EDG_RELEASE_MACRO_CONF}")
+                                     "${EDG_EFFECTIVE_RELEASE_MACRO_CONF}")
     set(release_args "${configured_cmakedef_definitions}")
     # Conditionally add either the debug or release configuration defines.
     add_compile_definitions(
                          "$<IF:$<CONFIG:Debug>,${debug_args},${release_args}>")
   else()
-    configure_definitions_as_values("${target}" "$CACHE{EDG_MACRO_CONF}")
+    configure_definitions_as_values("${target}" "${EDG_EFFECTIVE_MACRO_CONF}")
     add_compile_definitions(${configured_cmakedef_definitions})
   endif()
 endfunction()
@@ -145,12 +182,12 @@ function(macro_configuration_to_defines target)
   if(CMAKE_CONFIGURATION_TYPES)
     # Write out a defines.h for the debug configuration.
     configure_definitions_as_defines("${target}"
-                                     "$CACHE{EDG_DEBUG_MACRO_CONF}")
+                                     "${EDG_EFFECTIVE_DEBUG_MACRO_CONF}")
     FILE(WRITE "${PROJECT_HEADER_OUTPUT_DIRECTORY}/cmake_debug_defines.h"
                "${configured_cmakedef_definitions}")
     # Write out a defines.h for the release configuration.
     configure_definitions_as_defines("${target}"
-                                     "$CACHE{EDG_RELEASE_MACRO_CONF}")
+                                     "${EDG_EFFECTIVE_RELEASE_MACRO_CONF}")
     FILE(WRITE "${PROJECT_HEADER_OUTPUT_DIRECTORY}/cmake_release_defines.h"
                "${configured_cmakedef_definitions}")
     # Generate a defines.h file that will include either the debug or
@@ -166,7 +203,7 @@ function(macro_configuration_to_defines target)
     add_compile_definitions(
                            "$<IF:$<CONFIG:Debug>,CMAKE_DEBUG=1,CMAKE_DEBUG=0>")
   else()
-    configure_definitions_as_defines("${target}" "$CACHE{EDG_MACRO_CONF}")
+    configure_definitions_as_defines("${target}" "${EDG_EFFECTIVE_MACRO_CONF}")
     FILE(WRITE "${cmake_defines_file_path}"
                "${configured_cmakedef_definitions}")
   endif()
