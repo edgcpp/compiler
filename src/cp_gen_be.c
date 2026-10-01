@@ -15255,16 +15255,26 @@ it is a tpck_unknown_function constant and to NULL otherwise.
 }  /* is_dot_static_operation */
 
 
-static void gen_array_subscript(an_expr_node_ptr  expr)
+static void gen_array_subscript_list(an_expr_node_ptr expr)
 /*
-Render the given expression surrounded by brackets.
+Put out the given expression list surrounded by square brackets.
 */
 {
+  a_boolean first = TRUE;
+
   write_tok_ch('[');
-  gen_expr(expr, /*need_parens=*/expr_has_comma_operation(expr),
-           /*obj_expr_of_mfunc_operator=*/FALSE);
+  while (expr != NULL) {
+    if (first) {
+      first = FALSE;
+    } else {
+      write_tok_str(", ");
+    }  /* if */
+    gen_expr(expr, /*need_parens=*/expr_has_comma_operation(expr),
+             /*obj_expr_of_mfunc_operator=*/FALSE);
+    expr = expr->next;
+  }  /* if */
   write_tok_ch(']');
-}  /* gen_array_subscript */
+}  /* gen_array_subscript_list */
 
 
 static void gen_va_arg(an_expr_node_ptr expr)
@@ -17852,7 +17862,7 @@ handled through recursion.
       break;
     case eok_subscript:
       gen_member_selector_for_builtin_offsetof(arg1);
-      gen_array_subscript(arg2);
+      gen_array_subscript_list(arg2);
       break;
     case eok_cast:
     case eok_base_class_cast:
@@ -19245,7 +19255,7 @@ gen_expr that might end up generating this expr as a temporary.
                    parens_may_be_needed(generated_precedence[eok_subscript],
                                         operand_1),
                    /*obj_expr_of_mfunc_operator=*/FALSE);
-          gen_array_subscript(operand_2);
+          gen_array_subscript_list(operand_2);
           goto done_with_operation;
         case eok_cli_subscript:
           gen_expr_with_parens(operand_1);

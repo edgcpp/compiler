@@ -8,6 +8,30 @@ behavior standard-mandated.  It is now the default behavior, except in
 Microsoft mode with microsoft_version < 1951.
 
 
+Version 7.1
+
+10/1/26  [GH #195]
+C++-generating back end: dependent multi-dimensional subscripts
+
+In cases in which template definitions are generated from the prototype
+instantiation IL, when a dependent multi-dimensional subscript operation
+appears in a template definition, the C++-generating back end previously
+emitted only the first subscript.  This is now fixed.  For example, with
+--c++23:
+
+  template<typename T> auto f(const T &t) {
+    return t[1, 2];   // Previously generated as "t[1]"
+  }
+
+
+10/1/26  [GH #191]
+C++-generating back end: inaccessible or out-of-scope template arguments
+
+In certain complex cases, the C++-generating back end could put out a
+template argument that uses an inaccessible or out-of-scope name, making
+the generated code uncompilable.  This is now fixed.
+
+
 Version 7.0, September 28, 2026
 
 9/15/26  [EDGcpfe/28958]
