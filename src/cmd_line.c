@@ -3237,7 +3237,6 @@ option values if they were not already set by a command line option.
             exc_spec_in_func_type = TRUE;
           }  /* if */
 #endif /* EXC_SPEC_IN_FUNC_TYPE_ENABLING_POSSIBLE */
-          deduction_from_exc_spec_allowed = FALSE;
           if (!option_kind_used[(int)optk_aligned_new]) {
             overaligned_allocation_enabled = TRUE;
           }  /* if */
@@ -5928,13 +5927,7 @@ before this routine is called.
       warn_on_deduced_return_types = TRUE;
     }  /* if */
   }  /* if */
-  if (cpp17_mode) {
-    /* g++ and clang allow deduction from the noexcept flag of a function
-       parameter. */
-    if (exc_spec_in_func_type) {
-      deduction_from_exc_spec_allowed = TRUE;
-    }  /* if */
-  } else {
+  if (!cpp17_mode) {
     /* g++ and clang do not implement this as a DR in C++14 mode.  Note that
        clang has this disabled by default even in C++17 mode (as of 6.0.1).
        But we don't have a separate option to enable this, so we still
@@ -13281,7 +13274,6 @@ variables declared in cmd_line.h.
   implicit_noexcept_enabled = FALSE;
   core_constant_expr_is_noexcept = FALSE;
   exc_spec_in_func_type = FALSE;
-  deduction_from_exc_spec_allowed = FALSE;
   delegating_constructors_enabled = FALSE;
   inheriting_constructors_enabled = FALSE;
   constexpr_enabled = FALSE;

@@ -13889,9 +13889,6 @@ A nontype template parameter is potentially being deduced from a noexcept
 specifier.  For example:
 
 	template<bool B> void f(int (*)() noexcept(B));
-
-This is currently nonstandard, but accepted by GCC and Clang, and the omission
-in the standard is perhaps accidental.
 */
 {
   a_boolean				match = FALSE;
@@ -13907,11 +13904,9 @@ in the standard is perhaps accidental.
   } else {
     /* Check the exception specification. */
     a_constant_ptr	t_cp = t_esp->variant.noexcept_arg;
-    if (deduction_from_exc_spec_allowed &&
-        (flags & MTT_ALLOW_STRICTER_NOEXCEPT) == 0 &&
+    if ((flags & MTT_ALLOW_STRICTER_NOEXCEPT) == 0 &&
         !constant_bool_value_known_at_compile_time(t_cp)) {
-      /* Some compilers allow deduction from the noexcept flag of a function
-         type.  Do this deduction, if needed. */
+      /* Perform deduction from the noexcept flag of a function type. */
       a_constant_ptr	cp;
       a_boolean		cp_is_local = FALSE;
       if (esp != NULL && esp->variant.noexcept_arg != NULL) {

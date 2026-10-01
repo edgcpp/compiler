@@ -927,12 +927,6 @@ EXTERN_THREAD a_boolean
 			   semantics should be implemented. */
 
 EXTERN_THREAD a_boolean
-		deduction_from_exc_spec_allowed;
-			/* TRUE if a template parameter can be deduced from
-			   the noexcept flag of a parameter of function
-			   type. */
-
-EXTERN_THREAD a_boolean
 		assume_references_cannot_be_null;
 			/* If TRUE, C++ references are assumed never to have
 			   NULL addresses in them.  That's as required by the
