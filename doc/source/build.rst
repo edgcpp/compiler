@@ -54,16 +54,15 @@ directories and files:
          ``Makefile``\ s in the appropriate subdirectories (especially
          ``misc/`` and ``src/``) are still likely to be useful.
    * - | ``src/``
-     - | The directory containing the source files of the C++ front end and its
-         optional components (such as the C- and C++-generating back ends).
-         This directory contains a subdirectory ``disp/`` used to build the
-         stand-alone IL display utility.  In addition to source code, the
-         ``src/`` directory also holds the ``Changes`` file, which describes
-         the various changes made to the front end in the current and previous
-         releases.  Note that most of the source files have the ``.c`` suffix
-         that would normally indicate a C source file.  Starting with the 6.0
-         release, these files contain C++ source code and must be compiled
-         using a C++ compiler (with the C++11 dialect).  The original filenames
+     - | The directory containing the source files of the C++ front end and
+         its optional components (such as the C- and C++-generating back
+         ends).  In addition to source code, the ``src/`` directory also
+         holds the ``Changes`` file, which describes the various changes
+         made to the front end in the current and previous releases.  Note
+         that most of the source files have the ``.c`` suffix that would
+         normally indicate a C source file.  Starting with the 6.0 release,
+         these files contain C++ source code and must be compiled using a
+         C++ compiler (with the C++14 dialect).  The original filenames
          have been maintained to make patching files easier.  If desired,
          symbolic links can be added to accommodate build environments as
          necessary.
@@ -104,17 +103,18 @@ directories and files:
    * - | ``lib/``
      - | Initially, this directory only contains a file
          ``predefined_macros.txt``.  This file is read by the front end to
-         predefine certain macros.  It is typically used to define macros that
-         are defined by compilers being emulated (see
-         ``make_predef_macro_table`` and ``make_win_predef_macro_table.c`` for
-         utilities that automatically generate a set of predefined macros for
-         GNU and Microsoft compilers, respectively).  Once the run-time support
-         library is built (in the ``lib_src/`` directory), it can be moved here
-         so the ``eccp`` script can find it (this is done automatically if the
-         top-level ``Makefile`` is used).  Note that this directory is only
-         used when an unnamed "legacy" target configuration is specified -- see
-         ``lib_``\ *target*\ ``/`` below for cases where a named target
-         configuration is used.
+         predefine certain macros.  It is typically used to define macros
+         that are defined by compilers being emulated (see
+         ``make_predef_macro_table`` and ``make_win_predef_macro_table.c``
+         for utilities that automatically generate a set of predefined
+         macros for GNU and clang and Microsoft compilers, respectively).
+         Once the run-time support library is built (in the ``lib_src/``
+         directory), it can be moved here so the ``eccp`` script can find
+         it (this is done automatically if the top-level ``Makefile`` is
+         used).  Note that this directory is only used when an unnamed
+         "legacy" target configuration is specified -- see ``lib_``\
+         *target*\ ``/`` below for cases where a named target configuration
+         is used.
    * - | ``lib_``\ *target*\ ``/``
      - | Target-specific version of the ``lib/`` directory described above
          used when the "``--target`` *target*" command-line option is
@@ -127,9 +127,9 @@ directories and files:
      - This directory contains sources for four utility programs (and a
        ``Makefile`` to build them) to build and configure the front end:
 
-       * ``make_predef_macro_table``: A script to generate a predefined macros
-         file (like ``lib/predefined_macros.txt``) to match a given version of
-         ``gcc/g++``.
+       * ``make_predef_macro_table``: A script to generate a predefined
+         macros file (like ``lib/predefined_macros.txt``) to match given
+         versions of ``gcc/g++`` and ``clang``.
        * ``make_win_predef_macro_table.c``: A program to generate a
          predefined macros file (like ``lib/predefined_macros.txt``) to match
          a given version of Microsoft Visual Studio.  Note that this program
@@ -377,6 +377,12 @@ Support for Source Language Dialects
        |
      - | Control whether compatibility with Sun CC should be enabled, either by
          default or only when the ``--sun`` command-line option is specified.
+   * - | ``DEFAULT_CLANG_COMPATIBILITY``
+       |
+     - | Controls whether compatibility with clang C and C++ should be
+         enabled by default or only when the ``--clang`` command-line
+         option is specified. (Clang extensions are mostly identical to GNU
+         extensions and are controlled by ``GNU_EXTENSIONS_ALLOWED``.)
 
 Setting an ...\ ``_ALLOWED`` macro to TRUE makes the corresponding
 ``DEFAULT_``\ ...  macro TRUE by default.  If the front end is configured to
@@ -386,15 +392,18 @@ to avoid selecting more than one dialect as the default.
 .. list-table::
 
    * - | ``CPPCLI_ENABLING_POSSIBLE``
+       | ``CPPCX_ENABLING_POSSIBLE``
        |
-     - | Control whether a mode compatible with Microsoft's C++/CLI extensions
-         should be available through the command-line option ``--cppcli``.
-         Setting this option to TRUE requires that
-         ``MICROSOFT_EXTENSIONS_ALLOWED`` also be TRUE.
+     - | Control whether a mode compatible with Microsoft's C++/CLI or
+         C++/CX extensions should be available through the command-line
+         options ``--cppcli``/``--cppcx``.  Setting either of these options
+         to TRUE requires that ``MICROSOFT_EXTENSIONS_ALLOWED`` also be
+         TRUE.
    * - | ``DEFAULT_CPPCLI_ENABLED``
+       | ``DEFAULT_CPPCX_ENABLED``
        |
-     - | TRUE if C++/CLI extensions should be enabled by default when Microsoft
-         extensions are enabled.
+     - | TRUE if C++/CLI or C++/CX extensions should be enabled by default
+         when Microsoft extensions are enabled.
 
 IL Features
 ^^^^^^^^^^^
@@ -415,14 +424,18 @@ IL Features
          including position information for operators that generally do not
          appear in the IL, such as ``*``, ``&``, and ``()``.
    * - | ``RECORD_MACROS_IN_IL``
+       | ``RECORD_MACRO_INVOCATIONS``
+       | ``RECORD_MACRO_ARGS``
        | ``FULLY_RESOLVED_MACRO_POSITIONS``
        | ``MACRO_INVOCATION_TREE_IN_IL``
        |
-     - | Indicate whether extra information should be recorded in the IL to
-         track macros and their expansions.  Setting either of the latter two
-         configuration macros to TRUE can increase the size of the IL
-         substantially.
-   * - | ``PROTOTYPE_INSTANTIATIONS_IN_IL``
+     - | Indicate whether extra information should be recorded in the IL
+         describing macros and their expansions. Setting
+         ``RECORD_MACRO_ARGS`` to TRUE requires that
+         ``RECORD_MACRO_INVOCATIONS`` be set to TRUE.  Setting either of
+         the latter two configuration macros to TRUE can increase the size
+         of the IL substantially.
+   * - | ``ALL_TEMPLATE_INFO_IN_IL``
        |
      - | TRUE if prototype template instantiations (i.e., the parsed generic
          form of templates) should be recorded in the main IL tree.
@@ -437,15 +450,16 @@ differ between target configurations).
 .. list-table::
 
    * - | ``IA64_ABI``
-     - | Controls whether the IA-64 ABI standard is used for code generation
-         and object layout.  This is a "modern" C++ object layout (unlike the
-         cfront layout), and is a good starting point even on architectures
-         other than IA-64 (Itanium).  This ABI is used by many versions of g++
-         (3.2 and later).  For a complete specification, see
-         ``www.codesourcery.com/cxx-abi``.  See also other macro names
-         beginning with ``IA64_ABI``, some of which enable compatibility with
-         the ARM EABI variant of the ``IA64_ABI``.  If ``IA64_ABI`` is set to
-         FALSE (or 0), a cfront-like ABI is used instead.
+     - | Controls whether the IA-64 ABI standard is used for code
+         generation and object layout.  This is a "modern" C++ object
+         layout (unlike the cfront layout), and is a good starting point
+         even on architectures other than IA-64 (Itanium).  This ABI is
+         used by many versions of g++ (3.2 and later) and clang.  For a
+         complete specification, see ``www.codesourcery.com/cxx-abi``.  See
+         also other macro names beginning with ``IA64_ABI``, some of which
+         enable compatibility with the ARM EABI variant of the
+         ``IA64_ABI``.  If ``IA64_ABI`` is set to FALSE (or 0), a
+         cfront-like ABI is used instead.
    * - | ``DEFAULT_GNU_ABI_VERSION``
        | ``DEFAULT_EMULATE_GNU_ABI_BUGS``
        |
@@ -456,11 +470,13 @@ differ between target configurations).
        | ``MSVC_TARGET_VERSION_NUMBER``
        | ``SUN_IS_GENERATED_CODE_TARGET``
        | ``SUN_TARGET_VERSION_NUMBER``
+       | ``CLANG_IS_GENERATED_CODE_TARGET``
+       | ``CLANG_TARGET_VERSION_NUMBER``
        |
-     - | Control whether the code generated by the C- or C++-generating back
-         end should target a specific GNU, Microsoft, or Sun compiler.  This is
-         information is used to avoid limitations of those compilers and to
-         exploit extensions provided by those compilers.
+     - | Control whether the code generated by the C- or C++-generating
+         back end should target a specific GNU, Microsoft, Sun, or clang
+         compiler.  This is information is used to avoid limitations of
+         those compilers and to exploit extensions they provide.
    * - | ``CP_GEN_BE_TARGET_MATCHES_SOURCE_DIALECT``
        |
      - | TRUE if the C++-generating back end should generate code that matches
@@ -512,9 +528,14 @@ Front End Behaviors
          while reading the source code.
    * - | ``UNICODE_SOURCE_SUPPORTED``
        |
-     - | TRUE if the multibyte character set to be supported is Unicode encoded
-         as UTF-8.  UTF-16 is also accepted, and is translated to UTF-8
-         immediately on input.
+     - | TRUE if the character set to be supported is Unicode.  When
+         ``MULTIBYTE_CHARS_IN_SOURCE_SUPPORTED`` is TRUE, source files
+         encoded as UTF-8 and UTF-16 are accepted, depending on the
+         ``--unicode_source_kind`` command-line option,
+         ``DEFAULT_UNICODE_SOURCE_KIND`` configuration macro, or Byte Order
+         Mark (BOM), and UTF-16 is translated to UTF-8 immediately on
+         input. When ``MULTIBYTE_CHARS_IN_SOURCE_SUPPORTED`` is FALSE, the
+         source file is assumed to be encoded as ISO/IEC 8859-1 (Latin-1).
 
 Development Aids
 ^^^^^^^^^^^^^^^^
@@ -534,17 +555,17 @@ Development Aids
          recommended for production builds.)
    * - | ``WRITE_CPPCLI_PORTABLE_ASSEMBLIES``
        |
-     - | When TRUE, this enables an internal command-line option "``--set_flag
-         generate_portable_assemblies``" that causes a front end built with
-         support for C++/CLI (for Microsoft Windows) to write out all
-         assemblies used in the compilation (likely including ``mscorlib.dll``)
-         to be written in the current directory in a format that is readable on
-         non-Windows platforms (i.e., with a front end not built with
-         ``EDG_WIN32`` set to TRUE).  Since the assemblies are written in the
-         current directory with their original file name (e.g.,
-         "``mscorlib.dll``"), care should be taken that no required assemblies
-         are in the current directory when the front end is invoked in this
-         way.
+     - | When TRUE, this enables an internal command-line option
+         "``--set_flag generate_portable_assemblies``" that causes a front
+         end built with support for C++/CLI (for Microsoft Windows) to
+         write out all assemblies used in the compilation (likely including
+         ``mscorlib.dll``) in the current directory in a format that is
+         readable on non-Windows platforms (i.e., with a front end not
+         built with ``EDG_WIN32`` set to TRUE).  Since the assemblies are
+         written in the current directory with their original file name
+         (e.g., "``mscorlib.dll``"), care should be taken that no required
+         assemblies are in the current directory when the front end is
+         invoked in this way.
 
 .. _target-specific-configuration:
 
@@ -742,15 +763,16 @@ can also support C++/CX, with the same caveats as those mentioned for C++/CLI
 support (in particular, IL lowering is not available for C++/CX mode).
 
 To include support for C++/CLI and/or C++/CX the configuration macros
-``CPPCLI_ENABLING_POSSIBLE`` and/or ``CPPCX_ENABLING_POSSIBLE`` (respectively)
-must be set to TRUE.  (The macros ``MICROSOFT_EXTENSIONS_ALLOWED`` and
-``EDG_WIN32`` must also be TRUE when building such configurations.) In addition
-to compiling the C files constituting the front end proper (as explained
-above), support for C++/CLI and/or C++/CX requires that the C++ source file
-``ms_metadata.cpp`` be compiled as C++ and the resulting object file must be
-added to the set of files linked into the final front end executable (or
-library).  The system libraries ``mscoree.lib`` and ``oleaut32.lib`` are then
-also required in the final executable.
+``CPPCLI_ENABLING_POSSIBLE`` and/or ``CPPCX_ENABLING_POSSIBLE``
+(respectively) must be set to TRUE.  (The macros
+``MICROSOFT_EXTENSIONS_ALLOWED`` and ``EDG_WIN32`` must also be TRUE when
+building such configurations.) In addition to compiling the C++ files
+constituting the front end proper (as explained above), support for C++/CLI
+and/or C++/CX requires that the C++ source file ``ms_metadata.cpp`` be
+compiled and the resulting object file must be added to the set of files
+linked into the final front end executable (or library).  The system
+libraries ``mscoree.lib`` and ``oleaut32.lib`` are then also required in
+the final executable.
 
 Compiling ``ms_metadata.cpp`` requires Visual C++ 2012 or later (or a C++
 compiler and libraries that are sufficiently compatible with that).  The free
@@ -774,10 +796,10 @@ of the IL data structures contain fields that are present only in certain
 configurations.)
 
 In an environment with a Unix-like ``make`` utility, ``edgcpdisp`` is
-automatically built (with a configuration that correctly matches that of the
-front end) when ``make`` is run for the default target in either the top-level
-or ``src/``\ directory.  It can also be built separately by using ``make`` in
-the ``src/disp/``\ directory.
+automatically built (with a configuration that correctly matches that of
+the front end) when ``make`` is run for the default target in either the
+top-level or ``src/``\ directory.  It can also be built separately in the
+``src/`` directory by specifying ``edgcpdisp`` as the target.
 
 If ``make`` is not available, ``edgcpdisp`` can be built after the front end is
 built (as described in the preceding section) in the ``src/``\ directory by
@@ -802,6 +824,37 @@ following commands:
 (In configurations that do IL lowering, ``x.cil`` will contain the lowered IL.
 To view the unlowered IL, see the ``--no_il_lowering`` front-end command-line
 option described in the next chapter.)
+
+The format of the output is partially controlled by the configuration macro
+``ALTERNATIVE_IL_FILE_FORMAT``. When that macro is set to TRUE, each entry
+is given a unique numeric identifier, resulting in output like the
+following:
+
+.. code:: text
+
+  ...
+  file-scope type#6
+  source_corresp:
+    name:                  file-scope id-name#17: "type_info"
+  ...
+
+When ``ALTERNATIVE_IL_FILE_FORMAT`` is FALSE, the entries are
+distinguished by a hexadecimal representation of the entry's address:
+
+.. code:: text
+
+  ...
+  file-scope type@a0013ee68
+  source_corresp:
+    name:                  file-scope id-name@a0013f050: "type_info"
+  ...
+
+It is not necessary to use the ``edgcpdisp`` to get a human-readable
+display of the IL. When it is built with the configuration macro
+``NEED_IL_DISPLAY`` set to TRUE, the front end will put out the IL display
+on ``stdout`` (using the hexadecimal-address format) when the
+``--il_display`` command-line option is specified. (The IL need not be
+written to a file in this case.)
 
 Driving the Front End
 =====================
@@ -858,8 +911,8 @@ downloaded from the EDG download site.  The file to download is
 it also contains source code for a Windows-hosted prelinker (``pl_nm``) and
 munch-like program (``munch_nm``).
 
-The plain text file ``src/msinfo`` contains additional notes for running the
-front end in the Windows environment.
+The plain text file ``src/msinfo.txt`` contains additional notes for
+running the front end in the Windows environment.
 
 Configuring and Building the Run-Time Support Library
 =====================================================
@@ -874,9 +927,9 @@ exception handling).
 
 Similarly to the front end, the library can be configured through macro
 definitions placed in ``lib_src/defines.h``.  Typically, however, few or no
-macros need to be defined because the ``--build_runtime`` option to the front
-end (used to build this library) causes most or all required macros to be
-predeclared.
+macros need to be defined because the ``--building_runtime`` option to the
+front end (used to build this library) causes most or all required macros
+to be predeclared.
 
 The macros that might need manual configuration are documented in
 ``lib_src/config.h``.
