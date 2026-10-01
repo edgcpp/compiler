@@ -37,7 +37,7 @@ These files can then be viewed in the browser by opening
 To check for warnings the same way CI does, which fails on any warning:
 
 ```
-make html SPHINXOPTS="-W --keep-going"
+make html SPHINXOPTS="-W"
 ```
 
 ## Publishing
