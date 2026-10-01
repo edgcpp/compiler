@@ -20,6 +20,10 @@ packages+=(
   "texlive-collection-latexextra"
 )
 
+# Add required packages for checkout to function (in CI, see
+# .github/workflows/documentation.yml)
+packages+=("git" "nodejs")
+
 # Add useful linux commands
 packages+=("util-linux") # kill, runuser
 

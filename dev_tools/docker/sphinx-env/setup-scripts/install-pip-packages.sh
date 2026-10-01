@@ -5,5 +5,5 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-# Install Sphinx using pip
-pip install -U Sphinx shibuya
+# Install the documentation's pinned packages (doc/requirements.txt) using pip
+pip install -r /edg/setup-scripts/requirements.txt

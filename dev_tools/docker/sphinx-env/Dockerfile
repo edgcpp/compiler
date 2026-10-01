@@ -15,6 +15,9 @@ RUN mkdir /edg && \
     mkdir /edg/user-script/pip-packages/
 COPY setup-scripts/* /edg/setup-scripts/
 
+# Copy in doc/requirements.txt (see prebuild.py) for the pip packages.
+COPY requirements.txt /edg/setup-scripts/requirements.txt
+
 # Execute root based setup scripts.
 RUN /edg/setup-scripts/run-all.sh
 
