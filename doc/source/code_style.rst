@@ -460,10 +460,17 @@ braces, aligned with the ``if``, and the closing brace aligned with the
 ---------------------
 
 ``switch`` statements should be formatted with their case labels indented
-by 2 spaces, the contents further indented by two spaces, and a closing
-comment (with two preceding spaces). The opening brace of a scoping block
-can be immediately followed on the same line by the first statement of the
-block, and its closing brace should have no comment:
+by 2 spaces, the contents further indented by two spaces, and the closing
+brace annotated with a comment (with two preceding spaces). The opening
+brace of a scoping block within a case can be immediately followed on the
+same line by the first statement of the block, and its closing brace should
+have no comment.  If one case intentionally omits the usual closing
+``break`` statement and flows into the next, the intent should be
+documented by use of the ``FALLTHROUGH`` macro. When the cases of a
+``switch`` statement are intended to cover all the enumerators of an
+enumeration, the ``default_is_unexpected`` macro should be used to trigger
+compiler diagnostics if an enumerator is added and not explicitly handled
+by the ``switch``:
 
 .. code:: cpp
 
@@ -473,7 +480,7 @@ block, and its closing brace should have no comment:
 
         x += y;
       }
-      break;
+      FALLTHROUGH
     case b:
       x += 1;
       break;
