@@ -11,6 +11,21 @@ example, with --clang_version 230100:
   #pragma clang diagnostic push
 
 was previously recorded as "clangdiagnostic push".  That is now fixed.
+10/3/26  [GH #19]
+Assertion failure on an empty diag_suppress pragma
+
+A diag_* pragma with no arguments, or with a trailing comma, diagnosed the
+missing argument and then read past the end of the directive.  That consumed
+the following source and could assert in process_immediate_pragmas.  For
+example:
+
+  #pragma diagnostic push
+  #pragma diag_suppress
+  int f() { int a; return a; }
+  #pragma diagnostic pop
+
+The missing argument is still diagnosed, and the code after the pragma is
+parsed.
 
 
 10/1/26  [GH #197]
