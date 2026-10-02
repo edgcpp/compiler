@@ -857,6 +857,7 @@ enum a_function_number : a_byte {
 #endif /* SUN_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
   fn_gcc_pragma,
+  fn_gcc_loop_pragma,
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
   fn_gnu_riscv_pragma,
   fn_clang_riscv_pragma,
