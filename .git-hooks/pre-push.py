@@ -94,7 +94,7 @@ def _is_excluded_file_path(path_str: str) -> bool:
   )
 
 COMMIT_SUBJECT_POLICY_REGEX = re.compile(
-  r'^.*\[((EDG[cfjp]+fe/([0-9]+))|,)*\].*$'
+  r'^.*\[(GH #[0-9]+|(EDG[cfjp]+fe/([0-9]+))|,)*\].*$'
 )
 
 TOOL_PATH_GIT = shutil.which('git')

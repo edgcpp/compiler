@@ -1,3 +1,13 @@
+Version 7.1
+
+10/1/26  [GH #191]
+C++-generating back end: inaccessible or out-of-scope template arguments
+
+In certain complex cases, the C++-generating back end could put out a
+template argument that uses an inaccessible or out-of-scope name, making
+the generated code uncompilable.  This is now fixed.
+
+
 Version 7.0, September 28, 2026
 
 9/15/26  [EDGcpfe/28958]

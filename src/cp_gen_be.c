@@ -9911,6 +9911,29 @@ elaborated-type-specifier, even if it would be required in some contexts.
            specified in the reference; a null template argument list
            implies an empty list, "<>", not that it was omitted. */
         arg_list = trp->variant.typeref.extra_info->template_arg_list;
+        if (arg_list != NULL) {
+          a_template_arg_ptr tap;
+          a_boolean          for_all_scopes = TRUE;
+          begin_template_arg_list_traversal_simple(arg_list, &tap);
+          while (tap != NULL) {
+            if (!template_arg_is_accessible(
+                                 tap, /*ignore_context=*/FALSE,
+                                 /*check_related_types=*/FALSE,
+                                 &for_all_scopes, /*check_visibility=*/TRUE)) {
+              /* This template argument uses a name that is inaccessible or
+                 out of scope, so the trk_template_arg_list cannot be used.
+                 Recursively put out the underlying type (which might
+                 include a trk_name_qualifier that should be preserved, so
+                 we use the direct underlying type and not
+                 skip_lexical_typerefs). */
+              gen_type_reference(trp->variant.typeref.type,
+                                 suppress_typename_kwd, is_declaration,
+                                 suppress_elab_type_spec);
+              goto done;
+            }  /* if */
+            advance_to_next_template_arg_simple(&tap);
+          }  /* while */
+        }  /* if */
         if (type_is(refp, tk_typeref) &&
             is_typeref_kind(refp, trk_name_qualifier)) {
           /* The target of the typeref specifies the qualifiers used in
@@ -10218,6 +10241,9 @@ delayed_definition:
     /* A fundamental type. */
     form_type(type, &octl);
   }  /* if */
+#if DEFAULT_RECORD_FORM_OF_NAME_REFERENCE
+done:;
+#endif /* DEFAULT_RECORD_FORM_OF_NAME_REFERENCE */
 }  /* gen_type_reference */
 
 
