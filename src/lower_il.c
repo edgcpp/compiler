@@ -18407,7 +18407,7 @@ the try-block has been rewritten).
 }  /* put_block_around_try_block */
 
 
-static void turn_statement_into_block_transferring_pragma(
+void turn_statement_into_block_transferring_pragma(
                                         a_statement_ptr        statement,
                                         an_insert_location_ptr insert_location,
                                         a_statement_ptr        *orig_statement,
@@ -19748,9 +19748,12 @@ If the "for" statement has an associated "break" label, lower it also.
       break_label_stmt->next = NULL;
     }  /* if */
     /* Put a block statement around the for-loop and attach the scope
-       to that block. */
+       to that block.  Any pragmas attached to the for-loop (e.g., a
+       "#pragma GCC unroll") stay with the for-loop. */
     block_stmt = for_stmt;
-    turn_statement_into_block(for_stmt, &insert_location, &for_stmt);
+    turn_statement_into_block_transferring_pragma(for_stmt, &insert_location,
+                                                  &for_stmt,
+                                                  curr_context->scope);
     if (break_label_stmt != NULL) {
       /* Re-attach the break label after the "for" statement entry. */
       check_assertion(for_stmt->next == NULL);
@@ -19780,7 +19783,10 @@ If the "for" statement has an associated "break" label, lower it also.
       /* Put a block around the for loop if we didn't previously. */
       if (block_stmt == NULL) {
         block_stmt = for_stmt;
-        turn_statement_into_block(for_stmt, &insert_location, &for_stmt);
+        turn_statement_into_block_transferring_pragma(for_stmt,
+                                                      &insert_location,
+                                                      &for_stmt,
+                                                      curr_context->scope);
       }  /* if */
       reinsert_for_loop_initialization(init_stmt, &insert_location);
     }  /* if */
@@ -19880,11 +19886,14 @@ Notes:
   push_context(&range_based_for_context, range_based_for_scope,
                (an_object_lifetime_ptr)NULL);
   /* Put a block statement around the range-based-for and attach the
-     range_based_for scope to that block.  Note that any pragmas attached to
-     the range-based-for statement will now be associated with the block. */
+     range_based_for scope to that block.  Any pragmas attached to the
+     range-based-for statement (e.g., a "#pragma GCC unroll") stay with the
+     statement, which becomes the lowered "for" loop. */
   outer_block = range_based_for_stmt;
-  turn_statement_into_block(range_based_for_stmt, &outer_insert_location,
-                            &range_based_for_stmt);
+  turn_statement_into_block_transferring_pragma(range_based_for_stmt,
+                                                &outer_insert_location,
+                                                &range_based_for_stmt,
+                                                curr_context->scope);
   outer_block->variant.block.extra_info->assoc_scope = range_based_for_scope;
   range_based_for_scope->assoc_block = outer_block;
   if (range_based_for_scope->lifetime != NULL) {

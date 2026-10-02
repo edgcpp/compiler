@@ -3262,6 +3262,31 @@ only, only preprocessing immediate pragmas are actually processed.
   }  /* if */
 }  /* record_pragma */
 
+#if GNU_EXTENSIONS_ALLOWED
+
+static a_boolean is_gcc_loop_pragma_name(a_const_char *ptr)
+/*
+Return TRUE if the characters at ptr are the name of one of the "GCC" pragmas
+that must immediately precede, and apply to a loop statement.
+Currently supported: "unroll", "ivdep", and "novector".
+*/
+{
+  static a_const_char *const loop_pragma_names[] = {
+    "unroll", "ivdep", "novector"
+  };
+  a_boolean is_loop_pragma = FALSE;
+
+  for (a_const_char *name : loop_pragma_names) {
+    size_t len = strlen(name);
+    if (strncmp(ptr, name, len) == 0 && !is_id_char[ptr[len]-CHAR_MIN]) {
+      is_loop_pragma = TRUE;
+      break;
+    }  /* if */
+  }  /* for */
+  return is_loop_pragma;
+}  /* is_gcc_loop_pragma_name */
+
+#endif /* GNU_EXTENSIONS_ALLOWED */
 
 a_pragma_kind_description_ptr look_up_pragma_id(
 					a_source_position	*id_position)
@@ -3297,8 +3322,8 @@ The position of the pragma ID is returned in id_position;
       if (curr_id_matches_pragma_id(pkdp->kind)) {
 #if GNU_EXTENSIONS_ALLOWED
         /* We found a match.  If we're processing a GCC pragma, see if we
-           should treat it as an immediate pragma or a next_token pragma
-           based on the token that follows "GCC". */
+           should treat it as an immediate pragma, a next_token pragma, or
+           a next_statement pragma based on the token that follows "GCC". */
         if (pkdp->kind == (a_pragma_kind)pk_gcc_immediate) {
           /* We want to look ahead to see if "diagnostic" is next, but
              being that we're in a preprocessing directive, next_token
@@ -3311,6 +3336,10 @@ The position of the pragma ID is returned in id_position;
             /* Treat all "GCC diagnostic" pragmas as next_token. */
             pkdp = pkdp->next;
             check_assertion(pkdp->kind == (a_pragma_kind)pk_gcc_next_token);
+          } else if (is_gcc_loop_pragma_name(curr_char_loc)) {
+            /* Bind the GCC loop pragmas to the statement that follows. */
+            pkdp = pragma_description_for_pragma_kind[
+                                            (int)pk_gcc_next_statement];
           }  /* if */
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
         } else if (pkdp->kind == pk_clang_riscv) {
@@ -4316,6 +4345,24 @@ Process a "#pragma GCC ..." construct.
     il_pragma_entry->variant.gcc = ppp->variant.gcc;
   }  /* if */
 }  /* gcc_pragma */
+
+
+void gcc_loop_pragma(a_pending_pragma_ptr       ppp,
+                     ARG_UNUSED a_symbol_ptr    sym,
+                     ARG_UNUSED a_statement_ptr sp)
+/*
+Process a "#pragma GCC unroll", "#pragma GCC ivdep", or "#pragma GCC novector",
+which has been bound to the statement sp that follows it.
+These pragmas apply only to the loop that immediately follows them.
+Binding them to that loop causes the C-generating back end to emit them directly in
+front of the loop rather than at the start of the enclosing block.
+*/
+{
+  begin_rescan_of_pragma_tokens(ppp);
+  pos_warning(ec_unrecognized_gcc_pragma, &error_position);
+  /* Pass error_in_pragma as TRUE to avoid diagnostics on the operands */
+  wrapup_rescan_of_pragma_tokens(/*error_in_pragma=*/TRUE);
+}  /* gcc_loop_pragma */
 
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if UPC_EXTENSIONS_ALLOWED

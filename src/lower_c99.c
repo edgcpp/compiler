@@ -4483,10 +4483,15 @@ Do C99 lowering on an stmk_for statement.
     } else {
       /* The C99 case: move the initialization code out into a
          block surrounding the for loop.  Note that this is particularly
-         desirable when there is a VLA declaration in the initialization. */
+         desirable when there is a VLA declaration in the initialization.
+         Any pragmas attached to the for loop (e.g., "#pragma GCC unroll")
+         must stay with the for loop. */
       an_insert_location insert_location;
       flp->initialization = NULL;
-      turn_statement_into_block(for_stmt, &insert_location, &for_stmt);
+      turn_statement_into_block_transferring_pragma(for_stmt,
+                                                    &insert_location,
+                                                    &for_stmt,
+                                                    curr_context->scope);
       reinsert_for_loop_initialization(init_stmt, &insert_location);
     }  /* if */
   }  /* if */
