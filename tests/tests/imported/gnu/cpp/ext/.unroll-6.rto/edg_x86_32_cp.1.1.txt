@@ -1,0 +1,73 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: warning: unrecognized GCC pragma
+    #pragma GCC unroll 1.0f			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 12: warning: unrecognized GCC pragma
+    #pragma GCC unroll 0xffffffffffffffffULL	// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 15: warning: unrecognized GCC pragma
+    #pragma GCC unroll -42			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 24: warning: unrecognized GCC pragma
+    #pragma GCC unroll 1.0f			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 27: warning: unrecognized GCC pragma
+    #pragma GCC unroll 0xffffffffffffffffULL	// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 30: warning: unrecognized GCC pragma
+    #pragma GCC unroll -42			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 39: warning: unrecognized GCC pragma
+    #pragma GCC unroll (N + 1.0f)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 42: warning: unrecognized GCC pragma
+    #pragma GCC unroll (N + 0xffffffffffffffffULL)
+                ^
+
+"Test_name.c", line 45: warning: unrecognized GCC pragma
+    #pragma GCC unroll (N - 42)
+                ^
+
+"Test_name.c", line 48: warning: unrecognized GCC pragma
+    #pragma GCC unroll ((T) 1.0f)
+                ^
+
+"Test_name.c", line 51: warning: unrecognized GCC pragma
+    #pragma GCC unroll ((T) 0xffffffffffffffffULL)
+                ^
+
+"Test_name.c", line 54: warning: unrecognized GCC pragma
+    #pragma GCC unroll ((T) -42)
+                ^
+
+"Test_name.c", line 63: warning: unrecognized GCC pragma
+    #pragma GCC unroll (N + 1.0f)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 66: warning: unrecognized GCC pragma
+    #pragma GCC unroll (N + 0xffffffffffffffffULL)// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 69: warning: unrecognized GCC pragma
+    #pragma GCC unroll (N - 42)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 72: warning: unrecognized GCC pragma
+    #pragma GCC unroll ((T) 1.0f)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 75: warning: unrecognized GCC pragma
+    #pragma GCC unroll ((T) 0xffffffffffffffffULL)// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
+"Test_name.c", line 78: warning: unrecognized GCC pragma
+    #pragma GCC unroll ((T) -42)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                ^
+
