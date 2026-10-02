@@ -8176,8 +8176,11 @@ as _Pragma that are not parsed except during instantiations).
       err = TRUE;
       pos_warning(ec_exp_error_argument, &pos_curr_token);
     }  /* if */
-    /* Bypass the token just processed. */
-    (void)get_token();
+    /* Advance past the argument.  Do not consume tok_end_of_source here.
+       Fetching that terminator already popped the pragma token cache, so
+       another get_token would read the source that follows the pragma and
+       could queue later pragmas while this one is still being processed. */
+    if (curr_token != tok_end_of_source) (void)get_token();
     if (curr_token != tok_comma && curr_token != tok_end_of_source) {
       pos_warning(ec_exp_comma, &pos_curr_token);
       error_in_pragma = TRUE;
