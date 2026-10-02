@@ -53,3 +53,8 @@ for quickly getting setup.
 To further aid humans and AI agents in product development there is additional
 documentation for tips, tricks, and tutorials that can be found in the
 [development annex](dev_annex/README.md).
+
+## License
+
+The repository is licensed under Apache 2.0 with LLVM Exception.
+There are some test cases, such as in `tests/tests/imported/`, where the files are under a different license.
