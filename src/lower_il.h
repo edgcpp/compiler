@@ -1200,6 +1200,12 @@ extern void turn_statement_into_block(a_statement_ptr        statement,
                                       an_insert_location_ptr insert_location,
                                       a_statement_ptr        *orig_statement);
 
+extern void turn_statement_into_block_transferring_pragma(
+                                        a_statement_ptr        statement,
+                                        an_insert_location_ptr insert_location,
+                                        a_statement_ptr        *orig_statement,
+                                        a_scope_ptr            scope);
+
 extern void put_block_around_try_block(a_statement_ptr        statement,
                                        an_insert_location_ptr insert_location,
                                        a_statement_ptr        *orig_statement);
