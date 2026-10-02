@@ -13904,7 +13904,8 @@ specifier.  For example:
   } else {
     /* Check the exception specification. */
     a_constant_ptr	t_cp = t_esp->variant.noexcept_arg;
-    if ((flags & MTT_ALLOW_STRICTER_NOEXCEPT) == 0 &&
+    if (deduction_from_exc_spec_allowed &&
+        (flags & MTT_ALLOW_STRICTER_NOEXCEPT) == 0 &&
         !constant_bool_value_known_at_compile_time(t_cp)) {
       /* Perform deduction from the noexcept flag of a function type. */
       a_constant_ptr	cp;

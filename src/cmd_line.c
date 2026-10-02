@@ -3237,6 +3237,7 @@ option values if they were not already set by a command line option.
             exc_spec_in_func_type = TRUE;
           }  /* if */
 #endif /* EXC_SPEC_IN_FUNC_TYPE_ENABLING_POSSIBLE */
+          deduction_from_exc_spec_allowed = microsoft_version >= 1951;
           if (!option_kind_used[(int)optk_aligned_new]) {
             overaligned_allocation_enabled = TRUE;
           }  /* if */
@@ -13274,6 +13275,7 @@ variables declared in cmd_line.h.
   implicit_noexcept_enabled = FALSE;
   core_constant_expr_is_noexcept = FALSE;
   exc_spec_in_func_type = FALSE;
+  deduction_from_exc_spec_allowed = TRUE;
   delegating_constructors_enabled = FALSE;
   inheriting_constructors_enabled = FALSE;
   constexpr_enabled = FALSE;
