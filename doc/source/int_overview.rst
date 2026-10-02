@@ -858,20 +858,26 @@ also included.
 Typerefs
 --------
 
-The description of a type in the intermediate language contains a type entry
-kind ``tk_typeref``, which is used to define typedefs, and also to add type
-qualifiers to a type, e.g., ``const`` in ``const int``.  Such an entry is in
-some ways not a full-fledged type.  For example, it doesn't indicate its size;
-one must go to the underlying type to get that.  The macro ``skip_typerefs``
-and the function ``f_skip_typerefs`` can be used to strip off typerefs and get
-to the underlying type, which can then be processed in the normal way.  A very
-common cause of bugs in code our customers add is failure to put in
-``skip_typerefs`` calls where necessary.  (For that matter, it's a common cause
-of bugs in our code, though we try hard to find all those bugs before we ship
-the code.) The whole ``skip_typerefs`` issue is error-prone and requires
-discipline, but you do get used to it, and after many years of working with it
-we remain convinced that it's the right way to handle typedefs and type
-qualifiers.  Just be careful.
+The ``a_type`` IL entry can have a ``tk_typeref`` kind; such entries
+represent a type that is based on another type in some way. For example, a
+``typedef`` is represented by a typeref entry designating the type for
+which it is a synonym. Similarly, cv-qualified types like ``const int`` are
+represented by a ``const`` typeref pointing to the entry for the ``int``
+type.  Additional uses for typerefs include type operators like
+``decltype``, capturing the specific template arguments used when a
+class or alias template specialization is referred to, and many others.
+
+In general, typerefs do not have complete information about the type they
+represent, such as the size and alignment. As a result, it is often
+necessary to access the type on which a given typeref is based, and
+various macros and functions are provided for that operation, such as
+``skip_typerefs``, ``skip_lexical_typerefs``,
+``skip_typerefs_not_typedefs``, etc. It is a common source of bugs to
+omit a call to one of these functions and operate on the typeref itself
+instead of its underlying type.
+
+See the :ref:`il-typerefs` section in the Intermediate Language
+chapter for further details.
 
 Source Positions
 ----------------

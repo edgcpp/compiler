@@ -860,6 +860,8 @@ routine's IL scope entry (see ``find_vla_dimension`` in ``il.c``).  When the
 bound of a VLA is unspecified (e.g., because it was declared with the ``[*]``
 syntax), ``is_vla`` will be TRUE but ``has_assoc_vla_dimension`` will be FALSE.
 
+.. _il-typerefs:
+
 Typerefs
 --------
 
