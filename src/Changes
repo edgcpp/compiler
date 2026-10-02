@@ -1,3 +1,12 @@
+10/1/26  [GH #197]
+Deducing noexcept-specifiers
+
+Previously, the front end emulated Clang and GCC's ability to deduce simple dependent
+noexcept-specifiers (see the entry for EDGcpfe/18317 of 9/6/17).  Meanwhile, the standard
+has been changed through Core issue 2355 to make that behavior standard-mandated.
+It is now the default behavior, except in Microsoft mode with microsoft_version < 1951.
+
+
 Version 7.0, September 28, 2026
 
 9/15/26  [EDGcpfe/28958]
