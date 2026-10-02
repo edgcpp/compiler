@@ -4858,7 +4858,7 @@ formatter::append_into functions.
   }  /* for */
 
   auto   *backing_array = reserve_func(total_size);
-  size_t counter = 0;
+  LOCAL_UNUSED size_t counter = 0;
   /* The following expression is expanded to effectively evaluate as:
 
        detail::String_formatter<type_1>::append_into(*backing_array,
