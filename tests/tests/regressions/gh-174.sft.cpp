@@ -37,3 +37,11 @@ void f4(R r) {
   for (int &x : r)
     x = 0;
 }
+
+void f5(int *a, int n) {
+  h();
+#pragma GCC novector
+  do
+    a[--n] = 0;
+  while (n > 0);
+}
