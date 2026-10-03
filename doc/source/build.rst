@@ -442,10 +442,10 @@ differ between target configurations).
          cfront layout), and is a good starting point even on architectures
          other than IA-64 (Itanium).  This ABI is used by many versions of g++
          (3.2 and later).  For a complete specification, see
-         ``www.codesourcery.com/cxx-abi``.  See also other macro names
-         beginning with ``IA64_ABI``, some of which enable compatibility with
-         the ARM EABI variant of the ``IA64_ABI``.  If ``IA64_ABI`` is set to
-         FALSE (or 0), a cfront-like ABI is used instead.
+         https://itanium-cxx-abi.github.io/cxx-abi/.  See also other macro
+         names beginning with ``IA64_ABI``, some of which enable compatibility
+         with the ARM EABI variant of the ``IA64_ABI``.  If ``IA64_ABI`` is set
+         to FALSE (or 0), a cfront-like ABI is used instead.
    * - | ``DEFAULT_GNU_ABI_VERSION``
        | ``DEFAULT_EMULATE_GNU_ABI_BUGS``
        |

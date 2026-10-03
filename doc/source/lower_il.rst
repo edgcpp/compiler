@@ -169,14 +169,15 @@ facto* standard.  The variants of the cfront-like ABI are:
     and the IA-64 ABI (see below) is a better choice.
 
 As of version 3.1, the front end also supports the IA-64 ABI, described by
-www.codesourcery.com/cxx-abi/abi.html.  This is a modern ABI originally
-designed for the Intel IA-64 ("Itanium") architecture, but now an industry
-standard widely used on other architectures as well.  In particular, the GNU
-g++ compiler uses the IA-64 ABI on many platforms.  This ABI is selected by
-setting ``IA64_ABI`` to TRUE.  Note that the fully-lowered implementation of
-exception handling provided by EDG works with the IA-64 ABI, but does not
-conform to the spec, and that versions using the C-generating back end do not
-fully conform because of some layout cases not easily represented in C.
+https://itanium-cxx-abi.github.io/cxx-abi/abi.html.  This is a modern ABI
+originally designed for the Intel IA-64 ("Itanium") architecture, but now an
+industry standard widely used on other architectures as well.  In particular,
+the GNU g++ compiler uses the IA-64 ABI on many platforms.  This ABI is
+selected by setting ``IA64_ABI`` to TRUE.  Note that the fully-lowered
+implementation of exception handling provided by EDG works with the IA-64 ABI,
+but does not conform to the spec, and that versions using the C-generating back
+end do not fully conform because of some layout cases not easily represented in
+C.
 
 Note that the IA-64 ABI requires linker support in the form of a feature (often
 called COMDAT) that allows different object files to contain (identical)
@@ -978,8 +979,8 @@ IA-64 ABI name mangling
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 In the IA-64 ABI, name mangling is done according to the ABI spec
-(www.codesourcery.com/cxx-abi/abi.html).  We will not repeat that description
-here.
+(https://itanium-cxx-abi.github.io/cxx-abi/abi.html).  We will not repeat that
+description here.
 
 There is no compression *per se* in the IA-64 ABI name mangling scheme.
 Instead, entities that have appeared earlier in a mangled name can be

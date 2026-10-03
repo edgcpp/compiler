@@ -1458,7 +1458,7 @@ based on specifications drafted by a group of vendors for the 64-bit Itanium
 Architecture of Intel.  At the time of this writing, the latter specifications
 can be found at:
 
-   `www.codesourcery.com/cxx-abi <http://www.codesourcery.com/cxx-abi/>`__
+   `<https://itanium-cxx-abi.github.io/cxx-abi/>`_
 
 The implementation of both models can be found in ``layout.c``.  Where
 convenient, the same routines are used to implement the two models (e.g., there
