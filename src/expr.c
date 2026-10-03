@@ -937,6 +937,31 @@ initializer lists can have their braces ignored.
 }  /* ignore_braces_for_placeholder_deduction */
 
 
+static an_error_code error_for_failed_auto_deduction(
+                                           a_boolean  is_decltype_auto,
+                                           a_type_ptr initializer_type)
+/*
+Return the diagnostic for a failed placeholder-type deduction.
+is_decltype_auto is TRUE when the placeholder is decltype(auto).
+initializer_type is the type of the initializer, or NULL when that type is
+not available (for example, a braced-init-list).
+*/
+{
+  an_error_code result;
+
+  if (is_decltype_auto) {
+    result = ec_cannot_deduce_decltype_auto_type;
+  } else if (initializer_type != NULL && is_void_type(initializer_type)) {
+    /* void is not an object type, so deduction cannot succeed.  Name that
+       type instead of using the generic message. */
+    result = ec_cannot_deduce_auto_from_void;
+  } else {
+    result = ec_cannot_deduce_auto_type;
+  }  /* if */
+  return result;
+}  /* error_for_failed_auto_deduction */
+
+
 void prescan_initializer_for_auto_type_deduction(
                                          a_decl_parse_state *dps,
                                          a_boolean          parenthesized_init)
@@ -1178,12 +1203,20 @@ swallowed); otherwise, it's "="-form or "{...}" form.
         dps->deduced_auto_type = unknown_type();
       } else {
         /* Deduction failed. */
-        expr_pos_error(dps->has_deducible_class_templ_args ?
-                         ec_cannot_deduce_class_template_arguments :
-                       (an_error_code)(dps->decltype_auto_specifier_seen ?
-                         ec_cannot_deduce_decltype_auto_type :
-                         ec_cannot_deduce_auto_type),
-                       &dps->auto_pos);
+        { an_error_code  err_code;
+          a_type_ptr     init_type = NULL;
+
+          if (dps->has_deducible_class_templ_args) {
+            err_code = ec_cannot_deduce_class_template_arguments;
+          } else {
+            if (icp != NULL && is_expression_component(icp)) {
+              init_type = operand_of_arg_list_elem(icp)->type;
+            }  /* if */
+            err_code = error_for_failed_auto_deduction(
+                                 dps->decltype_auto_specifier_seen, init_type);
+          }  /* if */
+          expr_pos_error(err_code, &dps->auto_pos);
+        }
         dps->specifiers_type = dps->deduced_auto_type = dps->type =
                                                                  error_type();
         dps->has_deduced_type = FALSE;
@@ -48752,9 +48785,9 @@ the type of element_operand and sets the variable type to the deduced type.
          type as it is. */
     } else {
       /* Deduction failed. */
-      pos_error(iterator->declared_with_decltype_auto ?
-                  ec_cannot_deduce_decltype_auto_type :
-                  ec_cannot_deduce_auto_type,
+      pos_error(error_for_failed_auto_deduction(
+                                       iterator->declared_with_decltype_auto,
+                                       element_operand->type),
                 &iterator->source_corresp.decl_position);
       iterator->type = error_type();
     }  /* if */
@@ -52389,7 +52422,9 @@ are left unaffected).
         is_decltype_auto_case = TRUE;
       }  /* if */
     } else {
-      pos_error(ec_cannot_deduce_auto_type, diag_pos);
+      /* The declared type is not a plain "auto" (for example, "auto *").
+         void still cannot be used to deduce it. */
+      pos_error(ec_cannot_deduce_auto_from_void, diag_pos);
       deduced_return_type = error_type();
     }  /* if */
     if (keep_placeholder) {
@@ -52489,8 +52524,8 @@ type with the type of return_op.
     /* The type is still dependent, so leave the return type as it is. */
   } else {
     /* Deduction failed. */
-    pos_error(is_decltype_auto ? ec_cannot_deduce_decltype_auto_type
-                               : ec_cannot_deduce_auto_type,
+    pos_error(error_for_failed_auto_deduction(is_decltype_auto,
+                                              return_op->type),
               &return_op->position);
     *return_type = error_type();
     rout_type->variant.routine.return_type = *return_type;

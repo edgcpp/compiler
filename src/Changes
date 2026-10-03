@@ -103,6 +103,18 @@ example, with --clang_version 230100:
   #pragma clang diagnostic push
 
 was previously recorded as "clangdiagnostic push".  That is now fixed.
+10/4/26  [GH #27]
+Clearer diagnostic when auto is deduced from void
+
+Deducing "auto" from a void expression failed with the generic message
+"cannot deduce \"auto\" type".  The diagnostic now says that the type is
+void.  For example:
+
+  void g();
+  auto x = g();
+
+decltype(auto) is unchanged: deduction succeeds and the incomplete-type
+diagnostic is issued.
 
 
 10/1/26  [GH #197]
