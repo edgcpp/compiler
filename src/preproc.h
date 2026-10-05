@@ -330,10 +330,6 @@ extern void check_for_stdc_pragmas(void);
 #if GNU_EXTENSIONS_ALLOWED
 extern void gcc_pragma(a_pending_pragma_ptr  ppp);
 
-extern void gcc_loop_pragma(a_pending_pragma_ptr  ppp,
-                            a_symbol_ptr          sym,
-                            a_statement_ptr       sp);
-
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
 extern void gnu_riscv_pragma(a_pending_pragma_ptr  ppp);
 extern void clang_riscv_pragma(a_pending_pragma_ptr  ppp);

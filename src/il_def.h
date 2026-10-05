@@ -6723,7 +6723,7 @@ enum a_pragma_kind : a_byte {
 #if GNU_EXTENSIONS_ALLOWED
   pk_gcc_immediate,     /* GCC pragmas (handled immediately). */
   pk_gcc_next_token,    /* GCC pragmas (handled as next token). */
-  pk_gcc_next_statement,/* GCC loop pragmas (bound to the next statement). */
+  pk_gcc_next_statement,/* GCC pragmas (bound to the next statement). */
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
   pk_gnu_riscv,         /* GCC RISC-V intrinsics. */
   pk_clang_riscv,       /* Clang RISC-V intrinsics. */

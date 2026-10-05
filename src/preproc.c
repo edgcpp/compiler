@@ -3339,7 +3339,7 @@ The position of the pragma ID is returned in id_position;
           } else if (is_gcc_loop_pragma_name(curr_char_loc)) {
             /* Bind the GCC loop pragmas to the statement that follows. */
             pkdp = pragma_description_for_pragma_kind[
-                                            (int)pk_gcc_next_statement];
+                                                   (int)pk_gcc_next_statement];
           }  /* if */
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
         } else if (pkdp->kind == pk_clang_riscv) {
@@ -4345,24 +4345,6 @@ Process a "#pragma GCC ..." construct.
     il_pragma_entry->variant.gcc = ppp->variant.gcc;
   }  /* if */
 }  /* gcc_pragma */
-
-
-void gcc_loop_pragma(a_pending_pragma_ptr       ppp,
-                     ARG_UNUSED a_symbol_ptr    sym,
-                     ARG_UNUSED a_statement_ptr sp)
-/*
-Process a "#pragma GCC unroll", "#pragma GCC ivdep", or "#pragma GCC novector",
-which has been bound to the statement sp that follows it.
-These pragmas apply only to the loop that immediately follows them.
-Binding them to that loop causes the C-generating back end to emit them directly in
-front of the loop rather than at the start of the enclosing block.
-*/
-{
-  begin_rescan_of_pragma_tokens(ppp);
-  pos_warning(ec_unrecognized_gcc_pragma, &error_position);
-  /* Pass error_in_pragma as TRUE to avoid diagnostics on the operands */
-  wrapup_rescan_of_pragma_tokens(/*error_in_pragma=*/TRUE);
-}  /* gcc_loop_pragma */
 
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if UPC_EXTENSIONS_ALLOWED

@@ -1867,7 +1867,7 @@ Initialize the pragma description table.
        important (look_up_pragma_id relies on it). */
     (void)add_next_construct_pragma_kind_description
                  ((a_pragma_kind)pk_gcc_next_statement,
-                 fn_for_function(gcc_loop_pragma),
+                 (a_function_number)fn_null,
                  /*is_pseudo_pragma=*/FALSE,
                  /*may_bind_to_decl=*/FALSE,
                  /*may_bind_to_stmt=*/TRUE,
