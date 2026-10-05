@@ -32,16 +32,17 @@
 # pushing anything. Information about why the push is rejected may be sent to
 # the user by writing to standard error.
 #
+# The policy this hook applies is defined in the edgpolicy library, which the
+# policy CI workflow also uses.  This hook exists to give fast local feedback;
+# CI is what actually enforces the policy.
+#
 
-import json
-import os
 import platform
-import re
-import shutil
 import subprocess
 import sys
 import tempfile
 
+import edgpolicy
 import edgutil
 
 from pathlib import Path
@@ -71,49 +72,15 @@ else:
   # On Unix-like systems we can regain access to terminal input using /dev/tty.
   sys.stdin = open('/dev/tty')
 
-
 #
-# File paths that begin with the prefixes listed here are excluded from file
-# level checking.
+# How each kind of finding reported by edgpolicy is introduced to the user.
 #
-EXCLUDES_PATH_PREFIXES = [
-  # Don't check tests as they're not necessarily "EDG-style".
-  'tests/',
-  # Don't check the generated builtin files as they're very large and there's
-  # really nothing the user can do but accept them.
-  'dev_tools/builtins/builtins_',
-  # Don't check GitHub workflow yml files; long lines are all but required.
-  '.github/workflows/',
-  # Don't check the error_msg.txt file.
-  'src/error_msg.txt',
-  # Don't check AGENT files.
-  'AGENTS.md',
-  '.agents/'
-]
-
-def _is_excluded_file_path(path_str: str) -> bool:
-  return any(
-    path_str.startswith(prefix) for prefix in EXCLUDES_PATH_PREFIXES
-  )
-
-COMMIT_SUBJECT_POLICY_REGEX = re.compile(
-  r'^.*\[(GH #[0-9]+|(EDG[cfjp]+fe/([0-9]+))|,)*\].*$'
-)
-
-TOOL_PATH_GIT = shutil.which('git')
-
-def run_git(args, *, check = True, text = True):
-  '''Run a git command and return the completed process.'''
-  return subprocess.run(
-    [TOOL_PATH_GIT, *args],
-    check = check,
-    capture_output = True,
-    text = text
-  )
-
-def git_output(args):
-  '''Run a git command and return stripped stdout.'''
-  return run_git(args).stdout.strip()
+FINDING_KIND_HEADINGS = {
+  'misspelling': 'New misspelled words:',
+  'typo': 'New typos:',
+  'coding-error': 'Coding errors:',
+  'overlong-line': 'Lines too long:'
+}
 
 def print_indented(text, prefix):
   '''Print each line of text with the given prefix.'''
@@ -123,20 +90,12 @@ def print_indented(text, prefix):
   for line in text.splitlines():
     print(f"{prefix}{line}")
 
-def git_show_blob(revision_path: str) -> bytes:
-  '''Return the blob contents for revision:path, or b'' if missing.'''
-  completed_process = run_git(
-    ['show', revision_path], check = False, text = False
-  )
-  if completed_process.returncode != 0:
-    return b''
-  return completed_process.stdout
-
 class PrePushChecker:
   '''Runs EDG pre-push policy checks against new commits and changed files.'''
 
   def __init__(self):
     self.errors = 0
+    self.repository = edgpolicy.GitRepository(edgutil.find_mono_repo_or_exit())
 
   def confirm_okay(self):
     '''Ask the user whether a policy warning is acceptable.
@@ -176,14 +135,16 @@ class PrePushChecker:
     As commits are walked, check to make sure they match formatting guidance.
 
     Returns the oldest new commit hash, or None if there are no new commits.
-    Exits immediately if a commit subject fails the PR-number policy.
+    A commit subject that fails the policy aborts the push outright when
+    edgpolicy says the rule is binding, and is otherwise offered for
+    confirmation like any other finding.
     '''
     first_new_commit = None
 
-    commits = git_output(['log', '--pretty=%H']).splitlines()
+    commits = self.repository.lines(['log', '--pretty=%H'])
     for commit in commits:
       # Break if the remote already has this commit.
-      contains = run_git(
+      contains = self.repository.run(
         ['branch', '-r', '--contains', commit], check = False
       ).stdout.strip()
       if contains:
@@ -191,150 +152,75 @@ class PrePushChecker:
 
       print('New commit:')
       print('')
-      show_output = git_output(['show', '--no-patch', commit])
+      show_output = self.repository.output(['show', '--no-patch', commit])
       print_indented(show_output, '  ')
       print('')
 
-      subject = git_output(['show', '--no-patch', '--format=%s', commit])
-      if COMMIT_SUBJECT_POLICY_REGEX.match(subject) is None:
-        print(
-          "  [POLICY] Commit message doesn't contain valid PR number (or [])."
-        )
-        sys.exit(1)
+      subject_error = edgpolicy.commit_subject_error(
+        self.repository.subject_of(commit)
+      )
+      if subject_error is not None:
+        print(f"  [POLICY] {subject_error}")
+        print_indented(edgpolicy.SUBJECT_POLICY_DESCRIPTION, '  ')
+        if edgpolicy.ENFORCE_COMMIT_SUBJECT_POLICY:
+          sys.exit(1)
+        self.confirm_okay()
 
       first_new_commit = commit
 
     return first_new_commit
 
+  def report_findings(self, findings):
+    '''Print findings grouped by kind, confirming once per group.'''
+    for kind, heading in FINDING_KIND_HEADINGS.items():
+      messages = [
+        message for finding_kind, message in findings
+        if finding_kind == kind
+      ]
+      if not messages:
+        continue
+
+      print(f"    {heading}")
+      for message in messages:
+        print(f"    - {message}")
+      self.confirm_okay()
+
   def check_changed_files(self, first_new_commit):
     '''Run per-file policy checks for files changed since
     first_new_commit~1.'''
-    remote_head = f"{first_new_commit}~1"
+    base_rev = f"{first_new_commit}~1"
     print('Checking changed files:')
 
-    changed_files = git_output(
-      ['diff', '--no-commit-id', '--name-only', '-r', f"{remote_head}..HEAD"]
-    ).splitlines()
+    containing_tmp_dir = self.repository.repo_dir / '.tmp'
+    containing_tmp_dir.mkdir(exist_ok = True)
 
-    mono_repo_dir = edgutil.find_mono_repo_or_exit()
-    containing_tmp_dir = mono_repo_dir / '.tmp'
-
-    with tempfile.TemporaryDirectory(dir = containing_tmp_dir) as tmp_dir_str:
-      input_spec = {}
-      for file_path_str in changed_files:
-        if _is_excluded_file_path(file_path_str):
-          continue
-
-        file_path = Path(file_path_str)
-        named_tmp_args = {
-          'prefix': file_path.stem,
-          'suffix': file_path.suffix,
-          'dir': tmp_dir_str,
-          'delete': False
-        }
-        with tempfile.NamedTemporaryFile(**named_tmp_args) as file_handle:
-          file_handle.write(git_show_blob(f"HEAD:{file_path_str}"))
-          new_file = (
-            Path(file_handle.name).relative_to(mono_repo_dir).as_posix()
-          )
-        with tempfile.NamedTemporaryFile(**named_tmp_args) as file_handle:
-          file_handle.write(git_show_blob(f"{remote_head}:{file_path_str}"))
-          old_file = (
-            Path(file_handle.name).relative_to(mono_repo_dir).as_posix()
-          )
-
-        input_spec[file_path_str] = [old_file, new_file]
-
+    with tempfile.TemporaryDirectory(
+      dir = str(containing_tmp_dir)
+    ) as tmp_dir_str:
       tmp_dir = Path(tmp_dir_str)
-      input_file = tmp_dir / 'input.json'
-      output_file = tmp_dir / 'output.json'
-      with open(input_file, 'w') as file_handle:
-        json.dump(input_spec, file_handle)
 
-      use_docker = (
-        shutil.which('docker') is not None and
-        edgutil.is_docker_preferred(mono_repo_dir)
+      change_spec = edgpolicy.collect_change_spec(
+        self.repository, base_rev, 'HEAD', tmp_dir
       )
-      if use_docker:
-        file_change_check_proc = subprocess.run(
-          [
-            shutil.which('edg-exec'),
-            '--',
-            'edg-check-file-changes',
-            str(input_file.relative_to(mono_repo_dir).as_posix()),
-            str(output_file.relative_to(mono_repo_dir).as_posix())
-          ],
-          cwd = mono_repo_dir,
-          stdin = subprocess.DEVNULL
-        )
-      else:
-        file_change_check_proc = subprocess.run(
-          [
-            shutil.which('edg-check-file-changes'),
-            str(input_file),
-            str(output_file)
-          ],
-          cwd = mono_repo_dir,
-          stdin = subprocess.DEVNULL
-        )
 
-      if file_change_check_proc.returncode != 0:
+      use_docker = edgpolicy.should_use_docker(self.repository.repo_dir)
+      results = edgpolicy.run_file_checks(
+        self.repository, change_spec, tmp_dir, use_docker = use_docker
+      )
+      if results is None:
         sys.exit(1)
 
-      with open(output_file, 'r') as file_handle:
-        results = json.load(file_handle)
-
-      for file_path_str, file_results in results.items():
+      for file_path_str in sorted(results):
         print(f"  Checking file: {file_path_str}")
 
-        misspellings = file_results['misspellings']
-        if misspellings is None:
+        findings = edgpolicy.summarize_file_result(results[file_path_str])
+        if any(kind == 'spelling-unavailable' for kind, _ in findings):
           print('    Spell check failed:')
           if not use_docker:
             print('      docker not used.')
           print('      aspell not found or missing dictionary.')
-        elif len(misspellings) != 0:
-          print('    New misspelled words:')
-          for misspelling in misspellings:
-            print(f"    - {misspelling}")
-          self.confirm_okay()
 
-        typos = file_results['typos']
-        if len(typos) != 0:
-          print('    New typos:')
-          for typo in typos:
-            print(f"    - {typo}")
-          self.confirm_okay()
-
-        coding_errors = file_results['coding_errors']
-        if len(coding_errors) != 0:
-          endif_hits = coding_errors['missing_endifs']
-          if len(endif_hits) != 0:
-            print(f"    Missing comment on #endif:")
-            print_indented('\n'.join(endif_hits), '    ')
-            self.confirm_okay()
-
-          else_hits = coding_errors['missing_elses']
-          if len(else_hits) != 0:
-            print(f"    Missing comment on #else:")
-            print_indented('\n'.join(else_hits), '    ')
-            self.confirm_okay()
-
-          closing_comments = coding_errors['closing_comments']
-          if len(closing_comments) != 0:
-            print_indented('\n'.join(closing_comments), '    ')
-            self.confirm_okay()
-
-        overlong_lines = file_results['overlong_lines']
-        if len(overlong_lines) != 0:
-          for line_no, (line_start, lines) in overlong_lines.items():
-            print(f"    Line {line_no} too long:")
-            line_end = line_start + (len(lines) - 1)
-            print(f" {line_start} -> {line_end} ".center(79, '='))
-            for line in lines:
-              print(line, end = '')
-            print('=' * 79)
-          self.confirm_okay()
+        self.report_findings(findings)
 
   def run(self) -> bool:
     '''Execute the full pre-push check sequence.'''

@@ -1,0 +1,261 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Check a revision range against the project's commit and file policies.
+
+This is the non-interactive counterpart to the pre-push hook.  Both read
+their rules from edgpolicy, but where the hook asks the developer whether
+a finding is acceptable, this reports every finding and fails, which is
+what a required status check needs to do.
+'''
+
+import argparse
+import os
+import sys
+import tempfile
+
+from pathlib import Path
+from typing import FrozenSet, List, Optional
+
+import edgpolicy
+import edgutil
+
+COMMIT_SUBJECT_FINDING_KIND = 'commit-subject'
+
+#
+# Findings of these kinds are reported without failing the run.
+#
+# aspell has no project dictionary to work from, so on a compiler code base
+# it reports identifiers, standards vocabulary, and abbreviations as new
+# misspellings on essentially every change; measured against recent history
+# it fires between 1 and 52 times per commit while the mechanical checks
+# fire between 0 and 3 times.  Spelling is therefore advisory, and the
+# mechanical checks are enforced.  Use --strict to fail on everything.
+#
+ADVISORY_FINDING_KINDS = frozenset([
+  'misspelling',
+  'spelling-unavailable'
+])
+
+def default_warning_kinds() -> FrozenSet[str]:
+  '''Return the finding kinds that should be reported but not enforced.
+
+  The commit subject rule joins them unless edgpolicy says it is binding.
+  '''
+  if edgpolicy.ENFORCE_COMMIT_SUBJECT_POLICY:
+    return ADVISORY_FINDING_KINDS
+  return ADVISORY_FINDING_KINDS | {COMMIT_SUBJECT_FINDING_KIND}
+
+class PolicyReporter:
+  '''Collects findings and prints them for humans and for GitHub.'''
+
+  def __init__(self, warning_kinds: FrozenSet[str]) -> None:
+    self.violations = 0
+    self.warning_kinds = warning_kinds
+    self.in_github_actions = 'GITHUB_ACTIONS' in os.environ
+
+  def report(self, kind: str, message: str, path: Optional[str]) -> None:
+    '''Record a finding at the severity configured for its kind.'''
+    if kind in self.warning_kinds:
+      self.warning(message, path)
+    else:
+      self.violation(message, path)
+
+  def _annotate(self, level: str, message: str, path: Optional[str]) -> None:
+    if not self.in_github_actions:
+      return
+    location = f" file={path}" if path else ''
+    # Annotations must be one line to be parsed by the Actions runner, and
+    # these messages can quote a line of the diff, so flatten every line
+    # break rather than just the newline.
+    flattened = message.replace('\r', ' ').replace('\n', ' ')
+    print(f"::{level}{location}::{flattened}")
+
+  def violation(self, message: str, path: Optional[str] = None) -> None:
+    self.violations += 1
+    print(f"  [POLICY] {message}")
+    self._annotate('error', message, path)
+
+  def warning(self, message: str, path: Optional[str] = None) -> None:
+    print(f"  [WARNING] {message}")
+    self._annotate('warning', message, path)
+
+def check_commit_subjects(
+  repository: edgpolicy.GitRepository,
+  reporter: PolicyReporter,
+  base_rev: str,
+  head_rev: str
+) -> None:
+  '''Check every commit subject in base_rev..head_rev.'''
+  commits = repository.lines(
+    ['log', '--no-merges', '--pretty=%H', f"{base_rev}..{head_rev}"]
+  )
+
+  if not commits:
+    print('No new commits to check.')
+    return
+
+  print(f"Checking {len(commits)} commit subject(s):")
+  rejected = 0
+  for commit in commits:
+    subject = repository.subject_of(commit)
+    short_hash = commit[:12]
+    print(f"  {short_hash} {subject}")
+
+    error = edgpolicy.commit_subject_error(subject)
+    if error is not None:
+      rejected += 1
+      reporter.report(
+        COMMIT_SUBJECT_FINDING_KIND, f"{short_hash}: {error}", None
+      )
+
+  if rejected:
+    print('')
+    print(edgpolicy.SUBJECT_POLICY_DESCRIPTION)
+
+def check_changed_files(
+  repository: edgpolicy.GitRepository,
+  reporter: PolicyReporter,
+  base_rev: str,
+  head_rev: str,
+  allow_docker: bool = True
+) -> None:
+  '''Run the file level checks over base_rev..head_rev.'''
+  containing_tmp_dir = repository.repo_dir / '.tmp'
+  containing_tmp_dir.mkdir(exist_ok = True)
+
+  with tempfile.TemporaryDirectory(
+    dir = str(containing_tmp_dir)
+  ) as tmp_dir_str:
+    tmp_dir = Path(tmp_dir_str)
+
+    change_spec = edgpolicy.collect_change_spec(
+      repository, base_rev, head_rev, tmp_dir
+    )
+    if not change_spec:
+      print('No changed files to check.')
+      return
+
+    print(f"Checking {len(change_spec)} changed file(s):")
+    results = edgpolicy.run_file_checks(
+      repository,
+      change_spec,
+      tmp_dir,
+      use_docker = (
+        allow_docker and edgpolicy.should_use_docker(repository.repo_dir)
+      )
+    )
+
+    if results is None:
+      edgutil.eprint('error: edg-check-file-changes failed to run')
+      reporter.violation('File change checks could not be run.')
+      return
+
+    # The checker drops a file from its results if checking it raised, so
+    # a missing entry means the file went unchecked rather than passed.
+    for path_str in sorted(set(change_spec) - set(results)):
+      reporter.warning(
+        f"{path_str}: the file checker returned no result for this file",
+        path_str
+      )
+
+    for path_str in sorted(results):
+      findings = edgpolicy.summarize_file_result(results[path_str])
+      if not findings:
+        continue
+
+      print(f"  {path_str}:")
+      for kind, message in findings:
+        reporter.report(kind, f"{path_str}: {message}", path_str)
+
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+  parser = argparse.ArgumentParser(
+    description = (
+      'Check a revision range against the project commit and file policies.'
+    )
+  )
+  parser.add_argument(
+    '--base-rev',
+    default = 'origin/main',
+    help = 'the revision the range starts after (default: origin/main)'
+  )
+  parser.add_argument(
+    '--head-rev',
+    default = 'HEAD',
+    help = 'the revision the range ends at (default: HEAD)'
+  )
+  parser.add_argument(
+    '--skip-commits',
+    action = 'store_true',
+    help = 'do not check commit subjects'
+  )
+  parser.add_argument(
+    '--skip-files',
+    action = 'store_true',
+    help = 'do not check changed files'
+  )
+  parser.add_argument(
+    '--strict',
+    action = 'store_true',
+    help = 'fail on advisory findings (spelling, commit subjects) as well'
+  )
+  parser.add_argument(
+    '--no-docker',
+    action = 'store_true',
+    help = (
+      'run the file checks directly rather than in the dev container, for '
+      'hosts that have docker but no EDG images (such as CI runners)'
+    )
+  )
+  return parser.parse_args(argv)
+
+def main() -> None:
+  args = parse_args()
+
+  repo_dir = edgutil.find_mono_repo_or_exit()
+  repository = edgpolicy.GitRepository(repo_dir)
+  reporter = PolicyReporter(
+    frozenset() if args.strict else default_warning_kinds()
+  )
+
+  # Compare against the point the branch left the base so that commits
+  # already on the base branch are not re-checked.
+  merge_base = repository.run(
+    ['merge-base', args.base_rev, args.head_rev], check = False
+  )
+  if merge_base.returncode != 0:
+    edgutil.eprint(
+      f"error: no merge base for {args.base_rev} and {args.head_rev}"
+    )
+    sys.exit(1)
+  base_rev = str(merge_base.stdout).strip()
+
+  print(f"Base: {base_rev}")
+  print(f"Head: {repository.output(['rev-parse', args.head_rev])}")
+  print('')
+
+  if not args.skip_commits:
+    check_commit_subjects(repository, reporter, base_rev, args.head_rev)
+    print('')
+
+  if not args.skip_files:
+    check_changed_files(
+      repository,
+      reporter,
+      base_rev,
+      args.head_rev,
+      allow_docker = not args.no_docker
+    )
+    print('')
+
+  if reporter.violations:
+    print(f"Failed: {reporter.violations} policy violation(s).")
+    sys.exit(1)
+
+  print('Passed: no policy violations.')
+
+main()
