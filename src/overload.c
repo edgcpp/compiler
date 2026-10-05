@@ -27542,7 +27542,9 @@ will be an lvalue instead of the usual prvalue.
                                   (a_param_type_ptr)NULL,
                                   /*param_type_is_deduced=*/FALSE,
                                   try_user_conversions_in_ovl_res,
-                                  /*allow_expl_conv_funcs=*/FALSE,
+                                  /*allow_expl_conv_funcs=*/
+                                    (conv_context &
+                                      CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS) != 0,
                                   arg_match);
       }  /* if */
     } else {

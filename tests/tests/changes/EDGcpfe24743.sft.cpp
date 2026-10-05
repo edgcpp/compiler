@@ -15,3 +15,9 @@ struct S  { operator D() const; };
 void g(S p) {
   D d(p);  // Previously an error.  Now okay.
 }
+
+struct ExplicitS { explicit operator D() const; };
+D h(ExplicitS p) {
+  D d(p);       // Previously an error in C++20 mode.  Now okay.
+  return D(p);  // Likewise.
+}
