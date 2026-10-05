@@ -31,7 +31,7 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   auto bad_init_3 = [&a(void_fn())] {}; // expected-error {{cannot form a reference to 'void'}}
                       ^
 
-"Test_name.c", line 51: error: cannot deduce "auto" type
+"Test_name.c", line 51: error: incomplete type "void" is not allowed
   auto bad_init_4 = [a(void_fn())] {}; // expected-error {{has incomplete type 'void'}}
                      ^
 

@@ -105,16 +105,19 @@ example, with --clang_version 230100:
 was previously recorded as "clangdiagnostic push".  That is now fixed.
 10/4/26  [GH #27]
 Clearer diagnostic when auto is deduced from void
+10/6/26  [GH #27]
+Clearer diagnostic when auto is deduced from an incomplete type
 
-Deducing "auto" from a void expression failed with the generic message
-"cannot deduce \"auto\" type".  The diagnostic now says that the type is
-void.  For example:
+Deducing a plain "auto" (including cv-qualified "auto") from void or another
+incomplete type used to fail with "cannot deduce \"auto\" type".  The type
+is now deduced, and the usual incomplete-type diagnostic is issued, as it
+already is for decltype(auto).  For example:
 
   void g();
-  auto x = g();
+  auto x = g();          // incomplete type "void" is not allowed
+  auto *p = g();         // cannot deduce "auto" type
 
-decltype(auto) is unchanged: deduction succeeds and the incomplete-type
-diagnostic is issued.
+Forms that are not a plain "auto", such as "auto *", still fail deduction.
 
 
 10/1/26  [GH #197]

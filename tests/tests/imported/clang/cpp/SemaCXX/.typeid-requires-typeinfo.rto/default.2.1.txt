@@ -3,12 +3,8 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     return typeid(A);
            ^
 
-"Test_name.c", line 11: error: cannot deduce "auto" type
+"Test_name.c", line 11: error: cannot convert to incomplete class "type_info"
     return typeid(A);
            ^
 
-"Test_name.c", line 8: error: cannot deduce "auto" type
-  auto f() {
-           ^
-
-3 errors detected in the compilation of "Test_name.c".
+2 errors detected in the compilation of "Test_name.c".
