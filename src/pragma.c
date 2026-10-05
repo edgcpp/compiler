@@ -350,9 +350,7 @@ Construct a pending pragma with the given pragma kind description.
       break;
 #if GNU_EXTENSIONS_ALLOWED
     case pk_gcc_immediate:
-      FALLTHROUGH
     case pk_gcc_next_token:
-      FALLTHROUGH
     case pk_gcc_next_statement:
       clear_gcc_pragma_descr(&this->variant.gcc);
       break;

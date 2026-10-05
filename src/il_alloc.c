@@ -4474,9 +4474,7 @@ pointer to it.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
     case pk_gcc_immediate:
-      FALLTHROUGH
     case pk_gcc_next_token:
-      FALLTHROUGH
     case pk_gcc_next_statement:
       clear_gcc_pragma_descr(&pp->variant.gcc);
       break;
