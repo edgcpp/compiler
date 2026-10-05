@@ -120,6 +120,19 @@ already is for decltype(auto).  For example:
 Forms that are not a plain "auto", such as "auto *", still fail deduction.
 
 
+10/5/26  [GH #213]
+White space lost in the pragma text for a "#pragma clang" directive
+
+The changes for EDGcpfe/29033 (in version 7.0) introduced a regression in
+which the text recorded in the IL for a "#pragma clang" directive other than
+"#pragma clang riscv ..." lost the white space following "clang".  For
+example, with --clang_version 230100:
+
+  #pragma clang diagnostic push
+
+was previously recorded as "clangdiagnostic push".  That is now fixed.
+
+
 10/1/26  [GH #197]
 Deducing noexcept-specifiers
 
