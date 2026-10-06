@@ -12,26 +12,6 @@ As a result it is *highly recommended* to use the Docker based development
 process as this will typically provide the best experience (even if directly
 running a Linux-based operation system).
 
-## Project Policy Checks
-
-`dev-init.py` installs a `pre-push` hook that checks new commits against the
-project's commit message and coding style policies.  The hook exists to tell
-you about problems before you push; it is not what enforces them.  It is only
-present if you ran `dev-init.py`, it is skipped by `git push --no-verify`, and
-it never runs for work done through the GitHub web interface.
-
-Enforcement happens in the `Policy Check` workflow, which applies the same
-rules from the same `edgpolicy` library when a pull request is opened.  To
-run those checks yourself at any point:
-
-```sh
-edg-check-policy --base-rev origin/main
-```
-
-Use `--strict` to also fail on the spelling findings that the workflow only
-reports as warnings.  See `.github/rulesets/README.md` for how the checks are
-tied to branch protection.
-
 ## Prerequisites
 
 The first step (regardless of Docker use) is to make EDG development tools

@@ -113,9 +113,6 @@ pushd pylibs/ > /dev/null
   pushd edgpack/ > /dev/null
     check_types __init__.py
   popd > /dev/null
-  pushd edgpolicy/ > /dev/null
-    check_types_strict __init__.py
-  popd > /dev/null
   pushd edgshell/ > /dev/null
     check_types __init__.py
   popd > /dev/null

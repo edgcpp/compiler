@@ -81,32 +81,21 @@ existing issues and discussion (it's possible someone is already working on
 the item or that there has been significant discussion about the desired
 implementation characeristics).
 
-### What CI Enforces
+### Automated Checks
 
-Some of the items below are checked automatically on every pull request by
-the `Policy Check` workflow, which runs the same rules as the `pre-push`
-hook installed by `dev-init.py`.
-
-These **fail** the check:
-
-- Changed files must stay within 79 columns, must comment their `#endif`
-  and `#else` directives, and must not contain repeated-word typos.
-
-These are **reported but do not fail** the check:
-
-- Commit subjects should carry a bracketed tag naming at least one GitHub
-  issue or legacy PR, such as `[GH #213]` or `[EDGcpfe/29032]`.  Whether
-  commits that belong to no issue must still carry an empty `[]` is an
-  open question, so this is advisory for now.
-- Spelling, because there is no project dictionary and a compiler code
-  base trips `aspell` constantly.  Please still read the spelling
-  annotations; they catch real mistakes.
-
-You can run the same check locally before opening a pull request:
+Some of the checklist below is checked automatically when you open a pull
+request.  `edg-check-policy` is the tool that does it, and you can run it
+yourself at any point to see what a pull request would report:
 
 ```sh
 edg-check-policy --base-rev origin/main
 ```
+
+Commit subjects must name the work they belong to, and changed files must
+follow the project's coding style; both will fail the check.  Spelling is
+reported but does not fail, because there is no project dictionary and a
+compiler code base trips `aspell` constantly.  Please still read what it
+says; it catches real mistakes.
 
 ### Checklist for Success
 
