@@ -30,6 +30,22 @@ the latter has not yet been entered.  For example, with --c++17 and
   static_assert(f(256) == 256, "");   // Previously not a constant.
 
 Constructor calls had the same problem.  This is now fixed.
+10/8/26  [GH #229]
+Improper handling of "if constexpr" substatements
+
+Previously, when a substatement of an "if constexpr" was discarded during
+instantiation and was not enclosed in braces, statements following the
+discarded statement could additionally be discarded, e.g.:
+
+  template <bool B> constexpr int f() {
+    return [] {
+        if constexpr (B) while (false) {}
+        return 1; // Previously erroneously discarded when B was false.
+        return 2;
+    }();
+  }
+
+This is now fixed.
 
 
 10/7/26  [GH #176]
