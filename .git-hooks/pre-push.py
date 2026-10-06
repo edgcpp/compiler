@@ -66,6 +66,25 @@ if platform.system() == 'Windows':
 
 TOOL_PATH_CHECK_POLICY = shutil.which('edg-check-policy')
 
+def terminal_input():
+  '''Open the terminal to hand to the checker as its standard input.
+
+  git supplies the refs being pushed on this hook's stdin, so the checker
+  cannot simply inherit it and still read the user's answers.  On Windows
+  the relaunch above has already arranged a standalone console, whose stdin
+  is usable as it is, so that is inherited instead.
+  '''
+  if platform.system() == 'Windows':
+    return None
+
+  try:
+    return open('/dev/tty')
+  except OSError:
+    # Pushing with no terminal attached, so there is nobody to prompt.  The
+    # checker reports its findings without asking rather than reading the
+    # refs above as if they were answers.
+    return subprocess.DEVNULL
+
 def main():
   if TOOL_PATH_CHECK_POLICY is None:
     print(
@@ -75,11 +94,14 @@ def main():
     )
     sys.exit(1)
 
-  completed_process = subprocess.run([
-    TOOL_PATH_CHECK_POLICY,
-    '--unpushed',
-    '--interactive'
-  ])
+  completed_process = subprocess.run(
+    [
+      TOOL_PATH_CHECK_POLICY,
+      '--unpushed',
+      '--interactive'
+    ],
+    stdin = terminal_input()
+  )
 
   sys.exit(completed_process.returncode)
 

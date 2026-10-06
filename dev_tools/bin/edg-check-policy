@@ -17,7 +17,6 @@ interactive review.
 import argparse
 import json
 import os
-import platform
 import re
 import shutil
 import subprocess
@@ -246,7 +245,14 @@ class PolicyReporter:
   '''
 
   def __init__(self, interactive: bool = False, strict: bool = False) -> None:
-    self.interactive = interactive
+    # Prompting needs both somewhere to ask and somewhere to be answered.
+    # When either is missing, as for a push from a GUI client that has no
+    # controlling terminal, fall back to the accounting used when nobody is
+    # watching.  That reaches the same verdict the pull request will, rather
+    # than refusing the push over warnings nobody is there to accept.
+    self.interactive = (
+      interactive and sys.stdin.isatty() and sys.stdout.isatty()
+    )
     self.strict = strict
     self.errors = 0
     self.in_github_actions = 'GITHUB_ACTIONS' in os.environ
@@ -273,16 +279,20 @@ class PolicyReporter:
   def confirm_okay(self) -> None:
     '''Ask the user whether a policy warning is acceptable.
 
-    When stdout is a terminal, prompt on stdin for y/n/q.  Otherwise record
-    an error without prompting (e.g. non-interactive pushes).
+    Prompts on stdin for y/n/q.  Only reached when a terminal is available
+    both ways, which the caller arranges: git hands a hook the refs being
+    pushed on stdin, so the pre-push hook opens the terminal itself and
+    passes that to this tool instead.
     '''
-    if not sys.stdout.isatty():
-      self.errors += 1
-      return
-
     tries = 0
     while True:
-      response = input('    Okay? [ynq] ').lower()
+      try:
+        response = input('    Okay? [ynq] ').lower()
+      except EOFError:
+        # The terminal went away mid-review, so let the finding stand.
+        print()
+        self.errors += 1
+        return
 
       if response == 'y':
         return
@@ -719,22 +729,8 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
   )
   return parser.parse_args(argv)
 
-def _reopen_terminal_input() -> None:
-  '''Point stdin at the terminal so findings can be reviewed.
-
-  A hook is handed the list of refs being pushed on stdin, so interactive
-  review has to read the user's answers from the terminal instead.  On
-  Windows the wrapper has already arranged for a console, whose stdin is
-  usable as it is.
-  '''
-  if platform.system() != 'Windows':
-    sys.stdin = open('/dev/tty')
-
 def main() -> None:
   args = parse_args()
-
-  if args.interactive:
-    _reopen_terminal_input()
 
   repo_dir = edgutil.find_mono_repo_or_exit()
   repository = GitRepository(repo_dir)
