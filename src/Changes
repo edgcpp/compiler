@@ -1,5 +1,17 @@
 Version 7.1
 
+10/9/26  [GH #260]
+GNU and Clang C++ modes: members skipped by a designated initializer
+
+In GNU C++ modes before C++20 and in all Clang C++ modes, a member that was
+not designated, but that precedes a designated member, was zero-initialized
+instead of being initialized from its default member initializer.  That is
+now fixed.  For example, with --gnu_version=170100:
+
+  struct P { int x = 1, y = 2, z = 3; };
+  P p = { .x = 10, .z = 30 };  // p.y was previously 0.  It is now 2.
+
+
 10/9/26  [GH #27]
 Clearer diagnostic when auto is deduced from an incomplete type
 
