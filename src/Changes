@@ -53,6 +53,19 @@ such object files failed.  For example, with --g++:
 This is now fixed: When generating code targeting GCC, the C-generating back
 end now preserves the __weak__ attribute and suppresses the __always_inline__
 attribute instead.
+10/6/26  [GH #27]
+Clearer diagnostic when auto is deduced from an incomplete type
+
+Deducing a plain "auto" (including cv-qualified "auto") from void or another
+incomplete type used to fail with "cannot deduce \"auto\" type".  The type
+is now deduced, and the usual incomplete-type diagnostic is issued, as it
+already is for decltype(auto).  For example:
+
+  void g();
+  auto x = g();          // incomplete type "void" is not allowed
+  auto *p = g();         // cannot deduce "auto" type
+
+Forms that are not a plain "auto", such as "auto *", still fail deduction.
 
 
 10/5/26  [GH #195]
@@ -90,34 +103,6 @@ process_immediate_pragmas.  For example:
 
 That is now fixed: The missing argument is still diagnosed, and the code after
 the pragma is parsed.
-
-
-10/5/26  [GH #213]
-White space lost in the pragma text for a "#pragma clang" directive
-
-The changes for EDGcpfe/29033 (in version 7.0) introduced a regression in
-which the text recorded in the IL for a "#pragma clang" directive other than
-"#pragma clang riscv ..." lost the white space following "clang".  For
-example, with --clang_version 230100:
-
-  #pragma clang diagnostic push
-
-was previously recorded as "clangdiagnostic push".  That is now fixed.
-10/4/26  [GH #27]
-Clearer diagnostic when auto is deduced from void
-10/6/26  [GH #27]
-Clearer diagnostic when auto is deduced from an incomplete type
-
-Deducing a plain "auto" (including cv-qualified "auto") from void or another
-incomplete type used to fail with "cannot deduce \"auto\" type".  The type
-is now deduced, and the usual incomplete-type diagnostic is issued, as it
-already is for decltype(auto).  For example:
-
-  void g();
-  auto x = g();          // incomplete type "void" is not allowed
-  auto *p = g();         // cannot deduce "auto" type
-
-Forms that are not a plain "auto", such as "auto *", still fail deduction.
 
 
 10/5/26  [GH #213]
