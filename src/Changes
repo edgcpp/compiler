@@ -57,13 +57,13 @@ attribute instead.
 Clearer diagnostic when auto is deduced from an incomplete type
 
 Deducing a plain "auto" (including cv-qualified "auto") from void or another
-incomplete type used to fail with "cannot deduce \"auto\" type".  The type
-is now deduced, and the usual incomplete-type diagnostic is issued, as it
-already is for decltype(auto).  For example:
+incomplete type used to be reported as a deduction failure.  The type is now
+deduced, and the usual incomplete-type diagnostic is issued, as it already
+is for decltype(auto).  For example:
 
   void g();
-  auto x = g();          // incomplete type "void" is not allowed
-  auto *p = g();         // cannot deduce "auto" type
+  auto x = g();    // Error: incomplete type "void" is not allowed
+  auto *p = g();   // Error: cannot deduce "auto" type
 
 Forms that are not a plain "auto", such as "auto *", still fail deduction.
 

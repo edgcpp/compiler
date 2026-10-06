@@ -4298,10 +4298,10 @@ are not removed.  If consider_nondeduced is non-NULL and the reason for
 failure is that an indefinite function matches several ways, return
 *consider_nondeduced TRUE.  template_arg_list is used in some nonstandard
 modes to introduce knowledge from previous arguments; in the standard case,
-it is always NULL.  allow_incomplete_arg is TRUE when deducing a plain
-"auto" (not, for example, "auto *").  In that case an incomplete argument
-type, including void, is left for deduction so the caller can diagnose the
-incomplete type instead of reporting a deduction failure.
+it is always NULL.  allow_incomplete_arg allows an incomplete argument
+type (including void) to be used for deduction.  It is used for placeholder
+type deduction, where an incomplete type error is diagnosed by the caller
+instead of a deduction failure.
 */
 {
   a_boolean   adjustment_okay = FALSE, indefinite_function_designator = FALSE;
@@ -4405,16 +4405,12 @@ incomplete type instead of reporting a deduction failure.
          void m() { f(*p); }
     */
     complete_type_is_needed(arg_type);
-    if (is_incomplete_type(arg_type) && !is_managed_nullptr_type(arg_type)) {
+    if (is_incomplete_type(arg_type) && !is_managed_nullptr_type(arg_type) &&
+        !allow_incomplete_arg) {
       /* Although the managed (C++/CLI) nullptr type is incomplete and
          cannot be used as the type of an object, for example, the Microsoft
-         compiler allows it as a template argument.  A plain "auto" variable
-         is also allowed through: the type is deduced, and the incomplete-type
-         diagnostic is issued for the variable (the same diagnostic as for
-         decltype(auto)).  "auto *" and similar forms still fail deduction. */
-      if (!(allow_incomplete_arg && is_template_param_type(param_type))) {
-        goto done;
-      }  /* if */
+         compiler allows it as a template argument. */
+      goto done;
     }  /* if */
   }  /* if */
   /* Return the adjusted types at this point as the types that can be used to
