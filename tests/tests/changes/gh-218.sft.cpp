@@ -2,7 +2,7 @@
 //options_all:--c++11 --diag_error noreturn_function_does_return
 
 // Do not warn that a noreturn function actually returns
-// if it invokes a noreturn constructor.
+// if it invokes a noreturn constructor or destructor.
 
 struct C {
   [[noreturn]] C() { throw 123; }
