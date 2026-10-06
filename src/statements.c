@@ -175,7 +175,7 @@ suppress warnings that might otherwise be issued later.
 
 static void check_reachability_following_expression(an_expr_node_ptr  node)
 /*
-If the indicated expression node represents a throw or a call of a function
+If the indicated expression node represents a throw or calls a function
 that may not return, update the current "reachability" to indicate that the
 code directly following the expression is (or may be) unreachable.
 */
@@ -196,28 +196,47 @@ code directly following the expression is (or may be) unreachable.
          (throw c, y)
        but it doesn't seem worth it. */
     set_unreachable(curr_reachability);
-  } else {
-    if (is_call_node(node)) {
-      a_boolean   call_does_not_return = FALSE;
-      a_type_ptr  routine_type;
-      node = node->variant.operation.operands;
-      routine_type = node->type;
-      if (is_pointer_type(routine_type)) {
-        /* Possibly a call through a function pointer. */
-        routine_type = type_pointed_to(routine_type);
+  } else if (node_is(node, enk_temp_init)) {
+    a_dynamic_init_ptr dip = node->variant.init.dynamic_init;
+    a_boolean          does_not_return = FALSE;
+    if (!dip) return;
+    if (dip->destructor && routine_does_not_return(dip->destructor)) {
+      does_not_return = TRUE;
+    }  /* if */
+    if (dyn_init_is(dip, dik_constructor)) {
+      a_routine_ptr rp = dip->variant.constructor.ptr;
+      if (rp && routine_does_not_return(rp)) {
+        does_not_return = TRUE;
       }  /* if */
-      if (is_function_type(routine_type)) {
-        call_does_not_return = skip_typerefs(routine_type)
-                                       ->variant.routine.extra_info
-                                       ->does_not_return;
-      }  /* if */
-      if (call_does_not_return) {
-        /* The statement is a call of a routine that is marked as not
-           returning.  Treat this like a lint notreached comment -- i.e.,
-           as a hint to the compiler but not something we know for sure. */
-        curr_reachability.reachable_considering_hints = FALSE;
-        curr_reachability.suppress_unreachable_warning = TRUE;
-      }  /* if */
+    }  /* if */
+    if (does_not_return) {
+      /* The statement is invoking a constructor or destructor that
+         is marked as not returning.  Treat this like a lint notreached
+         comment -- i.e., as a hint to the compiler but not something we
+         know for sure. */
+      curr_reachability.reachable_considering_hints = FALSE;
+      curr_reachability.suppress_unreachable_warning = TRUE;
+    }
+  } else if (is_call_node(node)) {
+    a_boolean   call_does_not_return = FALSE;
+    a_type_ptr  routine_type;
+    node = node->variant.operation.operands;
+    routine_type = node->type;
+    if (is_pointer_type(routine_type)) {
+      /* Possibly a call through a function pointer. */
+      routine_type = type_pointed_to(routine_type);
+    }  /* if */
+    if (is_function_type(routine_type)) {
+      call_does_not_return = skip_typerefs(routine_type)
+        ->variant.routine.extra_info
+        ->does_not_return;
+    }  /* if */
+    if (call_does_not_return) {
+      /* The statement is a call of a routine that is marked as not
+         returning.  Treat this like a lint notreached comment -- i.e.,
+         as a hint to the compiler but not something we know for sure. */
+      curr_reachability.reachable_considering_hints = FALSE;
+      curr_reachability.suppress_unreachable_warning = TRUE;
     }  /* if */
   }  /* if */
 }  /* check_reachability_following_expression */
@@ -5409,7 +5428,7 @@ the statement was preceded by the GNU C __extension__ keyword.
   }  /* if */
   if (expr != NULL) {
     sp->expr = expr;
-    /* If the expression is a throw expression or the call of a function that
+    /* If the expression is a throw expression or calls a function that
        is known not to return, the code following is unreachable. */
     check_reachability_following_expression(expr);
   } else {
