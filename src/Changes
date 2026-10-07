@@ -1,5 +1,31 @@
 Version 7.1
 
+10/7/26  [GH #176]
+C-generating back end: always_inline attribute and inlined setjmp calls
+
+When lowering inserts a call of setjmp in a routine that has the GNU
+always_inline attribute, the attribute is removed, because a back end GCC
+compiler gives an error on an always_inline routine that calls setjmp (see
+the entry for EDGcpfe/19110 of 1/10/18).  However, the front end's inlining
+could also introduce such a call, by expanding a call of an inline routine
+whose lowered code calls setjmp inside the always_inline routine.  The
+generated C code was then rejected by GCC with an error indicating that the
+always_inline routine can never be inlined.  When GCC is the back end
+compiler, such calls are now not inlined into a routine that has the
+always_inline attribute.  For example, with --g++:
+
+  inline void *operator new(decltype(sizeof 0), void *p) noexcept {
+    return p;
+  }
+  inline void operator delete(void *, void *) noexcept {}
+  struct A { A(); };
+  struct Alloc { void construct(A *p) { ::new ((void *)p) A(); } };
+  [[gnu::always_inline]] static inline void tconstruct(Alloc &a, A *p) {
+    a.construct(p);   // Previously, GCC gave an error on the generated code.
+  }
+  void f(Alloc &a, A *p) { tconstruct(a, p); }
+
+
 10/5/26  [GH #195]
 C++-generating back end: dependent multi-dimensional subscripts
 
