@@ -68,6 +68,13 @@ def parse_args() -> argparse.Namespace:
     help = 'record tests'
   )
   parser.add_argument(
+    '--replay',
+    dest = 'replay',
+    choices = ['all-failing', 'output-mismatch', 'regress', 'unexpected'],
+    default = None,
+    help = 'rerun tests from the last run (see edgy --help)'
+  )
+  parser.add_argument(
     '--discard-test-results',
     dest = 'discard_test_results',
     action = 'store_true',
@@ -115,7 +122,8 @@ class TestRunPosture:
                record_tests: bool, slow_tests: bool, meticulous: bool,
                test_filters: str,
                acknowledg_ui_host: Optional[str],
-               acknowledg_api_host: Optional[str]) -> None:
+               acknowledg_api_host: Optional[str],
+               replay_mode: Optional[str] = None) -> None:
     self.builds = builds
     self.keep_test_results = keep_test_results
     self.test_timeout_seconds = test_timeout_seconds
@@ -125,6 +133,7 @@ class TestRunPosture:
     self.test_filters = test_filters
     self.acknowledg_ui_host = acknowledg_ui_host
     self.acknowledg_api_host = acknowledg_api_host
+    self.replay_mode = replay_mode
 
 def _configure_day_posture(args: argparse.Namespace) -> TestRunPosture:
   return TestRunPosture(
@@ -256,6 +265,10 @@ def load_posture_file(file_path: Path,
       acknowledg_api_host = config_file_dict.get(
         'acknowledg_api_host',
         default_posture.acknowledg_api_host
+      ),
+      replay_mode = config_file_dict.get(
+        'replay_mode',
+        default_posture.replay_mode
       )
     )
 
@@ -292,6 +305,12 @@ def _configure_posture(args: argparse.Namespace) -> TestRunPosture:
     posture.test_timeout_seconds = args.timeout_seconds
   if args.discard_test_results:
     posture.keep_test_results = False
+  if args.replay is not None:
+    if args.discard_test_results:
+      eprint('--replay cannot be combined with --discard-test-results, as '
+             'the previous run would not be available to replay')
+      sys.exit(1)
+    posture.replay_mode = args.replay
   if args.non_interactive:
     posture.acknowledg_api_host = None
     posture.acknowledg_ui_host = None
@@ -407,6 +426,8 @@ def _build_edgy_args(posture: TestRunPosture, *,
     arg_str += ' --meticulous'
   if verbose:
     arg_str += ' --verbose'
+  if posture.replay_mode is not None:
+    arg_str += f" --replay={posture.replay_mode}"
   if len(posture.test_filters) != 0:
     arg_str += f" {posture.test_filters}"
   return arg_str
