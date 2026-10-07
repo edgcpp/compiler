@@ -820,6 +820,22 @@ expression can't be inlined.
     an_expr_node_ptr      operand = expr->variant.operation.operands;
     an_expr_node_ptr      operand2 = operand->next;
     a_constant_ptr        con2 = NULL;
+#if GNU_EXTENSIONS_ALLOWED && BACK_END_IS_C_GEN_BE
+    if (op == eok_call &&
+        gcc_is_generated_code_target &&
+        innermost_function_scope != NULL &&
+        innermost_function_scope->variant.routine.ptr->always_inline &&
+        is_eh_setjmp_routine(routine_from_function_expr(operand))) {
+      /* The code being inlined calls setjmp, and the routine it is being
+         inlined into has the GNU always_inline attribute.  gcc gives an
+         error on an always_inline routine that calls setjmp
+         (because such a routine can never be inlined), so do not inline the
+         call. */
+      *inlining_failed = TRUE;
+    }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED && BACK_END_IS_C_GEN_BE */
+    /* Look for operations that now have constant operands because of
+       parameter variables remapped to constants. */
     if (is_constant_node(operand) &&
         (operand2 == NULL || is_constant_node(operand2))) {
       /* The operands are constant. */

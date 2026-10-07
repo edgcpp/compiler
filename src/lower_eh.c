@@ -5380,6 +5380,17 @@ __suppress_optim_on_vars_in_try.  NULL until created.
 STATIC_THREAD a_routine_ptr
 		setjmp_routine,
 		suppress_optim_on_vars_in_try_routine;
+
+
+a_boolean is_eh_setjmp_routine(a_routine_ptr routine)
+/*
+Return TRUE if routine is the runtime routine setjmp called by the lowered
+code for try blocks.
+*/
+{
+  return routine != NULL && routine == setjmp_routine;
+}  /* is_eh_setjmp_routine */
+
 #endif /* DO_FULL_PORTABLE_EH_LOWERING */
 
 
