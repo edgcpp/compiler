@@ -11465,7 +11465,8 @@ make_proxy_type_if_needed:
                        operand_1, is_arrow_operator, member_sym,
                        projection_member_sym,
                        (a_boolean)locator.access_control_error_reported,
-                       /*do_protected_member_check=*/TRUE, &member_position);
+                       /*do_protected_member_check=*/!locator.is_splicer,
+                       &member_position);
           do_field_selection_operation(operand_1, orig_class_struct_union_type,
                                        is_arrow_operator,
                                        /*compiler_generated=*/FALSE,
@@ -11553,7 +11554,8 @@ nonstatic_member_function:
                                                  projection_member_sym,
                                                  (a_boolean)locator.
                                                  access_control_error_reported,
-                                            /*do_protected_member_check=*/TRUE,
+                                                 /*do_protected_member_check=*/
+                                                 !locator.is_splicer,
                                                  &member_position);
               }  /* if */
               /* Make an operand for the function with the selector bound
@@ -41763,6 +41765,7 @@ FIXME: This is currently incomplete.
                                     (a_ref_entry*)NULL,
                                     result);
         result->is_id_expression = TRUE;
+        result->designated_by_splice = TRUE;
       } else if (iek == iek_variable) {
         vp = (a_variable*)rvp->entity.ptr;
 variable_case:
@@ -41785,6 +41788,7 @@ routine_case:
                                       (a_ref_entry*)NULL,
                                       result);
           result->is_id_expression = TRUE;
+          result->designated_by_splice = TRUE;
         } else {
           make_function_designator_operand(symbol_for(rp),
                                            /*is_qualified_name=*/FALSE,

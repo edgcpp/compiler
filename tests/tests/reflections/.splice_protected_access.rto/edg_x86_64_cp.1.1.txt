@@ -1,0 +1,104 @@
+eccp -DTEST_NUMBER=1 --c++26 --set_flag=reflection Test_name.c
+"Test_name.c", line 77: error: expression must have a constant value
+  constexpr std::meta::info prot = member_named((decltype(^^0){}), "prot"); 
+                                   ^
+"Test_name.c", line 29: note: invalid reflection for intrinsic metafunction
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+"Test_name.c", line 29: note: called from:
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+
+"Test_name.c", line 78: error: expression must have a constant value
+  constexpr std::meta::info get = member_named((decltype(^^0){}), "get"); 
+                                  ^
+"Test_name.c", line 29: note: invalid reflection for intrinsic metafunction
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+"Test_name.c", line 29: note: called from:
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+
+"Test_name.c", line 79: error: expression must have a constant value
+  constexpr std::meta::info set = member_named((decltype(^^0){}), "set"); 
+                                  ^
+"Test_name.c", line 29: note: invalid reflection for intrinsic metafunction
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+"Test_name.c", line 29: note: called from:
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+
+"Test_name.c", line 80: error: expression must have a constant value
+  constexpr std::meta::info priv = member_named((decltype(^^0){}), "priv"); 
+                                   ^
+"Test_name.c", line 29: note: invalid reflection for intrinsic metafunction
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+"Test_name.c", line 29: note: called from:
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+
+"Test_name.c", line 85: error: member "C::prot" (declared at line 37) is inaccessible
+  int (C::*pm) = (&C::prot); 
+                      ^
+
+"Test_name.c", line 86: error: function "C::get" (declared at line 38) is inaccessible
+  int (C::*pf)(void) const = (&C::get); 
+                                  ^
+
+"Test_name.c", line 87: error: function "C::set" (declared at line 39) is inaccessible
+  void (C::*ps)(int) noexcept = (&C::set); 
+                                     ^
+
+"Test_name.c", line 90: error: function "C::get" (declared at line 38) is inaccessible
+  int e = c.get() + 1; 
+            ^
+
+"Test_name.c", line 92: error: member "C::prot" (declared at line 37) is inaccessible
+  int f = pc->prot; 
+              ^
+
+"Test_name.c", line 93: error: function "C::set" (declared at line 39) is inaccessible
+  d.set(5); 
+    ^
+
+"Test_name.c", line 94: error: member "C::prot" (declared at line 37) is inaccessible
+  int g = d.prot; 
+            ^
+
+"Test_name.c", line 100: error: no instance of overloaded function "read" matches the argument list
+            argument types are: (D *)
+  printf("%d %d %d\n", read< prot> (&d) + 3, call< get> (d) + 7, read< priv> (&c) + 4); 
+                       ^
+"Test_name.c", line 49: note: substituting explicit template arguments "<<expression>>" for function template "read<M,T>(T *)" failed
+  template < info M, typename T > int read ( T * p ) {
+                                      ^
+
+"Test_name.c", line 100: error: no instance of function template "call" matches the argument list
+            argument types are: (D)
+  printf("%d %d %d\n", read< prot> (&d) + 3, call< get> (d) + 7, read< priv> (&c) + 4); 
+                                             ^
+"Test_name.c", line 53: note: substituting explicit template arguments "<<expression>>" for function template "call" failed
+  template < info M, typename T > int call ( T & obj ) {
+                                      ^
+
+"Test_name.c", line 100: error: no instance of overloaded function "read" matches the argument list
+            argument types are: (C *)
+  printf("%d %d %d\n", read< prot> (&d) + 3, call< get> (d) + 7, read< priv> (&c) + 4); 
+                                                                 ^
+"Test_name.c", line 49: note: substituting explicit template arguments "<<expression>>" for function template "read<M,T>(T *)" failed
+  template < info M, typename T > int read ( T * p ) {
+                                      ^
+
+"Test_name.c", line 104: error: expression must have a constant value
+  printf("%d %d\n", w.sum() - 1, w.*member_pointer< member_named((decltype(^^0){}), "value")>  + 8); 
+                                                    ^
+"Test_name.c", line 29: note: invalid reflection for intrinsic metafunction
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+"Test_name.c", line 29: note: called from:
+  for (std::meta::info m : members_of(cls, access_context::unchecked())) { 
+                                     ^
+
+15 errors detected in the compilation of "Test_name.c".

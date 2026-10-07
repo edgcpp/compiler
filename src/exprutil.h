@@ -364,6 +364,15 @@ typedef struct an_operand {
 			   essentially still just a representation for
 			   an identifier, e.g., ok_indefinite_function and
 			   ok_sym_for_member. */
+  a_bit_field	designated_by_splice:1;
+			/* TRUE if this operand was generated from a
+			   splice-expression designating a class member.
+			   Such a member is accessible from any point, and
+			   the additional protected member access check
+			   ([class.protected]) does not apply to it.  Like
+			   access_control_error_reported, this remains
+			   meaningful only for ok_sym_for_member
+			   operands. */
   a_bit_field	is_operand_of_address_of:1;
 			/* TRUE if this operand is the immediate operand
 			   of an "&" address-of operator.  This is

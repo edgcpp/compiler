@@ -3486,6 +3486,7 @@ values.
   operand->is_qualified_name = FALSE;
   operand->is_microsoft_deferred_name = FALSE;
   operand->access_control_error_reported = FALSE;
+  operand->designated_by_splice = FALSE;
   operand->is_operand_of_address_of = FALSE;
   operand->has_required_ptr_to_member_form = FALSE;
   operand->is_template_id = FALSE;
@@ -23550,7 +23551,7 @@ by an "&" in the source, and *ampersand_position gives its position.
 {
   an_operand   orig_operand;
   a_symbol_ptr member_sym, fund_sym;
-  a_boolean    has_required_ampersand;
+  a_boolean    has_required_ampersand, check_protected_access;
   a_boolean    allow_addr_of_managed_member = FALSE, force_node = FALSE;
 
   has_required_ampersand = (ampersand_position != NULL &&
@@ -23578,11 +23579,15 @@ by an "&" in the source, and *ampersand_position gives its position.
 #if MICROSOFT_EXTENSIONS_ALLOWED
   allow_addr_of_managed_member = operand->allow_addr_of_managed_member;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+  /* The protected member access check does not apply to a member designated
+     by a splice-expression ([class.protected]). */
+  check_protected_access = !operand->access_control_error_reported &&
+                           !operand->designated_by_splice;
   /* Make an operand for a pointer-to-member constant. */
   make_ptr_to_member_constant_operand(member_sym, member_sym,
                                       &orig_operand.position,
                                       end_position_of_operand(&orig_operand),
-                                      !operand->access_control_error_reported,
+                                      check_protected_access,
                                       (a_boolean)operand->is_qualified_name,
                                       has_required_ampersand,
                                       allow_addr_of_managed_member,

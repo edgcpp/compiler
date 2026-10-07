@@ -1,5 +1,113 @@
 Version 7.1
 
+10/8/26
+std::meta::type_of for nonstatic member functions
+
+For a reflection of a nonstatic member function, std::meta::type_of returned
+a type that still carried the class of the function, so it did not compare
+equal to the reflection of the corresponding function type, and the spliced
+type did not match a partial specialization for function types.  The type of
+a nonstatic member function is a plain function type ([dcl.fct]), including
+its cv-qualifiers and ref-qualifier; type_of now returns that type.  For
+example:
+
+  #include <experimental/meta>
+  struct M {
+    int f(int, double);
+    void g() const noexcept;
+  };
+  static_assert(type_of(^^M::f) == ^^int(int, double));
+                                        // Previously failed.
+  static_assert(type_of(^^M::g) == ^^void() const noexcept);
+                                        // Previously failed.
+
+
+10/8/26
+std::meta::parent_of for namespaces
+
+std::meta::parent_of and std::meta::has_parent did not accept a reflection
+of a namespace or of a namespace alias: parent_of was not a constant
+expression for one, and has_parent returned false.  As specified in P2996R13
+([meta.reflection.scope]), parent_of now returns the enclosing namespace for
+any namespace or namespace alias other than the global namespace.  For
+example:
+
+  #include <experimental/meta>
+  namespace outer { namespace inner {} }
+  static_assert(std::meta::parent_of(^^outer::inner) == ^^outer);
+                                        // Previously an error.
+  static_assert(std::meta::parent_of(^^outer) == ^^::);
+                                        // Previously an error.
+
+
+10/8/26
+std::meta::source_location_of for reflections without a declaration
+
+As specified in P2996R13 ([meta.reflection.names]),
+std::meta::source_location_of is now a constant expression for every
+reflection.  For a reflection of a value, of a type other than a class or
+enumeration type, of the global namespace, or of a data member description,
+the result is a value-initialized std::source_location; the same is true for
+other reflections that have no declaration position.  Previously, those calls
+were not constant expressions.  For example:
+
+  static_assert(std::meta::source_location_of(^^int).line() == 0);
+                                        // Previously an error.
+  static_assert(std::meta::source_location_of(^^const S).line() != 0);
+                                        // Previously an error (S is a
+                                        // class).
+
+
+10/8/26
+std::meta::members_of: declaration order
+
+std::meta::members_of returned the members of a class grouped by kind: the
+nonstatic data members first, then the member functions, the member types
+and type aliases, the static data members, and the member templates.  The
+members of a namespace were grouped by kind in the same way.  As specified in
+P2996R13 ([meta.reflection.member.queries]), the members of a class are now
+returned in the order in which they are declared, with the
+implicitly-declared special members after all the others.  The members of a
+namespace are now also returned in declaration order.  For example:
+
+  #include <experimental/meta>
+  struct S {
+    int a;
+    void f();
+    int b;
+  };
+  // Previously a, b, f; now a, f, b (then the implicit members).
+  constexpr auto members = std::define_static_array(
+          std::meta::members_of(^^S, std::meta::access_context::unchecked()));
+
+
+10/8/26
+Protected members designated by splice-expressions
+
+A class member designated by a splice-expression is accessible from any
+point ([class.access.base]), and, as clarified by CWG 3109, the additional
+access check for protected members ([class.protected]) does not apply to it.
+The front end skipped the ordinary access check for such a member but still
+did the protected member check, so forming a pointer to a protected member
+with &[:r:], or naming it with obj.[:r:] or p->[:r:], was usually rejected
+outside of the members and friends of the class of the member.  For example,
+with --c++26 --set_flag=reflection:
+
+  #include <experimental/meta>
+  class C {
+  protected:
+    int prot = 1;
+  };
+  constexpr std::meta::info r = std::meta::nonstatic_data_members_of(
+                         ^^C, std::meta::access_context::unchecked())[0];
+  int C::*pm = &[:r:];   // Previously an error
+  int f(C &c) {
+    return c.[:r:];      // Previously an error
+  }
+
+This is now fixed.
+
+
 10/7/26  [GH #176]
 C-generating back end: always_inline attribute and inlined setjmp calls
 
