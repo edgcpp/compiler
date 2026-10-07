@@ -902,7 +902,9 @@ def get_latest_replay_number(replay_dir: Path) -> int:
 
 def get_run_dir(test_runs_dir: Path, args: argparse.Namespace,
                 test_suites: List[TestSuiteConfig]) -> Path:
-  if is_replay_run(args):
+  if args.output_directory is not None:
+    return args.output_directory
+  elif is_replay_run(args):
     # This is guaranteed to exist as the checks on test counts prior to calling
     # this function ensure that at least one test from the last run is being
     # replay (so there must be a last run).
@@ -933,6 +935,12 @@ def prepare_for_test_run(test_runs_dir: Path, args: argparse.Namespace,
 
     run_dir.mkdir(parents = True)
 
+    # Let a wrapping tool (e.g. edg-docker-test) learn exactly which directory
+    # this invocation is using, even for replays, without racing other runs.
+    run_dir_file = os.environ.get('EDGY_RUN_DIR_FILE')
+    if run_dir_file:
+      Path(run_dir_file).write_text(f"{run_dir}\n")
+
     setup_cache = RunSetupCache(run_dir)
 
     for test_suite in test_suites:
@@ -949,7 +957,12 @@ def prepare_for_test_run(test_runs_dir: Path, args: argparse.Namespace,
 
       # Set the test suite run as the current run
       test_suite.set_current_run(test_suite_run)
-  except FileExistsError:
+  except FileExistsError as ex:
+    if args.output_directory is not None:
+      # Retrying can't help, as an explicit output directory is never bumped.
+      edgutil.eprint(f"Path already exists: {ex.filename}")
+      sys.exit(1)
+
     # This can happen if edgy is rapidly invoked, just wait a bit and retry (to
     # bump the directory name).
     time.sleep(.5)
@@ -2177,6 +2190,16 @@ def parse_args() -> argparse.Namespace:
     help = 'override the directory where tests runs are stored'
   )
   parser.add_argument(
+    '--output-directory',
+    dest = 'output_directory',
+    type = Path,
+    help = (
+      'store the output of this run in exactly this directory, in place of a '
+      'new run or replay directory (replays still read the previous run from '
+      'the runs directory, and no old runs are cleaned up)'
+    )
+  )
+  parser.add_argument(
     '--run-timestamp',
     dest = 'test_run_timestamp',
     type = str,
@@ -2262,7 +2285,11 @@ def parse_args() -> argparse.Namespace:
     '--disp-run-dir',
     dest = 'disp_run_dir',
     action = 'store_true',
-    help = 'print the directory where the run output is being stored'
+    help = (
+      'print the directory where the run output is being stored (if '
+      'scripting, prefer setting EDGY_RUN_DIR_FILE to have the run directory '
+      'path written there)'
+    )
   )
   parser.add_argument(
     '-W',
@@ -2432,7 +2459,8 @@ def main() -> None:
 
   generate_logs(args, test_suites, tests, skipped_tests)
   maybe_dump_performance_info(args, tests, multi_config_run = multi_config_run)
-  try_cleanup_test_runs(test_runs_dir, args)
+  if args.output_directory is None:
+    try_cleanup_test_runs(test_runs_dir, args)
   sys.exit(exit_code)
 
 main()
