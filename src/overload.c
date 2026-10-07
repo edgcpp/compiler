@@ -31244,11 +31244,16 @@ TRUE and FALSE is returned.
       /* Adjust the argument and parameter types for deduction.  Some types can
          never succeed:  Issue an error and don't attempt deduction any
          further. */
+      /* In a prototype instantiation a deduction failure is often
+         suppressed.  Keep that behavior for an incomplete initializer:
+         the incomplete-type diagnostic is issued at instantiation. */
+      a_boolean  allow_incomplete_arg =
+                                 !scope_stack_top().in_prototype_instantiation;
       if (!adjust_deduction_pair(&type, &arg_type, initializer_operand,
                                  templ_param, (a_template_arg *)NULL,
                                  &qc_param_type, &qc_arg_type,
                                  (a_boolean *)NULL,
-                                 /*allow_incomplete_arg=*/TRUE)) {
+                                 allow_incomplete_arg)) {
         okay = FALSE;
       } else if (!deduce_from_one_pair(type, arg_type,
                                        qc_param_type, qc_arg_type,

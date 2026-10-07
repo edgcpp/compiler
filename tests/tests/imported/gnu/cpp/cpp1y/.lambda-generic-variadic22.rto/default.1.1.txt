@@ -7,9 +7,9 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
       int x[][i] = { 0 };		// { dg-error "not expanded" }
               ^
 
-"Test_name.c", line 9: error: cannot deduce "auto" type
+"Test_name.c", line 9: error: incomplete type "void" is not allowed
     auto a = [](auto ... i)	// { dg-prune-output "incomplete" }
-    ^
+         ^
           detected during instantiation of "auto f(T) [with T=int]" at line 16
 
 2 errors detected in the compilation of "Test_name.c".
