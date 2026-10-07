@@ -180,6 +180,8 @@ that may not return, update the current "reachability" to indicate that the
 code directly following the expression is (or may be) unreachable.
 */
 {
+  a_boolean  does_not_return = FALSE;
+
   if (node->kind == (an_expr_node_kind)enk_object_lifetime) {
     node = node->variant.object_lifetime.expr;
   }  /* if */
@@ -197,28 +199,20 @@ code directly following the expression is (or may be) unreachable.
        but it doesn't seem worth it. */
     set_unreachable(curr_reachability);
   } else if (node_is(node, enk_temp_init)) {
-    a_dynamic_init_ptr dip = node->variant.init.dynamic_init;
-    a_boolean          does_not_return = FALSE;
-    if (!dip) return;
-    if (dip->destructor && routine_does_not_return(dip->destructor)) {
-      does_not_return = TRUE;
-    }  /* if */
-    if (dyn_init_is(dip, dik_constructor)) {
-      a_routine_ptr rp = dip->variant.constructor.ptr;
+    a_dynamic_init_ptr  dip = node->variant.init.dynamic_init;
+    if (dip) {
+      a_routine_ptr  rp = dip->destructor;
       if (rp && routine_does_not_return(rp)) {
         does_not_return = TRUE;
       }  /* if */
     }  /* if */
-    if (does_not_return) {
-      /* The statement is invoking a constructor or destructor that
-         is marked as not returning.  Treat this like a lint notreached
-         comment -- i.e., as a hint to the compiler but not something we
-         know for sure. */
-      curr_reachability.reachable_considering_hints = FALSE;
-      curr_reachability.suppress_unreachable_warning = TRUE;
-    }
+    if (dip && dyn_init_is(dip, dik_constructor)) {
+      a_routine_ptr  rp = dip->variant.constructor.ptr;
+      if (rp && routine_does_not_return(rp)) {
+        does_not_return = TRUE;
+      }  /* if */
+    }  /* if */
   } else if (is_call_node(node)) {
-    a_boolean   call_does_not_return = FALSE;
     a_type_ptr  routine_type;
     node = node->variant.operation.operands;
     routine_type = node->type;
@@ -227,17 +221,17 @@ code directly following the expression is (or may be) unreachable.
       routine_type = type_pointed_to(routine_type);
     }  /* if */
     if (is_function_type(routine_type)) {
-      call_does_not_return = skip_typerefs(routine_type)
+      does_not_return |= skip_typerefs(routine_type)
         ->variant.routine.extra_info
         ->does_not_return;
     }  /* if */
-    if (call_does_not_return) {
-      /* The statement is a call of a routine that is marked as not
-         returning.  Treat this like a lint notreached comment -- i.e.,
-         as a hint to the compiler but not something we know for sure. */
-      curr_reachability.reachable_considering_hints = FALSE;
-      curr_reachability.suppress_unreachable_warning = TRUE;
-    }  /* if */
+  }  /* if */
+  if (does_not_return) {
+    /* The statement calls a routine that is marked as not returning.
+       Treat this like a lint notreached comment -- i.e., as a hint
+       to the compiler but not something we know for sure. */
+    curr_reachability.reachable_considering_hints = FALSE;
+    curr_reachability.suppress_unreachable_warning = TRUE;
   }  /* if */
 }  /* check_reachability_following_expression */
 
