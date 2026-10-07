@@ -1,5 +1,34 @@
 Version 7.1
 
+10/7/26  [GH #175]
+C-generating back end: always_inline routines defined in several objects
+
+When a routine placed in a COMDAT group also had the GNU "always_inline"
+attribute, the C-generating back end suppressed the __weak__ attribute that
+it otherwise uses to approximate the COMDAT group (see the entry for
+EDGcpfe/21186 of 5/2/19).  As a result, every object file that defined the
+routine contained a conflicting external definition of it, and linking two
+such object files failed.  This affected, for example, std::move and
+std::forward from libstdc++ 15.  Such routines are now marked __weak__.  When
+GCC is the back end compiler, which gives an error on calls to a weak routine
+marked __always_inline__, the __always_inline__ attribute is suppressed
+instead.  For example, with --g++:
+
+  // twice.h
+  [[gnu::always_inline]] inline int twice(int x) { return x + x; }
+
+  // test.cpp
+  #include "twice.h"
+  using fn = int (*)(int);
+  fn other();
+  int main() { return (&twice == other() && twice(1) == 2) ? 0 : 1; }
+
+  // other.cpp
+  #include "twice.h"
+  using fn = int (*)(int);
+  fn other() { return &twice; }   // Linking with test.cpp previously failed.
+
+
 10/5/26  [GH #195]
 C++-generating back end: dependent multi-dimensional subscripts
 
