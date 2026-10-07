@@ -59,6 +59,7 @@ pushd bin/ > /dev/null
   check_types edg-cmakedef
   check_types_strict edg-check-commit-messages
   check_types_strict edg-collect-changes
+  check_types_strict edg-compare-gen-c
   check_types_strict edg-docker-bench
   check_types_strict edg-docker-test
   check_types edg-examine-test
