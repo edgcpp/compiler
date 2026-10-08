@@ -53,6 +53,8 @@ such object files failed.  For example, with --g++:
 This is now fixed: When generating code targeting GCC, the C-generating back
 end now preserves the __weak__ attribute and suppresses the __always_inline__
 attribute instead.
+
+
 10/6/26  [GH #27]
 Clearer diagnostic when auto is deduced from an incomplete type
 
@@ -68,6 +70,23 @@ is for decltype(auto).  For example:
 Forms that are not a plain "auto", such as "auto *", still fail deduction.
 The diagnostic is not issued while scanning a template definition, because
 the initializer type may be completed before the template is instantiated.
+
+
+10/6/26  [GH #203]
+Assertion failure on an empty diag_suppress pragma
+
+A diag_suppress (or similar) pragma with no arguments, or with a trailing
+comma, diagnosed the missing argument and then read past the end of the
+directive.  That, in turn, could lead to an assertion failure in
+process_immediate_pragmas.  For example:
+
+  #pragma diagnostic push
+  #pragma diag_suppress
+  int f() { int a; return a; }
+  #pragma diagnostic pop
+
+That is now fixed: The missing argument is still diagnosed, and the code after
+the pragma is parsed.
 
 
 10/5/26  [GH #195]
@@ -90,21 +109,6 @@ C++-generating back end: inaccessible or out-of-scope template arguments
 In certain complex cases, the C++-generating back end could put out a
 template argument that uses an inaccessible or out-of-scope name, making
 the generated code uncompilable.  This is now fixed.
-10/6/26  [GH #203]
-Assertion failure on an empty diag_suppress pragma
-
-A diag_suppress (or similar) pragma with no arguments, or with a trailing
-comma, diagnosed the missing argument and then read past the end of the
-directive.  That, in turn, could lead to an assertion failure in
-process_immediate_pragmas.  For example:
-
-  #pragma diagnostic push
-  #pragma diag_suppress
-  int f() { int a; return a; }
-  #pragma diagnostic pop
-
-That is now fixed: The missing argument is still diagnosed, and the code after
-the pragma is parsed.
 
 
 10/5/26  [GH #213]
