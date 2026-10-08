@@ -4258,6 +4258,57 @@ kind indicates which of the above is being processed.
 }  /* process_gnu_options_pragma */
 
 
+static a_boolean process_gnu_diagnostic_pragma(a_pending_pragma_ptr  ppp)
+/*
+Handle
+   #pragma GCC diagnostic push
+   #pragma GCC diagnostic pop
+   #pragma GCC diagnostic kind "option"
+
+kind is recognized for: "error", "warning", "ignored", "fatal" (clang only),
+or "ignored_attributes" (for GCC 13 and later).
+
+"option" after kind is: an unchecked plain char string literal of type
+
+These pragmas control the warnings issued by the GCC or clang in the backend.
+Here, they are only accepted, and do not affect the diagnostics issued by the
+front end.  To match the behavior of GCC, any text following the pragma is
+ignored.  Return FALSE if the pragma is not a form recognized by the compiler
+being emulated.
+*/
+{
+  a_boolean  recognized = FALSE;
+
+  /* Skip the "diagnostic" identifier. */
+  (void)get_token();
+  if (curr_token == tok_identifier) {
+    a_const_char *str = locator_for_curr_id.symbol_header->identifier;
+    if (gnu_version >= 40600 &&
+        (strcmp(str, "push") == 0 || strcmp(str, "pop") == 0)) {
+      recognized = TRUE;
+    } else if (strcmp(str, "error") == 0 ||
+               strcmp(str, "warning") == 0 ||
+               strcmp(str, "ignored") == 0 ||
+               (clang_mode && strcmp(str, "fatal") == 0) ||
+               (gnu_version >= 130000 &&
+                strcmp(str, "ignored_attributes") == 0)) {
+      recognized = TRUE;
+      (void)get_token();
+      if (curr_token != tok_string_literal ||
+          !is_normal_character_kind(const_for_curr_token.character_kind)) {
+        /* The option (or attribute list) is missing.  Only a string literal
+           of plain char type is accepted. */
+        pos_warning(ec_exp_string_literal, &error_position);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  if (recognized) {
+    ppp->variant.gcc.kind = (a_gcc_pragma_kind)gcc_pk_diagnostic;
+  }  /* if */
+  return recognized;
+}  /* process_gnu_diagnostic_pragma */
+
+
 void gcc_pragma(a_pending_pragma_ptr  ppp)
 /*
 Process a "#pragma GCC ..." construct.
@@ -4289,6 +4340,9 @@ Process a "#pragma GCC ..." construct.
       process_gnu_options_pragma(ppp, (a_gcc_pragma_kind)gcc_pk_pop_options);
     } else if (gnu_version >= 40400 && strcmp(str, "reset_options") == 0) {
       process_gnu_options_pragma(ppp, (a_gcc_pragma_kind)gcc_pk_reset_options);
+    } else if (strcmp(str, "diagnostic") == 0) {
+      ignore_in_back_end = FALSE;
+      recognized = process_gnu_diagnostic_pragma(ppp);
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
     } else if (target_is_arm_based() && target_is_64_bits() &&
                strcmp(str, "aarch64") == 0) {
