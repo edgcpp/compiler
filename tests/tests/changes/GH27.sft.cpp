@@ -1,7 +1,7 @@
 //type:fn
 //options:--c++23
 //remark:[GH #27] Clearer diagnostic when auto deduces to void
-// 10/6/26  [GH #27]
+// 10/9/26  [GH #27]
 //
 // A plain auto deduced from void or another incomplete type gets the
 // incomplete-type diagnostic, matching decltype(auto).  auto * still

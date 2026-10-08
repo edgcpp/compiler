@@ -1,7 +1,7 @@
 //type:fn
 //options:--c++11 -A:--c++11 --gnu_version 160200:--c++11 --clang_version 230100:--ms_c++20 --microsoft_version 1951
 //remark:[GH #27] Incomplete auto deduction in a template definition
-// 10/6/26  [GH #27]
+// 10/9/26  [GH #27]
 //
 // In standard and Clang modes, a plain auto deduced from an incomplete
 // type in a template definition gets the incomplete-type diagnostic.  GCC

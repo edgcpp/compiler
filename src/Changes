@@ -1,5 +1,20 @@
 Version 7.1
 
+10/9/26  [GH #27]
+Clearer diagnostic when auto is deduced from an incomplete type
+
+Deducing a plain "auto" (including cv-qualified "auto") from void or another
+incomplete type used to be reported as a deduction failure.  The type is now
+deduced, and the usual incomplete-type diagnostic is issued, as it already
+is for decltype(auto).  For example:
+
+  void g();
+  auto x = g();    // Error: incomplete type "void" is not allowed
+  auto *p = g();   // Error: cannot deduce "auto" type
+
+Forms that are not a plain "auto", such as "auto *", still fail deduction.
+
+
 10/7/26  [GH #176]
 C-generating back end: always_inline attribute and inlined setjmp calls
 
@@ -55,38 +70,6 @@ end now preserves the __weak__ attribute and suppresses the __always_inline__
 attribute instead.
 
 
-10/6/26  [GH #27]
-Clearer diagnostic when auto is deduced from an incomplete type
-
-Deducing a plain "auto" (including cv-qualified "auto") from void or another
-incomplete type used to be reported as a deduction failure.  The type is now
-deduced, and the usual incomplete-type diagnostic is issued, as it already
-is for decltype(auto).  For example:
-
-  void g();
-  auto x = g();    // Error: incomplete type "void" is not allowed
-  auto *p = g();   // Error: cannot deduce "auto" type
-
-Forms that are not a plain "auto", such as "auto *", still fail deduction.
-
-
-10/6/26  [GH #203]
-Assertion failure on an empty diag_suppress pragma
-
-A diag_suppress (or similar) pragma with no arguments, or with a trailing
-comma, diagnosed the missing argument and then read past the end of the
-directive.  That, in turn, could lead to an assertion failure in
-process_immediate_pragmas.  For example:
-
-  #pragma diagnostic push
-  #pragma diag_suppress
-  int f() { int a; return a; }
-  #pragma diagnostic pop
-
-That is now fixed: The missing argument is still diagnosed, and the code after
-the pragma is parsed.
-
-
 10/5/26  [GH #195]
 C++-generating back end: dependent multi-dimensional subscripts
 
@@ -107,6 +90,21 @@ C++-generating back end: inaccessible or out-of-scope template arguments
 In certain complex cases, the C++-generating back end could put out a
 template argument that uses an inaccessible or out-of-scope name, making
 the generated code uncompilable.  This is now fixed.
+10/6/26  [GH #203]
+Assertion failure on an empty diag_suppress pragma
+
+A diag_suppress (or similar) pragma with no arguments, or with a trailing
+comma, diagnosed the missing argument and then read past the end of the
+directive.  That, in turn, could lead to an assertion failure in
+process_immediate_pragmas.  For example:
+
+  #pragma diagnostic push
+  #pragma diag_suppress
+  int f() { int a; return a; }
+  #pragma diagnostic pop
+
+That is now fixed: The missing argument is still diagnosed, and the code after
+the pragma is parsed.
 
 
 10/5/26  [GH #213]
