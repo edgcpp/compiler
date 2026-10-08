@@ -1,5 +1,22 @@
 Version 7.1
 
+10/8/26  [GH #178]
+Constexpr call depth limit and calls in arguments
+
+The constexpr interpreter limits the nesting of calls to the value of the
+--max_depth_constexpr_call option by charging each call a large up-front cost
+that is refunded when the call completes.  That cost was charged before the
+arguments of the call were evaluated, so a call appearing in an argument was
+treated as nested in the call to which the argument is passed, even though
+the latter has not yet been entered.  For example, with --c++17
+and --max_depth_constexpr_call=300:
+
+  constexpr int add(int a, int b) { return a + b; }
+  constexpr int f(int n) { return n == 0 ? 0 : add(1, f(n - 1)); }
+  static_assert(f(256) == 256, "");   // Previously not a constant.
+
+Constructor calls had the same problem.  This is now fixed.
+
 10/7/26  [GH #176]
 C-generating back end: always_inline attribute and inlined setjmp calls
 
