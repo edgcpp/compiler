@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=3 --g++ --gnu_version=40500 Test_name.c
+"Test_name.c", line 4: warning: unrecognized GCC pragma
+  #pragma GCC diagnostic push              // GCC 4.6 and later
+                         ^
+
+"Test_name.c", line 7: warning: unrecognized GCC pragma
+  #pragma GCC diagnostic ignored_attributes "vendor::"  // GCC 13 and later
+                         ^
+
+"Test_name.c", line 8: warning: unrecognized GCC pragma
+  #pragma GCC diagnostic fatal "-Wshadow"  // clang only
+                         ^
+
+"Test_name.c", line 9: warning: unrecognized GCC pragma
+  #pragma GCC diagnostic pop extra text    // Trailing text is ignored.
+                         ^
+
+"Test_name.c", line 10: warning: unrecognized GCC pragma
+  #pragma GCC diagnostic                   // Kind missing.
+                                                           ^
+
+"Test_name.c", line 11: warning: unrecognized GCC pragma
+  #pragma GCC diagnostic bogus             // Kind unknown.
+                         ^
+
+"Test_name.c", line 12: warning: expected a string literal
+  #pragma GCC diagnostic ignored           // Option missing.
+                                                             ^
+
+"Test_name.c", line 13: warning: expected a string literal
+  #pragma GCC diagnostic ignored -Wshadow  // Option not a string literal.
+                                 ^
+
+"Test_name.c", line 14: warning: expected a string literal
+  #pragma GCC diagnostic ignored L"-Wshadow"  // Option not a narrow string.
+                                 ^
+

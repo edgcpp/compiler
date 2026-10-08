@@ -1,12 +1,4 @@
 fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
-"Test_name.c", line 65: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 66: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wint-conversion"
-              ^
-
 "Test_name.c", line 68: warning: argument of type "void *" is incompatible with parameter of type "unsigned long"
     p =  __builtin_alloca_with_align (n, (void*)0);    /* { dg-error "must be a constant integer" } */
                                          ^
@@ -18,10 +10,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
 "Test_name.c", line 70: warning: argument of type "int *" is incompatible with parameter of type "unsigned long"
     p =  __builtin_alloca_with_align (n, L"");         /* { dg-error "must be a constant integer" } */
                                          ^
-
-"Test_name.c", line 72: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
 
 "Test_name.c", line 27: warning: variable "p" was set but never used
   static void* p;
