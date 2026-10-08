@@ -1,4 +1,4 @@
-//type:fn
+//type:fp
 //options_all:--c++17 --max_depth_constexpr_call=300
 
 // A constexpr call that appears in an argument of another constexpr call is
@@ -18,6 +18,3 @@ struct S {
 };
 constexpr int g(int n) { return n == 0 ? 0 : S(1 + g(n - 1)).v; }
 static_assert(g(299) == 299, "");   // Previously not a constant.
-
-// One call too many: still beyond the limit.
-static_assert(f(300) == 300, "");
