@@ -6619,6 +6619,7 @@ enum a_gcc_pragma_kind : a_byte {
   gcc_pk_push_options,          /* #pragma GCC push_options */
   gcc_pk_pop_options,           /* #pragma GCC pop_options */
   gcc_pk_reset_options,         /* #pragma GCC reset_options */
+  gcc_pk_diagnostic,            /* #pragma GCC diagnostic ... */
   gcc_pk_last
 };
 

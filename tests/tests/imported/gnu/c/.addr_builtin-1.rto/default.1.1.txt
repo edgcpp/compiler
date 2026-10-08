@@ -7,18 +7,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
     a = !__builtin_trap;               /* { dg-error "built-in function" }  */
          ^
 
-"Test_name.c", line 38: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 40: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wpointer-arith"
-              ^
-
-"Test_name.c", line 42: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
-
 "Test_name.c", line 50: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
     a = _Alignof __builtin_trap;
                  ^
@@ -67,14 +55,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
     (void)a;
     ^
 
-"Test_name.c", line 188: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 189: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
-              ^
-
 "Test_name.c", line 190: warning: function "isalnum" declared implicitly
       i = isalnum (i) || isalpha (i) || iscntrl (i);
           ^
@@ -86,10 +66,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
 "Test_name.c", line 190: warning: function "iscntrl" declared implicitly
       i = isalnum (i) || isalpha (i) || iscntrl (i);
                                         ^
-
-"Test_name.c", line 191: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
 
 "Test_name.c", line 13: warning: function "test_taking_address_of_gcc_builtin" was declared but never referenced
   static F* test_taking_address_of_gcc_builtin (void)

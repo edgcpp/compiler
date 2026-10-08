@@ -1,45 +1,9 @@
 fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
-"Test_name.c", line 11: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 12: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wstrict-overflow"
-              ^
-
 "Test_name.c", line 14: warning: expression has no effect
     j + 4 < j;
     ^
 
-"Test_name.c", line 15: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
-
 "Test_name.c", line 20: warning: expression has no effect
     k + 4 < k; /* { dg-error "overflow" "" { xfail *-*-* } } */
     ^
-
-"Test_name.c", line 31: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 32: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wsign-compare"
-              ^
-
-"Test_name.c", line 35: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
-
-"Test_name.c", line 48: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 49: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wswitch-enum"
-              ^
-
-"Test_name.c", line 57: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
 

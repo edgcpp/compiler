@@ -1,5 +1,24 @@
 Version 7.1
 
+10/8/26  [GH #182]
+ "GCC diagnostic" pragmas
+
+The "GCC diagnostic" pragmas were not recognized, so in GNU modes each one
+was given an "unrecognized GCC pragma" warning.  For example, with --g++:
+
+  #pragma GCC diagnostic push   // Previously warned about.
+  #pragma GCC diagnostic ignored "-Wunused-parameter"
+  int f(int unused) { return 0; }
+  #pragma GCC diagnostic pop
+
+This is now fixed. The "error", "warning", and "ignored" forms, the "push"
+and "pop" forms (when emulating GCC 4.6 or later), the "ignored_attributes"
+form (when emulating GCC 13 or later), and the "fatal" form (when emulating
+clang) are accepted without a warning, to match the behavior of those
+compilers.  A missing option string is still diagnosed.  The pragmas have no
+effect on the front end's own diagnostics.
+
+
 10/7/26  [GH #176]
 C-generating back end: always_inline attribute and inlined setjmp calls
 
