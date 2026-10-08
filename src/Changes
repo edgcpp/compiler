@@ -68,8 +68,6 @@ is for decltype(auto).  For example:
   auto *p = g();   // Error: cannot deduce "auto" type
 
 Forms that are not a plain "auto", such as "auto *", still fail deduction.
-The diagnostic is not issued while scanning a template definition, because
-the initializer type may be completed before the template is instantiated.
 
 
 10/6/26  [GH #203]

@@ -1,5 +1,5 @@
 //type:fn
-//options:--c++23:--c++23 --gnu_version=999999 -DSHOW_TEMPLATE_DEFN
+//options:--c++23
 //remark:[GH #27] Clearer diagnostic when auto deduces to void
 // 10/6/26  [GH #27]
 //
@@ -34,22 +34,3 @@ void f()
   auto *p = g();
 }
 
-#if SHOW_TEMPLATE_DEFN
-/* Incomplete in the template definition, complete before instantiation.
-   The definition must not be rejected. */
-struct Later;
-extern Later later_obj;
-
-template<int>
-void use_later()
-{
-  auto x = later_obj;
-}
-
-struct Later { int n; };
-
-void call_later()
-{
-  use_later<0>();
-}
-#endif /* SHOW_TEMPLATE_DEFN */

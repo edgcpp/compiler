@@ -31244,13 +31244,14 @@ TRUE and FALSE is returned.
       /* Adjust the argument and parameter types for deduction.  Some types can
          never succeed:  Issue an error and don't attempt deduction any
          further. */
-      /* Do not deduce an incomplete type while scanning a template
-         definition.  The type may be completed before instantiation, and
-         a deduction failure here is suppressed in GNU and Microsoft modes.
-         Diagnosing an incomplete type instead would reject a valid
-         template.  See GH27. */
+      /* GCC and Microsoft don't diagnose incomplete-type errors in template
+         definitions, but for now the only way for us to emulate that is by
+         failing deduction in these cases (which we then allow, see
+         prescan_initializer_for_auto_type_deduction). */
       a_boolean  allow_incomplete_arg =
-                                 !scope_stack_top().in_prototype_instantiation;
+               !((gpp_version_is(any_version) || ms_version_is(any_version)) &&
+                 scope_stack_top().in_prototype_instantiation &&
+                 innermost_function_scope != NULL);
       if (!adjust_deduction_pair(&type, &arg_type, initializer_operand,
                                  templ_param, (a_template_arg *)NULL,
                                  &qc_param_type, &qc_arg_type,
