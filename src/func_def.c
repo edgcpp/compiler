@@ -2531,6 +2531,9 @@ member declaration (allowed in some Microsoft modes only).
        specification, and issue one if needed. */
     issue_no_exception_support_diag_on_throw_spec(func_info);
   }  /* if */
+  /* Record whether the routine was inline before this declaration (used when
+     applying the GNU "noinline" attribute). */
+  dps->inline_on_earlier_decl = rp->is_inline;
   if (func_info->is_inline) {
     if (!rp->is_inline) {
       set_inline_flag(rp, TRUE);

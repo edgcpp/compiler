@@ -3284,12 +3284,15 @@ set).
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
   } else if (rp->never_inline && gnu_mode &&
+             (!rp->is_template_function || rp->is_specialized ||
+              rp->is_prototype_instantiation) &&
              (!rp->source_corresp.is_class_member ||
               rp->defined_outside_of_parent ||
               find_attribute(ak_always_inline, rp->source_corresp.attributes)
                                                                     != NULL)) {
     /* Was explicitly marked "noinline" previously and is now explicitly
-       marked inline. */
+       marked inline.  (An instance generated from a template is not
+       checked: the declarations of the template itself were.) */
     pos_warning(ec_inline_gnu_noinline_conflict, &error_position);
 #endif /* GNU_EXTENSIONS_ALLOWED */
   }  /* if */
