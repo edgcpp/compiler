@@ -30702,11 +30702,15 @@ parentheses do not themselves correspond to aggregate initialization).
     an_arg_match_summary  arg_match;
     an_operand            opnd;
     clear_arg_match_summary(&arg_match);
+    /* When matching the first reference parameter of a copy constructor
+       called with one argument in a direct-initialization context, explicit
+       conversion functions are considered ([over.match.copy]). */
     prep_list_initializer(arg_list, dest_type, /*is_direct_init=*/TRUE,
                           /*check_narrowing=*/FALSE,
                           /*warning_on_narrowing=*/FALSE,
                           CCO_CAST | CCO_FUNC_NOTATION_CAST |
-                          CCO_EXPLICIT_CAST | CCO_DIRECT_INITIALIZATION,
+                          CCO_EXPLICIT_CAST | CCO_DIRECT_INITIALIZATION |
+                          CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS,
                           /*fill_in_dtor=*/TRUE, /*force_temp=*/FALSE,
                           /*make_lvalue_temp=*/FALSE,
                           &opnd, (an_init_state*)NULL, &arg_match);
