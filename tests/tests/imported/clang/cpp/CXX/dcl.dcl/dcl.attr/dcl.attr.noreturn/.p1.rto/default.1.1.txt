@@ -27,14 +27,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   [[noreturn]] int f(); // expected-error {{'noreturn' attribute does not appear on the first declaration}}
     ^
 
-"Test_name.c", line 63: warning: missing return statement at end of non-void function "GH63009::test_no_return_constructor"
-  int test_no_return_constructor() { S1(); } // ok
-                                           ^
-
-"Test_name.c", line 64: warning: missing return statement at end of non-void function "GH63009::test_no_return_destructor"
-  int test_no_return_destructor() { S2(); } // ok
-                                          ^
-
 "Test_name.c", line 69: warning: missing return statement at end of non-void function "GH63009::main"
   }
   ^
