@@ -6723,6 +6723,7 @@ enum a_pragma_kind : a_byte {
 #if GNU_EXTENSIONS_ALLOWED
   pk_gcc_immediate,     /* GCC pragmas (handled immediately). */
   pk_gcc_next_token,    /* GCC pragmas (handled as next token). */
+  pk_gcc_next_statement,/* GCC pragmas (bound to the next statement). */
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
   pk_gnu_riscv,         /* GCC RISC-V intrinsics. */
   pk_clang_riscv,       /* Clang RISC-V intrinsics. */
@@ -6834,6 +6835,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, pragma_ids, pk_last + 1)
 #if GNU_EXTENSIONS_ALLOWED
 /* pk_gcc_immediate */		"GCC",
 /* pk_gcc_next_token */		"GCC",
+/* pk_gcc_next_statement */	"GCC",
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
 /* pk_gnu_riscv */		"riscv",
 /* pk_clang_riscv */		"clang",

@@ -128,6 +128,33 @@ dependent noexcept-specifiers (see the entry for EDGcpfe/18317 of 9/6/17).
 Meanwhile, the standard has been changed through Core issue 2355 to make that
 behavior standard-mandated.  It is now the default behavior, except in
 Microsoft mode with microsoft_version < 1951.
+Version 7.1
+
+10/2/26  [GH #174]
+C-generating back end: placement of GCC loop pragmas
+
+The GCC loop pragmas "#pragma GCC unroll", "#pragma GCC ivdep", and
+"#pragma GCC novector" were previously recorded in the IL as pragmas of the
+enclosing block and so were emitted by the C-generating back end at the start
+of that block, rather than immediately in front of the loop to which they
+apply.  The back-end compiler then rejected the generated code.  For example:
+
+  void h();
+  void f(char *first, char *last) {
+    h();
+  #pragma GCC unroll 4    // Previously emitted in front of the call of h,
+    while (first != last) // causing a "for, while or do statement expected"
+      ++first;            // error from the back-end compiler.
+  }
+
+10/1/26  [GH #197]
+Deducing noexcept-specifiers
+
+Previously, the front end emulated Clang and GCC's ability to deduce simple
+dependent noexcept-specifiers (see the entry for EDGcpfe/18317 of 9/6/17).
+Meanwhile, the standard has been changed through Core issue 2355 to make that
+behavior standard-mandated.  It is now the default behavior, except in
+Microsoft mode with microsoft_version < 1951.
 
 
 Version 7.0, September 28, 2026

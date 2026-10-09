@@ -351,6 +351,7 @@ Construct a pending pragma with the given pragma kind description.
 #if GNU_EXTENSIONS_ALLOWED
     case pk_gcc_immediate:
     case pk_gcc_next_token:
+    case pk_gcc_next_statement:
       clear_gcc_pragma_descr(&this->variant.gcc);
       break;
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
@@ -1857,11 +1858,28 @@ Initialize the pragma description table.
 #endif /* SUN_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
   if (gnu_mode && gnu_version >= 40200) {
-    /* "GCC" pragmas are handled by pk_gcc_next_token or pk_gcc_immediate
-       depending on the specific variety of "GCC" pragma.  Currently
-       "GCC diagnostic" pragmas are pk_gcc_next_token and all others are
-       pk_gcc_immediate.  Note that the order of these next two calls is
+    /* "GCC" pragmas are handled by pk_gcc_next_statement, pk_gcc_next_token,
+       or pk_gcc_immediate depending on the specific variety of "GCC" pragma.
+       Currently "GCC unroll", "GCC ivdep", and "GCC novector" pragmas
+       (which apply to the loop that follows them) are pk_gcc_next_statement,
+       "GCC diagnostic" pragmas are pk_gcc_next_token, and all others are
+       pk_gcc_immediate.  Note that the order of these next three calls is
        important (look_up_pragma_id relies on it). */
+    (void)add_next_construct_pragma_kind_description
+                 ((a_pragma_kind)pk_gcc_next_statement,
+                 (a_function_number)fn_null,
+                 /*is_pseudo_pragma=*/FALSE,
+                 /*may_bind_to_decl=*/FALSE,
+                 /*may_bind_to_stmt=*/TRUE,
+                 /*automatically_include_in_il=*/TRUE,
+                 /*record_pragma_text=*/TRUE,
+                 /*expand_macros=*/FALSE,
+                 /*processing_C_code=*/TRUE,
+                 /*fetch_pp_tokens=*/FALSE,
+                 /*ignore_in_back_end=*/FALSE,
+                 /*il_info_is_complete=*/TRUE,
+                 /*read_string_as_header_name=*/FALSE,
+                 es_warning);
     (void)add_next_token_pragma_kind_description
                  ((a_pragma_kind)pk_gcc_next_token,
                  fn_for_function(gcc_pragma),
