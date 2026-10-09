@@ -1061,6 +1061,11 @@ typedef struct a_decl_parse_state {
 			/* TRUE if this is the first declaration of a variable
 			   or function that was predeclared by the front
 			   end. */
+  a_bit_field	inline_on_earlier_decl:1;
+			/* TRUE if this declaration redeclares a function that
+			   was already inline before this declaration (e.g.,
+			   because an earlier declaration specified
+			   "inline"). */
   a_bit_field	redeclares_tag:1;
 			/* TRUE if the specifiers include a tag name (like
 			   "struct S" or "enum E") that must match a prior

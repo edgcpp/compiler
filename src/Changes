@@ -1,5 +1,26 @@
 Version 7.1
 
+10/9/26  [GH #183]
+GNU compatibility: "inline" combined with "noinline" on a definition
+
+In GNU C++ modes, the front end warned that a routine is both "inline" and
+"noinline" when a function definition was declared "inline" and had the GNU
+"noinline" attribute, but GCC accepts that combination silently (it is used,
+e.g., by Boost through "BOOST_NOINLINE inline").  For example:
+
+  inline __attribute__((noinline)) int f(int x) {  // No warning now.
+    return x;
+  }
+
+In C modes, where GCC warns about the combination in all of those cases, the
+behavior is unchanged.
+
+Also, instantiating a function template (or a member function of a class
+template) that is both "inline" and "noinline" no longer repeats the warning
+"At end of source" for each instance, only the template declarations are
+checked.
+
+
 10/9/26  [GH #27]
 Clearer diagnostic when auto is deduced from an incomplete type
 
