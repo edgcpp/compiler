@@ -69,6 +69,20 @@ This is now fixed: When generating code targeting GCC, the C-generating back
 end now preserves the __weak__ attribute and suppresses the __always_inline__
 attribute instead.
 
+10/7/26 [GH #238]
+Clang C compatibility: Empty aggregate initializers
+
+The changes for EDGcpfe/29042 (version 7.0) restricted empty initializers
+in pre-C23 Clang C modes to Clang 17 and later.  However, earlier versions
+of Clang accept empty initializers for aggregate types as an extension.
+This is now fixed.  For example, the following was incorrectly rejected
+when emulating Clang 16 and earlier:
+
+  struct A {
+    int i;
+  };
+
+  struct A a = {};  // Previously an error. Now okay.
 
 10/5/26  [GH #195]
 C++-generating back end: dependent multi-dimensional subscripts

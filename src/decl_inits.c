@@ -2365,7 +2365,7 @@ for this array initialization).  *is describes the initialization as a whole.
       diag_pos = &icp->variant.braced.end_pos;
       /* Unwrap the braced list for the processing that follows. */
       icp = icp->variant.braced.list;
-      if (icp == NULL && C_mode() && !empty_c_initializer_allowed) {
+      if (icp == NULL && C_mode() && !empty_c_aggregate_initializer_allowed) {
         /* Empty initializer lists are permitted only in the C modes that
            offer them. */
         pos_error(ec_exp_primary_expr, diag_pos);
@@ -3778,7 +3778,7 @@ issued if no more specific position is available.
       /* Unwrap the braced list for the processing that follows. */
       icp = icp->variant.braced.list;
       top_icp = icp;
-      if (icp == NULL && C_mode() && !empty_c_initializer_allowed) {
+      if (icp == NULL && C_mode() && !empty_c_aggregate_initializer_allowed) {
         /* Empty initializer lists are permitted only in the C modes that
            offer them. */
         pos_error(ec_exp_primary_expr, diag_pos);
