@@ -1,0 +1,790 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Check a range of commits against the project's commit and file policies.
+
+This is the high level policy tool.  It decides what to check and how to
+report it, and delegates the per-file work to edg-check-file-changes.  The
+pre-push hook, CI, and anyone at a shell all run this same tool; the only
+differences are the revision range and whether findings are offered for
+interactive review.
+'''
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+from pathlib import Path
+from typing import Any, Dict, List, NamedTuple, Optional, Sequence
+
+import edgutil
+
+#
+# File paths that begin with the prefixes listed here are excluded from file
+# level checking.
+#
+EXCLUDED_PATH_PREFIXES = (
+  # Don't check tests as they're not necessarily "EDG-style".
+  'tests/',
+  # Don't check the generated builtin files as they're very large and there's
+  # really nothing the user can do but accept them.
+  'dev_tools/builtins/builtins_',
+  # Don't check GitHub workflow yml files; long lines are all but required.
+  '.github/workflows/',
+  # Don't check the error_msg.txt file.
+  'src/error_msg.txt',
+  # Don't check AGENT files.
+  'AGENTS.md',
+  '.agents/'
+)
+
+#
+# The widest a line may be, measured in columns after tab expansion.  This
+# mirrors the limit edg-check-file-changes applies; it is used here only to
+# describe a finding.
+#
+MAX_LINE_COLUMNS = 79
+
+#
+# A commit subject must carry a bracketed tag naming the work it belongs to.
+# A tag holds one or more comma separated references, each of which is either
+# a GitHub issue ("GH #123") or a legacy internal PR ("EDGcpfe/29032").
+#
+SUBJECT_REFERENCE_REGEX = re.compile(r'GH #[0-9]+|EDG[cfjp]+fe/[0-9]+')
+
+BRACKETED_TAG_REGEX = re.compile(r'\[([^\[\]]*)\]')
+
+SUBJECT_POLICY_DESCRIPTION = (
+  'Commit subjects must end with a bracketed tag naming at least one '
+  'GitHub issue or legacy PR, for example "[GH #213]", '
+  '"[EDGcpfe/29032]", or "[GH #213,GH #214]".'
+)
+
+#
+# Findings of these kinds are reported without failing the run.
+#
+# aspell has no project dictionary to work from, so on a compiler code base
+# it reports identifiers, standards vocabulary, and abbreviations as new
+# misspellings on essentially every change; measured against recent history
+# it fires between 1 and 52 times per commit while the mechanical checks
+# fire between 0 and 3 times.  Spelling is therefore advisory and the
+# mechanical checks are enforced.  --strict enforces everything.
+#
+ADVISORY_FINDING_KINDS = frozenset([
+  'misspelling',
+  'spelling-unavailable',
+  'checker-no-result'
+])
+
+#
+# git's empty tree, used as the base when the range starts at a root commit
+# and so has no parent to compare against.
+#
+EMPTY_TREE_OBJECT = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+
+class Finding(NamedTuple):
+  '''One policy finding, for severity accounting and CI annotations.
+
+  The human readable form is printed separately by whichever check produced
+  it, so that each kind of finding keeps its own presentation.
+  '''
+  kind: str
+  message: str
+  path: Optional[str] = None
+  line: Optional[int] = None
+
+def is_excluded_path(path_str: str) -> bool:
+  '''Return True when a repository path is exempt from file level checks.'''
+  return any(
+    path_str.startswith(prefix) for prefix in EXCLUDED_PATH_PREFIXES
+  )
+
+def is_text_blob(data: bytes) -> bool:
+  '''Return True when a blob can be checked as UTF-8 text.'''
+  if b'\x00' in data:
+    return False
+
+  try:
+    data.decode('utf-8')
+  except UnicodeDecodeError:
+    return False
+
+  return True
+
+def _is_reference_list(tag_body: str) -> bool:
+  '''Return True when a tag's contents are a comma separated reference
+  list holding at least one reference.'''
+  if not tag_body.strip():
+    return False
+
+  return all(
+    SUBJECT_REFERENCE_REGEX.fullmatch(reference.strip()) is not None
+    for reference in tag_body.split(',')
+  )
+
+def check_for_subject_errors(subject: str) -> List[str]:
+  '''Return the reasons a commit subject fails the policy, if any.
+
+  An empty tag ("[]") does not name any work and so does not satisfy the
+  policy, even though the regex this replaced accepted it.
+  #
+  # TO RELAX THIS RULE: to go back to accepting commits that reference no
+  # issue, return an empty list for the two "no tag" cases below and keep
+  # only the malformed reference list case.  Nothing else needs to change.
+  #
+  '''
+  errors = []
+
+  tags = BRACKETED_TAG_REGEX.findall(subject)
+  if not tags:
+    errors.append('Commit subject has no bracketed tag.')
+  elif not any(_is_reference_list(tag) for tag in tags):
+    if any(not tag.strip() for tag in tags):
+      errors.append("Commit subject has an empty tag ('[]').")
+    else:
+      errors.append("Commit subject's tag is not a valid reference list.")
+
+  return errors
+
+def print_indented(text: str, prefix: str) -> None:
+  '''Print each line of text with the given prefix.'''
+  if not text:
+    return
+
+  for line in text.splitlines():
+    print(f"{prefix}{line}")
+
+def _leading_line_number(hit: str) -> Optional[int]:
+  '''Return the line number from a "<line>:<text>" checker hit, if present.'''
+  line_no, _, _ = hit.partition(':')
+  if line_no.isdigit():
+    return int(line_no)
+  return None
+
+class GitRepository:
+  '''Minimal read-only git helper scoped to one checkout.'''
+
+  def __init__(self, repo_dir: Path) -> None:
+    self.repo_dir = repo_dir
+    self._tool_path = edgutil.RequiredToolPath('git')
+
+  def run(
+    self,
+    args: Sequence[str],
+    check: bool = True,
+    text: bool = True
+  ) -> 'subprocess.CompletedProcess[Any]':
+    '''Run a git command in the repository and return the result.
+
+    Capture is spelled out rather than using capture_output, and decoding
+    with universal_newlines rather than text, because both shorthands
+    postdate the Python 3.6 floor this tooling still supports.
+    '''
+    return subprocess.run(
+      [str(self._tool_path), *args],
+      cwd = str(self.repo_dir),
+      check = check,
+      stdout = subprocess.PIPE,
+      stderr = subprocess.PIPE,
+      universal_newlines = text
+    )
+
+  def output(self, args: Sequence[str]) -> str:
+    '''Run a git command and return its stripped stdout.'''
+    return str(self.run(args).stdout).strip()
+
+  def lines(self, args: Sequence[str]) -> List[str]:
+    '''Run a git command and return its stdout split into lines.'''
+    return self.output(args).splitlines()
+
+  def show_blob(self, revision_path: str) -> bytes:
+    '''Return the blob contents for revision:path, or b'' if missing.'''
+    completed_process = self.run(
+      ['show', revision_path], check = False, text = False
+    )
+    if completed_process.returncode != 0:
+      return b''
+    return bytes(completed_process.stdout)
+
+  def subject_of(self, commit: str) -> str:
+    '''Return the subject line of a commit.'''
+    return self.output(['show', '--no-patch', '--format=%s', commit])
+
+  def is_on_a_remote(self, commit: str) -> bool:
+    '''Return True when some remote branch already contains a commit.'''
+    completed_process = self.run(
+      ['branch', '-r', '--contains', commit], check = False
+    )
+    return bool(str(completed_process.stdout).strip())
+
+  def parent_or_empty_tree(self, commit: str) -> str:
+    '''Return a commit's first parent, or the empty tree for a root commit.'''
+    completed_process = self.run(
+      ['rev-parse', '--verify', f"{commit}^"], check = False
+    )
+    if completed_process.returncode != 0:
+      return EMPTY_TREE_OBJECT
+    return str(completed_process.stdout).strip()
+
+class PolicyReporter:
+  '''Accounts for findings and reports them to the user and to GitHub.
+
+  Each check prints its own findings in whatever form reads best, then
+  hands them here.  In interactive mode a group of findings is offered for
+  confirmation, which is how the pre-push hook has always behaved.
+  Otherwise each finding is counted and annotated for GitHub.
+  '''
+
+  def __init__(self, interactive: bool = False, strict: bool = False) -> None:
+    # Prompting needs both somewhere to ask and somewhere to be answered.
+    # When either is missing, as for a push from a GUI client that has no
+    # controlling terminal, fall back to the accounting used when nobody is
+    # watching.  That reaches the same verdict the pull request will, rather
+    # than refusing the push over warnings nobody is there to accept.
+    self.interactive = (
+      interactive and sys.stdin.isatty() and sys.stdout.isatty()
+    )
+    self.strict = strict
+    self.errors = 0
+    self.in_github_actions = 'GITHUB_ACTIONS' in os.environ
+
+  def _is_advisory(self, kind: str) -> bool:
+    return not self.strict and kind in ADVISORY_FINDING_KINDS
+
+  def _annotate(self, level: str, finding: Finding) -> None:
+    if not self.in_github_actions:
+      return
+
+    location = ''
+    if finding.path is not None:
+      location = f" file={finding.path}"
+      if finding.line is not None:
+        location += f",line={finding.line}"
+
+    # Annotations must be one line to be parsed by the Actions runner, and
+    # these messages can quote a line of the diff, so flatten every line
+    # break rather than just the newline.
+    flattened = finding.message.replace('\r', ' ').replace('\n', ' ')
+    print(f"::{level}{location}::{flattened}")
+
+  def confirm_okay(self) -> None:
+    '''Ask the user whether a policy warning is acceptable.
+
+    Prompts on stdin for y/n/q.  Only reached when a terminal is available
+    both ways, which the caller arranges: git hands a hook the refs being
+    pushed on stdin, so the pre-push hook opens the terminal itself and
+    passes that to this tool instead.
+    '''
+    tries = 0
+    while True:
+      try:
+        response = input('    Okay? [ynq] ').lower()
+      except EOFError:
+        # The terminal went away mid-review, so let the finding stand.
+        print()
+        self.errors += 1
+        return
+
+      if response == 'y':
+        return
+      if response == 'n':
+        self.errors += 1
+        return
+      if response == 'q':
+        self.errors += 1
+        sys.exit(1)
+
+      print(
+        "Please answer 'y' (to accept), 'n' (to continue check) or "
+        "'q' (to quit)."
+      )
+      tries += 1
+      if tries >= 10:
+        print('Too many attempts.')
+        sys.exit(1)
+
+  def report(self, findings: List[Finding]) -> None:
+    '''Take a group of already printed findings.'''
+    if not findings:
+      return
+
+    if self.interactive:
+      self.confirm_okay()
+      return
+
+    for finding in findings:
+      if self._is_advisory(finding.kind):
+        self._annotate('warning', finding)
+      else:
+        self.errors += 1
+        self._annotate('error', finding)
+
+  def report_fatal(self, findings: List[Finding]) -> None:
+    '''Take findings that end the run, whether or not review was offered.
+
+    Used for the commit subject rule, which is enforced rather than
+    advisory: there is no point reviewing the rest of a change when the
+    first thing to fix is the history.
+    '''
+    for finding in findings:
+      self.errors += 1
+      self._annotate('error', finding)
+
+class PolicyChecker:
+  '''Runs the project's policy checks over a range of commits.'''
+
+  def __init__(
+    self,
+    repository: GitRepository,
+    reporter: PolicyReporter,
+    use_docker: bool = False
+  ) -> None:
+    self.repository = repository
+    self.reporter = reporter
+    self.use_docker = use_docker
+
+  def unpushed_commits(self) -> List[str]:
+    '''Return the commits on HEAD that no remote branch contains yet.
+
+    This is the range the pre-push hook cares about: everything the user is
+    about to publish, newest first.
+    '''
+    commits = []
+    for commit in self.repository.lines(['log', '--pretty=%H']):
+      if self.repository.is_on_a_remote(commit):
+        break
+      commits.append(commit)
+    return commits
+
+  def range_commits(self, base_rev: str, head_rev: str) -> List[str]:
+    '''Return the non-merge commits in base_rev..head_rev, newest first.'''
+    return self.repository.lines(
+      ['log', '--no-merges', '--pretty=%H', f"{base_rev}..{head_rev}"]
+    )
+
+  def check_commit_subjects(self, commits: List[str], verbose: bool) -> None:
+    '''Check every commit subject, aborting on the first failure.
+
+    The subject rule is enforced rather than advisory, so a bad subject
+    stops the run instead of being offered for confirmation.  There is no
+    point checking the rest when the first thing to fix is the history.
+    '''
+    for commit in commits:
+      subject = self.repository.subject_of(commit)
+
+      if verbose:
+        print('New commit:')
+        print('')
+        print_indented(
+          self.repository.output(['show', '--no-patch', commit]), '  '
+        )
+        print('')
+      else:
+        print(f"  {commit[:12]} {subject}")
+
+      subject_errors = check_for_subject_errors(subject)
+      if subject_errors:
+        for subject_error in subject_errors:
+          print(f"  [POLICY] {subject_error}")
+        print_indented(SUBJECT_POLICY_DESCRIPTION, '  ')
+        self.reporter.report_fatal([
+          Finding('commit-subject', f"{commit[:12]}: {subject_error}")
+          for subject_error in subject_errors
+        ])
+        sys.exit(1)
+
+  def collect_change_spec(
+    self,
+    base_rev: str,
+    head_rev: str,
+    tmp_dir: Path
+  ) -> Dict[str, List[str]]:
+    '''Materialize both sides of every changed file under tmp_dir.
+
+    Returns the mapping edg-check-file-changes consumes: repository path to
+    an [old_file, new_file] pair, each relative to the repository so the
+    checker can run inside or outside a container.
+
+    Binary files are left out.  Everything downstream reads its input as
+    UTF-8 text, and handing it an image makes the checker raise part way
+    through and drop the file from its own results, which reads as a silent
+    pass.
+    '''
+    change_spec = {}
+
+    changed_files = self.repository.lines([
+      'diff', '--name-only', '--diff-filter=d', f"{base_rev}..{head_rev}"
+    ])
+
+    for path_str in changed_files:
+      if is_excluded_path(path_str):
+        continue
+
+      blobs = [
+        self.repository.show_blob(f"{revision}:{path_str}")
+        for revision in (base_rev, head_rev)
+      ]
+      if not all(is_text_blob(blob) for blob in blobs):
+        continue
+
+      file_path = Path(path_str)
+
+      def materialize(data: bytes) -> str:
+        '''Write one side of the change out, returning its relative path.'''
+        with tempfile.NamedTemporaryFile(
+          prefix = file_path.stem,
+          suffix = file_path.suffix,
+          dir = str(tmp_dir),
+          delete = False
+        ) as file_handle:
+          file_handle.write(data)
+          return Path(file_handle.name).relative_to(
+            self.repository.repo_dir
+          ).as_posix()
+
+      change_spec[path_str] = [materialize(blob) for blob in blobs]
+
+    return change_spec
+
+  def run_file_checks(
+    self,
+    change_spec: Dict[str, List[str]],
+    tmp_dir: Path
+  ) -> Optional[Dict[str, Any]]:
+    '''Run edg-check-file-changes over a change spec.
+
+    Returns the checker's results, or None if the checker itself failed.
+    '''
+    input_file = tmp_dir / 'input.json'
+    output_file = tmp_dir / 'output.json'
+
+    with open(input_file, 'w') as file_handle:
+      json.dump(change_spec, file_handle)
+
+    def repo_relative(path: Path) -> str:
+      return path.relative_to(self.repository.repo_dir).as_posix()
+
+    if self.use_docker:
+      command = [
+        str(edgutil.RequiredToolPath('edg-exec')),
+        '--',
+        'edg-check-file-changes',
+        repo_relative(input_file),
+        repo_relative(output_file)
+      ]
+    else:
+      command = [
+        str(edgutil.RequiredToolPath('edg-check-file-changes')),
+        str(input_file),
+        str(output_file)
+      ]
+
+    completed_process = subprocess.run(
+      command,
+      cwd = str(self.repository.repo_dir),
+      stdin = subprocess.DEVNULL
+    )
+    if completed_process.returncode != 0:
+      return None
+
+    with open(output_file, 'r') as file_handle:
+      results = json.load(file_handle)
+
+    return dict(results)
+
+  def _report_spelling(
+    self,
+    path_str: str,
+    file_results: Dict[str, Any]
+  ) -> None:
+    misspellings = file_results['misspellings']
+
+    if misspellings is None:
+      print('    Spell check failed:')
+      if not self.use_docker:
+        print('      docker not used.')
+      print('      aspell not found or missing dictionary.')
+      self.reporter.report([
+        Finding(
+          'spelling-unavailable',
+          f"{path_str}: aspell not found or missing dictionary",
+          path_str
+        )
+      ])
+      return
+
+    if len(misspellings) != 0:
+      print('    New misspelled words:')
+      for misspelling in misspellings:
+        print(f"    - {misspelling}")
+      self.reporter.report([
+        Finding(
+          'misspelling',
+          f"{path_str}: new misspelled word: {misspelling}",
+          path_str
+        )
+        for misspelling in misspellings
+      ])
+
+  def _report_typos(
+    self,
+    path_str: str,
+    file_results: Dict[str, Any]
+  ) -> None:
+    typos = file_results['typos']
+    if len(typos) == 0:
+      return
+
+    print('    New typos:')
+    for typo in typos:
+      print(f"    - {typo}")
+    self.reporter.report([
+      Finding(
+        'typo', f"{path_str}: repeated-word typo: {typo.strip()}", path_str
+      )
+      for typo in typos
+    ])
+
+  def _report_coding_errors(
+    self,
+    path_str: str,
+    file_results: Dict[str, Any]
+  ) -> None:
+    coding_errors = file_results['coding_errors']
+    if len(coding_errors) == 0:
+      return
+
+    for key, heading, description in (
+      ('missing_endifs', 'Missing comment on #endif:', '#endif'),
+      ('missing_elses', 'Missing comment on #else:', '#else')
+    ):
+      hits = coding_errors[key]
+      if len(hits) == 0:
+        continue
+
+      print(f"    {heading}")
+      print_indented('\n'.join(hits), '    ')
+      self.reporter.report([
+        Finding(
+          'coding-error',
+          f"{path_str}: {description} without a comment",
+          path_str,
+          _leading_line_number(hit)
+        )
+        for hit in hits
+      ])
+
+    closing_comments = coding_errors['closing_comments']
+    if len(closing_comments) != 0:
+      print_indented('\n'.join(closing_comments), '    ')
+      self.reporter.report([
+        Finding(
+          'coding-error',
+          f"{path_str}: closing comment: {hit.strip()}",
+          path_str
+        )
+        for hit in closing_comments
+      ])
+
+  def _report_overlong_lines(
+    self,
+    path_str: str,
+    file_results: Dict[str, Any]
+  ) -> None:
+    '''Print each overlong line with its surrounding context.
+
+    The window is delimited with '=' so that it is obvious at a glance
+    which part of the file is too wide.
+    '''
+    overlong_lines = file_results['overlong_lines']
+    if len(overlong_lines) == 0:
+      return
+
+    for line_no, (line_start, lines) in overlong_lines.items():
+      print(f"    Line {line_no} too long:")
+      line_end = line_start + (len(lines) - 1)
+      print(f" {line_start} -> {line_end} ".center(MAX_LINE_COLUMNS, '='))
+      for line in lines:
+        print(line, end = '')
+      print('=' * MAX_LINE_COLUMNS)
+
+    self.reporter.report([
+      Finding(
+        'overlong-line',
+        f"{path_str}: line {line_no} exceeds {MAX_LINE_COLUMNS} columns",
+        path_str,
+        int(line_no)
+      )
+      for line_no in sorted(overlong_lines, key = int)
+    ])
+
+  def check_changed_files(self, base_rev: str, head_rev: str) -> None:
+    '''Run the file level checks over base_rev..head_rev.'''
+    print('Checking changed files:')
+
+    containing_tmp_dir = self.repository.repo_dir / '.tmp'
+    containing_tmp_dir.mkdir(exist_ok = True)
+
+    with tempfile.TemporaryDirectory(
+      dir = str(containing_tmp_dir)
+    ) as tmp_dir_str:
+      tmp_dir = Path(tmp_dir_str)
+
+      change_spec = self.collect_change_spec(base_rev, head_rev, tmp_dir)
+      if not change_spec:
+        print('  No changed files to check.')
+        return
+
+      results = self.run_file_checks(change_spec, tmp_dir)
+      if results is None:
+        edgutil.eprint('error: edg-check-file-changes failed to run')
+        sys.exit(1)
+
+      # The checker drops a file from its results if checking it raised, so
+      # a missing entry means the file went unchecked rather than passed.
+      for path_str in sorted(set(change_spec) - set(results)):
+        print(f"  Checking file: {path_str}")
+        print('    No result returned by edg-check-file-changes.')
+        self.reporter.report([
+          Finding(
+            'checker-no-result',
+            f"{path_str}: the file checker returned no result",
+            path_str
+          )
+        ])
+
+      for path_str in sorted(results):
+        print(f"  Checking file: {path_str}")
+        file_results = results[path_str]
+
+        self._report_spelling(path_str, file_results)
+        self._report_typos(path_str, file_results)
+        self._report_coding_errors(path_str, file_results)
+        self._report_overlong_lines(path_str, file_results)
+
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+  parser = argparse.ArgumentParser(
+    description = (
+      'Check a range of commits against the project commit and file '
+      'policies.'
+    )
+  )
+  parser.add_argument(
+    '--base-rev',
+    default = 'origin/main',
+    help = 'the revision the range starts after (default: origin/main)'
+  )
+  parser.add_argument(
+    '--head-rev',
+    default = 'HEAD',
+    help = 'the revision the range ends at (default: HEAD)'
+  )
+  parser.add_argument(
+    '--unpushed',
+    action = 'store_true',
+    help = (
+      'check every commit on HEAD that no remote branch contains yet, '
+      'instead of an explicit range; this is what the pre-push hook wants'
+    )
+  )
+  parser.add_argument(
+    '--interactive',
+    action = 'store_true',
+    help = (
+      'offer each group of findings for review instead of failing on it, '
+      'reading the answer from the terminal'
+    )
+  )
+  parser.add_argument(
+    '--skip-commits',
+    action = 'store_true',
+    help = 'do not check commit subjects'
+  )
+  parser.add_argument(
+    '--skip-files',
+    action = 'store_true',
+    help = 'do not check changed files'
+  )
+  parser.add_argument(
+    '--strict',
+    action = 'store_true',
+    help = 'fail on advisory findings (spelling) as well'
+  )
+  parser.add_argument(
+    '--no-docker',
+    action = 'store_true',
+    help = (
+      'run the file checks directly rather than in the dev container, for '
+      'hosts that have docker but no EDG images (such as CI runners)'
+    )
+  )
+  return parser.parse_args(argv)
+
+def main() -> None:
+  args = parse_args()
+
+  repo_dir = edgutil.find_mono_repo_or_exit()
+  repository = GitRepository(repo_dir)
+  reporter = PolicyReporter(
+    interactive = args.interactive, strict = args.strict
+  )
+  use_docker = (
+    not args.no_docker and
+    shutil.which('docker') is not None and
+    edgutil.is_docker_preferred(repo_dir)
+  )
+  checker = PolicyChecker(repository, reporter, use_docker = use_docker)
+
+  if args.unpushed:
+    commits = checker.unpushed_commits()
+    base_rev = (
+      repository.parent_or_empty_tree(commits[-1]) if commits else None
+    )
+    head_rev = 'HEAD'
+  else:
+    merge_base = repository.run(
+      ['merge-base', args.base_rev, args.head_rev], check = False
+    )
+    if merge_base.returncode != 0:
+      edgutil.eprint(
+        f"error: no merge base for {args.base_rev} and {args.head_rev}"
+      )
+      sys.exit(1)
+    base_rev = str(merge_base.stdout).strip()
+    head_rev = args.head_rev
+    commits = checker.range_commits(base_rev, head_rev)
+
+    print(f"Base: {base_rev}")
+    print(f"Head: {repository.output(['rev-parse', head_rev])}")
+    print('')
+
+  if not commits:
+    print('No new commits to check.')
+    return
+
+  if not args.skip_commits:
+    if not args.unpushed:
+      print(f"Checking {len(commits)} commit subject(s):")
+    checker.check_commit_subjects(commits, verbose = args.unpushed)
+    print('')
+
+  if not args.skip_files and base_rev is not None:
+    checker.check_changed_files(base_rev, head_rev)
+    print('')
+
+  if reporter.errors:
+    print(f"Failed: {reporter.errors} policy finding(s) not accepted.")
+    sys.exit(1)
+
+  print('Passed: no policy violations.')
+
+main()
