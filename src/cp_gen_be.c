@@ -8305,6 +8305,25 @@ one step instead of class-by-class, return TRUE.
 }  /* pm_cast_is_unambiguous */
 
 
+static a_constant_ptr first_explicit_aggr_constant(a_constant_ptr con)
+/*
+con is NULL or a constant in the list of an aggregate constant.  Return the
+first constant in that list, starting with con, that is not an implicit
+initializer for a base class or member (such initializers do not appear in
+the generated source), or NULL if there is none.
+*/
+{
+  while (con != NULL &&
+         (con->constant_for_base_class_from_constexpr_folding ||
+          con->implicit_aggr_element ||
+          (constant_is(con, ck_dynamic_init) &&
+           is_default_dynamic_init(con->variant.dynamic_init.ptr)))) {
+    con = con->next;
+  }  /* while */
+  return con;
+}  /* first_explicit_aggr_constant */
+
+
 static void gen_designator(a_constant_ptr con,
                            a_field_ptr    *field,
                            a_constant_ptr *p_eff_con,
@@ -8388,12 +8407,13 @@ brace/parenthesis delimiters around it should be suppressed.
     if (!eff_con->explicit_braces_on_aggregate &&
         !eff_con->explicit_parentheses_on_aggregate &&
         !eff_con->explicit_cast_applied) {
+      a_constant_ptr  first_con = eff_con->variant.aggregate.first_constant;
+      first_con = first_explicit_aggr_constant(first_con);
       *suppress_delims = TRUE;
-      if (eff_con->variant.aggregate.first_constant != NULL &&
-          constant_is(eff_con->variant.aggregate.first_constant,
-                      ck_designator)) {
+      if (first_con != NULL && constant_is(first_con, ck_designator)) {
         /* Do not close the designator if another one will follow
-           immediately. */
+           immediately (i.e., a chained designator, possibly preceded by
+           implicit initializers for the members it skips). */
         close = FALSE;
       }  /* if */
     }  /* if */
@@ -8603,13 +8623,7 @@ which constant is the value.
     /* Loop through the list of initializer constants. */
     /* First, skip over any implicit initializers for base classes and
        initial members; they shouldn't appear in the generated source. */
-    for (sub_con = first_con;
-         sub_con != NULL &&
-                (sub_con->constant_for_base_class_from_constexpr_folding ||
-                 sub_con->implicit_aggr_element ||
-                 (sub_con->kind == (a_constant_repr_kind)ck_dynamic_init &&
-                  is_default_dynamic_init(sub_con->variant.dynamic_init.ptr)));
-         sub_con = sub_con->next) {}
+    sub_con = first_explicit_aggr_constant(first_con);
     if (sub_con != NULL &&
         sub_con->kind == (a_constant_repr_kind)ck_init_repeat) {
       /* A ck_init_repeat constant is used to do default initialization

@@ -3,20 +3,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   static constexpr C c2 = { .a = 1.0, .x = 3 };
                                  ^
 
-"Test_name.c", line 86: error: static assertion failed
-  static_assert(a.a.d == string{}.d);
-  ^
-"Test_name.c", line 86: note: the final comparison was 0 == 43
-  static_assert(a.a.d == string{}.d);
-                      ^
-
-"Test_name.c", line 87: error: static assertion failed
-  static_assert(a.b == 42);
-  ^
-"Test_name.c", line 87: note: the final comparison was 0 == 42
-  static_assert(a.b == 42);
-                    ^
-
 "Test_name.c", line 112: error: an initializer cannot be specified for a flexible array member
     int y[] = { 0 };
             ^
@@ -53,4 +39,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   constexpr S2 y[2] = {
                ^
 
-9 errors detected in the compilation of "Test_name.c".
+7 errors detected in the compilation of "Test_name.c".

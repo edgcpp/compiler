@@ -3319,6 +3319,33 @@ Return TRUE if field second follows field first in the declaration order.
 }  /* fields_are_ordered */
 
 
+static a_boolean field_range_is_designated(a_constant_ptr  aggr_con,
+                                           a_field_ptr     first,
+                                           a_field_ptr     end)
+/*
+Return TRUE if a ck_designator constant in the aggregate constant aggr_con
+designates field first or a field declared between first and end (excluding
+end itself).  That is possible only when out-of-order designators are accepted:
+E.g., in "{ .c = 3, .a = 1, .d = 4 }", c lies between b (the field following
+a) and d.
+*/
+{
+  a_boolean       result = FALSE;
+  a_constant_ptr  con;
+
+  for (con = aggr_con->variant.aggregate.first_constant;
+       con != NULL && !result;
+       con = con->next) {
+    if (constant_is(con, ck_designator) &&
+        con->variant.designator.is_field_designator) {
+      a_field_ptr  fp = con->variant.designator.variant.field;
+      result = fields_are_ordered(first, fp) && !fields_are_ordered(end, fp);
+    }  /* if */
+  }  /* for */
+  return result;
+}  /* field_range_is_designated */
+
+
 static void aggr_init_field_designator(an_init_component_ptr  *p_icp,
                                        a_type_ptr             class_type,
                                        an_init_state          *is,
@@ -3561,18 +3588,23 @@ initialization. */
   }  /* if */
   if (okay) {
     if ((orig_field != *field || *p_bcp != NULL ) &&
-        cpp20_designators_restriction && !is->init_error &&
-        !is->check_validity_only && orig_field != NULL &&
-        !type_is(class_type, tk_union)) {
-    /* C++20 designators can cause base classes and certain members to
-       be skipped. Initialize those members before initializing the
-       designated member. If we found an error, we shouldn't proceed with
-       the initialization of remaining members, as the designators
-       may not be in order.  If orig_field is NULL, we have already
-       initialized all the members and this designator is invalid. It is
-       possible that it has not been diagnosed as invalid yet, so we
-       check orig_field here just in case.  If we're checking validity only,
-       there's no need to initialize the remainder. */
+        !is->init_error && !is->check_validity_only && orig_field != NULL &&
+        !type_is(class_type, tk_union) &&
+        (cpp20_designators_restriction || gpp_version_is(>= 80000) ||
+         (clang_mode && !C_mode() && fields_are_ordered(orig_field, *field) &&
+          !field_range_is_designated(aggr_con, orig_field, *field)))) {
+    /* C++ designators can cause base classes and certain members to
+       be skipped. Initialize those members (e.g., using their default member
+       initializers) before initializing the designated member. If we found
+       an error, we shouldn't proceed with the initialization of remaining
+       members, as the designators may not be in order.  If orig_field is
+       NULL, we have already initialized all the members and this designator
+       is invalid. It is possible that it has not been diagnosed as invalid
+       yet, so we check orig_field here just in case.  If we're checking
+       validity only, there's no need to initialize the remainder.  Clang
+       accepts out-of-order designators (with a warning), so in that mode the
+       skipped members are initialized only if the designator does not go
+       backward and none of them was designated earlier. */
        aggr_init_class_remainder_if_needed(aggr_con, class_type, orig_field,
                                            *p_bcp, is, diag_pos, *field);
        *p_bcp = NULL;
