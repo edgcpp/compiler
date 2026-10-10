@@ -14,6 +14,15 @@ endif()
 # set the project name
 project(cpfe)
 
+# Setup CMake module path to find our custom modules (like FindLibGCCJIT.cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# GCC Backend Option
+option(EDG_ENABLE_GCC_BACKEND "Enable the libgccjit backend" OFF)
+if(EDG_ENABLE_GCC_BACKEND)
+  find_package(LibGCCJIT REQUIRED)
+endif()
+
 # Check for attempts to use an in-source build.
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   message(FATAL_ERROR
@@ -82,6 +91,10 @@ if(NOT WIN32)
   set(EDG_BUILD_LIB TRUE CACHE BOOL "Enable the EDG library build")
 endif()
 
+# Enable Testing
+enable_testing()
+include(CTest)
+
 # For GCC and Clang provide an (off by default) option for colored output.
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -145,3 +158,29 @@ include(${CMAKE_SOURCE_DIR}/cmake/wrapper.cmake)
 # Handle wrapping eccp, needed for building the C library, and general
 # development
 add_edg_wrapper_script(eccp "." ${CMAKE_SOURCE_DIR}/util/eccp.sh)
+
+if(EDG_ENABLE_GCC_BACKEND)
+  add_subdirectory(tests/gcc_be)
+endif()
+
+# --- CPack Integration ---
+set(CPACK_PACKAGE_NAME "edg-cpfe")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "EDG C++ Front End (with GCC backend)")
+set(CPACK_PACKAGE_VENDOR "Edison Design Group")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+
+if(APPLE)
+  set(CPACK_GENERATOR "DragNDrop;TGZ")
+elseif(WIN32)
+  set(CPACK_GENERATOR "ZIP;WIX")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+  set(CPACK_GENERATOR "TXZ")
+else()
+  set(CPACK_GENERATOR "DEB;RPM")
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "EDG")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libgccjit0 (>= 10.0.0) | libgccjit-10-dev | libgccjit-11-dev | libgccjit-12-dev | libgccjit-13-dev | libgccjit-14-dev")
+  set(CPACK_RPM_PACKAGE_REQUIRES "libgccjit")
+endif()
+
+include(CPack)

@@ -47,8 +47,13 @@ Open-sourced in September of 2026.
 #if BACK_END_IS_CP_GEN_BE
 #include "cp_gen_be.h"
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_GCC_GEN_BE
+#include "gcc_gen_be_main.h"
+#include "gcc_gen_be_context.h"
+#include "gcc_gen_be_context.h"
+#endif /* BACK_END_IS_GCC_GEN_BE */
 #if BACK_END_SHOULD_BE_CALLED && \
-    !BACK_END_IS_C_GEN_BE && !BACK_END_IS_CP_GEN_BE
+    !BACK_END_IS_C_GEN_BE && !BACK_END_IS_CP_GEN_BE && !BACK_END_IS_GCC_GEN_BE
 /*
 Provide a declaration for a non-EDG-supplied back end (not in the "edg"
 namespace).
@@ -104,6 +109,10 @@ MAKE_FRONT_END_CALLABLE is TRUE.
      if it wasn't invoked during this compilation). */
   cp_gen_be_early_init();
 #endif /* BACK_END_SHOULD_BE_CALLED && BACK_END_IS_CP_GEN_BE && ... */
+#if BACK_END_SHOULD_BE_CALLED && BACK_END_IS_GCC_GEN_BE && \
+    MAKE_FRONT_END_CALLABLE
+  gcc_gen_be_early_init();
+#endif /* BACK_END_SHOULD_BE_CALLED && BACK_END_IS_GCC_GEN_BE && ... */
   /* Get the execution starting time.  Do this unconditionally because the
      timing command line option will not have been processed yet.  This must
      be done after the early initialization done above. */

@@ -1806,6 +1806,21 @@ Initialize the option information table.
                          /*arg_required=*/FALSE, pchek_command_line);
   add_option_description(optk_incognito, "no_incognito", '\0', /*value=*/FALSE,
                          /*arg_required=*/FALSE, pchek_command_line);
+
+#if BACK_END_IS_GCC_GEN_BE
+  add_option_description(optk_gcc_be_O0, "O0", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_O1, "O1", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_O2, "O2", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_O3, "O3", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_Os, "Os", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_Ofast, "Ofast", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_g, "g", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_fPIC, "fPIC", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_fPIE, "fPIE", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_dump_initial_tree, "fdump-tree-all", '\0', TRUE, FALSE, pchek_command_line);
+  add_option_description(optk_gcc_be_dump_gimple, "fdump-tree-gimple", '\0', TRUE, FALSE, pchek_command_line);
+#endif /* BACK_END_IS_GCC_GEN_BE */
+
 }  /* initialize_option_descriptions */
 
 
@@ -12250,6 +12265,21 @@ enable_microsoft_mode:
       case optk_incognito:
         incognito = opt_value;
         break;
+
+#if BACK_END_IS_GCC_GEN_BE
+      case optk_gcc_be_O0: gcc_be_opt_level = 0; break;
+      case optk_gcc_be_O1: gcc_be_opt_level = 1; break;
+      case optk_gcc_be_O2: gcc_be_opt_level = 2; break;
+      case optk_gcc_be_O3: gcc_be_opt_level = 3; break;
+      case optk_gcc_be_Os: gcc_be_opt_level = 2; /* libgccjit doesn't have Os natively, map to 2 */ break;
+      case optk_gcc_be_Ofast: gcc_be_opt_level = 3; break;
+      case optk_gcc_be_g: gcc_be_debug_info = TRUE; break;
+      case optk_gcc_be_fPIC: gcc_be_fPIC = TRUE; break;
+      case optk_gcc_be_fPIE: gcc_be_fPIE = TRUE; break;
+      case optk_gcc_be_dump_initial_tree: gcc_be_dump_initial_tree = TRUE; break;
+      case optk_gcc_be_dump_gimple: gcc_be_dump_gimple = TRUE; break;
+#endif /* BACK_END_IS_GCC_GEN_BE */
+
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -13041,6 +13071,11 @@ enable_microsoft_mode:
   create_template_deduction_name_references = NEED_NAME_MANGLING;
   /* If the -o option appeared, its file should have been taken for
      something. */
+  #if BACK_END_IS_GCC_GEN_BE
+  gcc_be_output_file_name = ofile_name;
+  ofile_name = NULL;
+#endif
+
   if (ofile_name != NULL) {
     command_line_error(ec_cl_no_output_file_needed);
   }  /* if */

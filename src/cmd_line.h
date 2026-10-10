@@ -386,8 +386,21 @@ enum an_option_kind {
   optk_dump_command_options,
   optk_output_mode,
   optk_incognito,
-  optk_last		/* Must be last. */
-};
+  #if BACK_END_IS_GCC_GEN_BE
+  optk_gcc_be_O0,
+  optk_gcc_be_O1,
+  optk_gcc_be_O2,
+  optk_gcc_be_O3,
+  optk_gcc_be_Os,
+  optk_gcc_be_Ofast,
+  optk_gcc_be_g,
+  optk_gcc_be_fPIC,
+  optk_gcc_be_fPIE,
+  optk_gcc_be_dump_initial_tree,
+  optk_gcc_be_dump_gimple,
+  #endif /* BACK_END_IS_GCC_GEN_BE */
+  optk_last             /* Must be last. */
+  };
 
 /* C_dialect is in basics.h. */
 
@@ -480,7 +493,20 @@ EXTERN_THREAD FILE
 			   TRUE. */
 EXTERN_THREAD a_const_char
 		*pp_file_name;
-			/* Name of the preprocessing output file to be
+
+EXTERN_THREAD a_const_char
+                *gcc_be_output_file_name;
+
+#if BACK_END_IS_GCC_GEN_BE
+EXTERN_THREAD int gcc_be_opt_level;
+EXTERN_THREAD a_boolean gcc_be_debug_info;
+EXTERN_THREAD a_boolean gcc_be_fPIC;
+EXTERN_THREAD a_boolean gcc_be_fPIE;
+EXTERN_THREAD a_boolean gcc_be_dump_initial_tree;
+EXTERN_THREAD a_boolean gcc_be_dump_gimple;
+#endif /* BACK_END_IS_GCC_GEN_BE */
+
+                        /* Name of the preprocessing output file to be
 			   opened, or NULL if no such file is needed or if
 			   a default file should be used. */
 EXTERN_THREAD a_boolean
