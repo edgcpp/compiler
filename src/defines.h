@@ -282,6 +282,7 @@ Flags to be set for any version that uses the C++ generating back end.
 #endif /* ifndef CP_GEN_BE_TARGET_MATCHES_SOURCE_DIALECT */
 #define BACK_END_IS_C_GEN_BE 0
 #define BACK_END_IS_CP_GEN_BE 1
+#define BACK_END_IS_LLVM_GEN_BE 0
 #define DEFAULT_EXCEPTIONS_ENABLED 0
 #define COMPILE_MULTIPLE_TRANSLATION_UNITS 0
 #define DO_IL_LOWERING 0
@@ -304,6 +305,13 @@ Flags to be set for any version that uses the C++ generating back end.
 #ifndef BACK_END_IS_CP_GEN_BE
 #define BACK_END_IS_CP_GEN_BE 0
 #endif /* ifndef BACK_END_IS_CP_GEN_BE */
+#ifndef BACK_END_IS_LLVM_GEN_BE
+#define BACK_END_IS_LLVM_GEN_BE 0
+#endif /* ifndef BACK_END_IS_LLVM_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+#undef BACK_END_IS_C_GEN_BE
+#define BACK_END_IS_C_GEN_BE 0
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 #endif /* ifdef CP_GEN_BE_VERSION */
 
 #ifdef __sun

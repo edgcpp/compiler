@@ -26891,6 +26891,7 @@ initialization is performed even if the back end isn't used.
 
 #endif /* MAKE_FRONT_END_CALLABLE */
 
+#if !BACK_END_IS_LLVM_GEN_BE
 void back_end(void)
 /*
 Simple "back end" that turns the intermediate language back into C++ or C
@@ -26917,6 +26918,7 @@ as the front end.
   /* Note that the file scope memory region is not freed here.  It will
      be freed by the front end wrapup process. */
 }  /* back_end */
+#endif /* !BACK_END_IS_LLVM_GEN_BE */
 #endif /* (else of) STANDALONE_CP_GEN_BE */
 
 #if MAKE_FRONT_END_CALLABLE

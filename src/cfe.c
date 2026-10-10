@@ -47,8 +47,11 @@ Open-sourced in September of 2026.
 #if BACK_END_IS_CP_GEN_BE
 #include "cp_gen_be.h"
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+#include "llvm_gen_be.h"
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 #if BACK_END_SHOULD_BE_CALLED && \
-    !BACK_END_IS_C_GEN_BE && !BACK_END_IS_CP_GEN_BE
+    !BACK_END_IS_C_GEN_BE && !BACK_END_IS_CP_GEN_BE && !BACK_END_IS_LLVM_GEN_BE
 /*
 Provide a declaration for a non-EDG-supplied back end (not in the "edg"
 namespace).

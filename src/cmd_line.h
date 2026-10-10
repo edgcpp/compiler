@@ -42,7 +42,7 @@ enum an_option_kind {
   optk_preprocess_only_no_line_dirs,
   optk_preprocess_only_emit_line_dirs,
   optk_keep_comments_in_pp_output,
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   optk_old_line_dirs,
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
   optk_C_dialect_pcc,
@@ -108,12 +108,18 @@ enum an_option_kind {
   optk_constexpr_diag_warning,
   optk_constexpr_diag_error,
   optk_display_error_number,
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   optk_gen_c_file_name,
   optk_msvc_target_version,
   optk_gnu_target_version,
   optk_clang_target_version,
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+  optk_gen_llvm_file_name,
+  optk_gen_llvm_bc_file_name,
+  optk_gen_obj_file_name,
+  optk_gen_asm_file_name,
+#endif /* BACK_END_IS_LLVM_GEN_BE */
   optk_create_pch,
   optk_use_pch,
   optk_pch,
@@ -461,7 +467,7 @@ EXTERN_THREAD a_boolean
 			/* If TRUE, comments should be retained in
 			   preprocessing output.  Meaningful only when
 			   generate_pp_output is TRUE. */
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 EXTERN_THREAD a_boolean
 		gen_old_style_line_dirs;
 			/* If TRUE, generate old-style line directives in
@@ -1365,13 +1371,33 @@ EXTERN_THREAD a_boolean
 			/* Should the diagnostic message output include the
 		           error number. */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 EXTERN_THREAD a_const_char
 		*gen_c_file_name;
 			/* Points to a string specifying the name of the
 			   generated C file to be created.  The front end
 			   will generate a name if this string is NULL. */
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+
+#if BACK_END_IS_LLVM_GEN_BE
+EXTERN_THREAD a_const_char
+           *gen_llvm_file_name;
+                   /* Points to a string specifying the name of the
+                      generated LLVM IR file to be created.  The front end
+                      will generate a name if this string is NULL. */
+EXTERN_THREAD a_const_char
+           *gen_llvm_bc_file_name;
+                   /* Points to a string specifying the name of the
+                      generated LLVM bitcode file to be created. */
+EXTERN_THREAD a_const_char
+           *gen_obj_file_name;
+                   /* Points to a string specifying the name of the
+                      generated object file to be created. */
+EXTERN_THREAD a_const_char
+           *gen_asm_file_name;
+                   /* Points to a string specifying the name of the
+                      generated assembly file to be created. */
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 
 EXTERN_THREAD a_boolean
 		precompiled_header_processing_required;

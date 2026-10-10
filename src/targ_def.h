@@ -3551,7 +3551,7 @@ and no target compiler has been specified, provide a default target.
 #endif /* BACK_END_IS_C_GEN_BE */
 #endif /* !defined(GCC_IS_GENERATED_CODE_TARGET) && ... */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 /*
 Make sure undefined targets are defined to FALSE.
 */
@@ -3796,7 +3796,7 @@ that are trying to detect uninitialized values, but not in general.
 #define DEFAULT_EMULATE_GNU_VALUE_INITIALIZATION_BUGS FALSE
 #endif /* DEFAULT_EMULATE_GNU_VALUE_INITIALIZATION_BUGS */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 /*
 When generating code to be compiled with the Microsoft compiler, this macro
 specifies the version of the compiler being used.  This affects, for example,
@@ -3841,7 +3841,7 @@ MSVC_IS_GENERATED_CODE_TARGET is ignored in non-Microsoft modes.)
 #endif /* MSVC_IS_GENERATED_CODE_TARGET && !MICROSOFT_DIALECT_... */
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 /*
 The C-generating and C++-generating back ends should never have to generate
 code for more than one specific target dialect (Microsoft, GNU, Sun, or Clang).

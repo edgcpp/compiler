@@ -1,0 +1,38 @@
+name: LLVM Backend Coverage
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake llvm-14-dev clang-14 lcov valgrind
+        
+    - name: Run Tests with Coverage
+      run: |
+        export CXX=clang++-14
+        export CC=clang-14
+        OUTPUT=$(./dev_tools/bin/run_coverage.sh)
+        echo "$OUTPUT"
+        if ! echo "$OUTPUT" | grep -q "100%"; then
+          echo "Coverage is below strict 100% threshold!"
+          exit 1
+        fi
+        
+    - name: Run Valgrind Tests
+      run: |
+        export CXX=clang++-14
+        export CC=clang-14
+        cmake -S . -B build/valgrind -DBUILD_TESTING=ON -DENABLE_LLVM_BACKEND=ON
+        cmake --build build/valgrind
+        cd build/valgrind
+        ctest -T memcheck

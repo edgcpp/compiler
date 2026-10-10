@@ -1155,7 +1155,7 @@ is disabled by default except when using the C generating back end.
 */
 #ifndef ONE_INSTANTIATION_PER_OBJECT
 #if DRIVER_COMPATIBILITY_VERSION >= 237
-#if BACK_END_IS_C_GEN_BE
+#if (BACK_END_IS_C_GEN_BE) && !BACK_END_IS_CP_GEN_BE
 #define ONE_INSTANTIATION_PER_OBJECT TRUE
 #else /* !BACK_END_IS_C_GEN_BE */
 #define ONE_INSTANTIATION_PER_OBJECT FALSE
@@ -1865,7 +1865,7 @@ This is intended mostly for use with the C-generating back end, and does
 not do anything very fancy.
 */
 #ifndef MINIMAL_INLINING
-#if BACK_END_IS_C_GEN_BE
+#if (BACK_END_IS_C_GEN_BE) && DO_IL_LOWERING
 #define MINIMAL_INLINING TRUE
 #else /* !BACK_END_IS_C_GEN_BE */
 #define MINIMAL_INLINING FALSE

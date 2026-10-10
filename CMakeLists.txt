@@ -37,6 +37,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
   add_compile_options("$<$<CONFIG:Debug>:-g3>")
 endif()
 
+if (EDG_LLVM_BE_COVERAGE)
+  add_compile_options("-fprofile-instr-generate" "-fcoverage-mapping")
+  add_link_options("-fprofile-instr-generate" "-fcoverage-mapping")
+endif()
+
 # Attempt to determine the best linker
 if(NOT DEFINED EDG_PREFERRED_LINKER)
   if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
@@ -49,8 +54,8 @@ if(NOT DEFINED EDG_PREFERRED_LINKER)
     endif()
 
     # Only use lld with Clang, it doesn't understand GCC's LTO format well (at
-    # least at the time of writing).
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # least at the time of writing). Do not use lld on Apple due to TAPI bugs.
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT APPLE)
       if(NOT DEFINED EDG_PREFERRED_LINKER_TRIAL)
         find_program(LLD_LINKER ld.lld NO_CACHE)
         if(NOT LLD_LINKER STREQUAL "LLD_LINKER-NOTFOUND")
@@ -145,3 +150,16 @@ include(${CMAKE_SOURCE_DIR}/cmake/wrapper.cmake)
 # Handle wrapping eccp, needed for building the C library, and general
 # development
 add_edg_wrapper_script(eccp "." ${CMAKE_SOURCE_DIR}/util/eccp.sh)
+
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
+enable_testing()
+
+# 100% Doc Coverage Check for LLVM Backend
+add_custom_target(
+    check_doc_coverage ALL
+    COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/dev_tools/check_doc_coverage.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Verifying 100% LLVM backend Doxygen coverage..."
+)

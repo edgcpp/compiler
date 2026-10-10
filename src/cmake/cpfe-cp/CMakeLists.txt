@@ -46,3 +46,7 @@ add_dependencies(cpfe-all cpfe-cp)
 
 # Expose softfloat.
 add_softfloat_to_target("${primary_front_end_target}")
+
+if(ENABLE_LLVM_BACKEND)
+  target_link_libraries(${primary_front_end_target} PRIVATE LLVMCore LLVMSupport LLVMTarget LLVMBitWriter LLVMAnalysis)
+endif()
