@@ -3315,9 +3315,14 @@ The position of the pragma ID is returned in id_position;
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
         } else if (pkdp->kind == pk_clang_riscv) {
           a_const_char *save_start_of_curr_token = start_of_curr_token;
+          a_const_char *save_curr_char_loc = curr_char_loc;
           skip_white_space();
           start_of_curr_token = save_start_of_curr_token;
           if (strncmp(curr_char_loc, "riscv", 5U) != 0) {
+            /* Restore the scan position advanced by skip_white_space() so the
+               space after "clang" is preserved when recording the pragma
+               text. */
+            curr_char_loc = save_curr_char_loc;
             pkdp = pkdp->next;
             continue;
           }  /* if */

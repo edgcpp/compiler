@@ -22952,7 +22952,6 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
     a_boolean        eval_right_to_left =
                               call_node->variant.operation.eval_right_to_left;
     work_item_result_cap(item, &result_cap);
-    up_front_cost = charge_call_cost(ips);
     /* Set up arguments, starting with "this" if applicable. */
     /* This process must happen in two phases.  First, the arguments must be
        allocated and evaluated.  Only then can we map parameter variables onto
@@ -23165,6 +23164,7 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
            should perform some more work (like mapping parameters) in case the
            intrinsic handling falls back to the provided definition (as, e.g.,
            std::construct_at does). */
+        up_front_cost = charge_call_cost(ips);
         push_new_call_frame(ips, callee, &call_node->position, result_cap);
         result = do_constexpr_intrinsic_call(
                                    ips, callee, call_node, (a_byte**)arg_ptrs,
@@ -23254,6 +23254,11 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
       p_arg_ptr += 1;
       arg_size += 1;
     }  /* for */
+    /* Charge for the call only now that the arguments have been evaluated.
+       A call nested in an argument (e.g., the "f(n-1)" in "g(f(n-1))") is
+       not nested in this call, and charging earlier would make it count
+       twice toward the call depth limit. */
+    up_front_cost = charge_call_cost(ips);
     /* Set up the call frame. */
     push_new_call_frame(ips, callee, &call_node->position, result_cap);
     /* Record what finish_call_work needs to undo all of the above. */
@@ -23499,7 +23504,6 @@ after the constructor body has been interpreted.
                          class_type, ips);
       goto done;
     }  /* if */
-    up_front_cost = charge_call_cost(ips);
     /* Set up arguments, starting with "this" if applicable. */
     /* This process must happen in two phases.  First, the arguments must be
        allocated and evaluated.  Only then can we map parameter variables onto
@@ -23656,6 +23660,9 @@ after the constructor body has been interpreted.
       memzero(result_storage+sizeof(void*),
               size_t_arg(n_class_bytes-sizeof(void*)));
     }  /* if */
+    /* Charge for the call only now that the arguments have been evaluated
+       (see process_call_work). */
+    up_front_cost = charge_call_cost(ips);
     /* Set up the call frame. */
     push_new_call_frame(ips, callee, pos, cap);
     /* Mark all the empty base class subobjects as initialized. */

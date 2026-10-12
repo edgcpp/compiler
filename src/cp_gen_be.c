@@ -9911,6 +9911,29 @@ elaborated-type-specifier, even if it would be required in some contexts.
            specified in the reference; a null template argument list
            implies an empty list, "<>", not that it was omitted. */
         arg_list = trp->variant.typeref.extra_info->template_arg_list;
+        if (arg_list != NULL) {
+          a_template_arg_ptr tap;
+          a_boolean          for_all_scopes = TRUE;
+          begin_template_arg_list_traversal_simple(arg_list, &tap);
+          while (tap != NULL) {
+            if (!template_arg_is_accessible(
+                                 tap, /*ignore_context=*/FALSE,
+                                 /*check_related_types=*/FALSE,
+                                 &for_all_scopes, /*check_visibility=*/TRUE)) {
+              /* This template argument uses a name that is inaccessible or
+                 out of scope, so the trk_template_arg_list cannot be used.
+                 Recursively put out the underlying type (which might
+                 include a trk_name_qualifier that should be preserved, so
+                 we use the direct underlying type and not
+                 skip_lexical_typerefs). */
+              gen_type_reference(trp->variant.typeref.type,
+                                 suppress_typename_kwd, is_declaration,
+                                 suppress_elab_type_spec);
+              goto done;
+            }  /* if */
+            advance_to_next_template_arg_simple(&tap);
+          }  /* while */
+        }  /* if */
         if (type_is(refp, tk_typeref) &&
             is_typeref_kind(refp, trk_name_qualifier)) {
           /* The target of the typeref specifies the qualifiers used in
@@ -10179,17 +10202,25 @@ delayed_definition:
         use_elab_type_spec = TRUE;
       }  /* if */
     } else if (!suppress_elab_type_spec) {
-      /* See if the type is a member of a class or namespace.  If so, we
-         need to push the hidden name information for that scope to see if
-         the elaborated type specifier is needed. */
-      a_scope_ptr scope = parent_scope_of(type);
-      if (scope != NULL) {
-        /* This type is a member of a class or namespace, so push the
-           hidden name information for that name context. */
-        push_name_context(scope);
+      if (is_tag_type(type) && is_declaration) {
+        /* The tag keyword is required in a declaration.  Normally the recorded
+           form of the name reference puts out the tag keyword, but that path
+           may be bypassed when the recorded template argument list cannot be
+           used. */
+        use_elab_type_spec = TRUE;
+      } else {
+        /* See if the type is a member of a class or namespace.  If so, we
+           need to push the hidden name information for that scope to see if
+           the elaborated type specifier is needed. */
+        a_scope_ptr scope = parent_scope_of(type);
+        if (scope != NULL) {
+          /* This type is a member of a class or namespace, so push the
+             hidden name information for that name context. */
+          push_name_context(scope);
+        }  /* if */
+        use_elab_type_spec = type->elaborated_type_specifier_needed;
+        if (scope != NULL) pop_name_context();
       }  /* if */
-      use_elab_type_spec = type->elaborated_type_specifier_needed;
-      if (scope != NULL) pop_name_context();
     }  /* if */
     if (!has_name_before_mangling(orig_type) &&
         synthesize_decltype_specifier(orig_type)) {
@@ -10218,6 +10249,9 @@ delayed_definition:
     /* A fundamental type. */
     form_type(type, &octl);
   }  /* if */
+#if DEFAULT_RECORD_FORM_OF_NAME_REFERENCE
+done:;
+#endif /* DEFAULT_RECORD_FORM_OF_NAME_REFERENCE */
 }  /* gen_type_reference */
 
 
@@ -15255,16 +15289,26 @@ it is a tpck_unknown_function constant and to NULL otherwise.
 }  /* is_dot_static_operation */
 
 
-static void gen_array_subscript(an_expr_node_ptr  expr)
+static void gen_array_subscript_list(an_expr_node_ptr expr)
 /*
-Render the given expression surrounded by brackets.
+Put out the given expression list surrounded by square brackets.
 */
 {
+  a_boolean first = TRUE;
+
   write_tok_ch('[');
-  gen_expr(expr, /*need_parens=*/expr_has_comma_operation(expr),
-           /*obj_expr_of_mfunc_operator=*/FALSE);
+  while (expr != NULL) {
+    if (first) {
+      first = FALSE;
+    } else {
+      write_tok_str(", ");
+    }  /* if */
+    gen_expr(expr, /*need_parens=*/expr_has_comma_operation(expr),
+             /*obj_expr_of_mfunc_operator=*/FALSE);
+    expr = expr->next;
+  }  /* if */
   write_tok_ch(']');
-}  /* gen_array_subscript */
+}  /* gen_array_subscript_list */
 
 
 static void gen_va_arg(an_expr_node_ptr expr)
@@ -17852,7 +17896,7 @@ handled through recursion.
       break;
     case eok_subscript:
       gen_member_selector_for_builtin_offsetof(arg1);
-      gen_array_subscript(arg2);
+      gen_array_subscript_list(arg2);
       break;
     case eok_cast:
     case eok_base_class_cast:
@@ -19245,7 +19289,7 @@ gen_expr that might end up generating this expr as a temporary.
                    parens_may_be_needed(generated_precedence[eok_subscript],
                                         operand_1),
                    /*obj_expr_of_mfunc_operator=*/FALSE);
-          gen_array_subscript(operand_2);
+          gen_array_subscript_list(operand_2);
           goto done_with_operation;
         case eok_cli_subscript:
           gen_expr_with_parens(operand_1);

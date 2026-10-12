@@ -127,10 +127,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     for (auto u : NoEnd()) { // expected-error {{no viable 'end' function available}}
                   ^
 
-"Test_name.c", line 180: error: cannot deduce "auto" type
-    for (auto u : NoIncr()) { // expected-error {{arithmetic on a pointer to void}}\
-              ^
-
 "Test_name.c", line 180: error: incomplete type "void" is not allowed
     for (auto u : NoIncr()) { // expected-error {{arithmetic on a pointer to void}}\
                           ^
@@ -305,4 +301,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                 ^
           detected during instantiation of "void rdar13712739::foo(const T &) [with T=int]" at line 290
 
-55 errors detected in the compilation of "Test_name.c".
+54 errors detected in the compilation of "Test_name.c".

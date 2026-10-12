@@ -3,9 +3,9 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   auto g(T) -> decltype([]() { T::invalid; } ());
                                ^
 
-"Test_name.c", line 32: error: cannot deduce "auto" type
+"Test_name.c", line 32: error: incomplete type "void" is not allowed
   auto e = g(0); // expected-error@-1{{type 'int' cannot be used prior to '::'}}
-  ^
+       ^
 
 "Test_name.c", line 44: error: template instantiation resulted in unexpected function type of "auto (lambda []()->int)" (the meaning of a name may have changed since the template declaration -- the type of the template is "auto (decltype((<expression>)))")
     foo<int>({});

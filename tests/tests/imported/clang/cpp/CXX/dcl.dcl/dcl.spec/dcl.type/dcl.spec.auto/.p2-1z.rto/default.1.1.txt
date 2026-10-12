@@ -12,8 +12,8 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     ^
           detected during instantiation of "auto d<k>() [with k=0]" at line 41
 
-"Test_name.c", line 46: error: cannot deduce "auto" type
+"Test_name.c", line 46: error: incomplete type "void" is not allowed
   auto e = []{ if constexpr (false) return 0; }(); // expected-error {{variable has incomplete type 'void'}}
-  ^
+       ^
 
 2 errors detected in the compilation of "Test_name.c".

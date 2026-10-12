@@ -15,6 +15,143 @@ initializing an aggregate in C++20 mode.  For example:
 That is now fixed.  The rule allowing explicit conversion functions in this
 context comes from Core issue 899 and applies in C++11 and later modes.  The
 failure occurred when C++20 parenthesized aggregate initialization was enabled.
+Version 7.1
+
+10/9/26  [GH #27]
+Clearer diagnostic when auto is deduced from an incomplete type
+
+Deducing a plain "auto" (including cv-qualified "auto") from void or another
+incomplete type used to be reported as a deduction failure.  The type is now
+deduced, and the usual incomplete-type diagnostic is issued, as it already
+is for decltype(auto).  For example:
+
+  void g();
+  auto x = g();    // Error: incomplete type "void" is not allowed
+  auto *p = g();   // Error: cannot deduce "auto" type
+
+Forms that are not a plain "auto", such as "auto *", still fail deduction.
+
+10/8/26  [GH #178]
+Constexpr call depth limit and calls in arguments
+
+The constexpr interpreter limits the nesting of calls to the value of the
+--max_depth_constexpr_call option by charging each call a large up-front cost
+that is refunded when the call completes.  That cost was charged before the
+arguments of the call were evaluated, so a call appearing in an argument was
+treated as nested in the call to which the argument is passed, even though
+the latter has not yet been entered.  For example, with --c++17 and
+--max_depth_constexpr_call=300:
+
+  constexpr int add(int a, int b) { return a + b; }
+  constexpr int f(int n) { return n == 0 ? 0 : add(1, f(n - 1)); }
+  static_assert(f(256) == 256, "");   // Previously not a constant.
+
+Constructor calls had the same problem.  This is now fixed.
+
+
+10/7/26  [GH #176]
+C-generating back end: always_inline attribute and inlined setjmp calls
+
+When lowering inserts a call of setjmp in a routine that has the GNU
+always_inline attribute, the attribute is removed, because a back end GCC
+compiler gives an error on an always_inline routine that calls setjmp (see
+the entry for EDGcpfe/19110 of 1/10/18).  However, the front end's inliner
+(enabled when MINIMAL_INLINING is TRUE) could also introduce such a call when
+expanding a call of an inline function whose lowered code calls setjmp inside
+the always_inline routine.  The generated C code was then rejected by GCC
+with an error indicating that the always_inline routine can never be inlined.
+For example, with --g++:
+
+  inline void *operator new(decltype(sizeof 0), void *p) noexcept {
+    return p;
+  }
+  inline void operator delete(void *, void *) noexcept {}
+  struct S { S(); };
+  struct Alloc { void construct(S *p) { ::new ((void *)p) S(); } };
+  [[gnu::always_inline]] static inline void make(Alloc &a, S *p) {
+    a.construct(p);   // Previously, GCC gave an error on the generated code.
+  }
+  void f(Alloc &a, S *p) { make(a, p); }
+
+This is now fixed: When GCC is the back end compiler, such calls are now not
+inlined into a routine that has the always_inline attribute.
+10/7/26  [GH #175]
+C-generating back end: always_inline routines defined in several objects
+
+When a routine placed in a COMDAT group also had the GNU "always_inline"
+attribute, the C-generating back end suppressed the __weak__ attribute that
+it otherwise uses to approximate the COMDAT group (see the entry for
+EDGcpfe/21186 of 5/2/19).  As a result, every object file that defined the
+routine contained a conflicting external definition of it, and linking two
+such object files failed.  For example, with --g++:
+
+  // twice.h
+  [[gnu::always_inline]] inline int twice(int x) { return x + x; }
+
+  // test.cpp
+  #include "twice.h"
+  using fn = int (*)(int);
+  fn other();
+  int main() { return (&twice == other() && twice(1) == 2) ? 0 : 1; }
+
+  // other.cpp
+  #include "twice.h"
+  using fn = int (*)(int);
+  fn other() { return &twice; }   // Linking with test.cpp previously failed.
+
+This is now fixed: When generating code targeting GCC, the C-generating back
+end now preserves the __weak__ attribute and suppresses the __always_inline__
+attribute instead.
+
+
+10/5/26  [GH #195]
+C++-generating back end: dependent multi-dimensional subscripts
+
+In cases in which template definitions are generated from the prototype
+instantiation IL, when a dependent multi-dimensional subscript operation
+appears in a template definition, the C++-generating back end previously
+emitted only the first subscript.  This is now fixed.  For example, with
+--c++23:
+
+  template<typename T> auto f(const T &t) {
+    return t[1, 2];   // Previously generated as "t[1]"
+  }
+
+
+10/5/26  [GH #191]
+C++-generating back end: inaccessible or out-of-scope template arguments
+
+In certain complex cases, the C++-generating back end could put out a
+template argument that uses an inaccessible or out-of-scope name, making
+the generated code uncompilable.  This is now fixed.
+10/6/26  [GH #203]
+Assertion failure on an empty diag_suppress pragma
+
+A diag_suppress (or similar) pragma with no arguments, or with a trailing
+comma, diagnosed the missing argument and then read past the end of the
+directive.  That, in turn, could lead to an assertion failure in
+process_immediate_pragmas.  For example:
+
+  #pragma diagnostic push
+  #pragma diag_suppress
+  int f() { int a; return a; }
+  #pragma diagnostic pop
+
+That is now fixed: The missing argument is still diagnosed, and the code after
+the pragma is parsed.
+
+
+10/5/26  [GH #213]
+White space lost in the pragma text for a "#pragma clang" directive
+
+The changes for EDGcpfe/29033 (in version 7.0) introduced a regression in
+which the text recorded in the IL for a "#pragma clang" directive other than
+"#pragma clang riscv ..." lost the white space following "clang".  For
+example, with --clang_version 230100:
+
+  #pragma clang diagnostic push
+
+was previously recorded as "clangdiagnostic push".  That is now fixed.
 
 
 10/1/26  [GH #197]

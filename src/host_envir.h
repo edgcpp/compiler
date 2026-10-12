@@ -841,7 +841,7 @@ because of some ordering problems.
 TRUE if the IA-64 ABI should be used.  This is a "modern" C++ object
 layout standard (unlike the cfront ABI), and is a good starting point
 even on architectures other than IA-64 (it's the default for a lot
-of 3.x versions of g++).  See www.codesourcery.com/cxx-abi/.
+of 3.x versions of g++).  See https://itanium-cxx-abi.github.io/cxx-abi/.
 
 This is really a target configuration macro, but it needs to be here
 because of some ordering problems.

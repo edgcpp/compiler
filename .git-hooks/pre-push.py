@@ -85,7 +85,10 @@ EXCLUDES_PATH_PREFIXES = [
   # Don't check GitHub workflow yml files; long lines are all but required.
   '.github/workflows/',
   # Don't check the error_msg.txt file.
-  'src/error_msg.txt'
+  'src/error_msg.txt',
+  # Don't check AGENT files.
+  'AGENTS.md',
+  '.agents/'
 ]
 
 def _is_excluded_file_path(path_str: str) -> bool:
