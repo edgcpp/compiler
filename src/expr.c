@@ -30704,7 +30704,8 @@ parentheses do not themselves correspond to aggregate initialization).
     clear_arg_match_summary(&arg_match);
     /* When matching the first reference parameter of a copy constructor
        called with one argument in a direct-initialization context, explicit
-       conversion functions are considered ([over.match.copy]). */
+       conversion functions are considered (N3092 [over.match.copy]/1,
+       Core issue 899). */
     prep_list_initializer(arg_list, dest_type, /*is_direct_init=*/TRUE,
                           /*check_narrowing=*/FALSE,
                           /*warning_on_narrowing=*/FALSE,
