@@ -6059,6 +6059,37 @@ that entity.
 
 #endif /* GNU_NAKED_ATTRIBUTE_ALLOWED || MICROSOFT_EXTENSIONS_ALLOWED */
 
+static a_boolean gnu_accepts_noinline_on_inline_routine(an_attribute_ptr  ap)
+/*
+ap is a GNU "noinline" attribute being applied to an inline routine.  Return
+TRUE if GCC accepts that combination silently in the context of ap. For
+example:
+
+  inline __attribute__((noinline)) int f() { return 0; }  // No warning.
+
+This idiom is used to ensure a noinline function in a header file does not
+cause linker errors. GCC in C mode will warn on this while it does not in C++
+*/
+{
+  a_boolean           result = FALSE;
+  a_decl_parse_state  *dps = (a_decl_parse_state*)ap->assoc_info;
+
+  if (!C_mode()) {
+    if (dps == NULL) {
+      /* The attribute is not being applied as part of a declaration, which
+         means it is being copied to a template instance. */
+      result = TRUE;
+    } else {
+      result = ap->on_primary_declaration &&
+               (dps->dso_flags &
+                     (DSO_INLINE | DSO_CONSTEXPR | DSO_CONSTEVAL)) != 0 &&
+               !dps->inline_on_earlier_decl;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* gnu_accepts_noinline_on_inline_routine */
+
+
 static char* apply_noinline_attr(an_attribute_ptr  ap,
                                  char              *entity,
                                  an_il_entry_kind  entity_kind)
@@ -6069,15 +6100,16 @@ and return the entity.
 {
   if (entity_kind == iek_routine) {
     a_routine_ptr  rp = (a_routine_ptr)entity;
+    a_boolean      has_always_inline = FALSE;
+#if GNU_EXTENSIONS_ALLOWED
+    has_always_inline = find_attribute(ak_always_inline,
+                                       rp->source_corresp.attributes) != NULL;
+#endif /* GNU_EXTENSIONS_ALLOWED */
     rp->never_inline = TRUE;
     if (rp->is_inline && is_gcc_attribute(ap) &&
         (!rp->source_corresp.is_class_member ||
-         rp->defined_outside_of_parent
-#if GNU_EXTENSIONS_ALLOWED
-         || find_attribute(ak_always_inline, rp->source_corresp.attributes)
-                                                                    != NULL
-#endif /* GNU_EXTENSIONS_ALLOWED */
-                                                                           )) {
+         rp->defined_outside_of_parent || has_always_inline) &&
+        (has_always_inline || !gnu_accepts_noinline_on_inline_routine(ap))) {
       pos_warning(ec_inline_gnu_noinline_conflict, &ap->position);
     }  /* if */
   } else {

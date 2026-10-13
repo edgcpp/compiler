@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=150000 --diag_error=inline_gnu_noinline_conflict --c++17 Test_name.c
+"Test_name.c", line 9: error: routine is both "inline" and "noinline"
+  inline NOINLINE int f1(int x);   // Error: not a definition.
+         ^
+
+"Test_name.c", line 10: error: routine is both "inline" and "noinline"
+  inline int f1(int x) { return x; }   // Error: inline after noinline.
+             ^
+
+"Test_name.c", line 12: error: routine is both "inline" and "noinline"
+  inline int f2(int x) NOINLINE;   // Error: not a definition.
+                       ^
+
+"Test_name.c", line 15: error: routine is both "inline" and "noinline"
+  inline int f3(int x) { return x; }   // Error: inline after noinline.
+             ^
+
+"Test_name.c", line 18: error: routine is both "inline" and "noinline"
+  inline NOINLINE int f4(int x) { return x; }   // Error: inline after
+                      ^
+
+"Test_name.c", line 22: error: routine is both "inline" and "noinline"
+  NOINLINE int f5(int x) { return x; }   // Error: noinline after inline.
+  ^
+
+"Test_name.c", line 25: error: routine is both "inline" and "noinline"
+  inline NOINLINE int f6(int x) { return x; }   // Error: noinline after
+         ^
+
+"Test_name.c", line 29: error: routine is both "inline" and "noinline"
+  constexpr NOINLINE int f7(int x) { return x; }   // Error: noinline after
+            ^
+
+"Test_name.c", line 37: error: routine is both "inline" and "noinline"
+  inline NOINLINE int A::m1(int x) { return x; }   // Error.
+         ^
+
+"Test_name.c", line 38: error: routine is both "inline" and "noinline"
+  inline NOINLINE int A::m2(int x) { return x; }   // Error (only once).
+                         ^
+
+"Test_name.c", line 39: error: routine is both "inline" and "noinline"
+  inline NOINLINE int A::m3(int x) { return x; }   // Error.
+         ^
+
+"Test_name.c", line 45: error: routine is both "inline" and "noinline"
+  template <class T> inline T B<T>::m1(T x) { return x; }   // Error.
+                                    ^
+
+"Test_name.c", line 46: error: routine is both "inline" and "noinline"
+  template <class T> NOINLINE T B<T>::m2(T x) { return x; }   // Error.
+                     ^
+
+13 errors detected in the compilation of "Test_name.c".

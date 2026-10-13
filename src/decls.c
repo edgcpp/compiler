@@ -314,6 +314,7 @@ be restored).
   dps->has_direct_initializer = FALSE;
   dps->first_decl = FALSE;
   dps->first_decl_of_predeclared_entity = FALSE;
+  dps->inline_on_earlier_decl = FALSE;
   dps->override_okay = FALSE;
   dps->initializer_is_expr_list = FALSE;
   dps->no_special_cli_class_type_check = FALSE;
@@ -10374,6 +10375,9 @@ skip_overloading:;
       is_nothrow_type(rtp)) {
     routine_ptr->never_throws = TRUE;
   }  /* if */      
+  /* Record whether the routine was inline before this declaration (used when
+     applying the GNU "noinline" attribute). */
+  dps->inline_on_earlier_decl = routine_ptr->is_inline;
   if (func_info->is_inline) set_inline_flag(routine_ptr, TRUE);
   if (use_std_c99_inlining && !idlb.is_block_extern_decl) {
     /* In C99 mode the definition_for_inlining_only flag is set only if that is
