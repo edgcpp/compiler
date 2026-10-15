@@ -27545,14 +27545,17 @@ will be an lvalue instead of the usual prvalue.
            in this context. */
         arg_match_err = TRUE;
       } else {
+        /* For this tentative match, explicit conversion functions are only
+           considered for direct initialization.  In particular, a temporary
+           created for a braced reference argument is copy-list-initialized. */
         determine_arg_match_level(operand_of_arg_list_elem(icp),
                                   (a_type_ptr)NULL,
                                   dest_type,
                                   (a_param_type_ptr)NULL,
                                   /*param_type_is_deduced=*/FALSE,
                                   try_user_conversions_in_ovl_res,
-                                  /*allow_expl_conv_funcs=*/
-                                    (conv_context &
+                                  is_direct_init &&
+                                  (conv_context &
                                       CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS) != 0,
                                   arg_match);
       }  /* if */

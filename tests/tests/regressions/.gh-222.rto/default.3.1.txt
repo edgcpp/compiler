@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=3 -tused --c++11 --clang_version 230100 Test_name.c
+"Test_name.c", line 15: error: no instance of overloaded function "f" matches the argument list
+            argument types are: ({...})
+  int i = f({A{}});  // Error: cannot copy-list-initialize the temporary int.
+          ^
+"Test_name.c", line 7: note: function "f(int *)" does not match because argument #1 does not match parameter
+  int f(int*);
+      ^
+"Test_name.c", line 6: note: function "f(int &&)" does not match because argument #1 does not match parameter
+  int f(int&&);
+      ^
+
+"Test_name.c", line 16: error: no instance of overloaded function "g" matches the argument list
+            argument types are: ({...})
+  int j = g({A{}});  // Likewise for a const lvalue reference.
+          ^
+"Test_name.c", line 9: note: function "g(int *)" does not match because argument #1 does not match parameter
+  int g(int*);
+      ^
+"Test_name.c", line 8: note: function "g(const int &)" does not match because argument #1 does not match parameter
+  int g(const int&);
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

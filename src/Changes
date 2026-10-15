@@ -1,3 +1,5 @@
+Version 7.1
+
 10/12/26  [GH #281]
 Explicit conversion functions before parenthesized aggregate initialization
 
@@ -7,15 +9,12 @@ initializing an aggregate in C++20 mode.  For example:
 
   struct D { float x, y; };
   struct S { explicit operator D() const; };
-  D f(S s) {
-    D d(s);       // Previously an error in C++20 mode.  Now okay.
-    return D(s);  // Likewise.
-  }
+  D d(S{});  // Previously an error in C++20 mode.  Now okay.
 
 That is now fixed.  The rule allowing explicit conversion functions in this
 context comes from Core issue 899 and applies in C++11 and later modes.  The
 failure occurred when C++20 parenthesized aggregate initialization was enabled.
-Version 7.1
+
 
 10/9/26  [GH #27]
 Clearer diagnostic when auto is deduced from an incomplete type
