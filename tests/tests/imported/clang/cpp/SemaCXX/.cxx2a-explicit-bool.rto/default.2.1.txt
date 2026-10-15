@@ -476,14 +476,6 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   Y y2 = z; // expected-error {{no viable conversion}}
          ^
 
-"Test_name.c", line 530: error: too many initializer values
-  Y y2b(z);
-        ^
-
-"Test_name.c", line 532: error: too many initializer values
-  Y y4 = Y(z);
-           ^
-
 "Test_name.c", line 540: error: no suitable user-defined conversion from "conversion3::Z<true>" to "const conversion3::Y" exists
   const Y& y6 = z; // expected-error {{no viable conversion}}
                 ^
@@ -683,4 +675,4 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     explicit(ptr) S(long);             // expected-error {{conversion from 'const int *' to 'bool' is not allowed in a converted constant expression}}
              ^
 
-121 errors detected in the compilation of "Test_name.c".
+119 errors detected in the compilation of "Test_name.c".

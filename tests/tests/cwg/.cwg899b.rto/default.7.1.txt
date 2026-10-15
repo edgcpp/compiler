@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=7 -tused --ms_c++20 --microsoft_version 1950 Test_name.c
+"Test_name.c", line 13: error: no suitable conversion function from "A" to "int" exists
+    int i = a;  // Error: copy-initialization.
+            ^
+
+"Test_name.c", line 14: error: no suitable user-defined conversion from "A" to "C" exists
+    C c = a;    // Error: copy-initialization.
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

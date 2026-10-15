@@ -23,14 +23,6 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       Y y2 = z; // expected-error {{no viable conversion from 'Z' to 'Y'}}
              ^
 
-"Test_name.c", line 90: error: too many initializer values
-      Y y2b(z);
-            ^
-
-"Test_name.c", line 92: error: too many initializer values
-      Y y4 = Y(z);
-               ^
-
 "Test_name.c", line 100: error: no suitable user-defined conversion from "Z" to "const Y" exists
       const Y& y6 = z; // expected-error {{no viable conversion from 'Z' to 'const Y'}}
                     ^
@@ -171,4 +163,4 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
         switch(EC){}
                ^
 
-31 errors detected in the compilation of "Test_name.c".
+29 errors detected in the compilation of "Test_name.c".
