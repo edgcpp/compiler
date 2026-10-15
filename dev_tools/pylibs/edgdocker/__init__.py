@@ -51,7 +51,8 @@ BUILDABLE_IMAGES = (
   'native-tools',
   'legacy-native-tools',
   'softfloat',
-  'ci-runner'
+  'ci-runner',
+  'acknowledg-forge'
 )
 
 # The registry namespace EDG images are published under (the GitHub

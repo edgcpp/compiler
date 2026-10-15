@@ -14,3 +14,5 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["acknowledg_server*", "edgacknowledg*"]
+# acknowledg-forge (a separate service) isn't part of the server.
+exclude = ["edgacknowledg.forge*"]

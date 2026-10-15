@@ -7,7 +7,6 @@ import asyncio
 import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -173,15 +172,6 @@ def _is_test_file(file_path: Path, test_file_extensions: Set[str]) -> bool:
 
   return True
 
-def _process_env_output(env_output: str) -> Dict[str, str]:
-  # Translate the output into a python friend mapping of environment variable
-  # values
-  suite_env = {}
-  for line in env_output.split('\n'):
-    parts = line.split('=')
-    suite_env[parts[0]] = '='.join(parts[1:])
-  return suite_env
-
 def _add_run_my_tests_env_vars(suite_env: Dict[str, str]) -> None:
   # Fallback to LC_ALL=C explicitly, as some tests don't work without this.
   if 'LC_ALL' not in suite_env:
@@ -193,19 +183,14 @@ def _add_run_my_tests_env_vars(suite_env: Dict[str, str]) -> None:
     suite_env['CDISP'] = os.path.dirname(suite_env['CPFE'])
 
 def load_test_suite_env(test_suite_dir: Path) -> Dict[str, str]:
-  env_file = test_suite_dir / '.run_test_env'
+  '''Return the environment tests in the given suite run with.
 
-  # Source the .run_my_test_environment file and dump the output
-  if env_file.exists():
-    output = subprocess.check_output(
-      ['bash', '-c', f"source {env_file} && env"]
-    ).decode('utf-8')
-    # Get a python dictionary representation of the environment
-    suite_env = _process_env_output(output)
-  else:
-    # If no environment file is provided for the suite, inherit
-    # reasonable defaults.
-    suite_env = os.environ.copy()
+  Suites used to be able to customize this with a `.run_test_env` shell
+  script, but sourcing it executes arbitrary code from the test tree (a
+  problem when serving untrusted pull requests), and no suite uses one, so
+  the environment is now always inherited.
+  '''
+  suite_env = os.environ.copy()
 
   if 'RUN_TEST_DEFAULT_CONFIG' not in suite_env:
     suite_env['RUN_TEST_DEFAULT_CONFIG'] = runtest.get_default_config_name()
@@ -435,12 +420,13 @@ def copy_raw_test_files(test_path: Path, dest_dir: Path) -> Path:
     )
   copy_assoc_files_to(test_path, dest_dir)
 
-  # Pull in the recorindgs.
+  # Pull in the recordings (a test without output may have none).
   test_recordings = runtest.get_assoc_recordings_path(test_path)
-  _copytree_exist_ok(
-    test_recordings,
-    dest_dir / test_recordings.name
-  )
+  if test_recordings.is_dir():
+    _copytree_exist_ok(
+      test_recordings,
+      dest_dir / test_recordings.name
+    )
 
   # Pull in the test file.
   new_test_file_path = dest_dir / test_path.name

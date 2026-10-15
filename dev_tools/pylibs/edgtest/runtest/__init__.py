@@ -27,7 +27,7 @@ from enum import IntEnum
 from collections import OrderedDict
 from pathlib import Path
 from typing import (
-  Any, Callable, Dict, Iterator, List, Mapping, NamedTuple, Optional,
+  Any, Callable, Dict, IO, Iterator, List, Mapping, NamedTuple, Optional,
   Pattern, Set, Tuple, cast
 )
 
@@ -1281,12 +1281,35 @@ def finalize_rt_tar(contents: RtTarContents,
   }
   contents.pack(metadata, dest_path)
 
+class RunTestOutputLinkError(ValueError):
+  '''Raised when a run artifact member that is read is a link.'''
+
+def _extract_tar_member(tar: tarfile.TarFile,
+                        member_name: str) -> IO[bytes]:
+  '''Open a run artifact member, which must be a regular file.
+
+  tarfile resolves a symlink or hard link member to another member of the
+  archive (never the file system), but links have no place in a run
+  artifact, may alias members, and can form cycles that exhaust the stack;
+  so they're refused (RunTestOutputLinkError) rather than followed.
+  '''
+  try:
+    member = tar.getmember(member_name)
+  except KeyError:
+    raise FileNotFoundError(member_name) from None
+  if member.issym() or member.islnk():
+    raise RunTestOutputLinkError(
+      f"{member_name} is a link to {member.linkname}"
+    )
+  extracted = tar.extractfile(member)
+  if extracted is None:
+    raise FileNotFoundError(member_name)
+  return extracted
+
 def _read_tar_lines_member(tar: tarfile.TarFile,
                            member_name: str) -> List[str]:
   '''Read a tar member as a list of lines (keepends=True).'''
-  extracted = tar.extractfile(member_name)
-  if extracted is None:
-    raise FileNotFoundError(member_name)
+  extracted = _extract_tar_member(tar, member_name)
   with io.TextIOWrapper(
     extracted,
     encoding = 'utf-8',
@@ -1329,9 +1352,7 @@ class RunTestOutput:
   @property
   def metadata(self) -> Dict[str, Any]:
     if self._metadata is None:
-      extracted = self._require_tar().extractfile('metadata.json')
-      if extracted is None:
-        raise FileNotFoundError('metadata.json')
+      extracted = _extract_tar_member(self._require_tar(), 'metadata.json')
       with io.TextIOWrapper(
         extracted,
         encoding = 'utf-8',
@@ -1360,9 +1381,7 @@ class RunTestOutput:
                              dest: Path) -> None:
     '''Stream cases/<N>/<C>/output.txt to dest.'''
     member = f"cases/{case_number}/{command_number}/output.txt"
-    extracted = self._require_tar().extractfile(member)
-    if extracted is None:
-      raise FileNotFoundError(member)
+    extracted = _extract_tar_member(self._require_tar(), member)
     with open(dest, 'wb') as out_handle:
       shutil.copyfileobj(extracted, out_handle)
 
@@ -1385,9 +1404,7 @@ class RunTestOutput:
   def extract_case_matches(self, case_number: int, dest: Path) -> None:
     '''Stream cases/<N>/matches/output.txt to dest.'''
     member = f"cases/{case_number}/matches/output.txt"
-    extracted = self._require_tar().extractfile(member)
-    if extracted is None:
-      raise FileNotFoundError(member)
+    extracted = _extract_tar_member(self._require_tar(), member)
     with open(dest, 'wb') as out_handle:
       shutil.copyfileobj(extracted, out_handle)
 

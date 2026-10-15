@@ -16,7 +16,8 @@
 # Host, paths, and credentials come from secrets in the `acknowledg`
 # environment (see dev_tools/services/acknowledg/README.md). The SSH setup
 # writes them into a `Host acknowledg` alias so they never appear on a command
-# line. The public API URL is the ACKNOWLEDG_API_HOST repository variable.
+# line. The public API URL is the ACKNOWLEDG_API_HOST repository variable,
+# shared with acknowledg-forge-deploy.yml.
 
 name: AcknowlEDG Deploy
 
@@ -27,6 +28,8 @@ on:
     paths:
       - dev_tools/services/acknowledg/**
       - dev_tools/pylibs/edgacknowledg/**
+      # acknowledg-forge is a separate service.
+      - '!dev_tools/pylibs/edgacknowledg/forge/**'
       - .github/workflows/acknowledg-deploy.yml
   workflow_dispatch:
 

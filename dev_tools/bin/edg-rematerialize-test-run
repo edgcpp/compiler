@@ -122,6 +122,9 @@ def collect_affected_tests(test_home: Path,
 
   tests_dir = test_home / 'tests'
   expectations_dir = test_home / 'expectations'
+  # The test files themselves and the default recordings are what the default
+  # configuration uses.
+  default_config = edgtest.runtest.get_default_config_name()
 
   for diff_file in diff_files:
     file_path = test_home.parent.joinpath(PurePosixPath(diff_file.file_name))
@@ -130,10 +133,12 @@ def collect_affected_tests(test_home: Path,
       # A file in a test suite.
       orig_file_path = file_path
 
-      file_extensions = ''.join(file_path.suffixes)
+      # The extensions are listed without their leading '.'.
+      file_extensions = ''.join(file_path.suffixes)[1:]
       if file_extensions in edgtest.DEFAULT_TEST_EXTENSIONS:
         # A test file itself.
         result.tests.add(file_path)
+        result.configs.add(default_config)
         continue
 
       test_file_found = False
@@ -154,8 +159,11 @@ def collect_affected_tests(test_home: Path,
               )
               if candidate_test_file.exists():
                 result.tests.add(candidate_test_file)
-                if orig_file_path.stem != 'default':
-                  result.configs.add(orig_file_path.stem)
+                # Recordings are named <config>.<case>.<command>.txt.
+                recording_config = orig_file_path.name.split('.')[0]
+                if recording_config == 'default':
+                  recording_config = default_config
+                result.configs.add(recording_config)
                 break
             test_file_found = True
           else:
@@ -195,12 +203,16 @@ async def patch_file(output_dir: Path,
                      input_dir: Path,
                      relative_path: PurePosixPath,
                      diff_file_path: Path) -> bool:
+  output_path = output_dir / relative_path
+  # A new file (e.g. a new test's recording) has no copied directory to be
+  # written into.
+  output_path.parent.mkdir(parents = True, exist_ok = True)
   patch_proc = await asyncio.create_subprocess_exec(
     str(TOOL_PATH_PATCH),
-    str(input_dir.joinpath(relative_path)),
+    str(input_dir / relative_path),
     str(diff_file_path),
     '-o',
-    str(output_dir.joinpath(relative_path)),
+    str(output_path),
     stdout = asyncio.subprocess.DEVNULL
   )
   await patch_proc.wait()
@@ -236,6 +248,9 @@ async def materialize_tests(loop: asyncio.AbstractEventLoop,
 
   # First create a copy of all relevant tests.
   for test in test_change_state.tests:
+    if not test.exists():
+      # A new test; the patch creates all of its files.
+      continue
     relative_dir = test.parent.relative_to(tests_dir)
     edgtest.copy_raw_test_files(test, output_dir.joinpath(relative_dir))
 
@@ -375,7 +390,7 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
 
       command_metadata = []
       matches_metadata = None
-      any_mismatch = False
+      comparisons: List[edgtest.exec.OutputComparison] = []
 
       for command_number in range(1, num_commands + 1):
         cmd_dir = case_dir / str(command_number)
@@ -427,8 +442,7 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
             'change.diff'
           )
 
-        if output_cmp_result != edgtest.exec.OutputComparison.EQUAL:
-          any_mismatch = True
+        comparisons.append(output_cmp_result)
 
         command_metadata.append({
           'command': command_str,
@@ -471,7 +485,14 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
             'matches',
             'change.diff'
           )
-          any_mismatch = True
+
+        # As edgy compares a case's matches (process_matches_mismatch).
+        if old_matches is None:
+          comparisons.append(edgtest.exec.OutputComparison.PREV_MISSING)
+        elif matches_diff_hash is None:
+          comparisons.append(edgtest.exec.OutputComparison.EQUAL)
+        else:
+          comparisons.append(edgtest.exec.OutputComparison.MISMATCH)
 
         matches_metadata = {'diff_hash': matches_diff_hash}
 
@@ -482,9 +503,13 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
       old_status = get_status_for_test_key(old_expectations, key_str)
       new_status = get_status_for_test_key(new_expectations, key_str)
 
-      # Add the mismatch string if needed.
-      if any_mismatch:
+      # Add the output comparison string as edgy does (e.g. a new test has no
+      # previous output).
+      case_comparison = edgtest.exec.aggregate_output_comparison(comparisons)
+      if case_comparison == edgtest.exec.OutputComparison.MISMATCH:
         new_status = f"{new_status}--OUTPUT MISMATCH"
+      elif case_comparison == edgtest.exec.OutputComparison.PREV_MISSING:
+        new_status = f"{new_status}--NO PREVIOUS OUTPUT"
 
       case_entry = {
         'status': {
@@ -625,6 +650,7 @@ async def simulate_config_testing(
         new_parent_dir
       )
 
+  tests = sorted(tests)
   for test_path in tests:
     rel_test_path_str = str(
       test_path.relative_to(test_home / 'tests')
@@ -646,6 +672,19 @@ async def simulate_config_testing(
     for test_status_lines in tests_status_lines:
       for status_line in test_status_lines:
         file_handle.write(status_line)
+
+  # As edgy does, list the tests whose status changed (by their path relative
+  # to the tests directory, which is where their .rt.tar files are in the
+  # configuration's run directory) so edgy-review and others can find them.
+  changed_tests = [
+    test_path.relative_to(test_home / 'tests').as_posix()
+    for test_path, test_status_lines in zip(tests, tests_status_lines)
+    if len(test_status_lines) > 0
+  ]
+  if len(changed_tests) > 0:
+    with open(config_run_dir / 'changes.elist', 'w') as file_handle:
+      for changed_test in changed_tests:
+        file_handle.write(f"{changed_test}\n")
 
 async def simulate_testing(loop: asyncio.AbstractEventLoop,
                            test_home: Path, new_run_dir: Path,

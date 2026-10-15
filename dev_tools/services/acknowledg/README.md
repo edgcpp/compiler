@@ -18,8 +18,8 @@ under `/review/<UUID>/tests/<slug>` or `/review/<UUID>/benchmarks/<slug>`
 and replacing non-alphanumeric runs with dashes). The review list still only reports type presence
 (Test / Benchmark / both), not every section name. List titles default to
 `"Review opened by {user}"` and can be overridden with a fully custom
-`--name` (plain text; other providers may send rich names with links, see
-PROTOCOL.md). Each review entry includes a client-supplied start time (captured
+`--name` (plain text; providers such as acknowledg-forge may send rich names
+with links, see PROTOCOL.md). Each review entry includes a client-supplied start time (captured
 when the CLI starts, so reconnects keep the original time) shown in the
 viewer's local timezone.
 
@@ -180,9 +180,10 @@ The workflow reads these secrets from the `acknowledg` GitHub environment:
 | `ACKNOWLEDG_SERVICE_NAME` | systemd unit running the server (e.g. `acknowledg-api`) |
 
 It also reads the public API URL from the `ACKNOWLEDG_API_HOST` **repository
-variable** (not a secret: it's public). The URL is baked into the client as
-`VITE_EDG_ACKNOWLEDG_API_HOST` and must include the scheme, e.g.
-`wss://acknowledg-api.example.com`.
+variable** (not a secret: it's public, and it's shared with the
+[acknowledg-forge](../acknowledg-forge/README.md) deploy). The URL is baked
+into the client as `VITE_EDG_ACKNOWLEDG_API_HOST` and must include the scheme,
+e.g. `wss://acknowledg-api.example.com`.
 
 The host must already be set up; the workflow does not manage the unit file:
 

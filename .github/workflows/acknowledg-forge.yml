@@ -1,0 +1,82 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Typecheck and test acknowledg-forge: the shared edgacknowledg.forge
+# package, the GitHub and GitLab services, and their integration with the
+# AcknowlEDG client library and server.
+
+name: acknowledg-forge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - dev_tools/pylibs/edgacknowledg/**
+      - dev_tools/pylibs/edgtest/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/services/acknowledg/server/**
+      - dev_tools/services/acknowledg-forge/**
+      - dev_tools/docker/acknowledg-forge/**
+      - .github/workflows/acknowledg-forge.yml
+  pull_request:
+    paths:
+      - dev_tools/pylibs/edgacknowledg/**
+      - dev_tools/pylibs/edgtest/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/services/acknowledg/server/**
+      - dev_tools/services/acknowledg-forge/**
+      - dev_tools/docker/acknowledg-forge/**
+      - .github/workflows/acknowledg-forge.yml
+  # Also run by acknowledg-forge-deploy before publishing an image.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Typecheck and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Typecheck
+        run: dev_tools/services/acknowledg-forge/typecheck.sh
+
+      - name: Test
+        run: dev_tools/services/acknowledg-forge/tests/run-tests.sh -v
+
+  containers:
+    # The deployment itself (compose.yaml): what each container sees and
+    # can reach, on the runner's stock Docker and AppArmor (nothing to set
+    # up on the host, which is the point), on the Ubuntu release deployments
+    # run on.
+    name: Containers
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Build image
+        env:
+          PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+        run: dev_tools/bin/build-edg-env --quiet acknowledg-forge
+
+      - name: Test
+        env:
+          ACKNOWLEDG_FORGE_TEST_IMAGE: ghcr.io/edgcpp/acknowledg-forge:latest
+        run: |
+          dev_tools/services/acknowledg-forge/tests/run-tests.sh -v -rs \
+            test_containers.py
