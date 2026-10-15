@@ -3,7 +3,7 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-FROM edgcpp/build-base:latest
+FROM ghcr.io/edgcpp/build-base:latest
 
 RUN mkdir /edg/workspace && \
     mkdir /edg/opt-software && \

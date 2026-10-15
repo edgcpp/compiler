@@ -20,12 +20,12 @@ RUN /edg/setup-scripts/run-all.sh && rm -rf /edg/setup-scripts/**
 RUN ln -sf /usr/bin/dash /usr/bin/sh
 
 # Install native tools.
-COPY --from=edgcpp/native-tools:latest \
+COPY --from=ghcr.io/edgcpp/native-tools:latest \
   /edg/native-tools \
   /edg/native-tools
 
 # Install softfloat tools.
-COPY --from=edgcpp/softfloat:latest \
+COPY --from=ghcr.io/edgcpp/softfloat:latest \
   /edg/softfloat \
   /edg/softfloat
 
