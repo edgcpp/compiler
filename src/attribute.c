@@ -1096,7 +1096,9 @@ namespace.  If non-zero, length represents the number of characters in name
     length = strlen(name);
   }  /* if */
   for (np = valid_attribute_namespaces; *np != NULL; np++) {
-    if (strncmp(*np, name, length) == 0) {
+    /* The whole name must match: a name that is only a prefix of a known
+       namespace (e.g., "cl" or "g") is not recognized. */
+    if (strncmp(*np, name, length) == 0 && (*np)[length] == '\0') {
       result = TRUE;
       break;
     }  /* if */

@@ -1,5 +1,16 @@
 Version 7.1
 
+10/15/26  [GH #305]
+Attribute namespaces that only start like a known one are not recognized
+
+An attribute namespace was treated as known if it was merely the first part
+of the name of a known namespace, so a namespace such as "cl", "g" or "ms"
+was accepted as if it were "clang", "gnu" or "msvc".  The whole name must
+now match.  For example:
+
+  [[cl::x]] int a;    // Warning: attribute namespace "cl" is unrecognized
+  [[g::y]] int b;     // Previously, the namespace was accepted.
+
 10/9/26  [GH #27]
 Clearer diagnostic when auto is deduced from an incomplete type
 
