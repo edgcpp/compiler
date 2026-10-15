@@ -19,6 +19,7 @@ from typing import (
   Dict,
   List,
   Optional,
+  Sequence,
 )
 
 from edgacknowledg import (
@@ -144,9 +145,17 @@ def collect_all_benchmarks(run_dir: Path,
   return benchmark_metadatas
 
 
-def get_cg_annotate_output(baseline_path: Path, run_path: Path) -> str:
+def get_cg_annotate_output(baseline_path: Path,
+                           run_path: Path,
+                           *,
+                           command_prefix: Sequence[str] = ()) -> str:
+  '''Return the ``cg_annotate`` diff of ``run_path`` against
+  ``baseline_path``, with ``command_prefix`` (e.g. a sandbox launcher)
+  prepended to the command.
+  '''
   proc = subprocess.run(
     [
+      *command_prefix,
       str(TOOL_PATH_CG_ANNOTATE),
       '--no-annotate',
       '--diff',
@@ -204,13 +213,16 @@ class BenchReviewSession:
                baseline_dir: Path,
                tag: str,
                threshold_slow: float = DEFAULT_THRESHOLD_SLOW,
-               threshold_fast: float = DEFAULT_THRESHOLD_FAST) -> None:
+               threshold_fast: float = DEFAULT_THRESHOLD_FAST,
+               command_prefix: Sequence[str] = ()) -> None:
     self.bench_home = bench_home
     self.run_dir = run_dir
     self.baseline_dir = baseline_dir
     self.tag = tag
     self.threshold_slow = threshold_slow
     self.threshold_fast = threshold_fast
+    # Prepended to external commands run on the benchmark files.
+    self.command_prefix = tuple(command_prefix)
     self.statuses_payload: Dict[str, Any] = {}
     self.metadata_by_id: Dict[str, BenchmarkMetadata] = {}
     self.refresh_statuses()
@@ -290,7 +302,10 @@ async def run_bench_source_handler(channel: Channel,
 
       async def annotate_job() -> str:
         return await edgutil.async_to_thread(
-          get_cg_annotate_output, baseline_path, run_path
+          get_cg_annotate_output,
+          baseline_path,
+          run_path,
+          command_prefix = session.command_prefix
         )
 
       annotate_text = await worker_pool.submit(annotate_job)

@@ -51,7 +51,8 @@ BUILDABLE_IMAGES = (
   'native-tools',
   'legacy-native-tools',
   'softfloat',
-  'ci-runner'
+  'ci-runner',
+  'acknowledg-forge'
 )
 
 def get_docker_file_dir(image_name: str) -> Path:

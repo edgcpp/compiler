@@ -1,0 +1,61 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Typecheck and test acknowledg-forge: the shared edgacknowledg.forge
+# package, the GitHub and GitLab services, and their integration with the
+# AcknowlEDG client library and server.
+
+name: acknowledg-forge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - dev_tools/pylibs/edgacknowledg/**
+      - dev_tools/pylibs/edgtest/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/services/acknowledg/server/**
+      - dev_tools/services/acknowledg-forge/**
+      - .github/workflows/acknowledg-forge.yml
+  pull_request:
+    paths:
+      - dev_tools/pylibs/edgacknowledg/**
+      - dev_tools/pylibs/edgtest/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/services/acknowledg/server/**
+      - dev_tools/services/acknowledg-forge/**
+      - .github/workflows/acknowledg-forge.yml
+  # Also run by acknowledg-forge-deploy before publishing an image.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Typecheck and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
+
+      # The sandbox tests need bubblewrap, which needs unprivileged user
+      # namespaces (restricted by AppArmor on Ubuntu 24.04 runners).
+      - name: Install bubblewrap
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Typecheck
+        run: dev_tools/services/acknowledg-forge/typecheck.sh
+
+      - name: Test
+        run: dev_tools/services/acknowledg-forge/tests/run-tests.sh -v

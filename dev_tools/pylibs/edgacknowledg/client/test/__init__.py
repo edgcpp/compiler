@@ -20,6 +20,7 @@ from typing import (
   Dict,
   List,
   Optional,
+  Sequence,
   Tuple,
 )
 
@@ -182,8 +183,14 @@ def _test_if_any_matches_exists(recordings_dir: Path,
 async def run_test_source_handler(channel: Channel,
                                   test_home: Path,
                                   relative_run_dir: Path,
-                                  changes_files: Dict[str, Path]) -> None:
-  '''Handle one test source request on ``channel``.'''
+                                  changes_files: Dict[str, Path],
+                                  *,
+                                  command_prefix: Sequence[str] = ()) -> None:
+  '''Handle one test source request on ``channel``.
+
+  ``command_prefix`` is prepended to external commands run on files from the
+  test tree (e.g. a sandbox launcher when the tree is untrusted).
+  '''
   request_tag, request_value, _section = decode_response(await channel.recv())
   is_multi_config_run = len(changes_files) > 1
 
@@ -534,7 +541,7 @@ async def run_test_source_handler(channel: Channel,
             }
           ))
         elif path_to_show.suffix == '.ifc':
-          cmd_args = ['ifc-dump', str(path_to_show)]
+          cmd_args = [*command_prefix, 'ifc-dump', str(path_to_show)]
 
           # Execute the ifc-dump command.
           proc = await asyncio.create_subprocess_exec(
@@ -589,11 +596,14 @@ class TestSourceHandler:
                section_name: str,
                slug: str,
                test_home: Path,
-               root: Path) -> None:
+               root: Path,
+               *,
+               command_prefix: Sequence[str] = ()) -> None:
     self._section_name = section_name
     self._slug = slug
     self._test_home = test_home
     self._root = root
+    self._command_prefix = tuple(command_prefix)
     self._changes_files = edgtest.find_changes_files(root)
     self._relative_run_dir = root.relative_to(test_home)
 
@@ -615,7 +625,8 @@ class TestSourceHandler:
       channel,
       self._test_home,
       self._relative_run_dir,
-      self._changes_files
+      self._changes_files,
+      command_prefix = self._command_prefix
     )
 
 async def handle_test_edit_request(
