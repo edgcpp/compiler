@@ -1,13 +1,13 @@
 //type:fp
 //options:--c++17
-//remark:[GH #?] Attribute namespaces that only start like a known one
+//remark:[GH #305] Attribute namespaces that only start like a known one
 //match_regex:attribute namespace "cl" is unrecognized
 //match_regex:attribute namespace "gn" is unrecognized
 //match_regex:attribute namespace "g" is unrecognized
 //match_regex:attribute namespace "ms" is unrecognized
 //match_regex:attribute namespace "_Cl" is unrecognized
 //match_regex:\A(?![\s\S]*attribute namespace "(gnu|__gnu__|clang|_Clang|msvc)" is unrecognized)
-// 10/14/26  [GH #?]
+// 10/14/26  [GH #305]
 //
 // A namespace that is only a prefix of a namespace known to the front end
 // ("clang", "gnu", "msvc", "_Clang") is not recognized: it gets the
