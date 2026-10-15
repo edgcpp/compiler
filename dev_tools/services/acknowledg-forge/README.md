@@ -10,7 +10,7 @@ these sections, when they apply:
 | --- | --- |
 | Test - Changes | The pull request's expectation and recording diffs, recreated with `edg-rematerialize-test-run` on the merge-base |
 | Test - Failures | Unexpected differences from the latest CI run for the pull request's head (the `test-results-all` artifact) |
-| Bench - C, Bench - C++ | The CI cachegrind results (the `bench-results` artifact), compared with the checked-in `benchmarks/baselines/project/release-{c,cpp}` |
+| Bench - C, Bench - C++ | The CI cachegrind results (a `bench-results` artifact, once CI produces one), compared with the checked-in `benchmarks/baselines/project/release-{c,cpp}` |
 
 Optionally, a service account comments on the pull request whenever what's
 served changes in a meaningful way: once the pull request has *settled* (CI for
@@ -133,8 +133,10 @@ from the environment variable shown as a fallback.
   `https://<host>/webhook`, typically behind a reverse proxy to
   `ACKNOWLEDG_FORGE_WEBHOOK_BIND`.
 - **CI:** set `ACKNOWLEDG_FORGE_CI_WORKFLOW=build-and-test-ci.yml`. Its
-  `publish-test-results` and `bench` jobs upload the artifacts, including the
-  `ci-meta.json` that records the tested (merge) commit.
+  `publish-test-results` job uploads `test-results-all`, including the
+  `ci-meta.json` that records the tested (merge) commit. Benchmark results
+  need a CI job uploading `bench-results` (`c/` and `cpp/` runs plus
+  `ci-meta.json`), which is a separate change.
 
 ### GitLab
 
@@ -164,7 +166,7 @@ public. It contains no credentials or deployment configuration, and the build
 job has no access to the deployment's secrets.
 
 To build locally, run `build-edg-env acknowledg-forge`; the result is tagged
-`docker.io/edgcpp/acknowledg-forge:latest`.
+`ghcr.io/edgcpp/acknowledg-forge:latest`.
 
 ### Host setup (once)
 
@@ -467,8 +469,8 @@ add a service directory like `github/`, whose `__main__` passes a
 - On GitHub, pull request CI tests the merge commit. Failures and benchmarks
   are served against that commit when it can still be fetched, and against the
   pull request's head otherwise.
-- The `ci-runner` image doesn't include valgrind yet, so the CI `bench` job
-  installs it at run time.
+- Until CI uploads a `bench-results` artifact (a separate change), no bench
+  sections are served.
 - The tooling is frozen into the image, so a change to the test-home or
   expectations layout that `edg-rematerialize-test-run` must follow needs a
   new image.

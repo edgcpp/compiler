@@ -15,14 +15,9 @@
 #   build-gcc ─────────────┘                ├──► publish (on failure)
 #   prepare ───────────────┬──► test-i686 ──┘
 #   build-i686 ────────────┘
-#   bench (pull requests only; independent)
 #
 # A shared run timestamp keeps results under the same tests/runs/<timestamp>/
 # tree; the publish job republishes failure artifacts from all test legs.
-# The bench job runs the cachegrind benchmarks the way
-# `edg-docker-bench --posture=release` does and uploads them as
-# bench-results (c/ and cpp/ runs, compared by acknowledg-forge against the
-# checked-in benchmarks/baselines/project/release-{c,cpp}).
 
 name: Build & Test CI
 
@@ -308,80 +303,4 @@ jobs:
           name: test-results-all
           path: aggregated-test-results/
           if-no-files-found: warn
-          retention-days: 14
-
-  bench:
-    name: Benchmark linux-gcc-release
-    if: ${{ github.event_name == 'pull_request' }}
-    # Benchmark infrastructure problems shouldn't fail a pull request's CI.
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    container:
-      image: docker.io/edgcpp/ci-runner@sha256:73be12d128b8507f5feb9e73c25f48f14e6b041940ef165bce5fda8efe2b605c
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      # The ci-runner image doesn't ship valgrind yet (the dev-env image
-      # does); container job steps run as root, so install it here.
-      - name: Install valgrind
-        shell: bash
-        run: dnf install -y --setopt=install_weak_deps=False valgrind
-
-      - name: Configure linux-gcc-release
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --preset linux-gcc-release
-
-      - name: Build linux-gcc-release
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --build build/gcc-release --target cpfe cpfe-cp
-
-      - name: Run benchmarks
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-          EDG_BENCH_RUNS_KEPT: '0'
-        run: |
-          # Use the pull request's own benchmark tooling.
-          export PATH="${GITHUB_WORKSPACE}/dev_tools/bin:${PATH}"
-          export PYTHONPATH="${GITHUB_WORKSPACE}/dev_tools/pylibs"
-          mkdir -p bench-results
-          for run in c:bin/cpfe cpp:bin/cpfe-cp; do
-            name="${run%%:*}"
-            binary="${run#*:}"
-            (cd build/gcc-release && source environment.sh &&
-             edg-bench "${binary}")
-            latest="$(ls -1d benchmarks/runs/*/ | sort | tail -n 1)"
-            mv "${latest}" "bench-results/${name}"
-          done
-
-      - name: Record CI metadata
-        env:
-          TESTED_SHA: ${{ github.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          RUN_ID: ${{ github.run_id }}
-          RUN_ATTEMPT: ${{ github.run_attempt }}
-        run: |
-          python3 - > bench-results/ci-meta.json <<'EOF'
-          import json, os
-          print(json.dumps({
-            'tested_sha': os.environ['TESTED_SHA'],
-            'head_sha': os.environ['HEAD_SHA'],
-            'run_id': int(os.environ['RUN_ID']),
-            'run_attempt': int(os.environ['RUN_ATTEMPT']),
-          }, indent = 2))
-          EOF
-
-      - name: Upload benchmark results
-        uses: actions/upload-artifact@v7
-        with:
-          name: bench-results
-          path: bench-results/
-          if-no-files-found: error
           retention-days: 14

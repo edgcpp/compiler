@@ -50,8 +50,9 @@ class ForgeServiceConfig:
   home: Path
   database_url: str
   repositories: tuple[str, ...]
-  # Only pull requests targeting these branches are served, so tooling only
-  # ever runs from trusted, main-line commits.
+  # Only pull requests targeting these branches are served (e.g. not ones
+  # into feature branches). A pull request retargeted away from them has its
+  # review removed, as if it were closed.
   base_branches: frozenset[str]
   # Forge API base URL override (e.g. GitHub Enterprise, self-hosted GitLab).
   api_url: Optional[str]

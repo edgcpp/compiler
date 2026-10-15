@@ -7,7 +7,7 @@
 #
 #   test     the acknowledg-forge typecheck and tests (acknowledg-forge.yml)
 #   publish  build the image (build-edg-env acknowledg-forge) and push it to
-#            ghcr.io/<owner>/acknowledg-forge:latest (deployments use the
+#            ghcr.io/edgcpp/acknowledg-forge:latest (deployments use the
 #            pushed digest)
 #   deploy   over SSH, run the host's deploy helper (an administrator-
 #            installed copy of
@@ -79,14 +79,12 @@ jobs:
       - name: Push image
         id: push
         env:
-          OWNER: ${{ github.repository_owner }}
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          image="ghcr.io/${OWNER,,}/acknowledg-forge"
+          image=ghcr.io/edgcpp/acknowledg-forge
           printf '%s' "${REGISTRY_TOKEN}" \
             | docker login ghcr.io --username "${GITHUB_ACTOR}" \
                 --password-stdin
-          docker tag docker.io/edgcpp/acknowledg-forge:latest "${image}:latest"
           docker push --quiet "${image}:latest"
           docker logout ghcr.io
           digest="$(docker inspect \
