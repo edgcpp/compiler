@@ -1,5 +1,22 @@
 Version 7.1
 
+10/15/26  [GH #309]
+Position of (lowered) cleanups at the end of a function body
+
+The cleanup actions (e.g., destructor calls) performed when control reaches
+the end of a function body were attributed to the source position of the
+preceding statement instead of to that of the closing brace of the function
+body.  That is now fixed.  For example:
+
+  int v = 0;
+  struct D { ~D() { v = v + 1; } };
+  void f() {
+    D d;
+    v = 2;
+  }  // The call of d's destructor is now positioned on this line.
+     // Previously it was positioned on the line with "v = 2;" above.
+
+
 10/9/26  [GH #260]
 GNU and Clang C++ modes: members skipped by a designated initializer
 

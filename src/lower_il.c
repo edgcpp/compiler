@@ -19288,12 +19288,26 @@ Lower an stmk_return statement.
   }  /* if */
   if (any_cleanup_on_return) {
     /* Generate any cleanup actions required on exit from the routine. */
+    a_source_position saved_code_pos = code_pos_for_lowering;
+    a_source_position saved_error_position = error_position;
+    if (statement->compiler_generated && statement->position.seq == 0) {
+      a_statement_ptr assoc_block = innermost_function_scope->assoc_block;
+      if (assoc_block != NULL &&
+          assoc_block->kind == (a_statement_kind)stmk_block &&
+          assoc_block->variant.block.extra_info->final_position.seq != 0) {
+        code_pos_for_lowering = assoc_block->variant.block.extra_info
+                                                             ->final_position;
+        error_position = code_pos_for_lowering;
+      }  /* if */
+    }  /* if */
     if (make_block) {
       /* Turn the return into a block so that code can be inserted
          in front of the return. */
       turn_branch_into_block(statement, &insert_location, &return_statement);
     }  /* if */
     gen_cleanup_actions(innermost_function_scope->lifetime, &insert_location);
+    code_pos_for_lowering = saved_code_pos;
+    error_position = saved_error_position;
     reset_cleanup_state_at_transfer_of_control(return_statement, statement);
   }  /* if */
   /* Maintain a list of all returns in the routine so that epilogue code
