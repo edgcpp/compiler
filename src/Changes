@@ -1,5 +1,18 @@
 Version 7.1
 
+10/16/26 [GH #303]
+C++20 modules: gnu emulation modes and extended floating-point types
+
+Module interface units compiled in a gnu or clang emulation mode always
+failed with a catastrophic error indicating that an IFC file could not be
+produced:  the predeclared typedefs of extended floating-point types
+(e.g., "_Float16") entered by those modes have no IFC encoding.
+Predeclared typedefs are now skipped when the members of a scope are
+written to an IFC file (they are re-created by any importing translation
+unit), and the "_Float16", "_Float32", "_Float64", and "_Float128" type
+families can now be written to and read from IFC files.
+
+
 10/16/26 [GH #229]
 Improper handling of "if constexpr" substatements
 

@@ -2714,20 +2714,33 @@ for the float type.
       set_ifc_precision(&fund_type, ifc_tps_long);
       break;
     case fk_float128:
+    case fk_std_float128:
       set_ifc_basis(&fund_type, ifc_tbs_float);
       set_ifc_precision(&fund_type, ifc_tps_bit128);
       break;
     case fk_float16:
+    case fk_std_float16:
+      set_ifc_basis(&fund_type, ifc_tbs_float);
+      set_ifc_precision(&fund_type, ifc_tps_bit16);
+      break;
+    case fk_std_float32:
+      set_ifc_basis(&fund_type, ifc_tbs_float);
+      set_ifc_precision(&fund_type, ifc_tps_bit32);
+      break;
+    case fk_std_float64:
+      set_ifc_basis(&fund_type, ifc_tbs_float);
+      set_ifc_precision(&fund_type, ifc_tps_bit64);
+      break;
     case fk_fp16:
     case fk_float32x:
     case fk_float64x:
     case fk_float80:
     case fk_std_bfloat16:
-    case fk_std_float16:
-    case fk_std_float32:
-    case fk_std_float64:
-    case fk_std_float128:
     case fk_last:
+      /* These extended floating-point kinds have no IFC encoding that
+         distinguishes them from other floating-point types of the same
+         size ("__fp16" in particular has a different mangling than
+         "_Float16"). */
       ifc_write_catastrophe();
       break;
     default_is_unexpected();
@@ -6040,6 +6053,13 @@ Add all the types in the given scope to the given IL -> IFC mapping.
          nested types (and nonreal nested types are not currently relevant to
          modules).  See create_nonreal_version_of_nested_type for more
          information. */
+      continue;
+    }  /* if */
+    if (type->kind == tk_typeref && type->variant.typeref.predeclared) {
+      /* Skip predeclared typedefs (e.g., "_Float16", which is entered in gnu
+         and clang emulation modes):  they are re-created by the predefined
+         type entry processing of an importing translation unit, and the
+         types of some of them cannot currently be written to an IFC file. */
       continue;
     }  /* if */
     (void)il_map->find_or_enter_type(type);
