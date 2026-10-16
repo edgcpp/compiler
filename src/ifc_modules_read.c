@@ -16502,12 +16502,7 @@ no corresponding type, return an error type.
                 result = float_type(fk_float);
                 break;
               case ifc_tps_bit16:
-                /* Map to the "_Float16" kind used by the current dialect
-                   (see the corresponding predefined type entry processing
-                   in sys_predef.c). */
-                result = float_type((gnu_version_is(>= 130000) ||
-                                     clang_version_is(>= 150000)) ?
-                                        fk_std_float16 : fk_float16);
+                result = float_type(float16_kind());
                 break;
               case ifc_tps_bit32:
                 result = float_type(fk_std_float32);
