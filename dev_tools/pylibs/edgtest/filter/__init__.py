@@ -108,6 +108,9 @@ _REGEX_REPLACEMENTS = {
   # IL-style address annotations.
   r'@[0-9a-f]{3,}': '@XXXXXXXX',
   r'@0x[0-9a-f]{3,}': '@XXXXXXXX',
+  # IL display of a name that is not in the file scope memory region.
+  r'\*\*possible non-file-scope ptr\*\* \(0x[0-9a-f]+\)':
+      '**possible non-file-scope ptr** (0xXX)',
   # Linker section offsets that move with codegen layout; keep the .text
   # marker so symbol-blame changes remain visible.
   r'\.text\+0x[0-9a-f]+': '.text+0xXX',
