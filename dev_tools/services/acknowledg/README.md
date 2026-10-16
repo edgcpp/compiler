@@ -177,7 +177,12 @@ The workflow reads these secrets from the `acknowledg` GitHub environment:
 | `ACKNOWLEDG_CLIENT_PATH` | Web root for the client files |
 | `ACKNOWLEDG_SERVER_PATH` | Server directory containing `venv/` |
 | `ACKNOWLEDG_SERVICE_NAME` | systemd unit running the server (e.g. `acknowledg-api`) |
-| `ACKNOWLEDG_API_HOST` | API URL baked into the client (`VITE_EDG_ACKNOWLEDG_API_HOST`), including the scheme, e.g. `wss://acknowledg-api.example.com` |
+
+It also reads the public API URL from the `ACKNOWLEDG_API_HOST` **repository
+variable** (not a secret: it's public, and it's shared with the
+[acknowledg-forge](../acknowledg-forge/README.md) deploy). The URL is baked
+into the client as `VITE_EDG_ACKNOWLEDG_API_HOST` and must include the scheme,
+e.g. `wss://acknowledg-api.example.com`.
 
 The host must already be set up; the workflow does not manage the unit file:
 

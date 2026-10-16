@@ -41,7 +41,7 @@ from edgacknowledg.client.bench import (
   BenchSourceHandler,
   resolve_baseline_dir,
 )
-from edgacknowledg.client.shared import ReviewClientHandler
+from edgacknowledg.client.shared import ReviewClientHandler, SandboxContext
 from edgacknowledg.client.test import TestEditHandler, TestSourceHandler
 from edgutil import eprint
 
@@ -96,10 +96,12 @@ def _make_bench_session(parameters: Dict[str, Any],
   if session is not None:
     return session
 
+  # The run (which may lie elsewhere) and the bench home are all a review
+  # may read.
+  context = SandboxContext(bench_home, root)
   session = BenchReviewSession(
-    bench_home = bench_home,
-    run_dir = root,
-    baseline_dir = resolve_baseline_dir(bench_home, tag),
+    run_dir = context.subpath(root),
+    baseline_dir = resolve_baseline_dir(context.subpath(bench_home), tag),
     tag = tag,
     threshold_slow = float(
       parameters.get('slower_threshold', DEFAULT_THRESHOLD_SLOW)
@@ -131,11 +133,15 @@ def _make_handler(section: Dict[str, Any],
   if section_type == 'test.src':
     if test_home is None:
       raise ValueError('test home required for test.src sections')
+    root = Path(parameters['root'])
+    # The run (which may lie elsewhere) and the test home are all a review
+    # may read.
+    context = SandboxContext(test_home, root)
     return TestSourceHandler(
       section_name,
       slug,
-      test_home,
-      Path(parameters['root'])
+      context.subpath(test_home),
+      context.subpath(root)
     )
   if section_type == 'test.edit':
     return TestEditHandler(section_name, slug, worker_pool)

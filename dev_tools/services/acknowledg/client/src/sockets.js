@@ -5,7 +5,7 @@ See https://edgcpp.org/LICENSE.txt for license information.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 */
 
-const PROTOCOL_REVISION = 18
+const PROTOCOL_REVISION = 19
 
 const getSocketHost = () => {
   if (process.env.NODE_ENV === "development") {

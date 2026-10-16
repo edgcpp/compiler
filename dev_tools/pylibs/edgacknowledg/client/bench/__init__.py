@@ -13,7 +13,6 @@ import subprocess
 import sys
 import traceback
 
-from pathlib import Path
 from typing import (
   Any,
   Dict,
@@ -31,6 +30,10 @@ from edgacknowledg import (
 from edgacknowledg.client.shared import (
   BackgroundWorkerPool,
   Channel,
+  ConfinedPath,
+  ConfinedPathComponent,
+  IllegalFileAccessError,
+  SandboxContext,
   trunc_display_content,
 )
 import edgutil
@@ -51,8 +54,8 @@ def _compute_percent_change(baseline_ops: int, run_ops: int) -> float:
 
 
 class BenchmarkMetadata:
-  def __init__(self, rel_benchmark_path: Path, baseline_ops: int,
-               run_ops: int) -> None:
+  def __init__(self, rel_benchmark_path: ConfinedPathComponent,
+               baseline_ops: int, run_ops: int) -> None:
     self.rel_benchmark_path = rel_benchmark_path
     self.baseline_ops = baseline_ops
     self.run_ops = run_ops
@@ -71,11 +74,14 @@ class BenchmarkMetadata:
     }
 
 
-def read_program_totals(file_path: Path) -> Optional[int]:
+def read_program_totals(file_path: ConfinedPath) -> Optional[int]:
+  '''Return the Ir total of the ``.cgout`` file ``file_path``, or None if
+  it is missing or has none.
+  '''
   if not file_path.exists():
     return None
 
-  with open(file_path, 'rb') as file_handle:
+  with file_path.open('rb') as file_handle:
     try:
       # Advance to the last character of the file.
       file_handle.seek(-2, os.SEEK_END)
@@ -98,14 +104,12 @@ def read_program_totals(file_path: Path) -> Optional[int]:
     return None
 
 
-def collect_benchmark_metadata(rel_benchmark_path: Path, run_dir: Path,
-                               baseline_dir: Path
+def collect_benchmark_metadata(rel_benchmark_path: ConfinedPathComponent,
+                               run_dir: ConfinedPath,
+                               baseline_dir: ConfinedPath
                                ) -> Optional[BenchmarkMetadata]:
-  baseline_file = baseline_dir / rel_benchmark_path
-  run_file = run_dir / rel_benchmark_path
-
-  baseline_ops = read_program_totals(baseline_file)
-  run_ops = read_program_totals(run_file)
+  baseline_ops = read_program_totals(baseline_dir / rel_benchmark_path)
+  run_ops = read_program_totals(run_dir / rel_benchmark_path)
 
   if baseline_ops is None or run_ops is None:
     return None
@@ -117,46 +121,68 @@ def collect_benchmark_metadata(rel_benchmark_path: Path, run_dir: Path,
   )
 
 
-def resolve_baseline_dir(bench_home: Path, tag: str) -> Path:
+def resolve_baseline_dir(bench_home: ConfinedPath, tag: str) -> ConfinedPath:
+  '''The baselines of ``tag`` in ``bench_home``.'''
   if tag.startswith('@'):
     return bench_home / 'baselines' / 'user' / tag[1:]
   return bench_home / 'baselines' / 'project' / tag
 
 
-def collect_all_benchmarks(run_dir: Path,
-                           baseline_dir: Path) -> List[BenchmarkMetadata]:
+def collect_all_benchmarks(run_dir: ConfinedPath,
+                           baseline_dir: ConfinedPath
+                           ) -> List[BenchmarkMetadata]:
+  '''Collect every benchmark in ``run_dir`` with a baseline in
+  ``baseline_dir``; benchmarks whose files may not be read are skipped
+  (with a warning).
+  '''
   benchmark_metadatas: List[BenchmarkMetadata] = []
-  for root, dirs, files in os.walk(run_dir):
+  for directory, dirs, files in run_dir.walk():
     for file_name in files:
-      file_path = Path(root, file_name)
+      file_path = directory / file_name
       if file_path.suffix != '.cgout':
         continue
 
       rel_benchmark_path = file_path.relative_to(run_dir)
-      benchmark_metadata = collect_benchmark_metadata(
-        rel_benchmark_path,
-        run_dir,
-        baseline_dir
-      )
+      try:
+        benchmark_metadata = collect_benchmark_metadata(
+          rel_benchmark_path,
+          run_dir,
+          baseline_dir
+        )
+      except IllegalFileAccessError as ex:
+        eprint(f"Skipping benchmark {rel_benchmark_path}: {ex}")
+        continue
       if benchmark_metadata is None:
         continue
       benchmark_metadatas.append(benchmark_metadata)
   return benchmark_metadatas
 
 
-def get_cg_annotate_output(baseline_path: Path, run_path: Path) -> str:
-  proc = subprocess.run(
-    [
-      str(TOOL_PATH_CG_ANNOTATE),
-      '--no-annotate',
-      '--diff',
-      str(baseline_path),
-      str(run_path)
-    ],
-    stdout = subprocess.PIPE,
-    stderr = subprocess.STDOUT,
-    check = False
-  )
+def get_cg_annotate_output(context: SandboxContext,
+                           baseline_path: ConfinedPath,
+                           run_path: ConfinedPath) -> str:
+  '''Return the ``cg_annotate`` diff of ``run_path`` against
+  ``baseline_path``, run in ``context``.
+  '''
+  try:
+    proc = subprocess.run(
+      context.command(
+        str(TOOL_PATH_CG_ANNOTATE),
+        '--no-annotate',
+        '--diff',
+        baseline_path,
+        run_path
+      ),
+      stdin = subprocess.DEVNULL,
+      stdout = subprocess.PIPE,
+      stderr = subprocess.STDOUT,
+      timeout = context.command_timeout,
+      check = False
+    )
+  except subprocess.TimeoutExpired:
+    return (
+      f"cg_annotate timed out after {context.command_timeout:g} seconds\n"
+    )
   return proc.stdout.decode(errors = 'replace')
 
 
@@ -199,13 +225,17 @@ class BenchReviewSession:
   '''Shared source/editor state for one benchmark review section.'''
 
   def __init__(self, *,
-               bench_home: Path,
-               run_dir: Path,
-               baseline_dir: Path,
+               run_dir: ConfinedPath,
+               baseline_dir: ConfinedPath,
                tag: str,
                threshold_slow: float = DEFAULT_THRESHOLD_SLOW,
                threshold_fast: float = DEFAULT_THRESHOLD_FAST) -> None:
-    self.bench_home = bench_home
+    '''``run_dir`` and ``baseline_dir`` come from one ``SandboxContext``,
+    which every read, the baseline update, and cg_annotate go through.
+    '''
+    if baseline_dir.context is not run_dir.context:
+      raise ValueError('the run and baselines belong to different contexts')
+    self.context = run_dir.context
     self.run_dir = run_dir
     self.baseline_dir = baseline_dir
     self.tag = tag
@@ -216,7 +246,10 @@ class BenchReviewSession:
     self.refresh_statuses()
 
   def refresh_statuses(self) -> None:
-    all_benchmarks = collect_all_benchmarks(self.run_dir, self.baseline_dir)
+    all_benchmarks = collect_all_benchmarks(
+      self.run_dir,
+      self.baseline_dir
+    )
     self.statuses_payload = build_statuses_payload(
       all_benchmarks,
       self.threshold_slow,
@@ -238,8 +271,8 @@ class BenchReviewSession:
     if not run_file.exists():
       return False
 
-    baseline_file.parent.mkdir(parents = True, exist_ok = True)
-    shutil.copy2(run_file, baseline_file)
+    baseline_file.path.parent.mkdir(parents = True, exist_ok = True)
+    shutil.copy2(run_file.path, baseline_file.path)
     print(
       f"Updated baseline for {bench_id} under tag {self.tag}:\n"
       f"  {run_file} -> {baseline_file}"
@@ -285,12 +318,17 @@ async def run_bench_source_handler(channel: Channel,
         ))
         return
 
-      baseline_path = session.baseline_dir / metadata.rel_benchmark_path
+      baseline_path = (
+        session.baseline_dir / metadata.rel_benchmark_path
+      )
       run_path = session.run_dir / metadata.rel_benchmark_path
 
       async def annotate_job() -> str:
         return await edgutil.async_to_thread(
-          get_cg_annotate_output, baseline_path, run_path
+          get_cg_annotate_output,
+          session.context,
+          baseline_path,
+          run_path
         )
 
       annotate_text = await worker_pool.submit(annotate_job)
@@ -310,6 +348,8 @@ async def run_bench_source_handler(channel: Channel,
         value = { 'reviewer_id': reviewer_id }
       ))
   except Exception as ex:
+    if isinstance(ex, IllegalFileAccessError):
+      ex.reviewer_id = reviewer_id
     if sys.version_info >= (3, 11):
       ex.add_note(f"request triggered by reviewer: \"{reviewer_id}\"")
     raise ex

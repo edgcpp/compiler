@@ -16,6 +16,7 @@ import edgtest
 
 from pathlib import Path, PurePosixPath
 from typing import (
+  IO,
   Any,
   Dict,
   List,
@@ -33,6 +34,8 @@ from edgacknowledg import (
 from edgacknowledg.client.shared import (
   BackgroundWorkerPool,
   Channel,
+  ConfinedPath,
+  IllegalFileAccessError,
   trunc_display_content,
 )
 from edgutil import eprint
@@ -42,47 +45,17 @@ MULTI_CONFIG_TEST_FORMAT = re.compile(r'^\(([a-zA-Z0-9-_]+)\) (.+)$')
 _StatusDict = Dict[str, Dict[str, Any]]
 
 
-class IllegalFileAccessError(Exception):
-  '''Raised when a request asks for a file outside the allowed tree.'''
-  pass
+# Re-exported: it used to be defined here.
+__all__ = ['IllegalFileAccessError']
 
 
-def _validate_file_access(test_home: Path, file_path: Path) -> None:
-  '''Validate that ``file_path`` is under ``test_home``.'''
-  test_home = test_home.resolve()
-  file_path = file_path.resolve()
-
-  okay = False
-  try:
-    if Path(os.path.commonpath([test_home, file_path])) == test_home:
-      okay = True
-  finally:
-    if not okay:
-      raise IllegalFileAccessError(
-        f"A request was made attempting to retrieve the file: \"{file_path}\"!"
-      )
-
-
-def _safe_compose_path(test_home: Path, *path_components: str) -> Path:
-  '''Validated Path.joinpath for network-influenced path components.'''
-  result_path = test_home.joinpath(*path_components)
-  _validate_file_access(test_home, result_path)
-  return result_path
-
-
-def _rt_path_for(test_home: Path, root_dir: Path, test_id: str) -> Path:
-  rt_rel = PurePosixPath(test_id).with_suffix(
+def _rt_path_for(config_dir: ConfinedPath, test_id: str) -> ConfinedPath:
+  return config_dir / str(PurePosixPath(test_id).with_suffix(
     edgtest.runtest.RUN_TEST_OUTPUT_SUFFIX
-  )
-  return _safe_compose_path(
-    test_home,
-    *root_dir.relative_to(test_home).parts,
-    *rt_rel.parts
-  )
+  ))
 
 
-def _create_status_dict(test_home: Path,
-                        elog_file_paths: List[Path], *,
+def _create_status_dict(elog_file_paths: List[ConfinedPath], *,
                         is_multi_config_run: bool) -> _StatusDict:
   # test_id -> config_name -> combined_diff_hash.
   pending: Dict[str, Dict[str, str]] = {}
@@ -91,7 +64,7 @@ def _create_status_dict(test_home: Path,
 
   for elog_file_path in elog_file_paths:
     config_name = elog_file_path.parent.name
-    with open(elog_file_path, 'r') as file_handle:
+    with elog_file_path.open() as file_handle:
       for line in file_handle:
         key, parsed_diff = (
           edgtest.runtest.parse_test_status_diff(line)
@@ -104,13 +77,9 @@ def _create_status_dict(test_home: Path,
             remarks[key] = parsed_diff.remark
 
         if config_name not in pending[key]:
-          rt_file_path = _rt_path_for(
-            test_home,
-            elog_file_path.parent,
-            key
-          )
+          rt_file_path = _rt_path_for(elog_file_path.parent, key)
           pending[key][config_name] = (
-            edgtest.runtest.grouping_combined_diff_hash(rt_file_path)
+            edgtest.runtest.grouping_combined_diff_hash(rt_file_path.path)
           )
           lines_by_test_config[key][config_name] = []
 
@@ -138,18 +107,22 @@ def _create_status_dict(test_home: Path,
   return keyed_statuses
 
 
-def _matching_change_files(changes_files: Dict[str, Path],
-                           new_name: str) -> List[Path]:
+def _matching_change_files(changes_files: Dict[str, ConfinedPath],
+                           new_name: str) -> List[ConfinedPath]:
   regress_files = [f.with_name(new_name) for f in changes_files.values()]
   regress_files[:] = [f for f in regress_files if f.exists()]
   return regress_files
 
 
-def _test_if_any_output_exists(recordings_dir: Path,
+def _test_if_any_output_exists(recordings_dir: ConfinedPath,
                                suite_env: Dict[str, str],
                                case_number: int,
-                               command_number: int) -> Optional[Path]:
-  '''Return a recording path if one exists for the case/command, else None.'''
+                               command_number: int) -> Optional[ConfinedPath]:
+  '''Return a recording path if one exists for the case/command, else None.
+
+  Recordings are read and shown to reviewers, so they're confined like any
+  other requested file.
+  '''
   names_to_test = edgtest.runtest.get_recording_possible_names(
     suite_env,
     case_number,
@@ -163,9 +136,20 @@ def _test_if_any_output_exists(recordings_dir: Path,
   return None
 
 
-def _test_if_any_matches_exists(recordings_dir: Path,
+def _copy_recording(recording: Optional[ConfinedPath],
+                    destination: Path) -> Optional[Path]:
+  '''Copy ``recording`` (if any) to the private ``destination``, reading it
+  through its checks, for tools that take a plain path.
+  '''
+  if recording is None:
+    return None
+  destination.write_bytes(recording.read_bytes())
+  return destination
+
+
+def _test_if_any_matches_exists(recordings_dir: ConfinedPath,
                                 suite_env: Dict[str, str],
-                                case_number: int) -> Optional[Path]:
+                                case_number: int) -> Optional[ConfinedPath]:
   '''Return a matches recording path if one exists for the case, else None.'''
   names_to_test = edgtest.runtest.get_matches_possible_names(
     suite_env,
@@ -179,34 +163,41 @@ def _test_if_any_matches_exists(recordings_dir: Path,
   return None
 
 
+def _assoc_files_path(test_home: ConfinedPath,
+                      test_path: ConfinedPath) -> Optional[ConfinedPath]:
+  assoc_files_path = edgtest.runtest.get_assoc_files_path(test_path.path)
+  if assoc_files_path is None:
+    return None
+  return test_home.subpath(assoc_files_path)
+
+
 async def run_test_source_handler(channel: Channel,
-                                  test_home: Path,
-                                  relative_run_dir: Path,
-                                  changes_files: Dict[str, Path]) -> None:
-  '''Handle one test source request on ``channel``.'''
+                                  test_home: ConfinedPath,
+                                  run_dir: ConfinedPath,
+                                  changes_files: Dict[str, ConfinedPath]
+                                  ) -> None:
+  '''Handle one test source request on ``channel``. Every file is reached
+  from ``test_home`` (the root of its tree), so it can't leave it, and
+  commands run on them (ifc-dump) in its context.
+  '''
   request_tag, request_value, _section = decode_response(await channel.recv())
   is_multi_config_run = len(changes_files) > 1
 
-  def decompose_test_id(test_id: str) -> Tuple[Path, str]:
+  def decompose_test_id(test_id: str) -> Tuple[ConfinedPath, str]:
     test_id_match = MULTI_CONFIG_TEST_FORMAT.match(test_id)
     assert test_id_match is not None
     return changes_files[test_id_match.group(1)], test_id_match.group(2)
 
-  def test_id_to_path(test_home: Path, test_id: str) -> Path:
+  def test_id_to_path(test_id: str) -> ConfinedPath:
     test_id_parts = test_id.split('/')
 
     # See if there's a patched version of this test that should be displayed
     # instead.
-    patched_test_version = _safe_compose_path(
-      test_home,
-      *(relative_run_dir.parts),
-      'patched-tests',
-      *test_id_parts
-    )
+    patched_test_version = run_dir.joinpath('patched-tests', *test_id_parts)
     if patched_test_version.exists():
       return patched_test_version
 
-    return _safe_compose_path(test_home, 'tests', *test_id_parts)
+    return test_home.joinpath('tests', *test_id_parts)
 
   if request_value is not None and 'reviewer_id' in request_value:
     reviewer_id = request_value['reviewer_id']
@@ -218,7 +209,6 @@ async def run_test_source_handler(channel: Channel,
           {
             'name': 'Changes List',
             'statuses': _create_status_dict(
-              test_home,
               _matching_change_files(changes_files, 'changes.elog'),
               is_multi_config_run = is_multi_config_run
             )
@@ -234,7 +224,6 @@ async def run_test_source_handler(channel: Channel,
             {
               'name': 'Regressions List',
               'statuses': _create_status_dict(
-                test_home,
                 regress_files,
                 is_multi_config_run = is_multi_config_run
               )
@@ -250,7 +239,6 @@ async def run_test_source_handler(channel: Channel,
             {
               'name': 'Improvements List',
               'statuses': _create_status_dict(
-                test_home,
                 improve_files,
                 is_multi_config_run = is_multi_config_run
               )
@@ -272,11 +260,7 @@ async def run_test_source_handler(channel: Channel,
             request_tag == RequestTags.TEST_SHOW_RAW_OUTPUT):
         configured_test_id = request_value['id']
         changes_file_path, test_id = decompose_test_id(configured_test_id)
-        rt_file_path = _rt_path_for(
-          test_home,
-          changes_file_path.parent,
-          test_id
-        )
+        rt_file_path = _rt_path_for(changes_file_path.parent, test_id)
 
         if not rt_file_path.exists():
           await channel.send(message(
@@ -292,7 +276,7 @@ async def run_test_source_handler(channel: Channel,
           return
 
         async def form_curr_diff_text(config_name: str,
-                                      case_rt_path: Path) -> str:
+                                      case_rt_path: ConfinedPath) -> str:
           '''Live-diff observed vs recordings per command.
 
           Per-command body content is diffed (recording command line stripped),
@@ -300,25 +284,26 @@ async def run_test_source_handler(channel: Channel,
           presentation as static.
           '''
           suite_name = test_id.split('/')[0]
-          suite_path = _safe_compose_path(test_home, 'tests', suite_name)
+          suite_path = test_home / 'tests' / suite_name
           # Load the suite ENV and then populate EDG_CONFIG with the name of
           # the config that execute so as to restore the correct active config,
           # ensuring that the diff can be run against not only the default
           # recordings but the prior recordings of that same active config.
-          suite_env = edgtest.load_test_suite_env(suite_path)
+          suite_env = edgtest.load_test_suite_env(suite_path.path)
           suite_env['EDG_CONFIG'] = config_name
           # Use the test path to gather the recording directory to find the
           # status-quo recording files to be examined.
-          test_path = test_id_to_path(test_home, test_id)
-          recordings_dir = edgtest.runtest.get_assoc_recordings_path(
-            test_path
+          test_path = test_id_to_path(test_id)
+          recordings_dir = test_home.subpath(
+            edgtest.runtest.get_assoc_recordings_path(test_path.path)
           )
 
           with tempfile.TemporaryDirectory() as tmp_dir_name:
             tmp_dir = Path(tmp_dir_name)
             entries: List[Tuple[Dict[str, Any], List[str]]] = []
 
-            with edgtest.runtest.RunTestOutput(case_rt_path) as rt_output:
+            with edgtest.runtest.RunTestOutput(
+                case_rt_path.path) as rt_output:
               for case_number, case in enumerate(
                 rt_output.metadata.get('cases', []),
                 start = 1
@@ -341,11 +326,14 @@ async def run_test_source_handler(channel: Channel,
                   except FileNotFoundError:
                     observed_path.touch()
 
-                  expected_path = _test_if_any_output_exists(
-                    recordings_dir,
-                    suite_env,
-                    case_number,
-                    command_number
+                  expected_path = _copy_recording(
+                    _test_if_any_output_exists(
+                      recordings_dir,
+                      suite_env,
+                      case_number,
+                      command_number
+                    ),
+                    cmd_dir / 'expected'
                   )
 
                   diff_hash = await edgtest.runtest.write_content_diff(
@@ -380,10 +368,13 @@ async def run_test_source_handler(channel: Channel,
                 except FileNotFoundError:
                   continue
 
-                expected_matches = _test_if_any_matches_exists(
-                  recordings_dir,
-                  suite_env,
-                  case_number
+                expected_matches = _copy_recording(
+                  _test_if_any_matches_exists(
+                    recordings_dir,
+                    suite_env,
+                    case_number
+                  ),
+                  matches_dir / 'expected'
                 )
                 matches_diff_hash = await edgtest.runtest.write_content_diff(
                   expected_matches,
@@ -411,14 +402,14 @@ async def run_test_source_handler(channel: Channel,
             )
 
         if request_tag == RequestTags.TEST_SHOW_DIFF:
-          with edgtest.runtest.RunTestOutput(rt_file_path) as rt_output:
+          with edgtest.runtest.RunTestOutput(rt_file_path.path) as rt_output:
             static_text = ''.join(rt_output.combined_static_diff())
           client_response = {
             'id': configured_test_id,
             **trunc_display_content(static_text)
           }
         elif request_tag == RequestTags.TEST_SHOW_RAW_OUTPUT:
-          with edgtest.runtest.RunTestOutput(rt_file_path) as rt_output:
+          with edgtest.runtest.RunTestOutput(rt_file_path.path) as rt_output:
             raw_output = ''.join(rt_output.combined_raw_output())
           client_response = {
             'id': configured_test_id,
@@ -434,11 +425,7 @@ async def run_test_source_handler(channel: Channel,
             if config_name == rep_config:
               continue
             sibling_changes = changes_files[config_name]
-            sibling_rt = _rt_path_for(
-              test_home,
-              sibling_changes.parent,
-              test_id
-            )
+            sibling_rt = _rt_path_for(sibling_changes.parent, test_id)
             if not sibling_rt.exists():
               divergent_configs.append(config_name)
               continue
@@ -468,13 +455,14 @@ async def run_test_source_handler(channel: Channel,
         ))
       elif request_tag == RequestTags.TEST_LIST_ASSOC_FILES:
         test_id = request_value['id']
-        test_path = test_id_to_path(test_home, test_id)
-        assoc_files_path = edgtest.runtest.get_assoc_files_path(test_path)
+        test_path = test_id_to_path(test_id)
+        assoc_files_path = _assoc_files_path(test_home, test_path)
 
         file_list = []
 
         if assoc_files_path is not None and assoc_files_path.exists():
-          for root, dirs, filenames in os.walk(assoc_files_path):
+          for directory, dirs, filenames in assoc_files_path.walk():
+            root = str(directory.path)
             dirs[:] = [
               d for d in dirs if edgtest.runtest.is_valid_assoc_path(root, d)
             ]
@@ -482,13 +470,12 @@ async def run_test_source_handler(channel: Channel,
               if not edgtest.runtest.is_valid_assoc_path(root, filename):
                 continue
 
-              file_path = Path(root, filename)
+              file_path = directory / filename
 
-              # Get the relative path as path components and then form a string
-              # using the / separator (to canonicalize the path regardless of
-              # operating system).
+              # The relative path with / separators (to canonicalize the path
+              # regardless of operating system).
               relative_path = file_path.relative_to(assoc_files_path)
-              file_list.append('/'.join(relative_path.parts))
+              file_list.append(relative_path.as_posix())
 
           file_list.sort()
 
@@ -504,20 +491,15 @@ async def run_test_source_handler(channel: Channel,
         ))
       elif request_tag == RequestTags.TEST_SHOW_SOURCE:
         test_id = request_value['id']
-        test_path = test_id_to_path(test_home, test_id)
+        test_path = test_id_to_path(test_id)
 
-        path_to_show: Optional[Path] = None
+        path_to_show: Optional[ConfinedPath] = None
         if ('assoc_file' in request_value and
             request_value['assoc_file'] is not None):
           assoc_file_path_parts = request_value['assoc_file'].split('/')
-          assoc_files_path = edgtest.runtest.get_assoc_files_path(test_path)
+          assoc_files_path = _assoc_files_path(test_home, test_path)
           if assoc_files_path is not None:
-            relative_assoc_files_path = assoc_files_path.relative_to(test_home)
-            path_to_show = _safe_compose_path(
-              test_home,
-              *relative_assoc_files_path.parts,
-              *assoc_file_path_parts
-            )
+            path_to_show = assoc_files_path.joinpath(*assoc_file_path_parts)
         else:
           path_to_show = test_path
 
@@ -534,16 +516,29 @@ async def run_test_source_handler(channel: Channel,
             }
           ))
         elif path_to_show.suffix == '.ifc':
-          cmd_args = ['ifc-dump', str(path_to_show)]
+          context = test_home.context
+          cmd_args = context.command('ifc-dump', path_to_show)
 
           # Execute the ifc-dump command.
           proc = await asyncio.create_subprocess_exec(
             *cmd_args,
+            stdin = asyncio.subprocess.DEVNULL,
             stdout = asyncio.subprocess.PIPE,
             stderr = asyncio.subprocess.STDOUT
           )
-          stdout, _ = await proc.communicate()
-          ifc_dump_output = stdout.decode()
+          try:
+            stdout, _ = await asyncio.wait_for(
+              proc.communicate(),
+              context.command_timeout
+            )
+            ifc_dump_output = stdout.decode(errors = 'replace')
+          except asyncio.TimeoutError:
+            proc.kill()
+            await proc.wait()
+            ifc_dump_output = (
+              f"ifc-dump timed out after {context.command_timeout:g} "
+              f"seconds\n"
+            )
 
           await channel.send(message(
             RequestTags.TEST_SHOW_SOURCE,
@@ -557,7 +552,7 @@ async def run_test_source_handler(channel: Channel,
             }
           ))
         else:
-          with open(path_to_show, 'r', errors = 'replace') as file_handle:
+          with path_to_show.open(errors = 'replace') as file_handle:
             await channel.send(message(
               RequestTags.TEST_SHOW_SOURCE,
               value = {
@@ -577,6 +572,8 @@ async def run_test_source_handler(channel: Channel,
           }
         ))
     except Exception as ex:
+      if isinstance(ex, IllegalFileAccessError):
+        ex.reviewer_id = reviewer_id
       if sys.version_info >= (3, 11):
         ex.add_note(f"request triggered by reviewer: \"{reviewer_id}\"")
       raise ex
@@ -588,14 +585,21 @@ class TestSourceHandler:
   def __init__(self,
                section_name: str,
                slug: str,
-               test_home: Path,
-               root: Path) -> None:
+               test_home: ConfinedPath,
+               root: ConfinedPath) -> None:
+    '''``test_home`` and the run directory ``root`` come from one
+    ``SandboxContext``, which requests reach files only through.
+    '''
+    if root.context is not test_home.context:
+      raise ValueError('the test home and run belong to different contexts')
     self._section_name = section_name
     self._slug = slug
     self._test_home = test_home
     self._root = root
-    self._changes_files = edgtest.find_changes_files(root)
-    self._relative_run_dir = root.relative_to(test_home)
+    self._changes_files = {
+      config: self._root.subpath(path)
+      for config, path in edgtest.find_changes_files(self._root.path).items()
+    }
 
   @property
   def subscription_type(self) -> str:
@@ -614,7 +618,7 @@ class TestSourceHandler:
     await run_test_source_handler(
       channel,
       self._test_home,
-      self._relative_run_dir,
+      self._root,
       self._changes_files
     )
 

@@ -53,6 +53,8 @@ app = Quart(__name__)
 
 # IANA WebSocket Close Code Number Registry: 3000 Unauthorized
 WS_CLOSE_UNAUTHORIZED = 3000
+# A provider reported that the reviewer requested a file it may not read.
+WS_CLOSE_ILLEGAL_ACCESS = 3001
 
 F = TypeVar('F', bound = Callable[..., Any])
 
@@ -142,6 +144,15 @@ class NoBenchSourceSocket(Exception):
 
 class NoTestEditSocket(Exception):
   pass
+
+class ReviewerExpelled(Exception):
+  '''Ends a reviewer session that a provider reported for illegal access.'''
+  pass
+
+# Queued to a reviewer's session to end it (``ReviewerExpelled``); never
+# sent. Such a reviewer gets no explanation: the request couldn't have come
+# from the reviewer UI.
+_EXPEL_REVIEWER: ProtocolMessage = {}
 
 class NoBenchEditSocket(Exception):
   pass
@@ -291,6 +302,12 @@ class ReviewDescriptor:
 
   async def broadcast_to_reviewers(self, msg: ProtocolMessage) -> None:
     await self._reviewer_brokers.publish_all(msg)
+
+  async def expel_reviewer(self, reviewer_id: uuid.UUID) -> None:
+    '''End the session of a reviewer that a provider reported for illegal
+    access (``ReviewerExpelled``).
+    '''
+    await self.publish_to_reviewer(reviewer_id, _EXPEL_REVIEWER)
 
   def _subscribe_section_slot(
       self,
@@ -644,6 +661,16 @@ async def _receive_provider_replies(
       ):
         continue
 
+      if request_tag == RequestTags.ILLEGAL_ACCESS:
+        try:
+          offender = uuid.UUID(str(request_value['reviewer_id']))
+        except (KeyError, TypeError, ValueError):
+          await send(message(RequestTags.INVALID_REQUEST))
+          continue
+        # Reviewers are per review, so a provider can only name its own.
+        await run_descr.expel_reviewer(offender)
+        continue
+
       if (request_tag not in allowed_tags or
           request_value is None or
           'reviewer_id' not in request_value):
@@ -793,8 +820,14 @@ async def _run_reviewer_session(
     run_descr: ReviewDescriptor,
     *,
     send: SendFn,
-    recv: RecvFn) -> None:
-  '''Run a browser/reviewer session for one review.'''
+    recv: RecvFn) -> bool:
+  '''Run a browser/reviewer session for one review.
+
+  Return whether it ended because a provider reported the reviewer for
+  illegal access; the caller then drops the connection, without telling the
+  reviewer why.
+  '''
+  expelled = False
   try:
     reviewer_id = uuid.uuid4()
 
@@ -804,6 +837,8 @@ async def _run_reviewer_session(
         value = run_descr.connection_state()
       ))
       async for msg in run_descr.subscribe_as_reviewer(reviewer_id):
+        if msg is _EXPEL_REVIEWER:
+          raise ReviewerExpelled()
         await send(msg)
 
     async def pull_inbound() -> None:
@@ -837,10 +872,13 @@ async def _run_reviewer_session(
     async with asyncio.TaskGroup() as tg:
       tg.create_task(push_outbound())
       tg.create_task(pull_inbound())
-  except IncompatibleProtocolVersion:
+  except* IncompatibleProtocolVersion:
     await send(outdated_protocol_message())
+  except* ReviewerExpelled:
+    expelled = True
   finally:
     await remove_run_if_dead(run_descr.run_id)
+  return expelled
 
 def _websocket_send() -> SendFn:
   async def send(msg: ProtocolMessage) -> None:
@@ -864,11 +902,11 @@ async def reviews_handler() -> None:
 @app.websocket('/review/<uuid:run_id>')
 async def review_handler(run_id: uuid.UUID) -> None:
   run_descr = _get_or_create_run(run_id)
-  await _run_reviewer_session(
-    run_descr,
-    send = _websocket_send(),
-    recv = _websocket_recv()
-  )
+  if await _run_reviewer_session(
+      run_descr,
+      send = _websocket_send(),
+      recv = _websocket_recv()):
+    await websocket.close(WS_CLOSE_ILLEGAL_ACCESS)
 
 @app.websocket('/edit/<uuid:run_id>/test/<slug>')
 @require_api_key
@@ -977,6 +1015,27 @@ def _provider_subscribe_for_type(
 @require_api_key
 async def batch_handler() -> None:
   subscriptions: Dict[uuid.UUID, _BatchSubscription] = {}
+  # Set when a reviewer session on this socket is expelled for illegal
+  # access: the whole socket is closed, every other subscription with it.
+  expelled = asyncio.Event()
+
+  async def receive() -> Any:
+    '''The next frame; raise ``ReviewerExpelled`` once a reviewer session
+    on this socket was expelled.
+    '''
+    frame = asyncio.ensure_future(websocket.receive())
+    expulsion = asyncio.ensure_future(expelled.wait())
+    try:
+      await asyncio.wait(
+        {frame, expulsion},
+        return_when = asyncio.FIRST_COMPLETED
+      )
+    finally:
+      for task in (frame, expulsion):
+        task.cancel()
+    if expelled.is_set():
+      raise ReviewerExpelled()
+    return frame.result()
 
   async def cancel_subscription(subscription_id: uuid.UUID) -> None:
     state = subscriptions.pop(subscription_id, None)
@@ -1027,7 +1086,8 @@ async def batch_handler() -> None:
       try:
         if sub_type == 'review':
           run_descr = _get_or_create_run(run_id)
-          await _run_reviewer_session(run_descr, send = send, recv = recv)
+          if await _run_reviewer_session(run_descr, send = send, recv = recv):
+            expelled.set()
           return
 
         slug = value.get('slug')
@@ -1071,10 +1131,13 @@ async def batch_handler() -> None:
     while True:
       try:
         request_tag, request_value, _section = decode_response(
-          await websocket.receive()
+          await receive()
         )
       except IncompatibleProtocolVersion:
         await websocket.send(encode_message(outdated_protocol_message()))
+        return
+      except ReviewerExpelled:
+        await websocket.close(WS_CLOSE_ILLEGAL_ACCESS)
         return
 
       if request_tag == RequestTags.BATCH_SUBSCRIBE:
