@@ -8,7 +8,8 @@
 A forge service supplies its ``Forge`` (and optionally ``ForgeWebhooks`` and
 ``ForgeCommenter``) via ``main``; this module runs the rest:
 
-- the AcknowlEDG publisher (one batch connection),
+- the AcknowlEDG publisher (one batch connection, in a sandboxed worker
+  process),
 - the processor (and, if enabled, the announcer after each sweep),
 - the poller (always: at least the startup sync),
 - the webhook receiver and its event worker (only if configured).
@@ -29,7 +30,7 @@ from edgacknowledg.forge.db import ForgeStore
 from edgacknowledg.forge.ingest import Ingestor
 from edgacknowledg.forge.poller import run_poller
 from edgacknowledg.forge.processor import Processor
-from edgacknowledg.forge.publisher import AcknowledgPublisher
+from edgacknowledg.forge.publisher import SubprocessPublisher
 from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
 from edgacknowledg.forge.webhooks import EventQueue, create_app
 from edgacknowledg.forge.workspace import Workspaces
@@ -86,18 +87,25 @@ async def run_service(config: ForgeServiceConfig,
   await sandbox.check()
   if not sandbox.enabled:
     _log.warning('sandboxing is DISABLED; for local development only')
+  elif len(config.environment_secrets) != 0:
+    _log.warning('secrets come from the environment (%s); use credentials '
+                 'in production', ', '.join(config.environment_secrets))
 
   store = await ForgeStore.open(config.database_url)
   try:
     wake = asyncio.Event()
     ingestor = Ingestor(store, forge, config, wake = wake)
-    publisher = AcknowledgPublisher(
+    workspaces = Workspaces(config.home, forge)
+    # Serving reviewers happens in a separate, sandboxed process.
+    publisher = SubprocessPublisher(
       api_host = config.acknowledg_api_host,
       api_port = config.acknowledg_api_port,
       api_key = config.acknowledg_api_key,
       ui_host = config.acknowledg_ui_host,
       ui_port = config.acknowledg_ui_port,
-      sandbox = sandbox
+      sandbox = sandbox,
+      reviews_dir = workspaces.reviews_dir,
+      home = config.home
     )
 
     processor: Optional[Processor] = None
@@ -119,7 +127,7 @@ async def run_service(config: ForgeServiceConfig,
       store = store,
       forge = forge,
       config = config,
-      workspaces = Workspaces(config.home, forge),
+      workspaces = workspaces,
       sandbox = sandbox,
       publisher = publisher,
       wake = wake,

@@ -47,6 +47,7 @@ from edgacknowledg import (
 from edgacknowledg.client.shared import (
   BackgroundWorkerPool,
   Channel,
+  IllegalFileAccessError,
   ReviewClientHandler,
   announce_section,
 )
@@ -384,6 +385,19 @@ class _DirectChannel:
     await self._websocket.send(encode_message(msg))
 
 
+async def _send_reply_best_effort(channel: Channel,
+                                  reply: ProtocolMessage) -> None:
+  '''Send ``reply`` to a failed request, ignoring any failure but a lost
+  connection (which the caller handles).
+  '''
+  try:
+    await channel.send(reply)
+  except (ConnectionClosed, NotConnectedError):
+    raise
+  except Exception:
+    pass
+
+
 async def _reply_to_failed_request(channel: Channel,
                                    handler: ReviewClientHandler) -> None:
   '''Answer a request whose handler raised, and log why.
@@ -395,12 +409,29 @@ async def _reply_to_failed_request(channel: Channel,
     f"Request to section {handler.subscription_type}/{handler.slug} failed:"
   )
   traceback.print_exc()
-  try:
-    await channel.send(message(RequestTags.INVALID_REQUEST))
-  except (ConnectionClosed, NotConnectedError):
-    raise
-  except Exception:
-    pass
+  await _send_reply_best_effort(channel, message(RequestTags.INVALID_REQUEST))
+
+
+async def _report_illegal_access(channel: Channel,
+                                 handler: ReviewClientHandler,
+                                 error: IllegalFileAccessError) -> None:
+  '''Report the reviewer whose request asked for a file outside the
+  section, so the server drops their connection. The section keeps serving
+  everyone else.
+  '''
+  if error.reviewer_id is None:
+    # Not traced to a reviewer; just a failed request.
+    await _reply_to_failed_request(channel, handler)
+  else:
+    eprint(
+      f"Reviewer {error.reviewer_id} of section "
+      f"{handler.subscription_type}/{handler.slug} requested a file outside "
+      f"it; having the server disconnect them: {error}"
+    )
+    await _send_reply_best_effort(channel, message(
+      RequestTags.ILLEGAL_ACCESS,
+      value = {'reviewer_id': error.reviewer_id}
+    ))
 
 
 async def _await_acknowledgement(future: asyncio.Future,
@@ -479,6 +510,8 @@ class _BatchClientReview:
         except IncompatibleProtocolVersion as ex:
           self._client.abort(ex)
           raise
+        except IllegalFileAccessError as ex:
+          await _report_illegal_access(channel, handler, ex)
         except Exception:
           await _reply_to_failed_request(channel, handler)
     finally:
@@ -645,6 +678,8 @@ class _DirectClientReview:
       except (RoleOccupied, ConnectionClosed, asyncio.CancelledError,
               IncompatibleProtocolVersion):
         raise
+      except IllegalFileAccessError as ex:
+        await _report_illegal_access(channel, handler, ex)
       except Exception:
         await _reply_to_failed_request(channel, handler)
 

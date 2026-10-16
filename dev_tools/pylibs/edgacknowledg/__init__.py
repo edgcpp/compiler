@@ -26,6 +26,9 @@ class RequestTags:
   INVALID_REQUEST = 'invalid'
   OUTDATED_PROTOCOL = 'outdated-proto'
   ROLE_OCCUPIED = 'role-occupied'
+  # A reviewer asked a provider for a file it may not read: provider ->
+  # server (naming the reviewer), which closes that reviewer's connection.
+  ILLEGAL_ACCESS = 'illegal-access'
   META_SECTION_NAME = 'meta.section.name'
   META_REVIEW_NAME = 'meta.review.name'
   META_REVIEW_TIMESTAMP = 'meta.review.timestamp'
@@ -117,7 +120,7 @@ ALLOWED_REVIEWER_REQUEST_TAGS = (
   ALLOWED_BENCH_EDIT_TAGS
 )
 
-PROTOCOL_REVISION = 18
+PROTOCOL_REVISION = 19
 
 # 10MiB
 MAX_MESSAGE_SIZE = 10485760

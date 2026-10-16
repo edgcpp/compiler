@@ -3,7 +3,7 @@
 This document describes the WebSocket protocol used by the AcknowlEDG server,
 the Vue client, and the `edgy-review` / `edg-bench-review` /
 `edg-acknowledg-cli` providers.
-The current protocol revision is **18**.
+The current protocol revision is **19**.
 
 All frames are JSON text. Implementations live in `edgacknowledg`
 (`dev_tools/pylibs/edgacknowledg`) and must stay in sync with the JavaScript
@@ -163,6 +163,7 @@ Closing `/batch` cancels every subscription for that connection.
 | `invalid` | unused / `null` | Malformed request, bad slug, failed handshake, or unexpected tag |
 | `outdated-proto` | `null` | Peer `r` does not match |
 | `role-occupied` | `null` | Another provider already holds this UUID + slug |
+| `illegal-access` | see [Illegal access](#illegal-access) | A reviewer requested a file outside the section |
 | `test.missing-src` | `null` | Reviewer request needs a test source that is not connected |
 | `test.missing-edit` | `null` | Reviewer request needs a test editor that is not connected |
 | `bench.missing-src` | `null` | Reviewer request needs a bench source that is not connected |
@@ -294,6 +295,22 @@ provider slug.
 
 `configs` is present only for test recording updates.
 
+### Illegal access
+
+When a reviewer's request names a file outside the section's tree (or, for
+content that isn't the provider user's own, one reached through a symlink),
+the provider doesn't answer the request. It reports the reviewer instead:
+
+```json
+{ "t": "illegal-access", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+```
+
+The server then closes that reviewer's socket with code **3001**, without
+any message: the reviewer UI never sends such requests, and doesn't reconnect
+by itself. For a reviewer in a `/batch` `review` subscription that is the
+whole `/batch` socket, ending every subscription on it. A provider can only
+report reviewers of its own review.
+
 ### Source `client_response` shapes (reviewer `v`)
 
 Display payloads that carry file text use `content` (string or `null` if
@@ -397,6 +414,7 @@ match the representative.
 | `invalid` | server → any |
 | `outdated-proto` | server → any |
 | `role-occupied` | server → source/edit (or nested in `batch.event`) |
+| `illegal-access` | source/edit → server |
 | `meta.section.name` | provider → server (optional tab label) |
 | `meta.review.name` | provider → server (optional review title) |
 | `meta.review.timestamp` | provider → server (optional created_at) |

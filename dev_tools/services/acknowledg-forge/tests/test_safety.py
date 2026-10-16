@@ -16,7 +16,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from edgacknowledg.forge.sandbox import Sandbox
+from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
 from edgacknowledg.forge.workspace import (
   UnsafeArchiveError,
   WorkspaceError,
@@ -219,3 +219,28 @@ async def test_sandbox_provides_frozen_tools(tmp_path: Path) -> None:
   # ...and read-only.
   result = await sandbox.run(['touch', str(script)], timeout = 30)
   assert not result.succeeded
+
+
+@pytest.mark.parametrize('version_output', [
+  'bubblewrap 0.7.0',
+  'bubblewrap 0.6.2',
+  'something else',
+])
+async def test_sandbox_requires_bwrap_0_8(tmp_path: Path,
+                                          version_output: str) -> None:
+  fake = tmp_path / 'bwrap'
+  fake.write_text(f"#!/bin/sh\necho '{version_output}'\n")
+  fake.chmod(0o755)
+  with pytest.raises(SandboxUnavailableError, match = '0.8 or later'):
+    await Sandbox(enabled = True, bwrap = str(fake)).check()
+
+
+@needs_bwrap
+async def test_sandboxed_commands_cannot_create_namespaces() -> None:
+  sandbox = Sandbox(enabled = True)
+  await sandbox.check()
+  result = await sandbox.run(
+    ['sh', '-c', 'unshare -U true && echo UNSHARED'],
+    timeout = 30
+  )
+  assert 'UNSHARED' not in result.output, result.output

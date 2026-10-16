@@ -6,6 +6,7 @@
 '''AcknowledgPublisher against a real AcknowlEDG server.'''
 
 import asyncio
+import json
 import os
 import shutil
 import signal
@@ -20,7 +21,13 @@ import pytest
 import pytest_asyncio
 import websockets
 
-from edgacknowledg import decode_response, encode_message, message
+from edgacknowledg import (
+  PROTOCOL_REVISION,
+  batch_event_message,
+  decode_response,
+  encode_message,
+  message,
+)
 from edgacknowledg.forge.db import SectionRecord
 from edgacknowledg.forge.publisher import (
   KIND_TEST_CHANGES,
@@ -154,9 +161,8 @@ async def test_publish_heal_and_survive_bad_requests(
       f"https://ui.example/review/{review.review_id}/tests/test-changes"
     )
 
-    # A reviewer asking for a file outside the test home is refused (the
-    # provider logs it; a bare 'invalid' can't be routed back to the
-    # reviewer), and the section keeps answering afterwards.
+    # A reviewer asking for a file outside the test home is reported by the
+    # provider and disconnected by the server, without explanation...
     async with websockets.connect(
         f"ws://127.0.0.1:{server.port}/review/{review.review_id}"
         ) as reviewer:
@@ -165,18 +171,59 @@ async def test_publish_heal_and_survive_bad_requests(
         value = {'id': '../../../../etc/passwd', 'assoc_file': None},
         section = 'test-changes'
       )))
+      replies = []
+      with pytest.raises(websockets.exceptions.ConnectionClosed) as closed:
+        while True:
+          tag, value, _ = decode_response(
+            await asyncio.wait_for(reviewer.recv(), 10)
+          )
+          replies.append(tag)
+          assert 'root:' not in str(value)
+      assert set(replies) == {'review.connection-state'}, replies
+      assert closed.value.rcvd is not None
+      assert closed.value.rcvd.code == 3001
+
+    # A reviewer on a /batch socket takes the whole socket down with it.
+    async with websockets.connect(
+        f"ws://127.0.0.1:{server.port}/batch") as batch:
+      await batch.send(encode_message(message(
+        'batch.subscribe',
+        value = {'type': 'review', 'id': str(review.review_id)}
+      )))
+      tag, value, _ = decode_response(
+        await asyncio.wait_for(batch.recv(), 10)
+      )
+      assert tag == 'batch.subscribe', (tag, value)
+      subscription_id = uuid.UUID(value['subscription_id'])
+      await batch.send(encode_message(batch_event_message(
+        subscription_id,
+        message(
+          'test.src.show-src',
+          value = {'id': '../../../../etc/passwd', 'assoc_file': None},
+          section = 'test-changes'
+        )
+      )))
+      with pytest.raises(websockets.exceptions.ConnectionClosed) as closed:
+        while True:
+          frame = await asyncio.wait_for(batch.recv(), 10)
+          assert 'root:' not in str(frame)
+      assert closed.value.rcvd is not None
+      assert closed.value.rcvd.code == 3001
+
+    # ...while the section keeps serving everyone else.
+    async with websockets.connect(
+        f"ws://127.0.0.1:{server.port}/review/{review.review_id}"
+        ) as reviewer:
       await reviewer.send(encode_message(message(
         'test.src.list-statuses',
         section = 'test-changes'
       )))
-      replies = []
-      while 'test.src.list-statuses' not in replies:
-        tag, value, _ = decode_response(
+      tag = None
+      while tag != 'test.src.list-statuses':
+        tag, _, _ = decode_response(
           await asyncio.wait_for(reviewer.recv(), 10)
         )
-        replies.append(tag)
-        assert tag != 'test.missing-src', replies
-        assert 'root:' not in str(value)
+        assert tag not in ('test.missing-src', 'illegal-access', 'invalid')
     await _wait_for_sources(server.port, review.review_id, ['test-changes'])
 
     # After the server restarts (losing all state), the section is
@@ -190,3 +237,17 @@ async def test_publish_heal_and_survive_bad_requests(
   finally:
     task.cancel()
     await asyncio.gather(task, return_exceptions = True)
+
+
+async def test_reviewer_with_outdated_protocol_is_told(server: Server) -> None:
+  async with websockets.connect(
+      f"ws://127.0.0.1:{server.port}/review/{uuid.uuid4()}") as reviewer:
+    await reviewer.send(json.dumps({
+      't': 'test.src.list-statuses',
+      'r': PROTOCOL_REVISION - 1,
+      's': 'test-changes',
+    }))
+    tags = []
+    while 'outdated-proto' not in tags:
+      frame = json.loads(await asyncio.wait_for(reviewer.recv(), 10))
+      tags.append(frame['t'])

@@ -14,9 +14,14 @@ Disk use is kept small because pull requests may stay open for a long time:
   only when a section needs them.
 - Run directories are swapped in by rename and deleted once superseded.
 
-Everything taken from a pull request or a CI artifact is untrusted: paths
-are checked for symlinks before the service writes through them, and
-archives are size-capped and may not contain links or escaping paths.
+Everything taken from a pull request or a CI artifact is untrusted:
+
+- Clones check symlinks out as plain files holding the link's target
+  (``core.symlinks=false``) and fsck what they fetch, so no worktree holds a
+  link a pull request committed; ``check_plain_tree`` verifies that after
+  every checkout, and checks what sandboxed commands write too.
+- Paths are checked for symlinks before the service writes through them.
+- Archives are size-capped and may not contain links or escaping paths.
 '''
 
 import asyncio
@@ -187,6 +192,61 @@ def ensure_real_directory(root: Path, relative: PurePosixPath) -> Path:
     if not stat.S_ISDIR(mode):
       raise WorkspaceError(f"{current} is not a real directory")
   return current
+
+
+def require_real_directory(root: Path, relative: PurePosixPath) -> Path:
+  '''Return ``root/relative`` after checking that every component of it
+  below ``root`` is a real directory (not a symlink); create nothing.
+  '''
+  current = root
+  for part in relative.parts:
+    if part in ('', '.', '..'):
+      raise WorkspaceError(f"invalid path component in {relative}")
+    current = current / part
+    try:
+      mode = os.lstat(current).st_mode
+    except FileNotFoundError:
+      raise WorkspaceError(f"{current} does not exist") from None
+    if not stat.S_ISDIR(mode):
+      raise WorkspaceError(f"{current} is not a real directory")
+  return current
+
+
+def require_real_directory_under(root: Path, path: Path) -> Path:
+  '''``require_real_directory`` for an absolute ``path`` that must lie
+  (lexically) under ``root``.
+  '''
+  try:
+    relative = path.relative_to(root)
+  except ValueError:
+    raise WorkspaceError(f"{path} is not under {root}") from None
+  return require_real_directory(root, PurePosixPath(*relative.parts))
+
+
+def check_plain_tree(root: Path, *, allow_hard_links: bool = True) -> None:
+  '''Raise ``WorkspaceError`` unless everything under ``root`` is a real
+  directory or a regular file: no symlinks, FIFOs, sockets, or devices
+  (and, unless ``allow_hard_links``, no regular file with other links).
+
+  Run over trees that untrusted content shaped (worktrees, sandbox output)
+  before anything outside a sandbox reads them.
+  '''
+  def check(path: Path) -> None:
+    info = os.lstat(path)
+    if stat.S_ISDIR(info.st_mode):
+      return
+    if not stat.S_ISREG(info.st_mode):
+      raise WorkspaceError(f"{path} is not a regular file or directory")
+    if not allow_hard_links and info.st_nlink > 1:
+      raise WorkspaceError(f"{path} is hard-linked")
+
+  def raise_error(error: OSError) -> None:
+    raise error
+
+  check(root)
+  for directory, dirs, files in os.walk(root, onerror = raise_error):
+    for name in [*dirs, *files]:
+      check(Path(directory, name))
 
 
 def remove_tree(path: Path) -> None:
@@ -369,6 +429,12 @@ class Workspaces:
         # Each worktree keeps its own sparse-checkout configuration.
         ('extensions.worktreeConfig', 'true'),
         ('core.hooksPath', os.devnull),
+        # Check symlinks out as plain files holding their target, so a pull
+        # request can't plant a link for the service to read through.
+        ('core.symlinks', 'false'),
+        # Reject malformed trees ('..' or '.git' components and the like).
+        ('transfer.fsckObjects', 'true'),
+        ('fetch.fsckObjects', 'true'),
         ('gc.autoDetach', 'false')):
       await self.git('config', key, value, git_dir = staging)
     # With per-worktree configuration, core.bare must be per-worktree too,
@@ -447,7 +513,9 @@ class Workspaces:
     '''Check ``sha`` out sparsely (only ``patterns``) into the review's
     ``name`` worktree, creating it if needed; return the worktree root.
 
-    Untracked run directories in the worktree are left alone.
+    Untracked run directories in the worktree are left alone. The result
+    holds only real directories and regular files (``WorkspaceError``
+    otherwise).
     '''
     async with self.lock(info.repository):
       clone_dir = await self._ensure_clone(info.repository)
@@ -456,7 +524,7 @@ class Workspaces:
         PurePosixPath(self._reviews_dir.name, str(review_id))
       )
       worktree = review_dir / name
-      if not worktree.exists():
+      if not os.path.lexists(worktree):
         await self.git(
           'worktree', 'add', '--quiet', '--no-checkout', '--detach',
           str(worktree), sha,
@@ -468,6 +536,7 @@ class Workspaces:
         stdin = ''.join(f"{pattern}\n" for pattern in patterns)
       )
       await self.git('reset', '--quiet', '--hard', sha, cwd = worktree)
+      await asyncio.to_thread(check_plain_tree, worktree)
       return worktree
 
   async def remove_review(self,

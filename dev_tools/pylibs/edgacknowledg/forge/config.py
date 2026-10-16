@@ -43,6 +43,21 @@ def read_secret(credential_name: str,
   return environ.get(env_name)
 
 
+def _environment_secrets(environ: Mapping[str, str],
+                         names: dict[str, str]) -> tuple[str, ...]:
+  '''The variables (of ``names``, credential name -> variable) a secret
+  is actually read from, for lack of a credential.
+  '''
+  credentials_dir = environ.get('CREDENTIALS_DIRECTORY')
+  return tuple(
+    env_name for credential_name, env_name in names.items()
+    if environ.get(env_name) is not None and (
+      credentials_dir is None or
+      not Path(credentials_dir, credential_name).is_file()
+    )
+  )
+
+
 @dataclass(frozen = True)
 class ForgeServiceConfig:
   '''Settings shared by every forge service.'''
@@ -84,6 +99,9 @@ class ForgeServiceConfig:
   acknowledg_api_key: Optional[str]
   acknowledg_ui_host: str
   acknowledg_ui_port: int
+  # Secrets read from environment variables rather than credentials; any
+  # process can read its own initial environment (/proc/self/environ).
+  environment_secrets: tuple[str, ...] = ()
 
   @classmethod
   def from_environment(cls,
@@ -195,6 +213,13 @@ class ForgeServiceConfig:
       ),
       acknowledg_ui_host = default_ui_host(),
       acknowledg_ui_port = default_ui_port(),
+      # (Not the database URL, which is only a secret if it holds a
+      # password, and then the documentation says to use the credential.)
+      environment_secrets = _environment_secrets(environ, {
+        'forge-token': f"{ENV_PREFIX}TOKEN",
+        'webhook-secret': f"{ENV_PREFIX}WEBHOOK_SECRET",
+        'acknowledg-api-key': 'EDG_ACKNOWLEDG_API_KEY',
+      }),
     )
 
   @property

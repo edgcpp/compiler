@@ -48,12 +48,15 @@ from edgacknowledg.forge.publisher import (
 from edgacknowledg.forge.sandbox import Sandbox
 from edgacknowledg.forge.workspace import (
   BENCH_BASELINE_PATTERNS,
+  WorkspaceError,
   Workspaces,
   changes_patterns,
+  check_plain_tree,
   ensure_real_directory,
   extract_artifact,
   failures_patterns,
   remove_tree,
+  require_real_directory,
 )
 
 _log = logging.getLogger(__name__)
@@ -396,6 +399,19 @@ class Processor:
           f"edg-rematerialize-test-run {reason}: "
           f"{result.output.strip()[-2000:]}"
         )
+      # The sandboxed command saw only pull request content and the frozen
+      # tooling, but what it wrote is read outside the sandbox: it may hold
+      # only directories and regular files (no links to service files).
+      try:
+        await asyncio.to_thread(
+          check_plain_tree,
+          staging,
+          allow_hard_links = False
+        )
+      except WorkspaceError as ex:
+        raise ProcessingError(
+          f"edg-rematerialize-test-run wrote something unsafe: {ex}"
+        ) from ex
       if len(edgtest.find_changes_files(staging / timestamp)) == 0:
         _log.warning(
           '%s#%d: edg-rematerialize-test-run produced no changes.elist; '
@@ -640,8 +656,14 @@ class Processor:
     sections = []
     for subdirectory, tag, name in BENCH_SECTIONS:
       root = run_dir / subdirectory
-      baseline_dir = bench_home / 'baselines' / 'project' / tag
-      if not root.is_dir() or not baseline_dir.is_dir():
+      try:
+        # The baselines come from the pull request; never follow a link.
+        baseline_dir = require_real_directory(
+          bench_home,
+          PurePosixPath('baselines', 'project', tag)
+        )
+        require_real_directory(run_dir, PurePosixPath(subdirectory))
+      except WorkspaceError:
         continue
       sections.append(SectionRecord(
         kind = KIND_BENCH,

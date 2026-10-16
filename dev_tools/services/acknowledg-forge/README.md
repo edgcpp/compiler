@@ -59,14 +59,40 @@ Pull requests, and the CI artifacts their runs produce, are untrusted:
   merge-base with a served branch (`ACKNOWLEDG_FORGE_BASE_BRANCHES`).
 - Every command that reads pull request content (`edg-rematerialize-test-run`
   and `patch`, plus `ifc-dump` and `cg_annotate` run for reviewers) runs under
-  [bubblewrap](https://github.com/containers/bubblewrap). It gets no network
-  and a cleared environment, sees only the files it needs, and can write only
-  its output directory.
+  [bubblewrap](https://github.com/containers/bubblewrap). It gets no network,
+  no capabilities, and a cleared environment, sees only the files it needs,
+  and can write only its output directory. It can't create user namespaces
+  either, so the service requires bubblewrap 0.8 or later and refuses to
+  start with an older one. Reviewer-triggered commands are also time-limited.
+- Answering reviewers means reading pull request content, so it happens in a
+  separate process (`publisher_worker`), also under bubblewrap. That process
+  has the network, to reach AcknowlEDG. It sees the review trees, read-only,
+  and nothing else of the service: no credentials, database, or clones. Its
+  only secret is the AcknowlEDG API key, which it gets over a pipe. If it
+  dies, the service restarts it and serves every review again. At startup,
+  the service checks that bubblewrap can run nested this way.
+- **Symlinks.** A pull request can commit symlinks. Several layers keep the
+  service from reading through them:
+  - Clones check symlinks out as plain files holding the link's target
+    (`core.symlinks=false`), so no worktree contains one. Symlinked tests
+    therefore show their target path rather than its contents.
+  - Clones also fsck everything fetched.
+  - After every checkout, a worktree may hold only directories and regular
+    files, and so may what `edg-rematerialize-test-run` writes (which also
+    may not hold hard links). A violation fails the section rather than
+    serving it.
+  - The section's directories, including the bench baselines a pull request
+    supplies, must be real directories.
+  - The handlers serving reviewers open files without following any symlink,
+    and only under the section's tree.
+  - The service refuses to write through symlinks.
 - Artifacts are size-capped, including the decompressed size of the
   `.rt.tar.gz` files inside them, and may not contain links or escaping paths.
-  The service refuses to write through symlinks a pull request committed.
 - Sections are read-only. Reviewers can't accept diffs or update baselines
   through the service.
+- Secrets belong in credentials. A secret passed in an environment variable is
+  readable from the process's own `/proc/self/environ`, so the service warns
+  at startup when sandboxing is on and a secret came from the environment.
 - Comments contain only fixed text, commit hashes, and links the service
   generates.
 
@@ -84,9 +110,9 @@ The host then needs only rootless Podman (with Quadlet), systemd, and network
 access to the forge and the AcknowlEDG API.
 
 Running directly on a host instead needs Python 3.11 or later, git 2.35 or
-later, bubblewrap (with unprivileged user namespaces), `python3`, `patch`,
-`diff` and `cg_annotate` under `/usr`, and a `dev_tools` copy for
-`ACKNOWLEDG_FORGE_TOOLS_DIR`.
+later, bubblewrap 0.8 or later with unprivileged user namespaces (Ubuntu
+24.04 and later have it), `python3`, `patch`, `diff` and `cg_annotate` under
+`/usr`, and a `dev_tools` copy for `ACKNOWLEDG_FORGE_TOOLS_DIR`.
 
 ## Configuration
 
@@ -411,9 +437,10 @@ settings so the host can pull it without logging in.
 Notes:
 
 - **Isolation:** the container keeps the service and its dependencies away
-  from the host. bubblewrap still isolates the commands that read pull request
-  content from the service inside the container: from its credentials, its
-  database, and other reviews. `unmask=/proc/*` only affects what the
+  from the host. Inside the container, bubblewrap still isolates whatever
+  reads pull request content from the service: from its credentials, its
+  database, and its clones. That covers the commands, and the worker process
+  that answers reviewers. The commands are also isolated from other reviews. `unmask=/proc/*` only affects what the
   container's `/proc` shows. In a rootless container those files stay
   unreadable to it.
 - **Shutdown:** stopping the service (SIGTERM) shuts it down cleanly. Because
