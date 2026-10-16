@@ -1,0 +1,40 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Check that the issue forms (.github/ISSUE_TEMPLATE) and the discussion forms
+# (.github/DISCUSSION_TEMPLATE) they mirror haven't drifted apart.
+
+name: Issue Templates
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/ISSUE_TEMPLATE/**
+      - .github/DISCUSSION_TEMPLATE/**
+      - .github/workflows/issue-templates.yml
+      - dev_tools/bin/edg-check-issue-templates
+  pull_request:
+    paths:
+      - .github/ISSUE_TEMPLATE/**
+      - .github/DISCUSSION_TEMPLATE/**
+      - .github/workflows/issue-templates.yml
+      - dev_tools/bin/edg-check-issue-templates
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check-issue-templates
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Compare issue and discussion forms
+        run: python3 dev_tools/bin/edg-check-issue-templates
