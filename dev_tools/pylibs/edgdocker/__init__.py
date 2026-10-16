@@ -367,6 +367,31 @@ def _get_group_id() -> int:
     return 1000
   return os.getgid()
 
+def _stdin_is_interactive_console() -> bool:
+  '''Return TRUE if standard input is attached to an interactive console.
+
+  On Windows, "os.isatty" (and "sys.stdin.isatty") returns TRUE for some
+  character devices that are not consoles (e.g., "NUL", which is used when
+  a caller passes "subprocess.DEVNULL" as standard input), which would
+  incorrectly request TTY attachment for the container.  A real console
+  handle can be identified by "GetConsoleMode", which fails for all other
+  devices.
+  '''
+  if platform.system() != 'Windows':
+    return os.isatty(sys.stdin.fileno())
+
+  import ctypes
+  import msvcrt
+
+  kernel32 = ctypes.WinDLL('kernel32', use_last_error = True)
+  kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+  kernel32.GetConsoleMode.restype = ctypes.c_int
+  stdin_handle = msvcrt.get_osfhandle(sys.stdin.fileno())
+  console_mode = ctypes.c_uint(0)
+  return bool(
+    kernel32.GetConsoleMode(stdin_handle, ctypes.byref(console_mode))
+  )
+
 def exec_docker_cmd(image_name: str, workspace_dir: Path,
                     container_working_dir: PurePosixPath, command_string: str,
                     *, enable_x11: bool = False, memory_limit: str = '',
@@ -395,7 +420,7 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
     f"EDG_USER_NAME={render_user_name()}"
   ]
 
-  if os.isatty(sys.stdin.fileno()):
+  if _stdin_is_interactive_console():
     # Make the container interactive.
     docker_args.append('-it')
   else:
@@ -478,13 +503,15 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
 
   if platform.system() == 'Windows':
     # Windows does not properly handle the execvp. Instead, keep this process
-    # around, and simply forward on stdin, stdout, and stderr.
-    subprocess.run(
+    # around, and simply forward on stdin, stdout, and stderr.  Forward the
+    # exit status of the container so that callers observe failures.
+    completed_proc = subprocess.run(
       docker_args,
       stdin = sys.stdin,
       stdout = sys.stdout,
       stderr = sys.stderr
     )
+    sys.exit(completed_proc.returncode)
   else:
     # Execute the docker command, replacing the current process.
     os.execvp('docker', docker_args)

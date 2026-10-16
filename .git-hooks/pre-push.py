@@ -53,24 +53,24 @@ sys.path.insert(
 import edgutil
 
 if platform.system() == 'Windows':
-  # On Windows we need to use the kernel API to detect if this script is
-  # running in a standalone console window (if so, there will be only one
-  # processes at this point).
-  import ctypes
-
-  kernel32 = ctypes.WinDLL('kernel32', use_last_error = True)
-  process_array = (ctypes.c_uint * 2)()
-  num_processes = kernel32.GetConsoleProcessList(process_array, 2)
-  if num_processes != 1:
-    # When not running in a standalone console window, the script relaunches
-    # itself to make sure the user has an interactive shell.  Then it forwards
-    # the exit code from the delegate process.
+  # The standard input of this hook carries the push ref list supplied by
+  # git, so it cannot be used to prompt the user.  When a console is
+  # attached, open the console input device directly ("CONIN$" is the
+  # Windows counterpart of "/dev/tty") so that all prompts and output stay
+  # in the user's current terminal.
+  try:
+    sys.stdin = open('CONIN$', 'r')
+  except OSError:
+    # No console is attached (e.g., a GUI git client or a pseudo terminal
+    # such as mintty).  Relaunch in a standalone console window so that the
+    # user can still respond to interactive prompts.
     delegate_proc = subprocess.run(
       [
         sys.executable,
         __file__
       ],
-      creationflags = subprocess.CREATE_NEW_CONSOLE
+      creationflags = subprocess.CREATE_NEW_CONSOLE,
+      env = {**os.environ, 'EDG_PREPUSH_DELEGATE': '1'}
     )
     sys.exit(delegate_proc.returncode)
 else:
@@ -352,8 +352,24 @@ class PrePushChecker:
 
     return self.errors == 0
 
+def pause_delegate_window() -> None:
+  '''When running as a relaunch delegate, wait for the user before the
+  standalone console window closes so that failure output can be read.'''
+  if os.environ.get('EDG_PREPUSH_DELEGATE') != '1':
+    return
+
+  try:
+    input('Push checks failed; press Enter to close this window. ')
+  except EOFError:
+    pass
+
 def main():
   checker = PrePushChecker()
-  sys.exit(0 if checker.run() else 1)
+  try:
+    sys.exit(0 if checker.run() else 1)
+  except SystemExit as exit_request:
+    if exit_request.code != 0:
+      pause_delegate_window()
+    raise
 
 main()
