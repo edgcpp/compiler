@@ -47,8 +47,11 @@ Open-sourced in September of 2026.
 #if BACK_END_IS_CP_GEN_BE
 #include "cp_gen_be.h"
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+#include "llvm_gen_be.h"
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 #if BACK_END_SHOULD_BE_CALLED && \
-    !BACK_END_IS_C_GEN_BE && !BACK_END_IS_CP_GEN_BE
+    !BACK_END_IS_C_GEN_BE && !BACK_END_IS_CP_GEN_BE && !BACK_END_IS_LLVM_GEN_BE
 /*
 Provide a declaration for a non-EDG-supplied back end (not in the "edg"
 namespace).
@@ -153,7 +156,7 @@ MAKE_FRONT_END_CALLABLE is TRUE.
     if (is_at_least_one_error()) suppress_back_end = TRUE;
 #endif /* ifndef CALL_BACK_END_EVEN_WITH_ERRORS */
     if (!suppress_back_end) {
-#if USING_KAI_INLINER
+      #if USING_KAI_INLINER
       /* Call the Kuck & Associates inliner (if being used).  It is
          not part of the source code provided by EDG. */
       extern void DoKfrontPasses();
@@ -167,7 +170,11 @@ MAKE_FRONT_END_CALLABLE is TRUE.
       }  /* if */
 #endif /* USING_KAI_INLINER */
       if (display_compilation_time) get_timer(&be_start_time);
+#if BACK_END_IS_LLVM_GEN_BE
+      llvm_gen_be();
+#else
       back_end();
+#endif
       if (display_compilation_time) {
         /* Get the back end ending time. */
         get_timer(&be_end_time);

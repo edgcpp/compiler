@@ -25,7 +25,9 @@ cp_gen_be.h - Declarations related to cp_gen_be.c (C++/C-generating back end).
 BEGIN_EDG_NAMESPACE
 
 #if !STANDALONE_UTILITY_PROGRAM
+#if !BACK_END_IS_LLVM_GEN_BE
 extern void back_end(void);
+#endif
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #if MAKE_FRONT_END_CALLABLE

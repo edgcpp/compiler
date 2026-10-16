@@ -258,7 +258,7 @@ Initialize the option information table.
   add_option_description(optk_keep_comments_in_pp_output, "comments", 'C',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_none);
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   add_option_description(optk_old_line_dirs, "old_line_commands", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_none);
@@ -483,7 +483,7 @@ Initialize the option information table.
   add_option_description(optk_display_error_number, "no_display_error_number",
                          '\0', /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_none);
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   add_option_description(optk_gen_c_file_name, "gen_c_file_name",
                          '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_none);
@@ -502,6 +502,36 @@ Initialize the option information table.
                          '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_command_line);
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+  add_option_description(optk_gen_llvm_file_name, "gen_llvm_file_name",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  add_option_description(optk_gen_llvm_bc_file_name, "gen_llvm_bc_file_name",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  add_option_description(optk_gen_llvm_thinlto_index, "gen_llvm_thinlto_index",
+                         '\0', /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_none);
+  add_option_description(optk_flto, "flto",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  add_option_description(optk_fprofile_generate, "fprofile-generate",
+                         '\0', /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_none);
+  add_option_description(optk_fprofile_use, "fprofile-use",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  add_option_description(optk_gen_obj_file_name, "gen_obj_file_name",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  add_option_description(optk_gen_asm_file_name, "gen_asm_file_name",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  add_option_description(optk_fsanitize, "fsanitize",
+                         '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_none);
+  if (strcmp("fsanitize", "fsanitize") == 0) {} // placeholder
+#endif /* BACK_END_IS_LLVM_GEN_BE */
   add_option_description(optk_create_pch, "create_pch",
                          '\0', /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_none);
@@ -10625,7 +10655,7 @@ Process the arguments on the command line that invoked the compiler.
         check_assertion(opt_value == TRUE);
         keep_comments_in_pp_output = TRUE;
         break;
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
       case optk_old_line_dirs:
         /* Generate old-style line directives in generated C/C++ output,
            i.e., "# nnn" instead of "#line nnn". */
@@ -11092,7 +11122,7 @@ Process the arguments on the command line that invoked the compiler.
         /* Enable or disable display of error number in diagnostic messages. */
         display_error_number = opt_value;
         break;
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
       case optk_gen_c_file_name:
         /* The name to be used for the generated C file. */
         gen_c_file_name = file_name_from_opt_arg(opt_arg);
@@ -11114,6 +11144,44 @@ Process the arguments on the command line that invoked the compiler.
         clang_is_generated_code_target = TRUE;
         break;
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+      case optk_gen_llvm_file_name:
+        /* The name to be used for the generated LLVM IR file. */
+        gen_llvm_file_name = file_name_from_opt_arg(opt_arg);
+        break;
+      case optk_gen_llvm_bc_file_name:
+        /* The name to be used for the generated LLVM bitcode file. */
+        gen_llvm_bc_file_name = file_name_from_opt_arg(opt_arg);
+        break;
+      case optk_gen_llvm_thinlto_index:
+        gen_llvm_thinlto_index = TRUE;
+        break;
+      case optk_flto:
+        if (opt_arg) flto_kind = opt_arg;
+        else flto_kind = "full";
+        break;
+      case optk_fprofile_generate:
+        if (opt_arg) fprofile_generate_path = opt_arg;
+        else fprofile_generate_path = "default.profraw";
+        break;
+      case optk_fprofile_use:
+        fprofile_use_path = file_name_from_opt_arg(opt_arg);
+        break;
+      case optk_gen_obj_file_name:
+        /* The name to be used for the generated object file. */
+        gen_obj_file_name = file_name_from_opt_arg(opt_arg);
+        break;
+      case optk_gen_asm_file_name:
+        /* The name to be used for the generated assembly file. */
+        gen_asm_file_name = file_name_from_opt_arg(opt_arg);
+        break;
+      case optk_fsanitize:
+        if (strcmp(opt_arg, "address") == 0) sanitize_address = TRUE;
+        else if (strcmp(opt_arg, "thread") == 0) sanitize_thread = TRUE;
+        else if (strcmp(opt_arg, "memory") == 0) sanitize_memory = TRUE;
+        else if (strcmp(opt_arg, "undefined") == 0) sanitize_undefined = TRUE;
+        break;
+#endif /* BACK_END_IS_LLVM_GEN_BE */
       case optk_create_pch:
         /* Create precompiled header file as part of this compilation. */
         check_assertion(opt_value == TRUE);
@@ -13237,7 +13305,7 @@ variables declared in cmd_line.h.
   pp_output_file_needed = FALSE;
   generate_pp_output = FALSE;
   keep_comments_in_pp_output = FALSE;
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   gen_old_style_line_dirs = FALSE;
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
   gen_edg_special_types = FALSE;
@@ -13419,9 +13487,23 @@ variables declared in cmd_line.h.
   implicit_template_inclusion_mode = DEFAULT_IMPLICIT_TEMPLATE_INCLUSION_MODE;
 #endif /* INSTANTIATION_BY_IMPLICIT_INCLUSION */
   display_error_number = DEFAULT_DISPLAY_ERROR_NUMBER;
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   gen_c_file_name = NULL;
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+  gen_llvm_file_name = NULL;
+  gen_llvm_bc_file_name = NULL;
+  gen_llvm_thinlto_index = FALSE;
+  flto_kind = NULL;
+  fprofile_generate_path = NULL;
+  fprofile_use_path = NULL;
+  gen_obj_file_name = NULL;
+  gen_asm_file_name = NULL;
+  sanitize_address = FALSE;
+  sanitize_thread = FALSE;
+  sanitize_memory = FALSE;
+  sanitize_undefined = FALSE;
+#endif /* BACK_END_IS_LLVM_GEN_BE */
   precompiled_header_processing_required = FALSE;
   create_precompiled_header = FALSE;
   use_precompiled_header = FALSE;

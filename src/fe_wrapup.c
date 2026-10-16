@@ -52,6 +52,9 @@ fe_wrapup.c - End of front end processing.
 #if BACK_END_IS_CP_GEN_BE
 #include "cp_gen_be.h"
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+#include "llvm_gen_be.h"
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 #if MICROSOFT_EXTENSIONS_ALLOWED
 #include "ms_metadata.h"
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -902,6 +905,9 @@ memory used by the compilation.
 #if BACK_END_IS_CP_GEN_BE
   cp_gen_be_cleanup();
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+  llvm_gen_be_cleanup();
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 #if IL_SHOULD_BE_WRITTEN_TO_FILE
   close_il_output_file();
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */

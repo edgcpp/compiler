@@ -10020,7 +10020,7 @@ Do IL lowering of the indicated field and everything under it.
     mark_as_visited(field);
     lower_source_correspondence(&field->source_corresp);
     lower_os_type(field->type);
-#if BACK_END_IS_C_GEN_BE && IA64_ABI && MAINTAIN_NEEDED_FLAGS
+#if (BACK_END_IS_C_GEN_BE) && IA64_ABI && MAINTAIN_NEEDED_FLAGS
     if (field->class_subobject_with_tail_padding) {
       /* Ensure that the corresponding subobject type definition is not
          removed from the IL, as it will be needed by the C-generating back

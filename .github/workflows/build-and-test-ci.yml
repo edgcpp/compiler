@@ -284,3 +284,53 @@ jobs:
           path: aggregated-test-results/
           if-no-files-found: warn
           retention-days: 14
+
+  coverage-llvm:
+    name: LLVM Backend Code Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container:
+      image: docker.io/edgcpp/ci-runner:latest
+    defaults:
+      run:
+        shell: edg-container-exec "bash -eo pipefail {0}"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Configure CMake with coverage
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+        run: |
+          cmake --preset linux-gcc-debug \
+            -DEDG_CPFE_USE_GCOV=TRUE \
+            -DENABLE_LLVM_BACKEND=TRUE
+
+      - name: Build cpfe
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+        run: cmake --build build/gcc --target cpfe
+
+      - name: Run LLVM Tests
+        env:
+          RUN_LLVM_LINK_TESTS: "1"
+        run: |
+          mkdir -p build/test_llvm_enabled/bin
+          cp build/gcc/bin/cpfe build/test_llvm_enabled/bin/
+          ./tests/test_llvm_globals.sh
+          ./tests/test_llvm_functions.sh
+          ./tests/test_llvm_expressions.sh
+          ./tests/test_llvm_control_flow.sh
+          ./tests/test_llvm_output_generation.sh
+
+      - name: Check 100% Coverage for llvm_gen_be.cpp
+        run: |
+          cd build/gcc
+          gcov -r ../../src/llvm_gen_be.cpp
+          # Ensure coverage fails if not 100
+          if ! grep -q "Lines executed:100.00% of" llvm_gen_be.cpp.gcov; then
+            echo "FAIL: llvm_gen_be.cpp does not have 100% code coverage."
+            cat llvm_gen_be.cpp.gcov
+            exit 1
+          fi
+          echo "PASS: llvm_gen_be.cpp has 100% code coverage."

@@ -344,6 +344,16 @@ class PrePushChecker:
     if first_new_commit is not None:
       self.check_changed_files(first_new_commit)
 
+    print('Checking documentation coverage for LLVM Backend...')
+    mono_repo_dir = edgutil.find_mono_repo_or_exit()
+    doc_check_proc = subprocess.run(
+        [sys.executable, 'dev_tools/check_doc_coverage.py', 'src/llvm_gen_be.cpp', 'src/llvm_gen_be_abi_aapcs64.cpp', 'src/llvm_gen_be_abi_arm32.cpp', 'src/llvm_gen_be_abi_loongarch64.cpp', 'src/llvm_gen_be_abi_mips.cpp', 'src/llvm_gen_be_abi_ppc64.cpp', 'src/llvm_gen_be_abi_riscv64.cpp', 'src/llvm_gen_be_abi_s390x.cpp', 'src/llvm_gen_be_abi_sparc.cpp', 'src/llvm_gen_be_abi_sysv_x86_64.cpp', 'src/llvm_gen_be_abi_wasm.cpp', 'src/llvm_gen_be_abi_win64.cpp', 'src/llvm_gen_be_abi_x86_32.cpp', 'src/llvm_gen_be_asm.cpp', 'src/llvm_gen_be_codegen.cpp', 'src/llvm_gen_be_const.cpp', 'src/llvm_gen_be_coro.cpp', 'src/llvm_gen_be_debug.cpp', 'src/llvm_gen_be_debug_scopes.cpp', 'src/llvm_gen_be_debug_types.cpp', 'src/llvm_gen_be_decl.cpp', 'src/llvm_gen_be_eh.cpp', 'src/llvm_gen_be_error.cpp', 'src/llvm_gen_be_expr.cpp', 'src/llvm_gen_be_omp.cpp', 'src/llvm_gen_be_opt.cpp', 'src/llvm_gen_be_ptrmem.cpp', 'src/llvm_gen_be_rtti.cpp', 'src/llvm_gen_be_stmt.cpp', 'src/llvm_gen_be_type.cpp', 'src/llvm_gen_be_vtable.cpp'],
+        cwd = mono_repo_dir
+    )
+    if doc_check_proc.returncode != 0:
+        print('  [POLICY] LLVM Backend documentation coverage check failed.')
+        self.errors += 1
+
     return self.errors == 0
 
 def main():
