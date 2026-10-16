@@ -7508,6 +7508,14 @@ typedef struct a_ctor_init_block {
   a_boolean	out_of_order_diag_issued;
 			/* TRUE if a diagnostic has been issued about
 			   mem-initializers not matching declaration order. */
+  a_constructor_init_ptr
+		first_pending_unresolved_base_init;
+			/* First pending constructor init for a base class
+			   not matched with the base class list.  These entries
+			   occupy the tail of direct_list until the next
+			   mem-initializer for a matched nonvirtual direct
+			   base class is scanned.  NULL if no entries are
+			   pending. */
   a_boolean	pack_expansion_context_started;
 			/* TRUE if begin_potential_pack_expansion_context has
 			   been called for a mem-initializer, and elements
@@ -7597,8 +7605,59 @@ template containing the ctor-initializer is instantiated.
     cibp->end_of_direct_list->next = new_cip;
   }  /* if */
   cibp->end_of_direct_list = new_cip;
+  if (cibp->first_pending_unresolved_base_init == NULL) {
+    cibp->first_pending_unresolved_base_init = new_cip;
+  }  /* if */
   return new_cip;
 }  /* add_new_unresolved_base_ctor_init */
+
+
+static void move_pending_unresolved_base_inits(
+                                          a_ctor_init_block       *cibp,
+                                          a_constructor_init_ptr  explicit_cip)
+/*
+cibp tracks the constructor init entries for the constructor being defined.
+If it has pending entries for unresolved base classes, move them from the tail
+of direct_list to immediately before explicit_cip and clear the pending state.
+explicit_cip is the existing init entry for the matched nonvirtual direct base
+class whose mem-initializer is being scanned.  This preserves the source order
+of the unresolved mem-initializers relative to that mem-initializer.
+*/
+{
+  a_constructor_init_ptr  first_pending =
+                                      cibp->first_pending_unresolved_base_init;
+  a_constructor_init_ptr  last_pending = cibp->end_of_direct_list;
+
+  if (first_pending != NULL) {
+    /* Find the predecessors of the pending tail and explicit_cip. */
+    a_constructor_init_ptr  prev_of_pending = NULL, prev_of_explicit = NULL;
+
+    check_assertion(last_pending != NULL && last_pending->next == NULL);
+    for (a_constructor_init_ptr  cip = cibp->direct_list, prev_cip = NULL;
+         cip != NULL;
+         prev_cip = cip, cip = cip->next) {
+      if (cip == first_pending) {
+        prev_of_pending = prev_cip;
+        break;
+      }  /* if */
+      if (cip == explicit_cip) prev_of_explicit = prev_cip;
+    }  /* for */
+    check_assertion(prev_of_pending != NULL &&
+                    (explicit_cip == cibp->direct_list ||
+                     prev_of_explicit != NULL));
+    /* Remove the pending entries from the end of the list and splice them
+       before explicit_cip. */
+    prev_of_pending->next = NULL;
+    cibp->end_of_direct_list = prev_of_pending;
+    last_pending->next = explicit_cip;
+    if (prev_of_explicit == NULL) {
+      cibp->direct_list = first_pending;
+    } else {
+      prev_of_explicit->next = first_pending;
+    }  /* if */
+    cibp->first_pending_unresolved_base_init = NULL;
+  }  /* if */
+}  /* move_pending_unresolved_base_inits */
 
 
 static a_symbol_ptr look_up_mem_initializer_id(void)
@@ -7967,7 +8026,8 @@ all known yet; it is left unchanged otherwise.
          that only direct and virtual base classes can be specified. */
       bcp = base_classes_of(class_type);
       for (; bcp != NULL; bcp = bcp->next) {
-        if (same_entities(bcp->type, init_type)) {
+        if (identical_types_full(bcp->type, init_type,
+                                 ITF_EXACT_DECLTYPE_EXPR_MATCH_REQUIRED)) {
           if (bcp->direct || bcp->is_virtual) {
             if (found_bcp == NULL) {
               found_bcp = bcp;
@@ -8036,10 +8096,13 @@ all known yet; it is left unchanged otherwise.
       for (; new_cip != NULL; new_cip = new_cip->next) {
         if (new_cip->variant.base_class == bcp) break;
       }  /* for */
-      if (new_cip == NULL && prototype_instantiation) {
-        new_cip = add_new_unresolved_base_ctor_init(cibp,init_type);
-      }
       check_assertion(new_cip != NULL);
+      if (!bcp->is_virtual) {
+        /* Place pending unresolved base initializers before this matched
+           direct-base initializer, following their relative order in the
+           ctor-initializer list. */
+        move_pending_unresolved_base_inits(cibp, new_cip);
+      }  /* if */
       /* new_cip was initially marked as compiler-generated. Reset the
          flag now that it's appeared explicitly in the ctor-initializer
          list. */
@@ -9301,6 +9364,7 @@ initialized.  These are addressed in the course of the processing.
   cib.pending_decltype_pos = null_source_position;
   cib.has_explicit_init = FALSE;
   cib.out_of_order_diag_issued = FALSE;
+  cib.first_pending_unresolved_base_init = NULL;
   cib.pack_expansion_context_started = FALSE;
   if (user_defined && curr_token == tok_colon) {
     /* User-specified initializers are present. */
