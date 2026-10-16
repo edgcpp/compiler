@@ -1,5 +1,23 @@
 Version 7.1
 
+10/17/26 [GH #38]
+Integer value limits for a 128-bit host integer representation
+
+When target integers are represented by a 128-bit host integer (for example,
+in the macOS CMake configurations), MAX_INTEGER_VALUE, MIN_INTEGER_VALUE, and
+MAX_UNSIGNED_INTEGER_VALUE still defaulted to 64-bit limits.  As a result,
+constant arithmetic on __int128 values that did not fit in 64 bits could be
+wrongly diagnosed as overflowing.  For example:
+
+  constexpr __int128 s = (__int128)1 << 100;
+  static_assert(s * 4 == ((__int128)1 << 102), "");  // Previously an error.
+
+This is now fixed: When __int128 extensions are allowed, the default limits
+are those of the 128-bit types.  The Linux configurations no longer hard-code
+the 64-bit limits, so they also get the 128-bit limits when the integer value
+types are changed to the 128-bit types.
+
+
 10/16/26 [GH #229]
 Improper handling of "if constexpr" substatements
 
