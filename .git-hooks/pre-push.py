@@ -41,10 +41,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
+# Git invokes this hook with the ambient environment, which does not
+# necessarily have PYTHONPATH configured (e.g., on Windows).  Locate
+# "dev_tools/pylibs" relative to this script so "edgutil" can be imported.
+sys.path.insert(
+  0, str(Path(__file__).resolve().parents[1] / 'dev_tools' / 'pylibs')
+)
 
 import edgutil
-
-from pathlib import Path
 
 if platform.system() == 'Windows':
   # On Windows we need to use the kernel API to detect if this script is

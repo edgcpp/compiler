@@ -242,7 +242,12 @@ def _check_parents(mapped_dirs: List[Path], workspace_dir: Path) -> None:
   and can be a dangerous mistake (so we don't permit it).
   '''
   for mapped_dir in mapped_dirs:
-    common_dir = Path(os.path.commonpath([mapped_dir, workspace_dir]))
+    try:
+      common_dir = Path(os.path.commonpath([mapped_dir, workspace_dir]))
+    except ValueError:
+      # On Windows, paths on different drives have no common prefix (e.g.,
+      # APPDATA on "C:" and the workspace on "E:"), so they cannot overlap.
+      continue
     if common_dir == workspace_dir:
       print('Current workspace is the parent of a mapped dir:')
       print(f"  {mapped_dir}")

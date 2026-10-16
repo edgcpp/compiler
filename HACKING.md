@@ -27,6 +27,16 @@ If direnv is not an option, manually add `<EDG PROJECT DIR>/dev_tools/bin` (or
 variables respectively.  This will make the EDG development tools and their
 supporting Python libraries available.
 
+> [!WARNING]
+>
+> Windows users should ensure their clone uses LF line endings, e.g., by
+> setting `git config core.autocrlf input` before cloning (an existing clone
+> can be repaired by setting that configuration and re-checking out the
+> tree).  The default Windows Git configuration (`core.autocrlf true`)
+> produces a CRLF checkout, which breaks both the build (e.g., `mk_errinfo`
+> cannot parse `src/error_msg.txt`) and the Docker based workflow (scripts
+> mounted into the container fail on CRLF shebangs).
+
 ## Docker Based (Recommended)
 
 To get started with Docker, it is recommended that Windows and MacOS users
