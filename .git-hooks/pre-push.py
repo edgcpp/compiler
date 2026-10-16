@@ -143,6 +143,7 @@ class PrePushChecker:
 
   def __init__(self):
     self.errors = 0
+    self.abort = False
 
   def confirm_okay(self):
     '''Ask the user whether a policy warning is acceptable.
@@ -165,7 +166,8 @@ class PrePushChecker:
         return
       if response == 'q':
         self.errors = 1
-        sys.exit(1)
+        self.abort = True
+        return
 
       print(
         "Please answer 'y' (to accept), 'n' (to continue check) or "
@@ -174,15 +176,18 @@ class PrePushChecker:
       tries += 1
       if tries >= 10:
         print('Too many attempts.')
-        sys.exit(1)
+        self.errors = 1
+        self.abort = True
+        return
 
   def check_commits(self):
     '''Walk commits until one already on a remote branch is found.
 
     As commits are walked, check to make sure they match formatting guidance.
 
-    Returns the oldest new commit hash, or None if there are no new commits.
-    Exits immediately if a commit subject fails the PR-number policy.
+    Returns the oldest new commit hash, or None if there are no new commits
+    (or if a commit subject fails the PR-number policy, in which case an
+    error is recorded and the check sequence is aborted).
     '''
     first_new_commit = None
 
@@ -206,7 +211,9 @@ class PrePushChecker:
         print(
           "  [POLICY] Commit message doesn't contain valid PR number (or [])."
         )
-        sys.exit(1)
+        self.errors = 1
+        self.abort = True
+        return None
 
       first_new_commit = commit
 
@@ -291,6 +298,8 @@ class PrePushChecker:
         results = json.load(file_handle)
 
       for file_path_str, file_results in results.items():
+        if self.abort:
+          break
         print(f"  Checking file: {file_path_str}")
 
         misspellings = file_results['misspellings']
@@ -342,15 +351,15 @@ class PrePushChecker:
             print('=' * 79)
           self.confirm_okay()
 
-  def run(self) -> bool:
-    '''Execute the full pre-push check sequence.'''
+  def run(self) -> int:
+    '''Execute the full pre-push check sequence.  Return the exit status.'''
     first_new_commit = self.check_commits()
 
     # Skip per file checks if we didn't actually detect a new commit.
-    if first_new_commit is not None:
+    if not self.abort and first_new_commit is not None:
       self.check_changed_files(first_new_commit)
 
-    return self.errors == 0
+    return 0 if (self.errors == 0 and not self.abort) else 1
 
 def pause_delegate_window() -> None:
   '''When running as a relaunch delegate, wait for the user before the
@@ -365,11 +374,9 @@ def pause_delegate_window() -> None:
 
 def main():
   checker = PrePushChecker()
-  try:
-    sys.exit(0 if checker.run() else 1)
-  except SystemExit as exit_request:
-    if exit_request.code != 0:
-      pause_delegate_window()
-    raise
+  returncode = checker.run()
+  if returncode != 0:
+    pause_delegate_window()
+  sys.exit(returncode)
 
 main()

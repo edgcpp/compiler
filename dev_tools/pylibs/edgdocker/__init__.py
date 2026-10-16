@@ -241,13 +241,14 @@ def _check_parents(mapped_dirs: List[Path], workspace_dir: Path) -> None:
   This can be valid (from a Docker perspective), but it's an advanced use case
   and can be a dangerous mistake (so we don't permit it).
   '''
+  workspace_drive = os.path.splitdrive(str(workspace_dir))[0]
   for mapped_dir in mapped_dirs:
-    try:
-      common_dir = Path(os.path.commonpath([mapped_dir, workspace_dir]))
-    except ValueError:
-      # On Windows, paths on different drives have no common prefix (e.g.,
-      # APPDATA on "C:" and the workspace on "E:"), so they cannot overlap.
+    if os.path.splitdrive(str(mapped_dir))[0] != workspace_drive:
+      # The two paths are on different drives (which can only happen on
+      # Windows), so neither path can contain the other and the check below
+      # does not apply.
       continue
+    common_dir = Path(os.path.commonpath([mapped_dir, workspace_dir]))
     if common_dir == workspace_dir:
       print('Current workspace is the parent of a mapped dir:')
       print(f"  {mapped_dir}")
@@ -367,31 +368,6 @@ def _get_group_id() -> int:
     return 1000
   return os.getgid()
 
-def _stdin_is_interactive_console() -> bool:
-  '''Return TRUE if standard input is attached to an interactive console.
-
-  On Windows, "os.isatty" (and "sys.stdin.isatty") returns TRUE for some
-  character devices that are not consoles (e.g., "NUL", which is used when
-  a caller passes "subprocess.DEVNULL" as standard input), which would
-  incorrectly request TTY attachment for the container.  A real console
-  handle can be identified by "GetConsoleMode", which fails for all other
-  devices.
-  '''
-  if platform.system() != 'Windows':
-    return os.isatty(sys.stdin.fileno())
-
-  import ctypes
-  import msvcrt
-
-  kernel32 = ctypes.WinDLL('kernel32', use_last_error = True)
-  kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-  kernel32.GetConsoleMode.restype = ctypes.c_int
-  stdin_handle = msvcrt.get_osfhandle(sys.stdin.fileno())
-  console_mode = ctypes.c_uint(0)
-  return bool(
-    kernel32.GetConsoleMode(stdin_handle, ctypes.byref(console_mode))
-  )
-
 def exec_docker_cmd(image_name: str, workspace_dir: Path,
                     container_working_dir: PurePosixPath, command_string: str,
                     *, enable_x11: bool = False, memory_limit: str = '',
@@ -420,7 +396,7 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
     f"EDG_USER_NAME={render_user_name()}"
   ]
 
-  if _stdin_is_interactive_console():
+  if edgutil.is_interactive_terminal():
     # Make the container interactive.
     docker_args.append('-it')
   else:
