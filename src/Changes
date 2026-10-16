@@ -1,5 +1,39 @@
 Version 7.1
 
+10/16/26 [GH #303]
+C++20 modules: gnu emulation modes and extended floating-point types
+
+A module interface unit compiled in a gnu or clang emulation mode always
+ended with the catastrophic error "an IFC file could not be produced for
+the current translation unit" (with "one or more entities cannot currently
+be written to an IFC file").  The predeclared typedefs of extended
+floating-point types (e.g., "_Float16") entered into the global scope by
+such modes were written to the IFC file, but the types of some of them had
+no IFC encoding.  Predeclared typedefs are now skipped when the members of
+a scope are written to an IFC file:  they are re-created by the predefined
+type entry processing of an importing translation unit.  For example, with
+--c++20 --gnu=150100 --modules:
+
+  export module m;
+  export int f();
+    // Previously: catastrophic error when writing the IFC file.
+
+In addition, the floating-point types "_Float16", "__fp16", "_Float32",
+"_Float64", and "_Float128" (and their C++23 standard counterparts) can now
+be written to and read from an IFC file, so that module interfaces can
+export entities involving those types:
+
+  export module m;
+  export _Float16 half(_Float16 v) { return v / 2; }
+    // Previously: catastrophic error when writing the IFC file.
+
+The extended kinds "_Float32x", "_Float64x", "__float80", and
+"std::bfloat16_t" still have no IFC encoding that distinguishes them from
+other floating-point types of the same size, and an attempt to write an
+entity involving them to an IFC file is still rejected with the same
+catastrophic error.
+
+
 10/16/26 [GH #229]
 Improper handling of "if constexpr" substatements
 

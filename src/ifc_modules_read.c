@@ -16497,8 +16497,35 @@ no corresponding type, return an error type.
             }
             break;
           case ifc_tbs_float:
-            check_assertion(precision == ifc_tps_default);
-            result = float_type((a_float_kind)fk_float);
+            switch (precision) {
+              case ifc_tps_default:
+                result = float_type(fk_float);
+                break;
+              case ifc_tps_bit16:
+                /* Map to the "_Float16" kind used by the current dialect
+                   (see the corresponding predefined type entry processing
+                   in sys_predef.c). */
+                result = float_type((gnu_version_is(>= 130000) ||
+                                     clang_version_is(>= 150000)) ?
+                                        fk_std_float16 : fk_float16);
+                break;
+              case ifc_tps_bit32:
+                result = float_type(fk_std_float32);
+                break;
+              case ifc_tps_bit64:
+                result = float_type(fk_std_float64);
+                break;
+              case ifc_tps_bit128:
+                result = float_type(fk_float128);
+                break;
+              default:
+                { a_string err_msg("Unexpected ", str_for(precision),
+                                   " for ", str_for(basis));
+
+                  ifc_unexpected(module_of(itf), err_msg);
+                }
+                goto invalid;
+            }  /* switch */
             break;
           case ifc_tbs_double:
             if (precision == ifc_tps_long) {
