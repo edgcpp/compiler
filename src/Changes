@@ -1,5 +1,26 @@
 Version 7.1
 
+10/16/26 [GH #302]
+Incorrect order of base-class initializers in class template
+
+Previously, in the IL for prototype instantiations of class templates,
+base-class mem-initializers with non-type template arguments could appear after
+the initializers for other base classes.  Such initializers are now recorded in
+base-class declaration order when the base class can be identified.
+Initializers for base classes that cannot yet be identified now retain their
+source order relative to the next initializer for an identified nonvirtual
+direct base class.  For example, with --c++11:
+
+  template<int> struct A { };
+  struct B { };
+  template<int N> struct C : A<N>, B {
+    C() : A<N>(), B() { }      // Previously recorded as "B(), A<N>()".
+    C(int) : A<+N>(), B() { }  // Previously recorded as "B(), A<+N>()".
+  };
+
+Both initializer lists are now recorded in the order shown.
+
+
 10/16/26 [GH #229]
 Improper handling of "if constexpr" substatements
 
