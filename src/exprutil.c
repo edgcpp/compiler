@@ -33,6 +33,7 @@ exprutil.c -- Expression scanning utility routines.
 #include "lower_il.h"
 #endif /* DO_IL_LOWERING */
 #include "statements.h"
+#include "modules.h"
 #if USE_X86_FUNCTION_MULTIVERSIONING
 #include "sys_predef.h"
 #endif /* USE_X86_FUNCTION_MULTIVERSIONING */
@@ -18087,7 +18088,9 @@ reference entry, or is NULL if none is needed.
     } else if (routine->has_deducible_return_type &&
                !routine->has_deduced_return_type &&
                !routine->is_prototype_instantiation &&
-               !routine->defined) {
+               !routine->defined &&
+               !has_pending_template_definition_from_module(
+                   routine->assoc_template)) {
       /* A function with a deducible return type that has not (yet) been
          deduced.  If we are in a context where diagnostics are suppressed,
          treat the absence of a definition as a (suppressed) expression
