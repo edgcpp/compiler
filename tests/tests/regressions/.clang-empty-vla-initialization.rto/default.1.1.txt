@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c11 --clang_version 160000 Test_name.c
+"Test_name.c", line 8: error: variable "vla" may not be initialized
+    int vla[n] = {};
+        ^
+
+"Test_name.c", line 8: warning: variable "vla" was declared but never referenced
+    int vla[n] = {};
+        ^
+
+1 error detected in the compilation of "Test_name.c".
