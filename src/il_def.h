@@ -7020,12 +7020,12 @@ typedef struct a_pragma {
 		ident_string;
 			/* The string for the #ident. */
 #endif /* IDENT_DIRECTIVE_AND_PRAGMA */
-#if BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE
     /* When kind == pk_pack: */
     a_targ_alignment
 		alignment;
 			/* The alignment specified by the pack pragma. */
-#endif /* BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #if MICROSOFT_EXTENSIONS_ALLOWED
     /* When kind == pk_comment: */
     struct {
@@ -12090,7 +12090,7 @@ typedef struct a_field {
 			   this field will contain 2043, and bit_size will
 			   be the number of bits in an int, which is the
 			   maximum permitted size for an int bit field. */
-#if BACK_END_IS_C_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE
   a_type_ptr	bit_field_alignment_type;
 			/* For a bit field where the declared_bit_size is
 			   larger than bit_size, the integer type whose
@@ -12098,7 +12098,7 @@ typedef struct a_field {
 			   that concept applies in the ABI (e.g., the IA-64
 			   ABI). NULL otherwise, and NULL until the containing
 			   class type has been laid out. */
-#endif /* BACK_END_IS_C_GEN_BE */
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   a_source_range
 		initializer_range;

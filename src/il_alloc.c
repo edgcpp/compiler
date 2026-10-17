@@ -2803,9 +2803,9 @@ to it.
   fp->property_or_event_descr = NULL;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   fp->declared_bit_size        = 0;
-#if BACK_END_IS_C_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE
   fp->bit_field_alignment_type = NULL;
-#endif /* BACK_END_IS_C_GEN_BE */
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   fp->initializer_range           = null_source_range;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
@@ -4367,9 +4367,9 @@ pointer to it.
     case pk_none:
       break;
     case pk_pack:
-#if BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE
       pp->variant.alignment = 0;
-#endif /* BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE */
       break;
 #if PRAGMA_WEAK_ALLOWED
     case pk_weak:

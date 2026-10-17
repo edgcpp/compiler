@@ -4363,7 +4363,7 @@ Get the name reference associated with a node, if any.
    is_type_node(node) ? (node)->variant.type_operand.name_reference :         \
    /* else */ (a_name_reference*)NULL)
 
-#if BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE
 /*
 If an enk_routine node has an associated name reference, return its
 "special_kind" field.  Otherwise, produce sfk_none.
@@ -4387,7 +4387,7 @@ Get the property/event descriptor associated with a routine node, if any.
 #define property_or_event_for_routine_node(node)                              \
   ((a_property_or_event_descr_ptr)NULL)
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED && !DO_IL_LOWERING */
-#endif /* BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 
 extern
 a_targ_alignment compute_alignof_value(a_type_ptr         alignof_type,
