@@ -1,7 +1,7 @@
 //type:fp
 //options_all:--clang --c++17
-//remark:[GH #?] The macOS clang bases define __GCC_CONSTRUCTIVE_SIZE and __GCC_DESTRUCTIVE_SIZE
-// 10/15/26  [GH #?]
+//remark:[GH #319] The macOS clang bases define __GCC_CONSTRUCTIVE_SIZE and __GCC_DESTRUCTIVE_SIZE
+// 10/15/26  [GH #319]
 //
 // Clang 19 and later predefine __GCC_CONSTRUCTIVE_SIZE and
 // __GCC_DESTRUCTIVE_SIZE, and libc++ (<__new/interference_size.h>, reached by
