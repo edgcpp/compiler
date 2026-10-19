@@ -13,8 +13,8 @@
 #
 #   prepare ───────────────┬──► test-gcc  ──┐
 #   build-gcc ─────────────┘                ├──► publish (on failure)
-#   prepare ───────────────┬──► test-i686 ──┘
-#   build-i686 ────────────┘
+#   prepare ───────────────┬──► test-i686 ──┤
+#   build-i686 ────────────┘                └──► coverage
 #   bench (pull requests only; independent)
 #
 # A shared run timestamp keeps results under the same tests/runs/<timestamp>/
@@ -23,6 +23,13 @@
 # `edg-docker-bench --posture=release` does and uploads them as bench-results
 # (c/ and cpp/ runs, for comparison against the checked-in
 # benchmarks/baselines/project/release-{c,cpp}).
+#
+# The debug builds are instrumented for gcov (EDG_CPFE_USE_GCOV) and ship
+# their .gcno files with the build products. Each test leg turns the .gcda
+# files its run produces into a gcovr JSON report for src/; the coverage job
+# merges the reports of all test legs and uploads one report to Codecov
+# (see .github/codecov.yml). The coverage steps never fail the run; only
+# edgy's results do.
 
 name: Build & Test CI
 
@@ -31,6 +38,9 @@ on:
     branches:
       - main
   pull_request:
+
+env:
+  GCOVR_VERSION: '8.7'
 
 jobs:
   prepare:
@@ -63,7 +73,7 @@ jobs:
       - name: Configure linux-gcc-debug
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --preset linux-gcc-debug
+        run: cmake --preset linux-gcc-debug -DEDG_CPFE_USE_GCOV=ON
 
       - name: Build linux-gcc-debug
         env:
@@ -72,7 +82,8 @@ jobs:
 
       # Runtime layout only: environment.sh / eccp need bin/, lib/, and the
       # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
-      # lib_<target>). lib_src is build-only and omitted.
+      # lib_<target>). lib_src is build-only and omitted. The .gcno files
+      # let the test legs produce coverage reports.
       - name: Upload build products
         uses: actions/upload-artifact@v7
         with:
@@ -83,6 +94,7 @@ jobs:
             build/gcc/lib_linux_*
             build/gcc/lib_win*
             build/gcc/environment.sh
+            build/gcc/src/**/*.gcno
           if-no-files-found: error
           retention-days: 1
           compression-level: 6
@@ -104,7 +116,7 @@ jobs:
       - name: Configure linux-i686-gcc-debug
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --preset linux-i686-gcc-debug
+        run: cmake --preset linux-i686-gcc-debug -DEDG_CPFE_USE_GCOV=ON
 
       - name: Build linux-i686-gcc-debug
         env:
@@ -121,6 +133,7 @@ jobs:
             build/gcc-i686/lib_linux_*
             build/gcc-i686/lib_win*
             build/gcc-i686/environment.sh
+            build/gcc-i686/src/**/*.gcno
           if-no-files-found: error
           retention-days: 1
           compression-level: 6
@@ -193,6 +206,51 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
+      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
+      # the downloaded .gcno files under build/gcc/src. Each leg saves a gcovr
+      # JSON report; the coverage job merges them and uploads to Codecov.
+      # Coverage problems must never fail the test leg, hence
+      # continue-on-error.
+      - name: Install gcovr
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      # cpfe and cpfe-cp compile the same sources; separate function merging
+      # keeps gcovr from rejecting functions seen at different lines. A few
+      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
+      # instead of failing.
+      - name: Generate coverage report
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          CONFIG: ${{ matrix.config }}
+        run: |
+          mkdir -p coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --filter 'src/' \
+            --merge-mode-functions=separate \
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
+            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
+            -j "$(nproc)" \
+            --json "coverage/${CONFIG}.json" \
+            --print-summary \
+            build/gcc
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.config }}
+          path: coverage/${{ matrix.config }}.json
+          if-no-files-found: warn
+          retention-days: 1
+
   test-i686:
     name: Test ${{ matrix.config }}
     needs:
@@ -261,6 +319,51 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
+      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
+      # the downloaded .gcno files under build/gcc-i686/src. Each leg saves a gcovr
+      # JSON report; the coverage job merges them and uploads to Codecov.
+      # Coverage problems must never fail the test leg, hence
+      # continue-on-error.
+      - name: Install gcovr
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      # cpfe and cpfe-cp compile the same sources; separate function merging
+      # keeps gcovr from rejecting functions seen at different lines. A few
+      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
+      # instead of failing.
+      - name: Generate coverage report
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          CONFIG: ${{ matrix.config }}
+        run: |
+          mkdir -p coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --filter 'src/' \
+            --merge-mode-functions=separate \
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
+            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
+            -j "$(nproc)" \
+            --json "coverage/${CONFIG}.json" \
+            --print-summary \
+            build/gcc-i686
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.config }}
+          path: coverage/${{ matrix.config }}.json
+          if-no-files-found: warn
+          retention-days: 1
+
   publish-test-results:
     name: Publish aggregated test results
     needs:
@@ -309,6 +412,71 @@ jobs:
           path: aggregated-test-results/
           if-no-files-found: warn
           retention-days: 14
+
+  coverage:
+    name: Publish coverage to Codecov
+    needs:
+      - test-gcc
+      - test-i686
+    # Like publish-test-results, merge whatever the test legs produced,
+    # whether or not their tests passed. The number of configs is not
+    # fixed: every coverage-* artifact is merged into one report and
+    # uploaded once.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Download per-config coverage reports
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-*
+          path: coverage
+          merge-multiple: true
+
+      - name: Install gcovr
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      - name: Merge coverage reports
+        if: ${{ hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        run: |
+          ls -l coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --merge-mode-functions=separate \
+            --json-add-tracefile 'coverage/*.json' \
+            --cobertura coverage.xml \
+            --print-summary
+
+      # Pull requests from forks have no access to secrets; the Codecov
+      # action then falls back to a tokenless upload, which Codecov accepts
+      # for public repositories.
+      #
+      # The report is complete as generated by gcovr, so skip the CLI's own
+      # gcov run (plugins: noop) and its "file fixes" pass, which opens every
+      # file git tracks and crashes on the dangling symlinks used as test
+      # inputs (e.g. tests/.../embed___has_embed/embed___has_embed.c).
+      - name: Upload coverage to Codecov
+        if: ${{ hashFiles('coverage.xml') != '' }}
+        continue-on-error: true
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          disable_search: true
+          disable_file_fixes: true
+          network_filter: src/
+          plugins: noop
+          fail_ci_if_error: true
+          verbose: true
 
   bench:
     name: Benchmark linux-gcc-release
