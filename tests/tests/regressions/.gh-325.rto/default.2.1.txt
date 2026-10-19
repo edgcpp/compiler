@@ -1,0 +1,167 @@
+fe_only -DTEST_NUMBER=2 --c++20 --clang_version 220100 Test_name.c
+"Test_name.c", line 12: error: type "S" is invalid as an argument for this builtin
+      __builtin_add_overflow(s, 1, p);
+                             ^
+
+"Test_name.c", line 13: error: type "S" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, s, p);
+                                ^
+
+"Test_name.c", line 14: error: type "int *" is invalid as an argument for this builtin
+      __builtin_sub_overflow(p, 1, p);
+                             ^
+
+"Test_name.c", line 15: error: type "int *" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, p, p);
+                                ^
+
+"Test_name.c", line 16: error: type "double" is invalid as an argument for this builtin
+      __builtin_mul_overflow(d, 1, p);
+                             ^
+
+"Test_name.c", line 17: error: type "double" is invalid as an argument for this builtin
+      __builtin_mul_overflow(1, d, p);
+                                ^
+
+"Test_name.c", line 18: error: type "C" is invalid as an argument for this builtin
+      __builtin_add_overflow(c, 1, p);
+                             ^
+
+"Test_name.c", line 19: error: type "std::nullptr_t" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, nullptr, p);
+                                ^
+
+"Test_name.c", line 20: error: type "void (*)()" is invalid as an argument for this builtin
+      __builtin_mul_overflow(g, 1, p);
+                             ^
+
+"Test_name.c", line 37: error: type "float *" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, 2, q);
+                                   ^
+
+"Test_name.c", line 42: error: type "F *" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, 2, f);
+                                   ^
+
+"Test_name.c", line 43: error: type "const int *" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, 2, c);
+                                   ^
+
+"Test_name.c", line 44: error: type "const volatile int *" is invalid as an argument for this builtin
+      __builtin_mul_overflow(1, 2, v);
+                                   ^
+
+"Test_name.c", line 45: error: type "void *" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, 2, w);
+                                   ^
+
+"Test_name.c", line 46: error: type "int **" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, 2, r);
+                                   ^
+
+"Test_name.c", line 47: error: type "S *" is invalid as an argument for this builtin
+      __builtin_mul_overflow(1, 2, s);
+                                   ^
+
+"Test_name.c", line 48: error: type "int" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, 2, 0);
+                                   ^
+
+"Test_name.c", line 49: error: type "std::nullptr_t" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, 2, nullptr);
+                                   ^
+
+"Test_name.c", line 50: error: type "C" is invalid as an argument for this builtin
+      __builtin_mul_overflow(1, 2, x);
+                                   ^
+
+"Test_name.c", line 67: error: too few arguments in function call
+      __builtin_add_overflow();
+                             ^
+
+"Test_name.c", line 68: error: too few arguments in function call
+      __builtin_sub_overflow(1);
+                              ^
+
+"Test_name.c", line 69: error: too few arguments in function call
+      __builtin_mul_overflow(1, 2);
+                                 ^
+
+"Test_name.c", line 70: error: too many arguments in function call
+      __builtin_add_overflow(1, 2, p, 3);
+                                      ^
+
+"Test_name.c", line 71: error: too many arguments in function call
+      __builtin_sub_overflow(1, 2, p, 3);
+                                      ^
+
+"Test_name.c", line 72: error: too many arguments in function call
+      __builtin_mul_overflow(1, 2, p, 3);
+                                      ^
+
+"Test_name.c", line 86: error: a brace-enclosed list is not allowed here
+      __builtin_add_overflow({1}, 2, p);
+                             ^
+
+"Test_name.c", line 87: error: a brace-enclosed list is not allowed here
+      __builtin_sub_overflow(1, {2}, p);
+                                ^
+
+"Test_name.c", line 88: error: a brace-enclosed list is not allowed here
+      __builtin_mul_overflow(1, 2, {p});
+                                   ^
+
+"Test_name.c", line 107: error: type "int *" is invalid as an argument for this builtin
+      __builtin_add_overflow(a, 2, p);
+                             ^
+
+"Test_name.c", line 108: error: type "void (*)(int *)" is invalid as an argument for this builtin
+      __builtin_add_overflow(f, 2, p);
+                             ^
+
+"Test_name.c", line 115: error: type "int *" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, a, p);
+                                ^
+
+"Test_name.c", line 131: error: type "F" is invalid as an argument for this builtin
+      __builtin_add_overflow(F::f, 2, p);
+                             ^
+
+"Test_name.c", line 132: error: type "F" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, F::f, p);
+                                ^
+
+"Test_name.c", line 133: error: type "F" is invalid as an argument for this builtin
+      __builtin_mul_overflow(F::f, F::f, p);
+                             ^
+
+"Test_name.c", line 133: error: type "F" is invalid as an argument for this builtin
+      __builtin_mul_overflow(F::f, F::f, p);
+                                   ^
+
+"Test_name.c", line 140: error: type "F *" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, 2, p);
+                                   ^
+
+"Test_name.c", line 141: error: type "const bool *" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, 2, b);
+                                   ^
+
+"Test_name.c", line 142: error: type "const E *" is invalid as an argument for this builtin
+      __builtin_mul_overflow(1, 2, e);
+                                   ^
+
+"Test_name.c", line 143: error: type "const int *" is invalid as an argument for this builtin
+      __builtin_add_overflow(1, 2, q);
+                                   ^
+
+"Test_name.c", line 144: error: type "float *" is invalid as an argument for this builtin
+      __builtin_sub_overflow(1, 2, r);
+                                   ^
+
+"Test_name.c", line 99: error: type "double" is invalid as an argument for this builtin
+      return __builtin_add_overflow(x, 1, p);
+                                    ^
+          detected during instantiation of "bool invalid_template_instantiation::j(T, int *) [with T=double]" at line 101
+
+41 errors detected in the compilation of "Test_name.c".

@@ -7,3 +7,16 @@ fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999
     char plain_char[] = {U'牛'};
                          ^
 
+"C/C23/n2683.c", line 47: error: type "char (*)[1]" is invalid as an argument for this builtin
+    bool flag_nostr = __builtin_sub_overflow((a), (b), (&plain_char));
+                                                       ^
+
+"C/C23/n2683.c", line 49: error: type "int" is invalid as an argument for this builtin
+    bool flag_noptr = __builtin_add_overflow((a), (b), (result));
+                                                       ^
+
+"C/C23/n2683.c", line 50: error: type "const int *" is invalid as an argument for this builtin
+    bool flag_noconst = __builtin_sub_overflow((a), (b), (&const_result));
+                                                         ^
+
+3 errors detected in the compilation of "Test_name.c".

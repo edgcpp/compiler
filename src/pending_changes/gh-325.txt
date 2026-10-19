@@ -1,0 +1,12 @@
+[GH #325]
+GNU/Clang compatibility: argument checking for arithmetic overflow builtins
+
+Previously, calls to __builtin_add_overflow, __builtin_sub_overflow, and
+__builtin_mul_overflow (and their GNU _p forms) could be accepted with invalid
+argument types or an incorrect number of arguments.  These calls are now
+properly diagnosed.  For example, with --gnu_version=150200:
+
+  struct S {};
+  void f(S s, int *p) {
+    __builtin_add_overflow(s, 1, p);  // Previously accepted, now an error.
+  }

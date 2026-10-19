@@ -5931,6 +5931,7 @@ typedef a_routine_ptr a_builtin_call_adjustment_callback(
 static a_builtin_call_adjustment_callback
 		adjust_sync_atomic_builtin,
 		adjust_builtin_zero_non_value_bits,
+		adjust_overflow_builtin,
 		adjust_elementwise_or_reduce_builtin,
 		adjust_type_generic_builtin,
 		adjust_return_type_to_type_of_first_argument,
@@ -6219,6 +6220,14 @@ be called to check and adjust the argument and routine types as needed.
     case bfk_zero_non_value_bits:
       /* Callback will validate arguments. */
       bcap->callback = adjust_builtin_zero_non_value_bits;
+      break;
+    case bfk_add_overflow:
+    case bfk_add_overflow_p:
+    case bfk_sub_overflow:
+    case bfk_sub_overflow_p:
+    case bfk_mul_overflow:
+    case bfk_mul_overflow_p:
+      bcap->callback = adjust_overflow_builtin;
       break;
     case bfk_source_location:
       { /* The source location builtin has been used, require and process the
@@ -6892,6 +6901,85 @@ be a pointer to a complete type and may not be const-qualified.
   }  /* if */
   return routine_from_function_operand(target);
 }  /* adjust_builtin_zero_non_value_bits */
+
+
+static a_routine_ptr adjust_overflow_builtin(
+                  an_operand                           *target,
+                  an_arg_list_elem_ptr                 args,
+                  a_source_position                    *closing_paren_position,
+                  ARG_UNUSED a_builtin_call_adjustment *bcap,
+                  an_expr_node_ptr                     *arg_list)
+/*
+Check the arguments for the generic arithmetic overflow builtin described by
+target.  The operands must be integers or enums (excluding scoped enums in
+Clang mode).  The result must point to a non-const integer, or be an integer
+for the _p form.  GCC excludes bool and enum results; Clang also allows bool
+and unscoped enums.  Use closing_paren_position for missing-argument
+diagnostics.  bcap is unused.  Return the routine to call and set *arg_list to
+the checked argument expressions, or return NULL on error.
+*/
+{
+  a_routine_ptr  rout = routine_from_function_operand(target);
+  a_boolean      err = FALSE;
+  a_boolean      result_is_pointer;
+  int            arg_index = 0;
+
+  *arg_list = NULL;
+  result_is_pointer =
+                   rout->variant.builtin_function_kind != bfk_add_overflow_p &&
+                   rout->variant.builtin_function_kind != bfk_sub_overflow_p &&
+                   rout->variant.builtin_function_kind != bfk_mul_overflow_p;
+  if (args == NULL || args->next == NULL || args->next->next == NULL) {
+    expr_pos_error(ec_too_few_arguments, closing_paren_position);
+    err = TRUE;
+  } else if (args->next->next->next != NULL) {
+    expr_pos_error(ec_too_many_arguments,
+                   init_component_pos(args->next->next->next));
+    err = TRUE;
+  } else {
+    an_arg_list_elem_ptr  arg;
+    for (arg = args; arg != NULL; arg = arg->next, ++arg_index) {
+      an_operand_ptr  operand;
+      a_type_ptr      arg_type;
+
+      operand = operand_of_arg_list_elem(arg);
+      do_operand_transformations(operand, TOPT_NO_OPTIONS);
+      arg_type = skip_typerefs(operand->type);
+      if (is_error_type(arg_type)) {
+        /* An error argument. */
+      } else if (arg_index < 2) {
+        if (!is_integral_or_enum_type(arg_type) ||
+            (clang_mode && is_scoped_enum_type(arg_type))) {
+          expr_pos_ty_error(ec_invalid_type_for_builtin,
+                            init_component_pos(arg), arg_type);
+          err = TRUE;
+        }  /* if */
+      } else {
+        a_type_ptr  result_type = arg_type;
+        if (result_is_pointer && is_pointer_type(arg_type)) {
+          result_type = type_pointed_to(arg_type);
+        }  /* if */
+        if ((result_is_pointer && !is_pointer_type(arg_type)) ||
+            (clang_mode ? !is_integral_or_unscoped_enum_type(result_type) :
+                          (!is_integral_type(result_type) ||
+                           is_enum_type(result_type) ||
+                           is_bool_type(result_type))) ||
+            (result_is_pointer && is_const_qualified_type(result_type))) {
+          expr_pos_ty_error(ec_invalid_type_for_builtin,
+                            init_component_pos(arg), arg_type);
+          err = TRUE;
+        }  /* if */
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  if (err) {
+    rout = NULL;
+  } else {
+    *arg_list = make_expr_list_from_argument_list(
+                                         args, /*dependent_expression=*/FALSE);
+  }  /* if */
+  return rout;
+}  /* adjust_overflow_builtin */
 
 
 static a_boolean convert_to_prvalue_and_check_for_identical_types(
