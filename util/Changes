@@ -1,5 +1,27 @@
 Version 7.1
 
+10/19/26  [GH #319]
+Clang's __FLT_EVAL_METHOD__ and the #embed macros in make_predef_macro_table
+
+Clang 13 and later implement __FLT_EVAL_METHOD__ as a builtin macro (its
+value can be changed by "#pragma clang fp eval_method"), so it is not listed
+in the -dM output used by make_predef_macro_table, and a predefined_macros.txt
+file created from such a compiler did not define it.  FLT_EVAL_METHOD (from
+<float.h>) then expanded to an undeclared identifier.  When __FLT_EVAL_METHOD__
+is missing from the -dM output, make_predef_macro_table now preprocesses the
+macro name to get its value and adds an entry for it.
+
+The __STDC_EMBED_NOT_FOUND__, __STDC_EMBED_FOUND__ and __STDC_EMBED_EMPTY__
+macros are now also suppressed, since the front end defines them itself when
+#embed is enabled (which depends on the emulated compiler version).
+
+The predefined_macros.txt files of the macOS clang bases have been regenerated
+with Apple clang 21.0.0 (clang-2100.3.34.2) and the macOS 27 SDK; the x86_64
+files were created on an arm64 host with "-arch x86_64".  Among other things,
+they now define __GCC_CONSTRUCTIVE_SIZE and __GCC_DESTRUCTIVE_SIZE, which
+libc++ uses from C++17 on to define the hardware interference sizes.
+
+
 10/15/26  [GH #307]
 Suppress the blocks macros in make_predef_macro_table output
 

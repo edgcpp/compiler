@@ -78,10 +78,32 @@ get_predefined_macros()
   echo  >>info.tmp
   if [ $result -eq 0 ] ; then
     $cmd $extra_opts -E -dM $file >$output
+    add_flt_eval_method $cmd $output $file
   else
     echo "make_predef_macro_table: $cmd returned a non-zero status."
     echo "make_predef_macro_table: $header omitted."
     touch $output
+  fi
+}
+
+#
+# Clang 13 and later implement __FLT_EVAL_METHOD__ as a builtin macro (its
+# value can be changed by "#pragma clang fp eval_method"), so -dM does not
+# list it.  If it is missing from the -dM output, preprocess the macro name
+# to get its value and add a definition for it.
+#
+add_flt_eval_method()
+{
+  fem_cmd=$1
+  fem_output=$2
+  fem_file=fem.${3##*.}
+  if ! grep "^#define __FLT_EVAL_METHOD__ " $fem_output >/dev/null ; then
+    echo "__FLT_EVAL_METHOD__" >$fem_file
+    fem_value=`$fem_cmd $extra_opts -E -P $fem_file | sed -e "/^ *$/d"`
+    if [ -n "$fem_value" ] && [ "$fem_value" != "__FLT_EVAL_METHOD__" ] ; then
+      echo "#define __FLT_EVAL_METHOD__ $fem_value" >>$fem_output
+    fi
+    rm -f $fem_file
   fi
 }
 
@@ -140,6 +162,9 @@ delete_unneeded_entries()
   unneeded="$unneeded __STDC_NO_VLA__"
   unneeded="$unneeded __STDC_UTF_16__"
   unneeded="$unneeded __STDC_UTF_32__"
+  unneeded="$unneeded __STDC_EMBED_NOT_FOUND__"
+  unneeded="$unneeded __STDC_EMBED_FOUND__"
+  unneeded="$unneeded __STDC_EMBED_EMPTY__"
   unneeded="$unneeded __STDCPP_THREADS__"
   unneeded="$unneeded __STDCPP_DEFAULT_NEW_ALIGNMENT__"
   unneeded="$unneeded __GXX_RTTI"
