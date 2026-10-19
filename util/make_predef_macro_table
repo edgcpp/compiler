@@ -87,10 +87,26 @@ get_predefined_macros()
 }
 
 #
-# Clang 13 and later implement __FLT_EVAL_METHOD__ as a builtin macro (its
-# value can be changed by "#pragma clang fp eval_method"), so -dM does not
-# list it.  If it is missing from the -dM output, preprocess the macro name
-# to get its value and add a definition for it.
+# Clang 13 and later implement __FLT_EVAL_METHOD__ as a builtin macro rather
+# than a predefined one (its value can be changed within a translation unit
+# by "#pragma clang fp eval_method"), so -dM does not list it.  The front end
+# does not define it either, so without an entry in predefined_macros.txt,
+# FLT_EVAL_METHOD from <float.h> expands to an undeclared identifier.  This
+# affects clang on all hosts, not just macOS.
+#
+# When the macro is missing from the -dM output, preprocess the macro name to
+# get its value and add a definition for it.  The value is target-dependent
+# (e.g., 2 with "-m32 -mno-sse"), so it is computed with the same options as
+# the -dM run rather than assumed to be 0.  The temporary file has the same
+# suffix as the -dM input, so the value is computed in the same language
+# mode.  If the compiler does not define the macro at all, the name comes back
+# unchanged and nothing is added.
+#
+# The test is on the -dM output rather than on --clang because on macOS the
+# default gcc and g++ commands are Apple clang, so a GNU table made there with
+# the default commands needs this too.  GCC always lists __FLT_EVAL_METHOD__
+# in its -dM output (as does clang before version 13), so for those compilers
+# the grep finds it and the table is left exactly as -dM produced it.
 #
 add_flt_eval_method()
 {

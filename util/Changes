@@ -7,9 +7,12 @@ Clang 13 and later implement __FLT_EVAL_METHOD__ as a builtin macro (its
 value can be changed by "#pragma clang fp eval_method"), so it is not listed
 in the -dM output used by make_predef_macro_table, and a predefined_macros.txt
 file created from such a compiler did not define it.  FLT_EVAL_METHOD (from
-<float.h>) then expanded to an undeclared identifier.  When __FLT_EVAL_METHOD__
-is missing from the -dM output, make_predef_macro_table now preprocesses the
-macro name to get its value and adds an entry for it.
+<float.h>) then expanded to an undeclared identifier.  This affects clang on
+all hosts, not only macOS.  When __FLT_EVAL_METHOD__ is missing from the -dM
+output, make_predef_macro_table now preprocesses the macro name to get its
+value and adds an entry for it.  The test is on the -dM output rather than on
+--clang, since on macOS the default gcc and g++ commands are clang.  GCC lists
+the macro in its -dM output, so tables created with GCC are not affected.
 
 The __STDC_EMBED_NOT_FOUND__, __STDC_EMBED_FOUND__ and __STDC_EMBED_EMPTY__
 macros are now also suppressed, since the front end defines them itself when
