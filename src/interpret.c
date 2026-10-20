@@ -32243,8 +32243,9 @@ the value representation of the integer value.
                 result_addr = *(a_constexpr_address*)opnd1_value;
               } else {
                 /* The first operand is a class rvalue: Create an address for
-                   it. */
-                mark_complete_object_initialized(opnd1_value);
+                   it.  Do not mark the object as fully initialized: since
+                   C++20, a constexpr constructor can leave members
+                   uninitialized, and reading those must be diagnosed. */
                 clear_address(&result_addr, opnd1_value);
                 result_addr.alloc_seq_number = ips->storage_stack.alloc_seq();
               }  /* if */
@@ -32368,8 +32369,9 @@ the value representation of the integer value.
                 result_addr = *(a_constexpr_address*)opnd1_value;
               } else {
                 /* The first operand is a class rvalue: Create an address for
-                   it. */
-                mark_complete_object_initialized(opnd1_value);
+                   it.  Do not mark the object as fully initialized: since
+                   C++20, a constexpr constructor can leave members
+                   uninitialized, and reading those must be diagnosed. */
                 clear_address(&result_addr, opnd1_value);
                 result_addr.alloc_seq_number = ips->storage_stack.alloc_seq();
               }  /* if */
