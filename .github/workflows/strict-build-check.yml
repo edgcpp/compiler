@@ -12,6 +12,10 @@ on:
   push:
     branches:
       - main
+    # The nightly collect-changes job's commits only move Changes entries.
+    paths-ignore:
+      - '**/Changes'
+      - '**/pending_changes/**'
   pull_request:
 
 jobs:

@@ -42,6 +42,7 @@ import subprocess
 import sys
 import tempfile
 
+import edgchanges
 import edgutil
 
 from pathlib import Path
@@ -170,6 +171,11 @@ class PrePushChecker:
         print('Too many attempts.')
         sys.exit(1)
 
+  def reject(self):
+    '''Record a problem that can't be accepted, without asking.'''
+    print('    Not allowed: CI would reject this; fix it and push again.')
+    self.errors = 1
+
   def check_commits(self):
     '''Walk commits until one already on a remote branch is found.
 
@@ -287,6 +293,23 @@ class PrePushChecker:
       for file_path_str, file_results in results.items():
         print(f"  Checking file: {file_path_str}")
 
+        # A pending Changes entry with any of these problems fails the
+        # changes-fragments CI check, so there's no accepting them here.
+        is_changes_entry = edgchanges.is_fragment_path(file_path_str)
+        confirm_okay = (
+          self.reject if is_changes_entry else self.confirm_okay
+        )
+
+        format_errors = [
+          edgchanges.FormatError(*error)
+          for error in file_results['format_errors']
+        ]
+        if len(format_errors) != 0:
+          print('    Badly formatted Changes entry:')
+          for error in format_errors:
+            print(f"    - {edgchanges.describe_error(file_path_str, error)}")
+          confirm_okay()
+
         misspellings = file_results['misspellings']
         if misspellings is None:
           print('    Spell check failed:')
@@ -297,14 +320,20 @@ class PrePushChecker:
           print('    New misspelled words:')
           for misspelling in misspellings:
             print(f"    - {misspelling}")
-          self.confirm_okay()
+          if is_changes_entry:
+            hint_lines = edgchanges.allowed_words_hint(
+              file_path_str,
+              misspellings
+            )
+            print_indented('\n'.join(hint_lines), '    ')
+          confirm_okay()
 
         typos = file_results['typos']
         if len(typos) != 0:
           print('    New typos:')
           for typo in typos:
             print(f"    - {typo}")
-          self.confirm_okay()
+          confirm_okay()
 
         coding_errors = file_results['coding_errors']
         if len(coding_errors) != 0:
@@ -327,14 +356,9 @@ class PrePushChecker:
 
         overlong_lines = file_results['overlong_lines']
         if len(overlong_lines) != 0:
-          for line_no, (line_start, lines) in overlong_lines.items():
-            print(f"    Line {line_no} too long:")
-            line_end = line_start + (len(lines) - 1)
-            print(f" {line_start} -> {line_end} ".center(79, '='))
-            for line in lines:
-              print(line, end = '')
-            print('=' * 79)
-          self.confirm_okay()
+          for line in edgutil.format_overlong_lines(overlong_lines, '    '):
+            print(line)
+          confirm_okay()
 
   def run(self) -> bool:
     '''Execute the full pre-push check sequence.'''

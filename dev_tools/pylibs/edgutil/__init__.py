@@ -28,6 +28,7 @@ from typing import (
   List,
   Optional,
   Set,
+  Tuple,
   cast
 )
 
@@ -189,6 +190,25 @@ def indent_text_block(text_block: str, n_times: int = 1) -> str:
   indent = '  ' * n_times
   return re.sub(r'^(.)', f"{indent}\\1", text_block, flags = re.MULTILINE)
 
+def format_overlong_lines(overlong_lines: Dict[str, Any],
+                          heading_indent: str = '') -> List[str]:
+  '''Format the overlong_lines result of edg-check-file-changes ({line number:
+  [first context line number, context lines]}) for display.
+
+  Each overlong line gets a heading (indented by heading_indent) and its
+  context between two 79-column rules.  The context isn't indented, so the
+  columns line up with the rules.
+  '''
+  report_lines = []
+  for line_no, (line_start, lines) in sorted(overlong_lines.items(),
+                                             key = lambda item: int(item[0])):
+    line_end = line_start + (len(lines) - 1)
+    report_lines.append(f"{heading_indent}Line {line_no} too long:")
+    report_lines.append(f" {line_start} -> {line_end} ".center(79, '='))
+    report_lines += [line.rstrip('\n') for line in lines]
+    report_lines.append('=' * 79)
+  return report_lines
+
 def is_env_set(env_var: str) -> bool:
   '''Return True if the given environment variable is set to a non-zero
   value.'''
@@ -268,6 +288,24 @@ def collect_cpp_line_directives(file_path: Path) -> Dict[str, List[str]]:
         started_collection = True
 
     return directive_map
+
+def split_leading_cpp_line_directives(
+                   lines: List[str]) -> Tuple[Dict[str, List[str]], List[str]]:
+  '''Split the EDG C++ directive block off the start of lines.
+
+  Unlike collect_cpp_line_directives, only the unbroken block of directive
+  lines starting at the very first line is collected, so directive-looking
+  lines later on (e.g., in an example) are left alone.
+
+  Returns the directive map and the lines that follow the block.
+  '''
+  directive_map: Dict[str, List[str]] = {}
+  line_index = 0
+  while (line_index < len(lines) and
+         _collect_directive_line(directive_map, lines[line_index])):
+    line_index += 1
+
+  return directive_map, lines[line_index:]
 
 def replace_cpp_line_directives(file_path: Path,
                                 directive_lines: Iterable[str]) -> None:
