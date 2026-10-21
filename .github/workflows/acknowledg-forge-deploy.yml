@@ -31,6 +31,9 @@ on:
   push:
     branches:
       - main
+      # TEMPORARY: deploy from the acknowledg-forge branch before it merges.
+      # Remove (here and in the test job's condition) before merging.
+      - acknowledg-forge
     paths:
       # The image freezes all of dev_tools/bin and dev_tools/pylibs.
       - dev_tools/bin/**
@@ -51,7 +54,10 @@ permissions:
 jobs:
   test:
     name: Test
-    if: github.ref == 'refs/heads/main'
+    # TEMPORARY: also the acknowledg-forge branch (see the push trigger).
+    if: >-
+      github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/acknowledg-forge'
     uses: ./.github/workflows/acknowledg-forge.yml
 
   publish:
