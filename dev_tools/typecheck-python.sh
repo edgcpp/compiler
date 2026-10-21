@@ -57,6 +57,7 @@ pushd bin/ > /dev/null
   check_types_strict edg-bench-run-delta
   check_types_strict edg-bench-run-save
   check_types edg-cmakedef
+  check_types_strict edg-compare-gen-c
   check_types_strict edg-docker-bench
   check_types_strict edg-docker-test
   check_types edg-examine-test

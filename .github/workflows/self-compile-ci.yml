@@ -1,0 +1,94 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Check that the front end can still be built from the C that its
+# C-generating back end produces for the front end's own sources, which is how
+# C++ code is built for a system that has only a C compiler.  Each job builds
+# cpfe with the host C++ compiler, uses it to translate the front end to C,
+# builds cpfe-self from that C with the host C compiler, and then checks that
+# cpfe-self translates the front end to the same C as cpfe (see
+# src/cmake/cpfe-self/CMakeLists.txt).
+
+name: Self-Compile CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  linux:
+    name: Linux ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: GCC x64
+            preset: linux-gcc-debug
+            build-dir: build/gcc
+            base: gcc
+          - name: GCC x32
+            preset: linux-i686-gcc-debug
+            build-dir: build/gcc-i686
+            base: gcc-i686
+          - name: Clang x64
+            preset: linux-clang-debug
+            build-dir: build/clang
+            base: clang
+    container:
+      image: docker.io/edgcpp/ci-runner:latest
+    defaults:
+      run:
+        shell: edg-container-exec "bash -eo pipefail {0}"
+    env:
+      EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/${{ matrix.base }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Configure ${{ matrix.preset }}
+        run: cmake --preset ${{ matrix.preset }} -DEDG_SELF_COMPILE=ON
+
+      - name: Build cpfe-self
+        run: cmake --build ${{ matrix.build-dir }} --target cpfe-self
+
+      - name: Check cpfe-self
+        run: cmake --build ${{ matrix.build-dir }} --target cpfe-self-check
+
+  windows-msvc:
+    name: Windows MSVC x64
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      EDG_SOFTFLOAT_INCLUDE_PATH: ${{ github.workspace }}/softfloat/include
+      EDG_SOFTFLOAT_LIB_PATH: ${{ github.workspace }}/softfloat/lib/softfloat.lib
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install Ninja
+        run: choco install ninja -y
+
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build SoftFloat
+        uses: ./.github/actions/build-softfloat-msvc
+
+      # The debug macro configuration does not use Microsoft bit-field
+      # allocation, so its layouts do not match the code that MSVC generates.
+      - name: Configure windows-msvc-release
+        run: cmake --preset windows-msvc-release -DEDG_SELF_COMPILE=ON
+
+      - name: Build cpfe-self
+        run: cmake --build build/msvc-release --target cpfe-self
+
+      - name: Check cpfe-self
+        run: cmake --build build/msvc-release --target cpfe-self-check
