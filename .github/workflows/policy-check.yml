@@ -1,0 +1,73 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Enforce the commit and file change policies that the pre-push hook checks
+# locally.  The hook is advisory by nature: it is only installed by
+# dev-init.py, it can be skipped with "git push --no-verify", and it never
+# runs for work merged through the GitHub web UI.  This workflow re-checks
+# the same rules, from the same edgpolicy library, where they cannot be
+# skipped.
+#
+# Marking this workflow's job as a required status check is what actually
+# makes the policy binding; see .github/rulesets/README.md.
+#
+# This runs on a stock runner rather than in edgcpp/ci-runner because the
+# file checks need aspell, which the CI image does not carry.
+
+name: Policy Check
+
+# Pull requests only: the policy is defined over the range of commits a
+# pull request proposes, which a push event does not describe.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: policy-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Commit and file policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out the pull request head
+        uses: actions/checkout@v7
+        with:
+          # Check out the branch itself rather than the synthetic merge
+          # commit, so the commits reported are the ones the author wrote.
+          ref: ${{ github.event.pull_request.head.sha }}
+          # The policy runs over a revision range, so the base commit and
+          # the merge base between it and the head must both be present.
+          fetch-depth: 0
+
+      - name: Install aspell
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y aspell aspell-en
+
+      # get-comments and check-closing-comments are C++ helpers that
+      # edg-check-file-changes shells out to. They install into
+      # dev_tools/bin alongside the Python tooling.
+      - name: Build the dev_tools helpers
+        run: |
+          cmake -S dev_tools -B dev_tools/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build dev_tools/build --target install --parallel
+
+      - name: Check commit and file policy
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          export PATH="${GITHUB_WORKSPACE}/dev_tools/bin:${PATH}"
+          export PYTHONPATH="${GITHUB_WORKSPACE}/dev_tools/pylibs"
+          edg-check-policy \
+            --base-rev "${BASE_SHA}" \
+            --head-rev "${HEAD_SHA}" \
+            --no-docker
