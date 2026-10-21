@@ -45,14 +45,16 @@ void ne(T) noexcept(noexcept([]{ return T{}; }())) {}
 void t6() { ne(1); ne('a'); }
 
 // The template parameters are put back when another instance of the same
-// template is deduced while the first is: f<int> checks f<long> (found by
-// argument-dependent lookup) in its constraint.
+// template is deduced while the first is: f<int> checks f<long long> (found
+// by argument-dependent lookup) in its constraint.  (long long, not long: a
+// long that has the size of int would make the constraint of f<long> depend
+// on itself.)
 template <class T> struct W { };
 template <class T>
   requires (sizeof([]{ static_assert(sizeof(T) >= 4); return T{}; }()) >= 4) &&
-           (sizeof(T) > 4 || requires { f(W<decltype(T{} + 1L)>{}); })
+           (sizeof(T) > 4 || requires { f(W<decltype(T{} + 1LL)>{}); })
 int f(W<T>) { return sizeof(T); }
-int t7() { return f(W<int>{}) + f(W<long>{}); }
+int t7() { return f(W<int>{}) + f(W<long long>{}); }
 
 // A lambda that calls a function template whose own declaration has a lambda
 // that names its own template parameter.
