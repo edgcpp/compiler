@@ -20528,17 +20528,13 @@ Generate one of the predefined UPC pragmas.
 
 #endif /* UPC_EXTENSIONS_ALLOWED */
 
-static void gen_pragma(void)
+static void gen_pragma_entry(a_pragma_ptr pp)
 /*
-Generate a declaration for a pragma.  The current source sequence entry
-is the one associated with the pragma.
+Generate a declaration for the pragma pp.
 */
 {
-  a_pragma_ptr pp = ss_entry_ptr(curr_source_sequence_entry, a_pragma_ptr);
   a_boolean    saved_suppress_line_breaking = octl.suppress_line_breaking;
 
-  /* Advance past the source sequence entry for the pragma. */
-  adv_curr_source_sequence_entry();
   /* Ignore this entry if told to do so. */
   if (!pp->ignore_in_back_end) {
     octl.suppress_line_breaking = TRUE;
@@ -20612,7 +20608,55 @@ is the one associated with the pragma.
     }  /* if */
     octl.suppress_line_breaking = saved_suppress_line_breaking;
   }  /* if */
+}  /* gen_pragma_entry */
+
+
+static void gen_pragma(void)
+/*
+Generate a declaration for a pragma.  The current source sequence entry
+is the one associated with the pragma.
+*/
+{
+  a_pragma_ptr pp = ss_entry_ptr(curr_source_sequence_entry, a_pragma_ptr);
+
+  /* Advance past the source sequence entry for the pragma. */
+  adv_curr_source_sequence_entry();
+#if GNU_EXTENSIONS_ALLOWED
+  if (pp->kind == (a_pragma_kind)pk_gcc_next_statement) {
+    /* A GCC loop pragma (e.g., "#pragma GCC unroll") is generated in front
+       of the statement to which it is bound (see gen_gcc_statement_pragmas)
+       instead. */
+  } else
+#endif /* GNU_EXTENSIONS_ALLOWED */
+  /* Do not insert code here. */
+  {
+    gen_pragma_entry(pp);
+  }
 }  /* gen_pragma */
+
+
+#if GNU_EXTENSIONS_ALLOWED
+
+static void gen_gcc_statement_pragmas(a_statement_ptr statement)
+/*
+Generate any GCC loop pragmas (e.g., "#pragma GCC unroll") that are bound to
+the given statement.  These must immediately precede the statement, so they
+are generated here rather than at the position of their source sequence
+entries (see gen_pragma).
+*/
+{
+  if (statement->has_associated_pragma) {
+    a_pragma_ptr pp = NULL;
+    while ((pp = find_assoc_pragma((char *)statement, iek_statement,
+                                   innermost_function_scope, pp)) != NULL) {
+      if (pp->kind == (a_pragma_kind)pk_gcc_next_statement) {
+        gen_pragma_entry(pp);
+      }  /* if */
+    }  /* while */
+  }  /* if */
+}  /* gen_gcc_statement_pragmas */
+
+#endif /* GNU_EXTENSIONS_ALLOWED */
 
 
 static void write_tok_str_if_nonnull(a_const_char *str)
@@ -22466,6 +22510,10 @@ one that yields the value) of a statement expression.
          advance past it. */
       check_for_and_take_source_seq_entry(statement->source_sequence_entry);
     }  /* if */
+#if GNU_EXTENSIONS_ALLOWED
+    /* Generate any GCC loop pragmas bound to the statement. */
+    gen_gcc_statement_pragmas(statement);
+#endif /* GNU_EXTENSIONS_ALLOWED */
     /* Adjust the output position to match the statement position. */
     set_output_position(&statement->position);
   }  /* if */
