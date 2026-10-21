@@ -36,14 +36,14 @@ void use() { char a[sizeof(int)]; f<int>(&a, &a); }
 #elif TEST_NUMBER == 2
 template <class T>
 void f(T x, char (*)[sizeof([](decltype(x) y){ return y; }(x))]) {}
-void use() { char a[sizeof(long)]; f(1L, &a); }
+void use() { char a[sizeof(long long)]; f(1LL, &a); }
 #elif TEST_NUMBER == 3
 template <class... Ts>
 void f(char (*)[([]{ return (sizeof(Ts) + ... + 0); }())]) {}
-void use() { char a[sizeof(int) + sizeof(long)]; f<int, long>(&a); }
+void use() { char a[sizeof(int) + sizeof(long long)]; f<int, long long>(&a); }
 #elif TEST_NUMBER == 4
 template <class T, class... Ts>
 void f(char (*)[sizeof([]{ return T{}; }())],
        char (*)[([]{ return sizeof(T) + (sizeof(Ts) + ... + 0); }())]) {}
-void use() { char a[sizeof(int)], b[sizeof(int) + sizeof(long)]; f<int, long>(&a, &b); }
+void use() { char a[sizeof(int)], b[sizeof(int) + sizeof(long long)]; f<int, long long>(&a, &b); }
 #endif
