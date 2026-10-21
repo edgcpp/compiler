@@ -33,6 +33,14 @@ on:
   # Also run by acknowledg-forge-deploy before publishing an image.
   workflow_call:
 
+# A new push to a pull request cancels its in-progress run. Pushes to main are
+# grouped per commit, so every merged commit is still tested in full. When
+# called from acknowledg-forge-deploy, github.workflow is the caller's name,
+# so that run never shares a group with this workflow's own run on the push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
