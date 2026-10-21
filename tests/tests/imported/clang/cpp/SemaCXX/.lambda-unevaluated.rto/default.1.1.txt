@@ -32,24 +32,16 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   void use_f() { f<int>({}); } // expected-error {{ambiguous}}
                  ^
 
-"Test_name.c", line 67: error: identifier "N" is undefined
-  template<int N> void g(const char (*)[([]{ return N; })()]) {} // expected-note {{candidate}}
-                                                    ^
-
 "Test_name.c", line 66: error: identifier "N" is undefined
   template<int N> void g(const char (*)[([]{ return N; })()]) {} // expected-note {{candidate}}
                                                     ^
 
-"Test_name.c", line 68: error: no instance of overloaded function "PR52073::g" matches the argument list
+"Test_name.c", line 68: error: more than one instance of overloaded function "PR52073::g" matches the argument list:
+            function template "void PR52073::g<N>(const char (*)[<expression>])" (declared at line 66)
+            function template "void PR52073::g<N>(const char (*)[<expression>])" (declared at line 67)
             argument types are: (const char (*)[6])
   void use_g() { g<6>(&"hello"); } // expected-error {{ambiguous}}
                  ^
-"Test_name.c", line 67: note: substituting explicit template arguments "<6>" for function template "PR52073::g<N>(const char (*)[<expression>])" failed
-  template<int N> void g(const char (*)[([]{ return N; })()]) {} // expected-note {{candidate}}
-                       ^
-"Test_name.c", line 66: note: substituting explicit template arguments "<6>" for function template "PR52073::g<N>(const char (*)[<expression>])" failed
-  template<int N> void g(const char (*)[([]{ return N; })()]) {} // expected-note {{candidate}}
-                       ^
 
 "Test_name.c", line 79: error: declaration is incompatible with "void GH51416::A<T>::spam(decltype((<expression>)))" (declared at line 75)
   void A<T>::spam(decltype([] {})) // expected-error{{out-of-line definition of 'spam' does not match}}
@@ -226,4 +218,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   constexpr auto Ret = ICE()(1);
                  ^
 
-28 errors detected in the compilation of "Test_name.c".
+27 errors detected in the compilation of "Test_name.c".

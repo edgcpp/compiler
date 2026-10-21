@@ -5641,10 +5641,18 @@ is used in the constraint, its evaluation will fail.
       a_template_ptr  templ = rp->assoc_template;
       check_assertion(templ != NULL);
       init_ctws_state(&ctws_state);
+      /* Push an instantiation scope for the template, as the substitution
+         into the signature does (see the call of
+         push_instantiation_scope_for_rescan in
+         wrapup_function_template_argument_deduction's caller), so that the
+         names of its template parameters are found if the substitution
+         rescans a lambda in the condition. */
+      push_instantiation_scope_for_rescan(symbol_for(templ));
       expr = copy_expr_with_substitutions(expr, t_args,
                                           templ_params_of(symbol_for(templ)),
                                           CTWS_NO_OPTIONS, &failed,
                                           &ctws_state);
+      pop_instantiation_scope_for_rescan();
       if (failed) {
         /* If substitution failed, the function is discarded as a candidate.
            No need to try another attribute. */

@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 16: error: identifier "T" is undefined
+  void f(char (*)[sizeof([](auto x){ return T(x); }(1))]) {}
+                                            ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 17
+
+"Test_name.c", line 16: error: identifier "T" is undefined
+  void f(char (*)[sizeof([](auto x){ return T(x); }(1))]) {}
+                                            ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 17
+
+"Test_name.c", line 17: error: no instance of function template "f" matches the argument list
+            argument types are: (char (*)[4])
+  void use() { char a[sizeof(int)]; f<int>(&a); }
+                                    ^
+"Test_name.c", line 16: note: function template "f" does not match because argument #1 does not match parameter
+  void f(char (*)[sizeof([](auto x){ return T(x); }(1))]) {}
+       ^
+
+3 errors detected in the compilation of "Test_name.c".
