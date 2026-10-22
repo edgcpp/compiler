@@ -25,6 +25,9 @@ from edgutil import eprint
 
 TOOL_PATH_EDG_EXEC = edgutil.RequiredToolPath('edg-exec')
 
+OPTIMIZED_BUILD_ROOT = 'build/optimized-posture'
+OPTIMIZED_BUILD_TYPE = 'RelWithDebInfo'
+
 BUILTIN_POSTURES = [
   'day',
   'night',
@@ -80,6 +83,16 @@ def parse_args() -> argparse.Namespace:
     help = 'do not launch AcknowlEDG'
   )
   parser.add_argument(
+    '--no-optimize',
+    dest = 'no_optimize',
+    action = 'store_true',
+    help = (
+      'build with the preset\'s normal build type instead of '
+      f"{OPTIMIZED_BUILD_TYPE} (optimized builds are otherwise used when "
+      'no test filter contains a "/")'
+    )
+  )
+  parser.add_argument(
     '--dry-run',
     dest = 'dry_run',
     action = 'store_true',
@@ -102,9 +115,11 @@ def parse_args() -> argparse.Namespace:
 class TestRunPostureBuild:
   def __init__(self, *, cmake_preset: str, build_path: str,
                targets: List[str], test_configs: List[str],
-               edg_base: str) -> None:
+               edg_base: str,
+               configure_args: Optional[List[str]] = None) -> None:
     self.cmake_preset = cmake_preset
     self.build_path = build_path
+    self.configure_args = configure_args or []
     self.targets = targets
     self.test_configs = test_configs
     self.edg_base = PurePosixPath(edg_base)
@@ -115,8 +130,10 @@ class TestRunPosture:
                record_tests: bool, slow_tests: bool, meticulous: bool,
                test_filters: str,
                acknowledg_ui_host: Optional[str],
-               acknowledg_api_host: Optional[str]) -> None:
+               acknowledg_api_host: Optional[str],
+               optimized: bool = False) -> None:
     self.builds = builds
+    self.optimized = optimized
     self.keep_test_results = keep_test_results
     self.test_timeout_seconds = test_timeout_seconds
     self.record_tests = record_tests
@@ -282,6 +299,28 @@ def _configure_base_posture(args: argparse.Namespace) -> TestRunPosture:
     eprint(f"No builtin mode named: {args.posture}")
     sys.exit(1)
 
+def _is_optimization_wanted(args: argparse.Namespace,
+                            posture: TestRunPosture) -> bool:
+  '''Broad runs use optimized builds; runs of specific tests (a filter
+  containing a "/") keep the preset's build type for debugging.'''
+  return not args.no_optimize and not any(
+    '/' in test_filter for test_filter in posture.test_filters.split(',')
+  )
+
+def _optimize_builds(posture: TestRunPosture) -> None:
+  for build in posture.builds:
+    build_dir = PurePosixPath(build.build_path)
+    if build_dir.parts[0] == 'build':
+      build_dir = PurePosixPath(*build_dir.parts[1:])
+    build.build_path = str(PurePosixPath(OPTIMIZED_BUILD_ROOT, build_dir))
+    # Only the build type changes.  ASan is enabled by default only for Debug
+    # builds, so keep it on explicitly.
+    build.configure_args = [
+      '-B', build.build_path,
+      f"-DCMAKE_BUILD_TYPE={OPTIMIZED_BUILD_TYPE}",
+      '-DEDG_CPFE_USE_ASAN=ON'
+    ]
+
 def _configure_posture(args: argparse.Namespace) -> TestRunPosture:
   posture = _configure_base_posture(args)
   if args.filters:
@@ -295,6 +334,9 @@ def _configure_posture(args: argparse.Namespace) -> TestRunPosture:
   if args.non_interactive:
     posture.acknowledg_api_host = None
     posture.acknowledg_ui_host = None
+  posture.optimized = _is_optimization_wanted(args, posture)
+  if posture.optimized:
+    _optimize_builds(posture)
   return posture
 
 def _apply_tty_fix(cmd_str: str) -> str:
@@ -325,7 +367,9 @@ def configure_build(src_dir: Path, posture: TestRunPosture, *,
 
     print(f"Configuring build ({build.cmake_preset})...", flush = True)
 
-    configure_cmd = f"cmake --preset {build.cmake_preset}"
+    configure_cmd = ' '.join(
+      ['cmake', '--preset', build.cmake_preset] + build.configure_args
+    )
     cmd_args = [
       str(TOOL_PATH_EDG_EXEC),
       '--',

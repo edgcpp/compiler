@@ -47,6 +47,15 @@ edg-docker-test --dry-run rma
 - Postures: `day`, `night`, `quick-c-fe`, `extensive`, or `--posture=@file.json`.
 - Results: `tests/runs/<timestamp>/<config>/` (e.g. `changes.elog`,
   `executed.elist`). Empty / no unexpected diffs means a clean match.
+- **Optimized builds**: unless a filter contains a `/` (a specific test or
+  directory, e.g. `sandbox/foo`), `edg-docker-test` builds the same preset
+  with `CMAKE_BUILD_TYPE=RelWithDebInfo` (ASan and macros unchanged) in
+  `build/optimized-posture/<normal dir under build/>` (e.g.
+  `build/optimized-posture/gcc`). Broad runs get faster tests; runs of
+  specific tests keep using the normal debug build (`build/gcc`) for easy
+  debugging. Pass `--no-optimize` to force the preset's normal build type.
+  CI emulates this. Use the matching directory when sourcing
+  `environment.sh` for a manual `edgy` run.
 - `edg-docker-test` is for the standard front-end change workflow, where the
   user wants these results kept. For ad-hoc runs and experiments, use
   `edgy --runs-dir` instead (skill **edg-agent-temp-files**); if you still use

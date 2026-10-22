@@ -7,7 +7,10 @@
 #
 #   edg-docker-test --posture=extensive --non-interactive
 #
-# inside the ghcr.io/edgcpp/ci-runner image. Jobs are staged so GitHub can schedule
+# inside the ghcr.io/edgcpp/ci-runner image. As with edg-docker-test for an
+# unfiltered posture, the builds use the debug presets with only
+# CMAKE_BUILD_TYPE=RelWithDebInfo (and ASan kept on), in
+# build/optimized-posture/. Jobs are staged so GitHub can schedule
 # them in parallel, with each test leg waiting only on its own build (and the
 # shared timestamp, which runs alongside the builds):
 #
@@ -55,7 +58,7 @@ jobs:
           echo "run_timestamp=$(date -u +'%Y.%m.%d-%H.%M.%S')" >> "${GITHUB_OUTPUT}"
 
   build-gcc:
-    name: Build linux-gcc-debug
+    name: Build linux-gcc-debug (RelWithDebInfo)
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
@@ -71,12 +74,16 @@ jobs:
       - name: Configure linux-gcc-debug
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --preset linux-gcc-debug
+        run: >
+          cmake --preset linux-gcc-debug
+          -B build/optimized-posture/gcc
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DEDG_CPFE_USE_ASAN=ON
 
-      - name: Build linux-gcc-debug
+      - name: Build linux-gcc-debug (RelWithDebInfo)
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --build build/gcc
+        run: cmake --build build/optimized-posture/gcc
 
       # Runtime layout only: environment.sh / eccp need bin/, lib/, and the
       # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
@@ -86,17 +93,17 @@ jobs:
         with:
           name: build-linux-gcc-debug
           path: |
-            build/gcc/bin
-            build/gcc/lib
-            build/gcc/lib_linux_*
-            build/gcc/lib_win*
-            build/gcc/environment.sh
+            build/optimized-posture/gcc/bin
+            build/optimized-posture/gcc/lib
+            build/optimized-posture/gcc/lib_linux_*
+            build/optimized-posture/gcc/lib_win*
+            build/optimized-posture/gcc/environment.sh
           if-no-files-found: error
           retention-days: 1
           compression-level: 6
 
   build-i686:
-    name: Build linux-i686-gcc-debug
+    name: Build linux-i686-gcc-debug (RelWithDebInfo)
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
@@ -112,23 +119,27 @@ jobs:
       - name: Configure linux-i686-gcc-debug
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --preset linux-i686-gcc-debug
+        run: >
+          cmake --preset linux-i686-gcc-debug
+          -B build/optimized-posture/gcc-i686
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DEDG_CPFE_USE_ASAN=ON
 
-      - name: Build linux-i686-gcc-debug
+      - name: Build linux-i686-gcc-debug (RelWithDebInfo)
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --build build/gcc-i686
+        run: cmake --build build/optimized-posture/gcc-i686
 
       - name: Upload build products
         uses: actions/upload-artifact@v7
         with:
           name: build-linux-i686-gcc-debug
           path: |
-            build/gcc-i686/bin
-            build/gcc-i686/lib
-            build/gcc-i686/lib_linux_*
-            build/gcc-i686/lib_win*
-            build/gcc-i686/environment.sh
+            build/optimized-posture/gcc-i686/bin
+            build/optimized-posture/gcc-i686/lib
+            build/optimized-posture/gcc-i686/lib_linux_*
+            build/optimized-posture/gcc-i686/lib_win*
+            build/optimized-posture/gcc-i686/environment.sh
           if-no-files-found: error
           retention-days: 1
           compression-level: 6
@@ -162,14 +173,15 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: build-linux-gcc-debug
-          # upload-artifact strips the shared build/gcc/ prefix, leaving
-          # bin/, lib/, and environment.sh at the artifact root.
-          path: build/gcc
+          # upload-artifact strips the shared build/optimized-posture/gcc/
+          # prefix, leaving bin/, lib/, and environment.sh at the artifact
+          # root.
+          path: build/optimized-posture/gcc
 
       - name: Restore execute bits on build binaries
         run: |
           # Artifact round-trip does not reliably preserve +x.
-          chmod -R a+x build/gcc/bin
+          chmod -R a+x build/optimized-posture/gcc/bin
 
       - name: Run edgy (${{ matrix.config }})
         env:
@@ -182,7 +194,7 @@ jobs:
           EOF
 
           cat > .tmp/extensive-ci.edgivk <<EOF
-          prefix_source TEST_${CONFIG} build/gcc/environment.sh
+          prefix_source TEST_${CONFIG} build/optimized-posture/gcc/environment.sh
           prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
           exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
           EOF
@@ -230,14 +242,15 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: build-linux-i686-gcc-debug
-          # upload-artifact strips the shared build/gcc-i686/ prefix, leaving
-          # bin/, lib/, and environment.sh at the artifact root.
-          path: build/gcc-i686
+          # upload-artifact strips the shared build/optimized-posture/gcc-i686/
+          # prefix, leaving bin/, lib/, and environment.sh at the artifact
+          # root.
+          path: build/optimized-posture/gcc-i686
 
       - name: Restore execute bits on build binaries
         run: |
           # Artifact round-trip does not reliably preserve +x.
-          chmod -R a+x build/gcc-i686/bin
+          chmod -R a+x build/optimized-posture/gcc-i686/bin
 
       - name: Run edgy (${{ matrix.config }})
         env:
@@ -250,7 +263,7 @@ jobs:
           EOF
 
           cat > .tmp/extensive-ci.edgivk <<EOF
-          prefix_source TEST_${CONFIG} build/gcc-i686/environment.sh
+          prefix_source TEST_${CONFIG} build/optimized-posture/gcc-i686/environment.sh
           prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
           exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
           EOF
