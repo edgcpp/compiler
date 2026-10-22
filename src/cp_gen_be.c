@@ -20645,7 +20645,14 @@ are generated here rather than at the position of their source sequence
 entries (see gen_pragma).
 */
 {
-  if (statement->has_associated_pragma) {
+  if (!statement->has_associated_pragma) {
+    /* No pragmas are bound to the statement. */
+  } else if (innermost_function_scope == NULL ||
+             in_file_scope(statement)) {
+    /* The pragmas are on the list of a file or namespace scope, which
+       find_assoc_pragma locates through the front end's scope stack.  That
+       stack is no longer valid here. */
+  } else {
     a_pragma_ptr pp = NULL;
     while ((pp = find_assoc_pragma((char *)statement, iek_statement,
                                    innermost_function_scope, pp)) != NULL) {
