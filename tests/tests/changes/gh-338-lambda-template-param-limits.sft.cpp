@@ -20,8 +20,8 @@
 // call does not find an instance.
 //
 // Case 3: a lambda that names a template parameter pack is rescanned as before
-// (the symbols of a pack are not bound like those of the other parameters),
-// and the name is not found.
+// (binding the symbol of a pack is not enough for a pack expansion to find its
+// elements, and that is not implemented yet), and the name is not found.
 //
 // Case 4: the binding of the parameters for the rescan of a lambda that is
 // bound does not leak into the next lambda of the declaration: the second
