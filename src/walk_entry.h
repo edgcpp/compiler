@@ -736,10 +736,12 @@ handle_next_entry:
   }  /* if */
 #endif /* DO_SUBTREE_WALK */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Walking IL tree, entry kind = %s\n",
                      il_entry_kind_names[(int)entry_kind]);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* For each pointer in the entry, remap it and walk the subtree.
      In general, linked lists are traversed while processing the entry

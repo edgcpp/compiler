@@ -790,11 +790,13 @@ is that the caller is about to record that note).
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of entries allocated, for debugging purposes.
 */
 EXTERN_THREAD unsigned long
 		num_candidate_functions_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -1524,9 +1526,11 @@ extern an_expr_node_ptr convert_arg_list_to_expr_list(
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_substitution_stack(void);
 
 extern void db_viability_stats(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */

@@ -359,9 +359,11 @@ extern an_integer_kind int_kind_for_bit_size(unsigned int  number_of_bits,
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED || GNU_EXTENSIONS_ALLOWED || IA64_ABI */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern a_number_buffer db_format_integer_value(an_integer_value  *value);
 
 extern void db_signed_integer_value(an_integer_value  *value);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*

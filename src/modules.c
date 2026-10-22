@@ -636,6 +636,7 @@ processing has ended.
      entities available. */
   check_assertion(deferred_entries != NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_symbols")) {
     a_string dbg_msg("Symbol load started (depth = ",
                      deferred_entries->num_active_scopes,
@@ -645,6 +646,7 @@ processing has ended.
     db_scope(scope);
     (void)fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ++deferred_entries->num_active_scopes;
   for (size_t i = 0; i < deferred_entries->entries.length(); ++i) {
@@ -655,11 +657,13 @@ processing has ended.
       continue;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_symbols")) {
       (void)fprintf(f_debug, "Symbol load of \"%s\" in ", sym_hdr->identifier);
       db_scope(scope);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     ++deferred_entries->num_processed;
     entry.scope = NULL;
@@ -671,6 +675,7 @@ processing has ended.
     (void)request_entity(mep);
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_symbols")) {
     a_string dbg_msg("Symbol load finished (depth = ",
                      deferred_entries->num_active_scopes,
@@ -680,6 +685,7 @@ processing has ended.
     db_scope(scope);
     (void)fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (--deferred_entries->num_active_scopes == 0) {
     size_t total_num_entries = deferred_entries->entries.length();
@@ -687,17 +693,20 @@ processing has ended.
     if (deferred_entries->num_processed == total_num_entries) {
       /* Free the entire list as it's now unused. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ifc_symbols")) {
         a_string dbg_msg("Symbol loading completed for \"",
                          sym_hdr->identifier, "\"");
 
         print(dbg_msg, f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       delete_fe(&sym_hdr->deferred_module_entries);
     } else if (deferred_entries->num_processed > 0) {
       /* Clean up any entries that match the current scope. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ifc_symbols")) {
         a_string dbg_msg("Symbol loading partially completed for \"",
                          sym_hdr->identifier, "\" (",
@@ -706,6 +715,7 @@ processing has ended.
 
         print(dbg_msg, f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       auto has_been_processed =
                         [](const a_deferred_module_entry &entry) -> a_boolean {
@@ -2025,6 +2035,7 @@ module implementation about the new information.
 {
   mep->locators.push_back(new_loc);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("module_entity_locator") && mep->locators.length() > 1) {
     a_string  dbg_msg("Entity identified by multiple locators: ");
     a_boolean first = TRUE;
@@ -2038,6 +2049,7 @@ module implementation about the new information.
     }  /* for */
     print(dbg_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (mep->entity.ptr != NULL) {
     /* Notify the appropriate module implementation. */
@@ -2155,6 +2167,7 @@ module output file.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_mep_stack()
 /*
@@ -2327,6 +2340,7 @@ Display debug information about a module entity.
   }  /* if */
 }  /* db_mep */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void modules_pch_reset()
@@ -2356,12 +2370,14 @@ This is done before command line processing.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* These are initialized per-translation unit.  However, in case of a command
      line error these must be reinitialized to prevent -d-module_report from
      reporting "declarations processed" by the previous front end
      invocation. */
   num_module_decls_attempted = 0;
   num_module_decls_failed = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* modules_early_init */
 
@@ -2400,8 +2416,10 @@ Do one-time initialization of static variables defined in this file.
   /* Register variables that have distinct copies for distinct translation
      units. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   register_trans_unit_variable(num_module_decls_attempted);
   register_trans_unit_variable(num_module_decls_failed);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   register_trans_unit_variable(curr_module_sym);
   register_trans_unit_variable(lazy_symbols_may_be_visible);
@@ -2449,8 +2467,10 @@ translation unit.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_module_decls_attempted = 0;
   num_module_decls_failed = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   curr_module_sym = NULL;
   lazy_symbols_may_be_visible = FALSE;

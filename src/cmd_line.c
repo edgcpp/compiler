@@ -203,8 +203,10 @@ is FALSE an error will be issued if the option is used.
   if (option_description_number == SIZE_OF_OPTION_DESCRIPTIONS) {
     /* There are more entries than fit in the array. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     fprintf(f_debug, "Too many options descriptions.  Current limit is %d\n",
             SIZE_OF_OPTION_DESCRIPTIONS);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     unexpected_condition();
   } else {
@@ -427,6 +429,7 @@ Initialize the option information table.
                          pchek_command_line);
 #endif /* BACK_END_IS_C_GEN_BE */
 #if DEBUG
+/* GCOVR_EXCL_START */
   add_option_description(optk_debug, "db", 'd',
                          /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_none);
@@ -438,6 +441,7 @@ Initialize the option information table.
                          /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_none);
 #endif /* MAINTAIN_ALLOCATION_SEQUENCE_NUMBER */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !EDG_WIN32 && !MULTIPLE_THREAD_COMPILATION
   /* This option is only available on Unix and only works at the process
@@ -2299,9 +2303,11 @@ processing routine to update the severity.
     char	*opt_end = strchr(ptr, '\0');
     a_boolean	err;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Setting error severity for: %s\n", opt_start);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (isdigit((unsigned char)*opt_start)) {
       int error_number;
@@ -2492,7 +2498,9 @@ STATIC_THREAD a_flag_name
   { "stack_referenced_include_directories",
     &stack_referenced_include_directories },
 #if DEBUG
+/* GCOVR_EXCL_START */
   { "space_used", &display_space_used },
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   { "use_nonstd_partial_ordering", &use_nonstd_partial_ordering },
   { "no_checking_pragmas", &no_checking_pragmas },
@@ -11039,6 +11047,7 @@ Process the arguments on the command line that invoked the compiler.
         break;
 #endif /* BACK_END_IS_C_GEN_BE */
 #if DEBUG
+/* GCOVR_EXCL_START */
       case optk_debug:
         /* Set debug level. */
         if (proc_debug_option(opt_arg)) {
@@ -11060,6 +11069,7 @@ Process the arguments on the command line that invoked the compiler.
         }  /* if */
         break;
 #endif /* MAINTAIN_ALLOCATION_SEQUENCE_NUMBER */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !EDG_WIN32 && !MULTIPLE_THREAD_COMPILATION
       case optk_time_limit:
@@ -13065,8 +13075,10 @@ enable_microsoft_mode:
                          error_file_name, /*binary_file=*/FALSE,
                          /*update_mode=*/FALSE, OFF_COMMAND_LINE, ec_error);
 #if DEBUG
+/* GCOVR_EXCL_START */
     /* Direct debug output to the new error output file. */
     f_debug = f_error;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   if (option_kind_used[(int)optk_generate_raw_listing]) {
@@ -13231,7 +13243,9 @@ variables declared in cmd_line.h.
   allow_nonconst_call_anachronism = DEFAULT_ALLOW_NONCONST_CALL_ANACHRONISM;
   assignment_to_this_allowed = ASSIGNMENT_TO_THIS_ALLOWED;
 #if DEBUG
+/* GCOVR_EXCL_START */
   init_debug_level = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   do_preprocessing_only = FALSE;
   pp_output_file_needed = FALSE;
@@ -13639,7 +13653,9 @@ variables declared in cmd_line.h.
   no_checking_pragmas = FALSE;
   no_find_pragma_validation = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   display_space_used = FALSE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if IA64_ABI
   emulate_gnu_abi_bugs = DEFAULT_EMULATE_GNU_ABI_BUGS;

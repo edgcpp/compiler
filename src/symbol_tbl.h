@@ -7767,6 +7767,7 @@ EXTERN_THREAD unsigned
 extern void show_top_templates(unsigned  n);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Show and return the amount of memory used by symbol table entries. */
 extern unsigned long show_symbol_space_used(void);
 
@@ -7805,6 +7806,7 @@ EXTERN_THREAD unsigned long
 		num_slow_id_lookups,
 		num_active_using_directives_allocated,
 		num_generated_entity_blocks_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern a_symbol_ptr f_class_template_for_type(a_type_ptr	type);
@@ -7958,7 +7960,9 @@ extern a_hash_data_ptr *hash_find(a_hash_table_ptr	table,
 			    a_boolean		create);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 void db_hash_statistics(a_hash_table_ptr	table);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern a_hash_value hash_source_string(a_void_ptr  key);

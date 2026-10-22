@@ -210,7 +210,9 @@ encoded form.
          that after all the function scopes have been written). */
       if (epp->file_scope) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         display_il_entry_kind_and_ptr(entry_ptr, entry_kind);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error("assign_entry_number: file-scope num in func scope");
       }  /* if */
@@ -252,7 +254,9 @@ encoded form.
 #if CHECKING
       if (!epp->file_scope) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         display_il_entry_kind_and_ptr(entry_ptr, entry_kind);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error(
          "assign_entry_number: non-file-scope ptr referenced from file scope");
@@ -348,7 +352,9 @@ corresponding encoded entry number, and return that number cast to "char *".
            write_entry.  We can't handle them here because we don't have the
            length. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         display_il_entry_kind_and_ptr(entry_ptr, entry_kind);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error("remap_ptr_to_entry_number: string entry");
       }  /* if */
@@ -659,7 +665,9 @@ its length.
 #if CHECKING
     if (!is_string_entry) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       display_il_entry_kind_and_ptr(entry_ptr, entry_kind);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("write_entry: non-string entry already written");
     }  /* if */
@@ -667,12 +675,14 @@ its length.
     goto end_of_routine;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug,
            "Writing IL entry to file: kind = %d, number = %lu, length = %lu\n",
            (int)entry_kind, (unsigned long)encoded_number,
            (unsigned long)entry_length);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* For non-string entries, the pointers must be remapped.  Make a copy
      so the original pointers can be restored after the write. */
@@ -758,10 +768,12 @@ Write the indicated memory region to the file f_il_output.
      written. */
   if (f_il_output != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 2) {
       fprintf(f_debug, "Writing out memory region %lu\n",
                        (unsigned long)(unsigned)region_number);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if ALTERNATE_IL_FILE_FORMAT
     /* Using alternate IL file format. */
@@ -903,9 +915,11 @@ Write the indicated memory region to the file f_il_output.
         total_bytes += sizeof(a_mem_block_header) + block_used;
       }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, "total_bytes = %lu\n", (unsigned long)total_bytes);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       hdr = mem_region_table[region_number];
       /* Write the original address of the first block, the original address
@@ -919,11 +933,13 @@ Write the indicated memory region to the file f_il_output.
       for (; hdr != NULL; hdr = hdr->next) {
         sizeof_t block_used = hdr->next_avail_in_block - hdr->start_of_block;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           fprintf(f_debug, "writing %lu + %lu\n",
                            (unsigned long)sizeof(a_mem_block_header),
                            (unsigned long)block_used);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if ((fwrite((char *)hdr, sizeof(a_mem_block_header),
                     1, f_il_output) != 1) ||

@@ -107,11 +107,13 @@ EXTERN_THREAD a_variable_remapping_for_inlining_ptr
 			    and are available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Count of entries allocated, for debugging purposes.
 */
 EXTERN_THREAD unsigned long
 		num_variable_remappings_for_inlining;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 

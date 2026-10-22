@@ -511,11 +511,13 @@ duplication.
             *include_path_boundary = prev_dnep2;
           }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (db_flag_is_set("incl_search_path")) {
             fprintf(f_debug, "Removing %s, which duplicates a %s incl\n",
                     dnep2->dir_name, sys_includes_only ? "system" : "regular");
             db_incl_search_path();
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           if (sys_includes_only) {
             /* Issue a warning if a directory was specified as both
@@ -624,6 +626,7 @@ include files to the end of the search path lists.
 }  /* add_default_include_search_path */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_incl_search_path(void)
 /*
@@ -637,6 +640,7 @@ Display the include search path, for debugging purposes.
   }  /* while */
 }  /* db_incl_search_path */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void change_primary_include_search_dir(a_const_char *dir_name)
@@ -647,12 +651,14 @@ general memory.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug,
             "change_primary_include_search_dir: before changing %s to %s\n",
             incl_search_path->dir_name, dir_name);
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /*  DEBUG */
   incl_search_path->dir_name = dir_name;
   embed_search_path->dir_name = dir_name;
@@ -678,11 +684,13 @@ stack_referenced_include_directories to TRUE.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug, "push_primary_include_search_dir: pushing %s\n",
             dir_name);
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /*  DEBUG */
   /* The "-I-" option disables these changes. */
   if (put_dir_of_each_opened_source_file_on_incl_search_path) {
@@ -701,11 +709,13 @@ stack_referenced_include_directories to TRUE.
     incl_search_path->system_include_dir = system_include_dir;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug, "push_primary_include_search_dir: after pushing %s\n",
             dir_name);
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /*  DEBUG */
 }  /* push_primary_include_search_dir */
 
@@ -720,11 +730,13 @@ considered a system include directory.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug, "pop_primary_include_search_dir: popping to %s\n",
             dir_name);
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /*  DEBUG */
   /* The "-I-" option disables these changes. */
   if (put_dir_of_each_opened_source_file_on_incl_search_path) {
@@ -752,11 +764,13 @@ considered a system include directory.
     incl_search_path->system_include_dir = system_include_dir;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug, "pop_primary_include_search_dir: after popping to %s\n",
             dir_name);
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /*  DEBUG */
 }  /* pop_primary_include_search_dir */
 
@@ -1016,9 +1030,11 @@ be passed to the back end.
   (void)memcpy(&der_name[base_name_length], suffix, size_t_arg(suffix_length));
   der_name[der_name_length] = '\0';
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "derived name = \"%s\".\n", der_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return(der_name);
 }  /* derived_name */
@@ -1178,10 +1194,12 @@ necessary.  This routine may be called iteratively.
 
   db_enter(5, "replace_file_name_suffix");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("replace_file_name_suffix")) {
     fprintf(f_debug, "current file_name = \"%s\", new suffix = \"%s\"\n",
             file_name_buffer->buffer, new_suffix);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Determine the size of file_name, excluding the trailing NULL. */
   new_suffix_length = strlen(new_suffix);
@@ -1203,9 +1221,11 @@ necessary.  This routine may be called iteratively.
   /* Terminate the string. */
   add_char_to_text_buffer(file_name_buffer, '\0');
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("replace_file_name_suffix")) {
     fprintf(f_debug, "new file name = \"%s\"\n", file_name_buffer->buffer);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 #undef SUFFIX_DELIMITER
@@ -1587,9 +1607,11 @@ file is not Unicode.
   FILE        *temp_file;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("open_source_file") || debug_level >= 2) {
     fprintf(f_debug, "About to open %s\n", file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *unicode_source_kind = usk_none;
   temp_file = fopen_with_result(file_name, FOPEN_MODE_FOR_READ, open_result);
@@ -1736,9 +1758,11 @@ reason for the failure.
   char *mode;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 2) {
     fprintf(f_debug, "About to open input file %s\n", file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   mode = (char *)(binary_file ? FOPEN_MODE_FOR_BINARY_READ :
                                 FOPEN_MODE_FOR_READ);
@@ -2053,10 +2077,12 @@ binary mode if binary_file is TRUE; otherwise, the file is opened textually.
       continue;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Opening temporary file %s\n",
               file_name.as_temp_characters());
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
     /* A temporary file path has been computed, attempt to open the file. */
@@ -2125,10 +2151,12 @@ file.
     /* This function does not return from the above call. */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Opened temporary file %s\n",
             file_name.as_temp_characters());
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   /* Create a FILE from the file descriptor. */
@@ -2164,10 +2192,12 @@ mode if binary_file is TRUE; otherwise, the file is opened textually.
     file_name.reset_to(a_string_view(temp_dir, temp_dir_len),
                        "edg", temp_seed++, "_", (long)getpid());
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Opening temporary file %s\n",
               file_name.as_temp_characters());
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
     /* Check to see if the file exists already.  If so, go on to the next
@@ -2398,11 +2428,13 @@ Only write the signoff if there ARE errors, and if we are supposed to.
   a_diagnostic_counter diags_total = diagnostic_counters.total;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("module_report") && num_module_decls_attempted > 0) {
     fprintf(f_debug, "%lu modules declarations processed (%lu failed).\n",
             num_module_decls_attempted,
             num_module_decls_failed);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (diags_total.all_error_types() > 0) {
     a_diagnostic_counter diags_suppressed = diagnostic_counters.suppressed;
@@ -3604,10 +3636,12 @@ Set module_id to the string and return it.
       str2 = NULL;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("module_id")) {
       fprintf(f_debug, "make_module_id: str1 = %s, str2 = %s\n",
               str1, str2 == NULL ? "NULL" : str2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     { /* The identifier is made of the primary source file name plus
          either the name of an externally defined variable or routine,
@@ -3659,9 +3693,11 @@ Set module_id to the string and return it.
       module_id = mod_id;
     }
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("module_id")) {
       fprintf(f_debug, "make_module_id: final string = %s\n", module_id);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If there are any functions whose lowering was delayed due to lack
        of a suitable module id, they can now be lowered (but can't be lowered
@@ -4001,7 +4037,9 @@ of the host allocation granularity.
   DWORD		bytes_written;
   HANDLE	f_map;
 #if DEBUG
+/* GCOVR_EXCL_START */
   const char*	failed_system_call = NULL;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   a_void_ptr    map_address = (base_addr != NULL) ?
               (a_void_ptr)((char*)base_addr + curr_size) : NULL;
@@ -4026,9 +4064,11 @@ of the host allocation granularity.
                                  large_file_offset.LowPart, incremental_size,
                                  map_address);
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (addr == NULL) {
             failed_system_call = "MapViewOfFileEx";
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         } else {
           addr = MapViewOfFile(f_map, FILE_MAP_WRITE,
@@ -4036,26 +4076,33 @@ of the host allocation granularity.
                                large_file_offset.LowPart,
                                incremental_size);
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (addr == NULL) {
             failed_system_call = "MapViewOfFile";
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
         /* The handle for mapping is not needed after the view is obtained
            above. */
         if (!CloseHandle(f_map)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (failed_system_call == NULL) {
             failed_system_call = "CloseHandle";
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       } else {
         failed_system_call = "CreateFileMapping";
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("mmap") || debug_level >= 4) {
         fprintf(f_debug,
                 "map_memory_region_file: allocated %lu bytes of mmap memory "
@@ -4065,18 +4112,24 @@ of the host allocation granularity.
           fprintf(f_debug, "  requested address was: %p\n", map_address);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if DEBUG
+/* GCOVR_EXCL_START */
     } else {
       failed_system_call = "WriteFile";
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   } else {
     failed_system_call = "SetFilePointerEx";
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (failed_system_call != NULL && db_flag_is_set("mmap")) {
     DWORD err_code = GetLastError();
     if (map_address != NULL) {
@@ -4089,6 +4142,7 @@ of the host allocation granularity.
     fprintf(f_error, " %s() failed with error code %d\n",
             failed_system_call, err_code);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return addr;
@@ -4122,6 +4176,7 @@ error).
                                 large_file_offset.HighPart,
                                 large_file_offset.LowPart, size, address);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("mmap") || debug_level >= 4) {
     fprintf(f_debug,
         "map_input_file_to_region: allocated %lu bytes of mmap memory at %p\n",
@@ -4131,6 +4186,7 @@ error).
     fprintf(f_debug, "Map failed: address=%p, size=%lu, offset=%lu\n",
             address, (unsigned long)size, (unsigned long)offset);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (result_addr == NULL) {
     error_position = null_source_position;
@@ -4298,6 +4354,7 @@ of the host page size.
       addr = mmap_posix(map_address, incremental_size, PROT_WRITE | PROT_READ,
                         fileno(handle), file_offset);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("mmap") || debug_level >= 4) {
         fprintf(f_debug,
                 "map_memory_region_file: allocated %lu bytes of mmap memory "
@@ -4307,6 +4364,7 @@ of the host page size.
           fprintf(f_debug, "  requested address was: %p\n", map_address);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -4361,6 +4419,7 @@ error).
                                                    PROT_READ | PROT_WRITE,
                                        fd, offset);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("mmap") || debug_level >= 4) {
     fprintf(f_debug,
         "map_input_file_to_region: allocated %lu bytes of mmap memory at %p\n",
@@ -4370,6 +4429,7 @@ error).
     fprintf(f_debug, "Map failed: address=%p, size=%lu, offset=%lu\n",
             address, (unsigned long)size, (unsigned long)offset);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (result_addr == NULL) {
     error_position = null_source_position;
@@ -5331,10 +5391,12 @@ to the current directory.
   /* Terminate the string. */
   add_char_to_text_buffer(buf, '\0');
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("normalize_dir_name")) {
     fprintf(f_debug, "normalize_dir_name in=%s out=%s\n", dir_name,
             buf->buffer);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return buf->buffer;
 }  /* normalize_dir_name */
@@ -5982,10 +6044,12 @@ components.  For a typical U.S. system, this will return
     add_to_text_buffer(locale_name_buffer, buf, chars);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("locale")) {
     fprintf(f_debug, "System default locale is %s\n",
             locale_name_buffer->buffer);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return locale_name_buffer->buffer;
 #undef TMP_BUF_SIZE

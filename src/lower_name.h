@@ -56,11 +56,13 @@ EXTERN_THREAD a_compressible_string_pos_ptr
 			   and available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Count of entries allocated, for debugging purposes.
 */
 EXTERN_THREAD unsigned long
 		num_compressible_string_pos_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #endif /* !IA64_ABI */

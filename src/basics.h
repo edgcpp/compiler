@@ -686,6 +686,7 @@ BEGIN_EDG_NAMESPACE  /* Conditionally open the "edg" namespace. */
 #define DEBUG TRUE
 #endif /* ifndef DEBUG */
 #if DEBUG
+/* GCOVR_EXCL_START */
 EXTERN_THREAD int
 		debug_level;
 			/* Debug level.  0 means no debug output, 1 - 5
@@ -712,6 +713,7 @@ extern void debug_exit(void);
 /* Macro that returns TRUE if the specified debug flag is set. */
 #define db_flag_is_set(name)						\
   (db_active && debug_flag_is_set(name))
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 
 /* If debugging code is not included: */
@@ -763,7 +765,9 @@ extern void debug_exit(void);
    determining whether two separately-compiled executables were built with
    compatible configuration options. */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define DUMP_CONFIG_ENABLED TRUE /* Do not change this. */
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define DUMP_CONFIG_ENABLED TRUE /* Okay to change this. */
 #endif /* DEBUG */

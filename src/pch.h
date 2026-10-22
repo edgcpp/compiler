@@ -43,6 +43,7 @@ enum a_pch_event_kind {
 };
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 constexpr a_const_char *pch_event_kind_names[(int)pchek_last+1]
 /*
 Table of names of PCH event kinds.
@@ -53,6 +54,7 @@ Table of names of PCH event kinds.
   "pp_directive",
   "last"
 };
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -128,9 +130,11 @@ typedef struct a_pch_saved_variable {
 			   in order to get the true address of the
 			   data to be stored. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_const_char	*var_name;
 			/* The name of the variable being saved.  Used for
 			   debug output purposes. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 } a_pch_saved_variable;
 
@@ -291,7 +295,9 @@ extern void pch_late_cleanup(void);
 #endif /* MAKE_FRONT_END_CALLABLE */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern unsigned long db_show_pch_space_used(unsigned long grand_total);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*

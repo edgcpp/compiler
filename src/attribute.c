@@ -3762,6 +3762,7 @@ this is &scp.attributes.)
 }  /* get_attribute_link */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_attribute(an_attribute_ptr  ap)
 /*
@@ -3916,6 +3917,7 @@ including (a) the string descr, (b) a rendering of the given attribute, and
   }  /* if */
 }  /* db_log_attribute_action */
 
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 
 #define db_log_attribute_action(descr, ap, entity, entity_kind)  /*Nothing*/
@@ -4195,11 +4197,13 @@ produces *p_type.
       *p_type = new_type;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("trace_attributes")) {
       for (ap = attributes; ap != NULL; ap = ap->next) {
         db_log_attribute_action("attach", ap, (char*)new_type, iek_type);
       }  /* for */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* attach_type_attributes */
@@ -8070,10 +8074,12 @@ multiversioning isn't applicable.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("trace_attributes")) {
     (void)fprintf(f_debug, "apply_target_attr: target=%s\n",
                   aap->variant.token);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* apply_target_attr */
@@ -8663,10 +8669,12 @@ STATIC_THREAD an_ELF_visibility_stack_entry_ptr
 			   stack, and available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_ELF_visibility_stack_entries_allocated;
 			/* Number of ELF visibility stack entries allocated,
 			   to track total use of memory. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void push_ELF_visibility(an_ELF_visibility_kind  evk,
@@ -8685,7 +8693,9 @@ is TRUE if this "push" operation is for a namespace attribute.
   } else {
     entry = alloc_fe_of_type(an_ELF_visibility_stack_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_ELF_visibility_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   entry->next = ELF_visibility_stack;
@@ -10049,8 +10059,10 @@ STATIC_THREAD an_alias_fixup_ptr
 		avail_alias_fixups;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_alias_fixups_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -10072,7 +10084,9 @@ it will be pointed to by the aliased IL entry.
   } else {
     entry = (an_alias_fixup_ptr)alloc_fe(sizeof(an_alias_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_alias_fixups_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Append the entry at the of the fixup list. */
@@ -10514,8 +10528,10 @@ next_entry:
 #if REDEFINE_EXTNAME_PRAGMA_ENABLED
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		pragma_extname_string_space;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void redefine_extname_pragma(a_pending_pragma_ptr  ppp)
@@ -10558,7 +10574,9 @@ process_alias_fixup_list.
     /* Recreate the pragma string: "redefine_extname <src-name> <asm-name>". */
     ppp->pragma_text  = (char *)alloc_primary_file_scope_il(pragma_len);
 #if DEBUG
+/* GCOVR_EXCL_START */
     pragma_extname_string_space += pragma_len;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /*lint -e(668)*/(void)memcpy(ppp->pragma_text, "redefine_extname ",
                                  size_t_arg(prefix_len));
@@ -11043,7 +11061,9 @@ attributes.
       pch_saved_var_array_elem(ELF_visibility_stack),
       pch_saved_var_array_elem(avail_ELF_visibility_stack_entries),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_ELF_visibility_stack_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* GNU_VISIBILITY_ATTRIBUTE_ALLOWED */
       pch_saved_var_array_elem(asm_name_map),
@@ -11054,10 +11074,12 @@ attributes.
       pch_saved_var_array_elem(last_alias_fixup),
       pch_saved_var_array_elem(avail_alias_fixups),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_alias_fixups_allocated),
 #if REDEFINE_EXTNAME_PRAGMA_ENABLED
       pch_saved_var_array_elem(pragma_extname_string_space),
 #endif /* REDEFINE_EXTNAME_PRAGMA_ENABLED */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* GNU_EXTENSIONS_ALLOWED || REDEFINE_EXTNAME_PRAGMA_ENABLED */
 #if USE_X86_FUNCTION_MULTIVERSIONING && DO_IL_LOWERING
@@ -11107,7 +11129,9 @@ be initialized for each compilation.
   ELF_visibility_stack = NULL;
   avail_ELF_visibility_stack_entries = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_ELF_visibility_stack_entries_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* GNU_VISIBILITY_ATTRIBUTE_ALLOWED */
   gnu_abi_tag_attribute_seen = FALSE;
@@ -11116,10 +11140,12 @@ be initialized for each compilation.
   alias_fixup_list = NULL;
   last_alias_fixup = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_alias_fixups_allocated = 0;
 #if REDEFINE_EXTNAME_PRAGMA_ENABLED
   pragma_extname_string_space = 0;
 #endif /* REDEFINE_EXTNAME_PRAGMA_ENABLED */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* GNU_EXTENSIONS_ALLOWED || REDEFINE_EXTNAME_PRAGMA_ENABLED */
   memzero((char*)attr_family_seen, sizeof(attr_family_seen));
@@ -11129,6 +11155,7 @@ be initialized for each compilation.
 
 #if GNU_EXTENSIONS_ALLOWED || REDEFINE_EXTNAME_PRAGMA_ENABLED
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_attribute_space_used(void)
 /*
@@ -11155,6 +11182,7 @@ entities.
   return grand_total;
 }  /* show_attribute_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #endif /* GNU_EXTENSIONS_ALLOWED || REDEFINE_EXTNAME_PRAGMA_ENABLED */

@@ -1392,6 +1392,7 @@ flag set value is returned.
     }  /* if */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("vmi_flags")) {
     db_type_name(type);
     if (flags & VMI_DIAMOND) fprintf(f_debug, " vmi_diamond");
@@ -1400,6 +1401,7 @@ flag set value is returned.
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return flags;
 }  /* vmi_flags_for_type */

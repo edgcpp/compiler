@@ -139,7 +139,9 @@ Clear an output control block to default values.
   octl->for_diagnostics           = FALSE;
   octl->reflection_display_form   = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   octl->debug_output              = FALSE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   octl->force_qualified_name      = FALSE;
   octl->gen_vla_array_as_asterisk_bound_array = FALSE;
@@ -171,7 +173,9 @@ Clear an output control block to default values.
 Macro that is TRUE if debug output is being generated.
 */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define generating_debug_output(octl) ((octl)->debug_output)
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define generating_debug_output(octl) (FALSE) /*lint --e(506)*/
 #endif /* DEBUG */
@@ -239,6 +243,7 @@ Output an unsigned number as indicated by octl.
 }  /* form_unsigned_num */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void form_unsigned_hex(unsigned long                         num,
                               an_il_to_str_output_control_block_ptr octl)
@@ -251,6 +256,7 @@ Output an unsigned number in hexadecimal form, as indicated by octl.
   octl->output_str(num_buff.as_temp_characters(), octl);
 }  /* form_unsigned_hex */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void form_attribute_arguments(
@@ -1009,10 +1015,12 @@ The output includes template arguments on template classes.
       octl->output_str("<", octl);
       octl->output_str(error_text(ec_unnamed), octl);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (octl->debug_output) {
         octl->output_str("@", octl);
         form_unsigned_hex(possible_lossy_cast_from_pointer(scp), octl);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       octl->output_str(">", octl);
     }  /* if */
@@ -1055,8 +1063,10 @@ The output includes template arguments on template classes.
         tap = var_ptr->template_info->template_arg_list;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     } else if (octl->debug_output && entry_kind == iek_routine) {
       tap = ((a_routine_ptr)scp)->template_arg_list;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     if (tap != NULL) {
@@ -1117,9 +1127,11 @@ octl.  Called only for C++.  */
       /* Avoid abort on error case where parent has no supplement, so
          debug output will still come out okay. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (octl->debug_output) {
         octl->output_str("<parent with missing IL supplement>", octl);
       } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       {
         unexpected_condition_str("form_class_qualifier: missing supplement");
@@ -1314,10 +1326,12 @@ Output a string that describes the tag kind for the indicated type, i.e.,
     case tk_union:  str = "union";  break;
     default:
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (octl->debug_output) {
         str = "**BAD-TAG-KIND**";
         break;
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str("form_tag_kind: bad type kind");
   }  /* switch */
@@ -1585,7 +1599,9 @@ way described by octl.
 #if CHECKING
   if (*str == '*'
 #if DEBUG
+/* GCOVR_EXCL_START */
       && !octl->debug_output
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
                             ) {
     internal_error("form_int_type_name: bad integer kind");
@@ -1724,7 +1740,9 @@ way described by octl.
 #if CHECKING
   if (*str == '*'
 #if DEBUG
+/* GCOVR_EXCL_START */
       && !octl->debug_output
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
                             ) {
     internal_error("form_float_kind_name: bad float kind");
@@ -2735,6 +2753,7 @@ by octl.
             form_name(scp, (an_il_entry_kind)scp_kind, octl);
           }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (octl->debug_output) {
             if (type->variant.template_param.kind ==
                                      (a_template_param_type_kind)tptk_param) {
@@ -2749,6 +2768,7 @@ by octl.
               octl->output_str(buf.as_temp_characters(), octl);
             }  /* if */
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
       }
@@ -2854,10 +2874,12 @@ by octl.
       break;
     default:
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (octl->debug_output) {
         octl->output_str("**BAD-TYPE-KIND**", octl);
         break;
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str("form_type_specifier: bad type kind");
   }  /* switch */
@@ -3215,10 +3237,12 @@ if FTO_SUPPRESS_SPECIFIERS is TRUE, suppress generation of the type specifiers
   if (type == NULL) {
     /* NULL type pointer. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (octl->debug_output) {
       octl->output_str("**NULL-TYPE-POINTER**", octl);
       goto end_of_routine;
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     check_assertion_str(!octl->gen_compilable_code,
                         "form_type_first_part: NULL type");
@@ -5486,7 +5510,9 @@ precedence confusion.  Do the output in the way described by octl.
     desired_type = NULL;
   } else if (
 #if DEBUG
+/* GCOVR_EXCL_START */
              !octl->debug_output &&
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
              !is_for_c_gen_be(octl) &&
              constant->implicit_cast &&
@@ -6288,6 +6314,7 @@ on every expression.
             form_expression(operand, octl);
             octl->output_str(")", octl);
 #if DEBUG
+/* GCOVR_EXCL_START */
           } else if (octl->debug_output) {
             a_const_char *op_str =
                                db_operator_names[expr->variant.operation.kind];
@@ -6367,6 +6394,7 @@ on every expression.
               octl->output_str(")", octl);
             }  /* if */
             octl->output_str(")", octl);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           } else if (op == (an_expr_operator_kind)eok_array_to_pointer ||
                      op == (an_expr_operator_kind)eok_lvalue_adjust ||
@@ -6416,6 +6444,7 @@ on every expression.
         break;
       case enk_temp_init:
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (octl->debug_output) {
           octl->output_str("temp(", octl);
           form_type(expr->type, octl);
@@ -6423,6 +6452,7 @@ on every expression.
           form_dynamic_init(expr->variant.init.dynamic_init, octl);
           octl->output_str(")", octl);
         } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Do not insert code here */
         { a_dynamic_init_ptr  dip = expr->variant.init.dynamic_init;
@@ -6445,6 +6475,7 @@ on every expression.
         break;
       case enk_builtin_operation:
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (octl->debug_output) {
           an_expr_node_ptr  operand = expr->variant.builtin_operation.operands;
           a_const_char      *op_str = builtin_operation_names[
@@ -6458,6 +6489,7 @@ on every expression.
           }  /* while */
           octl->output_str(")", octl);
         } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Do not insert code here. */
         {
@@ -6497,6 +6529,7 @@ on every expression.
         break;
       case enk_c11_generic:
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (octl->debug_output) {
           an_expr_node_ptr  operand = expr->variant.c11_generic.operands;
           octl->output_str("_Generic", octl);
@@ -6515,6 +6548,7 @@ on every expression.
           }  /* while */
           octl->output_str(")", octl);
         } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Do not insert code here. */
         {
@@ -6550,6 +6584,7 @@ on every expression.
 }  /* form_expression */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_abbr_expr(an_expr_node_ptr                       expr,
                   an_il_to_str_output_control_block_ptr  octl)
@@ -6561,6 +6596,7 @@ debug output routines.
   form_expression(expr, octl);
 }  /* db_abbr_expr */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -6793,9 +6829,11 @@ precedence confusion.  Do the output in the way described by octl.
     if (kind != (a_constant_repr_kind)ck_init_repeat &&
 	kind != (a_constant_repr_kind)ck_designator) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (octl->debug_output) {
         octl->output_str("**NULL-CONSTANT-TYPE**", octl);
       } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Do not insert code here.  This is the else of an "if". */
       {
@@ -6864,7 +6902,9 @@ precedence confusion.  Do the output in the way described by octl.
       } else if (constant->implicit_cast) {
         if (
 #if DEBUG
+/* GCOVR_EXCL_START */
             (octl->debug_output && !is_nullptr_type(con_type)) ||
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             is_for_c_gen_be(octl)) {
 #if GCC_BUILTIN_VARARGS
@@ -7000,7 +7040,9 @@ precedence confusion.  Do the output in the way described by octl.
         constant->source_corresp.is_class_member = orig_class_member;
       } else if (is_enum && il_header.source_language == sl_Cplusplus &&
 #if DEBUG
+/* GCOVR_EXCL_START */
                  !octl->debug_output &&
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
                  is_enum_constant_equivalent(constant, &equiv_constant)) {
         /* The equivalent of an enum constant (an enum constant used in
@@ -7375,10 +7417,12 @@ precedence confusion.  Do the output in the way described by octl.
         for (; sub_con != NULL; sub_con = sub_con->next) {
           if (sub_con->implicit_aggr_element && !is_for_c_gen_be(octl)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (octl->debug_output) {
               /* Emit the constant (with an indication that it is implicit). */
               octl->output_str(error_text(ec_implicit_element), octl);
             } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             /* Do not insert code here. */
             {
@@ -7675,10 +7719,12 @@ do_sizeof_cases:
       break;
     default:
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (octl->debug_output) {
         octl->output_str("**BAD-CONSTANT-KIND**", octl);
         break;
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str("form_constant: bad constant kind");
   }  /* switch */
@@ -8564,6 +8610,7 @@ is properly maintained.  Do the output as indicated by octl.
 
 #if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 STATIC_THREAD uintptr_t
                 unique_id_counter;
@@ -8602,6 +8649,7 @@ pointer.
   return result;
 }  /* generate_unique_id_for_temporary */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 a_temp_var_name_buffer form_temporary_name_for_back_end(void *ptr)
@@ -8612,9 +8660,11 @@ Return a temporary name generated for the given IL pointer.
   uintptr_t unique_id;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_active) {
     unique_id = generate_unique_id_for_temporary(ptr);
   } else
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Do not add code here. */
   {
@@ -8633,9 +8683,11 @@ are initializations that must be redone for each generated file.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   unique_id_counter = 0;
   ptr_to_unique_id = alloc_general_of_type(a_ptr_unique_id_map);
   construct(ptr_to_unique_id, /*mask_width=*/10u);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* il_to_str_back_end_file_init */
 

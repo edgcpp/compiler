@@ -20,9 +20,11 @@ attribute.h -- Declarations related to attribute.c (having to do with
 BEGIN_EDG_NAMESPACE
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_attribute(an_attribute_ptr  ap);
 
 extern void db_attribute_list(an_attribute_ptr  ap);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if REDEFINE_EXTNAME_PRAGMA_ENABLED

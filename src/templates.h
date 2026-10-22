@@ -1559,6 +1559,7 @@ Throw away any deferred constraint entries.
 }
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern
 void db_generic_constraint_kind(a_generic_constraint_kind	kind);
 
@@ -1568,6 +1569,7 @@ void db_generic_constraint(a_generic_constraint_ptr	gcp);
 extern
 void db_generic_constraint_list(a_generic_constraint_ptr	gcp,
                                 int				indent);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #else /* !MICROSOFT_EXTENSIONS_ALLOWED */
@@ -1635,7 +1637,9 @@ extern a_boolean is_template_deducible_from(a_template_ptr  tmpl,
                                             a_type_ptr      type);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern unsigned long db_show_template_space_used(unsigned long grand_total);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern a_hash_value hash_instantiation(a_void_ptr	key);

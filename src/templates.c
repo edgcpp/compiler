@@ -455,6 +455,7 @@ STATIC_THREAD unsigned long
 			   that are in progress at any point in time. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counters used to track memory usage.
 */
@@ -469,6 +470,7 @@ STATIC_THREAD unsigned long
 		num_tmpl_decl_states_allocated,
 		num_variadic_param_infos_allocated,
 		num_partial_order_candidates_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Forward declarations. */
@@ -633,7 +635,9 @@ a pointer to it.
     /* Allocate a new entry. */
     vpip = alloc_fe_of_type(a_variadic_param_info);
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_variadic_param_infos_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   vpip->next = NULL;
@@ -686,7 +690,9 @@ and return a pointer to it.
     pscp = (a_partial_order_candidate_ptr)
                                    alloc_fe(sizeof(a_partial_order_candidate));
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_partial_order_candidates_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   pscp->next              = NULL;
@@ -758,11 +764,13 @@ the "text" field of *template_ptr to point to it.
      be copied. */
   template_ptr->text = make_copy_of_token_string();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 ||
       (db_active && db_flag_is_set("dump_template_strings"))) {
     /* This won't work if the string contains nulls -- is it worth fixing? */
     fprintf(f_debug, "Saved template string:\n%s\n", template_ptr->text);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   
   db_exit();
@@ -794,10 +802,12 @@ the string in the IL template entry associated with the member function.
   /* Copy the string into IL memory. */
   template_ptr->text = make_copy_of_token_string();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_template_strings")) {
     /* This won't work properly if the string contains nulls. */
     fprintf(f_debug, "Saved template string:\n%s\n", template_ptr->text);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* make_member_function_template_string */
 
@@ -984,10 +994,12 @@ Open the template information file.
   check_assertion_str2(generate_template_files(), "open_template_info_file:",
                       "generate_template_files() is FALSE");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ti_file")) {
     fprintf(f_debug, "Opening template_info_file %s\n",
             template_info_file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Open a file in which the list of generated file names will be
      returned. */
@@ -1057,10 +1069,12 @@ already exists.
     if (is_regular_file(template_info_file_name)) {
       delete_file(template_info_file_name);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ti_file")) {
        fprintf(f_debug, "Deleting template info file %s\n",
                template_info_file_name);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -3939,6 +3953,7 @@ CFT_ENTIRE_TYPE flag is FALSE.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("cft")) {
     fprintf(f_debug, "compare_function_template:\n");
     db_symbol(templ_sym1, "  template1: ", 2);
@@ -3948,6 +3963,7 @@ CFT_ENTIRE_TYPE flag is FALSE.
                         : (result == 1 ? "more specialized"
                                        : "less specialized"));
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* compare_function_templates */
@@ -4231,6 +4247,7 @@ determine the partial order among matching partial specializations.
     free_template_arg_list(*ps_arg_list);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("partial_ord")) {
     fprintf(f_debug, "mpp match=%d\n", result);
     fprintf(f_debug, "mpp instance: \n");
@@ -4239,6 +4256,7 @@ determine the partial order among matching partial specializations.
     db_symbol(template_sym, "", 2);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /*lint --e{438} for spurious "last value assigned to local_arg_list
     not used (LINTBUG). */
@@ -4380,6 +4398,7 @@ templates being ordered are class or variable template partial specializations.
     new_is_more_specialized = result == 1;
     curr_is_more_specialized = result == -1;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("partial_ord")) {
       fprintf(f_debug, "atpoc: comparing\n  sym_1:");
       db_symbol_name(fund_curr_sym);
@@ -4404,6 +4423,7 @@ templates being ordered are class or variable template partial specializations.
       fprintf(f_debug, "  sym_2 more specialized: %d\n",
               new_is_more_specialized);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (new_is_more_specialized && !curr_is_more_specialized) {
       /* The new entry is more specialized than the one already on the
@@ -4435,10 +4455,12 @@ templates being ordered are class or variable template partial specializations.
     new_pscp->next = *psc_list;
     *psc_list = new_pscp;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("partial_ord")) {
       fprintf(f_debug, "atpoc: adding: \n");
       db_symbol(new_sym, "", 2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     /* If we are not adding the entry to the list, free the template
@@ -4493,10 +4515,12 @@ p_ambiguous is non-NULL.
           prev_pscp->next = next_pscp;
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("partial_ord")) {
           fprintf(f_debug, "Removing partial ord because of decl_seq:\n");
           db_symbol(pscp->symbol, "", 2);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Free the entry.  This also frees the template argument list. */
         free_partial_order_candidate(pscp);
@@ -4583,10 +4607,12 @@ ambiguous, set *p_subst_error = TRUE and inhibit the ambiguity diagnostic.
                                   /*no_diagnostics=*/p_subst_error != NULL);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("partial_ord") && matching_sym != NULL) {
     fprintf(f_debug, "Partial specialization result is: \n");
     db_symbol(matching_sym, "", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return matching_sym;
@@ -5062,6 +5088,7 @@ Instantiate the C++/CLI generic delegate specified by class_type.
     add_to_types_list(class_type, NO_SCOPE_DEPTH);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", instance_sym)) {
     fprintf(f_debug, "Instantiation of delegate: ");
     db_symbol_name_trans_unit(instance_sym);
@@ -5071,6 +5098,7 @@ Instantiate the C++/CLI generic delegate specified by class_type.
     db_type(class_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Call a routine that manages the correspondence of entities between
      translation units to notify it of the new instance. */
@@ -5470,6 +5498,7 @@ be completed here.
       ctsp = class_type->variant.class_struct_union.extra_info;
       ctsp->assoc_template = tssp_of_prototype->il_template_entry;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_sym_trace("instantiations", instance_sym)) {
         fprintf(f_debug, "Beginning full instantiation of: ");
         db_symbol_name_trans_unit(instance_sym);
@@ -5477,6 +5506,7 @@ be completed here.
         db_symbol_name_trans_unit(template_sym);
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Find the outermost enclosing class type.  The template arguments
          are associated with this class type. */
@@ -5546,11 +5576,13 @@ be completed here.
 #if GENERATE_SOURCE_SEQUENCE_LISTS
 #if CLASS_TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("full instantiation of \"", f_debug);
         db_type_name(class_type);
         fputs("\":\n", f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* CLASS_TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS */
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
@@ -5737,6 +5769,7 @@ using an_owned_template_cache_segment_ptr =
 			   segments. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_template_cache_segments(
                            const a_template_cache_segment_list &cache_segments)
@@ -5758,6 +5791,7 @@ Display the contents of list of template cache segment entries.
   }  /* for */
 }  /* db_template_cache_segments */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static INLINE void remove_body_from_cache(
@@ -5986,7 +6020,9 @@ and a list of the unprocessed entries is returned to the caller.
                                       &before_first_token_it,
                                       &last_token_it);
 #if DEBUG
+/* GCOVR_EXCL_START */
     a_boolean removed = FALSE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (tcsp->is_friend) {
       /* Do nothing: friend function bodies are not removed from the
@@ -6004,7 +6040,9 @@ and a list of the unprocessed entries is returned to the caller.
                                      before_first_token_it,
                                      last_token_it);
 #if DEBUG
+/* GCOVR_EXCL_START */
         removed = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
     } else if (tcsp->is_exception_specification_arg) {
@@ -6018,7 +6056,9 @@ and a list of the unprocessed entries is returned to the caller.
                                      last_token_it);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
         removed = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
     } else {
@@ -6047,7 +6087,9 @@ and a list of the unprocessed entries is returned to the caller.
 #endif /* RECORD_TEMPLATE_STRINGS */
           }
 #if DEBUG
+/* GCOVR_EXCL_START */
           removed = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           break;
         case sk_class_or_struct_tag:
@@ -6074,7 +6116,9 @@ and a list of the unprocessed entries is returned to the caller.
                                            *cache_segments,
                                            new_cache.ptr());
 #if DEBUG
+/* GCOVR_EXCL_START */
             removed = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           }  /* if */
           break;
@@ -6086,7 +6130,9 @@ and a list of the unprocessed entries is returned to the caller.
                                        before_first_token_it,
                                        last_token_it);
 #if DEBUG
+/* GCOVR_EXCL_START */
           removed = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           break;
         default:
@@ -6094,11 +6140,13 @@ and a list of the unprocessed entries is returned to the caller.
       }  /* switch */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (removed && db_flag_is_set("emb")) {
       fprintf(f_debug, "extract_member_bodies: removed ");
       db_symbol_name(tcsp->symbol);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   db_exit();
@@ -6155,11 +6203,13 @@ is populated.
   };
 #endif /* CHECKING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", template_sym)) {
     fprintf(f_debug, "Prototype instantiation of: ");
     db_symbol_name_trans_unit(template_sym);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Update the type_kind of the instance with the type_kind from the
      template.  Ordinarily, this will have already been done when the
@@ -6491,12 +6541,14 @@ user later during real instantiations.
 
   db_enter(3, "default_arg_prototype_instantiation");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("def_arg_proto")) {
     for (daefp = def_arg_list; daefp != NULL; daefp = daefp->next) {
       fprintf(f_debug, "prototype instantiation of default arg:\n");
       db_token_cache(daefp->cache.tokens.ptr(), "default arg");
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tssp = template_supplement_for_symbol(template_sym);
   rout_ptr = tssp->variant.function.routine;
@@ -7430,6 +7482,7 @@ cases).
     goto done;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", rout_sym)) {
     fprintf(f_debug, "instantiating: ");
     db_symbol_name_trans_unit(rout_sym);
@@ -7437,6 +7490,7 @@ cases).
     db_symbol_name_trans_unit(template_sym);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (func_info_ptr->is_inline) {
     set_inline_flag(rout_ptr, TRUE);
@@ -7527,11 +7581,13 @@ cases).
 #if GENERATE_SOURCE_SEQUENCE_LISTS
 #if TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     fputs("full instantiation of \"", f_debug);
     db_name(&rout_ptr->source_corresp);
     fputs("\":\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (entity_cannot_be_specialized(rout_sym)) {
     /* A template function that cannot be specialized: Avoid generating source
@@ -8636,6 +8692,7 @@ the same constant.
     if (arg1 != NULL || arg2 != NULL) equiv = FALSE;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("eta")) {
     fprintf(f_debug, "equiv_template_arg_lists is %s for :\n",
             equiv ? "TRUE" : "FALSE");
@@ -8645,6 +8702,7 @@ the same constant.
     db_template_arg_list(list2);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return equiv;
@@ -10035,10 +10093,12 @@ argument list for the instantiation to be found.
   ikp = (an_instantiation_key_ptr)key;
   value = (a_hash_value)hash_template_arg_list(ikp->template_arg_list);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("hash_instantiation")) {
     db_template_arg_list(ikp->template_arg_list);
     fprintf(f_debug, ": %lu\n", (unsigned long)value);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return value;
 }  /* hash_instantiation */
@@ -10402,12 +10462,14 @@ argument lists.
                                    eta_options | ETA_EXACT_MATCH_REQUIRED)) {
         /* We've found a match. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         fprintf(f_debug, "check_new_class_instantiation:\n");
         fprintf(f_debug, "  existing list: ");
         db_template_arg_list(old_list);
         fprintf(f_debug, "\n  new list: ");
         db_template_arg_list(template_arg_list);
         fprintf(f_debug, "\n");
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         unexpected_condition();
       }  /* if */
@@ -10779,12 +10841,14 @@ a type in certain ways (see template_arg_list_is_dependent).
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("cpioc") ||
       db_flag_is_set("dump_ss_full")) {
     fputs("partial instantiation of \"", f_debug);
     db_type_name(class_type);
     fputs("\":\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (class_template_sym == symbol_for_std_initializer_list) {
     ctsp->is_initializer_list = TRUE;
@@ -10812,6 +10876,7 @@ a type in certain ways (see template_arg_list_is_dependent).
   }  /* if */
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", sym)) {
     fprintf(f_debug, "Partial instantiation of: ");
     db_symbol_name_trans_unit(sym);
@@ -10822,6 +10887,7 @@ a type in certain ways (see template_arg_list_is_dependent).
                                                                     : "FALSE");
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Call a routine that manages the correspondence of entities between
      translation units to notify it of the new instance. */
@@ -11281,6 +11347,7 @@ error type is used.
     add_to_types_list(type, NO_SCOPE_DEPTH);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", instance_sym)) {
     fprintf(f_debug, "Instantiation of alias: ");
     db_symbol_name_trans_unit(instance_sym);
@@ -11291,6 +11358,7 @@ error type is used.
     fprintf(f_debug, " nonreal=%s\n",
             type->variant.typeref.is_nonreal ? "TRUE" : "FALSE");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Call a routine that manages the correspondence of entities between
      translation units to notify it of the new instance. */
@@ -11478,6 +11546,7 @@ template.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", instance_sym)) {
     fprintf(f_debug, "Instantiation of enum: ");
     db_symbol_name_trans_unit(instance_sym);
@@ -11487,6 +11556,7 @@ template.
     db_type(enum_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* If the translation unit stack was pushed above, pop it now. */
   if (trans_unit_pushed) pop_translation_unit_stack();
@@ -12100,6 +12170,7 @@ use the current global value of the template template parameter.
   tssp = template_sym->variant.template_info;
   is_alias_template = tssp->variant.class_template.is_alias_template;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ftc")) {
     fprintf(f_debug, "find_template_class: beginning search for arg list ");
     db_template_arg_list(*new_list);
@@ -12107,6 +12178,7 @@ use the current global value of the template template parameter.
     db_symbol_name(template_sym);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* The template symbol must be for the primary template. */
   check_assertion(tssp->primary_template_sym == NULL);
@@ -12294,6 +12366,7 @@ use the current global value of the template template parameter.
   }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ftc")) {
     fprintf(f_debug, "find_template_class: for arg list ");
     db_template_arg_list(list_for_instantiation);
@@ -12305,6 +12378,7 @@ use the current global value of the template template parameter.
       fprintf(f_debug, ", not found\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!do_not_create &&
       (sym == NULL ||
@@ -12895,10 +12969,12 @@ instead of creating a real instantiation.
       *new_templ_arg_list = copy_template_arg_list(*new_templ_arg_list);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("instantiations")) {
       db_symbol(sym, "created: ", 2);
       db_symbol(template_sym, "template: ", 2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     a_variable_ptr	var;
@@ -13215,12 +13291,14 @@ doing C++17-style template template parameter matching.
     new_list = NULL;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("cital")) {
     fprintf(f_debug, "create_initial_template_arg_list:\n");
     db_template_param_list(templ_param_list);
     db_template_arg_list(new_list);
     fprintf(f_debug, "\n\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return new_list;
 }  /* create_initial_template_arg_list */
@@ -14284,12 +14362,14 @@ argument deduction purposes.
   a_type_ptr	templ_type_underlying = NULL;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("qc")) {
     fprintf(f_debug, "matches_template_type_with_qualification_conversion:\n");
     fprintf(f_debug, "  type: "); db_type(type);
     fprintf(f_debug, "\n  templ_type: "); db_type(templ_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   type = skip_typerefs(type);
   templ_type = skip_typerefs(templ_type);
@@ -14330,12 +14410,14 @@ argument deduction purposes.
          types match. */
       match = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("qc")) {
         fprintf(f_debug, "Underlying types:\n");
         fprintf(f_debug, "  type: "); db_type(type);
         fprintf(f_debug, "\n  templ_type: "); db_type(templ_type);
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (microsoft_mode) {
         /* The Microsoft compiler drops the qualifiers on the underlying
@@ -14348,12 +14430,14 @@ argument deduction purposes.
         templ_type_underlying = skip_typerefs(templ_type_underlying);
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("qc")) {
         fprintf(f_debug, "Adjusted underlying types:\n");
         fprintf(f_debug, "  type: "); db_type(type_underlying);
         fprintf(f_debug, "\n  templ_type: "); db_type(templ_type_underlying);
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Note that because qualifiers on function types have no effect, the
          check for a qualification conversion as part of deduction is not done
@@ -14463,6 +14547,7 @@ points to the template parameter list.
   a_symbol_ptr                   sym, templ_sym;
   an_mtt_flag_set		 new_flags;
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_type_ptr			 orig_type = type;
   a_type_ptr			 orig_templ_type = templ_type;
 
@@ -14475,6 +14560,7 @@ points to the template parameter list.
     db_type(templ_type);
     fprintf(f_debug, "\n");   
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* When this routine calls itself recursively, the recursive calls
      should not allow conversions or the special unknown this class
@@ -15216,6 +15302,7 @@ points to the template parameter list.
   }  /* if */
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("mtt")) {
     fprintf(f_debug, "matches_template_type type: ");
     db_type(orig_type);
@@ -15223,6 +15310,7 @@ done:
     db_type(orig_templ_type);
     fprintf(f_debug, ", match=%s\n", match ? "TRUE" : "FALSE");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return match;
@@ -17892,11 +17980,13 @@ a pointer over a reference type or creating an array of references.
 
   db_enter(5, "copy_type_with_substitution");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("ctws")) {
     fputs("in:  ", f_debug);
     db_type(type);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   type = skip_lexical_typerefs(type);
   if (type->source_corresp.is_class_member && type_is(type, tk_typeref)) {
@@ -18681,6 +18771,7 @@ done:
   if (*copy_error) new_type = error_type();
   if (new_type == adjusted_orig_type) new_type = orig_type;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("ctws")) {
     fputs("out: ", f_debug);
     if (*copy_error) {
@@ -18690,6 +18781,7 @@ done:
     }  /* if */
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return new_type;
@@ -21892,9 +21984,11 @@ mode in-class specialization.
         declared_type = routine_type_without_default_args(declared_type);
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("creating new template function:\n", f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       add_source_sequence_entry_for_partial_instantiation(
                                                (char *)rp,
@@ -21908,6 +22002,7 @@ mode in-class specialization.
 #endif /* NONCLASS_TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS */
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", sym)) {
     fprintf(f_debug, "partial instantiation: ");
     db_symbol_name_trans_unit(sym);
@@ -21915,6 +22010,7 @@ mode in-class specialization.
     db_symbol_name_trans_unit(templ_sym);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Pop the template instantiation scope. */
   pop_template_instantiation_scope();
@@ -23345,10 +23441,12 @@ resulting data structure and the pointer provided by the caller is set to NULL.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       db_symbol(sym, "created: ", 2);
       db_symbol(templ_sym, "template: ", 2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     sym = tip->instance_sym;
@@ -30312,7 +30410,9 @@ to it.
 
   etfp = alloc_fe_of_type(an_exported_template_file);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_exported_template_files_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   etfp->directory_name = NULL;
   etfp->source_file_name = NULL;
@@ -34222,9 +34322,11 @@ END_DISABLE_GCC_WARNING_MAYBE_UNITIALIZED
     remove_stop_token(tok_rbrace);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (sym != NULL) db_symbol(sym, "template symbol: ", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   decl_state->sym = sym;
 #if BACK_END_IS_CP_GEN_BE
@@ -35874,7 +35976,9 @@ a pointer to the entry.
     /* Allocate a new entry. */
     dccp = alloc_fe_of_type(a_deferred_constraint_check);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_deferred_constraint_checks_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   dccp->next = NULL;
@@ -35941,6 +36045,7 @@ Free any deferred constraint checks that may have been created.
 }  /* f_discard_deferred_constraint_checks */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_generic_constraint_kind(a_generic_constraint_kind	kind)
 /*
@@ -35992,6 +36097,7 @@ number of characters to indent the output.
   }  /* for */
 }  /* db_generic_constraint_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -36019,6 +36125,7 @@ scanned yet.
   a_boolean			any_errors = FALSE;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("cfcc") && !in_generated_code()) {
     fprintf(f_debug, "check_for_constraint_conflict:\n");
     fprintf(f_debug, "  param_type: ");
@@ -36037,6 +36144,7 @@ scanned yet.
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Go through the current list of constraints to check for a conflict. */
   for (gcp = curr_list; gcp != NULL; gcp = gcp->next) {
@@ -37554,17 +37662,21 @@ file we simply return.
   a_directory_name_entry_ptr
                         dir_entry;
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_boolean		print_debug_info = FALSE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   db_enter(3, "do_implicit_include_if_needed");
   /* Translate the sequence number into a file name and line number. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   print_debug_info = debug_level >= 3 || db_flag_is_set("implicit_include");
   if (print_debug_info) {
     fprintf(f_debug, "Attempting implicit include to define:\n");
     db_symbol(tip->instance_sym, "", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   decl_position = &tip->template_sym->decl_position;
   sfp = source_file_for_seq(decl_position->seq, &line_number,
@@ -37582,10 +37694,12 @@ file we simply return.
          do so now. */
       check_assertion(!after_instantiation_wrapup);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (print_debug_info) {
         fprintf(f_debug, "  Looking for source file related to '%s'\n",
                 sfp->file_name);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       sfp->related_file_implicit_include_done = TRUE;
       is_system_include = sfp->included_by_system_include;
@@ -37617,9 +37731,11 @@ file we simply return.
             !find_include_history(full_file_name, &ifhp, /*create=*/FALSE,
                                   /*use_canonical=*/TRUE)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (print_debug_info || db_flag_is_set("show_implicit_include")) {
             fprintf(f_debug, "  Including text from '%s'\n", full_file_name);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           /* Push the new file onto the input stack and scan it.  There is
              no "name as written" so a NULL pointer is passed in. */
@@ -37635,10 +37751,12 @@ file we simply return.
                too. */
 	    if (!suppress_include) (void)fclose(f_source);
 #if DEBUG
+/* GCOVR_EXCL_START */
 	    if (print_debug_info) {
 	      fprintf(f_debug, "%s %s %s\n", "do_implicit_include_if_needed:",
                       "skipping guarded include file", full_file_name);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 	  } else {
             /* Defer any instantiations caused by the processing of the
@@ -38516,7 +38634,9 @@ data member specified by tip.
   a_boolean			trans_unit_pushed = FALSE;
   a_boolean			pushed_for_export = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_boolean			output_debug_info;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* The instantiation process may rescan various things and invalidate the
      current token positions as a result.  Save these positions so that they
@@ -38528,12 +38648,14 @@ data member specified by tip.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   output_debug_info = db_sym_trace("instantiations", tip->instance_sym);
   if (output_debug_info) {
     fprintf(f_debug, "instantiate_entity: ");
     db_symbol_name_trans_unit(tip->instance_sym);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   saved_pos_curr_token = pos_curr_token;
   saved_error_position = error_position;
@@ -38581,11 +38703,13 @@ data member specified by tip.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (tip != NULL && output_debug_info) {
       fprintf(f_debug, "Corresponding instance is: ");
       db_symbol_name_trans_unit(tip->instance_sym);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   if (tip == NULL) {
@@ -38683,7 +38807,9 @@ to it.
 
   tlp = alloc_fe_of_type(a_template_lookup_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_template_lookup_entries_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tlp->next = NULL;
   tlp->name = NULL;
@@ -39056,12 +39182,14 @@ instantiation request file.
       mip->add_to_request_file = TRUE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_sym_trace("instantiations", tip->instance_sym)) {
       fprintf(f_debug, "check_if_entity...: ");
       db_symbol_name_trans_unit(tip->instance_sym);
       fprintf(f_debug, ": instantiate=%d, add_to_request_file=%d\n",
               instantiate, add_to_request_file);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* check_if_entity_should_be_automatically_instantiated */
@@ -39123,10 +39251,12 @@ specified by tip.
   saved_instantiation_mode = instantiation_mode;
   instantiation_mode = tim_none;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Automatic instantiation processing for:\n");
     db_symbol(tip->instance_sym, "", 0);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Do the instantiation. */
   instantiate_entity(tip);
@@ -39163,9 +39293,11 @@ Returns a pointer to the FILE structure for the file.
                                                (a_text_buffer_ptr)NULL);
   full_name = file_name_buffer->buffer;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("export")) {
     fprintf(f_debug, "Opening export template file: %s\n", full_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   f_file = fopen_with_error(full_name, "r", OFF_NO_OPTIONS,
                             ec_exported_template);
@@ -39354,9 +39486,11 @@ Attempt to open the export information in the directory specified by
   eifp->file_name = copy_string_to_region(FRONT_END_REGION_NUMBER,
                                           file_name);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("export")) {
     fprintf(f_debug, "Opening export information file: %s\n", file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   f_file = fopen_with_error(file_name, "r",
                             OFF_OKAY_IF_NOT_FOUND, ec_export_info);
@@ -39752,11 +39886,13 @@ Assign a master instance entry for the template instance "tip".
     }  /* if */
     canonical_tip->master_instance = mip;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_sym_trace("instantiations", tip->instance_sym)) {
       fprintf(f_debug, "find_or_create_master_instance: symbol: \n");
       db_symbol_name_trans_unit(tip->instance_sym);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Save a pointer to the master instance in the template instance. */
@@ -39764,6 +39900,7 @@ Assign a master instance entry for the template instance "tip".
 }  /* find_or_create_master_instance */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_instance_count(a_master_instance_ptr	mip,
 			      a_boolean			increment)
@@ -39780,6 +39917,7 @@ incremented.
           (int)mip->instance_required_count, (void *)mip);
 }  /* db_instance_count */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -39939,6 +40077,7 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("instantiations", sym) ||
       db_sym_trace("uirf", sym)) {
     fprintf(f_debug,
@@ -39952,6 +40091,7 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Master instances are created immediately in the primary translation unit,
      but in secondary translation units they are only established after
@@ -40005,9 +40145,11 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
         mip->instance_required_count--;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_sym_trace("instantiations", sym)) {
         db_instance_count(mip, /*increment=*/FALSE);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       check_assertion(mip->instance_required_count >= 0);
       /* If the instance count has been decremented to zero, reset the
@@ -40046,9 +40188,11 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
          translation units that require the instantiation. */
       mip->instance_required_count++;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_sym_trace("instantiations", sym)) {
         db_instance_count(mip, /*increment=*/TRUE);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     if (!flag_already_set) {
@@ -40163,11 +40307,13 @@ Does nothing if called in C mode.
     a_template_instance_ptr	tip;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_sym_trace("instantiations", sym)) {
       fprintf(f_debug, "Setting instance required for ");
       db_symbol_name_trans_unit(sym);
       fprintf(f_debug, " to %s\n", value ? "true" : "false");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (symbol_is(sym, sk_static_data_member)) {
       /*lint -e{506}*/
@@ -40411,6 +40557,7 @@ for adding the entries to the actual instantiation request file.
       fputs("\n", f_definition_list);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_sym_trace("instantiations", mip->instance->instance_sym)) {
       fprintf(f_debug, "add_entities_to_request_file: ");
       db_symbol_name(mip->instance->instance_sym);
@@ -40422,6 +40569,7 @@ for adding the entries to the actual instantiation request file.
       fprintf(f_debug, "  needed=%d\n", needed);
 #endif /* MAINTAIN_NEEDED_FLAGS */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   close_output_file_with_error_handling(&f_definition_list,
@@ -40692,6 +40840,7 @@ be processed.
       routine->instance_required = instance_required;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_sym_trace("instantiations", instance_sym)) {
       fprintf(f_debug, "update_auto_instantiation_flags:\n");
       if (is_variable) {
@@ -40714,6 +40863,7 @@ be processed.
       db_symbol_name(mip->instance->instance_sym);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (instantiation_flags_needed() &&
         (instance_required || can_be_instantiated || do_not_instantiate)) {
@@ -40865,11 +41015,13 @@ that might be required.
        for this entity. */
     (void)is_static_or_inline_template_entity(tip);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_sym_trace("instantiations", tip->instance_sym)) {
       fprintf(f_debug, "do_any_needed_instantiations, checking: ");
       db_symbol_name_trans_unit(tip->instance_sym);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Skip entries that have already been instantiated. */
     if (mip->already_instantiated) continue;
@@ -40984,9 +41136,11 @@ correspondence information established first.
     if (tip->instantiation_required) {
       tip->master_instance->instance_required_count++;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("instantiations")) {
         db_instance_count(tip->master_instance, /*increment=*/TRUE);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* for */
@@ -41331,6 +41485,7 @@ emitted in this translation unit.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_trace("instantiation", rout_ptr, iek_routine)) {
     fprintf(f_debug, "inline_function_should_be_emitted:\n");
     db_entity_info((char*)rout_ptr, iek_routine);
@@ -41343,6 +41498,7 @@ emitted in this translation unit.
             is_nontemplate_routine_from_exported_trans_unit(rout_ptr));
 #endif /* AUTOMATIC_TEMPLATE_INSTANTIATION */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* inline_function_should_be_emitted */
@@ -41487,6 +41643,7 @@ emitted in this translation unit.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_trace("instantiation", var, iek_variable)) {
     fprintf(f_debug, "inline_variable_should_be_emitted:\n");
     db_entity_info((char*)var, iek_variable);
@@ -41497,6 +41654,7 @@ emitted in this translation unit.
             inline_variable_in_request_file(var));
 #endif /* AUTOMATIC_TEMPLATE_INSTANTIATION */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* inline_variable_should_be_emitted */
@@ -41804,6 +41962,7 @@ a definition (if needed) for extern inline entities.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("instantiation", rout_ptr, iek_routine)) {
       fprintf(f_debug, "create_inst_flags_for_inline_function:\n");
       db_entity_info((char*)rout_ptr, iek_routine);
@@ -41821,6 +41980,7 @@ a definition (if needed) for extern inline entities.
       fprintf(f_debug, " suppress_inline_body=%d\n",
               (a_boolean)rout_ptr->suppress_inline_body);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* create_instantiation_flags_for_inline_function */
@@ -41878,6 +42038,7 @@ a definition (if needed) for extern inline entities.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("instantiation", var, iek_variable)) {
       fprintf(f_debug, "create_inst_flags_for_inline_variable:\n");
       db_entity_info((char*)var, iek_variable);
@@ -41887,6 +42048,7 @@ a definition (if needed) for extern inline entities.
       fprintf(f_debug, " inline_instance_required=%d\n",
               (a_boolean)var->inline_instance_required);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* create_instantiation_flags_for_inline_variable */
@@ -42352,6 +42514,7 @@ this routine is called indirectly for a class instantiation.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "Updated instantiation flags for:\n");
     if (sym != NULL) {
@@ -42361,6 +42524,7 @@ this routine is called indirectly for a class instantiation.
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* update_instantiation_flags */
@@ -45012,12 +45176,14 @@ identical).
     tssp->il_template_entry->template_decl = guide_template_decl;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("impl_guide")) {
     db_type(ctor_rout->type);
     fprintf(f_debug, "\n");
     db_type(rout_type);
     fprintf(f_debug, "\n\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tssp->variant.function.routine = rout;
   if (orig_ct_sym->is_class_member) {
@@ -45586,6 +45752,7 @@ On success, return the symbol for the new guide; otherwise return NULL.
   }  /* if */
   rout_type = guide->type;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ctad")) {
     fputs("ctad for alias-like template: ", f_debug);
     db_type(def_type);
@@ -45593,6 +45760,7 @@ On success, return the symbol for the new guide; otherwise return NULL.
     db_type(guide->type);
     fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* A rescan context is needed because nonreal types will be created below. */
   push_instantiation_scope_for_rescan(NULL);
@@ -46019,9 +46187,11 @@ On success, return the symbol for the new guide; otherwise return NULL.
     rout->compiler_generated = guide->compiler_generated;
     add_to_routines_list(rout, NO_SCOPE_DEPTH);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ctad")) {
       db_symbol(new_guide, "transformed guide: ", 2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_deduction_guide(new_guide, p_guide_set);
   }
@@ -46543,6 +46713,7 @@ deduction succeeds and results in the same type "A<T>".
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long db_show_template_space_used(unsigned long grand_total)
 /*
 Show space used by the template routines.  This is called by
@@ -46579,6 +46750,7 @@ routines is reported as part of the symbol table memory used.
 #endif /* TEMPLATE_LOOKUP_NEEDED */
   return grand_total;
 }  /* db_show_template_space_used */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -46610,6 +46782,7 @@ One-time initialization for templates.c static variables.
       pch_saved_var_array_elem(local_type_used_as_template_type_argument),
 #endif /* ENSURE_LOWERED_TYPE_LIST_ORDERING */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_partial_order_candidates_allocated),
       pch_saved_var_array_elem(num_tmpl_decl_states_allocated),
       pch_saved_var_array_elem(num_variadic_param_infos_allocated),
@@ -46617,6 +46790,7 @@ One-time initialization for templates.c static variables.
       pch_saved_var_array_elem(num_template_lookup_entries_allocated),
       pch_saved_var_array_elem(num_exported_template_files_allocated),
 #endif /* TEMPLATE_LOOKUP_NEEDED */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_elem(initializer_list_sym_hdr),
       pch_saved_var_array_elem(invented_template_sym_hdr),
@@ -46699,6 +46873,7 @@ Initializations for template.
   local_type_used_as_template_type_argument = FALSE;
 #endif /* ENSURE_LOWERED_TYPE_LIST_ORDERING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_partial_order_candidates_allocated = 0;
   num_tmpl_decl_states_allocated = 0;
   num_variadic_param_infos_allocated = 0;
@@ -46709,6 +46884,7 @@ Initializations for template.
   num_template_lookup_entries_allocated = 0;
   num_exported_template_files_allocated = 0;
 #endif /* TEMPLATE_LOOKUP_NEEDED */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if AUTOMATIC_TEMPLATE_INSTANTIATION
   any_instantiated_entities_added_to_request_file = FALSE;

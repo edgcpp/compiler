@@ -31,6 +31,7 @@ BEGIN_EDG_NAMESPACE
 
 #if !STANDALONE_UTILITY_PROGRAM
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 using an_allocation_counter = unsigned long;
 		/* The type used for an allocation count. */
@@ -114,6 +115,7 @@ Track an allocation of an IL entry with the given IL entry kind.
   ++il_allocation_counter[kind];
 }  /* f_tally_alloc */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Static variable and macro for quickly initializing the source_corresp
@@ -171,8 +173,10 @@ Macro to increment the entry prefix allocation count only if DEBUG
 is TRUE.  Used in do_alloc.
 */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define incr_num_il_entry_prefixes_allocated()                        \
   num_il_entry_prefixes_allocated++
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define incr_num_il_entry_prefixes_allocated() /* Nothing */
 #endif /* DEBUG */
@@ -222,8 +226,10 @@ Macro to increment the count of translation unit copy address pointers
 allocated.  When not generating debugging code, this expands to nothing.
 */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define incr_num_trans_unit_copy_address_pointers_allocated()              \
   num_trans_unit_copy_address_pointers_allocated++
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define incr_num_trans_unit_copy_address_pointers_allocated() /* Nothing */
 #endif /* DEBUG */
@@ -339,7 +345,9 @@ to by trace_alloc_ptr.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   fprintf(f_debug, "Created node at %p.\n", (void*)ptr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* alloc_intercept */
 
@@ -485,7 +493,9 @@ least in non-pcc mode).
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   string_literal_text_space_allocated += (unsigned long)size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return alloc_il(size);
 }  /* alloc_text_of_string_literal */
@@ -578,7 +588,9 @@ Allocate a source file entry, initialize it, and return a pointer to it.
      translation unit file scope memory region. */
   sfp = (a_source_file_ptr)alloc_primary_file_scope_il(sizeof(a_source_file));
 #if DEBUG
+/* GCOVR_EXCL_START */
   f_tally_alloc(iek_source_file);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   sfp->file_name        = NULL;
   sfp->full_name        = NULL;
@@ -658,7 +670,9 @@ region if at_file_scope is TRUE.
                      alloc_cil(sizeof(a_per_instantiation_needed_flags_entry));
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   f_tally_alloc(iek_per_instantiation_needed_flags_entry);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   pinfep->next = NULL;
   memzero((char *)pinfep->bytes, sizeof(pinfep->bytes));
@@ -1574,7 +1588,9 @@ otherwise, allocate it in the current file-scope memory region.
                                                    scp,
                                                    sizeof(a_class_list_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
   f_tally_alloc(iek_class_list_entry);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clep->next  = NULL;
   clep->class_type = NULL;
@@ -1685,7 +1701,9 @@ base_type, because base_type will point to the entry.
                                              &base_type->source_corresp,
                                              sizeof(a_based_type_list_member));
 #if DEBUG
+/* GCOVR_EXCL_START */
   f_tally_alloc(iek_based_type_list_member);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   btlmp->next = NULL;
   btlmp->based_type = NULL;
@@ -3251,7 +3269,9 @@ Allocate space for an asm function body and return a pointer to it.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   asm_function_body_space_allocated += (unsigned long)len;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return (char *)alloc_cil(len);
 }  /* alloc_asm_function_body */
@@ -3779,6 +3799,7 @@ Allocate and initialize an expression node.
     } else {
       ptr = alloc_il_of_type(an_expr_node);
 #if DEBUG
+/* GCOVR_EXCL_START */
       num_fs_expr_nodes_allocated += 1;
       { /* Increment num_rescan_fs_expr_nodes_allocated if we're in an
            expression rescan context (this is approximate). */
@@ -3786,6 +3807,7 @@ Allocate and initialize an expression node.
         extern void count_rescan_fs_expr_nodes(unsigned long*);
         count_rescan_fs_expr_nodes(&num_rescan_fs_expr_nodes_allocated);
       }
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   } else {
@@ -4403,9 +4425,11 @@ pointer to it.
       break;
 #endif /* ADD_CHECKING_PRAGMAS_FOR_INTERNAL_TESTING */
 #if DEBUG
+/* GCOVR_EXCL_START */
     case pk_db_opt:
     case pk_db_name:
       break;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     case pk_push_macro:
     case pk_pop_macro:
@@ -5294,10 +5318,12 @@ a pointer to it.
   snlep->next = NULL;
   snlep->source_file = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
 #if EXPENSIVE_CHECKING
   snlep->is_marked_for_recycle = FALSE;
 #endif /* EXPENSIVE_CHECKING */
   f_tally_alloc(iek_seq_number_lookup_entry);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return snlep;
 }  /* alloc_seq_number_lookup_entry */
@@ -5784,6 +5810,7 @@ Allocate an entry for a_scoped_expression in the file scope memory region.
 }  /* alloc_scoped_expression */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_il_alloc_space_used(unsigned long grand_total)
 /*
@@ -5845,6 +5872,7 @@ Display and return the amount of space used for various IL tables.
 
   return grand_total;
 }  /* show_il_alloc_space_used */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if CHECKING && defined(offsetof)
@@ -6023,6 +6051,7 @@ in il_alloc_init.)
       pch_saved_var_array_elem(avail_constant_list_entries),
 #endif /* NEED_NAME_MANGLING */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(string_literal_text_space_allocated),
       pch_saved_var_array_elem(num_il_entry_prefixes_allocated),
       pch_saved_var_array_elem(num_fs_expr_nodes_allocated),
@@ -6035,6 +6064,7 @@ in il_alloc_init.)
       pch_saved_var_array_elem(asm_function_body_space_allocated),
 #endif /* ASM_SUPPORT_NEEDED */
       pch_array_saved_var_array_elem(il_allocation_counter),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -6118,6 +6148,7 @@ initializations that are done for each compilation.
   /* Static variables. */
   available_local_constants              = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   string_literal_text_space_allocated    = 0;
   num_il_entry_prefixes_allocated        = 0;
   num_fs_expr_nodes_allocated            = 0;
@@ -6132,6 +6163,7 @@ initializations that are done for each compilation.
   for (unsigned iek = (unsigned)iek_none; iek < (unsigned)iek_last; ++iek) {
     il_allocation_counter[iek] = 0;
   }  /* for */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
   local_constants_in_use                 = 0;

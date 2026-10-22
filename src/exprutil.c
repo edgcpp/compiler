@@ -117,6 +117,7 @@ STATIC_THREAD a_dynamic_init_dtor_fixup_ptr
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of entries allocated, for debugging purposes.
 */
@@ -148,6 +149,7 @@ context" if expr_stack->suppress_diagnostics is TRUE.
   }  /* if */
 }  /* count_rescan_fs_expr_nodes */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if SEQUENCING_DIAGNOSTICS_ENABLED
 
@@ -167,7 +169,9 @@ Allocate and return a sequence info entry that points to expr.
     /* Allocate a new entry. */
     spiep = alloc_fe_of_type(a_seq_pt_info_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_sequence_info_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   spiep->next = NULL;
@@ -209,7 +213,9 @@ Allocate and return a sequence point variable entry that points to variable.
     /* Allocate a new entry. */
     spvep = alloc_fe_of_type(a_seq_pt_var_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_seq_pt_var_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   spvep->next = NULL;
@@ -308,7 +314,9 @@ the current expression, headed by curr_expr_ref_entries.
     /* Allocate a new entry. */
     rep = (a_ref_entry_ptr)alloc_fe(sizeof(a_ref_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_ref_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   rep->kind = SRK_REFERENCE;
@@ -905,7 +913,9 @@ entries are used to hold arguments of function calls.
     /* Allocate a new entry. */
     aop = (an_arg_operand_ptr)alloc_fe(sizeof(an_arg_operand));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_arg_operands_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   aop->next = NULL;
@@ -1006,13 +1016,17 @@ kind to "kind" and its fields to default values, and return a pointer to it.
     icp = avail_init_components;
     avail_init_components = icp->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_init_components_freed--;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     /* Allocate a new entry. */
     icp = alloc_fe_of_type(an_init_component);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_init_components_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   icp->next = NULL;
@@ -1093,7 +1107,9 @@ subtree of entries, free those as well.
   icp->next = avail_init_components;
   avail_init_components = icp;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_init_components_freed++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 end_of_routine:;
 }  /* free_init_component */
@@ -1250,6 +1266,7 @@ expansion, return TRUE.  Otherwise, return FALSE.
 }  /* any_pack_expansion_components_in_list */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_init_component(an_init_component_ptr icp)
 /*
@@ -1331,6 +1348,7 @@ Output a list of initializer components for debugging purposes.
   }  /* if */
 }  /* db_icp_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void conv_braced_init_component_to_error_expression(an_arg_list_elem_ptr alep)
@@ -1563,7 +1581,9 @@ The entry is put on the fixup list for the current expression context.
     didfp = (a_dynamic_init_dtor_fixup_ptr)
                                    alloc_fe(sizeof(a_dynamic_init_dtor_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_dynamic_init_dtor_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   didfp->next = expr_stack->dynamic_init_dtor_fixup_list;
@@ -2784,9 +2804,11 @@ destructions preceding the first destruction from the expression).
 #if CHECKING
           if (tdip == NULL) {
 #if DEBUG 
+/* GCOVR_EXCL_START */
             fprintf(f_debug, "Dynamic init not found:\n");
             db_dynamic_initializer(dip, 2);
             db_object_lifetime(curr_object_lifetime);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             unexpected_condition_str2("update_last_processed_dynamic_init:",
                                       "dip not found");
@@ -2808,11 +2830,13 @@ destructions preceding the first destruction from the expression).
 #if CHECKING
           if (tdip == NULL) {
 #if DEBUG 
+/* GCOVR_EXCL_START */
             fprintf(f_debug, "Dynamic init to insert:\n");
             db_dynamic_initializer(dip, 2);
             fprintf(f_debug, "Dynamic init not found:\n");
             db_dynamic_initializer(tblock->last_relinked_dynamic_init, 2);
             db_object_lifetime(curr_object_lifetime);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             unexpected_condition_str2("update_last_processed_dynamic_init:",
                                       "insert point not found");
@@ -3584,6 +3608,7 @@ If the operand is an expression, do not set the position in the expression.
 }  /* set_operand_position_to_pos_curr_token */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_operand(an_operand *operand)
 /*
@@ -3720,6 +3745,7 @@ debug output.
   db_ref_entries(operand->ref_entries_list);
 }  /* db_operand_ref_entries */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 an_expr_node_ptr alloc_empty_parens_func_cast(
@@ -4413,7 +4439,9 @@ set its fields to default values, and return a pointer to it.
   eriep = (an_expr_rescan_info_entry_ptr)alloc_fe(
                                             sizeof(an_expr_rescan_info_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_expr_rescan_info_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_expr_rescan_info_entry(eriep);
   return eriep;
@@ -20779,7 +20807,9 @@ in the source (and *operator_position gives its position).
       /* Okay. */
     } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_operand(operand);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("take_address_of_or_reference_to_lvalue: not an lvalue");
 #endif /* CHECKING */
@@ -22873,8 +22903,10 @@ lvalue_adjust:
        original state of the expression.) */
     if (!is_rvalueable_node(node) && !node_is(node, enk_lambda)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       fprintf(f_debug, "\n");
       db_expression(node);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str("conv_glvalue_expr_to_prvalue: bad expr");
     }  /* if */
@@ -25715,6 +25747,7 @@ struct a_constraint_chart {
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 /*lint -esym(714,*db_constraint_chart)*/
 void db_constraint_chart(a_constraint_chart  *chart)
@@ -25821,6 +25854,7 @@ constraints).
   }  /* if */
 }  /* db_active_E2_constraint */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 using a_constraint_charts_map = Ptr_map<a_symbol_ptr, a_constraint_chart*>;
@@ -25842,6 +25876,7 @@ the chart links identical expressions on a circular linked list through the
 using an_expr_chart_map = Ptr_map<an_expr_node_ptr, uint32_t>;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 /*
 Explicitly instantiate "an_expr_chart_map"'s db_ptrs function.  Note that,
@@ -25849,6 +25884,7 @@ grammatically, the type alias an_expr_chart_map cannot be used here.
 */
 template void Ptr_map<an_expr_node_ptr, int32_t>::db_ptrs() const;
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -27801,6 +27837,7 @@ memory region constraints.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long show_expr_space_used(void)
 /*
 Display and return the amount of space used for various expression tables.
@@ -27838,6 +27875,7 @@ Display and return the amount of space used for various expression tables.
   return grand_total;
 }  /* show_expr_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING && DEBUG
 
@@ -27887,6 +27925,7 @@ Do one-time initialization of variables related to expression processing.
       pch_saved_var_array_elem(imaginary_unit),
 #endif /* C99_IL_EXTENSIONS_SUPPORTED */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_arg_operands_allocated),
       pch_saved_var_array_elem(num_init_components_allocated),
       pch_saved_var_array_elem(num_init_components_permanently_allocated),
@@ -27900,6 +27939,7 @@ Do one-time initialization of variables related to expression processing.
       pch_saved_var_array_elem(num_dynamic_init_dtor_fixups_allocated),
       pch_saved_var_array_elem(num_arg_match_summaries_allocated),
       pch_saved_var_array_elem(num_candidate_functions_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -27994,6 +28034,7 @@ for each compilation.
   avail_init_components = NULL;
   avail_dynamic_init_dtor_fixups = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_arg_match_summaries_allocated      = 0;
   num_arg_operands_allocated             = 0;
   num_init_components_allocated          = 0;
@@ -28006,6 +28047,7 @@ for each compilation.
   num_sequence_info_entries_allocated    = 0;
 #endif /* SEQUENCING_DIAGNOSTICS_ENABLED */
   num_dynamic_init_dtor_fixups_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   constraint_charts = new_fe<a_constraint_charts_map>(/*mask_width=*/10u);
   template_param_objects =

@@ -2778,6 +2778,7 @@ done_with_folding:
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "type_change_constant of ");
     db_constant(constant);
@@ -2795,6 +2796,7 @@ done_with_folding:
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (err_code != ec_no_error) {
     /* There was an error or warning. */
@@ -3016,6 +3018,7 @@ parameter constant that might be a null pointer constant.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_unary_operation(a_const_char  *operation,
 			       a_constant    *operand,
                                a_constant    *result,
@@ -3033,6 +3036,7 @@ Do a debug print giving the result of folding a one-operand constant operation.
     fprintf(f_debug, "\n");
   }  /* if */
 }  /* db_unary_operation */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -3083,7 +3087,9 @@ Do the negate operation on all types of integers.
     *err_severity = es_warning;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_unary_operation("i-", constant, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_inegate */
 
@@ -3115,7 +3121,9 @@ Do the negate operation on all types of float and imaginary values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_unary_operation("f-", constant, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fnegate */
 
@@ -3147,7 +3155,9 @@ Do the negate operation on all types of fixed-point values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_unary_operation("fx-", constant, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxnegate */
 
@@ -3180,7 +3190,9 @@ Do the negate operation on all types of complex.
     *err_severity = es_error;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_unary_operation("x-", constant, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xnegate */
 
@@ -3207,7 +3219,9 @@ Do the complement operation on all types of integers.
   result->non_arithmetic = TRUE;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_unary_operation("~", constant, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_complement */
 
@@ -3230,11 +3244,13 @@ Do the "!" (not) operation on all types of scalars.
                       (a_host_large_integer)is_false_constant(constant));
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (*did_not_fold) {
     if (debug_level >= 5) fprintf(f_debug, "! did not fold\n");
   } else {
     db_unary_operation("!", constant, result, ec_no_error);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_not */
 
@@ -3271,7 +3287,9 @@ types of complex values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_unary_operation("x~", constant, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xconj */
 
@@ -3569,6 +3587,7 @@ for any diagnostics issued.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_binary_operation(a_const_char   *operation,
 				a_constant_ptr constant_1,
 				a_constant_ptr constant_2,
@@ -3599,6 +3618,7 @@ Do a debug print giving the result of folding a two-operand constant operation.
     fprintf(f_debug, "\n");
   }  /* if */
 }  /* db_binary_operation */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -3630,7 +3650,9 @@ Do the addition operation on all types of integers.
                         err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("i+", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_iadd */
 
@@ -3663,7 +3685,9 @@ Do the subtract operation on all types of integers.
                         err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("i-", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_isubtract */
 
@@ -3696,7 +3720,9 @@ Do the multiply operation on all types of integers.
                         err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("i*", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_imultiply */
 
@@ -3736,7 +3762,9 @@ Do the divide operation on all types of integers.
                         err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("i/", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_idivide */
 
@@ -3776,7 +3804,9 @@ Do the remainder operation ("%") on all types of integers.
                         err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("%", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_remainder */
 
@@ -3986,7 +4016,9 @@ Do the shift right operation on all types of integers.
 	   err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(">>", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_shiftr */
 
@@ -4004,7 +4036,9 @@ Do the shift left operation on all types of integers.
 	   err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("<<", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_shiftl */
 
@@ -4062,7 +4096,9 @@ Do the shift right operation on fixed-point values.
 	     err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("fx>>", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxshiftr */
 
@@ -4080,7 +4116,9 @@ Do the shift left operation on fixed-point values.
 	     err_code, err_severity);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("fx<<", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxshiftl */
 
@@ -4119,8 +4157,10 @@ operator "op", and return a 0 or 1 integer in "result".
                     (a_host_large_integer)result_value);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_icompare */
 
@@ -4153,8 +4193,10 @@ GNU C++ minimum and maximum operators ("<?" and ">?").
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_ignu_min_max */
 
@@ -4175,7 +4217,9 @@ Do the bitwise "and" operation on all types of integers.
   result->variant.integer_value = result_value;
   result->non_arithmetic = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("&", constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_and */
 
@@ -4195,7 +4239,9 @@ Do the bitwise "or" operation on all types of integers.
   result->variant.integer_value = result_value;
   result->non_arithmetic = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("|", constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_or */
 
@@ -4215,7 +4261,9 @@ Do the bitwise "xor" operation on all types of integers.
   result->variant.integer_value = result_value;
   result->non_arithmetic = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("^", constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xor */
 
@@ -4250,11 +4298,13 @@ Do the logical "and" (&&) operation on integers, floats, and pointers.
                       (a_host_large_integer)res);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (*did_not_fold) {
     if (debug_level >= 5) fprintf(f_debug, "&& did not fold\n");
   } else {
     db_binary_operation("&&", constant_1, constant_2, result, ec_no_error);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_land */
 
@@ -4289,11 +4339,13 @@ Do the logical "or" (||) operation on integers, floats, and pointers.
                       (a_host_large_integer)res);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (*did_not_fold) {
     if (debug_level >= 5) fprintf(f_debug, "|| did not fold\n");
   } else {
     db_binary_operation("||", constant_1, constant_2, result, ec_no_error);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_lor */
 
@@ -4328,7 +4380,9 @@ Do the addition operation on all types of float and imaginary values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("f+", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fadd */
 
@@ -4363,7 +4417,9 @@ Do the subtraction operation on all types of float and imaginary values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("f-", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fsubtract */
 
@@ -4406,7 +4462,9 @@ Do the multiplication operation on all types of float.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("f*", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fmultiply */
 
@@ -4456,7 +4514,9 @@ Do the division operation on all types of float.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("f/", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fdivide */
 
@@ -4515,8 +4575,10 @@ relational operator "op", and return a 0 or 1 integer in "result".
                     (a_host_large_integer)result_value);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fcompare */
 
@@ -4546,7 +4608,9 @@ combinations of fixed-point and integer values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("fx+", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxadd */
 
@@ -4575,7 +4639,9 @@ combinations of fixed-point and integer values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("fx-", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxsubtract */
 
@@ -4604,7 +4670,9 @@ combinations of fixed-point and integer values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("fx*", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxmultiply */
 
@@ -4639,7 +4707,9 @@ combinations of fixed-point and integer values.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("fx/", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxdivide */
 
@@ -4679,8 +4749,10 @@ relational operator "op", and return a 0 or 1 integer in "result".
                     (a_host_large_integer)result_value);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fxcompare */
 
@@ -4722,8 +4794,10 @@ GNU C++ minimum and maximum operators ("<?" and ">?").
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_fgnu_min_max */
 
@@ -4760,7 +4834,9 @@ Do the addition operation on all types of complex.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("x+", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xadd */
 
@@ -4794,7 +4870,9 @@ Do the subtraction operation on all types of complex.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("x-", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xsubtract */
 
@@ -4827,7 +4905,9 @@ Do the multiplication operation on all types of complex.
     *err_severity = es_error;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("x*", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xmultiply */
 
@@ -4924,7 +5004,9 @@ Do the division operation on all types of complex.
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("x/", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xdivide */
 
@@ -4960,8 +5042,10 @@ thereof).
                     (a_host_large_integer)result_value);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, ec_no_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_xcompare */
 
@@ -5001,7 +5085,9 @@ Do the multiplication operation on two imaginary numbers (any precision).
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("j*", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_jmultiply */
 
@@ -5049,7 +5135,9 @@ Do the division of a real number by an imaginary number (any precision).
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation("j/", constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_jdivide */
 
@@ -5118,8 +5206,10 @@ preservation of negative zeroes.
     *err_severity = es_error;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_real_imag_add_subtract */
 
@@ -5399,8 +5489,10 @@ have_result:
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_binary_operation(db_operator_names[op],
                       constant_1, constant_2, result, *err_code);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   release_local_constant(&offset);
 }  /* do_padd */
@@ -5504,6 +5596,7 @@ integral type, as in "(int)&x - (int)&x".
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level  >= 5) {
     if (cannot_fold) {
       fprintf(f_debug, "do_pdiff: did not fold\n");
@@ -5511,6 +5604,7 @@ integral type, as in "(int)&x - (int)&x".
       db_binary_operation("pd", constant_1, constant_2, result, *err_code);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   release_local_constant(&offset_2);
   release_local_constant(&offset_1);
@@ -5784,6 +5878,7 @@ set if the operation cannot be folded.
                       (a_host_large_integer)result_value);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level  >= 5) {
     if (cannot_fold) {
       fprintf(f_debug, "do_pcompare: did not fold\n");
@@ -5792,6 +5887,7 @@ set if the operation cannot be folded.
                           constant_1, constant_2, result, *err_code);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   release_local_constant(&offset_1);
   release_local_constant(&offset_2);
@@ -5837,10 +5933,12 @@ and *result is set to an integer 0 or 1 for the result.
   set_integer_value(&result->variant.integer_value,
                     (a_host_large_integer)result_value);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level  >= 5) {
     db_binary_operation(db_operator_names[op],
                         constant_1, constant_2, result, ec_no_error);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* do_pmcompare */
 
@@ -6798,6 +6896,7 @@ through the usual interface because a field cannot be passed as a constant.
   }  /* if */
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "fold_field_selection: offset = ");
     if (is_constant) {
@@ -6807,6 +6906,7 @@ done:
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* CHECKING */
   release_local_constant(&offset);
   return is_constant;
@@ -11889,6 +11989,7 @@ the folding mechanism is used as a way to validate argument values.
   }  /* if */
   release_local_constant(&result);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (folded && db_flag_is_set("folded_builtin")) {
     fprintf(f_debug, "folded builtin: ");
     db_constant(result_con);
@@ -11905,6 +12006,7 @@ the folding mechanism is used as a way to validate argument values.
       fprintf(f_debug, "\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return folded;
 }  /* fold_gnu_builtin_function_call_if_possible */
@@ -12627,6 +12729,7 @@ static initialization.
 }  /* is_static_init_constant */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long db_show_folding_fe_space_used(unsigned long grand_total)
 /*
@@ -12636,6 +12739,7 @@ Display memory use for entities in front end memory in this file (folding.c).
   return grand_total;
 }  /* db_show_folding_fe_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void folding_one_time_init(void)

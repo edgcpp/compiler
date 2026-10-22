@@ -6345,6 +6345,7 @@ returned set to TRUE.
   }  /* if */
 #endif /* CHECKING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("dump_init")) {
     if (!var_err) {
       fputs("initializer for ", f_debug);
@@ -6357,6 +6358,7 @@ returned set to TRUE.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* initializer */
@@ -6570,6 +6572,7 @@ expressions.  For the latter, see init_capture_initializer below.)
       field->initializer_range.end = curr_construct_end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("dump_init")) {
         fputs("initializer for field ", f_debug);
         db_name(&field->source_corresp);
@@ -6581,6 +6584,7 @@ expressions.  For the latter, see init_capture_initializer below.)
         fputs(")\n", f_debug);
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   } else {
@@ -7344,11 +7348,13 @@ FALSE is returned) for non-class objects.
                                    err_pos, (a_decl_pos_block_ptr)NULL,
                                    (a_statement_ptr *)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3 || db_flag_is_set("dump_init")) {
           db_variable(var);
           fputs(",\n", f_debug);
           db_initializer(var, 2);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
       if (sym->kind == (a_symbol_kind)sk_static_data_member) {
@@ -7376,11 +7382,13 @@ FALSE is returned) for non-class objects.
                                  err_pos, (a_decl_pos_block_ptr)NULL,
                                  (a_statement_ptr *)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3 || db_flag_is_set("dump_init")) {
         fputs("Default-initialized VLA: ", f_debug);
         db_variable(var);
         fputs("\n", f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else if (is_reflection_type(tp)) {
       /* Default-initialization for reflection types is zero-initialization. */
@@ -10230,6 +10238,7 @@ initialized.  These are addressed in the course of the processing.
   }  /* if */
 #endif /* NEW_CAN_BE_FOLDED_INTO_CTOR */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("dump_init")) {
     db_symbol((a_symbol_ptr)ctor_rout->source_corresp.assoc_info,
               "constructor: ", 2);
@@ -10251,6 +10260,7 @@ initialized.  These are addressed in the course of the processing.
       }  /* if */
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 done:
   db_exit();
@@ -10757,6 +10767,7 @@ past_subobject_destructions:
   }
 #endif /* DELETE_CAN_BE_FOLDED_INTO_DTOR */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("dump_init")) {
     db_symbol(symbol_for(dtor_rout), "destructor: ", 2);
     for (cip = cip_list; cip != NULL; cip = cip->next) {
@@ -10776,6 +10787,7 @@ past_subobject_destructions:
       }  /* if */
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return cip_list;
