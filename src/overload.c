@@ -76,6 +76,7 @@ static a_boolean check_narrowing_conversion(an_operand  *source_operand,
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		n_viability_checks = 0,
 		n_viability_failures = 0,
@@ -114,6 +115,7 @@ Display some statistics regarding calls to determine_function_viability.
           n_deduced_substitition_lookup_failures);
 }  /* db_viability_stats */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -258,6 +260,7 @@ done:
 }  /* in_substitution_loop */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_substitution_stack(void)
 /*
@@ -274,6 +277,7 @@ Output a log of the current substitution stack.
   }  /* for */
 }  /* db_substitution_stack */
 
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
 
 using a_small_ovl_res_stack_stack =
@@ -1267,6 +1271,7 @@ is_ambiguous:
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     if (match_sym == NULL) {
       fprintf(f_debug, "find_addr_of_overloaded_function_match: %s\n",
@@ -1275,6 +1280,7 @@ is_ambiguous:
       db_symbol(match_sym, "find_addr_of_overloaded_function_match: ", 2);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return match_sym;
@@ -1560,7 +1566,9 @@ Such entries are used in resolving calls to overloaded functions.
     /* Allocate a new entry. */
     amsp = (an_arg_match_summary_ptr)alloc_fe(sizeof(an_arg_match_summary));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_arg_match_summaries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   clear_arg_match_summary(amsp);
@@ -1584,6 +1592,7 @@ Free the list of argument match summary entries pointed to by amsp.
 }  /* free_arg_match_summary_list */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_arg_match_summary(an_arg_match_summary_ptr amsp)
 /*
@@ -1651,6 +1660,7 @@ Print an argument match summary for debug purposes.
   fprintf(f_debug, "\n");
 }  /* db_arg_match_summary */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_candidate_function_ptr alloc_candidate_function(void)
@@ -1669,7 +1679,9 @@ are used in resolving calls to overloaded functions.
     /* Allocate a new entry. */
     cfp = (a_candidate_function_ptr)alloc_fe(sizeof(a_candidate_function));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_candidate_functions_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   clear_candidate_function(cfp);
@@ -1699,6 +1711,7 @@ Free the list of candidate function entries pointed to by cfp.
 }  /* free_candidate_function_list */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_candidate_function(a_candidate_function_ptr cfp)
 /*
@@ -1756,8 +1769,10 @@ Print a candidate function entry for debugging purposes.
   }  /* for */
 }  /* db_candidate_function */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_candidate_function_list(a_candidate_function_ptr cfp_list)
 /*
@@ -1779,6 +1794,7 @@ Print a candidate function entry list for debugging purposes.
   }  /* if */
 }  /* db_candidate_function_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void add_function_to_candidate_functions_list(
@@ -1807,10 +1823,12 @@ formal parameters.
   candidate->next = *candidate_functions;
   *candidate_functions = candidate;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "add_function_to_candidate_functions_list: added\n"); 
     db_candidate_function(candidate);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_function_to_candidate_functions_list */
 
@@ -1835,11 +1853,13 @@ have match the function's formal parameters.
   candidate->next = *candidate_functions;
   *candidate_functions = candidate;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug,
             "add_surrogate_function_to_candidate_functions_list: added\n"); 
     db_candidate_function(candidate);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_surrogate_function_to_candidate_functions_list */
 
@@ -1867,11 +1887,13 @@ types.
   candidate->next = *candidate_functions;
   *candidate_functions = candidate;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug,
             "add_builtin_operator_to_candidate_functions_list: added\n"); 
     db_candidate_function(candidate);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_builtin_operator_to_candidate_functions_list */
 
@@ -1912,11 +1934,13 @@ function's formal parameters.
   candidate->next = *candidate_functions;
   *candidate_functions = candidate;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug,
             "add_function_template_to_candidate_functions_list: added\n"); 
     db_candidate_function(candidate);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_function_template_to_candidate_functions_list */
 
@@ -2888,6 +2912,7 @@ constructor.  Record in *arg_summary the selected constructor.
 }  /* arg_copy_can_be_done_via_constructor */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_display_overload_level(void)
 /*
@@ -2901,6 +2926,7 @@ of a line of debug output.
           (int)ovl_res_stack()->emit_note_diagnostics());
 }  /* db_display_overload_level */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_boolean binding_rvalue_ref_to_lvalue_allowed(
@@ -3063,6 +3089,7 @@ copy-initialization).
 
   db_enter(4, "determine_arg_match_level");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Entering determine_arg_match_level, param_type = ");
@@ -3076,6 +3103,7 @@ copy-initialization).
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (allow_expl_conv_funcs) conv_context |= CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS;
   param_is_reference = is_any_reference_type(param_type);
@@ -3876,6 +3904,7 @@ have_level:;
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     if (arg_summary->match_level == aml_none) {
@@ -3885,6 +3914,7 @@ have_level:;
       db_arg_match_summary(arg_summary);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* determine_arg_match_level */
@@ -5053,10 +5083,12 @@ deduction failed.
                                                  ctws_options,
                                                  (a_type_ptr)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
     n_deduced_substitition_lookups += 1;
     if (updated_routine_type == NULL) {
       n_deduced_substitition_lookup_failures += 1;
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   if (updated_routine_type == NULL) {
@@ -5565,10 +5597,12 @@ match.
       goto done;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       fprintf(f_debug, "arg_count_mismatch: default arg match\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   if (designator_seen) {
@@ -5946,7 +5980,9 @@ in a new-expression).
     goto reject_function;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   n_viability_checks += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (routine_type == NULL) {
     function_symbol = fundamental_symbol_of(proj_function_symbol);
@@ -5994,6 +6030,7 @@ in a new-expression).
       /* We've consumed the selector at this point. */
       have_selector = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("overload")) {
         db_display_overload_level();
         fprintf(f_debug, "determine_function_viability: consume selector for"
@@ -6001,6 +6038,7 @@ in a new-expression).
         db_abbreviated_type(this_object->variant.expr.arg_op->operand.type);
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -6134,7 +6172,9 @@ in a new-expression).
           ctws_options |= CTWS_MAY_BE_RESCANNED;
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         n_explicit_arg_viability_checks += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (notes != NULL) {
           an_ovl_res_descr_ptr descr = ovl_stack->top();
@@ -6149,7 +6189,9 @@ in a new-expression).
         /* Bail out if there is a mismatch. */
         if (routine_type == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           n_explicit_arg_viability_failures += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           if (notes != NULL) {
             if (!ovl_stack->top()->constraint_failure) {
@@ -6324,12 +6366,14 @@ in a new-expression).
                                                   (arg_list_elem == arg_list));
       narg++;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("overload")) {
         db_display_overload_level();
         fprintf(f_debug, "determine_function_viability: arg %d", narg);
         if (!first_pass) fprintf(f_debug, " (pass 2)");
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       while (is_designator_component(arg_list_elem)) {
         arg_list_elem = next_elem(arg_list_elem);
@@ -6357,10 +6401,12 @@ in a new-expression).
              desirability. */
           arg_match->match_level = aml_ellipsis;
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4 || db_flag_is_set("overload")) {
             db_display_overload_level();
             fprintf(f_debug, "determine_function_viability: ellipsis match\n");
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         } else if (function_template_case &&
                    (param_before_deduction == NULL ||
@@ -6627,7 +6673,9 @@ next_argument:
     arg_match = arg_match_list;
     /* Do template argument deduction on the parameter types. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     n_deduction_viability_checks += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     routine_type = function_template_call_argument_deduction(
                                                    function_symbol,
@@ -6639,7 +6687,9 @@ next_argument:
     if (routine_type == NULL) {
       /* Deduction failed. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       n_deduction_viability_failures += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (notes != NULL) {
         if (!ovl_stack->top()->constraint_failure) {
@@ -6965,7 +7015,9 @@ reject_function:
   }  /* if */
   /* The function is not suitable. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   n_viability_failures += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Free any argument match summary entries built for it. */
   free_arg_match_summary_list(arg_match_list);
@@ -7211,11 +7263,13 @@ retry2:
     a_boolean                eff_allow_udc_on_arguments =
                                                         allow_udc_on_arguments;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       db_symbol(proj_function_symbol,
                 "try_overloaded_function_match: considering ", 4);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     function_symbol = fundamental_symbol_of(proj_function_symbol);
     if (ignore_templates && symbol_is(function_symbol, sk_function_template)) {
@@ -7567,11 +7621,13 @@ hide-by-sig lookup.
        surrogate_function_conv_sym =
                               next_symbol_in_overload_symbol_list(&ostblock)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       db_symbol(surrogate_function_conv_sym,
                 "try_surrogate_function_match: considering ", 4);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     base_surrogate_function_conv_sym =
                             fundamental_symbol_of(surrogate_function_conv_sym);
@@ -10236,11 +10292,13 @@ is set to TRUE.
 
   db_enter(4, "select_best_candidate_functions");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Entry to select_best_candidate_functions: ");
     db_candidate_function_list(candidates);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *undecidable_because_of_error = FALSE;
   *ambiguous = FALSE;
@@ -10620,11 +10678,13 @@ create_final_list:
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Return from select_best_candidate_functions: ");
     db_candidate_function_list(candidates);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* select_best_candidate_functions */
@@ -11349,11 +11409,13 @@ This routine is called only in C++ mode.
   db_enter(4, "select_overloaded_function");
   ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     db_symbol(overloaded_function_symbol,
               "Entering select_overloaded_function with ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (unknown_dependent_function != NULL) *unknown_dependent_function = FALSE;
   if (found_through_adl != NULL) *found_through_adl = FALSE;
@@ -11888,9 +11950,11 @@ normal_no_function_matches:
   } else if (ambiguous) {
     /* More than one function applies and is a best match -- ambiguity. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       db_candidate_function_list(candidate_functions);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (candidate_functions->next == NULL &&
         candidate_functions->function_symbol != NULL &&
@@ -11967,19 +12031,23 @@ normal_no_function_matches:
       *surrogate_function_conv_sym =
                               candidate_functions->surrogate_function_conv_sym;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("overload")) {
         db_display_overload_level();
         db_symbol(*surrogate_function_conv_sym,
                   "select_overloaded_function: selected surrogate ", 4);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("overload")) {
         db_display_overload_level();
         db_symbol(function_symbol,
                   "select_overloaded_function: selected ", 4);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -11991,11 +12059,13 @@ normal_no_function_matches:
        overload -- redo the overload processing, this time adding additional
        notes that should help with diagnosing the issue. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       db_symbol(overloaded_function_symbol,
                 "Reprocessing overload symbol for additional notes ", 4);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     goto reprocess_with_notes;
   } else if (dp != NULL) {
@@ -12038,11 +12108,13 @@ have_function:
                             ->any_function_referenced_in_dependent_call = TRUE;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     db_symbol(function_symbol,
               "Leaving select_overloaded_function, function_symbol = ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -16321,11 +16393,13 @@ not_direct_binding_case:
       if (conversion_symbol == NULL) break;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       db_symbol(conversion_symbol,
                 "try_conversion_function_match_full: considering ", 4);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Set template_arg_list early so that, on goto to reject_function, we
        know what has to be freed. */
@@ -17938,11 +18012,13 @@ the target type to be used).
   /* This routine is similar to try_overloaded_function_match (but it only
      looks at one type pattern per call). */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "try_builtin_operands_match: considering %s\n",
                      operand_type_pattern);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   arg_match_list = end_arg_match_list = NULL;
   need_lvalue_result = first_operand_must_be_lvalue;
@@ -17961,10 +18037,12 @@ the target type to be used).
 #endif /* CHECKING */
     narg++;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       fprintf(f_debug, "try_builtin_operands_match: operand %d\n", narg);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Because braced-init-lists are not allowed as operands of operators,
        the entry here must be for an expression. */
@@ -20271,10 +20349,12 @@ selected, it is stored in *rewritten_candidate.
   ovl_stack->push();
   ovl_stack->top()->in_comparison_rewrite = in_comparison_rewrite;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Entering check_for_operator_overloading\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *processed = FALSE;
   if (p_none_viable != NULL) *p_none_viable = FALSE;
@@ -20570,9 +20650,11 @@ no_applicable_operator_function:
              ambiguity. */
           *processed = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             db_candidate_function_list(candidate_functions);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           if (expr_error_should_be_issued()) {
             dp = pos_st_start_error(ec_ambiguous_operator_function,
@@ -20618,11 +20700,13 @@ no_applicable_operator_function:
             a_boolean op_1_inside_conditional = FALSE,
                       op_2_inside_conditional = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 4 || db_flag_is_set("overload")) {
               db_display_overload_level();
               fprintf(f_debug, "check_for_operator_overloading: selected\n");
               db_candidate_function(candidate_functions);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             /* *processed is left FALSE so the caller will try the built-in
                meaning. */
@@ -20654,11 +20738,13 @@ no_applicable_operator_function:
             a_boolean  bitwise_assignment = FALSE, have_selector;
             a_type_ptr routine_type;
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 4 || db_flag_is_set("overload")) {
               db_display_overload_level();
               db_symbol(proj_function_symbol,
                         "check_for_operator_overloading: selected ", 4);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             *processed = TRUE;
             function_symbol = fundamental_symbol_of(proj_function_symbol);
@@ -20696,11 +20782,13 @@ no_applicable_operator_function:
                  operator, so generate an assignment instead of a call. */
               a_boolean access_error_reported;
 #if DEBUG
+/* GCOVR_EXCL_START */
               if (debug_level >= 4 || db_flag_is_set("overload")) {
                 db_display_overload_level();
                 fprintf(f_debug,
                  "check_for_operator_overloading: bitwise operator=\n");
               }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
               check_assertion(nonstatic_member_is_best_match);
               bitwise_assignment = TRUE;
@@ -20978,11 +21066,13 @@ free_resources:
            overload -- redo the overload processing, this time adding
            additional notes that should help with diagnosing the issue. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4 || db_flag_is_set("overload")) {
           db_display_overload_level();
           fprintf(f_debug,
                   "Reprocessing operator overload for additional notes\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         goto reprocess_with_notes;
       }  /* if */
@@ -21004,10 +21094,12 @@ free_resources:
     dp = NULL;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Leaving f_check_for_operator_overloading\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -21088,12 +21180,14 @@ error.  conv_context describes the context of the conversion.
   db_enter(4, "conversion_to_class_possible");
   ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Entering conversion_to_class_possible, dest_type = ");
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *ambiguous = FALSE;
   okay = FALSE;
@@ -21455,9 +21549,11 @@ error.  conv_context describes the context of the conversion.
         /* More than one constructor or conversion function matches at the same
            level.  Ambiguity. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           db_candidate_function_list(candidate_functions);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else if (expr_access_checking_should_be_done() &&
                  candidate_functions->function_symbol != NULL &&
@@ -21513,11 +21609,13 @@ error.  conv_context describes the context of the conversion.
     clear_conv_descr(ctor_arg_conversion);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Leaving conversion_to_class_possible: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -21574,12 +21672,14 @@ conv_context describes the context of the conversion.  */
   db_enter(4, "conversion_from_class_possible");
   ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Entering conversion_from_class_possible, dest_type = ");
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_conv_descr(conversion);
   if (is_template_dependent_context() &&
@@ -21655,9 +21755,11 @@ conv_context describes the context of the conversion.  */
     } else if (*ambiguous) {
       /* There are several equally desirable functions. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         db_candidate_function_list(candidate_functions);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else {
       /* There is exactly one best conversion function. */
@@ -21676,11 +21778,13 @@ conv_context describes the context of the conversion.  */
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug, "Leaving conversion_from_class_possible: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -21828,6 +21932,7 @@ describes the context of the conversion.
     clear_conv_descr(conversion);
     ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       fprintf(f_debug,
@@ -21839,6 +21944,7 @@ describes the context of the conversion.
       }  /* if */
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     check_assertion(dest_type == NULL || !is_any_reference_type(dest_type));
     if (is_handle_type(source_type) ||
@@ -21913,9 +22019,11 @@ describes the context of the conversion.
         } else if (*ambiguous) {
           /* There are several equally desirable functions. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             db_candidate_function_list(candidate_functions);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         } else {
           /* There is exactly one best conversion function. */
@@ -21935,12 +22043,14 @@ describes the context of the conversion.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("overload")) {
       db_display_overload_level();
       fprintf(f_debug,
               "Leaving cli_handle_user_defined_conversion_possible: %s\n",
               okay ? "okay" : "not okay");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     ovl_res_stack()->pop();
   }  /* if */
@@ -22691,9 +22801,11 @@ error:
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "conversion_possible: %s\n", okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -29716,6 +29828,7 @@ find_default_constructor.
   db_enter(4, "select_overloaded_default_constructor");
   ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug,
@@ -29723,6 +29836,7 @@ find_default_constructor.
     db_abbreviated_type(class_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *ambiguous = FALSE;
   class_type = skip_typerefs(class_type);
@@ -29814,11 +29928,13 @@ find_default_constructor.
     free_candidate_function_list(candidate_functions);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     db_symbol(ctor_sym,
               "Leaving select_overloaded_default_constructor, ctor_sym = ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -30027,6 +30143,7 @@ C++ mode.  It does not do access checking on the copy constructor.
   db_enter(4, "select_overloaded_copy_constructor");
   ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug,
@@ -30034,6 +30151,7 @@ C++ mode.  It does not do access checking on the copy constructor.
     db_abbreviated_type(class_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (uncallable != NULL) *uncallable = FALSE;
   *class_bitwise_copy = FALSE;
@@ -30167,10 +30285,12 @@ traversal_start:
         }  /* if */
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("overload")) {
         db_display_overload_level();
         db_symbol(sym, "select_overloaded_copy_constructor: considering ", 4);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       arg_match = alloc_arg_match_summary();
       /* See if the argument type matches the parameter of the constructor. */
@@ -30284,11 +30404,13 @@ next_function:;
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     db_symbol(cctor_sym,
               "Leaving select_overloaded_copy_constructor, cctor_sym = ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -30342,6 +30464,7 @@ assignment operator.
   db_enter(4, "select_overloaded_assignment_operator");
   ovl_res_stack()->push();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     fprintf(f_debug,
@@ -30349,6 +30472,7 @@ assignment operator.
     db_abbreviated_type(class_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *ambiguous = FALSE;
   *undecidable_because_of_error = FALSE;
@@ -30424,11 +30548,13 @@ traversal_start:
         }  /* if */
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("overload")) {
         db_display_overload_level();
         db_symbol(sym,
                   "select_overloaded_assignment_operator: considering ", 4);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       selector_match = alloc_arg_match_summary();
       arg_match = alloc_arg_match_summary();
@@ -30547,12 +30673,14 @@ next_function:;
     free_candidate_function_list(candidate_functions);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("overload")) {
     db_display_overload_level();
     db_symbol(assign_sym,
               "Leaving select_overloaded_assignment_operator, assign_sym = ",
               4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ovl_res_stack()->pop();
   db_exit();
@@ -30881,6 +31009,7 @@ appropriate, produce the "aggregate deduction candidate" (see N4885
        definition.  Use the resulting parameter list to create a deduction
        guide template. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ctad")) {
       fprintf(f_debug, "\nParameters for aggregate deduction candidate:"
                        " (line %d, column %d)\n"
@@ -30889,6 +31018,7 @@ appropriate, produce the "aggregate deduction candidate" (see N4885
       db_param_type_list(param_list);
       fprintf(f_debug, ")\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Attempt to create the aggregate deduction candidate.  If one is
        created, it is also added to the deduction guide overload set. */
@@ -31387,7 +31517,9 @@ These are initializations that must be redone for each compilation.
   avail_candidate_functions = NULL;
   avail_arg_match_summaries = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_candidate_functions_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   substitution_stack = NULL;
   avail_substitution_stack_entries = NULL;

@@ -399,6 +399,7 @@ a_boolean constexpr_diag_tag_is_valid(a_const_char   *tag,
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 uintptr_t db_hash_ptr(void  *ptr);
 
 a_host_large_integer db_int_val(a_byte  *val_bytes);
@@ -420,6 +421,7 @@ unsigned long db_show_interpret_fe_space_used(unsigned long  grand_total);
 unsigned long db_object_alloc_num(a_byte  *ptr);
 #endif /* TRACK_INTERPRETER_ALLOCATIONS */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void clean_up_interpreter(void);

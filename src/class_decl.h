@@ -473,6 +473,7 @@ void synth_class_definition(a_type_ptr                     class_type,
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern unsigned long db_show_routine_fixups_used(unsigned long grand_total);
 
 extern unsigned long db_show_class_fixups_used(unsigned long grand_total);
@@ -507,6 +508,7 @@ extern void db_base_class(a_base_class_ptr  bcp,
 extern void db_base_class_list(a_type_ptr tp);
 
 extern void db_all_virtual_function_override_lists(a_type_ptr  class_type);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */

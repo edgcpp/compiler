@@ -29,7 +29,9 @@ fe_wrapup.c - End of front end processing.
 #include "il_write.h"
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #include "overload.h"
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #include "templates.h"
 #include "trans_corresp.h"
@@ -42,9 +44,11 @@ fe_wrapup.c - End of front end processing.
 #include "lower_name.h"
 #endif /* MANGLE_ALL_NAMES */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #include "exprutil.h"
 #include "preproc.h"
 #include "statements.h"
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if MAINTAIN_NEEDED_FLAGS || DO_IL_LOWERING
 #include "il_walk.h"
@@ -63,6 +67,7 @@ fe_wrapup.c - End of front end processing.
 BEGIN_EDG_NAMESPACE
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void show_space_used(void)
 /*
 Show the amount of memory allocated.
@@ -89,6 +94,7 @@ Show the amount of memory allocated.
 
   show_mem_manage_space_used(total_space);
 }  /* show_space_used */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -169,10 +175,12 @@ It's a static entity that may be referenced from exported templates.
   a_trans_unit_corresp_ptr tucp;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_has_traced_name(scp, kind)) {
     fprintf(f_debug, "Externalizing for exported templates:\n");
     db_entity_info((char *)scp, kind);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   externalize_source_correspondence(scp, is_variable);
   if (is_variable) {
@@ -785,11 +793,13 @@ and before the back end (if any) is executed.
   copy_macro_invocation_tree_to_il();
 #endif /* MACRO_INVOCATION_TREE_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("source_file_for_seq_info")) {
     /* Display some debug information about the source file to sequence
        number translation process. */
     db_source_file_for_seq_info();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   /* Lower the file scope, remove unneeded entities, etc. */
@@ -820,6 +830,7 @@ and before the back end (if any) is executed.
   close_output_file_with_error_handling(&f_xref_info, ec_cross_reference);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (display_space_used || debug_level > 0 || db_flag_is_set("space_used")) {
     /* Print total memory used. */
     show_space_used();
@@ -830,6 +841,7 @@ and before the back end (if any) is executed.
   if (db_flag_is_set("viability")) {
     db_viability_stats();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if CHECKING

@@ -599,6 +599,7 @@ value for any error.
 #if USE_LONG_DOUBLE_FOR_HOST_FP_VALUE || APPROXIMATE_QUADMATH
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 void db_long_double(long double d)
 /*
 Display a long double, for debugging purposes.
@@ -606,6 +607,7 @@ Display a long double, for debugging purposes.
 {
   fprintf(f_debug, "%.40Le\n", d);
 }  /* db_long_double */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #endif /* USE_LONG_DOUBLE_FOR_HOST_FP_VALUE || APPROXIMATE_QUADMATH */
@@ -740,6 +742,7 @@ Convert the given string to a host floating point value (stored in *value).
 
 #endif /* USE_HOST_FP_CONVERSION_ROUTINES */
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_internal_float_value(an_internal_float_value *ifv)
 /*
@@ -754,6 +757,7 @@ Display an internal floating-point value, for debugging purposes.
   fprintf(f_debug, "\n");
 }  /* db_internal_float_value */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void conv_host_fp_to_float(a_host_fp_value	temp,
@@ -1949,6 +1953,7 @@ Clear the fields of a mantissa entry.
 }  /* init_mantissa */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_mantissa(a_mantissa_ptr	mp)
 /*
@@ -1963,6 +1968,7 @@ Display a mantissa value, for debugging purposes.
   fprintf(f_debug, "\n");
 }  /* db_mantissa */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void shift_left_mantissa(a_mantissa_ptr	mp,
@@ -2766,11 +2772,13 @@ exponent was out of range).
   /* Set the error flag if the exponent was too large. */
   if (overflow) *err = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("fp_hex_string_to_float")) {
     fprintf(f_debug, "fp hex value: ");
     db_mantissa(mp);
     fprintf(f_debug, "exponent=%ld\n", exponent);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Check whether the resulting value fits in the type being used. */
   check_and_denormalize_hex_fp_value(mp, &exponent, kind, err, inexact,
@@ -2918,22 +2926,26 @@ before setting it if there are unused bits.
       }
 #endif /* !HOST_HAS_FLOAT16_TYPE && !USE_SOFTFLOAT */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fp")) {
         fprintf(f_debug, "read_float16: res=%d\n", (int)res);
         fprintf(f_debug, "  %s\n  ", str);
         db_binary_float16((unsigned char *)&float_value_temp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else if (kind == fk_float || kind == fk_std_float32 ||
                kind == fk_std_bfloat16) {
       res = read_float((unsigned char *)&float_value_temp, str,
                        (int)strlen(str));
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fp")) {
         fprintf(f_debug, "read_float: res=%d\n", (int)res);
         fprintf(f_debug, "  %s\n  ", str);
         db_binary_float((unsigned char *)&float_value_temp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else if (kind_is_binary64(kind)) {
       /* Either "double" or "long double", where "double" and "long double"
@@ -2941,22 +2953,26 @@ before setting it if there are unused bits.
       res = read_double((unsigned char *)&float_value_temp, str,
                         (int)strlen(str));
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fp")) {
         fprintf(f_debug, "read_double: res=%d\n", (int)res);
         fprintf(f_debug, "  %s\n  ", str);
         db_binary_double((unsigned char *)&float_value_temp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if FLOAT80_ENABLING_POSSIBLE
     } else if (kind == (a_float_kind)fk_float80) {
       res = read_float80((unsigned char *)&float_value_temp, str,
                          (int)strlen(str));
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fp")) {
         fprintf(f_debug, "read_float80: res=%d\n", (int)res);
         fprintf(f_debug, "  %s\n  ", str);
         db_binary_float80((unsigned char *)&float_value_temp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* FLOAT80_ENABLING_POSSIBLE */
 #if FLOAT128_ENABLING_POSSIBLE
@@ -2964,11 +2980,13 @@ before setting it if there are unused bits.
       res = read_float128((unsigned char *)&float_value_temp, str,
                           (int)strlen(str));
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fp")) {
         fprintf(f_debug, "read_float128: res=%d\n", (int)res);
         fprintf(f_debug, "  %s\n  ", str);
         db_binary_float128((unsigned char *)&float_value_temp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* FLOAT128_ENABLING_POSSIBLE */
     } else {
@@ -2977,11 +2995,13 @@ before setting it if there are unused bits.
       res = read_long_double((unsigned char *)&float_value_temp, str,
                              (int)strlen(str));
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fp")) {
         fprintf(f_debug, "read_long_double: res=%d\n", (int)res);
         fprintf(f_debug, "  %s\n  ", str);
         db_binary_long_double((unsigned char *)&float_value_temp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #else /* !FP_HAS_LONG_DOUBLE */
       unexpected_condition();
@@ -3305,53 +3325,63 @@ value might use (plus a temporary null character).
   if (kind_is_binary16(value.kind)) {
     res = write_float16(buff_ptr, (int)size_hint, float_as_char);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("fp")) {
       fprintf(f_debug, "write_float16: res=%d\n  ", (int)res);
       db_binary_float16(float_as_char);
       fprintf(f_debug, "  %s\n", buff_ptr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else if (value.kind == fk_float || value.kind == fk_std_float32 ||
              value.kind == fk_std_bfloat16) {
     res = write_float(buff_ptr, (int)size_hint, float_as_char);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("fp")) {
       fprintf(f_debug, "write_float: res=%d\n  ", (int)res);
       db_binary_float(float_as_char);
       fprintf(f_debug, "  %s\n", buff_ptr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else if (kind_is_binary64(value.kind)) {
     /* Either "double" or "long double", where "double" and "long double" are
        configured as binary64. */
     res = write_double(buff_ptr, (int)size_hint, float_as_char);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("fp")) {
       fprintf(f_debug, "write_double: res=%d\n  ", (int)res);
       db_binary_double(float_as_char);
       fprintf(f_debug, "  %s\n", buff_ptr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if FLOAT80_ENABLING_POSSIBLE
   } else if (value.kind == fk_float80) {
     res = write_float80(buff_ptr, (int)size_hint, float_as_char);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("fp")) {
       fprintf(f_debug, "write_float80: res=%d\n  ", (int)res);
       db_binary_float80(float_as_char);
       fprintf(f_debug, "  %s\n", buff_ptr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* FLOAT80_ENABLING_POSSIBLE */
 #if FLOAT128_ENABLING_POSSIBLE
   } else if (value.kind == fk_float128 || value.kind == fk_std_float128) {
     res = write_float128(buff_ptr, (int)size_hint, float_as_char);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("fp")) {
       fprintf(f_debug, "write_float128: res=%d\n  ", (int)res);
       db_binary_float128(float_as_char);
       fprintf(f_debug, "  %s\n", buff_ptr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* FLOAT128_ENABLING_POSSIBLE */
   } else {
@@ -3359,11 +3389,13 @@ value might use (plus a temporary null character).
     check_assertion(repr_is_long_double(value.kind));
     res = write_long_double(buff_ptr, (int)size_hint, float_as_char);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("fp")) {
       fprintf(f_debug, "write_long_double: res=%d\n  ", (int)res);
       db_binary_long_double(float_as_char);
       fprintf(f_debug, "  %s\n", buff_ptr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #else /* !FP_HAS_LONG_DOUBLE */
     unexpected_condition();

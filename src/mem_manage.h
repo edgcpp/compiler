@@ -117,9 +117,11 @@ extern a_mem_block_header_ptr alloc_mem_block(
 extern void trim_mem_block(a_mem_block_header_ptr hdr);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void track_allocation(a_memory_region_number region_number,
                              sizeof_t               size,
                              sizeof_t               orig_size);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if !STANDALONE_UTILITY_PROGRAM
@@ -146,7 +148,9 @@ is used for allocation of general front end memory (i.e., not IL).
   size = max_val(size, (sizeof_t)1);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   sizeof_t orig_size = size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Round up the size if necessary to preserve alignment.  Note that
      aside from keeping the data correctly aligned, this also keeps the
@@ -232,7 +236,9 @@ is used for allocation of general front end memory (i.e., not IL).
     hdr->next_avail_in_block = hdr->after_end_of_block;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   track_allocation(region_number, size, orig_size);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !STANDALONE_UTILITY_PROGRAM
 #ifdef TRACE_ALLOC
@@ -503,8 +509,10 @@ extern void free_all_memory_regions(void);
 /* Free the unused space in the final block of a memory region. */
 extern void trim_memory_region(a_memory_region_number region_number);
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Display the amount of memory used, for debug purposes. */
 extern void show_mem_manage_space_used(unsigned long total_accounted_for);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 /* Early initialization of memory management routines. */
 extern void mem_manage_early_init(void);
@@ -515,9 +523,11 @@ extern void mem_manage_trans_unit_init(void);
 extern void mem_manage_reset(void);
 extern void mem_manage_init(void);
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Functions for tracking important high water marks. */
 extern void mem_manage_one_time_init_done();
 extern void mem_manage_trans_unit_init_done();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if MAKE_FRONT_END_CALLABLE
@@ -634,6 +644,7 @@ Macro that is TRUE if two memory allocation history entries are equivalent.
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 EXTERN_THREAD unsigned long
 		*allocated_in_region;
 			/* Parallel array to mem_region_table.  Keeps track
@@ -642,6 +653,7 @@ EXTERN_THREAD a_memory_region_number
 		size_of_allocated_in_region;
 			/* Size of allocated_in_region (in entries, not 
 			   bytes). */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -779,12 +791,14 @@ Add the specified character to the text buffer specifier by "buf".
 }  /* add_char_to_text_buffer */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_text_buffer(a_const_char      *prefix,
 			   a_text_buffer_ptr buf);
 
 extern void db_prefix(void  *entry_ptr);
 
 extern an_il_entry_prefix_ptr db_prefix_ptr(char  *entry);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -869,8 +883,10 @@ enum a_function_number : a_byte {
   fn_test_next_construct_pragma,
 #endif /* INCLUDE_EDG_TEST_PRAGMAS */
 #if DEBUG
+/* GCOVR_EXCL_START */
   fn_db_opt_pragma,
   fn_db_name_pragma,
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if NEED_IL_DISPLAY
   fn_pragma_il_display,

@@ -271,8 +271,10 @@ CONSTINIT_ARRAY(/* none */, a_function_pointer, function_pointers, fn_last + 1)
   (a_function_pointer)test_next_construct_pragma,
 #endif /* INCLUDE_EDG_TEST_PRAGMAS */
 #if DEBUG
+/* GCOVR_EXCL_START */
   (a_function_pointer)db_opt_pragma,
   (a_function_pointer)db_name_pragma,
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if NEED_IL_DISPLAY
   (a_function_pointer)pragma_il_display,
@@ -1756,9 +1758,11 @@ line processing is done.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Initialize debugging data structures.  This must be done first in this
      routine. */
   debug_early_init();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
   check_int_type_config();
@@ -1876,7 +1880,9 @@ after the command-line processing has been done.
   }  /* if */
 #endif /* CHECKING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   mem_manage_one_time_init_done();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* fe_one_time_init */
 
@@ -1893,12 +1899,14 @@ source file's compilation.
   time_t  timer;
   char    *time_str;
 #if DEBUG
+/* GCOVR_EXCL_START */
   int     save_debug_level;
 
   /* Drop the debug level to 0 during initialization.  If debug output
      is desired in initialization, it can be explicitly requested by
      name (of this routine, "fe_init_part_1"). */
   debug_level = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_enter(5, "fe_init_part_1");
 
@@ -1987,6 +1995,7 @@ source file's compilation.
   identify_source_file();
 #endif /* COMPILE_MULTIPLE_SOURCE_FILES */
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Establish the initial debug level (from the command line, or 0 by
      default) at this point so that the first line will be read with the
      same debug level as the other lines.  This avoids the confusion of
@@ -1994,11 +2003,14 @@ source file's compilation.
      other lines appear. */
   save_debug_level = debug_level;
   if (init_debug_level > debug_level) debug_level = init_debug_level;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Restore the debug level fe_init is supposed to have (0 unless
      there's a command-line request to change the debug level in fe_init). */
   debug_level = save_debug_level;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   il_header.plain_chars_are_signed = targ_has_signed_chars;
@@ -2069,9 +2081,11 @@ source file's compilation.
   write_init();
   db_exit();
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Restore the initial debug level (from the command line, or 0 by
      default). */
   debug_level = init_debug_level;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* fe_init_part_1 */
 
@@ -2303,7 +2317,9 @@ when it is a secondary file.
     do_preprocessing_only = FALSE;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   mem_manage_trans_unit_init_done();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* fe_translation_unit_init */
 

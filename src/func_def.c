@@ -114,9 +114,11 @@ Comments in asm functions are saved along with the normal tokens.
   /* Add a null terminator. */
   body[pos_in_asm_func_body_buffer] = '\0';
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("asm_function")) {
     fprintf(f_debug, "asm block: %s\n", body);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return body;
@@ -815,9 +817,11 @@ pointer decay).
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
     mark_variable_value_set(sym);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       db_symbol(sym, "Changed from parameter symbol: ", 4);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   if (vp->is_pack_element) {
@@ -1590,6 +1594,7 @@ of lambda expressions.
       stack_ptr = &scope_stack[DEPTH_OF_FILE_SCOPE];
       ssep = func_info->prototype_scope_ss_list;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         if (ssep != NULL) {
           fputs("scan_function_body: fixing up func prototype ss list:\n",
@@ -1597,6 +1602,7 @@ of lambda expressions.
           db_ss_list(ssep);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       for (; ssep != NULL; ssep = next_ssep) {
         next_ssep = ssep->next;
@@ -1613,11 +1619,13 @@ of lambda expressions.
               if (param_id->source_sequence_entry == ssep) break;
             }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
               fprintf(f_debug, "%sparam_id match for ",
                                param_id == NULL ? "no " : "");
               db_source_sequence_entry(ssep);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             if (param_id == NULL) {
               /* This source sequence entry is not associated with one of the
@@ -2002,12 +2010,14 @@ of lambda expressions.
   }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     a_symbol_ptr  sym = (a_symbol_ptr)rout_ptr->source_corresp.assoc_info;
     if (sym != NULL) {
       db_symbol(sym, "finished scanning body for ", 2);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_function_body */
@@ -2517,12 +2527,14 @@ member declaration (allowed in some Microsoft modes only).
 #if EXTRA_SOURCE_POSITIONS_IN_IL
     update_decl_pos_info(&rp->source_corresp, decl_pos_block);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (decl_pos_block != NULL) {
       if (debug_level >= 3 || db_flag_is_set("dump_decl_pos_info")) {
         fprintf(f_debug, "decl-pos info for member function def\n");
         db_decl_pos_info(sym);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   }  /* if */
@@ -2618,9 +2630,11 @@ member declaration (allowed in some Microsoft modes only).
   *ext_sym = NULL;
   *linkage_ptr = idl_external;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(sym, "", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* define_member_function */

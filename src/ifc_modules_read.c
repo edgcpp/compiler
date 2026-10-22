@@ -282,7 +282,9 @@ public:
   void import_referenced_modules(a_boolean impl_unit_importing_self);
   void export_ifc_macros();
 #if DEBUG
+/* GCOVR_EXCL_START */
   void db_ifc_scope(an_ifc_scope_offset scope);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 };  /* an_ifc_input_state */
 
@@ -398,8 +400,10 @@ does not compile with a possibly-misinterpreted IFC import).
     a_diagnostic_ptr diag = start_error(ec_ifc_requirement_failure, mod);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     add_diag_info(diag, ec_ifc_requirement_failure_fill_in,
                   line_number, function, string);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     end_diagnostic(diag);
 
@@ -462,9 +466,11 @@ Convert the given index value into a string representation.
                mod->resolved_file, "\")");
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     append_index_context(msg, idx);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return msg;
 }  /* index_to_str */
@@ -815,6 +821,7 @@ lifetime of this object expires (whichever is sooner).
     }
     /* Do not add code here. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     else if (db_flag_is_set("ifc_srcpos")) {
       /* The IFC gave us a null source location locus value, emit a remark. */
       an_ifc_partition_kind kind = to_partition_kind(idx.sort);
@@ -828,6 +835,7 @@ lifetime of this object expires (whichever is sooner).
 
       print(dbg_msg, f_debug, /*end=*/"\n\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     hint_given = FALSE;
@@ -2073,12 +2081,14 @@ cases.
     a_module_entity pending_entity = make_temporary_ifc_module_entity(index);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx") && cached_result == NULL) {
       a_string err_msg("Module entity initial lookup started for ",
                        index_to_str(index));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
     a_module_entity_stack_state mep_state(&pending_entity);
@@ -2169,6 +2179,7 @@ cases.
       result = get_ifc_error_module_entity(index);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx") && cached_result == NULL) {
       a_string dbg_msg("Module entity lookup done ",
                        index_to_str(index), " (", (void*)result,
@@ -2176,6 +2187,7 @@ cases.
 
       print(dbg_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (cached_result == NULL) {
       a_module_entity_ptr side_effect_cache_result =
@@ -4336,11 +4348,13 @@ field is encountered, an IL entity and symbol are created at that time.
   a_deferred_module_entry deferred_entry{scope, mel};
   hdr->deferred_module_entries->entries.push_back(deferred_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_symbols")) {
     (void)fprintf(f_debug, "Defer symbol creation for %s",
                   loc->symbol_header->identifier);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* defer_symbol_creation */
 
@@ -4639,11 +4653,13 @@ corresponding template entity and update *kind with the associated entity kind.
   a_token_kind       final_token = tok_error;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_def")) {
     fprintf(f_debug, "Reconstituted template declaration:\n");
     db_tokens(cache);
     fprintf(f_debug, "\n---------------------\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   {
     a_module_entity_rescan rescan(cache, &final_token);
@@ -4674,11 +4690,13 @@ kind with the associated entity kind.
   a_token_kind       final_token = tok_error;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_def")) {
     fprintf(f_debug, "Reconstituted partial specialization declaration:\n");
     db_tokens(cache);
     fprintf(f_debug, "\n---------------------\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   {
     a_module_entity_rescan rescan(cache, &final_token);
@@ -4705,11 +4723,13 @@ associated entity kind.
   a_token_kind       final_token = tok_error;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_def")) {
     fprintf(f_debug, "Reconstituted declaration:\n");
     db_tokens(cache);
     fprintf(f_debug, "\n---------------------\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   {
     a_module_entity_rescan rescan(cache, &final_token);
@@ -4722,6 +4742,7 @@ associated entity kind.
 }  /* parse_cached_nonmember_decl */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 template<typename an_ifc_Index_type>
 static void append_index_context(a_string          &str,
@@ -4750,6 +4771,7 @@ Append any useful identifying information about the index.
   }  /* if */
 }  /* append_index_context */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 namespace {
@@ -5650,11 +5672,13 @@ index information to the given symbol.
                from_lexical_index<an_ifc_decl_index>(ifc_index_for_curr_token);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string err_msg("Bound token resolved for ", index_to_str(decl_idx));
 
     print(err_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   associate_symbol_with_declaration(decl_idx, sym);
 
@@ -6846,12 +6870,14 @@ can be found, return NULL.
   a_symbol_ptr result = NULL;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string dbg_msg("Parameter ref search started for ",
                      index_to_str(decl_idx));
 
     print(dbg_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (is_template_parameter(decl_idx)) {
     an_ifc_decl_parameter param_decl;
@@ -6880,6 +6906,7 @@ invalid:
   result = NULL;
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string dbg_msg("Parameter ref search done ",
                      index_to_str(decl_idx),
@@ -6887,6 +6914,7 @@ done:
 
     print(dbg_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* load_param_ref */
@@ -7261,12 +7289,14 @@ error occurs, return NULL.
   a_symbol_ptr  result = NULL;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string err_msg("Entity ref resolution started for ",
                      index_to_str(expr_idx));
 
     print(err_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   switch (expr_idx.sort) {
     case ifc_es_expr_named_decl:
@@ -7376,12 +7406,14 @@ invalid:
   result = NULL;
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string err_msg("Entity ref resolution done for ",
                      index_to_str(expr_idx));
 
     print(err_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* load_ifc_entity_ref */
@@ -7640,12 +7672,14 @@ entity during parsing.
   cache_fn(cache, decl_idx);
   cache_token_with_index(cache, tok_ifc_decl, decl_idx);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string err_msg("Bound token cached for ", index_to_str(decl_idx));
 
     print(err_msg, f_debug);
   }  /* if */
   ++num_module_decls_attempted;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* cache_bound_entity */
 
@@ -9296,12 +9330,14 @@ variable initializer.
                             !display_module_import_diagnostics);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Variable initializer loading started for ",
                        index_to_str(decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
     a_module_scope_push_kind
@@ -9353,11 +9389,13 @@ variable initializer.
 
         cache_expr(&init_cache, init, /*cinfo=*/{});
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("ifc_def")) {
           fprintf(f_debug, "Variable initializer cache:\n");
           db_tokens(&init_cache);
           fprintf(f_debug, "\n---------------------\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (init_cache.is_valid()) {
           an_ifc_object_traits_bitfield
@@ -9433,12 +9471,14 @@ variable initializer.
     }  /* if */
     pop_module_declaration_context(scope_push_status);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Variable initializer loading done for ",
                        index_to_str(decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -9484,12 +9524,14 @@ definition.
                             !display_module_import_diagnostics);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Function def loading started for ",
                        index_to_str(decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     ifc_function_bodies->mark_pending(rp);
 
@@ -9528,12 +9570,14 @@ loaded_successfully:
       pop_module_declaration_context(scope_push_status);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Function def loading done for ",
                        index_to_str(decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -11452,12 +11496,14 @@ must refer to the canonical template.
                       ifc_template_definitions->get_associated_ifc_decl(templ);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Template def loading started for ",
                        index_to_str(def_decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     ifc_template_definitions->mark_pending(templ);
 
@@ -11498,12 +11544,14 @@ must refer to the canonical template.
        based. */
     pop_module_declaration_context(scope_push_status);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Template def loading done for ",
                        index_to_str(def_decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -11536,12 +11584,14 @@ Note that templ must refer to the canonical template.
     an_ifc_decl_index  primary_decl_idx =
                   ifc_template_specializations->get_associated_ifc_decl(templ);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Template spec loading started for ",
                        index_to_str(primary_decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     ifc_template_specializations->mark_pending(templ);
 
@@ -11553,12 +11603,14 @@ Note that templ must refer to the canonical template.
     /* Consider the specializations successfully loaded. */
     ifc_template_specializations->mark_finished(templ);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Template spec loading done for ",
                        index_to_str(primary_decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -12331,12 +12383,14 @@ strongly preferred over calling this function directly.
                             !display_module_import_diagnostics);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++num_module_decls_attempted;
   if (db_flag_is_set("ifc_idx")) {
     a_string msg("IL processing started for ", index_to_str(decl_idx));
 
     print(msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   mep->imminent = TRUE;
   if (!validate(decl_idx)) {
@@ -12382,11 +12436,13 @@ strongly preferred over calling this function directly.
         }  /* if */
         cache_decl(&cache, decl_idx, cache_info);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("ifc_def")) {
           fprintf(f_debug, "Reconstituted variable declaration:\n");
           db_tokens(&cache);
           fprintf(f_debug, "\n---------------------\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (!cache.is_valid()) {
           goto invalid;
@@ -13281,7 +13337,9 @@ strongly preferred over calling this function directly.
   goto done;
 invalid:
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++num_module_decls_failed;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   mep->invalid = TRUE;
 done:
@@ -13295,11 +13353,13 @@ done:
     pop_module_declaration_context(scope_push_status);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string msg("IL processing done for ", index_to_str(decl_idx));
 
     print(msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* process_decl_to_il_entity */
 
@@ -13824,7 +13884,9 @@ parsing; this is used to diagnose unprocessed tok_ifc_decl tokens.
 #endif /* CHECKING */
       mem_mep->invalid = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
       ++num_module_decls_failed;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* for */
@@ -13859,12 +13921,14 @@ Complete the definition of the class referred to by mep (if needed).
     check_assertion(mep->entity.kind == (an_il_entry_kind)iek_type &&
                     class_type != NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Class completion started for ",
                        index_to_str(decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
     an_ifc_scope_offset          class_scope_offset = get_ifc_initializer(ids);
@@ -13933,6 +13997,7 @@ Complete the definition of the class referred to by mep (if needed).
       }  /* if */
       cache_token(&cache, tok_semicolon);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ifc_def")) {
         fprintf(f_debug, "Reconstituted class definition: ");
         if (unmangled_name_of(&class_type->source_corresp) != NULL) {
@@ -13943,6 +14008,7 @@ Complete the definition of the class referred to by mep (if needed).
         db_tokens(&cache);
         fprintf(f_debug, "\n---------------------\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (cache.is_valid()) {
         a_boolean template_scope_pushed;
@@ -14004,11 +14070,13 @@ Complete the definition of the class referred to by mep (if needed).
       pop_module_declaration_context(scope_push_status);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_idx")) {
       a_string err_msg("Class completion done for ", index_to_str(decl_idx));
 
       print(err_msg, f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* complete_definition_of_module_class */
@@ -14183,6 +14251,7 @@ otherwise, return an empty optional.
 }  /* source_position_from_ifc_of */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 a_string s_db_ifc_locator(a_module_entry_locator loc)
 /*
@@ -14329,6 +14398,7 @@ Print the corresponding file and line number for the source location
   }  /* if */
 }  /* db_locus */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void merge_compatibility_severity(an_error_severity *result,
@@ -14783,9 +14853,11 @@ calling this function; otherwise, file descriptor leaks may occur.
     goto invalid;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_modules")) {
     db_module(mod);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   {
     an_ifc_error_severity_checker checker(skip_module_version_check);
@@ -14829,6 +14901,7 @@ calling this function; otherwise, file descriptor leaks may occur.
       a_string_view name_str_temp(name_str.as_temp_characters(),
                                   name_str.length());
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ifc_modules")) {
         a_string dbg_msg("partition ", i, " \"", name_str, "\" offset 0x",
                          (an_ifc_byte_offset_storage)get_ifc_offset(ip),
@@ -14839,6 +14912,7 @@ calling this function; otherwise, file descriptor leaks may occur.
 
         print(dbg_msg, f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* FIXME: Do we need this assertion? */
       check_assertion(get_ifc_cardinality(ip) != 0 && get_ifc_offset(ip) != 0);
@@ -15106,11 +15180,13 @@ to this function.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string msg("IL deferral started for ", index_to_str(decl_idx));
 
     print(msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   switch (decl_idx.sort) {
     case ifc_ds_decl_alias:
@@ -15433,11 +15509,13 @@ invalid:;
   expect_error_str("expected errors for bad module entity deferral");
 done:;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string msg("IL deferral done for ", index_to_str(decl_idx));
 
     print(msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* defer_ifc_declaration */
 
@@ -15487,12 +15565,14 @@ the given scope.
   an_ifc_dir_index         dir_idx = get_ifc_directive(barren_decl);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++num_module_decls_attempted;
   if (db_flag_is_set("ifc_idx")) {
     a_string msg("Directive processing started for ", index_to_str(dir_idx));
 
     print(msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ensure_module_scope(scope, &scope_push_status);
   switch (dir_idx.sort) {
@@ -15539,7 +15619,9 @@ the given scope.
   goto done;
 invalid:
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++num_module_decls_failed;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 done:
   /* If a scope was pushed, scope popping should always occur. */
@@ -15547,11 +15629,13 @@ done:
     pop_module_declaration_context(scope_push_status);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string msg("Directive processing done for ", index_to_str(dir_idx));
 
     print(msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* process_ifc_directive */
 
@@ -16317,11 +16401,13 @@ no corresponding type, return an error type.
   a_type_ptr result = NULL;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string err_msg("Type resolution started for ", index_to_str(type_idx));
 
     print(err_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   switch (type_idx.sort) {
     case ifc_ts_type_base:
@@ -16967,11 +17053,13 @@ done:
      use the invalid result case. */
   check_assertion(result != NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_idx")) {
     a_string err_msg("Type resolution done for ", index_to_str(type_idx));
 
     print(err_msg, f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* Type_loader<a_Derived_type>::load_impl */
@@ -23698,10 +23786,12 @@ context to help inform decisions about what to cache.
       ifc_unexpected(module_of(cinfo.parameterizing_entity),
                      err_msg.as_temp_characters());
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ifc_def")) {
         db_tokens(templ_cache.as_canonical());
         fprintf(f_debug, "\n---------------------\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       goto invalid;
     }  /* if */
@@ -31035,11 +31125,13 @@ specialization entity and update *kind with the associated entity kind.
   a_token_kind       final_token = tok_error;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_def")) {
     fprintf(f_debug, "Reconstituted explicit specialization declaration:\n");
     db_tokens(cache);
     fprintf(f_debug, "\n---------------------\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(get_ifc_sort(decl) == ifc_ss_explicit);
   {
@@ -31070,11 +31162,13 @@ kind.
   a_source_position  template_kw_pos;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ifc_def")) {
     fprintf(f_debug, "Reconstituted explicit instantiation declaration:\n");
     db_tokens(cache);
     fprintf(f_debug, "\n---------------------\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(get_ifc_sort(decl) == ifc_ss_instantiation);
 
@@ -31097,6 +31191,7 @@ kind.
 }  /* parse_cached_explicit_instantiation */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void an_ifc_input_state::db_ifc_scope(an_ifc_scope_offset scope)
 /*
@@ -31151,6 +31246,7 @@ and print the diff of the cached tokens.
   db_diff_token_caches(prev_cache.as_canonical(), new_cache.as_canonical());
 }  /* db_diff_decls */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_boolean record_pending_ifc_template_definition(
@@ -31188,18 +31284,21 @@ definitions (and later replaced if a more complete definition is discovered).
        definition. */
     if (is_template_defined(decl_idx)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ifc_redef")) {
         a_string decl_idxs(index_to_str(existing_decl), " replaced by ",
                            index_to_str(decl_idx));
         print(decl_idxs, f_debug);
         db_diff_decls(existing_decl, decl_idx);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       ifc_template_definitions->associate_entity(templ, decl_idx);
       result = TRUE;
     }
     /* Do not add code here. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     else if (db_flag_is_set("ifc_redef")) {
       a_string decl_idxs("Keeping ", index_to_str(existing_decl),
                          " instead of ", index_to_str(decl_idx),
@@ -31208,6 +31307,7 @@ definitions (and later replaced if a more complete definition is discovered).
       print(decl_idxs, f_debug);
       db_diff_decls(existing_decl, decl_idx);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -31315,6 +31415,7 @@ required).
 }  /* finish_mep_processing */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 namespace {
 
@@ -31352,6 +31453,7 @@ Return the corresponding lexical IFC index kind.
 
 }  /* namespace */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 template<typename an_ifc_Index_type>
@@ -31390,7 +31492,9 @@ Given an IFC index, return the corresponding lexical index.
   result.index = idx.value;
   result.file = idx.file;
 #if DEBUG
+/* GCOVR_EXCL_START */
   result.reference_kind = get_lexical_ifc_kind<an_ifc_Index_type>();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* to_lexical_index */
@@ -31456,6 +31560,7 @@ been confirmed to exist and the path stored in midp.
     input_state_ptr->import_referenced_modules(
                                                midp->impl_unit_importing_self);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ifc_modsrc")) {
       /* Generate a textual representation of the module file and print it. */
       an_ifc_scope_offset scope =
@@ -31463,6 +31568,7 @@ been confirmed to exist and the path stored in midp.
 
       input_state_ptr->db_ifc_scope(scope);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Indicate to the lookup routines that lazy symbols are in use. */
     lazy_symbols_may_be_visible = TRUE;

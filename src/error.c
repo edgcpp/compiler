@@ -412,10 +412,12 @@ label fill-in entry is not found.
 #if CHECKING
   if (lfie->label == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     char *label_copy = alloc_general((sizeof_t)length+1);
     strncpy(label_copy, label, length);
     label_copy[length] = '\0';
     fprintf(f_debug, "missing fill-in label: %s\n", label_copy);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     unexpected_condition_str(
                             "get_label_fill_in_entry: no label fill-in found");
@@ -460,11 +462,13 @@ fill-in entries are valid.
 #endif /* EXPENSIVE_CHECKING && !STANDALONE_UTILITY_PROGRAM */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of tables allocated, to track total use of memory.
 */
 STATIC_THREAD uint32_t	num_diagnostics_allocated,
 		num_diag_fill_ins_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD a_diagnostic_ptr
@@ -962,7 +966,9 @@ of freed entries if possible.
     /* Allocate a new entry. */
     dp = alloc_general_or_in_region_of_type(diag_memory_region, a_diagnostic);
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_diagnostics_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   dp->kind = dck_primary;
@@ -1047,7 +1053,9 @@ is specified by "kind".
     dfip = alloc_general_or_in_region_of_type(diag_memory_region,
                                               a_diag_fill_in);
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_diag_fill_ins_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   dfip->next = NULL;
@@ -2175,11 +2183,13 @@ made is returned.
 #if CHECKING
     if (curr_file == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level > 0) {
         (void)fprintf(f_debug,
                       "Missing file index entry for source file \"%s\"\n", 
                       src_file->full_name);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("update_file_index: missing file index entry");
     }  /* if */
@@ -2235,6 +2245,7 @@ made is returned.
 				 INITIAL_PHYSICAL_LINE_COUNT_INCREMENT;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Updated error file index entries:\n");
     for (idx = 0;
@@ -2244,6 +2255,7 @@ made is returned.
     }  /* for */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Return the physical line number at which the next entry should be made. */
   return physical_line +
@@ -2279,11 +2291,13 @@ file which is closer to the desired line.
 #if CHECKING
   if (curr_file == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level > 0) {
       (void)fprintf(f_debug,
                     "Missing file index entry for source file \"%s\"\n", 
                     src_file->full_name);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("optimum_file_start_position: missing file index entry");
   }  /* if */
@@ -5935,9 +5949,11 @@ to the error severity of the error to be issued.
   } else if ((open_result->flags & OFR_BAD_NAME) != 0) {
     issue_error = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   } else if ((open_flags & OFF_FORCE_ERROR) != 0) {
     /* If this debug flag is specified, force an error to be issued. */
     issue_error = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   *severity = (open_flags & OFF_COMMAND_LINE) != 0 ? es_command_line_error
@@ -5965,11 +5981,13 @@ is not Unicode.
 
   file = open_source_file(file_name, open_result, unicode_source_kind);
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Pretend the open failed if OFF_FORCE_ERROR is specified. */
   if ((open_flags & OFF_FORCE_ERROR) != 0) {
     if (file != NULL) (void)fclose(file);
     file = NULL;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (file == NULL &&
       open_error_should_be_issued(open_flags, open_result, &severity)) {
@@ -6019,11 +6037,13 @@ code for the description of the file to be used if an error is issued.
 
   file = fopen_with_result(file_name, mode, &open_result);
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Pretend the open failed if OFF_FORCE_ERROR is specified. */
   if ((open_flags & OFF_FORCE_ERROR) != 0) {
     if (file != NULL) (void)fclose(file);
     file = NULL;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (file == NULL &&
       open_error_should_be_issued(open_flags, &open_result, &severity)) {
@@ -6057,11 +6077,13 @@ the description of the file to be used if an error is issued.
 
   file = open_output_file(file_name, binary_file, update_mode, &open_result);
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Pretend the open failed if OFF_FORCE_ERROR is specified. */
   if ((open_flags & OFF_FORCE_ERROR) != 0) {
     if (file != NULL) (void)fclose(file);
     file = NULL;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (file == NULL &&
       open_error_should_be_issued(open_flags, &open_result, &severity)) {
@@ -6093,11 +6115,13 @@ error is issued.
 
   file = open_input_file(file_name, binary_file, &open_result);
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Pretend the open failed if OFF_FORCE_ERROR is specified. */
   if ((open_flags & OFF_FORCE_ERROR) != 0) {
     if (file != NULL) (void)fclose(file);
     file = NULL;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (file == NULL &&
       open_error_should_be_issued(open_flags, &open_result, &severity)) {
@@ -8352,7 +8376,9 @@ reset the associated debug output FILE* (f_debug).
   close_f_error_if_open();
   f_error = default_error_output_file();
 #if DEBUG
+/* GCOVR_EXCL_START */
   f_debug = f_error;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* reset_f_error */
 
@@ -8476,8 +8502,10 @@ of each compilation.
   avail_diag_fill_ins = NULL;
   diagnostic_indent = 0;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_diagnostics_allocated = 0;
   num_diag_fill_ins_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   memzero((char *)recorded_diagnostic_table,
           sizeof(recorded_diagnostic_table));
@@ -8511,6 +8539,7 @@ of each compilation.
 }  /* error_init */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_error_space_used(void)
 /*
@@ -8529,6 +8558,7 @@ structures for space tracking purposes.
   return grand_total;
 }  /* show_error_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 namespace detail {

@@ -114,6 +114,7 @@ static sizeof_t adjusted_header_size = (sizeof_t)(sizeof(a_mem_block_header) +
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Record of memory allocated, for space tracking purposes.
 */
@@ -187,9 +188,11 @@ STATIC_THREAD unsigned long
 STATIC_THREAD unsigned long
 		num_text_buffers_allocated;
 			/* Number of text buffers that have been allocated. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void adjust_record_of_total_allocation(long amount)
 /*
 Record that an additional "amount" bytes of memory have been allocated.
@@ -211,6 +214,7 @@ and "freed" here mean via malloc/free, not by some mechanism on top of that.
     max_mem_allocated = (num_bytes_allocated - num_bytes_freed);
   }  /* if */
 }  /* adjust_record_of_total_allocation */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static char *malloc_with_check(sizeof_t size)
@@ -235,6 +239,7 @@ allocation and generates a catastrophic error.
     catastrophe(ec_out_of_memory);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Track total allocation. */
   /* Can't do this conditionally on db_active since db_active is not yet
      set when command line processing is done. */
@@ -244,6 +249,7 @@ allocation and generates a catastrophic error.
                      (unsigned long)size, (a_void_ptr)ptr,
                      (unsigned long)(num_bytes_allocated - num_bytes_freed));
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return (ptr);
 }  /* malloc_with_check */
@@ -259,6 +265,7 @@ a catastrophe.
 
   result = (void*)malloc((true_size_t)size_t_arg(size));
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Track total allocation. */
   if (result != NULL) {
     /* Can't do this conditionally on db_active since db_active is not yet
@@ -271,6 +278,7 @@ a catastrophe.
               (unsigned long)(num_bytes_allocated - num_bytes_freed));
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* malloc_for_interpreter */
@@ -283,6 +291,7 @@ Free a block of the given size allocated by a call to malloc_for_interpreter.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Can't do this conditionally on db_active since db_active is not yet
      set when command line processing is done. */
   adjust_record_of_total_allocation(-(long)size);
@@ -290,6 +299,7 @@ Free a block of the given size allocated by a call to malloc_for_interpreter.
     fprintf(f_debug, "free_for_interpreter: freeing block of size %lu\n",
                      (unsigned long)size);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   free((char*)block);
 }  /* free_for_interpreter */
@@ -316,6 +326,7 @@ malloc_with_check.  "old_size" is present to help with tracking of space used.
       catastrophe(ec_out_of_memory);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     /* Track total allocation. */
     /* Can't do this conditionally on db_active since db_active is not yet
        set when command line processing is done. */
@@ -327,6 +338,7 @@ malloc_with_check.  "old_size" is present to help with tracking of space used.
                        (unsigned long)old_size,
                        (unsigned long)(num_bytes_allocated - num_bytes_freed));
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return (ptr);
@@ -372,10 +384,12 @@ Add an entry to the memory allocation history array.
   mahp->addr = addr;
   mahp->size = size;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Added mem_alloc_history, addr: %p, size: %lu\n",
             addr, (unsigned long)size);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* add_mem_alloc_history_entry */
@@ -403,10 +417,12 @@ to cause the memory allocation history table to overflow.
     size_allocated += HOST_ALLOCATION_INCREMENT;
     add_mem_alloc_history_entry(ptr, HOST_ALLOCATION_INCREMENT);
 #if DEBUG
+/* GCOVR_EXCL_START */
     /* Track total allocation. */
     /* Can't do this conditionally on db_active since db_active is not yet
        set when command line processing is done. */
     adjust_record_of_total_allocation((long)HOST_ALLOCATION_INCREMENT);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* while */
 }  /* preallocate_pch_memory */
@@ -425,7 +441,9 @@ preallocated memory that has not been used.
        n < num_of_mem_alloc_history_entries; ++n) {
     (void)free(mem_alloc_history[n].addr);
 #if DEBUG
+/* GCOVR_EXCL_START */
     adjust_record_of_total_allocation(-(long)(mem_alloc_history[n].size));
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   /* Set the number of entries in existence to the number used so far.
@@ -476,11 +494,13 @@ file are mapped into the address space of subsequent compilation.
   mem_alloc_history_entries_used = num_of_mem_alloc_history_entries;
   mmap_size_allocated += size;
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Record the total amount of allocated memory that was allocated via
      memory mapped files. */
   num_mapped_bytes_allocated += (unsigned long)size;
   num_mapped_bytes_from_pch += (unsigned long)size;
   adjust_record_of_total_allocation((long)size);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* record_mapped_mem_block */
 
@@ -496,10 +516,12 @@ Unmap the memory blocks that have been mapped.
     sizeof_t	size = mem_alloc_history[n].size;
     unmap_memory(mem_alloc_history[n].addr, size);
 #if DEBUG
+/* GCOVR_EXCL_START */
     /* Record the total amount of allocated memory that was allocated via
        memory mapped files. */
     num_mapped_bytes_allocated -= (unsigned long)size;
     adjust_record_of_total_allocation(-(long)size);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   num_of_mem_alloc_history_entries = 0;
@@ -562,6 +584,7 @@ PCH was created.
      number of entries that exist in mmap mode. */
   mem_alloc_history_entries_used = num_of_mem_alloc_history_entries;
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Record the total amount of allocated memory that was allocated via
      memory mapped files. */
   num_mapped_bytes_allocated += (unsigned long)size;
@@ -570,6 +593,7 @@ PCH was created.
     fprintf(f_debug, "Allocated %lu bytes of mapped memory at %p\n",
             (unsigned long)size, addr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return addr;
 }  /* alloc_new_mem_block */
@@ -662,7 +686,9 @@ a smaller-sized block.  Return a pointer to the block header.
      the wasted space on the end of a previous block. */
   if (reusable_blocks_list != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_reclaim_attempts;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     needed_size = min_size + adjusted_header_size;
     for (prev_hdr = NULL, hdr = reusable_blocks_list;
@@ -675,7 +701,9 @@ a smaller-sized block.  Return a pointer to the block header.
       /*SUPPRESS 22*/
       check_assertion(hdr->after_end_of_block >= hdr->start_of_block);
 #if DEBUG
+/* GCOVR_EXCL_START */
       ++num_reclaim_traversals;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       alloc_size = (sizeof_t)(hdr->after_end_of_block - hdr->start_of_block) +
                    adjusted_header_size;
@@ -699,11 +727,13 @@ a smaller-sized block.  Return a pointer to the block header.
         prev_hdr_found->next = hdr_found->next;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 5) {
         fprintf(f_debug, "alloc_mem_block: reusing block, size = %lu\n",
                          (unsigned long)alloc_size);
       }  /* if */
       ++num_reclaim_successes;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       hdr = hdr_found;
       goto have_hdr;
@@ -786,6 +816,7 @@ Free a block that was allocated by malloc.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Can't do this conditionally on db_active since db_active is not yet
      set when command line processing is done. */
   adjust_record_of_total_allocation(-((long)hdr->malloc_size));
@@ -793,6 +824,7 @@ Free a block that was allocated by malloc.
     fprintf(f_debug, "free_complete_block: freeing block of size %lu\n",
                      (unsigned long)hdr->malloc_size);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   free((char *)hdr);
 }  /* free_complete_block */
@@ -872,6 +904,7 @@ Free any unallocated space remaining in the indicated memory block.
 }  /* trim_mem_block */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void track_allocation(a_memory_region_number region_number,
                       sizeof_t               size,
@@ -890,6 +923,7 @@ purposes.
   allocated_in_region[region_number] += (unsigned long)size;
 }  /* track_allocation */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void ensure_function_def_table_space(a_function_def_number function_def_number)
@@ -990,6 +1024,7 @@ the number of entries indicated by region_number.
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* ... and also allocated_in_region.  Note that this allocation might
          be out of sync with the others. */
   /* Can't do this conditionally on db_active since db_active is not yet
@@ -1007,6 +1042,7 @@ the number of entries indicated by region_number.
              sizeof(unsigned long)));
     size_of_allocated_in_region = size_of_mem_region_table;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* ensure_mem_region_table_space */
 
@@ -1057,9 +1093,11 @@ A new region is used for each function's executable code and data.
   }  /* if */
   region_number = ++highest_used_region_number;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 2) {
     fprintf(f_debug, "New memory region, number %ld.\n", (long)region_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   init_memory_region(region_number, (sizeof_t)0);
@@ -1083,7 +1121,9 @@ free_general will be reclaimed upon mem_manage_wrapup.
   memory_allocation_map->map(ptr, size);
 #endif /* TRACK_GENERAL_ALLOCATION */
 #if DEBUG
+/* GCOVR_EXCL_START */
   total_general_mem_allocated += (unsigned long)size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return ptr;
 }  /* alloc_general */
@@ -1108,7 +1148,9 @@ Free a tracked block of memory to general storage.
 #endif /* TRACK_GENERAL_ALLOCATION */
     /* Update internal memory tracking. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     total_general_mem_allocated -= (unsigned long)size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if TRACK_GENERAL_ALLOCATION
     memory_allocation_map->unmap(ptr);
@@ -1174,8 +1216,10 @@ acts like alloc_resizable_buffer.
 #endif /* EXPENSIVE_CHECKING */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   total_general_mem_allocated -= (unsigned long)old_size;
   total_general_mem_allocated += (unsigned long)new_size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return ptr;
 }  /* realloc_buffer */
@@ -1193,11 +1237,13 @@ needed (e.g., it has been written out to the IL file).
 
   db_enter(5, "free_memory_region");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "free_memory_region: region %lu, size = %lu\n",
                      (unsigned long)(unsigned)region_number,
                      (unsigned long)allocated_in_region[region_number]);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !STANDALONE_UTILITY_PROGRAM && EXPENSIVE_CHECKING
   /* Let the symbol table know the given memory region is being freed. */
@@ -1212,7 +1258,9 @@ needed (e.g., it has been written out to the IL file).
   mem_region_table[region_number] = NULL;
   il_header.region_scope_entry[region_number] = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   allocated_in_region[region_number] = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (region_number == file_scope_region_number) {
     /* The storage for local constants has been freed. */
@@ -1422,12 +1470,14 @@ memory or with an IL file.
 
   db_enter(5, "check_for_done_with_memory_region");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 1) {
     fprintf(f_debug,
             "check_for_done_with_memory_region: region %lu, size = %lu\n",
             (unsigned long)(unsigned)region_number,
             (unsigned long)allocated_in_region[region_number]);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if STANDALONE_UTILITY_PROGRAM
   /* In a standalone program the memory is always freed. */
@@ -1489,6 +1539,7 @@ memory or with an IL file.
     }  /* for */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (rout != NULL && debug_level >= 2) {
     fprintf(f_debug, "check_for_done_with_memory_region: ");
     fprintf(f_debug, "%s memory region for ",
@@ -1496,6 +1547,7 @@ memory or with an IL file.
     db_name(&rout->source_corresp);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!keep_memory) {
     /* Write the region to the file and free it. */
@@ -1553,6 +1605,7 @@ part of secondary translation units (perhaps).
                            "check_for_done_with_all_function_memory_regions:",
                            "trivial default constructor");
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 2) {
           fprintf(f_debug,
                   "check_for_done_with_all_function_memory_regions: ");
@@ -1562,6 +1615,7 @@ part of secondary translation units (perhaps).
           db_name(&rout->source_corresp);
           fprintf(f_debug, "\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (!from_secondary_trans_unit) write_memory_region(n);
         if (!skip_il_read) {
@@ -1578,6 +1632,7 @@ part of secondary translation units (perhaps).
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 #if !STANDALONE_UTILITY_PROGRAM
 void show_mem_manage_space_used(unsigned long total_accounted_for)
 /*
@@ -1666,6 +1721,7 @@ usage counts in other files.
   fprintf(f_debug, "%25s %26lu\n", "Max mem alloc", max_mem_allocated);
 }  /* show_mem_manage_space_used */
 #endif /* !STANDALONE_UTILITY_PROGRAM */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -1684,7 +1740,9 @@ they point to are allocated there.
   tbp->size = 0;
   tbp->buffer = alloc_resizable_buffer(allocation_increment);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_text_buffers_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return tbp;
 }  /* alloc_text_buffer */
@@ -1878,6 +1936,7 @@ specified size.  The block is recorded for possible reuse later by alloc_fe.
 
 }  /* namespace detail */
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_text_buffer(a_const_char	*prefix,
 		    a_text_buffer_ptr	buf)
@@ -1966,6 +2025,7 @@ prefix field.)
   return &il_entry_prefix_of(entry);
 }  /* db_prefix_ptr */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if EXPENSIVE_CHECKING
@@ -2000,9 +2060,11 @@ Do one-time initialization of variables related to the mem_manage routines.
        therefore doesn't need to be saved here. */
       pch_saved_var_array_elem(reusable_blocks_list),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(total_mem_used),
       pch_saved_var_array_elem(num_alignment_bytes_allocated),
       pch_saved_var_array_elem(num_text_buffers_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -2027,6 +2089,7 @@ Do one-time initialization of variables related to the mem_manage routines.
   register_trans_unit_variable(file_scope_region_number);
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 #if DEBUG
+/* GCOVR_EXCL_START */
   allocated_in_region = NULL;
   size_of_allocated_in_region = 0;
   num_text_buffers_allocated = 0;
@@ -2034,6 +2097,7 @@ Do one-time initialization of variables related to the mem_manage routines.
   num_mapped_bytes_allocated = 0;
   num_mapped_bytes_from_pch = 0;
 #endif /* USE_MMAP_FOR_MEMORY_REGIONS */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #ifdef USING_PURIFY
   /* Call the Purify runtime routine to determine whether this executable
@@ -2049,6 +2113,7 @@ Do one-time initialization of variables related to the mem_manage routines.
 }  /* mem_manage_one_time_init */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void mem_manage_one_time_init_done()
 /*
@@ -2059,6 +2124,7 @@ amount of memory that was in use after the initialization phase.
   mem_in_use_after_one_time_init = (num_bytes_allocated - num_bytes_freed);
 }  /* mem_manage_one_time_init_done */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void mem_manage_trans_unit_init(void)
@@ -2081,6 +2147,7 @@ must be initialized for each translation unit.
 }  /* mem_manage_trans_unit_init */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void mem_manage_trans_unit_init_done()
 /*
@@ -2099,6 +2166,7 @@ any translation unit.
   }  /* if */
 }  /* mem_manage_trans_unit_init_done */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void mem_manage_early_init(void)
@@ -2125,6 +2193,7 @@ This is done before command line processing.
   size_of_mem_region_table = 0;
   size_of_function_def_table = 0;
 #if DEBUG
+/* GCOVR_EXCL_START */
   max_mem_allocated = 0;
   mem_in_use_after_one_time_init = 0;
   max_mem_in_use_after_tu_init = 0;
@@ -2136,6 +2205,7 @@ This is done before command line processing.
   num_free_calls = 0;
   num_bytes_freed = 0;
   total_general_mem_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* mem_manage_early_init */
 
@@ -2163,8 +2233,10 @@ must be initialized for each compilation.
   file_scope_region_number = FILE_SCOPE_REGION_NUMBER;
   highest_used_function_def_number = NULL_function_def_number;
 #if DEBUG
+/* GCOVR_EXCL_START */
   total_mem_used = 0;
   num_alignment_bytes_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if MAINTAIN_ALLOCATION_SEQUENCE_NUMBER
   allocation_sequence_number_seed = 0;

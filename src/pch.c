@@ -230,8 +230,10 @@ Macro to do an fseek on the output file with an error check.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_pch_events_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -281,6 +283,7 @@ enum a_pch_file_section {
 };
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static a_const_char
 		*file_section_names[(int)pfs_last + 1] =
 {
@@ -292,6 +295,7 @@ static a_const_char
   "memory_regions",
   "last"
 };
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -315,6 +319,7 @@ value passed by the caller.
   /* coverity[+taint_source: arg-0] */ /* coverity[string_null_argument] */
   pch_read_value(section_in_file);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (section_in_file != section) {
     fprintf(f_debug, "Incorrect file section ID: expected %d, got %d\n",
             (int)section, (int)section_in_file);
@@ -322,6 +327,7 @@ value passed by the caller.
             file_section_names[(int)section],
             file_section_names[(int)section_in_file]);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion_str2(section_in_file == section,
                        "check_file_section_id:",
@@ -486,7 +492,9 @@ Allocate and initialize a precompiled header event record.
   /* Allocate a new entry. */
   pep = (a_pch_event_ptr)alloc_general(sizeof(a_pch_event));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_pch_events_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   pep->next = NULL;
   pep->kind = kind;
@@ -539,12 +547,14 @@ file.
   if (pch_event_list_tail != NULL) pch_event_list_tail->next = pep;
   pch_event_list_tail = pep;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("pch_event")) {
     fprintf(f_debug, "Added PCH event: %s, value=%s, line %lu, col %d\n",
             pch_event_kind_names[(int)pep->kind],
             pep->value == NULL ? "(NULL)" : pep->value,
             (unsigned long)pep->position.seq, pep->position.column);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* add_pch_event */
@@ -584,17 +594,20 @@ the command line.
   }  /* if */
   pch_cmd_line_event_list_tail = pep;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Added PCH event: %s, value=%s\n",
             pch_event_kind_names[(int)pep->kind],
             pep->value == NULL ? "(NULL)" : pep->value);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* add_command_line_pch_event */
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_pch_event(a_pch_event_ptr pep)
 /*
 Display a PCH event for debugging purposes.
@@ -619,6 +632,7 @@ Display a PCH event for debugging purposes.
           (unsigned long)pep->position.seq,
           (unsigned long)pep->position.column);
 }  /* db_pch_event */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -807,9 +821,11 @@ changed.
 {
   db_enter(3, "remove_pch_input_file");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "Removing PCH file: %s\n", pch_input_file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* First close the file. */
   if (f_pch_input != NULL) (void)fclose(f_pch_input);
@@ -847,9 +863,11 @@ file currently being compiled.  If not, remove the associated file.
   }  /* if */
   if (remove_file) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fprintf(f_debug, "Removing PCH file: %s\n", assoc_pch_file_name);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     delete_file(assoc_pch_file_name);
   }  /* if */
@@ -1019,6 +1037,7 @@ Return TRUE if two PCH events are equivalent.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Comparing PCH event: ");
     db_pch_event(pep1);
@@ -1026,6 +1045,7 @@ Return TRUE if two PCH events are equivalent.
     db_pch_event(pep2);
     fprintf(f_debug, "  Equivalent: %s\n", result ? "TRUE" : "FALSE");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* equivalent_pch_events */
@@ -1052,10 +1072,12 @@ child files encountered.
       pch_write_string(sfp->full_name);
       pch_write_value(mod_time);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 5) {
         fprintf(f_debug, "Writing file timestamp for %s, time is %ld\n",
                 sfp->full_name, (long)mod_time);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     if (sfp->first_child_file != NULL) {
@@ -1082,10 +1104,12 @@ timestamp to the PCH output file.
     pch_write_string(cmfp->full_name);
     pch_write_value(mod_time);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "Writing file timestamp for %s, time is %ld\n",
               cmfp->full_name, (long)mod_time);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   db_exit();
@@ -1110,10 +1134,12 @@ to the PCH output file.
     pch_write_string(midp->module_info->resolved_file);
     pch_write_value(mod_time);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "Writing file timestamp for %s, time is %ld\n",
               midp->module_info->resolved_file, (long)mod_time);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   db_exit();
@@ -1159,6 +1185,7 @@ variable lists.
          specified address. */
       if (psvp->indirect) address = *(a_void_ptr*)address;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 5) {
         fprintf(f_debug, "Saving %5lu bytes at %p, variable %s %s\n",
                 (unsigned long)psvp->var_size, address,
@@ -1167,6 +1194,7 @@ variable lists.
                   : psvp->var_name,
                 psvp->indirect ? "(indirect)" : "");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       fwrite_with_check(address, psvp->var_size, f_pch_output);
     }  /* for */
@@ -1194,6 +1222,7 @@ variable lists.
          specified address. */
       if (psvp->indirect) address = *(a_void_ptr*)address;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 5) {
         fprintf(f_debug, "Restoring %5lu bytes at %p, variable %s %s\n",
                 (unsigned long)psvp->var_size, address,
@@ -1202,6 +1231,7 @@ variable lists.
                   : psvp->var_name,
                 psvp->indirect ? "(indirect)" : "");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       fread_with_check(address, psvp->var_size, f_pch_input);
     }  /* for */
@@ -1330,9 +1360,11 @@ in exactly the same manner as that in which they were created.
 {
   a_mem_block_header_ptr	mbhp = mem_region_table[number];
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Writing memory region %d\n", number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   while (mbhp != NULL) {
     sizeof_t	size;
@@ -1344,10 +1376,12 @@ in exactly the same manner as that in which they were created.
     pch_write_value(mbhp);
     fwrite_with_check(mbhp, size, f_pch_output);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Writing %lu bytes from %p\n", (unsigned long)size,
               mbhp);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     mbhp = mbhp->next;
   }  /* while */
@@ -1387,10 +1421,12 @@ the PCH file.
     /* Create a memory allocation history entry for this block. */
     record_mapped_mem_block(mahp->addr, mahp->size);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "Mapped bytes from %p for %lu bytes from PCH\n",
               mahp->addr, (unsigned long)mahp->size);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   close_mapped_input_file(mapped_file);
@@ -1407,9 +1443,11 @@ file.  See write_a_memory_region for more information.
   a_mem_block_header_ptr	mbhp = mem_region_table[number];
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Reading memory region %d\n", number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   for (;;) {
     sizeof_t	size;
@@ -1418,10 +1456,12 @@ file.  See write_a_memory_region for more information.
     pch_read_value(region_size);
     pch_read_value(mbhp);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Reading %lu bytes into %p\n", (unsigned long)size,
               mbhp);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     fread_with_check((a_stdio_arg)mbhp, size, f_pch_input);
     /* See if this is the last block in the memory region. */
@@ -1464,10 +1504,12 @@ header information about the memory regions such as the mem_region_table.
                       f_pch_output);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Write the allocated_in_region information. */
   fwrite_with_check(allocated_in_region,
                     sizeof(unsigned long) * mem_regions_used,
                     f_pch_output);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if USE_MMAP_FOR_MEMORY_REGIONS
   /* When using memory mapping, instead of writing the memory regions one
@@ -1531,10 +1573,12 @@ header information about the memory regions such as the mem_region_table.
                       f_pch_input);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Read the allocated_in_region information. */
   fread_with_check(allocated_in_region,
                    sizeof(unsigned long) * mem_regions_used,
                    f_pch_input);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if USE_MMAP_FOR_MEMORY_REGIONS
   /* Read the blocks of memory used for memory region storage.  See
@@ -1568,6 +1612,7 @@ current point.
   open_pch_output_file();
   pch_message(ec_creating_pch, format_file_name(pch_file_name));
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     a_pch_event_ptr	pep;
     fprintf(f_debug, "Events to be recorded in %s:\n", pch_file_name);
@@ -1575,6 +1620,7 @@ current point.
       db_pch_event(pep);
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Write the string that identifies this file as a precompiled header
      file. */
@@ -1617,6 +1663,7 @@ current point.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_cannot_generate_reason(a_const_char *str)
 /*
 Display a debugging message explaining why a precompiled header file
@@ -1627,6 +1674,7 @@ can't be generated.
     fprintf(f_debug, "Cannot generate precompiled header: %s\n", str);
   }  /* if */
 }  /* db_cannot_generate_reason */
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define db_cannot_generate_reason(str) /* Nothing */
 #endif /* !DEBUG */
@@ -1970,6 +2018,7 @@ pch file.  Return a pointer to the last matching event.
     a_boolean	is_define = FALSE;
     a_boolean	event_matches = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       /* coverity[tainted_data] */
       db_pch_event(&event);
@@ -1977,6 +2026,7 @@ pch file.  Return a pointer to the last matching event.
         fprintf(f_debug, "Candidate event list longer than current file\n");
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (pos_in_event_list == NULL) {
       /* We've reached the end of the event list for this file but there
@@ -2104,6 +2154,7 @@ directory.  Return TRUE if an applicable PCH was found.
 
   db_enter(3, "find_applicable_pch");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     a_pch_event_ptr	pep;
     fprintf(f_debug, "Event list of this file:\n");
@@ -2111,6 +2162,7 @@ directory.  Return TRUE if an applicable PCH was found.
       db_pch_event(pep);
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   best_result_so_far = null_source_position;
   for (first = first_from_dir = TRUE;;first = FALSE) {
@@ -2141,9 +2193,11 @@ directory.  Return TRUE if an applicable PCH was found.
     if (!open_pch_input_file(file_name)) continue;
     pch_input_file_name = file_name;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Checking %s for applicability\n", file_name);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* See if this PCH file can be used. */
     last_matching_event = pch_is_applicable();
@@ -2154,6 +2208,7 @@ directory.  Return TRUE if an applicable PCH was found.
     is_applicable = last_matching_event != NULL;
     if (is_applicable) result = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("pch")) {
       fprintf(f_debug, "PCH file %s, applicable: %s",
               file_name, is_applicable ? "TRUE" : "FALSE");
@@ -2169,6 +2224,7 @@ directory.  Return TRUE if an applicable PCH was found.
         }  /* if */
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (is_applicable) {
       /* See if this precompiled header matches an event later in the source
@@ -2500,6 +2556,7 @@ file is created and restored when a PCH file is used.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long db_show_pch_space_used(unsigned long grand_total)
 /*
 Show space used by the PCH routines.  This is called by
@@ -2514,6 +2571,7 @@ routines is reported as part of the symbol table memory used.
   db_space_used("PCH events", num_pch_events_allocated, a_pch_event);
   return grand_total;
 }  /* db_show_pch_space_used */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -2524,7 +2582,9 @@ Initialize variables used by the precompiled header routines.
 {
   db_enter(4, "pch_init");
 #if DEBUG
+/* GCOVR_EXCL_START */
   check_assertion(strcmp(pch_event_kind_names[(int)pchek_last], "last") == 0);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   initialize_pch_id_string();
   cannot_do_pch_processing = FALSE;
@@ -2546,7 +2606,9 @@ Initialize variables used by the precompiled header routines.
   new_alloc_history_entries = 0;
   new_alloc_history = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_pch_events_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Check for conditions that make it impossible to do precompiled header
      processing. */

@@ -119,6 +119,7 @@ optional.
 }  /* read_into_string */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static thread_local a_daemon_string
                 trans_unit_tag;
@@ -146,6 +147,7 @@ about an unused function when CHECKING is FALSE.
   return hash_ptr(a_string_view(str));
 }  /* hash_trans_unit_tag */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static thread_local int
@@ -231,6 +233,7 @@ invocation ticket.
 
     /* Update the thread state. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     Opt<a_daemon_string> opt_tu_tag = read_into_string(&reader);
 
     if (!opt_tu_tag.has_value()) {
@@ -245,6 +248,7 @@ invocation ticket.
        hashing strategy for a_daemon_string. */
     check_assertion(trans_unit_tag_hash ==
                     hash_trans_unit_tag(trans_unit_tag.as_temp_characters()));
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     fd_thread_output = ticket->communication_fd;
 

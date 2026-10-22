@@ -31,6 +31,7 @@ symbol_ref.c - Routines to manage references to symbols.
 BEGIN_EDG_NAMESPACE
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_symbol_ref_kind(a_symbol_reference_kind  kind)
 /*
@@ -87,6 +88,7 @@ Output the flags set in kind to the debug output in a human-readable way.
   }  /* if */
 }  /* db_symbol_ref_kind */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD an_il_to_str_output_control_block
@@ -330,6 +332,7 @@ a class template in Microsoft mode.
     if (hnp->entity.ptr == entity) break;
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     if (hnp == NULL ||
         ((tag_hidden_by_nontag &&
@@ -362,6 +365,7 @@ a class template in Microsoft mode.
       fprintf(f_debug, "\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (hnp == NULL) {
     /* No existing entry.  Allocate a new one. */
@@ -707,6 +711,7 @@ flags cleared.  Note that this happens even if no hiding had occurred.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if ((debug_level >= 4 || db_flag_is_set("dump_hidden")) && hnp != NULL) {
     a_source_correspondence  *scp =
                source_corresp_for_il_entry(hnp->entity.ptr, entity_kind);
@@ -724,6 +729,7 @@ flags cleared.  Note that this happens even if no hiding had occurred.
     }  /* if */
     fprintf(f_debug, "\" can be used as an unqualified name\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* check_name_unhiding */
 
@@ -798,9 +804,11 @@ due to the simulated injected name of a template instance in Microsoft mode.
   clear_locator(&locator, &sym_ptr->decl_position);
   locator.symbol_header = sym_ptr->header;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     fputs("    ...doing lookup (inherited names)\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   (void)normal_id_lookup(&locator, IDL_HIDDEN_NAME_LOOKUP);
   old_sym_ptr = locator.specific_symbol;
@@ -932,6 +940,7 @@ hidden name checking on its own members, too.
   a_symbol_ptr      sym_ptr;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     /* If this is the top-level call, identify class_type. */
     if (bcp != NULL && top_level) {
@@ -940,6 +949,7 @@ hidden name checking on its own members, too.
       fputc('\n', f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Loop through each of the base classes of class type and perform hidden
      name checking on the inherited members of direct (and, if top-level,
@@ -1015,6 +1025,7 @@ hidden name checking on its own members, too.
       /* Skip constructors. */
       if (is_constructor_symbol(sym_ptr)) continue;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
         if (sym_ptr->decl_position.seq) {
           fputs("  Hidden name check: ", f_debug);
@@ -1023,6 +1034,7 @@ hidden name checking on its own members, too.
           fputc('\n', f_debug);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Unhide the injected class names since they can now be accessed
          using an unqualified name even if that was not so in the base. */
@@ -1158,9 +1170,11 @@ type specifier when put out by the C++-generating back end.
      An elaborated type specifier can be used to "defeat" the hiding. */
   /* Find the innermost tag declaration with the same name. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     fputs("    ...doing tag lookup (tag-nontag)\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   old_sym_ptr = normal_id_lookup(&locator, IDL_HIDDEN_NAME_LOOKUP |
                                            IDL_MUST_BE_TAG);
@@ -1220,9 +1234,11 @@ C++-generating back end.
   clear_locator(&locator, &sym_ptr->decl_position);
   locator.symbol_header = sym_ptr->header;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     fputs("    ...doing skip-curr-scope lookup (qualifiable)\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   old_sym_ptr = normal_id_lookup(&locator, IDL_HIDDEN_NAME_LOOKUP |
                                            IDL_SKIP_CURR_SCOPE);
@@ -1347,10 +1363,12 @@ C++-generating back end.
         !is_class_template_symbol(old_sym_ptr)) {
       clear_specific_symbol(locator);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
         fputs("    ...doing skip-curr-scope tag lookup (qualifiable)\n",
               f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       old_sym_ptr = normal_id_lookup(&locator, IDL_HIDDEN_NAME_LOOKUP |
                                                IDL_MUST_BE_TAG |
@@ -1424,9 +1442,11 @@ exist).
     clear_locator(&locator, &param_locator->source_position);
     locator.symbol_header = param_locator->symbol_header;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
       fputs("    ...doing skip-curr-scope lookup for parameter\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     old_sym_ptr = normal_id_lookup(&locator, IDL_HIDDEN_NAME_LOOKUP |
                                              IDL_SKIP_CURR_SCOPE |
@@ -1494,9 +1514,11 @@ resolve ambiguities caused by a using-directive.  For example:
   clear_locator(&locator, &sym_ptr->decl_position);
   locator.symbol_header = sym_ptr->header;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     fputs("    ...doing lookup (using-directive)\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   (void)normal_id_lookup(&locator, IDL_HIDDEN_NAME_LOOKUP);
   old_sym_ptr = locator.specific_symbol;
@@ -1536,6 +1558,7 @@ specified scope via the specified using_directive.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
     if (sym_ptr->decl_position.seq) {
       fputs("Hidden name check: ", f_debug);
@@ -1544,6 +1567,7 @@ specified scope via the specified using_directive.
       fputc('\n', f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!is_tag_symbol(sym_ptr) && !is_injected_class_symbol(sym_ptr)) {
     /* See if the current symbol hides a tag symbol. */
@@ -1862,6 +1886,7 @@ scopes and for the file scope.
 #endif /* CHECKING */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_hidden")) {
       if (sym_list != NULL) {
         fputs("Checking hidden names declared in ", f_debug);
@@ -1869,6 +1894,7 @@ scopes and for the file scope.
         fputs("\n", f_debug);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Traverse the symbols declared in the current scope. */
     for (sym = sym_list; sym != NULL; sym = sym->next_in_scope) {

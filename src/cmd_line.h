@@ -95,7 +95,9 @@ enum an_option_kind {
   optk_module_list_for_union_init,
 #endif /* !BACK_END_IS_C_GEN_BE */
 #if DEBUG
+/* GCOVR_EXCL_START */
   optk_debug,
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   optk_time_limit,
   optk_diag_suppress,
@@ -248,10 +250,12 @@ enum an_option_kind {
   optk_strict_gnu,
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   optk_debug_name,
 #if MAINTAIN_ALLOCATION_SEQUENCE_NUMBER
   optk_debug_alloc_seq,
 #endif /* MAINTAIN_ALLOCATION_SEQUENCE_NUMBER */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   optk_long_long,
   optk_context_limit,
@@ -437,10 +441,12 @@ EXTERN_THREAD a_boolean
 			   is ASSIGNMENT_TO_THIS_ALLOWED. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 EXTERN_THREAD int
 		init_debug_level;
 			/* Initial debug level: n in -dn option, or 0
 			   by default. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 EXTERN_THREAD a_boolean
 		do_preprocessing_only;
@@ -2567,10 +2573,12 @@ EXTERN_THREAD a_boolean
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 EXTERN_THREAD a_boolean
 		display_space_used;
 			/* TRUE if the space used information should be
 			   shown at the end of compilation. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if IA64_ABI

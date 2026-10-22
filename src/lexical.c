@@ -78,7 +78,9 @@ Allocate a block of address space to token control blocks.
     avail_token_ctrl_blocks->push_back(elem + (i - 1));
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_shared_token_states_allocated += token_ctrl_block_batch_size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* FE_allocator::reserve_block */
 
@@ -2849,6 +2851,7 @@ and empty the list.
 }  /* report_char_overflows */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of tables allocated, to track total use of memory.
 */
@@ -2902,6 +2905,7 @@ is non-zero.  Ensures that a '\n' is always the last character written.
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -3031,7 +3035,9 @@ Allocate a reusable cache entry.  Reuse a freed entry if possible.
     rsep = (a_reusable_cache_entry_ptr)
                                  alloc_fe(sizeof(a_reusable_cache_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_reusable_cache_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   rsep->next = NULL;
@@ -3058,7 +3064,9 @@ Allocate a cached constant entry.  Reuse a freed entry if possible.
     /* Allocate a new entry. */
     cp = (a_constant_ptr)alloc_fe(sizeof(a_constant));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_cached_constants_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return cp;
@@ -3118,8 +3126,10 @@ memory.
   /* Allocate the string, adding space for the terminator. */
   new_start = (char *)alloc_fe(length+1);
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Track the amount of space used for pp token strings. */
   cached_pp_token_string_space += (unsigned long)(length+1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   new_end = new_start + length - 1;
   strncpy(new_start, start_of_curr_token, size_t_arg(length));
@@ -4474,6 +4484,7 @@ that the current token may be discarded).
 {
   db_enter(4, "rescan_cached_tokens");
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* This cache was marked as reusable but is now being destructively
      rescanned.  Update the count of reusable cached tokens. */
   if (cache->is_reusable) {
@@ -4481,6 +4492,7 @@ that the current token may be discarded).
        later in this routine) won't be considered reusable. */
     cache->is_reusable = FALSE;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!cache->is_empty()) {
     /* Add the current token to the cache, so that it is not lost. */
@@ -5016,7 +5028,9 @@ original source line because of trigraphs and line splices.
     /* Allocate a new entry. */
     olmp = (an_orig_line_modif_ptr)alloc_fe(sizeof(an_orig_line_modif));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_orig_line_modifs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Set the fixed fields. */
@@ -5168,7 +5182,9 @@ headp and tailp, and set its line_loc and macro_sym pointers as specified.
     /* Allocate a new record. */
     crp = (a_concatenation_record_ptr)alloc_fe(sizeof(a_concatenation_record));
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_concatenation_records_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   if (*tailp != NULL) {
@@ -5238,7 +5254,9 @@ optimize calls to nested_source_line_modif.
     a_source_line_modif_ptr tslmp, pslmp;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_lookups_in_source_line_modif_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     for (pslmp = NULL, tslmp = source_line_modif_hash_table[hash];
          ;
@@ -5246,7 +5264,9 @@ optimize calls to nested_source_line_modif.
       check_assertion_str(tslmp != NULL,
              "rem_source_line_modif_from_hash_table: not found in hash table");
 #if DEBUG
+/* GCOVR_EXCL_START */
       num_compares_in_source_line_modif_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (tslmp == slmp) {
         /* Found the entry.  Unlink it from the hash table. */
@@ -5303,7 +5323,9 @@ invocations.
     /* Allocate a new entry. */
     slmp = (a_source_line_modif_ptr)alloc_fe(sizeof(a_source_line_modif));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_source_line_modifs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   slmp->next                = source_line_modif_list;
@@ -5553,7 +5575,9 @@ and return a pointer to it.
   a_source_line_modif_ptr slmp;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_lookups_in_source_line_modif_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Find the location in the hash table. */
   for (slmp = source_line_modif_hash_table[hash];
@@ -5562,7 +5586,9 @@ and return a pointer to it.
     check_assertion_str(slmp != NULL,
                         "nested_source_line_modif: not found in hash table");
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_compares_in_source_line_modif_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (slmp->line_loc == loc_in_line) break;
   }  /* for */
@@ -5584,14 +5610,18 @@ location, FALSE otherwise.
   a_source_line_modif_ptr slmp;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_lookups_in_source_line_modif_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Search the hash table for the specified location. */
   for (slmp = source_line_modif_hash_table[hash];
        slmp != NULL && slmp->line_loc != loc_in_line;
        slmp = slmp->next_in_hash_table) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_compares_in_source_line_modif_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   return slmp != NULL;
@@ -6644,7 +6674,9 @@ a pointer.
   a_preinclude_file_ptr	pfp;
   pfp = alloc_general_of_type(a_preinclude_file);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_preinclude_files_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   pfp->next = NULL;
   pfp->file_name = NULL;
@@ -6735,7 +6767,9 @@ a pointer.
   ifhp = (an_include_file_history_ptr)
                            alloc_fe(sizeof(an_include_file_history));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_include_file_histories_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ifhp->full_name = NULL;
   ifhp->suppress_subsequent_include = FALSE;
@@ -7013,16 +7047,19 @@ entry is found or created, return the pointer in ifhp_ptr.
     result = suppress_subsequent_include(*ifhp_ptr);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ssiof")) {
     fprintf(f_debug, "suppress_subsequent_include_of_file: %s: %s\n",
             full_name, result ? "yes" : "no");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* suppress_subsequent_include_of_file */
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_include_guard_info(void)
 /*
 Display the include guard information associated with the current input
@@ -7069,6 +7106,7 @@ stack entry, for debugging purposes.
   }  /* switch */
   db_exit();
 }  /* db_include_guard_info */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -7294,11 +7332,13 @@ and this include was suppressed, FALSE otherwise.
     if (!suppress_include) (void)fclose(input_file);
     if (include_was_suppressed != NULL) *include_was_suppressed = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug,
           "open_file_and_push_input_stack: skipping guarded include file %s\n",
           file_name);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If generating a list of include files (-H option), put out the
        file name. */
@@ -7431,7 +7471,9 @@ return a pointer to it.
 
   isrp = alloc_general_of_type(an_include_search_result);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_include_search_results_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_include_search_result(isrp);
   return isrp;
@@ -7507,10 +7549,12 @@ is set to indicate whether or not the returned entry is a newly created one.
                                                 /*create=*/TRUE);
   isrp = *isrp_in_table;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ssiof")) {
     fprintf(f_debug, "find_or_create...: dir=%s file=%s: %s\n",
             dir_name, file_name, isrp == NULL ? "not found" : "found");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (isrp == NULL) {
     /* No previous result was found.  Create the entry to be referenced by
@@ -8101,9 +8145,11 @@ used to find this file.
 
   db_enter(2, "push_input_stack");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 2) {
     fprintf(f_debug, "file_name = %s\n", full_file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Check for recursion of #includes.  This is done by looking through the
      stack for the file name we just opened. */
@@ -8303,11 +8349,13 @@ used to find this file.
                                                           pp_if_stack_depth;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug, "push_input_stack: search path after pushing %s:\n",
             full_file_name);
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* push_input_stack */
@@ -8439,9 +8487,11 @@ at the next level down.
 
   db_enter(2, "pop_input_stack");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     db_include_guard_info();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* First, discard any entries that were cloned for the purpose of
      tracking #line directives; the processing below applies to the actual
@@ -8560,11 +8610,13 @@ at the next level down.
     if (curr_ise->file == NULL) {
       an_open_file_result	open_result;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 2) {
         fprintf(f_debug, "re-opening at level %d, name = \"%s\", pos = %ld\n",
                          depth_input_stack, curr_ise->full_name,
                          curr_ise->position);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* This include file was closed on a push_input_stack to keep down
          the number of open files.  Re-open it and reposition it now. */
@@ -8676,10 +8728,12 @@ at the next level down.
           /* The search process detected that the file has already been
              included, so the file was not opened. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 3) {
 	    fprintf(f_debug, "pop_input_stack: skipping include file %s\n",
                     full_file_name);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         } else {
           /* A related source file was found.  Make sure that the name of the
@@ -8691,9 +8745,11 @@ at the next level down.
           } else {
             an_include_file_history_ptr	ifhp;
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 3) {
               fprintf(f_debug, "  Including text from '%s'\n", full_file_name);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             /* Push the new file onto the input stack and scan it.  There is
                no "name as written" so a NULL pointer is passed in. */
@@ -8711,10 +8767,12 @@ at the next level down.
                  actually be done in a real compilation. */
               (void)fclose(f_source);
 #if DEBUG
+/* GCOVR_EXCL_START */
               if (debug_level >= 3) {
 	        fprintf(f_debug, "pop_input_stack: skipping include file %s\n",
                         full_file_name);
               }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             } else {
               push_input_stack(f_source, (char *)NULL, display_name,
@@ -8749,10 +8807,12 @@ at the next level down.
     push_next_preinclude_file();
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("incl_search_path")) {
     fprintf(f_debug, "pop_input_stack: include search path after popping:\n");
     db_incl_search_path();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* pop_input_stack */
@@ -9781,6 +9841,7 @@ simple_return:
     trigraph_column = 0;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 1) {
     /* Display the line just read. */
     fprintf(f_debug, "Returning from read_logical_source_line, ");
@@ -9824,6 +9885,7 @@ simple_return:
       }  /* if */
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   return (return_value);
@@ -11685,9 +11747,11 @@ normal_comment:
             /* The special lint comment "notreached" (in caps), asserting that
                the code following is unreachable. */
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 3) {
               fprintf(f_debug, "lint NOTREACHED comment\n");
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             determine_comment_pos_if_not_yet_done();
             /* coverity[uninit_use_in_call] -- believes that comment_start_pos
@@ -11703,9 +11767,11 @@ normal_comment:
                the arguments of the function following are all used (or more
                accurately, that it's okay that they aren't all used). */
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 3) {
               fprintf(f_debug, "lint ARGSUSED comment\n");
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             determine_comment_pos_if_not_yet_done();
             (void)add_curr_token_pseudo_pragma((a_pragma_kind)pk_lint_argsused,
@@ -11740,10 +11806,12 @@ normal_comment:
               curr_char_loc++;
             }  /* while */
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 3) {
               fprintf(f_debug, "lint VARARGS comment, count = %d\n",
                                varargs_count);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             determine_comment_pos_if_not_yet_done();
 
@@ -12421,11 +12489,13 @@ float_accum_1:
                           &err_code, &err_pos);
       ctoken = tok_clang_version;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         fprintf(f_debug, "Numeric token = \"%.*s\", kind = clang_version\n",
                          (int)(end_of_curr_token - start_of_curr_token + 1),
                          start_of_curr_token);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       goto done;
     }  /* if */
@@ -12658,6 +12728,7 @@ fixed_point_suffix:
   end_of_curr_token = curr_char_loc - 1;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     a_const_char *ks;
     switch (kind) {
@@ -12675,6 +12746,7 @@ fixed_point_suffix:
                      (int)(end_of_curr_token - start_of_curr_token + 1),
                      start_of_curr_token, ks);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* See if there are more characters that would have been part of
      this number had it been scanned as a pp-number.  The pp-number
@@ -12771,6 +12843,7 @@ fixed_point_suffix:
       prev_ch = ch;
     } while (part_of_pp_num);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       if (curr_char_loc != (end_of_curr_token + 1)) {
         fprintf(f_debug, "Extra pp-number text: \"%.*s\"\n",
@@ -12778,6 +12851,7 @@ fixed_point_suffix:
                          end_of_curr_token+1);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else if (C_dialect == C_dialect_pcc && fetch_pp_tokens) {
     /* pcc mode has its own variant of this.  Consider
@@ -13116,6 +13190,7 @@ convert_literal_value:
   }  /* if */
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("scan_number")) {
     db_constant(&const_for_curr_token);
     if (const_for_curr_token.type != NULL) {
@@ -13124,6 +13199,7 @@ done:
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return (ctoken);
 #undef skip_digit_separator
@@ -15328,9 +15404,11 @@ and do no other processing.  Return TRUE for a Microsoft __asm.
      source line. */
   start_of_curr_token = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("asm_string")) {
     fprintf(f_debug, "asm string: %s\n", body);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   scanning_microsoft_asm = FALSE;
 done:
@@ -17114,8 +17192,10 @@ buffers.
                                                 ? size
                                                 : SPELLING_STORAGE_BUFFER_SIZE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++num_spelling_storage_buffers_allocated;
   spelling_storage_buffer_space += (unsigned long)new_ssbp->allocated_size;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   new_ssbp->next_available = 0;
   new_ssbp->buffer = alloc_fe(new_ssbp->allocated_size);
@@ -17344,7 +17424,9 @@ This uses the same hashing algorithm found in hash_source_string.
        table entry to point to the identifier representation. */
     new_id_rep = alloc_fe_of_type(an_id_representation);
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_id_representations_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     *new_id_rep = curr_id_repr;
     new_id_rep->next_confusable = NULL;
@@ -18850,6 +18932,7 @@ return_from_token_scan:
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     /* Write out the current token. */
     fprintf(f_debug, "get_token%s: pos = %lu/%2d, %-10s",
@@ -18883,6 +18966,7 @@ return_from_token_scan:
       fprintf(f_debug, "%.*s\n", (int)len_of_curr_token, start_of_curr_token);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!in_preprocessing_directive) {
     any_tokens_fetched_from_curr_input_file = TRUE;
@@ -19072,7 +19156,9 @@ to it.
     stsep = (a_stop_token_stack_entry_ptr)
                                    alloc_fe(sizeof(a_stop_token_stack_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_stop_token_stack_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   stsep->next = NULL;
@@ -19096,6 +19182,7 @@ is saved for use when the stack is popped.
 }  /* push_stop_token_stack */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_stop_tokens(void)
 /*
@@ -19114,6 +19201,7 @@ Display the current stop token array.
   }  /* for */
 }  /* db_stop_tokens */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -19131,10 +19219,12 @@ Check that the stop token array elements all made it back to zero.
     if (stop_tokens[token] != 0) {
       any_error = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level != 0) {
         fprintf(f_debug, "stop_tokens[\"%s\"] != 0\n", 
                 token_names[token]);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* for */
@@ -19160,7 +19250,9 @@ to alter the consistency check at the end of the routine.
      of the stop tokens have been reset. */
   { a_boolean	check_stop_tokens = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("check_stop_tokens")) check_stop_tokens = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if EXPENSIVE_CHECKING
     check_stop_tokens = TRUE;
@@ -19210,7 +19302,9 @@ to it.
     /* Allocate a new entry. */
     lssep = alloc_fe_of_type(a_lexical_state_stack_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_lexical_state_stack_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   lssep->next = NULL;
@@ -23323,12 +23417,14 @@ normal_exit:
   error_position = start_position;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     db_symbol(template_sym, "Template symbol: ", 2);
   }  /* if */
   if (debug_level >= 4) {
     db_symbol(new_sym, "Returning: ", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 skip_processing:
@@ -24170,6 +24266,7 @@ entry with that template argument list and whose underlying type is tp.
 #endif /* CREATE_LEXICAL_TYPEREFS */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_name_qualifier(a_name_qualifier_ptr	nqp)
 /*
@@ -24214,6 +24311,7 @@ Display a name reference, for debugging purposes.
   fprintf(f_debug, "\n");
 }  /* db_name_reference */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void make_name_qualifier(a_name_qualifier_ptr	*nqp,
@@ -24491,11 +24589,13 @@ describes the name specified by "locator".
     }  /* if */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("name_refs") && locator->symbol_header != NULL) {
     db_name_reference(nrp);
     fprintf(f_debug, "  locator name=%s\n",
             locator->symbol_header->identifier);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* make_name_reference_from_locator */
 
@@ -24526,6 +24626,7 @@ a previously created entry that can be reused.
     goto done;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("name_refs")) {
     fprintf(f_debug, "Looking for allocated name reference for: ");
     db_name_reference(entry_to_copy);
@@ -24534,6 +24635,7 @@ a previously created entry that can be reused.
     }  /* if */
     fprintf(f_debug, "  scp name=%s\n", scp->name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Look for a previously-created name reference that matches the information
      in the locator. */
@@ -27692,6 +27794,7 @@ See also coalesce_and_lookup_generalized_identifier.
   error_position = pos_curr_token;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "coalesce_and_lookup_qualified_name: ");
     if (return_value) {
@@ -27708,6 +27811,7 @@ See also coalesce_and_lookup_generalized_identifier.
       fprintf(f_debug, "not qualified name\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 exit:
   db_exit();
@@ -27933,7 +28037,9 @@ Allocate a file suffix entry, initialize it, and return a pointer to it.
 
   fsp = (a_file_suffix_ptr)alloc_general(sizeof(a_file_suffix));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_file_suffixes_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   fsp->next = NULL;
   fsp->suffix = NULL;
@@ -27979,9 +28085,11 @@ If the entry is already on the list the new entry is ignored.
       prev_fsp->next = fsp;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("add_to_file_suffix_list")) {
       fprintf(f_debug, "Added \"%s\" to the suffix list.\n", fsp->suffix);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* add_to_file_suffix_list */
@@ -29157,6 +29265,7 @@ temporary text buffer.
 }  /* put_pseudo_token_end_to_temp_text_buffer */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static constexpr a_const_char
                 *tok_dbg_bright_colors [] = { "092", "094", "091"};
@@ -29178,6 +29287,7 @@ static constexpr unsigned
                         /* The number of colors available for use by
                            -d-darkcolor token accenting. */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void add_cached_token_to_string(
@@ -29200,6 +29310,7 @@ the string.
   } else if (expand_pseudo_tokens && tok->is_ifc_reference()) {
     put_pseudo_token_start_to_temp_text_buffer(tok);
 #if DEBUG
+/* GCOVR_EXCL_START */
     {
       put_str_to_temp_text_buffer(" - ");
 
@@ -29208,6 +29319,7 @@ the string.
       a_string   idx_as_str = s_db_lexical_ifc_index(ifc_idx);
       put_str_to_temp_text_buffer(idx_as_str.as_temp_characters());
     }
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     put_pseudo_token_end_to_temp_text_buffer();
   } else {
@@ -29369,9 +29481,11 @@ and < end_tsn are included in the string.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("atcts")) {
     db_token_cache(cache, "add_token_cache_segment_to_string");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   add_cached_tokens_to_string(cache->begin(), cache->end(),
                               start_tsn, end_tsn);
@@ -29548,11 +29662,13 @@ C++/CLI delegate class types.)
   }  /* if */
   if (!define_class) goto done;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("gdoc")) {
     fprintf(f_debug, "Getting definition of ");
     db_type_name(class_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   class_type->definition_pending = TRUE;
   class_sym_for_context = class_sym;
@@ -29627,6 +29743,7 @@ C++/CLI delegate class types.)
     class_def_buffer->size = size;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_metadata") ||
       db_flag_is_set("dump_full_metadata")) {
     fprintf(f_debug, "Class definition for 0x%x/0x%08x: ",
@@ -29634,6 +29751,7 @@ C++/CLI delegate class types.)
     db_dump_metadata(class_def_buffer, db_flag_is_set("dump_metadata") ? 256
                                                                         : 0);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #else /* !CPPCLI_ENABLING_POSSIBLE */
   /* Add code here to construct in the text buffer the string to be used to
@@ -29767,10 +29885,12 @@ the caller should copy the contents as needed.
   /* Terminate the buffer. */
   add_char_to_text_buffer(buffer, '\0');
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_metadata") || db_flag_is_set("dump_full_metadata")){
     fprintf(f_debug, "Import types from %x: ", (unsigned int)idx);
     db_dump_metadata(buffer, db_flag_is_set("dump_metadata") ? 256 : 0);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return buffer->buffer;
 }  /* generate_top_level_metadata_code */
@@ -29778,6 +29898,7 @@ the caller should copy the contents as needed.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 template<typename Token_type>
 static void db_cached_token(const Token_type &tok)
@@ -30598,6 +30719,7 @@ Display and return the amount of space used for various lexical tables.
   return (grand_total);
 }  /* show_lexical_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void create_sun_include_file_suffixes(void)
@@ -30971,7 +31093,9 @@ are handled in lexical_init.)
   }  /* for */
   initialize_opname_names();
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_file_suffixes_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if INSTANTIATION_BY_IMPLICIT_INCLUSION
   /* Create the instantiation file suffix list. */
@@ -31011,6 +31135,7 @@ are handled in lexical_init.)
       pch_saved_var_array_elem(spelling_storage_buffer_tail),
 #endif /* UNICODE_VULNERABILITY_DETECTION_SUPPORTED */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_shared_token_states_allocated),
       pch_saved_var_array_elem(num_orig_line_modifs_allocated),
       pch_saved_var_array_elem(num_source_line_modifs_allocated),
@@ -31024,6 +31149,7 @@ are handled in lexical_init.)
       pch_saved_var_array_elem(num_include_file_histories_allocated),
       pch_saved_var_array_elem(num_preinclude_files_allocated),
       pch_saved_var_array_elem(cached_pp_token_string_space),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -31053,7 +31179,9 @@ are handled in lexical_init.)
                                fn_for_function(hash_include_search_result),
                                fn_for_function(compare_include_search_result));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_include_search_results_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* lexical_one_time_init */
 
@@ -31257,6 +31385,7 @@ of the front end.
   prototyped_spelling = NULL;
 #endif /* UNICODE_VULNERABILITY_DETECTION_SUPPORTED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_orig_line_modifs_allocated = 0;
   num_source_line_modifs_allocated = 0;
   num_concatenation_records_allocated = 0;
@@ -31279,6 +31408,7 @@ of the front end.
   spelling_storage_buffer_head = NULL;
   spelling_storage_buffer_tail = NULL;
 #endif /* UNICODE_VULNERABILITY_DETECTION_SUPPORTED */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if EXPENSIVE_CHECKING
   /* Make sure the UCN table is properly formed.  Each element of the

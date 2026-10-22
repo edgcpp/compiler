@@ -653,6 +653,7 @@ function.
   sym->variant.routine.ptr->variant.builtin_function_kind = kind;
   sym->variant.routine.ptr->is_consteval = is_consteval_builtin(kind);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_builtins")) {
     /* Dump builtin function declarations. */
     an_il_to_str_output_control_block octl;
@@ -667,6 +668,7 @@ function.
                           FTO_NO_OPTIONS, &octl);
     fprintf(f_debug, ";\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return sym;
 }  /* enter_builtin_function */

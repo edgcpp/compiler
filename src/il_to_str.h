@@ -287,9 +287,11 @@ typedef struct an_il_to_str_output_control_block {
 			   entity and with the full signature of a function
 			   rather than just its name. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_byte_boolean
 	debug_output;	/* TRUE if the generated string is part of debug
 			   output. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   a_byte_boolean
 	force_qualified_name;
@@ -695,8 +697,10 @@ extern void il_to_str_back_end_file_init();
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 void db_abbr_expr(an_expr_node_ptr                       expr,
                   an_il_to_str_output_control_block_ptr  octl);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void il_to_str_one_time_init(void);

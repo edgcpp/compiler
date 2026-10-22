@@ -1363,12 +1363,14 @@ above, NULL is also returned in this case).
   /* We're done with this mangling text buffer. */
   pop_mangling_text_buffer();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("mangled_names")) {
     if (scp != NULL) {
       db_name(scp);
     }  /* if */
     fprintf(f_debug, " -> %s\n", buffer);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return buffer;
 }  /* end_mangling_full */
@@ -7593,7 +7595,9 @@ is TRUE.
     default:
       /* Unexpected expression kind. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
       unexpected_condition_str(
                              "mangled_encoding_for_expression_full: bad kind");
@@ -9389,8 +9393,10 @@ entity for mangling purposes.
     if (!class_type_has_body(type) &&
         !type->variant.class_struct_union.is_nonreal_class) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       (void)fprintf(f_debug, "Parent class = ");
       db_abbr_type(type);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str(
                        "r_mangled_parent_qualifier: parent class has no body");
@@ -12286,11 +12292,13 @@ by ttt_scp_for_implicit_abi_tags, otherwise terminate the walk.
     wpcb->terminate = TRUE;
   } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("abi_tag")) {
       (void)fputs("Considering unmarked entity ", f_debug);
       db_name(scp);
       (void)fputs("\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     check_assertion(!entity_is_marked(scp, kind));
     if (kind == iek_type) {
@@ -12311,11 +12319,13 @@ by ttt_scp_for_implicit_abi_tags, otherwise terminate the walk.
       an_attribute_arg_ptr  aap;
       an_attribute_ptr      ap;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("abi_tag")) {
         (void)fputs("Adding implicit abi_tags from ", f_debug);
         db_name(scp);
         (void)fputs("\n", f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       for (ap = scp->attributes; ap != NULL; ap = ap->next) {
         if (ap->kind == ak_abi_tag) {
@@ -12329,9 +12339,11 @@ by ttt_scp_for_implicit_abi_tags, otherwise terminate the walk.
                that already appear in the mangled name. */
             if (abi_tag_is_on_list(aap->variant.constant, implicit_tag_list)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
               if (db_flag_is_set("abi_tag")) {
                 (void)fputs("Ignoring duplicate abi_tag\n", f_debug);
               }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             } else {
               add_implicit_abi_tag_attribute(ttt_scp_for_implicit_abi_tags,
@@ -12389,12 +12401,14 @@ of the specified type to ttt_mark_value.
   a_walk_parents_control_block wpcb;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("abi_tag")) {
     (void)fprintf(f_debug, "%s type ", ttt_mark_value ? "Marking" :
                                                         "Unmarking");
     db_name(&type->source_corresp);
     (void)fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   type->source_corresp.entity_marked = ttt_mark_value;
   if (is_immediate_class_type(type)) {
@@ -12429,12 +12443,14 @@ any related entities that would appear in the mangled name of the entity.
   } else {
     scp->entity_marked = ttt_mark_value;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("abi_tag")) {
       (void)fprintf(f_debug, "%s entity ", ttt_mark_value ? "Marking" :
                                                             "Unmarking");
       db_name(scp);
       (void)fputs("\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (scp == ttt_scp_for_implicit_abi_tags) {
       /* If we're marking the entity for which we're computing the implicit
@@ -12609,6 +12625,7 @@ As implemented here, this involves three steps:
           implicit_tag_list = NULL;
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("abi_tag")) {
           (void)fputs("Implicit abi_tags for ", f_debug);
           db_name(scp);
@@ -12621,6 +12638,7 @@ As implemented here, this involves three steps:
             (void)fputs("\n", f_debug);
           }  /* if */
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
     }  /* if */
@@ -13439,7 +13457,9 @@ is TRUE, a routine otherwise.
                            function_name_mangling_needed((a_routine_ptr)scp,
                                                          &dummy)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_entity_info((char *)scp, is_variable ? iek_variable : iek_routine);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("externalize_mangled_name: name not mangled");
     }  /* if */
@@ -15690,7 +15710,9 @@ values, and return a pointer to it.
     cspp = (a_compressible_string_pos_ptr)alloc_general(
                                             sizeof(a_compressible_string_pos));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_compressible_string_pos_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   cspp->next = NULL;
@@ -16026,7 +16048,9 @@ initialized for each compilation.
 #if !IA64_ABI
   avail_compressible_string_pos = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_compressible_string_pos_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* !IA64_ABI */
   active_parents = alloc_fe_of_type(an_active_parent_map);

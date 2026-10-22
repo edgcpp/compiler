@@ -1311,11 +1311,13 @@ EXTERN_THREAD a_boolean
 		reduce_backing_expression_use;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of entries allocated, for debugging purposes.
 */
 EXTERN_THREAD unsigned long
 		num_arg_match_summaries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -1655,7 +1657,9 @@ extern
 a_boolean any_pack_expansion_components_in_list(an_init_component_ptr icp);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_init_component(an_init_component_ptr icp);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern
@@ -2151,11 +2155,13 @@ extern void make_string_constant_operand(a_constant *constant,
                                          an_operand *operand);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_operand(an_operand *operand);
 
 extern void db_ref_entries(a_ref_entry_ptr rep);
 
 extern void db_operand_ref_entries(an_operand *operand);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void clear_operand(an_operand_kind kind,
@@ -3407,9 +3413,11 @@ a_dynamic_init_ptr unoptimize_conditional_return(a_dynamic_init_ptr  dip,
                                                  a_source_position   *pos);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void count_rescan_fs_expr_nodes(unsigned long *p_count);
 
 extern unsigned long show_expr_space_used(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING && DEBUG
 extern void check_all_init_component_entries_freed(void);

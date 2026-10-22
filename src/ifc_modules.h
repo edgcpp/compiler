@@ -188,6 +188,7 @@ extern void ifc_modules_cleanup();
 extern void ifc_modules_write_out();
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 extern a_string s_db_ifc_locator(a_module_entry_locator loc);
 
@@ -205,6 +206,7 @@ extern void db_node_at_tsn(a_module_token_cache_ptr cache,
 
 extern void db_locus(const an_ifc_source_location &locus);
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*lint -restore*/ /* FIXME: temporary. */

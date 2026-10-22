@@ -133,8 +133,10 @@ incorporated:
 #include "trans_corresp.h"
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Debug declarations. */
 #include "debug.h"
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #include "sys_predef.h"

@@ -393,12 +393,14 @@ EXTERN_THREAD a_destructible_entity_descr_ptr
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Count of entries allocated, for debugging purposes.
 */
 EXTERN_THREAD unsigned long
 		num_init_pos_modifiers_allocated,
 		num_destructible_entity_descrs_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -1367,6 +1369,7 @@ extern void eliminate_expr_object_lifetime(an_expr_node_ptr expr);
 extern void clean_up_all_object_lifetimes(a_scope_ptr scope);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern unsigned long show_lowering_space_used(void);
 
 extern unsigned long compute_checksum_for_expr(an_expr_node_ptr expr);
@@ -1376,6 +1379,7 @@ extern unsigned long compute_checksum_for_statement(a_statement_ptr statement);
 extern void db_context(a_context_ptr context);
 
 extern void db_context_stack(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void function_lower_init(void);

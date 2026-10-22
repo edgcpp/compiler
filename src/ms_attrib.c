@@ -33,12 +33,14 @@ BEGIN_EDG_NAMESPACE
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of tables allocated, to track total use of memory.
 */
 STATIC_THREAD unsigned long
 		num_ms_attribute_kind_descrs_allocated,
 		num_ms_attribute_params_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD a_text_buffer_ptr
@@ -188,7 +190,9 @@ return a pointer to the entry.
 
   msakdp = alloc_fe_of_type(an_ms_attribute_kind_descr);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_ms_attribute_kind_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   msakdp->kind = (an_ms_attribute_kind)msak_none;
   msakdp->target = msat_invalid;
@@ -246,7 +250,9 @@ return a pointer to the entry.
 
   msapp = alloc_fe_of_type(an_ms_attribute_param);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_ms_attribute_params_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   msapp->next = NULL;
   msapp->name = NULL;
@@ -2403,9 +2409,11 @@ attributes).
         attr->variant.info.string = make_copy_of_token_string();
       }  /* if */
   #if DEBUG
+  /* GCOVR_EXCL_START */
       if (db_flag_is_set("msattr")) {
         if (attr != NULL) db_microsoft_attribute(attr);
       }  /* if */
+  /* GCOVR_EXCL_STOP */
   #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -2896,11 +2904,13 @@ no attribute can be applied to the entity.
                         msap->variant.info.name);
          }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
          if (db_flag_is_set("msattr")) {
            fprintf(f_debug, "Attribute target: valid=%x, applicable=%x\n",
                    (unsigned int)valid_targets,
                    (unsigned int)applicable_targets);
          }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
     }  /* if */
@@ -3331,6 +3341,7 @@ return NULL.
 }  /* find_ms_attribute_for_entity */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_microsoft_attribute(an_ms_attribute_ptr	msap)
 /*
@@ -3441,6 +3452,7 @@ routines is reported as part of the symbol table memory used.
   return grand_total;
 }  /* db_show_ms_attrib_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void ms_attrib_one_time_init(void)
@@ -3456,8 +3468,10 @@ One-time initialization for ms_attrib.c static variables.
       pch_saved_var_array_elem(unrecognized_attribute),
       pch_saved_var_array_elem(custom_attribute),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_ms_attribute_kind_descrs_allocated),
       pch_saved_var_array_elem(num_ms_attribute_params_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -3479,8 +3493,10 @@ Microsoft attribute processing.
   unrecognized_attribute = NULL;
   custom_attribute = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_ms_attribute_kind_descrs_allocated = 0;
   num_ms_attribute_params_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   memzero((char *)attribute_lookup_table, sizeof(attribute_lookup_table));
   curr_attribute_descr = NULL;

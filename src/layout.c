@@ -634,6 +634,7 @@ curr_max_member_alignment.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "curr_max_member_alignment = %d, stack = ",
             (int)curr_max_member_alignment);
@@ -645,6 +646,7 @@ curr_max_member_alignment.
               pack_alignment_stack->alignment);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if BACK_END_IS_CP_GEN_BE
   if (ppp->il_pragma_entry != NULL) {
@@ -3020,12 +3022,14 @@ the layout of lob->class_type (which is also proximate_derivation->type).
     ref_bcp = direct_base_classes_of(proximate_derivation->type);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     if (ref_bcp != NULL) {
       fputs("setting offsets for base classes of:\n  ", f_debug);
       db_base_class(proximate_derivation, /*show_offset=*/TRUE);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Loop through the reference base classes, the direct base classes of
      the proximate_derivation base class. */
@@ -3063,12 +3067,14 @@ the layout of lob->class_type (which is also proximate_derivation->type).
         bcp->offset_is_set = TRUE;
 #endif /* IA64_ABI */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fputs("reference base class ", f_debug);
           db_base_class(ref_bcp, /*show_offset=*/TRUE);
           fputs("new offset for ", f_debug);
           db_base_class(bcp, /*show_offset=*/TRUE);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if IA64_ABI
       } else if (proximate_derivation->primary_base_class == bcp) {
@@ -3086,12 +3092,14 @@ the layout of lob->class_type (which is also proximate_derivation->type).
              the offset. */
           bcp->offset = proximate_derivation->offset + ref_bcp->offset;
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             fputs("reference base class ", f_debug);
             db_base_class(ref_bcp, /*show_offset=*/TRUE);
             fputs("new offset for ", f_debug);
             db_base_class(bcp, /*show_offset=*/TRUE);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
 #endif /* CFRONT_OBJECT_CODE_COMPATIBILITY */
@@ -3125,12 +3133,14 @@ the layout of lob->class_type (which is also proximate_derivation->type).
            the offset. */
         bcp->offset = proximate_derivation->offset + ref_bcp->offset;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fputs("reference base class ", f_debug);
           db_base_class(ref_bcp, /*show_offset=*/TRUE);
           fputs("new offset for ", f_debug);
           db_base_class(bcp, /*show_offset=*/TRUE);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
 #endif /* CFRONT_OBJECT_CODE_COMPATIBILITY */
@@ -3191,10 +3201,12 @@ Lay out the nonvirtual direct base class bcp.
     }  /* if */
     bcp->offset = set_offset_and_alignment(lob, size, alignment, bcp);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fputs("updated offset for ", f_debug);
       db_base_class(bcp, /*show_offset=*/TRUE);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if IA64_ABI
@@ -3798,10 +3810,12 @@ bcp.
   bcp->pointer_offset = set_offset_and_alignment(lob, size, alignment,
                                                  (a_base_class_ptr)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("updated pointer offset for ", f_debug);
     db_base_class(bcp, /*show_offset=*/TRUE);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* pointer_offset_for_virtual_base_class */
@@ -4239,10 +4253,12 @@ designated).
                                                  bcp->type->alignment,
                                                  (a_base_class_ptr)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             fputs("updated offset for ", f_debug);
             db_base_class(bcp, /*show_offset=*/TRUE);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           fixup_embedded_virtual_base_classes(bcp, lob->class_type);
         }  /* if */
@@ -4468,10 +4484,12 @@ Set bcp->offset.  The base class bcp must be a virtual base.
   set_base_class_offsets(lob, bcp);
 #endif /* IA64_ABI */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("updated offset for ", f_debug);
     db_base_class(bcp, /*show_offset=*/TRUE);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* set_virtual_base_class_offset */
 
@@ -4642,12 +4660,14 @@ some current state about the layout of lob->class_type.
 
   db_enter(4, "set_offsets_for_indirect_base_classes");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     if (bcp != NULL) {
       fputs("before setting offsets: ", f_debug);
       db_base_class_list(class_type);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Loop through the list of base classes, direct and indirect, that are
      defined for the class, but ignore all but the direct base classes.  The
@@ -4681,9 +4701,11 @@ lob->class_type.
   if (base_class->offset == 0) {
     /* Offset has not yet been set. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       db_base_class(base_class, /*show_offset=*/TRUE);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     data_section_bcp = base_class->data_section_base_class;
     if (data_section_bcp != NULL) {
@@ -5097,11 +5119,13 @@ for handling virtual bases and functions.
     goto set_size_for_complete_object;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_trace("dump_layout", class_type, iek_type)) {
     fprintf(f_debug, "Computing layout for ");
     db_abbreviated_type(class_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (class_type->alignment_set_explicitly) {
     /* Save the desired alignment and compute the alignment normally.
@@ -5352,6 +5376,7 @@ set_size_for_complete_object:
   }  /* if */
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (C_dialect == C_dialect_cplusplus) db_base_class_list(class_type);
   }  /* if */
@@ -5359,6 +5384,7 @@ set_size_for_complete_object:
     db_type(class_type);
     fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* do_class_layout */

@@ -38,6 +38,7 @@ pointer the caller may alter the list pointed to by the current pointer.
   (&scope_stack[depth_scope_stack].curr_construct_pragmas)
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_pragma_list(a_pragma_ptr pp)
 /*
@@ -75,6 +76,7 @@ Display the pragma list for a scope for debugging purposes.
   db_pragma_list(scope->pragmas);
 }  /* db_scope_pragmas */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_pragma_kind_description_ptr add_pragma_kind_description
@@ -143,7 +145,9 @@ which function to call to process this pragma.
   pkdp = (a_pragma_kind_description_ptr)
 				alloc_fe(sizeof(a_pragma_kind_description));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_pragma_descriptions_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   pkdp->kind = kind;
   pkdp->binding_kind = binding_kind;
@@ -374,9 +378,11 @@ Construct a pending pragma with the given pragma kind description.
       break;
 #endif /* ADD_CHECKING_PRAGMAS_FOR_INTERNAL_TESTING */
 #if DEBUG
+/* GCOVR_EXCL_START */
     case pk_db_opt:
     case pk_db_name:
       break;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if NEED_IL_DISPLAY
     case pk_il_display:
@@ -1405,6 +1411,7 @@ has been reached.
 }  /* process_pragmas_at_end_of_source */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_opt_pragma(a_pending_pragma_ptr	ppp)
 /*
@@ -1460,6 +1467,7 @@ pragma argument as if it were a debug option specified on the command-line.
   }  /* if */
 }  /* db_name_pragma */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if INCLUDE_EDG_TEST_PRAGMAS
@@ -1497,11 +1505,13 @@ are included by EDG for testing purposes.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("test_pragmas")) {
     fprintf(f_debug, "In test_next_construct pragma\n");
     db_sym(sym_ptr);
     db_statement(stmt_ptr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* test_next_construct_pragma */
 #endif /* INCLUDE_EDG_TEST_PRAGMAS */
@@ -2132,6 +2142,7 @@ Initialize the pragma description table.
                  es_none);
 #endif /* ADD_CHECKING_PRAGMAS_FOR_INTERNAL_TESTING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   (void)add_immediate_pragma_kind_description
 		((a_pragma_kind)pk_db_opt,
                  fn_for_function(db_opt_pragma),
@@ -2158,6 +2169,7 @@ Initialize the pragma description table.
 		 /*il_info_is_complete=*/FALSE,
 		 /*read_string_as_header_name=*/FALSE,
                  es_error);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if NEED_IL_DISPLAY
   (void)add_next_construct_pragma_kind_description

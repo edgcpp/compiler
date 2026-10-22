@@ -444,7 +444,9 @@ extern a_module_import_decl_ptr alloc_module_import_decl(void);
 extern a_scoped_expression_ptr alloc_scoped_expression(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long show_il_alloc_space_used(unsigned long grand_total);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void il_alloc_one_time_init(void);

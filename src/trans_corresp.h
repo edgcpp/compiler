@@ -312,9 +312,11 @@ extern a_type_ptr canonical_type_entry_of(a_type_ptr type);
 extern a_template_ptr canonical_template_entry_of(a_template_ptr templ);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void* db_corresp(void *ptr);
 
 extern void db_sym_list(a_symbol_list_entry_ptr entries);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */

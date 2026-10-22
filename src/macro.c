@@ -493,6 +493,7 @@ STATIC_THREAD a_boolean
 			   should be suppressed or included. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_macro_params_allocated,
 		num_macro_defs_allocated,
@@ -501,6 +502,7 @@ STATIC_THREAD unsigned long
 		param_name_string_space,
 		macro_definition_space;
 			/* Used to track space use. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD a_const_char
@@ -1938,7 +1940,9 @@ ensure_arg_raw_text_space.
     catastrophe(ec_requested_size_too_large);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   macro_arg_text_space += (unsigned long)increment;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Allocate one more byte than required, so that a pointer past the end
      will not have the same address as a pointer to the next object in
@@ -2035,7 +2039,9 @@ ensure_arg_expanded_text_space.
     catastrophe(ec_requested_size_too_large);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   macro_arg_text_space += (unsigned long)increment;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Allocate one more byte than required, so that a pointer past the end
      will not have the same address as a pointer to the next object in
@@ -2081,7 +2087,9 @@ to it.
 
   mpp = (a_macro_param_ptr)alloc_fe(sizeof(a_macro_param));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_macro_params_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   mpp->name = NULL;
   mpp->next = NULL;
@@ -2122,7 +2130,9 @@ to default values, and return a pointer to it.
 
   mdp = (a_macro_def_ptr)alloc_fe(sizeof(a_macro_def));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_macro_defs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_macro_def(mdp);
   return (mdp);
@@ -2151,7 +2161,9 @@ and return a pointer to it.
        alloc_fe, so that the raw_text storage can be kept around. */
     map = (a_macro_arg_ptr)alloc_general(sizeof(a_macro_arg));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_macro_args_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Allocate an initial raw text array.  This can be expanded later
        if necessary, but the size here should be able to cover most
@@ -2163,7 +2175,9 @@ and return a pointer to it.
        memory. */
     map->raw_text = alloc_resizable_buffer((sizeof_t)(map->raw_alloc_len+1));
 #if DEBUG
+/* GCOVR_EXCL_START */
     macro_arg_text_space += (unsigned long)(map->raw_alloc_len);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Likewise for the macro-expanded text array. */
     map->expanded_alloc_len = ARG_EXPANDED_TEXT_INITIAL_ALLOCATION;
@@ -2173,7 +2187,9 @@ and return a pointer to it.
     map->expanded_text = alloc_resizable_buffer(
                                         (sizeof_t)(map->expanded_alloc_len+1));
 #if DEBUG
+/* GCOVR_EXCL_START */
     macro_arg_text_space += (unsigned long)(map->expanded_alloc_len);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if FULLY_RESOLVED_MACRO_POSITIONS
     init_macro_text_map(MACRO_ARGUMENT_TEXT_MAP_INITIAL_COUNT,
@@ -2214,6 +2230,7 @@ Free the macro argument description pointed to by *map, and set *map to NULL.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void print_markered_text(a_const_char *str,
                                 sizeof_t     len,
                                 a_boolean    go_to_end_of_line)
@@ -2341,6 +2358,7 @@ print the replacement text and expansions of macros.
   }  /* for */
 
 }  /* print_markered_text */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   
 
@@ -3735,11 +3753,13 @@ end_loop:
         }  /* if */
       }
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug,
               "Tacking rest of containing line onto macro expansion:\n%.*s\n",
               (int)num_chars_added_from_source_line, loc_following_insertion);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       ensure_aux_buffer_for_pcc_macros_space(num_chars_added_from_source_line,
                                              pos_in_aux_buffer);
@@ -5915,10 +5935,12 @@ associated global variables will also have been set).
   /* See standard, 3.8.3 (Macro Replacement). */
   db_enter(4, "macro_invocation");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "About to expand invocation of macro %s:\n",
                      macro_symbol->header->identifier);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if FULLY_RESOLVED_MACRO_POSITIONS
   src_pos.seq = 0;
@@ -6165,9 +6187,11 @@ end_scan_for_macro_modifs:;
        LE_INERT_MACRO escape sequence followed by the identifier string. */
 make_inert_macro:
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "Macro is inert, left as identifier.\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     is_macro_call = FALSE;
     got_proper_closing_token = TRUE;
@@ -6563,10 +6587,12 @@ make_inert_macro:
     check_for_following_parenthesis(&paren_found, /*allow_id=*/FALSE);
     if (!paren_found) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, 
             "Potential macro not followed by \"(\", left as identifier.\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (macro_symbol == has_cpp_attribute_symbol ||
           macro_symbol == has_c_attribute_symbol) {
@@ -6946,12 +6972,14 @@ do_argument_again:
           }  /* if */
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             fprintf(f_debug, "raw argument %s: \"",
                              pp != NULL ? pp->name : "<extra>");
             print_markered_text(map->raw_text, map->raw_len, FALSE);
             fputs("\"\n", f_debug);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           /* Generate a warning on an empty macro argument, since that
              is "undefined" behavior according to the standard.  Do not
@@ -7211,6 +7239,7 @@ scan_expanded_tokens:
           terminate_macro_text_map(&tracker, map->expanded_len+LE_ESCAPE_LEN);
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             fprintf(f_debug, "expanded argument %s: \"",
                              pp != NULL ? pp->name : "<extra>");
@@ -7221,6 +7250,7 @@ scan_expanded_tokens:
             print_markered_text(map->expanded_text, (sizeof_t)-1, FALSE);
             fputs("\"\n", f_debug);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           /* Remove the temporary source line modification that put the raw
              argument text back into the source line. */
@@ -7523,11 +7553,13 @@ end_arg_expansion:;
     in_macro_arg_list = saved_in_macro_arg_list;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug,
             "Arguments scanned, about to do replacement of macro %s:\n",
                      macro_symbol->header->identifier);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!got_proper_closing_token) {
     /* Did not get proper closing token, so do not do the replacement.
@@ -7789,9 +7821,11 @@ end_arg_expansion:;
      in the case of an expanded argument value, the expansion may be
      further modified by source line modifications. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Expansion length is %u\n", (unsigned int)repl_text_len);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Make enough room in macro_buffer for the expansion, an
      LE_END_OF_TOP_LEVEL_EXPANSION or LE_EMPTY_VARIADIC_MACRO escape, if
@@ -8457,6 +8491,7 @@ return_point:
     delete_source_from_loc = NULL;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug,
             "Remaining source after expansion of macro %s (*rescan = %s):\n",
@@ -8466,6 +8501,7 @@ return_point:
     fprintf(f_debug, "macro_buffer size = %d\n",
                      (int)(next_avail_in_macro_buffer - macro_buffer));
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   macro_depth = saved_macro_depth;
   in_macro_arg_list = saved_in_macro_arg_list;
@@ -8569,10 +8605,12 @@ quote_process:
         if (curr_char_loc == end_of_cpp_string) end_of_cpp_string = NULL;
         curr_char_loc++;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           fprintf(f_debug, "mdefn_get_token:       cpp quote , \"%.*s\"\n",
                            (int)len_of_curr_token, start_of_curr_token);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else if (*curr_char_loc == '/' && *(curr_char_loc+1) == '*') {
         /* The sequence / * inside a string should not be interpreted as
@@ -8582,10 +8620,12 @@ quote_process:
         len_of_curr_token = 1;
         curr_char_loc++;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           fprintf(f_debug, "mdefn_get_token:       slash     , \"%.*s\"\n",
                            (int)len_of_curr_token, start_of_curr_token);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else if (*curr_char_loc == 'L' &&
                  (*(curr_char_loc+1) == '"' || *(curr_char_loc+1) == '\'')) {
@@ -8597,10 +8637,12 @@ quote_process:
         len_of_curr_token = 1;
         curr_char_loc++;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           fprintf(f_debug, "mdefn_get_token:       identifier, \"%.*s\"\n",
                            (int)len_of_curr_token, start_of_curr_token);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else {
         /* Any other case within a cpp string -- get a token. */
@@ -8658,11 +8700,13 @@ quote_process:
       goto quote_process;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       if (curr_token == tok_identifier) {
         fprintf(f_debug, "*param_num = %d\n", (int)(*param_num));
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return (curr_token);
@@ -8966,6 +9010,7 @@ IL entry.
 #endif /* RECORD_MACROS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_dump_macro_def(a_symbol_ptr      assoc_symbol,
                               a_boolean         object_like,
                               a_macro_param_ptr param_list,
@@ -9050,6 +9095,7 @@ beginning of the encoding of the replacement list.
     fprintf(f_debug, "  end\n");
   }  /* if */
 }  /* db_dump_macro_def */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_boolean equiv_replacement_text(char		*repl_text,
@@ -9374,7 +9420,9 @@ Scan and process a #define directive.
               (void)memcpy(pp->name, "__VA_ARGS__", sizeof("__VA_ARGS__"));
             }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
             param_name_string_space += (unsigned long)(strlen(pp->name)+1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             if (param_list == NULL) {
               param_list = pp;
@@ -9385,10 +9433,12 @@ Scan and process a #define directive.
             }  /* if */
             last_param = pp;
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 3) {
               fprintf(f_debug, "macro parameter %d: %s\n",
                                (int)param_num, pp->name);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             /* Eat the identifier or ellipsis that names the parameter: */
             (void)get_token();
@@ -9894,9 +9944,11 @@ process_ordinary_token:
        unclosed string. */
     end_of_cpp_string = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (assoc_symbol != NULL) {
       db_dump_macro_def(assoc_symbol, object_like, param_list, buffer_start);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     mdp = NULL;
     if (redefinition) {
@@ -9966,9 +10018,11 @@ process_ordinary_token:
           /* A predefined macro that changes the definition of an existing
              macro is always catastrophic. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           make_definition_string(assoc_symbol);
           fprintf(f_debug, "Previous definition was:\n  %s\n",
                   temp_text_buffer);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           str_catastrophe(ec_bad_predef_macro_redef,
                           assoc_symbol->header->identifier);
@@ -10047,7 +10101,9 @@ process_ordinary_token:
     repl_text_len = (sizeof_t)(next_avail_in_macro_buffer - buffer_start);
     repl_text = alloc_fe((sizeof_t)(repl_text_len+1));
 #if DEBUG
+/* GCOVR_EXCL_START */
     macro_definition_space += (unsigned long)(repl_text_len+1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     (void)memcpy(repl_text, buffer_start, size_t_arg(repl_text_len));
     repl_text[repl_text_len] = (char)rt_end;
@@ -10358,11 +10414,13 @@ token-list.
     some_error_in_curr_directive = TRUE;
   } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fprintf(f_debug, "Processing #assert %s", predicate_entry->name);
       if (token_str != NULL) fprintf(f_debug, " ( %s )", token_str);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Only add a value if there was a token sequence. */
     if (token_str != NULL) add_assert_value(token_str, predicate_entry);
@@ -10411,11 +10469,13 @@ or
       /* There's no existing entry, so there's nothing to undo. */
     } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, "Processing #unassert %s", predicate_entry->name);
         if (token_str != NULL) fprintf(f_debug, " ( %s )", token_str);
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (token_str == NULL) {
         /* There was no token sequence, so remove the entire predicate, not
@@ -11077,9 +11137,11 @@ TRUE) and "-U" (when process_undefs is TRUE) options on the command line.
       a_symbol_ptr     assoc_symbol;
       a_symbol_locator locator;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         fprintf(f_debug, "Command-line undef: %s\n", du_str);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Check the identifier to make sure it is valid. */
       if (!is_valid_identifier(du_str, (sizeof_t)strlen(du_str), &assoc_symbol,
@@ -11466,9 +11528,11 @@ that occurred.
   a_symbol_ptr  macro_sym;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("predef_macro_entry")) {
     fprintf(f_debug, "Predef macro line: %s\n", line);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #define skip_blanks() for (; *ptr == ' ' || *ptr == '\t'; ++ptr) {}
   *error_code = ec_no_error;
@@ -11563,6 +11627,7 @@ that occurred.
       a_macro_def_ptr mdp = macro_sym->variant.macro_def;
       mdp->cannot_be_redefined = cannot_redefine;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("predef_macro_entry")) {
         char* name = ptr;
         char saved_ch;
@@ -11576,6 +11641,7 @@ that occurred.
                 ptr, mdp->object_like ? "TRUE" : "FALSE",
                 cannot_redefine ? "TRUE" : "FALSE");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -12708,6 +12774,7 @@ command line -D options.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long show_macro_space_used(void)
 /*
 Display and return the amount of space used for various macro tables.
@@ -12742,6 +12809,7 @@ Display and return the amount of space used for various macro tables.
 
   return (grand_total);
 }  /* show_macro_space_used */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -12793,8 +12861,10 @@ Do one-time initialization of variables related to macro processing.
   }  /* if */
   avail_macro_args = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_macro_args_allocated = 0;
   macro_arg_text_space = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   registered_pointers = NULL;
   macro_buffer_region_in_progress = NULL;
@@ -12829,10 +12899,12 @@ Do one-time initialization of variables related to macro processing.
       pch_saved_var_array_elem(assert_predicates),
 #endif /* ATT_PREPROCESSING_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_macro_params_allocated),
       pch_saved_var_array_elem(num_macro_defs_allocated),
       pch_saved_var_array_elem(param_name_string_space),
       pch_saved_var_array_elem(macro_definition_space),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if RECORD_MACRO_INVOCATIONS
       pch_saved_var_array_elem(last_macro_invocation_record_block),
@@ -12947,6 +13019,7 @@ initialized for each compilation.
   active_text_map_position_trackers = NULL;
 #endif  /* FULLY_RESOLVED_MACRO_POSITIONS */
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_macro_params_allocated    = 0;
   num_macro_defs_allocated      = 0;
   /* num_macro_args_allocated is not per-compilation and should not be
@@ -12955,6 +13028,7 @@ initialized for each compilation.
      cleared. */
   param_name_string_space       = 0;
   macro_definition_space        = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* macro_init */
 

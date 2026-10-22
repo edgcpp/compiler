@@ -1069,7 +1069,9 @@ sometimes allocated on the stack.
     /* Allocate a new entry. */
     ipmp = (an_init_pos_modifier_ptr)alloc_fe(sizeof(an_init_pos_modifier));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_init_pos_modifiers_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   clear_init_pos_modifier(ipmp);
@@ -1273,7 +1275,9 @@ and return a pointer to it.
     dedp = (a_destructible_entity_descr_ptr)
                                  alloc_fe(sizeof(a_destructible_entity_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_destructible_entity_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   clear_destructible_entity_descr(dedp);
@@ -4629,6 +4633,7 @@ is TRUE, the original constructor initializers are removed from from_scope.
                               &from_scope->variant.routine.constructor_inits;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("copy_ctor_inits")) {
     (void)fprintf(f_debug, "Before: from lifetime = ");
     db_object_lifetime(from_scope->lifetime);
@@ -4639,6 +4644,7 @@ is TRUE, the original constructor initializers are removed from from_scope.
       db_dynamic_initializer(ctor_init->initializer, 0);
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(from_scope->kind == (a_scope_kind)sck_function &&
                   to_scope->kind == (a_scope_kind)sck_function);
@@ -4711,6 +4717,7 @@ is TRUE, the original constructor initializers are removed from from_scope.
     from_scope->lifetime = NULL;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("copy_ctor_inits")) {
     (void)fprintf(f_debug, "After: from lifetime = ");
     db_object_lifetime(from_scope->lifetime);
@@ -4729,6 +4736,7 @@ is TRUE, the original constructor initializers are removed from from_scope.
       db_dynamic_initializer(ctor_init->initializer, 0);
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* copy_ctor_inits */
 
@@ -7868,10 +7876,12 @@ code at *insert_location and update *insert_location accordingly.
                                          (an_expr_node_ptr)NULL,
                                          /*call_can_be_virtual=*/FALSE)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("remove_ctors_dtors")) {
       (void)fprintf(f_debug, "Removing static destruction for: ");
       db_dynamic_initializer(dip, 0);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* There's no need to call the destructor; skip the destruction processing
        altogether. */
@@ -9767,10 +9777,12 @@ This would require a multi-pass version of lowering.
   tblock.result = TRUE;
   traverse_statement(scope->assoc_block, &tblock);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("remove_ctors_dtors")) {
     db_scope(scope);
     (void)fprintf(f_debug, " has %s effect.\n", tblock.result ? "no" : "an");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return tblock.result;
 }  /* ctor_or_dtor_body_has_no_effect */
@@ -9863,6 +9875,7 @@ statement/expression lowering process (mostly by lower_dynamic_init).
                                     (a_special_function_kind)sfk_destructor) &&
                      scope->variant.routine.constructor_inits != NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("remove_ctors_dtors")) {
     db_scope(scope);
     (void)fprintf(f_debug, "\nBefore: lifetime = ");
@@ -9876,6 +9889,7 @@ statement/expression lowering process (mostly by lower_dynamic_init).
       }  /* for */
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* For scopes with constructor_inits (i.e., constructors and destructors),
      start with those and remove any calls to constructors and destructors
@@ -9931,6 +9945,7 @@ statement/expression lowering process (mostly by lower_dynamic_init).
     remove_unneeded_destructions_from_lifetime(olp);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("remove_ctors_dtors")) {
     (void)fprintf(f_debug, "After: lifetime = ");
     db_object_lifetime(scope->lifetime);
@@ -9943,6 +9958,7 @@ statement/expression lowering process (mostly by lower_dynamic_init).
       }  /* for */
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (routine->is_delegating_ctor &&
       scope->variant.routine.constructor_inits == NULL) {
@@ -10136,10 +10152,12 @@ C99 mode for the same reason.
        zero-initialization if the object is value-initialized otherwise
        no initialization is necessary. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("remove_ctors_dtors")) {
       (void)fprintf(f_debug, "Removing construction for: ");
       db_dynamic_initializer(dip, 0);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     remove_constructor_with_no_effect(dip);
   }  /* if */
@@ -12049,10 +12067,12 @@ arrays with class elements.
           /* There's no need to call this constructor (zero_storage has already
              been set above if zero-initialization is required). */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (db_flag_is_set("remove_ctors_dtors")) {
             (void)fprintf(f_debug, "Removing array new construction for: ");
             db_dynamic_initializer(elem_dip, 0);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           remove_constructor_with_no_effect(elem_dip);
           ctor_routine = NULL;
@@ -12065,10 +12085,12 @@ arrays with class elements.
              may be necessary (i.e., a throw during construction) are handled
              by the delete routine. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (db_flag_is_set("remove_ctors_dtors")) {
             (void)fprintf(f_debug, "Removing array new destruction for: ");
             db_dynamic_initializer(elem_dip, 0);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           elem_dip->destructor = NULL;
         }  /* if */
@@ -12694,10 +12716,12 @@ The subtree of the node has not yet been lowered.
                                            dip->variant.constructor.args,
                                            /*call_can_be_virtual=*/FALSE)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("remove_ctors_dtors")) {
         (void)fprintf(f_debug, "Removing new construction for: ");
         db_dynamic_initializer(dip, 0);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* There's no need to call this constructor. */
       remove_constructor_with_no_effect(dip);
@@ -13093,10 +13117,12 @@ The subtree of the node has not yet been lowered.
                                          (an_expr_node_ptr)NULL,
                                          /*call_can_be_virtual=*/TRUE)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("remove_ctors_dtors")) {
       (void)fprintf(f_debug, "Removing delete destruction for: ");
       db_dynamic_initializer(dip, 0);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* There's no need to call the destructor; change the destructor call
        into a "delete" call. */
@@ -14213,6 +14239,7 @@ directly.  *con_pos will be set to indicate the simple constant.
       simple_con = copy_unshared_constant(rep_con);
       first_repeat_con->next = simple_con;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug, "Splitting constant, constant before = ");
         db_constant(first_repeat_con);
@@ -14220,6 +14247,7 @@ directly.  *con_pos will be set to indicate the simple constant.
         db_constant(simple_con);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else {
       /* The position is at the beginning of the repeat, so there is no
@@ -14271,12 +14299,14 @@ directly.  *con_pos will be set to indicate the simple constant.
         copy_constant(rep_con, con);
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug,
                       "Splitting constant, no constant before, simple_con = ");
         db_constant(simple_con);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     if (second_count != 0) {
@@ -14299,22 +14329,26 @@ directly.  *con_pos will be set to indicate the simple constant.
       simple_con->next = second_repeat_con;
       second_repeat_con->next = next_con;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug,
                       "Splitting constant, constant after = ");
         db_constant(second_repeat_con);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     } else {
       /* The position is at the end of the repeat, so there is no repeated
          constant following the simple constant. */
       simple_con->next = next_con;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug,
                       "Splitting constant, no constant after.\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     /* The new current position is on the non-repeated actual constant. */
@@ -14374,9 +14408,11 @@ is not called for union initializations.
         prev_con->next = zero_con;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug, "Finding insert point: inserting at end\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       set_init_con_pos(zero_con, /*skip_empty_bases=*/TRUE,
                        /*skip_empty_fields=*/FALSE, &con);
@@ -14388,11 +14424,13 @@ is not called for union initializations.
         if (count > 1) {
           a_constant_ptr repeat_con = alloc_repeated_constant(zero_con, count);
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (db_flag_is_set("designators")) {
             (void)fprintf(f_debug, "Array repeat const = ");
             db_constant(repeat_con);
             (void)fprintf(f_debug, "\n");
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           set_init_con_pos(repeat_con, /*skip_empty_bases=*/TRUE,
                            /*skip_empty_fields=*/FALSE, &con);
@@ -14439,6 +14477,7 @@ is not called for union initializations.
   *previous_con = prev_con;
   *earlier_con = con;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("designators")) {
     (void)fprintf(f_debug, "Found insert point, previous_con = ");
     db_constant(*previous_con);
@@ -14446,6 +14485,7 @@ is not called for union initializations.
     db_constant(earlier_con->ptr);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* find_designator_insert_point */
 
@@ -14511,6 +14551,7 @@ values are being overwritten by the current aggregate.
       found_insert_point = TRUE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (found_insert_point && db_flag_is_set("designators")) {
       (void)fprintf(f_debug, "Quickly found insert point, prev_con = ");
       db_constant(*prev_con);
@@ -14518,6 +14559,7 @@ values are being overwritten by the current aggregate.
       db_constant(earlier_con->ptr);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return found_insert_point;
@@ -14550,12 +14592,14 @@ different than the old member), the old value is added to
     set_init_con_pos(old_con, /*skip_empty_bases=*/TRUE,
                      /*skip_empty_fields=*/FALSE, earlier_con);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("designators")) {
       (void)fprintf(f_debug,
                     "Initializing same member of union, earlier_con->ptr = ");
       db_constant(earlier_con->ptr);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     /* Different member.  Add the old constant to saved_union_init_constant. */
@@ -14566,11 +14610,13 @@ different than the old member), the old value is added to
       *saved_union_init_constant = old_con;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("designators")) {
       (void)fprintf(f_debug, "saved_union_init_constant = ");
       db_constant(*saved_union_init_constant);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Clear *earlier_con. */
     set_init_con_pos((a_constant_ptr)NULL, /*skip_empty_bases=*/TRUE,
@@ -14620,11 +14666,13 @@ This is DR 413 in the C standard.
                   il_identical_types(first->type, second->type));
   a_dynamic_init_ptr dip = first->variant.dynamic_init.ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("designators")) {
     (void)fprintf(f_debug, "constant with explicit initialization = ");
     db_constant(first);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   temp = make_lowered_temporary(first->type);
   set_var_init_pos_descr(temp, &ipd);
@@ -14717,11 +14765,13 @@ This is DR 413 in the C standard.
   }  /* if */
   second->is_implicit_initialization = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("designators")) {
     (void)fprintf(f_debug, "remaining constant = ");
     db_constant(second);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* combine_initializers_with_implicit_initialization */
 
@@ -14785,11 +14835,13 @@ designated initializers for base classes), but must process empty fields.
         advance_init_con_pos(&earlier_con);
         temp_con = temp_con->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("designators")) {
           (void)fprintf(f_debug, "prev_union_designator = ");
           db_constant(prev_union_designator);
           (void)fprintf(f_debug, "\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
       if (con.ptr != NULL &&
@@ -14926,11 +14978,13 @@ designated initializers for base classes), but must process empty fields.
           /* Combine the two initializers. */
           combine_initializer_constants(earlier_con.ptr, con.ptr);
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (db_flag_is_set("designators")) {
             (void)fprintf(f_debug, "Combined initializer consts = ");
             db_constant(con.ptr);
             (void)fprintf(f_debug, "\n");
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
       }  /* if */
@@ -14943,6 +14997,7 @@ designated initializers for base classes), but must process empty fields.
     if (con.ptr != NULL) {
       check_assertion(con.ptr->kind == (a_constant_repr_kind)ck_designator);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug, "Starting on designator ");
         db_constant(con.ptr);
@@ -14953,6 +15008,7 @@ designated initializers for base classes), but must process empty fields.
         db_constant(aggr_con);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Disconnect the ck_designator and the list that follows it from
          the aggregate. */
@@ -14962,11 +15018,13 @@ designated initializers for base classes), but must process empty fields.
         prev_con->next = NULL;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug, "aggr_con after detaching designator = ");
         db_constant(aggr_con);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     /* Keep the end of list pointer up to date. */
@@ -14986,11 +15044,13 @@ designated initializers for base classes), but must process empty fields.
       }  /* while */
       aggr_con->variant.aggregate.last_constant = earlier_con.ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("designators")) {
         (void)fprintf(f_debug, "aggr_con after adding to end = ");
         db_constant(aggr_con);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     /* Exit the outer loop unless we've run into a ck_designator. */
@@ -15013,11 +15073,13 @@ designated initializers for base classes), but must process empty fields.
       } else {
         union_designator = con.ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("designators")) {
           (void)fprintf(f_debug, "union_designator = ");
           db_constant(union_designator);
           (void)fprintf(f_debug, "\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
       /* Overwrite the previous value if it's for the same member of the
@@ -15063,11 +15125,13 @@ designated initializers for base classes), but must process empty fields.
       prev_con->next = con.ptr;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("designators")) {
       (void)fprintf(f_debug, "After relinking around designator = ");
       db_constant(aggr_con);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   /* For a union in which more than one member was initialized, combine
@@ -15079,11 +15143,13 @@ designated initializers for base classes), but must process empty fields.
     combine_initializer_constants(saved_union_init_constant,
                                   aggr_con->variant.aggregate.first_constant);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("designators")) {
       (void)fprintf(f_debug, "After combining union initializers = ");
       db_constant(aggr_con->variant.aggregate.first_constant);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* For a union initialization, re-insert a ck_designator if the field
@@ -15093,11 +15159,13 @@ designated initializers for base classes), but must process empty fields.
     aggr_con->variant.aggregate.first_constant = union_designator;
     check_assertion(union_designator->next != NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("designators")) {
       (void)fprintf(f_debug, "After reinsertion of union designator = ");
       db_constant(aggr_con);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if EXPENSIVE_CHECKING
@@ -15768,9 +15836,11 @@ subobject pointed to by expr.
     }  /* for */
 #if CHECKING
 #if DEBUG
+/* GCOVR_EXCL_START */
     fprintf(f_debug, "class_type: ");
     db_abbr_type(class_type);
     fprintf(f_debug, "\n");
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     unexpected_condition_str2("make_construction_vtbl_transfer_pointer_lvalue",
                               "did not find usable pointer");

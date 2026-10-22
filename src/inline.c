@@ -114,7 +114,9 @@ return.
     vrip = (a_variable_remapping_for_inlining_ptr)
                            alloc_fe(sizeof(a_variable_remapping_for_inlining));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_variable_remappings_for_inlining++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Keep the variable mappings in the order that the arguments are being
@@ -177,6 +179,7 @@ the available list.
 }  /* free_variable_remappings_for_inlining */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_variable_remapping(a_variable_remapping_for_inlining_ptr vrip)
 /*
@@ -207,6 +210,7 @@ Display the indicated variable remapping for debugging purposes.
   fprintf(f_debug, "\n");
 }  /* db_variable_remapping */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void make_remapping_temporary(
@@ -357,7 +361,9 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
                    vrip, last_remap = NULL;
   a_routine_ptr    routine = scope->variant.routine.ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_boolean        first = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   a_boolean        call_has_side_effects, arg_list_has_side_effects;
 
@@ -527,6 +533,7 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
            the argument value.  See finish_variable_remapping_for_inlining. */
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         if (first) {
           fprintf(f_debug, "Parameter remappings established:\n");
@@ -534,12 +541,15 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
         }  /* if */
         db_variable_remapping(vrip);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* for */
   /* Process the local variables. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   first = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   for (var = scope->nonstatic_variables;
        var != NULL;
@@ -554,6 +564,7 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
                     (a_boolean)var->is_temp_for_constructor_this_inlined_param,
                     (a_boolean)var->is_temp_for_unmodified_inlined_param);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         if (first) {
           fprintf(f_debug, "Variable remappings established:\n");
@@ -561,6 +572,7 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
         }  /* if */
         db_variable_remapping(vrip);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */        
   }  /* for */
@@ -1792,11 +1804,13 @@ detached from the IL (and should therefore no longer be used), FALSE otherwise.
            duration of the inlining to avoid problems with recursion. */
         routine->inlinable = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fprintf(f_debug, "Beginning inlining of call to ");
           db_name(&routine->source_corresp);
           fprintf(f_debug, ":\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         scope = scope_for_routine(routine);
         routine_scope_being_inlined = scope;
@@ -1927,11 +1941,13 @@ detached from the IL (and should therefore no longer be used), FALSE otherwise.
         if (failed) issue_inlining_failure_diagnostic(routine, is_too_large);
         routine_scope_being_inlined = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fprintf(f_debug, "End of inlining of call to ");
           db_name(&routine->source_corresp);
           fprintf(f_debug, "%s\n", failed ? " (failed)" : "");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
     }  /* if */
@@ -2059,7 +2075,9 @@ are handled in inline_init.)
     STATIC_THREAD a_pch_saved_variable saved_vars[] = {
       pch_saved_var_array_elem(avail_variable_remappings_for_inlining),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_variable_remappings_for_inlining),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -2077,7 +2095,9 @@ for each compilation.
   /* Variables in inline.h: */
   avail_variable_remappings_for_inlining = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_variable_remappings_for_inlining = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Static variables in inline.c: */
   variable_remappings_for_inlining = NULL;

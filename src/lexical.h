@@ -435,9 +435,11 @@ struct a_lexical_ifc_index_reference {
 			/* An opaque pointer to the IFC module file
 			   (an_ifc_module_file) containing this declaration. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   a_lexical_ifc_index_kind
 		reference_kind;
 			/* The kind of IFC index being referenced. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 };  /* a_lexical_ifc_index_reference */
 
@@ -931,10 +933,12 @@ EXTERN_THREAD Dyn_array<a_shared_token_ctrl_block*>
 			   used to quickly construct a new shared token. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 EXTERN_THREAD unsigned long
 		num_shared_token_states_allocated;
 			/* Counts of the number of a_shared_token_ctrl_block
 			   values allocated. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -1062,7 +1066,9 @@ struct a_token_cache_iterator :
 
   friend struct a_const_token_cache_iterator;
 #if DEBUG
+/* GCOVR_EXCL_START */
   friend void db_tokens(a_token_cache_iterator it);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 };  /* a_token_cache_iterator */
 
@@ -1089,7 +1095,9 @@ struct a_const_token_cache_iterator :
 
   INLINE const a_shared_token& operator*() const;
 #if DEBUG
+/* GCOVR_EXCL_START */
   friend void db_tokens(a_const_token_cache_iterator it);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 };  /* a_const_token_cache_iterator */
 
@@ -5150,6 +5158,7 @@ and all entities declared in functions.
                                      : make_name_reference((loc), (scp)))
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Show space used in the lexical routines, for debugging purposes. */
 extern unsigned long show_lexical_space_used(void);
 
@@ -5173,6 +5182,7 @@ extern void db_tokens(a_token_cache_iterator it);
 extern void db_tokens(a_const_token_cache_iterator it);
 
 extern void db_stop_tokens(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Test whether or not a given character location falls within

@@ -338,9 +338,11 @@ necessary to make it directly accessible in memory.
 
   db_enter(2, "read_memory_region");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 2) {
     fprintf(f_debug, "Reading IL memory region %ld\n", (long)region_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
   if (region_number <= 0 ||
@@ -453,10 +455,12 @@ necessary to make it directly accessible in memory.
     /* Read the entry number. */
     fread_with_check((char *)&encoded_number, sizeof(encoded_number));
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "Read IL entry from file: kind = %u, number = %lu\n",
               (unsigned int)byte_entry_kind, (unsigned long)encoded_number);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
     if (byte_entry_kind == 0 ||
@@ -489,10 +493,12 @@ necessary to make it directly accessible in memory.
     if (is_string_entry) {
       fread_with_check((char *)&entry_length, sizeof(entry_length));
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 5) {
         fprintf(f_debug, "Read IL entry from file: length = %lu\n",
                 (unsigned long)entry_length);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
       { sizeof_t gross_entry_size;
@@ -508,6 +514,7 @@ necessary to make it directly accessible in memory.
         count_of_entries_read[byte_entry_kind] +=
                                           (an_il_entry_number)gross_entry_size;
 #if DEBUG
+/* GCOVR_EXCL_START */
         { sizeof_t count, idx;
           /* Record the space for the string entry as having been read.
              Also mark the space for the prefix (preceding the entry) and
@@ -517,6 +524,7 @@ necessary to make it directly accessible in memory.
             set_entry_read_array(byte_entry_kind, idx);
           }  /* for */
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }
 #endif /* CHECKING */
@@ -527,8 +535,10 @@ necessary to make it directly accessible in memory.
       /* Count the entries read to see if we get all of them. */
       count_of_entries_read[byte_entry_kind]++;
 #if DEBUG
+/* GCOVR_EXCL_START */
       /* Mark this entry as having been read. */
       set_entry_read_array(byte_entry_kind, trimmed_entry_number);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* CHECKING */
       /* If reading the file scope, read in the orphaned IL entry pointer
@@ -570,6 +580,7 @@ necessary to make it directly accessible in memory.
           entry_count_array_ptr[byte_entry_kind]) {
         /* Not all expected entries were read. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         sizeof_t entry_count, idx;
 
         if (!errors) {
@@ -612,6 +623,7 @@ necessary to make it directly accessible in memory.
             }  /* if */
           }  /* for */
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         errors = TRUE;
       }  /* if */
@@ -646,10 +658,12 @@ necessary to make it directly accessible in memory.
   /* Loop for each block of the memory region. */
   first_block = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "read_memory_region: at top of block read loop\n");
     fprintf(f_debug, "total_bytes = %lu\n", (unsigned long)total_bytes);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   do {
     a_mem_block_header 		old_block_header;
@@ -660,6 +674,7 @@ necessary to make it directly accessible in memory.
     /* Read a block.  Start by reading the header. */
     fread_with_check((char *)&old_block_header, sizeof(old_block_header));
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "start_of_block = %p\n",
                        old_block_header.start_of_block);
@@ -668,6 +683,7 @@ necessary to make it directly accessible in memory.
       fprintf(f_debug, "after_end_of_block = %p\n",
                        old_block_header.after_end_of_block);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     total_bytes -= sizeof(old_block_header);
     block_size = old_block_header.after_end_of_block -
@@ -675,11 +691,13 @@ necessary to make it directly accessible in memory.
     block_used = old_block_header.next_avail_in_block -
                  old_block_header.start_of_block;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, "block_used  = %lu\n", (unsigned long)block_used);
       fprintf(f_debug, "block_size  = %lu\n", (unsigned long)block_size);
       fprintf(f_debug, "total_bytes = %lu\n", (unsigned long)total_bytes);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
     /* Do some sanity checking. */
@@ -726,6 +744,7 @@ necessary to make it directly accessible in memory.
     }  /* if */
   } while (total_bytes > 0);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 2) {
     fprintf(f_debug, "at end of block read loop\n");
   }  /* if */
@@ -746,6 +765,7 @@ necessary to make it directly accessible in memory.
     fprintf(f_debug, "Blocks at same/different addresses: %lu/%lu\n",
                      num_same, num_different);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!any_blocks_at_different_addresses && !reading_file_scope_il) {
     /* When reading a function scope memory region, the remapping has
@@ -757,9 +777,11 @@ necessary to make it directly accessible in memory.
       if (fsbrep->old_start_addr != fsbrep->new_start_addr) {
         any_blocks_at_different_addresses = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 2) {
           fprintf(f_debug, "Will have to remap because fs region moved\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         break;
       }  /* if */

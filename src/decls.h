@@ -2080,7 +2080,9 @@ extern void decls_trans_unit_init(void);
 extern void decls_init(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long show_decl_space_used(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */
