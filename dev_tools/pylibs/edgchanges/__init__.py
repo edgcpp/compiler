@@ -3,7 +3,7 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''Pending Changes entries: the *.chng.txt files in each pending_changes/
+'''Pending Changes entries: the *.txt files in each pending_changes/
 directory, which edg-collect-changes moves into the Changes file beside it
 (the nightly collect-changes workflow lists the directories).
 
@@ -35,7 +35,7 @@ import edgutil
 from pathlib import Path
 from typing import Iterable, List, NamedTuple, Optional, Set, Tuple
 
-FRAGMENT_SUFFIX = '.chng.txt'
+FRAGMENT_SUFFIX = '.txt'
 ALLOWED_WORDS_DIRECTIVE = 'allowed_words'
 PENDING_CHANGES_DIR_NAME = 'pending_changes'
 CHANGES_FILE_NAME = 'Changes'
@@ -54,8 +54,11 @@ FormatError = NamedTuple(
 )
 
 def is_fragment_path(path_str: str) -> bool:
-  '''Return True if path_str names a pending Changes entry.'''
-  return path_str.endswith(FRAGMENT_SUFFIX)
+  '''Return True if path_str names a pending Changes entry: a *.txt file in a
+  pending_changes/ directory.'''
+  path = Path(path_str)
+  return (path.suffix == FRAGMENT_SUFFIX and
+          path.parent.name == PENDING_CHANGES_DIR_NAME)
 
 def target_changes_path(fragment_path: Path) -> Path:
   '''Return the Changes file the entry at fragment_path will be collected

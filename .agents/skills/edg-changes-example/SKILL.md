@@ -1,7 +1,7 @@
 ---
 name: edg-changes-example
 description: >-
-  Writes Changes entries as pending_changes/*.chng.txt files (collected
+  Writes Changes entries as pending_changes/*.txt files (collected
   nightly by edg-collect-changes, checked with edg-collect-changes --check),
   and encodes/decodes non-UTF-8 example bytes with edg-changes-example
   («HHHH...» markers). Use when adding a Changes entry, editing any Changes
@@ -79,7 +79,7 @@ bytes. No other escapes are interpreted.
 New entries are **not** written into a `Changes` file. Each `Changes` file
 has a `pending_changes/` directory beside it (`src/pending_changes/`,
 `util/pending_changes/`, …); add one entry file there per change, named
-`*.chng.txt` (suggested: `gh-<N>-<short-slug>.chng.txt`). A nightly job
+`*.txt` (suggested: `gh-<N>-<short-slug>.txt`). A nightly job
 (`.github/workflows/collect-changes.yml`, midnight US Eastern) runs
 `edg-collect-changes`, which moves every entry into its `Changes` file under
 the newest `Version x.y` line, adds the date, orders that night's entries by
@@ -118,7 +118,7 @@ For example, with --c++11:
 Steps:
 
 1. Draft the entry as UTF-8 prose in
-   `<dir>/pending_changes/<name>.chng.txt` (the `pending_changes/` beside
+   `<dir>/pending_changes/<name>.txt` (the `pending_changes/` beside
    the `Changes` file the entry belongs in, usually `src/`).
 2. If an example needs non-UTF-8 bytes, author the example in a small raw
    file (or produce the markers by hand only when the bytes are already
@@ -129,9 +129,9 @@ Steps:
    `Note: The above example must be decoded using the edg-changes-example tool.`
 
 4. Check the entry (format, spelling, typos, line length). This is the
-   check `edg-check-file-changes` does for `*.chng.txt` files, which pull
-   request CI runs and which makes the pre-push hook refuse the push (no
-   override) if anything is wrong:
+   check `edg-check-file-changes` does for `pending_changes/*.txt` files,
+   which pull request CI runs and which makes the pre-push hook refuse the
+   push (no override) if anything is wrong:
 
    ```bash
    edg-exec -- edg-collect-changes --check src/Changes src/pending_changes

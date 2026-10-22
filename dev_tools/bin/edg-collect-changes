@@ -9,7 +9,7 @@
 
 Each Changes file in the tree has a pending_changes/ directory beside it.
 Rather than editing a Changes file directly (which makes every pull request
-conflict with every other), a change adds one *.chng.txt entry there:
+conflict with every other), a change adds one *.txt entry there:
 
   //allowed_words: reflectable memoized
   [GH #335]
@@ -67,7 +67,7 @@ def list_pending_dir(pending_dir: Path) -> Tuple[List[Path], List[Path]]:
   fragment_paths = []
   other_paths = []
   for path in sorted(pending_dir.iterdir()):
-    if edgchanges.is_fragment_path(path.name):
+    if edgchanges.is_fragment_path(str(path)):
       fragment_paths.append(path)
     elif path.name != PENDING_CHANGES_KEEP_FILE_NAME:
       other_paths.append(path)
@@ -166,7 +166,7 @@ def _run_file_checks(fragment_paths: List[Path]) -> Any:
   check_tool_path = Path(__file__).resolve().parent / 'edg-check-file-changes'
   with tempfile.TemporaryDirectory() as tmp_dir_str:
     tmp_dir = Path(tmp_dir_str)
-    empty_file = tmp_dir / 'empty.chng.txt'
+    empty_file = tmp_dir / 'empty.txt'
     empty_file.touch()
     input_spec = {
       str(path): [str(empty_file), str(path.resolve())]

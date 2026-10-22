@@ -123,7 +123,7 @@ directly maintain the `Changes` files (particularly `src/Changes`).
 
 Instead, there is a nightly job that updates the `Changes` files for all the
 work that happened over the last 24-hours.  To take advantage, add a file
-named `<something>.chng.txt` (e.g., `gh-335-qualified-function-types.chng.txt`)
+named `<something>.txt` (e.g., `gh-335-qualified-function-types.txt`)
 to the `pending_changes/` directory beside the `Changes` file your work belongs
 with:
 

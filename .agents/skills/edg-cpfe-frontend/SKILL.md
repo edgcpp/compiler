@@ -45,7 +45,7 @@ Language: `--c++11` … `--c++26`. Emulation: `--gnu=XXYYZZ`,
 
 ## Editing `Changes` files
 
-Add new entries as `pending_changes/*.chng.txt` files beside the `Changes`
+Add new entries as `pending_changes/*.txt` files beside the `Changes`
 file (usually `src/pending_changes/`), not in the `Changes` file itself; a
 nightly job collects them with `edg-collect-changes`. Write everything as
 **UTF-8**. For the entry format, `//allowed_words:`, `edg-collect-changes

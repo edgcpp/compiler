@@ -174,9 +174,9 @@ class FormatTests(unittest.TestCase):
 class ParseTests(TreeTestCase):
 
   def _parse(self, text: str, check_line_length: bool = True) -> Any:
-    self.tree.root.joinpath('x.chng.txt').write_text(text, encoding = 'utf-8')
+    self.tree.root.joinpath('x.txt').write_text(text, encoding = 'utf-8')
     return edgchanges.parse_fragment(
-      self.tree.root / 'x.chng.txt',
+      self.tree.root / 'x.txt',
       check_line_length = check_line_length
     )
 
@@ -260,10 +260,10 @@ class ParseTests(TreeTestCase):
     self.assertEqual(errors, [])
 
   def test_not_utf8(self) -> None:
-    self.tree.root.joinpath('x.chng.txt').write_bytes(
+    self.tree.root.joinpath('x.txt').write_bytes(
       b'[GH #1]\nSummary\n\n\xe9\n'
     )
-    entry, errors = edgchanges.parse_fragment(self.tree.root / 'x.chng.txt')
+    entry, errors = edgchanges.parse_fragment(self.tree.root / 'x.txt')
     self.assertIsNone(entry)
     self.assertIsNone(errors[0].line_no)
     self.assertIn('not valid UTF-8', errors[0].message)
@@ -273,10 +273,10 @@ class CollectTests(TreeTestCase):
   def test_open_section(self) -> None:
     changes_path = self.tree.add_changes('src', OPEN_CHANGES)
     zeta = self.tree.add_fragment(
-      'src', 'gh-2.chng.txt', _fragment('[GH #2]', 'zeta', 'Zeta body.  ')
+      'src', 'gh-2.txt', _fragment('[GH #2]', 'zeta', 'Zeta body.  ')
     )
     alpha = self.tree.add_fragment(
-      'src', 'gh-1.chng.txt',
+      'src', 'gh-1.txt',
       '//allowed_words: frob\n' + _fragment('[GH #1]', 'Alpha')
     )
 
@@ -325,7 +325,7 @@ class CollectTests(TreeTestCase):
       '\n'.join(lines[:2] + lines[next_entry_index:])
     )
     self.tree.add_fragment(
-      'src', 'newest.chng.txt',
+      'src', 'newest.txt',
       '\n'.join([tags_text.strip()] + entry_lines[1:]) + '\n'
     )
     month, day, year = (int(part) for part in date_text.split('/'))
@@ -338,7 +338,7 @@ class CollectTests(TreeTestCase):
     self.tree.add_changes('src', OPEN_CHANGES)
     changes_path = self.tree.add_changes('lib_src', RELEASED_CHANGES)
     self.tree.add_fragment(
-      'lib_src', 'gh-5.chng.txt', _fragment('[GH #5]', 'Library')
+      'lib_src', 'gh-5.txt', _fragment('[GH #5]', 'Library')
     )
 
     self.assertTrue(self.tree.collect('lib_src', version = '7.1'))
@@ -360,7 +360,7 @@ class CollectTests(TreeTestCase):
   def test_released_section_needs_version(self) -> None:
     self.tree.add_changes('lib_src', RELEASED_CHANGES)
     self.tree.add_fragment(
-      'lib_src', 'gh-5.chng.txt', _fragment('[GH #5]', 'Library')
+      'lib_src', 'gh-5.txt', _fragment('[GH #5]', 'Library')
     )
     with self.assertRaisesRegex(ValueError, 'use --version'):
       self.tree.collect('lib_src')
@@ -390,7 +390,7 @@ class CollectTests(TreeTestCase):
       'src',
       'Version 7.1\n\nNo changes.\n\n\n' + RELEASED_CHANGES.split('\n', 5)[5]
     )
-    self.tree.add_fragment('src', 'a.chng.txt', _fragment('[GH #1]', 'A'))
+    self.tree.add_fragment('src', 'a.txt', _fragment('[GH #1]', 'A'))
 
     self.assertTrue(self.tree.collect())
 
@@ -414,9 +414,9 @@ class CollectTests(TreeTestCase):
 
   def test_sort_tie_break(self) -> None:
     changes_path = self.tree.add_changes('src', OPEN_CHANGES)
-    self.tree.add_fragment('src', 'b.chng.txt', _fragment('[GH #2]', 'Same'))
-    self.tree.add_fragment('src', 'a.chng.txt', _fragment('[GH #1]', 'Same'))
-    self.tree.add_fragment('src', 'c.chng.txt', _fragment('[GH #3]', 'same'))
+    self.tree.add_fragment('src', 'b.txt', _fragment('[GH #2]', 'Same'))
+    self.tree.add_fragment('src', 'a.txt', _fragment('[GH #1]', 'Same'))
+    self.tree.add_fragment('src', 'c.txt', _fragment('[GH #3]', 'same'))
 
     self.assertTrue(self.tree.collect())
 
@@ -432,10 +432,10 @@ class CollectTests(TreeTestCase):
   def test_bad_fragment_left_in_place(self) -> None:
     changes_path = self.tree.add_changes('src', OPEN_CHANGES)
     good = self.tree.add_fragment(
-      'src', 'good.chng.txt', _fragment('[GH #1]', 'Good')
+      'src', 'good.txt', _fragment('[GH #1]', 'Good')
     )
     bad = self.tree.add_fragment(
-      'src', 'bad.chng.txt', _fragment('[EDGcpfe/1]', 'Bad')
+      'src', 'bad.txt', _fragment('[EDGcpfe/1]', 'Bad')
     )
 
     self.assertFalse(self.tree.collect())
@@ -448,7 +448,7 @@ class CollectTests(TreeTestCase):
 
   def test_nothing_pending(self) -> None:
     changes_path = self.tree.add_changes('src', OPEN_CHANGES)
-    self.tree.add_fragment('src', 'notes.txt', 'Not an entry.\n')
+    self.tree.add_fragment('src', 'notes.md', 'Not an entry.\n')
     before = changes_path.stat().st_mtime_ns
 
     self.assertTrue(self.tree.collect())
@@ -459,7 +459,7 @@ class CollectTests(TreeTestCase):
   def test_dry_run(self) -> None:
     changes_path = self.tree.add_changes('src', OPEN_CHANGES)
     fragment = self.tree.add_fragment(
-      'src', 'a.chng.txt', _fragment('[GH #1]', 'A')
+      'src', 'a.txt', _fragment('[GH #1]', 'A')
     )
 
     self.assertTrue(self.tree.collect(dry_run = True))
@@ -469,12 +469,28 @@ class CollectTests(TreeTestCase):
 
   def test_check_rejects_misnamed_file(self) -> None:
     self.tree.add_changes('src', OPEN_CHANGES)
-    self.tree.add_fragment('src', 'notes.txt', _fragment('[GH #1]', 'A'))
+    self.tree.add_fragment('src', 'notes.md', _fragment('[GH #1]', 'A'))
     with contextlib.redirect_stdout(io.StringIO()) as output:
       self.assertFalse(
         collect_tool.check(self.tree.root / 'src' / 'pending_changes')
       )
-    self.assertIn('notes.txt: not a pending Changes entry', output.getvalue())
+    self.assertIn('notes.md: not a pending Changes entry', output.getvalue())
+
+class FragmentPathTests(unittest.TestCase):
+
+  def test_is_fragment_path(self) -> None:
+    self.assertTrue(edgchanges.is_fragment_path('src/pending_changes/a.txt'))
+    self.assertTrue(
+      edgchanges.is_fragment_path('include_c++/pending_changes/gh-1-x.txt')
+    )
+    self.assertFalse(edgchanges.is_fragment_path('src/pending_changes/a.md'))
+    self.assertFalse(
+      edgchanges.is_fragment_path('src/pending_changes/.gitignore')
+    )
+    self.assertFalse(edgchanges.is_fragment_path('src/error_msg.txt'))
+    self.assertFalse(
+      edgchanges.is_fragment_path('src/pending_changes/sub/a.txt')
+    )
 
 class DirectiveTests(unittest.TestCase):
 
@@ -517,8 +533,8 @@ class CheckFileChangesTests(unittest.TestCase):
     self.tmp_dir = Path(tmp_dir.name)
 
   def _check(self, repo_path: str, text: str) -> Dict[str, Any]:
-    # Like the pre-push hook, the temporary file names don't end in
-    # .chng.txt; only the key does.
+    # Like the pre-push hook's, the temporary files aren't in a
+    # pending_changes/ directory; only the key is.
     old_file = self.tmp_dir / 'oldXYZ.txt'
     old_file.write_text('')
     new_file = self.tmp_dir / 'newXYZ.txt'
@@ -541,7 +557,7 @@ class CheckFileChangesTests(unittest.TestCase):
 
   def test_format_errors(self) -> None:
     results = self._check(
-      'src/pending_changes/a.chng.txt',
+      'src/pending_changes/a.txt',
       '//allowed_words: x\n[EDGcpfe/1]\nSummary\n\nBody.\n'
     )
     self.assertEqual(
@@ -550,7 +566,7 @@ class CheckFileChangesTests(unittest.TestCase):
     )
 
     results = self._check(
-      'src/pending_changes/a.chng.txt',
+      'src/pending_changes/a.txt',
       _fragment('[GH #1]', 'Summary')
     )
     self.assertEqual(results['format_errors'], [])
@@ -561,22 +577,22 @@ class CheckFileChangesTests(unittest.TestCase):
 
   def test_trailing_whitespace_not_overlong(self) -> None:
     text = _fragment('[GH #1]', 'Summary', 'x' * 79 + '   ')
-    results = self._check('src/pending_changes/a.chng.txt', text)
+    results = self._check('src/pending_changes/a.txt', text)
     self.assertEqual(results['overlong_lines'], {})
 
-    results = self._check('src/pending_changes/a.chng.txt',
+    results = self._check('src/pending_changes/a.txt',
                           _fragment('[GH #1]', 'Summary', 'x' * 80))
     self.assertEqual(list(results['overlong_lines']), ['4'])
 
   @unittest.skipUnless(_aspell_works(), 'aspell is not available')
   def test_allowed_words(self) -> None:
     text = _fragment('[GH #1,\n GH #2]', 'Summary', 'A frobnicator lvalue.')
-    results = self._check('src/pending_changes/a.chng.txt', text)
+    results = self._check('src/pending_changes/a.txt', text)
     # The tag block isn't spell checked.
     self.assertEqual(results['misspellings'], ['frobnicator', 'lvalue'])
 
     results = self._check(
-      'src/pending_changes/a.chng.txt',
+      'src/pending_changes/a.txt',
       '//allowed_words: frobnicator\n//allowed_words: lvalue\n' + text
     )
     self.assertEqual(results['misspellings'], [])
@@ -595,15 +611,15 @@ class CheckFileChangesTests(unittest.TestCase):
     )
     text = _fragment('[GH #1]', 'Summary', 'A frobnicator lvalue.')
 
-    results = self._check('src/pending_changes/a.chng.txt', text)
+    results = self._check('src/pending_changes/a.txt', text)
     self.assertEqual(results['misspellings'], ['frobnicator'])
 
-    results = self._check('util/pending_changes/a.chng.txt', text)
+    results = self._check('util/pending_changes/a.txt', text)
     self.assertEqual(results['misspellings'], ['lvalue'])
 
   @unittest.skipUnless(_aspell_works(), 'aspell is not available')
   def test_plain_text_file_unchanged(self) -> None:
-    # Without the .chng.txt key, directives get no special treatment.
+    # Outside pending_changes/, directives get no special treatment.
     results = self._check(
       'notes.txt',
       '//allowed_words: frobnicator\nA frobnicator.\n'

@@ -92,8 +92,8 @@ Hard always-on reminders (details in the RST / skill):
 
 ## Editing `Changes` files
 
-New changelog entries go in `pending_changes/*.chng.txt` files beside the
-`Changes` file (e.g. `src/pending_changes/gh-123-short-slug.chng.txt`), not
+New changelog entries go in `pending_changes/*.txt` files beside the
+`Changes` file (e.g. `src/pending_changes/gh-123-short-slug.txt`), not
 in the `Changes` file itself: tag block (`[GH #N]`, no date), summary line,
 blank line, description; optional leading `//allowed_words: …` lines accept
 words the spell check rejects (words already in the target `Changes` file
