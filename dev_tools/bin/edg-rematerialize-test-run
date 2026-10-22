@@ -169,7 +169,7 @@ def collect_affected_tests(test_home: Path,
           else:
             # Look for all mft files that might be associated with this file.
             for possible_test in file_path.iterdir():
-              if possible_test.suffixes[0] == '.mft':
+              if possible_test.suffixes[:1] == ['.mft']:
                 result.tests.add(possible_test)
                 test_file_found = True
         # File not found, move on to the parent.
