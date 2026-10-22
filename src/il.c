@@ -20682,6 +20682,65 @@ as they were, and release the saved state.
 }  /* restore_template_param_symbols */
 
 
+static a_boolean bind_template_params_for_lambda_rescan(
+                       a_lambda_ptr                       lambda,
+                       a_token_cache_ptr                  tokens,
+                       a_template_param_ptr               template_param_list,
+                       a_template_arg_ptr                 template_arg_list,
+                       a_saved_template_param_symbol_ptr  *p_saved,
+                       size_t                             *p_num_saved)
+/*
+If an instantiation scope for template_param_list is active and lambda names
+one of the parameters, bind those that have a value in template_arg_list for
+the rescan of tokens.  *p_saved and *p_num_saved get the state to restore
+afterwards (NULL and 0 if nothing is bound).  Return FALSE if a named
+parameter has no value yet.  Generic lambdas and packs are not handled yet.
+*/
+{
+  a_template_param_ptr  tpp;
+  a_boolean             names_a_parameter = FALSE;
+  a_boolean             names_a_pack = FALSE;
+  a_boolean             all_named_have_values = TRUE;
+
+  *p_saved = NULL;
+  *p_num_saved = 0;
+  if (!lambda->is_generic && !lambda->has_template_param_list &&
+      instantiation_scope_is_active_for_param_list(template_param_list)) {
+    for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+      if (lambda_tokens_name_template_param(tokens, tpp)) {
+        names_a_parameter = TRUE;
+        if (tpp->is_pack) names_a_pack = TRUE;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  if (names_a_parameter && !names_a_pack) {
+    a_saved_template_param_symbol_ptr saved;
+    size_t                            num_saved;
+    saved = save_template_param_symbols(template_param_list, &num_saved);
+    /* Hide every parameter first, so that one that has no value in
+       template_arg_list stays hidden whatever state its symbol was in. */
+    for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+      tpp->param_symbol->template_param_not_visible = TRUE;
+    }  /* for */
+    update_template_param_symbols(template_param_list, template_arg_list,
+                                  /*partial_argument_list=*/TRUE);
+    for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+      if (tpp->param_symbol->template_param_not_visible &&
+          lambda_tokens_name_template_param(tokens, tpp)) {
+        all_named_have_values = FALSE;
+      }  /* if */
+    }  /* for */
+    if (all_named_have_values) {
+      *p_saved = saved;
+      *p_num_saved = num_saved;
+    } else {
+      restore_template_param_symbols(saved, num_saved);
+    }  /* if */
+  }  /* if */
+  return all_named_have_values;
+}  /* bind_template_params_for_lambda_rescan */
+
+
 static an_expr_node_ptr copy_template_param_lambda_expr(
                                   an_expr_node_ptr       expr,
                                   a_template_arg_ptr     template_arg_list,
@@ -20706,6 +20765,7 @@ copy_template_param_expr for the parameter descriptions.
   a_saved_template_param_symbol_ptr
                       saved_param_symbols = NULL;
   size_t              num_saved_param_symbols = 0;
+  a_boolean           params_have_decl_scope;
 
   /* First, do a preliminary substitution on the lambda's routine type so that
      any SFINAE-able substitution failure is reported as a deduction failure
@@ -20716,59 +20776,21 @@ copy_template_param_expr for the parameter descriptions.
                                     copy_error, ctws_state);
   if (*copy_error) goto done;
   tokens = cached_lambdas->get(closure_class);
-  if (tokens != NULL && template_param_list != NULL &&
-      !(template_param_list->cache.decl_info != NULL &&
-        template_param_list->param_symbol != NULL) &&
-      !lambda->is_generic && !lambda->has_template_param_list &&
-      instantiation_scope_is_active_for_param_list(template_param_list)) {
-    /* These parameters have no declaration scope to push, and the active
-       instantiation scope leaves their symbols without values.  If the lambda
-       names one (and no pack), bind those that have a value to the arguments
-       for the rescan, then restore them (an enclosing instantiation may have
-       bound them).  One with no value (not deduced yet) is hidden, so the
-       copy fails instead of finding an entity of the same name outside. */
-    a_template_param_ptr tpp;
-    a_boolean            names_a_parameter = FALSE;
-    a_boolean            names_a_pack = FALSE;
-    for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
-      if (lambda_tokens_name_template_param(tokens, tpp)) {
-        names_a_parameter = TRUE;
-        if (tpp->is_pack) names_a_pack = TRUE;
-      }  /* if */
-    }  /* for */
-    if (names_a_parameter && !names_a_pack) {
-      a_boolean value_missing = FALSE;
-      saved_param_symbols = save_template_param_symbols(
-                                                  template_param_list,
-                                                  &num_saved_param_symbols);
-      /* A parameter that has no value must not be visible.  (The instantiation
-         scope that push_instantiation_scope_for_rescan pushes marks every
-         parameter not visible already, which is the only reason why this is
-         not needed there; it makes the result of the binding independent of
-         the state that the symbols happen to have.) */
-      for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
-        tpp->param_symbol->template_param_not_visible = TRUE;
-      }  /* for */
-      update_template_param_symbols(template_param_list, template_arg_list,
-                                    /*partial_argument_list=*/TRUE);
-      for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
-        if (tpp->param_symbol->template_param_not_visible &&
-            lambda_tokens_name_template_param(tokens, tpp)) {
-          value_missing = TRUE;
-        }  /* if */
-      }  /* for */
-      if (value_missing) {
-        restore_template_param_symbols(saved_param_symbols,
-                                       num_saved_param_symbols);
-        saved_param_symbols = NULL;
-        subst_fail(*copy_error);
-        goto done;
-      }  /* if */
-    }  /* if */
-  }  /* if */
+  params_have_decl_scope = template_param_list != NULL &&
+                           template_param_list->cache.decl_info != NULL &&
+                           template_param_list->param_symbol != NULL;
   if (tokens == NULL) {
     /* No cached tokens were recorded for this lambda (this can happen in
        severe error cases).  Substitution cannot proceed. */
+    subst_fail(*copy_error);
+  } else if (!params_have_decl_scope && template_param_list != NULL &&
+             !bind_template_params_for_lambda_rescan(
+                                                lambda, tokens,
+                                                template_param_list,
+                                                template_arg_list,
+                                                &saved_param_symbols,
+                                                &num_saved_param_symbols)) {
+    /* The lambda names a template parameter that has no value yet. */
     subst_fail(*copy_error);
   } else {
     an_operand                  result_operand;
@@ -20789,9 +20811,7 @@ copy_template_param_expr for the parameter descriptions.
     expr_stack_entry.suppress_diagnostics = TRUE;
     expr_stack_entry.possible_rescan_context = TRUE;
     push_lexical_state_stack();
-    if (template_param_list != NULL &&
-        template_param_list->cache.decl_info != NULL &&
-        template_param_list->param_symbol != NULL) {
+    if (params_have_decl_scope) {
       /* Make the template parameters being substituted visible during the
          rescan so that names that refer to them can be resolved.  The scope
          is pushed reusing the original declaration scope number so that the
@@ -20879,6 +20899,8 @@ copy_template_param_expr for the parameter descriptions.
       pop_scope();
     }  /* if */
     if (saved_param_symbols != NULL) {
+      /* Put back the template parameters that
+         bind_template_params_for_lambda_rescan bound. */
       restore_template_param_symbols(saved_param_symbols,
                                      num_saved_param_symbols);
     }  /* if */
