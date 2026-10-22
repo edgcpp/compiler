@@ -1,0 +1,19 @@
+[GH #405]
+A suppressed note of a constant-evaluation error no longer stops the front end
+
+When constant evaluation fails, the front end attaches notes to the error
+"expression must have a constant value": "shift count is too large" (#63),
+"shift count is negative" (#62), "division by zero" (#39) and "integer
+operation result is out of range" (#61) among them.  A note takes the severity
+of its own error number, so when --diag_suppress or a diag_suppress pragma
+named the number of the note, the note had a severity that could not be
+displayed and the front end stopped with an internal error (in the text
+output; the SARIF output listed the suppressed note as a related location):
+
+  constexpr int z = 1 << 32;
+    // --diag_suppress=63: internal error: assertion failed:
+    // determine_severity_code: bad severity
+
+A suppressed note is now left out of the diagnostic, as a suppressed
+diagnostic always is, in the SARIF output too.  The error itself is still
+reported.

@@ -7679,10 +7679,25 @@ void add_more_info_list(a_diagnostic_ptr	dp,
 			a_diag_list_ptr		dlp)
 /*
 Add the list of "more information" diagnostics specified by dlp to the
-primary diagnostic dp.
+primary diagnostic dp.  An entry whose severity is es_none was suppressed
+(by --diag_suppress or a diagnostic pragma for its error number): it is not
+added, as a suppressed diagnostic is never displayed.  The routines that write
+a diagnostic have no severity to give such an entry.
 */
 {
-  dp->more_info = *dlp;
+  a_diagnostic_ptr	mi_dp;
+  a_diagnostic_ptr	next_mi_dp;
+
+  clear_diag_list(&dp->more_info);
+  for (mi_dp = dlp->head; mi_dp != NULL; mi_dp = next_mi_dp) {
+    next_mi_dp = mi_dp->next;
+    mi_dp->next = NULL;
+    if (mi_dp->severity == es_none) {
+      free_diagnostic(mi_dp);
+    } else {
+      append_to_diag_list(&dp->more_info, mi_dp);
+    }  /* if */
+  }  /* for */
   /* Clear the entries in the list passed in. */
   clear_diag_list(dlp);
 }  /* add_more_info_list */
