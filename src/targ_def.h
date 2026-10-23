@@ -4861,7 +4861,7 @@ C-generating back end.
 #if DO_IL_LOWERING && !LOWER_VARIABLE_LENGTH_ARRAYS
 #ifndef NO_VLA_DIMENSION_TEMPORARIES_IN_FUNCTION_PROTOTYPES
 #define NO_VLA_DIMENSION_TEMPORARIES_IN_FUNCTION_PROTOTYPES \
-                                                         BACK_END_IS_C_GEN_BE
+                           (BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE)
 #endif /* NO_VLA_DIMENSION_TEMPORARIES_IN_FUNCTION_PROTOTYPES */
 
 #if BACK_END_IS_C_GEN_BE && \
@@ -4902,7 +4902,8 @@ variable.  When the switch here is TRUE, the local types and
 variables will be (selectively) promoted to the actual file scope.
 */
 #ifndef PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE
-#define PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE BACK_END_IS_C_GEN_BE
+#define PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE \
+                           (BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE)
 #endif /* ifndef PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE */
 #if ENSURE_LOWERED_TYPE_LIST_ORDERING && !PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE
  #error -- ENSURE_LOWERED_TYPE_LIST_ORDERING requires \

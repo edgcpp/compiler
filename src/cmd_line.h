@@ -386,8 +386,40 @@ enum an_option_kind {
   optk_dump_command_options,
   optk_output_mode,
   optk_incognito,
-  optk_last		/* Must be last. */
-};
+  #if BACK_END_IS_GCC_GEN_BE
+  optk_gcc_gen_be,
+  optk_gcc_be_c,
+  optk_gcc_be_S,
+  optk_gcc_be_O0,
+  optk_gcc_be_O1,
+  optk_gcc_be_O2,
+  optk_gcc_be_O3,
+  optk_gcc_be_Os,
+  optk_gcc_be_Ofast,
+  optk_gcc_be_g,
+  optk_gcc_be_fPIC,
+  optk_gcc_be_fPIE,
+  optk_gcc_be_fno_pie,
+  optk_gcc_be_dump_initial_tree,
+  optk_gcc_be_dump_gimple,
+  optk_gcc_be_dump_rtl_all,
+  optk_gcc_be_ffast_math,
+  optk_gcc_be_fno_trapping_math,
+  optk_gcc_be_fassociative_math,
+  optk_gcc_be_shared,
+  optk_gcc_be_static,
+  optk_gcc_be_march,
+  optk_gcc_be_mcpu,
+  optk_gcc_be_mtune,
+  optk_gcc_be_mfpu,
+  optk_gcc_be_mcmodel,
+  optk_gcc_be_m64,
+  optk_gcc_be_m32,
+  optk_gcc_be_L,
+  optk_gcc_be_l,
+  #endif /* BACK_END_IS_GCC_GEN_BE */
+  optk_last             /* Must be last. */
+  };
 
 /* C_dialect is in basics.h. */
 
@@ -480,7 +512,39 @@ EXTERN_THREAD FILE
 			   TRUE. */
 EXTERN_THREAD a_const_char
 		*pp_file_name;
-			/* Name of the preprocessing output file to be
+
+EXTERN_THREAD a_const_char
+                *gcc_be_output_file_name;
+
+#if BACK_END_IS_GCC_GEN_BE
+EXTERN_THREAD a_boolean gcc_be_enabled;
+EXTERN_THREAD int gcc_be_opt_level;
+EXTERN_THREAD a_boolean gcc_be_compile_only;
+EXTERN_THREAD a_boolean gcc_be_assemble_only;
+EXTERN_THREAD a_boolean gcc_be_debug_info;
+EXTERN_THREAD a_boolean gcc_be_fPIC;
+EXTERN_THREAD a_boolean gcc_be_fPIE;
+EXTERN_THREAD a_boolean gcc_be_fno_pie;
+EXTERN_THREAD a_boolean gcc_be_dump_initial_tree;
+EXTERN_THREAD a_boolean gcc_be_dump_gimple;
+EXTERN_THREAD a_boolean gcc_be_dump_rtl_all;
+EXTERN_THREAD a_boolean gcc_be_ffast_math;
+EXTERN_THREAD a_boolean gcc_be_fno_trapping_math;
+EXTERN_THREAD a_boolean gcc_be_fassociative_math;
+EXTERN_THREAD a_boolean gcc_be_shared;
+EXTERN_THREAD a_boolean gcc_be_static;
+EXTERN_THREAD a_const_char *gcc_be_march;
+EXTERN_THREAD a_const_char *gcc_be_mcpu;
+EXTERN_THREAD a_const_char *gcc_be_mtune;
+EXTERN_THREAD a_const_char *gcc_be_mfpu;
+EXTERN_THREAD a_const_char *gcc_be_mcmodel;
+EXTERN_THREAD a_boolean gcc_be_m64;
+EXTERN_THREAD a_boolean gcc_be_m32;
+EXTERN_THREAD void* gcc_be_driver_options;
+EXTERN_THREAD void* gcc_be_compiler_options;
+#endif /* BACK_END_IS_GCC_GEN_BE */
+
+                        /* Name of the preprocessing output file to be
 			   opened, or NULL if no such file is needed or if
 			   a default file should be used. */
 EXTERN_THREAD a_boolean

@@ -246,6 +246,85 @@ if(MSVC)
   link_libraries(mscoree)
 endif()
 
+if(EDG_ENABLE_GCC_BACKEND)
+  add_compile_definitions(BACK_END_IS_GCC_GEN_BE=1)
+  list(APPEND CORE_FRONT_END_SOURCE_FILES
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_error.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_context.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_cache.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_lib_loader.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_location.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_type.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_decl.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_expr.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_stmt.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_rtti.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_dtor.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_debug.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_abi.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_builtin.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_eh.c"
+    "${PROJECT_SOURCE_DIR}/gcc_gen_be_main.c"
+  )
+  link_libraries(LibGCCJIT::LibGCCJIT)
+  if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@executable_path/../lib;@rpath")
+  elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+  endif()
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  
+  if(MSVC)
+    add_link_options(/DELAYLOAD:libgccjit.dll)
+  endif()
+  
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_source_files_properties(
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_error.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_context.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_cache.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_lib_loader.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_location.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_type.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_decl.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_expr.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_stmt.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_rtti.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_dtor.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_debug.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_abi.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_builtin.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_eh.c"
+      "${PROJECT_SOURCE_DIR}/gcc_gen_be_main.c"
+      PROPERTIES COMPILE_OPTIONS "-Wunused-result;-Werror=unused-result")
+    if(EDG_GCC_BE_ENABLE_COVERAGE)
+      set_source_files_properties(
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_error.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_context.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_cache.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_lib_loader.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_location.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_type.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_decl.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_expr.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_stmt.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_rtti.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_dtor.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_debug.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_abi.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_builtin.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_eh.c"
+        "${PROJECT_SOURCE_DIR}/gcc_gen_be_main.c"
+        PROPERTIES COMPILE_OPTIONS "-fprofile-arcs;-ftest-coverage;-Wunused-result;-Werror=unused-result")
+      if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        add_link_options(-lgcov)
+      else()
+        add_link_options(--coverage)
+      endif()
+    endif()
+  endif()
+endif()
+
 add_custom_target(cpfe-all)
 
 # A quirk of CMake is that scoping is really done in CMakeLists.txt files via
@@ -254,3 +333,16 @@ add_custom_target(cpfe-all)
 add_subdirectory(cmake/cpfe)
 add_subdirectory(cmake/cpfe-cp)
 add_subdirectory(cmake/cdisp)
+
+
+if(EDG_ENABLE_GCC_BACKEND AND EDG_GCC_BE_ENABLE_COVERAGE)
+  # Apply coverage instrumentation specifically to gcc_gen_be_*.c
+  set_source_files_properties(gcc_gen_be_*.c PROPERTIES COMPILE_FLAGS "--coverage")
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set_source_files_properties(gcc_gen_be_*.c PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+    target_link_libraries(cpfe PRIVATE gcov)
+  elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_source_files_properties(gcc_gen_be_*.c PROPERTIES COMPILE_FLAGS "--coverage")
+    target_link_options(cpfe PRIVATE "--coverage")
+  endif()
+endif()

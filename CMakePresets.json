@@ -47,6 +47,38 @@
       }
     },
     {
+      "name": "macos-arm-gcc-be-debug",
+      "inherits": "macos-arm-common",
+      "displayName": "MacOS ARM (GCC Backend) Build Config - DEBUG",
+      "description": "MacOS ARM build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-debug",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "macos-arm-clang",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "clang",
+        "CXX": "clang++"
+      }
+    },
+    {
+      "name": "macos-arm-gcc-be-release",
+      "inherits": "macos-arm-common",
+      "displayName": "MacOS ARM (GCC Backend) Build Config - RELEASE",
+      "description": "MacOS ARM release build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-release",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "macos-arm-clang-release",
+        "CMAKE_BUILD_TYPE": "Release",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "clang",
+        "CXX": "clang++"
+      }
+    },
+    {
       "name": "macos-x86-common",
       "hidden": true,
       "description": "MacOS x86 base config",
@@ -275,6 +307,38 @@
       "cacheVariables": {
         "EDG_MACRO_CONF": "linux-gcc-reflection-release",
         "CMAKE_BUILD_TYPE": "Release"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
+      "name": "linux-gcc-be-debug",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC Backend) Build Config - DEBUG",
+      "description": "Linux debug build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-debug",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
+      "name": "linux-gcc-be-release",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC Backend) Build Config - RELEASE",
+      "description": "Linux release build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-release",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc-release",
+        "CMAKE_BUILD_TYPE": "Release",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
       },
       "environment": {
         "CC": "gcc",

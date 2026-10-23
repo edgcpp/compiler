@@ -8400,7 +8400,7 @@ determine if a leading space is still needed).
 }  /* form_label_attributes */
 
 #endif /* BACK_END_IS_C_GEN_BE */
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE
 
 void form_asm_name(a_const_char                           *asm_name,
                    an_il_to_str_output_control_block_ptr  octl)
@@ -8411,7 +8411,13 @@ asm_name is allowed to be NULL.
 {
   a_const_char *c;
 
-  if (gcc_or_clang_is_generated_code_target && asm_name != NULL) {
+  if ((
+#if BACK_END_IS_GCC_GEN_BE
+       TRUE
+#else /* !BACK_END_IS_GCC_GEN_BE */
+       gcc_or_clang_is_generated_code_target
+#endif /* BACK_END_IS_GCC_GEN_BE */
+       ) && asm_name != NULL) {
     octl->output_str(" __asm__(", octl);
     output_partial_token_str("\"", octl);
     for (c = asm_name; *c != '\0'; c++) {
@@ -8429,7 +8435,13 @@ void form_var_reg_name(a_named_register                       reg,
 Output an asm register name for a variable in the way described by octl.
 */
 {
-  if (gcc_or_clang_is_generated_code_target) {
+  if (
+#if BACK_END_IS_GCC_GEN_BE
+      TRUE
+#else /* !BACK_END_IS_GCC_GEN_BE */
+      gcc_or_clang_is_generated_code_target
+#endif /* BACK_END_IS_GCC_GEN_BE */
+      ) {
     octl->output_str(" __asm__(", octl);
     output_partial_token_str("\"", octl);
     octl->output_str(named_register_names[(int)reg], octl);
@@ -8438,7 +8450,7 @@ Output an asm register name for a variable in the way described by octl.
   }  /* if */
 }  /* form_var_reg_name */
 
-#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if SUN_EXTENSIONS_ALLOWED
