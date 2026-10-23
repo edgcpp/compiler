@@ -364,6 +364,16 @@ class ForgeStore:
       row = result.scalar_one_or_none()
       return _pull_request_record(row) if row is not None else None
 
+  async def find_pull_request_by_review(self,
+                                        review_id: uuid.UUID
+                                        ) -> Optional[PullRequestRecord]:
+    async with self._session() as session:
+      result = await session.execute(
+        select(PullRequest).where(PullRequest.review_id == review_id)
+      )
+      row = result.scalar_one_or_none()
+      return _pull_request_record(row) if row is not None else None
+
   async def open_pull_requests(self,
                                forge: str,
                                repository: Optional[str] = None
@@ -451,35 +461,65 @@ class ForgeStore:
       row.next_attempt_at = None
       row.last_error = None
 
-  async def mark_failed(self,
-                        pull_request_id: int,
-                        generation: int,
-                        error: str,
-                        *,
-                        now: datetime,
-                        max_attempts: int,
-                        base_delay: float,
-                        max_delay: float) -> bool:
-    '''Record a processing failure and schedule a retry with exponential
-    backoff. After ``max_attempts`` the service gives up until something
-    about the pull request changes. Returns whether it gave up.
+  async def begin_attempt(self,
+                          pull_request_id: int,
+                          generation: int,
+                          *,
+                          now: datetime,
+                          max_attempts: int,
+                          base_delay: float,
+                          max_delay: float) -> bool:
+    '''Count an attempt at processing ``generation``, before it starts,
+    as a failure: so one that never finishes (the service killed part-way,
+    say by a pull request that exhausts its memory) counts too. It
+    schedules the retry, with exponential backoff, and records why, until
+    ``mark_processed`` or ``mark_failed`` says how it went (or
+    ``refund_attempt`` takes it back). After ``max_attempts`` the service
+    gives up until something about the pull request changes. Returns
+    whether it gave up (then there is no attempt).
     '''
     async with self._session() as session, session.begin():
       row = await session.get(PullRequest, pull_request_id)
       if row is None:
         return True
-      row.last_error = error
       if row.generation != generation:
-        # Changed while processing; retry right away with the new state.
+        # Changed since; the attempt is at the new state.
         return False
-      row.error_count += 1
       if row.error_count >= max_attempts:
         row.processed_generation = generation
         row.next_attempt_at = None
         return True
+      row.error_count += 1
+      row.last_error = 'processing never finished (the service stopped)'
       delay = min(max_delay, base_delay * 2 ** (row.error_count - 1))
       row.next_attempt_at = now + timedelta(seconds = delay)
       return False
+
+  async def mark_failed(self,
+                        pull_request_id: int,
+                        generation: int,
+                        error: str) -> None:
+    '''Record why the attempt at ``generation`` (counted already, by
+    ``begin_attempt``) failed.
+    '''
+    async with self._session() as session, session.begin():
+      row = await session.get(PullRequest, pull_request_id)
+      # Changed while processing: its counts were reset, to retry at once.
+      if row is not None and row.generation == generation:
+        row.last_error = error
+
+  async def refund_attempt(self, record: PullRequestRecord) -> None:
+    '''Take back the attempt ``begin_attempt`` counted at ``record``'s
+    generation, which didn't fail through the pull request's fault (the
+    publisher couldn't be reached, or the service is stopping): as it was
+    in ``record``, read before.
+    '''
+    async with self._session() as session, session.begin():
+      row = await session.get(PullRequest, record.id)
+      if row is not None and row.generation == record.generation:
+        row.error_count = record.error_count
+        row.next_attempt_at = record.next_attempt_at
+        row.last_error = record.last_error
 
   async def sections(self, pull_request_id: int) -> list[SectionRecord]:
     async with self._session() as session:

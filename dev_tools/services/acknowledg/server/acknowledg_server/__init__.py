@@ -671,6 +671,21 @@ async def _receive_provider_replies(
       ):
         continue
 
+      if request_tag == RequestTags.INVALID_REQUEST:
+        # A provider failed a reviewer's request: tell the reviewer (only
+        # its own reviewers can be reached, as they are per review). One
+        # naming no reviewer isn't answered with another error: the two
+        # would bounce back and forth for as long as the section is served.
+        try:
+          failed_for = uuid.UUID(str(request_value['reviewer_id']))
+        except (KeyError, TypeError, ValueError):
+          continue
+        await run_descr.publish_to_reviewer(
+          failed_for,
+          message(RequestTags.INVALID_REQUEST, section = section)
+        )
+        continue
+
       if request_tag == RequestTags.ILLEGAL_ACCESS:
         try:
           offender = uuid.UUID(str(request_value['reviewer_id']))

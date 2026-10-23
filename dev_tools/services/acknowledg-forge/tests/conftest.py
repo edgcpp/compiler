@@ -233,6 +233,10 @@ def make_tools_dir(path: Path) -> Path:
 # The builder runner the local_builder fixture serves for the test, which
 # make_config points configurations at.
 _BUILDER_SERVICE_URL = 'ACKNOWLEDG_FORGE_BUILDER_SERVICE_URL'
+# The test's other clients of that runner (each Harness's), which
+# local_builder closes before it stops the runner: the runner's shutdown
+# waits for their connections.
+_builder_clients: list[RunnerClient] = []
 
 
 @pytest_asyncio.fixture(autouse = True)
@@ -249,7 +253,11 @@ async def local_builder(tmp_path: Path,
       home = tmp_path / 'home',
       tools_dir = make_tools_dir(tmp_path / 'tools')) as client:
     monkeypatch.setenv(_BUILDER_SERVICE_URL, client.url)
-    yield client
+    try:
+      yield client
+    finally:
+      while len(_builder_clients) != 0:
+        await _builder_clients.pop().close()
 
 
 def make_config(home: Path, **overrides: str) -> ForgeServiceConfig:
@@ -283,14 +291,16 @@ class Harness:
     self.forge = forge
     self.config = config
     self.clock = clock
-    self.publisher = publisher or FakePublisher()
+    self.publisher = publisher or FakePublisher(store, forge.name)
     self.commenter = commenter or FakeCommenter()
     self.wake = asyncio.Event()
     config.home.mkdir(parents = True, exist_ok = True)
-    self.sandbox = Sandbox(
-      builder = (RunnerClient(config.builder_service_url)
-                 if config.builder_service_url is not None else None)
-    )
+    builder = None
+    if config.builder_service_url is not None:
+      builder = RunnerClient(config.builder_service_url)
+      builder.start()
+      _builder_clients.append(builder)
+    self.sandbox = Sandbox(builder = builder)
     self.workspaces = Workspaces(config.home, forge)
     self.ingestor = Ingestor(
       store,
@@ -321,6 +331,7 @@ class Harness:
 
   async def start(self) -> None:
     await self.announcer.start()
+    await self.publisher.sync_all()
     await self.processor.restore()
 
   async def step(self) -> None:

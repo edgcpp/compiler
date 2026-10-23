@@ -40,6 +40,7 @@ from edgacknowledg import (
   ProtocolMessage,
   RequestTags,
   RichName,
+  decode_response,
   message,
 )
 
@@ -174,6 +175,18 @@ def trunc_display_content(content: str) -> Dict[str, Union[str, bool]]:
       'content': content
     }
   return { 'content': content }
+
+
+def reviewer_of(request: Any) -> Optional[str]:
+  '''The reviewer who made ``request``, as a handler receives it (the
+  server names them in every reviewer's request); ``None`` if it isn't a
+  reviewer's but the server's, e.g. its error for a reply it refused,
+  which a handler doesn't answer (an answer would only bounce back and
+  forth).
+  '''
+  _tag, value, _section = decode_response(request)
+  reviewer_id = value.get('reviewer_id') if isinstance(value, dict) else None
+  return None if reviewer_id is None else str(reviewer_id)
 
 
 
