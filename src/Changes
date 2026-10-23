@@ -1,5 +1,35 @@
 Version 7.1
 
+10/16/26  [GH #338]
+Lambdas that name template parameters in function template declarations
+
+A lambda in the declaration of a function template that names a template
+parameter (in the type of a parameter, in a default template argument, in the
+condition of Clang's enable_if attribute, ...) is rescanned when the template
+arguments are substituted for the template parameters.  The template
+parameters of most templates were not visible to that rescan, so the names
+were reported as undefined and the template could not be used:
+
+  template <class T>
+  void f(char (*)[sizeof([](T y) { return y; }(T{}))]) {}
+  void g() { char a[4]; f<int>(&a); }  // Was an error: identifier "T" is
+                                       // undefined
+
+The template parameters are now bound to the template arguments for the
+rescan of the lambda, and are put back afterwards.  The same applies to the
+condition of Clang's enable_if attribute on a function template, which is now
+rescanned in the instantiation scope of the template.
+
+This is not done yet for a generic lambda, a lambda with its own template
+parameter list, or a lambda that names a template parameter pack.  The names
+of the template parameters are still reported as undefined in those:
+
+  template <class T>
+  void f(char (*)[sizeof([](auto) { return T(); }(1))]) {}
+  void g() { char a[4]; f<int>(&a); }  // Still an error: identifier "T" is
+                                       // undefined
+
+
 10/21/26 [GH #335]
 Type transformations of qualified function types
 
