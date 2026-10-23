@@ -3,7 +3,9 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''AcknowledgPublisher against a real AcknowlEDG server.'''
+'''Publishing (``publisher.acknowledg``) against a real AcknowlEDG
+server.
+'''
 
 import asyncio
 import json
@@ -31,8 +33,12 @@ from edgacknowledg import (
   rich_text,
 )
 from edgacknowledg.forge.db import SectionRecord
-from edgacknowledg.forge.publisher import KIND_TEST_CHANGES, ReviewIdentity
-from edgacknowledg.forge.publisher.acknowledg import AcknowledgPublisher
+from edgacknowledg.forge.publisher import (
+  KIND_TEST_CHANGES,
+  ReviewIdentity,
+  section_url,
+)
+from edgacknowledg.forge.publisher.acknowledg import Sync, Wanted, publish
 from edgacknowledg.forge.publisher.pool import ProcessPool
 
 # services/acknowledg/server, relative to services/acknowledg-forge/tests.
@@ -167,26 +173,24 @@ async def test_publish_heal_and_survive_bad_requests(
   # No command runs here, so the tools runner is never reached.
   pool = ProcessPool(tools_service_url = unreachable_url, processes = 2)
   await pool.start()
-  publisher = AcknowledgPublisher(
+  wanted: Wanted = asyncio.Queue()
+  task = asyncio.create_task(publish(
+    wanted,
     api_host = '127.0.0.1',
     api_port = server.port,
     api_key = None,
-    ui_host = 'ui.example',
-    ui_port = 443,
     pool = pool
-  )
-  task = asyncio.create_task(publisher.run())
+  ))
   try:
-    await asyncio.wait_for(publisher.wait_connected(), 30)
     name = [
       rich_link('https://forge.example/edg/compiler/pull/1', 'edg/compiler#1'),
       rich_text(': test'),
     ]
     review = ReviewIdentity(uuid.uuid4(), name, '')
-    await publisher.sync(review, [section])
+    wanted.put_nowait(Sync(review, [section]))
     await _wait_for_sources(server.port, review.review_id, ['test-changes'])
     assert await _names(server.port, review.review_id) == (name, name)
-    assert publisher.section_url(review.review_id, section) == (
+    assert section_url('ui.example', 443, review.review_id, section) == (
       f"https://ui.example/review/{review.review_id}/tests/test-changes"
     )
 
@@ -261,8 +265,103 @@ async def test_publish_heal_and_survive_bad_requests(
     await server.start()
     await _wait_for_sources(server.port, review.review_id, ['test-changes'])
 
-    await publisher.sync(review, [])
+    wanted.put_nowait(Sync(review, []))
     await _wait_for_sources(server.port, review.review_id, [])
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+    await pool.close()
+
+
+async def test_what_is_queued_while_away_is_published_once_back(
+                                                  server: Server,
+                                                  section: SectionRecord,
+                                                  unreachable_url: str
+                                                  ) -> None:
+  pool = ProcessPool(tools_service_url = unreachable_url, processes = 1)
+  await pool.start()
+  wanted: Wanted = asyncio.Queue()
+  server.stop()
+  task = asyncio.create_task(publish(
+    wanted,
+    api_host = '127.0.0.1',
+    api_port = server.port,
+    api_key = None,
+    pool = pool
+  ))
+  try:
+    # Queued before AcknowlEDG was ever reached...
+    first = ReviewIdentity(uuid.uuid4(), [rich_text('edg/compiler#2')], '')
+    wanted.put_nowait(Sync(first, [section]))
+    await server.start()
+    await _wait_for_sources(server.port, first.review_id, ['test-changes'])
+
+    # ...and while it was away again: the client library serves both once
+    # it is back.
+    server.stop()
+    second = ReviewIdentity(uuid.uuid4(), [rich_text('edg/compiler#3')], '')
+    wanted.put_nowait(Sync(second, [section]))
+    await asyncio.sleep(0.5)
+    await server.start()
+    await _wait_for_sources(server.port, first.review_id, ['test-changes'])
+    await _wait_for_sources(server.port, second.review_id, ['test-changes'])
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+    await pool.close()
+
+
+async def test_a_failed_request_is_reported_to_its_reviewer(
+                                                  server: Server,
+                                                  section: SectionRecord,
+                                                  unreachable_url: str
+                                                  ) -> None:
+  pool = ProcessPool(tools_service_url = unreachable_url, processes = 1)
+  await pool.start()
+  answered = 0
+  answer = pool.answer
+
+  async def counting(*args: Any) -> Any:
+    nonlocal answered
+    answered += 1
+    return await answer(*args)
+
+  pool.answer = counting  # type: ignore[method-assign]
+  wanted: Wanted = asyncio.Queue()
+  task = asyncio.create_task(publish(
+    wanted,
+    api_host = '127.0.0.1',
+    api_port = server.port,
+    api_key = None,
+    pool = pool
+  ))
+  try:
+    review = ReviewIdentity(uuid.uuid4(), [rich_text('edg/compiler#4')], '')
+    wanted.put_nowait(Sync(review, [section]))
+    await _wait_for_sources(server.port, review.review_id, ['test-changes'])
+
+    # A request its handler fails on (a source too large to read): the
+    # reviewer is told, once, and the error doesn't bounce between the
+    # provider and the server (each time through the pool).
+    big = section.home / 'tests' / 'suite' / 'big.sft.cpp'
+    with big.open('wb') as file:
+      file.truncate(65 * 1024 * 1024)
+    async with websockets.connect(
+        f"ws://127.0.0.1:{server.port}/review/{review.review_id}"
+        ) as reviewer:
+      await reviewer.send(encode_message(message(
+        'test.src.show-src',
+        value = {'id': 'suite/big.sft.cpp', 'assoc_file': None},
+        section = 'test-changes'
+      )))
+      tag = None
+      while tag != 'invalid':
+        tag, _, reply_section = decode_response(
+          await asyncio.wait_for(reviewer.recv(), 10)
+        )
+      assert reply_section == 'test-changes'
+      await asyncio.sleep(1)
+    assert answered == 1
   finally:
     task.cancel()
     await asyncio.gather(task, return_exceptions = True)

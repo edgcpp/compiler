@@ -255,14 +255,42 @@ def load_edgy_config(args: argparse.Namespace, test_home: Path) -> EdgyConfig:
     )
 
     test_suites = config_file_dict.get('test_suites', {})
+    primary_test_suites = test_suites.get('primary', [])
+    secondary_test_suites = test_suites.get('secondary', [])
+    _validate_configured_suites(
+      config_file_path,
+      {'primary': primary_test_suites, 'secondary': secondary_test_suites}
+    )
     config_sets = config_file_dict.get('config_sets', {})
     return EdgyConfig(
       test_home,
       loaded_configs,
       config_sets,
-      test_suites.get('primary', []),
-      test_suites.get('secondary', [])
+      primary_test_suites,
+      secondary_test_suites
     )
+
+def _validate_configured_suites(config_file_path: Path,
+                                test_suites: Dict[str, Any]) -> None:
+  '''Exit unless each list of suites ``config_file_path`` gives is a list of
+  valid names.'''
+  invalid_test_suite_encountered = False
+  for kind, test_suite_names in test_suites.items():
+    if not isinstance(test_suite_names, list):
+      edgutil.eprint(f"Invalid {kind} test suites {test_suite_names!r} in "
+                     f"{config_file_path} (expected a list of names).")
+      invalid_test_suite_encountered = True
+      continue
+    for test_suite in test_suite_names:
+      if not (isinstance(test_suite, str) and
+              edgtest.is_valid_suite_name(test_suite)):
+        edgutil.eprint(f"Invalid test suite name {test_suite!r} in "
+                       f"{config_file_path} (expected 1-64 of A-Z, a-z, "
+                       "0-9, _ and -).")
+        invalid_test_suite_encountered = True
+
+  if invalid_test_suite_encountered:
+    sys.exit(1)
 
 def get_expectation_path(run_config: TestRunConfig,
                          test_suite_name: str) -> Path:
@@ -627,7 +655,7 @@ def _diagnose_bad_expectations_file(file_path: Path) -> None:
       line_ctr += 1
       try:
         parse_test_status(line_text)
-      except:
+      except Exception:
         if len(line_text) != 0:
           edgutil.eprint(
             f"{file_path_str}, line {line_ctr}: "
@@ -668,7 +696,7 @@ def _construct_replay_filters(
         )
         for key in comparison:
           desired_tests.add(parsed_test_status_key_to_name(key))
-    except:
+    except Exception:
       edgutil.eprint(
         f"Failed to compare the previous run of the {test_suite.name} "
         'suite to its expectations.'
@@ -691,7 +719,7 @@ def _construct_replay_filters(
           elif (args.replay == 'output-mismatch' and
                 parsed_test_status.is_output_mismatch()):
             desired_tests.add(parsed_test_status_key_to_name(key))
-    except:
+    except Exception:
       edgutil.eprint(
         f"Failed to parse test statuses in previous run of {test_suite.name}."
       )
@@ -1246,7 +1274,7 @@ class TestStatusChecker:
                 encountered_lines: List[str]) -> Optional['TestStatusChecker']:
     try:
       return TestStatusChecker(expected_lines, encountered_lines)
-    except:
+    except Exception:
       return None
 
   def _get_status_for_comparison(

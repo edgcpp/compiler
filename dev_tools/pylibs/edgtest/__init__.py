@@ -204,6 +204,15 @@ DEFAULT_TEST_EXTENSIONS = (
   {'sft.cpp', 'sft.c', 'mft.cpp', 'mft.c'}
 )
 
+# What a test suite (a directory of the test home's tests/) may be named.
+# Tools taking suite names from untrusted input (e.g. the AcknowlEDG Forge,
+# from expectation file names) rely on it to bound them.
+_SUITE_NAME_REGEX = re.compile(r'[A-Za-z0-9_-]{1,64}')
+
+def is_valid_suite_name(name: str) -> bool:
+  '''Return whether ``name`` may name a test suite.'''
+  return _SUITE_NAME_REGEX.fullmatch(name) is not None
+
 def test_extensions_for_suite(test_home: Path,
                               suite_name: str) -> Set[str]:
   '''Return a list of file extensions that should be considered when searching

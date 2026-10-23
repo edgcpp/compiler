@@ -39,7 +39,10 @@ from edgacknowledg.forge.publisher import (
   KIND_TEST_CHANGES,
   KIND_TEST_FAILURES,
 )
-from edgacknowledg.forge.publisher.protocol import MESSAGE_LIMIT, decode_section
+from edgacknowledg.forge.publisher.protocol import (
+  MESSAGE_LIMIT,
+  decode_section,
+)
 from edgacknowledg.forge.runner.client import RunnerClient
 from edgacknowledg.forge.sandbox import Sandbox
 
@@ -130,24 +133,27 @@ async def _run(channel_fd: int) -> None:
     sock = sock,
     limit = MESSAGE_LIMIT
   )
+  bench_workers = BackgroundWorkerPool(_BENCH_WORKERS)
   # One connection to the tools runner, for every command this process
   # runs.
-  tools = RunnerClient(os.environ.get(f"{ENV_PREFIX}TOOLS_SERVICE_URL", ''))
-  sandbox = Sandbox(tools = tools)
-  bench_workers = BackgroundWorkerPool(_BENCH_WORKERS)
-  try:
-    channel.write(b'{"ready": true}\n')
-    await channel.drain()
-    while True:
-      line = await messages.readline()
-      if line == b'':
-        return
-      reply = await answer(json.loads(line), sandbox, bench_workers)
-      channel.write((json.dumps(reply) + '\n').encode())
+  async with RunnerClient(
+      os.environ.get(f"{ENV_PREFIX}TOOLS_SERVICE_URL", '')) as tools:
+    sandbox = Sandbox(tools = tools)
+    try:
+      channel.write(b'{"ready": true}\n')
       await channel.drain()
-  finally:
-    channel.close()
-    await tools.close()
+      while True:
+        line = await messages.readline()
+        if line == b'':
+          return
+        request = json.loads(line)
+        reply = await answer(request, sandbox, bench_workers)
+        # Which request it answers.
+        reply['id'] = request.get('id')
+        channel.write((json.dumps(reply) + '\n').encode())
+        await channel.drain()
+    finally:
+      channel.close()
 
 
 def main() -> None:

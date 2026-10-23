@@ -111,7 +111,7 @@ class IndexSortDecorator:
   def decorate(self, ifc_reader, value):
     try:
       return ifc_reader.get_decomposed_index_sort(self.sort_name, value)[0]
-    except:
+    except Exception:
       sort, _ = ifc_reader.get_decomposed_index_sort_values(
         self.sort_name, value
       )
@@ -127,7 +127,7 @@ class IndexValueDecorator:
   def decorate(self, ifc_reader, value):
     try:
       return ifc_reader.get_decomposed_index_sort(self.sort_name, value)[1]
-    except:
+    except Exception:
       _, idx = ifc_reader.get_decomposed_index_sort_values(
         self.sort_name, value
       )

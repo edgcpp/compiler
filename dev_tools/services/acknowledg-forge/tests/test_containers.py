@@ -41,10 +41,12 @@ pytestmark = pytest.mark.skipif(
   reason = 'needs Docker and ACKNOWLEDG_FORGE_TEST_IMAGE'
 )
 
-# The service container's command, so probes can run in it.
+# The service container's command, so probes can run in it (and so no
+# healthcheck: nothing answers it).
 _OVERRIDE = '''services:
   service:
     command: ["sleep", "infinity"]
+    healthcheck: {disable: true}
 '''
 
 
@@ -209,7 +211,7 @@ def test_networks_pair_containers(deployment: Deployment) -> None:
 
 def test_webhooks_bound_to_the_frontend_reach_only_the_host(
     deployment: Deployment) -> None:
-  # As the service does with ACKNOWLEDG_FORGE_WEBHOOK_BIND=
+  # As the service does with ACKNOWLEDG_FORGE_SERVICE_BIND=
   # service-frontend:2728 (a stand-in server; the service isn't running).
   deployment.compose(
     'exec', '--detach', 'service', PYTHON, '-m', 'http.server',
@@ -240,12 +242,14 @@ def test_the_service_builds_through_the_builder(
     'import asyncio, json\n'
     'from edgacknowledg.forge.sandbox import RunnerClient, Sandbox\n'
     'async def main():\n'
-    "  sandbox = Sandbox(builder = RunnerClient('ws://builder:2730'))\n"
-    '  await sandbox.check()\n'
-    '  allowed = await sandbox.run(\n'
-    "    ['python3', '/edg/tools/bin/edg-rematerialize-test-run', '--help'],\n"
-    '    timeout = 60)\n'
-    "  refused = await sandbox.run(['sh', '-c', 'id'], timeout = 60)\n"
+    "  async with RunnerClient('ws://builder:2730') as builder:\n"
+    '    sandbox = Sandbox(builder = builder)\n'
+    '    await sandbox.check()\n'
+    '    allowed = await sandbox.run(\n'
+    "      ['python3', '/edg/tools/bin/edg-rematerialize-test-run',\n"
+    "       '--help'],\n"
+    '      timeout = 60)\n'
+    "    refused = await sandbox.run(['sh', '-c', 'id'], timeout = 60)\n"
     '  print(json.dumps([allowed.returncode, allowed.output,\n'
     '                    refused.returncode, refused.output]))\n'
     'asyncio.run(main())\n'
@@ -265,16 +269,15 @@ def test_the_publisher_runs_tools_through_its_runner(
     'from edgacknowledg.forge.runner.client import RunnerClient, '
     'RunnerError\n'
     'async def main():\n'
-    "  client = RunnerClient('ws://tools:2732')\n"
-    '  codes = []\n'
-    "  for argv in (['ifc-dump', '--help'], ['cg_annotate', '--version']):\n"
-    '    codes.append((await client.run(argv, timeout = 60)).returncode)\n'
-    '  try:\n'
-    "    await client.run(['sh', '-c', 'id'], timeout = 60)\n"
-    "    codes.append('ran')\n"
-    '  except RunnerError as ex:\n'
-    '    codes.append(str(ex))\n'
-    '  await client.close()\n'
+    "  async with RunnerClient('ws://tools:2732') as client:\n"
+    '    codes = []\n'
+    "    for argv in (['ifc-dump', '--help'], ['cg_annotate', '--version']):\n"
+    '      codes.append((await client.run(argv, timeout = 60)).returncode)\n'
+    '    try:\n'
+    "      await client.run(['sh', '-c', 'id'], timeout = 60)\n"
+    "      codes.append('ran')\n"
+    '    except RunnerError as ex:\n'
+    '      codes.append(str(ex))\n'
     '  print(json.dumps(codes))\n'
     'asyncio.run(main())\n'
   ))
@@ -289,24 +292,24 @@ def test_the_publisher_runs_tools_through_its_runner(
 def test_the_publisher_serves_each_connection_itself(
     deployment: Deployment) -> None:
   # The service connects (here: a probe), and the publisher server answers
-  # its requests, with a publisher of its own for the connection; its pool
-  # processes stand ready for reviewers.
+  # its requests with its publisher; its pool processes stand ready for
+  # reviewers.
   result = deployment.python('service', (
     'import asyncio, json, uuid\n'
     'from websockets.asyncio.client import connect\n'
+    'from edgacknowledg import rich_text\n'
+    'from edgacknowledg.forge.publisher import ReviewIdentity\n'
+    'from edgacknowledg.forge.publisher.protocol import encode_review\n'
     'async def main():\n'
     "  async with connect('ws://publisher:2731') as connection:\n"
     '    await connection.send(json.dumps({\n'
     "      'api_host': 'acknowledg.invalid', 'api_port': 2727,\n"
     "      'api_key': None, 'ui_host': 'ui.invalid', 'ui_port': 443,\n"
     f"      'reviews_dir': '{STATE}/reviews'}}))\n"
-    '    await connection.send(json.dumps({\n'
-    "      'op': 'remove', 'review_id': str(uuid.uuid4())}))\n"
-    '    while True:\n'
-    '      answer = json.loads(await connection.recv())\n'
-    "      if 'event' not in answer:\n"
-    '        print(json.dumps(answer))\n'
-    '        return\n'
+    "    review = ReviewIdentity(uuid.uuid4(), [rich_text('probe')], '')\n"
+    "    await connection.send(json.dumps({'op': 'sync',\n"
+    "      'review': encode_review(review), 'sections': []}))\n"
+    '    print(await connection.recv())\n'
     'asyncio.run(main())\n'
   ))
   assert result.stdout.strip().splitlines()[-1] == '{"ok": true}', result

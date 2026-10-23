@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 import asyncio
+import contextlib
 import difflib
 import functools
 import json
@@ -15,9 +16,11 @@ import signal
 import sys
 import tempfile
 import traceback
+import weakref
 
 from datetime import datetime
 from pathlib import Path
+from types import TracebackType
 from typing import (
   Any,
   BinaryIO,
@@ -29,6 +32,7 @@ from typing import (
   Optional,
   Set,
   Tuple,
+  Type,
   cast
 )
 
@@ -180,7 +184,10 @@ class CurrentWorkingDirectorySwap:
     os.chdir(self.dest_dir)
     return self
 
-  def __exit__(self, _type, _value, _tb):
+  def __exit__(self,
+               _type: Optional[Type[BaseException]],
+               _value: Optional[BaseException],
+               _tb: Optional[TracebackType]) -> None:
     os.chdir(self.original_cwd)
 
 def eprint(msg: str) -> None:
@@ -436,11 +443,48 @@ if sys.version_info >= (3, 7):
 else:
   def _active_asyncio_tasks(
       loop: asyncio.AbstractEventLoop) -> Set[asyncio.Task]:
-    return asyncio.Task.all_tasks(loop)  # type: ignore[attr-defined]
+    # Unlike asyncio.all_tasks, Task.all_tasks includes tasks that are done.
+    return {
+      task
+      for task in asyncio.Task.all_tasks(loop)  # type: ignore[attr-defined]
+      if not task.done()
+    }
+
+# The tasks ``_stop_asyncio_loop`` cancelled, which ``_finish_asyncio_tasks``
+# doesn't cancel again: that would cut their cleanup short.
+_stopped_asyncio_tasks: 'weakref.WeakSet[asyncio.Task]' = weakref.WeakSet()
 
 def _stop_asyncio_loop(loop: asyncio.AbstractEventLoop) -> None:
+  '''Cancel every task on ``loop``; again, should it be asked again (e.g. a
+  second SIGINT, to cut a stuck cleanup short).
+  '''
   for task in _active_asyncio_tasks(loop):
+    _stopped_asyncio_tasks.add(task)
     task.cancel()
+
+def _finish_asyncio_tasks(loop: asyncio.AbstractEventLoop) -> None:
+  '''Run ``loop`` until every task on it has finished, cancelling those
+  ``_stop_asyncio_loop`` hasn't (e.g. those started as others cleaned up),
+  as ``asyncio.run`` does; report what failed other than by being
+  cancelled.
+  '''
+  tasks = _active_asyncio_tasks(loop)
+  while tasks:
+    for task in tasks:
+      if task not in _stopped_asyncio_tasks:
+        _stopped_asyncio_tasks.add(task)
+        task.cancel()
+    loop.run_until_complete(
+      asyncio.gather(*tasks, return_exceptions = True)
+    )
+    for task in tasks:
+      if not task.cancelled() and task.exception() is not None:
+        loop.call_exception_handler({
+          'message': 'unhandled exception while stopping the loop',
+          'exception': task.exception(),
+          'task': task,
+        })
+    tasks = _active_asyncio_tasks(loop)
 
 @functools.lru_cache(maxsize = None)
 def lazy_init_event_loop() -> asyncio.AbstractEventLoop:
@@ -479,8 +523,10 @@ def run_asyncio_loop(
   the initial async function asyncio.
 
   If that task raises ``AsyncLoopFatalError``, remaining tasks are cancelled
-  the same way a SIGINT/SIGTERM would cancel them, those cancelled tasks are
-  awaited, and the error is re-raised to the caller.
+  the same way a SIGINT/SIGTERM would cancel them, and the error is
+  re-raised to the caller.  Either way, once stopped, the loop runs until
+  every task has finished (cancelling any started meanwhile), so each
+  cancelled task's cleanup completes.
 
   Pass ``install_signal_handlers=False`` when the caller already registers
   process-level handlers and must not have them replaced by the event loop.
@@ -496,9 +542,33 @@ def run_asyncio_loop(
       _stop_asyncio_loop(loop)
       raise
 
-  return loop.run_until_complete(
-    asyncio.shield(loop.create_task(run_task_consumer()))
-  )
+  consumer = loop.create_task(run_task_consumer())
+  try:
+    return loop.run_until_complete(consumer)
+  finally:
+    if consumer in _stopped_asyncio_tasks:
+      _finish_asyncio_tasks(loop)
+
+async def async_terminate_within(process: asyncio.subprocess.Process,
+                                 allowance: float) -> int:
+  '''Terminate ``process`` (SIGTERM, so it may clean up, e.g. remove its
+  lock files), killing it should it not exit within ``allowance`` seconds;
+  return its exit status once it has exited.  A process that has already
+  exited is left alone.
+  '''
+  if process.returncode is None:
+    # Raised should asyncio already be done with it (its transport closed).
+    with contextlib.suppress(ProcessLookupError):
+      process.terminate()
+    try:
+      await asyncio.wait_for(process.wait(), allowance)
+    except BaseException as ex:
+      # Out of time, or cancelled while waiting: kill it either way.
+      with contextlib.suppress(ProcessLookupError):
+        process.kill()
+      if not isinstance(ex, asyncio.TimeoutError):
+        raise
+  return await process.wait()
 
 def handle_proc_cancel(proc: Optional[asyncio.subprocess.Process]) -> bool:
   '''Terminate the given process prematurely.
@@ -523,7 +593,7 @@ def handle_proc_cancel(proc: Optional[asyncio.subprocess.Process]) -> bool:
 
 class AsyncJobLoop:
   def __init__(self, loop: asyncio.AbstractEventLoop, *, max_jobs: int,
-               max_update_interval = 1) -> None:
+               max_update_interval: float = 1) -> None:
     self.loop = loop
     self.max_jobs = max_jobs
     self.active_tasks: List[asyncio.Task] = []
@@ -642,7 +712,7 @@ class AsyncStatusReporter:
     self._print_status_line()
     sys.stdout.write('\n')
 
-  def print(self, string: str, end = '\n') -> None:
+  def print(self, string: str, end: str = '\n') -> None:
     # Setup to overwrite the status line if one is present. This is
     # particularly important for piped stdout as we don't want to pollute the
     # output stream with a bunch of nonsensical return characters.

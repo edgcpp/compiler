@@ -14,7 +14,8 @@ A forge service supplies its ``Forge`` (and optionally ``ForgeWebhooks`` and
   tools, and publisher containers run (``local``),
 - the processor (and, if enabled, the announcer after each sweep),
 - the poller (always: at least the startup sync),
-- the webhook receiver and its event worker (only if configured).
+- with a service bind, the web app (``serving``): health checks, and if
+  enabled, the webhook receiver (``webhooks``) and its event worker.
 '''
 
 import asyncio
@@ -26,7 +27,7 @@ import sys
 from dataclasses import dataclass
 from typing import Callable, Optional
 
-from edgacknowledg.forge import Forge, ForgeCommenter, ForgeWebhooks
+from edgacknowledg.forge import Forge, ForgeCommenter, ForgeWebhooks, serving
 from edgacknowledg.forge.announcer import Announcer
 from edgacknowledg.forge.config import ConfigError, ForgeServiceConfig
 from edgacknowledg.forge.db import ForgeStore
@@ -40,7 +41,7 @@ from edgacknowledg.forge.sandbox import (
   Sandbox,
   SandboxUnavailableError,
 )
-from edgacknowledg.forge.webhooks import EventQueue, create_app
+from edgacknowledg.forge.webhooks import EventQueue, create_receiver
 from edgacknowledg.forge.workspace import Workspaces
 
 _log = logging.getLogger(__name__)
@@ -54,33 +55,12 @@ class ForgeComponents:
   commenter: Optional[ForgeCommenter] = None
 
 
-async def _serve_webhooks(app: object, bind: str) -> None:
-  # Only needed (and imported) when webhooks are enabled.
-  from hypercorn.asyncio import serve
-  from hypercorn.config import Config
-
-  hypercorn_config = Config()
-  hypercorn_config.bind = [bind]
-  hypercorn_config.accesslog = None
-  # Log through the service's logging setup only (not twice).
-  hypercorn_config.errorlog = None
-  # Without a shutdown trigger Hypercorn installs its own SIGINT/SIGTERM
-  # handlers and shuts down alone; the service cancels it with everything
-  # else instead.
-  never = asyncio.Event()
-  await serve(
-    app,  # type: ignore[arg-type]
-    hypercorn_config,
-    shutdown_trigger = never.wait
-  )
-
-
 async def run_service(config: ForgeServiceConfig,
                       components: ForgeComponents) -> None:
-  if config.webhook_bind is not None and components.webhooks is None:
+  if config.webhooks and components.webhooks is None:
     raise ConfigError(
-      'ACKNOWLEDG_FORGE_WEBHOOK_BIND is set, but webhooks are not '
-      'configured (is the webhook secret set?)'
+      'ACKNOWLEDG_FORGE_WEBHOOKS is set, but webhooks are not configured '
+      '(is the webhook secret set?)'
     )
   if config.comments and components.commenter is None:
     raise ConfigError(
@@ -101,8 +81,9 @@ async def run_service(config: ForgeServiceConfig,
     else:
       assert config.builder_service_url is not None
       assert config.publisher_service_url is not None
-      builder = RunnerClient(config.builder_service_url)
-      stack.push_async_callback(builder.close)
+      builder = await stack.enter_async_context(
+        RunnerClient(config.builder_service_url)
+      )
       publisher_service_url = config.publisher_service_url
       if len(config.environment_secrets) != 0:
         _log.warning('secrets come from the environment (%s); use '
@@ -132,7 +113,10 @@ async def _run_components(config: ForgeServiceConfig,
       api_key = config.acknowledg_api_key,
       ui_host = config.acknowledg_ui_host,
       ui_port = config.acknowledg_ui_port,
-      reviews_dir = workspaces.reviews_dir
+      reviews_dir = workspaces.reviews_dir,
+      # What it serves: the database leads.
+      store = store,
+      forge_name = forge.name
     )
 
     processor: Optional[Processor] = None
@@ -161,19 +145,26 @@ async def _run_components(config: ForgeServiceConfig,
       after_sweep = announcer.sweep if announcer is not None else None
     )
 
-    async with asyncio.TaskGroup() as task_group:
-      task_group.create_task(publisher.run())
+    async with publisher, asyncio.TaskGroup() as task_group:
       task_group.create_task(processor.run())
       task_group.create_task(run_poller(ingestor, config))
-      if config.webhook_bind is not None:
-        assert components.webhooks is not None
-        events = EventQueue()
-        task_group.create_task(events.run(ingestor))
-        task_group.create_task(_serve_webhooks(
-          create_app(components.webhooks, events),
-          config.webhook_bind
+      # Only now, with everything started, is the service healthy.
+      if config.service_bind is not None:
+        blueprints = []
+        if config.webhooks:
+          assert components.webhooks is not None
+          events = EventQueue()
+          task_group.create_task(events.run(ingestor))
+          blueprints.append(create_receiver(components.webhooks, events))
+        host, _, port = config.service_bind.rpartition(':')
+        task_group.create_task(serving.serve(
+          *blueprints,
+          host = host.strip('[]'),
+          port = int(port)
         ))
-        _log.info('receiving webhooks on %s', config.webhook_bind)
+        _log.info('serving on %s (%s)', config.service_bind,
+                  'health checks and webhooks' if config.webhooks
+                  else 'health checks')
   finally:
     await forge.aclose()
     await store.aclose()
