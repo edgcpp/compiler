@@ -324,6 +324,8 @@ class PrePushChecker:
           for error in format_errors:
             print(f"    - {edgchanges.describe_error(file_path_str, error)}")
           confirm_okay()
+          if self.abort:
+            break
 
         misspellings = file_results['misspellings']
         if misspellings is None:
@@ -342,6 +344,8 @@ class PrePushChecker:
             )
             print_indented('\n'.join(hint_lines), '    ')
           confirm_okay()
+          if self.abort:
+            break
 
         typos = file_results['typos']
         if len(typos) != 0:
@@ -349,6 +353,8 @@ class PrePushChecker:
           for typo in typos:
             print(f"    - {typo}")
           confirm_okay()
+          if self.abort:
+            break
 
         coding_errors = file_results['coding_errors']
         if len(coding_errors) != 0:
@@ -357,23 +363,31 @@ class PrePushChecker:
             print(f"    Missing comment on #endif:")
             print_indented('\n'.join(endif_hits), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
           else_hits = coding_errors['missing_elses']
           if len(else_hits) != 0:
             print(f"    Missing comment on #else:")
             print_indented('\n'.join(else_hits), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
           closing_comments = coding_errors['closing_comments']
           if len(closing_comments) != 0:
             print_indented('\n'.join(closing_comments), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
         overlong_lines = file_results['overlong_lines']
         if len(overlong_lines) != 0:
           for line in edgutil.format_overlong_lines(overlong_lines, '    '):
             print(line)
           confirm_okay()
+          if self.abort:
+            break
 
   def run(self) -> int:
     '''Execute the full pre-push check sequence.  Return the exit status.'''

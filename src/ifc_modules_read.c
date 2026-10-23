@@ -16511,7 +16511,7 @@ no corresponding type, return an error type.
                 result = float_type(fk_std_float64);
                 break;
               case ifc_tps_bit128:
-                result = float_type(fk_float128);
+                result = float_type(fk_std_float128);
                 break;
               default:
                 { a_string err_msg("Unexpected ", str_for(precision),

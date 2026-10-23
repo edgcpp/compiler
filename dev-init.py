@@ -298,11 +298,12 @@ async def check_edg_python() -> InitResult:
       )
       find_edg_tools.add_failure_commentary(
         'and re-run this script; or, to configure new terminals '
-        'permanently, run:'
+        'permanently, run (appending to any existing user PYTHONPATH):'
       )
       find_edg_tools.add_failure_commentary(
         '  [Environment]::SetEnvironmentVariable("PYTHONPATH", '
-        f"'{pylibs_path}', 'User')",
+        '((@([Environment]::GetEnvironmentVariable("PYTHONPATH", "User"), '
+        f"'{pylibs_path}') | Where-Object {{ $_ }}) -join ';'), 'User')",
         allow_wrap = False
       )
       find_edg_tools.add_failure_commentary(

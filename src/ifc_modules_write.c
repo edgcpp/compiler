@@ -2713,7 +2713,6 @@ for the float type.
       set_ifc_basis(&fund_type, ifc_tbs_double);
       set_ifc_precision(&fund_type, ifc_tps_long);
       break;
-    case fk_float128:
     case fk_std_float128:
       set_ifc_basis(&fund_type, ifc_tbs_float);
       set_ifc_precision(&fund_type, ifc_tps_bit128);
@@ -2731,16 +2730,18 @@ for the float type.
       set_ifc_basis(&fund_type, ifc_tbs_float);
       set_ifc_precision(&fund_type, ifc_tps_bit64);
       break;
+    case fk_float128:
     case fk_fp16:
     case fk_float32x:
     case fk_float64x:
     case fk_float80:
     case fk_std_bfloat16:
     case fk_last:
-      /* These extended floating-point kinds have no IFC encoding that
-         distinguishes them from other floating-point types of the same
-         size ("__fp16" in particular has a different mangling than
-         "_Float16"). */
+      /* These extended floating-point kinds have no IFC fundamental-type
+         encoding that distinguishes them from other floating-point types
+         of the same size ("__fp16" and "__float128" in particular have
+         different manglings than "_Float16" and "_Float128"); they will
+         be covered by an EDG extension type. */
       ifc_write_catastrophe();
       break;
     default_is_unexpected();
