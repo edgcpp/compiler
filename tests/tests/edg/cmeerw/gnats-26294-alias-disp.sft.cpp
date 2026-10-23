@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^file-scope (name-qualifier@|variable@|class-type-supplement@|type@.*\\nkind: +(tk_struct|is_template_alias|template_arg_list|name_qualifier))/' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|qualifier|qualifier[.]class_type|extra_info|kind|name|type|declared_type|typeref_type|orig_template_arg_list|template_arg_list):' -e '^file-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (name-qualifier@|variable@|class-type-supplement@|type@.*\nkind: +(tk_struct|is_template_alias|template_arg_list|name_qualifier))/' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|qualifier|qualifier[.]class_type|extra_info|kind|name|type|declared_type|typeref_type|orig_template_arg_list|template_arg_list):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename T>
 struct A

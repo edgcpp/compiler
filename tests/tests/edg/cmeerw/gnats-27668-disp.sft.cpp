@@ -1,7 +1,7 @@
 //type:fp
 //options_all:-w -tused --no_il_lower --il_display
 //options:--c++14:--c++14 --gn 140200:--c++14 --clang_version 200100:--ms_c++20 --microsoft_version 1942
-//filter:awk '/^file-scope (variable|template)@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  decl_position\[.]seq|  referenced|  needed|  name_linkage|storage_class|init_kind|constant):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//g'
+//filter:awk '/^file-scope (variable|template)@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  decl_position[.]seq|  referenced|  needed|  name_linkage|storage_class|init_kind|constant):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//g'
 
 namespace set_only
 {

@@ -176,6 +176,14 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     }
   }
 
+  // Recordings are updated by the section's editor; a section without one
+  // (e.g. served by acknowledg-forge) is read-only.
+  const canRerecord = computed(() => {
+    return (connectionState.value.editors ?? []).some((editor) => {
+      return editor.kind === 'test' && editor.slug === reviewSectionSlug.value
+    })
+  })
+
   const rerecord = () => {
     beginPendingTask('test.recording-update')
     sendSectionMessage(
@@ -373,7 +381,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       setOutputMode("test.src.show-output")
     } else if (event.key === "v") {
       setOutputMode("test.src.show-src")
-    } else if (event.key === "Enter") {
+    } else if (event.key === "Enter" && canRerecord.value) {
       event.preventDefault()
       rerecord()
     }
@@ -514,6 +522,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
           Previous (p/k)
         </app-button>
         <app-button
+            v-if="canRerecord"
             keyshortcuts="Enter"
             aria-label="Update recording"
             @click="rerecord()">

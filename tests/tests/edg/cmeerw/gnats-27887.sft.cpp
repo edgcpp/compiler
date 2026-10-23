@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++17:--c++20 --gn 140200:--c++20 --clang_version 190100:--ms_c++20 --microsoft_version 1942
 //options_all:--no_il_lower --il_display
-//filter:awk '/^file-scope variable@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(type|  name|  [a-z]*_position\.seq|  [a-z]*_position\.column|    start\.seq|    start\.column|    end\.seq|    end\.column):' -e '^  [a-z]*_range$' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//g'
+//filter:awk '/^file-scope variable@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(type|  name|  [a-z]*_position.seq|  [a-z]*_position.column|    start.seq|    start.column|    end.seq|    end.column):' -e '^  [a-z]*_range$' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//g'
 
 namespace minimal
 {

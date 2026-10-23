@@ -282,9 +282,6 @@ Linux.
 #ifndef TYPE_FOR_A_SIGNED_INTEGER_VALUE
 #define TYPE_FOR_A_SIGNED_INTEGER_VALUE long long
 #endif /* TYPE_FOR_A_SIGNED_INTEGER_VALUE */
-#define MAX_INTEGER_VALUE 9223372036854775807LL
-#define MIN_INTEGER_VALUE (-MAX_INTEGER_VALUE-1)
-#define MAX_UNSIGNED_INTEGER_VALUE 18446744073709551615ULL
 
 #if defined(__aarch64__) || defined(__riscv)
 /* 64-bit ARM and RISC-V use a 128-bit long double representation. */

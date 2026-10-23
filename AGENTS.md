@@ -92,9 +92,21 @@ Hard always-on reminders (details in the RST / skill):
 
 ## Editing `Changes` files
 
-Any `Changes` changelog in the tree (not only `src/Changes`) must be written
-and kept as **valid UTF-8**. Prefer UTF-8 writes when adding or editing
-entries.
+New changelog entries go in `pending_changes/*.txt` files beside the
+`Changes` file (e.g. `src/pending_changes/gh-123-short-slug.txt`), not
+in the `Changes` file itself: tag block (`[GH #N]`, no date), summary line,
+blank line, description; optional leading `//allowed_words: …` lines accept
+words the spell check rejects (words already in the target `Changes` file
+pass without them). A nightly job runs `edg-collect-changes` to
+date them and move them into `Changes`. Check entries with
+`edg-exec -- edg-collect-changes --check src/Changes src/pending_changes`
+(for the directory in question). Edit a `Changes` file directly
+only to correct an already-collected entry. Details: skill
+**edg-changes-example**.
+
+Any `Changes` changelog in the tree (not only `src/Changes`) and every
+pending entry must be written and kept as **valid UTF-8**. Prefer UTF-8
+writes when adding or editing entries.
 
 Examples that need non-UTF-8 bytes must use `edg-changes-example` (`«HHHH…»`
 markers) and the standard note line — see skill **edg-changes-example**. After
@@ -136,6 +148,6 @@ If an agent does not auto-load skills, open the matching
 | `edg-cpfe-frontend` | [`.agents/skills/edg-cpfe-frontend/SKILL.md`](.agents/skills/edg-cpfe-frontend/SKILL.md) | Editing `src/`, IL/templates/overload, `Changes` |
 | `edg-cpfe-style` | [`.agents/skills/edg-cpfe-style/SKILL.md`](.agents/skills/edg-cpfe-style/SKILL.md) | Front-end coding style (`doc/source/code_style.rst`) |
 | `edg-python-style` | [`.agents/skills/edg-python-style/SKILL.md`](.agents/skills/edg-python-style/SKILL.md) | Python under `dev_tools/` (no formal RST; match in-tree) |
-| `edg-changes-example` | [`.agents/skills/edg-changes-example/SKILL.md`](.agents/skills/edg-changes-example/SKILL.md) | Encoding non-UTF-8 examples in any `Changes` file |
+| `edg-changes-example` | [`.agents/skills/edg-changes-example/SKILL.md`](.agents/skills/edg-changes-example/SKILL.md) | Adding a Changes entry (`pending_changes/`); encoding non-UTF-8 examples in any `Changes` file |
 | `acknowledg-client` | [`.agents/skills/acknowledg-client/SKILL.md`](.agents/skills/acknowledg-client/SKILL.md) | Batch/Direct client, reconnect, provider CLIs |
 | `acknowledg-bench` | [`.agents/skills/acknowledg-bench/SKILL.md`](.agents/skills/acknowledg-bench/SKILL.md) | `.cgout` / Ir / baselines / bench review |

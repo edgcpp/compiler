@@ -1,0 +1,115 @@
+fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 --gn 150100 Test_name.c
+file-scope class-type-supplement#1
+
+file-scope type#1
+  name:                  file-scope id-name#1: "_IO_FILE"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope class-type-supplement#2
+template_arg_list:       
+  type:                  file-scope type#2: T#(1,2)
+
+file-scope type#3
+  name:                  file-scope id-name#2: "__type_pack_element"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#2
+
+file-scope type#4
+  name:                  file-scope id-name#3: "__type_pack_element_alias"
+kind:                    tk_typeref
+typeref_type:            file-scope type#5: int
+template_arg_list:       
+  type:                  file-scope type#6: T#(1,2)
+  type:                  file-scope type#6: T#(1,2)
+kind:                    is_template_alias
+
+file-scope class-type-supplement#3
+
+file-scope type#7
+  name:                  file-scope id-name#4: "N"
+  decl_position.seq:     10
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#3
+
+file-scope class-type-supplement#4
+template_arg_list:       
+  type:                  file-scope type#8: V#(2,1)
+
+file-scope type#9
+  name:                  file-scope id-name#5: "M"
+  decl_position.seq:     14
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#4
+
+file-scope class-type-supplement#5
+template_arg_list:       
+  type:                  file-scope type#10: T#(1,1)
+  type:                  file-scope type#11: U#(1,2)
+
+file-scope type#12
+  name:                  file-scope id-name#6: "A"
+  decl_position.seq:     8
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#5
+
+file-scope class-type-supplement#6
+
+file-scope type#13
+  name:                  file-scope id-name#7: "B"
+  decl_position.seq:     21
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#6
+
+file-scope class-type-supplement#7
+proxy_of_type:           file-scope type#14: ns::A<T#(1,1)>
+
+file-scope type#15
+  name:                  file-scope id-name#6: "A"
+  decl_position.seq:     26
+kind:                    tk_class
+extra_info:              file-scope class-type-supplement#7
+
+file-scope type#14
+  name:                  file-scope id-name#6: "A"
+  decl_position.seq:     26
+kind:                    tk_typeref
+typeref_type:            file-scope type#13: B
+template_arg_list:       
+  type:                  file-scope type#16: T#(1,1)
+  explicitly_specified:  TRUE
+  type:                  file-scope type#16: T#(1,1)
+  explicitly_specified:  TRUE
+kind:                    is_template_alias
+
+file-scope base-class#1
+type:                    file-scope type#15: A
+orig_type:               file-scope type#14: ns::A<T#(1,1)>
+
+file-scope class-type-supplement#8
+template_arg_list:       
+  type:                  file-scope type#16: T#(1,1)
+
+file-scope type#17
+  name:                  file-scope id-name#8: "C"
+  decl_position.seq:     30
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#8
+
+file-scope class-type-supplement#9
+
+file-scope type#18
+  name:                  file-scope id-name#9: "type_info"
+kind:                    tk_class
+extra_info:              file-scope class-type-supplement#9
+
+file-scope type#19
+  name:                  file-scope id-name#6: "A"
+  decl_position.seq:     26
+kind:                    tk_typeref
+typeref_type:            file-scope type#13: B
+template_arg_list:       
+  type:                  file-scope type#20: <unnamed#1>#(1,1)
+  type:                  file-scope type#20: <unnamed#1>#(1,1)
+kind:                    is_template_alias
+

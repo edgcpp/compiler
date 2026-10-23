@@ -1,0 +1,41 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Codecov configuration (https://docs.codecov.com/docs/codecov-yaml).
+# The coverage job of .github/workflows/build-and-test-ci.yml merges the
+# reports of all test legs and uploads them as a single report, so no
+# upload count needs to be configured here.
+
+codecov:
+  # Wait for CI to pass before posting coverage results: a failed test leg
+  # can leave the report incomplete, which would look like a regression.
+  require_ci_to_pass: true
+
+coverage:
+  precision: 2
+  round: down
+  range: "20...80"
+  status:
+    # Report, but never fail, the project and patch checks.
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+comment:
+  layout: "header, diff, files, footer"
+  behavior: default
+  require_changes: false
+
+# Only src/ is reported (see the gcovr --filter in build-and-test-ci.yml);
+# keep the rest of the tree out of Codecov's view even if a report includes
+# it.
+ignore:
+  - "benchmarks/**"
+  - "dev_tools/**"
+  - "tests/**"
+  - "util/**"

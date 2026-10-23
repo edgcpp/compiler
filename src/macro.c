@@ -12465,7 +12465,7 @@ command line -D options.
     }  /* if */
     if (injection_enabled) {
       /* Likewise for token injection, which the EDG-provided
-         <experimental/meta.stdh> header uses to write token sequences. */
+         meta.stdh header uses to write token sequences. */
       (void)enter_predef_macro("1", "__EDG_INJECTION_ENABLED__",
                                /*cannot_be_redefined=*/TRUE,
                                /*ref_suppresses_pch_file=*/FALSE);

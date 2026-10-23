@@ -1,0 +1,69 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Check the pending Changes entries (*/pending_changes/*.txt) with
+# `edg-collect-changes --check` (format, spelling, typos, line length), so a
+# bad entry is caught before the nightly collect-changes job meets it, and run
+# the unit tests of the tools involved.
+
+name: Pending Changes Entries
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/pending_changes/**'
+      - .github/workflows/changes-fragments.yml
+      - dev_tools/bin/edg-check-file-changes
+      - dev_tools/bin/edg-collect-changes
+      - dev_tools/pylibs/edgchanges/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/tests/**
+  pull_request:
+    paths:
+      - '**/pending_changes/**'
+      - .github/workflows/changes-fragments.yml
+      - dev_tools/bin/edg-check-file-changes
+      - dev_tools/bin/edg-collect-changes
+      - dev_tools/pylibs/edgchanges/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/tests/**
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check-pending-changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+      # Each holds a Changes file and its pending_changes/ directory (keep in
+      # step with the list in collect-changes.yml).
+      CHANGES_DIRS: src util lib_src include_c++ nt_util
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      # The same dictionary as the dev-env image
+      # (dev_tools/docker/dev-env/setup-scripts/install-software.sh).
+      - name: Install aspell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aspell aspell-en
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s dev_tools/tests -v
+
+      - name: Check pending Changes entries
+        run: |
+          status=0
+          for dir in ${CHANGES_DIRS}; do
+            dev_tools/bin/edg-collect-changes --check \
+              "${dir}/Changes" "${dir}/pending_changes" || status=1
+          done
+          exit "${status}"

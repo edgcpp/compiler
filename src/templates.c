@@ -2381,6 +2381,10 @@ template parameters.
   init_decl_parse_state(&dps);
   init_templ_decl_state(&decl_state, &dps);
   decl_state.il_template_entry = alloc_template();
+  /* The IL template entry and its source correspondence are recorded in the
+     symbol so that the CTAD deducibility checks can access them. */
+  tssp->il_template_entry = decl_state.il_template_entry;
+  set_source_corresp(&decl_state.il_template_entry->source_corresp, sym);
   decl_state.decl_info = tdip;
   create_prototype_type(&decl_state, sym, tssp, (a_symbol_ptr)NULL,
                         /*is_partial_specialization=*/FALSE);
@@ -15381,7 +15385,8 @@ Otherwise, return the original template.
     coordinates = &templ->coordinates;
     tap = get_template_arg_for_coordinates(coordinates, options,
                                            &templ_arg_list, templ_param_list);
-    if (tap == NULL || tap->variant.templ.ptr == NULL) {
+    if (tap == NULL || !is_template_templ_arg(tap) ||
+        tap->variant.templ.ptr == NULL) {
       /* No value has been provided for this template parameter yet.
          Don't do the substitution, but don't consider this to be
          a copy error either. */
@@ -17356,30 +17361,34 @@ static a_type_ptr copy_class_template_placeholder_with_substitution(
 /*
 The given type is a class template placeholder type.  Perform substitution
 on the template associated with the placeholder type using the given
-template argument list and return the updated placeholder type.  See
-copy_type_with_substitution for the meaning of the parameters.
+template argument list and return the updated placeholder type, or type
+itself if no change is needed.  See copy_type_with_substitution for the
+meaning of the parameters.
 */
 {
-  a_symbol_ptr    ct_sym = type->variant.template_param.extra_info
-                               ->constraint.class_template_symbol;
+  a_template_param_type_supplement_ptr
+                  tptsp = type->variant.template_param.extra_info;
+  a_symbol_ptr    ct_sym = tptsp->constraint.class_template_symbol;
+  a_symbol_ptr    target_sym = tptsp->template_symbol != NULL ?
+                                               tptsp->template_symbol : ct_sym;
   a_template_ptr  orig_templ, templ;
-  a_type_ptr      result = NULL;
+  a_type_ptr      result = type;
 
-  check_assertion(is_class_template_symbol(ct_sym));
-  orig_templ = ct_sym->variant.template_info->il_template_entry;
+  check_assertion(is_class_template_symbol(ct_sym) &&
+                  is_class_template_symbol(target_sym));
+  orig_templ = target_sym->variant.template_info->il_template_entry;
   templ = copy_template_with_substitution(orig_templ, templ_arg_list,
                                           templ_param_list, source_pos,
                                           options, copy_error, ctws_state);
   if (!*copy_error && templ != orig_templ) {
-    a_symbol_ptr  new_ct_sym = symbol_for(templ);
+    a_symbol_ptr  new_target_sym = symbol_for(templ);
 
-    if (is_template_template_param_symbol(ct_sym) &&
-        !is_template_template_param_symbol(new_ct_sym)) {
-      /* Keep the type template template parameter as the placeholder target;
-         CTAD still needs its parameter list and default arguments. */
-      new_ct_sym = ct_sym;
+    if (is_template_template_param_symbol(ct_sym)) {
+      result = make_class_template_placeholder(ct_sym, source_pos,
+                                               new_target_sym);
+    } else {
+      result = make_class_template_placeholder(new_target_sym, source_pos);
     }  /* if */
-    result = make_class_template_placeholder(new_ct_sym, source_pos);
   }  /* if */
   return result;
 }  /* copy_class_template_placeholder_with_substitution */
@@ -18032,6 +18041,11 @@ a pointer over a reference type or creating an array of references.
                                             /*explicitly_signed=*/FALSE);
             }  /* if */
           }  /* if */
+          break;
+        } else if (!tptk_is(type, tptk_param)) {
+          /* This is not an actual template parameter (e.g., a tptk_member or
+             tptk_unknown type); there is no argument to substitute. */
+          new_type = type;
           break;
         }  /* if */
         /* If this template parameter type entry corresponds to the nth
@@ -45349,6 +45363,74 @@ Return TRUE if params includes the template parameter whose symbol is sym.
 }  /* template_param_list_contains_symbol */
 
 
+static a_boolean add_trailing_default_template_args(
+                                             a_symbol_ptr          arg_sym,
+                                             a_template_param_ptr  tttp_params,
+                                             a_template_arg_ptr    *p_args,
+                                             a_source_position     *source_pos)
+/*
+Append the default arguments of the trailing parameters of arg_sym to *p_args,
+the prototype argument list of a type template template parameter.  arg_sym is
+the template bound to that parameter, and tttp_params is its parameter list.
+Nothing is done if tttp_params contains a pack.  Return TRUE if *p_args is a
+valid argument list for arg_sym, and FALSE otherwise.  source_pos is used for
+substitution.
+*/
+{
+  a_template_param_ptr  tpp, arg_params;
+  a_template_arg_ptr    tap, last_tap = NULL;
+  a_boolean             has_pack = FALSE, copy_error = FALSE;
+
+  for (tpp = tttp_params; tpp != NULL; tpp = tpp->next) {
+    if (tpp->is_pack) has_pack = TRUE;
+  }  /* for */
+  arg_params = template_supplement_for_symbol(arg_sym)
+                                               ->cache->decl_info->parameters;
+  tpp = arg_params;
+  for (tap = *p_args; tap != NULL && tpp != NULL; tap = tap->next) {
+    last_tap = tap;
+    if (!tpp->is_pack) {
+      tpp = tpp->next;
+    }  /* if */
+  }  /* for */
+  if (!has_pack && tap != NULL) {
+    copy_error = TRUE;
+  }  /* if */
+  for (; !has_pack && !copy_error && tpp != NULL && tpp->has_default_arg &&
+         !tpp->is_pack;
+       tpp = tpp->next) {
+    a_ctws_state  ctws_state;
+
+    tap = alloc_template_arg(
+                     templ_arg_kind_for_symbol_kind(tpp->param_symbol->kind));
+    get_template_arg_value_from_default(arg_sym, tap, tpp, arg_params);
+    if (tpp->def_arg_involves_template_param) {
+      /* The default can refer to earlier parameters of arg_sym. */
+      init_ctws_state(&ctws_state);
+      substitute_template_argument(tap, tpp, *p_args, arg_params,
+                                   *p_args, arg_params, source_pos,
+                                   CTWS_MAY_BE_RESCANNED,
+                                   /*is_generic=*/FALSE, &copy_error,
+                                   &ctws_state);
+      free_list_of_variadic_param_info(ctws_state.variadic_param_info);
+    }  /* if */
+    if (copy_error) {
+      free_template_arg_list(tap);
+    } else if (last_tap == NULL) {
+      *p_args = tap;
+      last_tap = tap;
+    } else {
+      last_tap->next = tap;
+      last_tap = tap;
+    }  /* if */
+  }  /* for */
+  if (!has_pack && !copy_error && tpp != NULL && tpp->is_pack) {
+    tpp = tpp->next;
+  }  /* if */
+  return has_pack || (!copy_error && tpp == NULL);
+}  /* add_trailing_default_template_args */
+
+
 static a_type_ptr make_tttp_ctad_defining_type(
                                             a_symbol_ptr          tttp_sym,
                                             a_template_param_ptr  tttp_params,
@@ -45362,13 +45444,18 @@ tttp_params.  Return NULL if that type cannot be formed.
 */
 {
   a_template_arg_ptr  proto_args;
-  a_symbol_ptr        inst_sym;
+  a_symbol_ptr        inst_sym = NULL;
   a_type_ptr          result = NULL;
 
   proto_args = create_prototype_arg_list(tttp_sym, tttp_params,
                                          /*add_pack_descr=*/TRUE);
   push_instantiation_scope_for_rescan(arg_sym);
-  inst_sym = find_template_class_simple(arg_sym, &proto_args);
+  /* Supply defaults for any extra parameters of the bound template, and treat
+     an invalid argument list as a deduction failure. */
+  if (add_trailing_default_template_args(arg_sym, tttp_params, &proto_args,
+                                         &tttp_sym->decl_position)) {
+    inst_sym = find_template_class_simple(arg_sym, &proto_args);
+  }  /* if */
   pop_instantiation_scope_for_rescan();
   if (inst_sym != NULL && is_type_symbol(inst_sym)) {
     result = type_symbol_type(inst_sym);
@@ -45820,17 +45907,13 @@ On success, return the symbol for the new guide; otherwise return NULL.
       new_guide->decl_seq = guide_sym->decl_seq;
       new_tssp = new_guide->variant.template_info;
       new_tssp->cache->decl_info->parameters = new_template_params;
-      if (kind == actck_alias_template) {
+      if (kind == actck_alias_template ||
+          kind == actck_template_template_param) {
         /* Create an expression to check whether the alias template parameters
            are deducible from the return type of the transformed guide. */
         is_deducible_expr = make_builtin_edg_is_deducible_expr(
                                                  alias_tssp->il_template_entry,
                                                  ret_type);
-      } else if (kind == actck_template_template_param) {
-        a_template_ptr  result_ct_templ =
-              template_supplement_for_symbol(result_ct_sym)->il_template_entry;
-        is_deducible_expr = make_builtin_edg_is_deducible_expr(result_ct_templ,
-                                                               ret_type);
       }  /* if */
       guide_template_decl = guide_tssp->variant.function.decl_cache->
                                                       decl_info->template_decl;
@@ -45904,15 +45987,10 @@ On success, return the symbol for the new guide; otherwise return NULL.
     } else {
       /* For the non-template case, perform the deducible-from check for alias
          templates and for type template template parameters. */
-      if (kind == actck_alias_template &&
+      if ((kind == actck_alias_template ||
+           kind == actck_template_template_param) &&
           !is_template_deducible_from(alias_tssp->il_template_entry,
                                       ret_type)) {
-        goto done;
-      }  /* if */
-      if (kind == actck_template_template_param &&
-          !is_template_deducible_from(
-              template_supplement_for_symbol(result_ct_sym)->il_template_entry,
-              ret_type)) {
         goto done;
       }  /* if */
       new_guide = alloc_symbol(sk_routine,
@@ -46028,6 +46106,7 @@ guides of arg_sym.
   a_symbol_ptr           guide_set, guide_sym, invented_alias_sym;
   a_template_param_ptr   tttp_params;
   a_type_ptr             defining_type;
+  a_template_ptr         invented_alias_templ;
   a_boolean              is_list = FALSE;
 
   if (result_guide_list == NULL) goto done;
@@ -46043,6 +46122,11 @@ guides of arg_sym.
     invented_alias_sym = make_invented_class_template(
                                                  tttp_params, tttp_sym->header,
                                                  &tttp_sym->decl_position);
+    /* is_template_deducible_from deduces from the prototype instantiation
+       type, so record the defining-type-id there. */
+    invented_alias_templ = template_supplement_for_symbol(invented_alias_sym)
+                                                           ->il_template_entry;
+    invented_alias_templ->prototype_instantiation.type = defining_type;
     if (symbol_is(guide_set, sk_overloaded_function)) {
       is_list = TRUE;
       guide_sym = guide_set->variant.overloaded_function.symbols;
@@ -46126,16 +46210,17 @@ a_symbol_ptr bound_template_template_argument(
                                           a_boolean     *is_deducible_template)
 /*
 Return the template template argument bound to the type template template
-parameter tttp_sym and set *is_deducible_template to indicate whether it is a
+parameter tttp_sym (or tttp_sym itself when it is already a substituted
+template argument) and set *is_deducible_template to indicate whether it is a
 deducible template when the binding is non-dependent, or NULL otherwise.
 */
 {
   a_symbol_ptr  result = NULL;
 
   *is_deducible_template = FALSE;
-  if (is_template_template_param_symbol(tttp_sym)) {
-    a_symbol_ptr  bound = tttp_sym->variant.template_info
-                                  ->variant.class_template.argument_template;
+  if (tttp_sym != NULL) {
+    a_symbol_ptr  bound = template_argument_if_template_template_param(
+                                                                     tttp_sym);
     if (bound != NULL && !bound->is_error &&
         !is_template_template_param_symbol(bound)) {
       *is_deducible_template = is_deducible_template_symbol(bound);

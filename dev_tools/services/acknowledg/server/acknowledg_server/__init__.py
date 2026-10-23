@@ -27,14 +27,17 @@ from edgacknowledg import (
   IncompatibleProtocolVersion,
   ProtocolMessage,
   RequestTags,
+  RichName,
   RoleOccupied,
   batch_event_message,
   decode_response,
   encode_message,
   is_iso_timestamp,
+  is_valid_rich_name,
   is_valid_section_slug,
   message,
   outdated_protocol_message,
+  rich_text,
   role_occupied_message,
   unwrap_batch_event
 )
@@ -53,6 +56,8 @@ app = Quart(__name__)
 
 # IANA WebSocket Close Code Number Registry: 3000 Unauthorized
 WS_CLOSE_UNAUTHORIZED = 3000
+# A provider reported that the reviewer requested a file it may not read.
+WS_CLOSE_ILLEGAL_ACCESS = 3001
 
 F = TypeVar('F', bound = Callable[..., Any])
 
@@ -143,6 +148,15 @@ class NoBenchSourceSocket(Exception):
 class NoTestEditSocket(Exception):
   pass
 
+class ReviewerExpelled(Exception):
+  '''Ends a reviewer session that a provider reported for illegal access.'''
+  pass
+
+# Queued to a reviewer's session to end it (``ReviewerExpelled``); never
+# sent. Such a reviewer gets no explanation: the request couldn't have come
+# from the reviewer UI.
+_EXPEL_REVIEWER: ProtocolMessage = {}
+
 class NoBenchEditSocket(Exception):
   pass
 
@@ -194,7 +208,7 @@ def require_api_key(func: F) -> F:
 class ReviewDescriptor:
   def __init__(self, run_id: uuid.UUID) -> None:
     self.run_id = run_id
-    self._name = ''
+    self._name: Optional[RichName] = None
     self.created_at: Optional[str] = None
     self._reviewer_brokers = IdentifiedBroker()
     self._test_editors: Dict[str, SectionSlot] = {}
@@ -202,11 +216,17 @@ class ReviewDescriptor:
     self._test_sources: Dict[str, SectionSlot] = {}
     self._bench_sources: Dict[str, SectionSlot] = {}
 
-  def get_name(self) -> str:
+  def get_name(self) -> Optional[RichName]:
     return self._name
 
-  async def set_name(self, name: str) -> None:
+  async def set_name(self, name: RichName) -> None:
     self._name = name
+
+  def display_name(self) -> RichName:
+    '''The name shown to reviewers: the review's id until one is set.'''
+    if self._name is None:
+      return [rich_text(str(self.run_id))]
+    return self._name
 
   def get_num_reviewers(self) -> int:
     return len(self._reviewer_brokers.connections)
@@ -237,6 +257,7 @@ class ReviewDescriptor:
         editors.append({ 'kind': 'bench', 'slug': slug })
 
     return {
+      'name': self.display_name(),
       'sources': sources,
       'editors': editors
     }
@@ -291,6 +312,12 @@ class ReviewDescriptor:
 
   async def broadcast_to_reviewers(self, msg: ProtocolMessage) -> None:
     await self._reviewer_brokers.publish_all(msg)
+
+  async def expel_reviewer(self, reviewer_id: uuid.UUID) -> None:
+    '''End the session of a reviewer that a provider reported for illegal
+    access (``ReviewerExpelled``).
+    '''
+    await self.publish_to_reviewer(reviewer_id, _EXPEL_REVIEWER)
 
   def _subscribe_section_slot(
       self,
@@ -484,7 +511,7 @@ state_map: dict[uuid.UUID, ReviewDescriptor] = {}
 def _form_review_entry(run_descr: ReviewDescriptor) -> dict[str, Any]:
   return {
     'id': run_descr.run_id,
-    'name': run_descr.get_name() or run_descr.run_id,
+    'name': run_descr.display_name(),
     'created_at': run_descr.created_at,
     'sockets': {
       'reviewer': run_descr.get_num_reviewers(),
@@ -593,10 +620,10 @@ async def _apply_provider_meta(
     return True
 
   if request_tag == RequestTags.META_REVIEW_NAME:
-    if not isinstance(request_value, str) or not request_value:
+    if not is_valid_rich_name(request_value):
       await send(message(RequestTags.INVALID_REQUEST))
       return True
-    if not run_descr.get_name():
+    if run_descr.get_name() is None:
       await run_descr.set_name(request_value)
       await notify_review_state_changed(run_descr)
     return True
@@ -642,6 +669,16 @@ async def _receive_provider_replies(
         request_value,
         send = send
       ):
+        continue
+
+      if request_tag == RequestTags.ILLEGAL_ACCESS:
+        try:
+          offender = uuid.UUID(str(request_value['reviewer_id']))
+        except (KeyError, TypeError, ValueError):
+          await send(message(RequestTags.INVALID_REQUEST))
+          continue
+        # Reviewers are per review, so a provider can only name its own.
+        await run_descr.expel_reviewer(offender)
         continue
 
       if (request_tag not in allowed_tags or
@@ -793,8 +830,14 @@ async def _run_reviewer_session(
     run_descr: ReviewDescriptor,
     *,
     send: SendFn,
-    recv: RecvFn) -> None:
-  '''Run a browser/reviewer session for one review.'''
+    recv: RecvFn) -> bool:
+  '''Run a browser/reviewer session for one review.
+
+  Return whether it ended because a provider reported the reviewer for
+  illegal access; the caller then drops the connection, without telling the
+  reviewer why.
+  '''
+  expelled = False
   try:
     reviewer_id = uuid.uuid4()
 
@@ -804,6 +847,8 @@ async def _run_reviewer_session(
         value = run_descr.connection_state()
       ))
       async for msg in run_descr.subscribe_as_reviewer(reviewer_id):
+        if msg is _EXPEL_REVIEWER:
+          raise ReviewerExpelled()
         await send(msg)
 
     async def pull_inbound() -> None:
@@ -837,10 +882,13 @@ async def _run_reviewer_session(
     async with asyncio.TaskGroup() as tg:
       tg.create_task(push_outbound())
       tg.create_task(pull_inbound())
-  except IncompatibleProtocolVersion:
+  except* IncompatibleProtocolVersion:
     await send(outdated_protocol_message())
+  except* ReviewerExpelled:
+    expelled = True
   finally:
     await remove_run_if_dead(run_descr.run_id)
+  return expelled
 
 def _websocket_send() -> SendFn:
   async def send(msg: ProtocolMessage) -> None:
@@ -864,11 +912,11 @@ async def reviews_handler() -> None:
 @app.websocket('/review/<uuid:run_id>')
 async def review_handler(run_id: uuid.UUID) -> None:
   run_descr = _get_or_create_run(run_id)
-  await _run_reviewer_session(
-    run_descr,
-    send = _websocket_send(),
-    recv = _websocket_recv()
-  )
+  if await _run_reviewer_session(
+      run_descr,
+      send = _websocket_send(),
+      recv = _websocket_recv()):
+    await websocket.close(WS_CLOSE_ILLEGAL_ACCESS)
 
 @app.websocket('/edit/<uuid:run_id>/test/<slug>')
 @require_api_key
@@ -977,6 +1025,27 @@ def _provider_subscribe_for_type(
 @require_api_key
 async def batch_handler() -> None:
   subscriptions: Dict[uuid.UUID, _BatchSubscription] = {}
+  # Set when a reviewer session on this socket is expelled for illegal
+  # access: the whole socket is closed, every other subscription with it.
+  expelled = asyncio.Event()
+
+  async def receive() -> Any:
+    '''The next frame; raise ``ReviewerExpelled`` once a reviewer session
+    on this socket was expelled.
+    '''
+    frame = asyncio.ensure_future(websocket.receive())
+    expulsion = asyncio.ensure_future(expelled.wait())
+    try:
+      await asyncio.wait(
+        {frame, expulsion},
+        return_when = asyncio.FIRST_COMPLETED
+      )
+    finally:
+      for task in (frame, expulsion):
+        task.cancel()
+    if expelled.is_set():
+      raise ReviewerExpelled()
+    return frame.result()
 
   async def cancel_subscription(subscription_id: uuid.UUID) -> None:
     state = subscriptions.pop(subscription_id, None)
@@ -1027,7 +1096,8 @@ async def batch_handler() -> None:
       try:
         if sub_type == 'review':
           run_descr = _get_or_create_run(run_id)
-          await _run_reviewer_session(run_descr, send = send, recv = recv)
+          if await _run_reviewer_session(run_descr, send = send, recv = recv):
+            expelled.set()
           return
 
         slug = value.get('slug')
@@ -1071,10 +1141,13 @@ async def batch_handler() -> None:
     while True:
       try:
         request_tag, request_value, _section = decode_response(
-          await websocket.receive()
+          await receive()
         )
       except IncompatibleProtocolVersion:
         await websocket.send(encode_message(outdated_protocol_message()))
+        return
+      except ReviewerExpelled:
+        await websocket.close(WS_CLOSE_ILLEGAL_ACCESS)
         return
 
       if request_tag == RequestTags.BATCH_SUBSCRIBE:

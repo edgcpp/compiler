@@ -21,7 +21,10 @@ import edgutil
 from edgacknowledg import (
   IncompatibleProtocolVersion,
   is_ui_section_type,
+  is_valid_rich_name,
   review_display_name,
+  rich_name_text,
+  rich_text,
   section_slug,
   utc_now_iso,
 )
@@ -41,7 +44,7 @@ from edgacknowledg.client.bench import (
   BenchSourceHandler,
   resolve_baseline_dir,
 )
-from edgacknowledg.client.shared import ReviewClientHandler
+from edgacknowledg.client.shared import ReviewClientHandler, SandboxContext
 from edgacknowledg.client.test import TestEditHandler, TestSourceHandler
 from edgutil import eprint
 
@@ -96,10 +99,13 @@ def _make_bench_session(parameters: Dict[str, Any],
   if session is not None:
     return session
 
+  # The run (which may lie elsewhere) and the bench home are all a review
+  # may read.
+  context = SandboxContext(bench_home, root)
   session = BenchReviewSession(
-    bench_home = bench_home,
-    run_dir = root,
-    baseline_dir = resolve_baseline_dir(bench_home, tag),
+    context = context,
+    run_dir = context.subpath(root),
+    baseline_dir = resolve_baseline_dir(context.subpath(bench_home), tag),
     tag = tag,
     threshold_slow = float(
       parameters.get('slower_threshold', DEFAULT_THRESHOLD_SLOW)
@@ -131,11 +137,16 @@ def _make_handler(section: Dict[str, Any],
   if section_type == 'test.src':
     if test_home is None:
       raise ValueError('test home required for test.src sections')
+    root = Path(parameters['root'])
+    # The run (which may lie elsewhere) and the test home are all a review
+    # may read.
+    context = SandboxContext(test_home, root)
     return TestSourceHandler(
       section_name,
       slug,
-      test_home,
-      Path(parameters['root'])
+      context,
+      context.subpath(test_home),
+      context.subpath(root)
     )
   if section_type == 'test.edit':
     return TestEditHandler(section_name, slug, worker_pool)
@@ -161,9 +172,17 @@ async def build_review_client(session: BatchClientSession,
   if 'id' not in raw:
     raise ValueError('review is missing required field "id"')
 
+  # A plain title, or a rich name (see PROTOCOL.md).
+  name = raw.get('name')
+  if isinstance(name, list):
+    if not is_valid_rich_name(name):
+      raise ValueError('review "name" is not a valid rich name')
+  else:
+    name = [rich_text(review_display_name(name))]
+
   review = await session.create_review(
     uuid.UUID(str(raw['id'])),
-    review_display_name(raw.get('name')),
+    name,
     str(raw.get('timestamp') or utc_now_iso())
   )
 
@@ -254,7 +273,8 @@ def main() -> None:
               session, raw, worker_pool
             )
             print_connection_status(
-              f"Serving review \"{review.name}\" ({review.review_id})."
+              f"Serving review \"{rich_name_text(review.name)}\" "
+              f"({review.review_id})."
             )
             print_section_urls(args.ui_hostname, args.ui_port, review)
         except (OSError, ValueError) as ex:

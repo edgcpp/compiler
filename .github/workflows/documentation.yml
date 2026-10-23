@@ -6,10 +6,11 @@
 # Build the Sphinx documentation in doc/ with warnings treated as errors, so
 # documentation changes stay publishable.
 #
-# The build runs in the edgcpp/sphinx-env image, which the site workflow
-# described below also builds the published documentation with.  That image
-# installs the packages pinned in doc/requirements.txt, so after changing
-# them, rebuild it with build-edg-env sphinx-env and push it to Docker Hub.
+# The build runs in the ghcr.io/edgcpp/sphinx-env image, which the site
+# workflow described below also builds the published documentation with.
+# That image installs the packages pinned in doc/requirements.txt, so after
+# changing them, rebuild it with build-edg-env sphinx-env and push it to
+# ghcr.io/edgcpp.
 #
 # The documentation is published by the edgcpp/edgcpp.github.io site
 # workflow, not from here: it builds the release tag into
@@ -47,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
-      image: docker.io/edgcpp/sphinx-env:latest
+      image: ghcr.io/edgcpp/sphinx-env:latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v7

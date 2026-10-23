@@ -1,2 +1,56 @@
 fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope variable-template-info#1
+template_arg_list:       
+  type:                  file-scope type#1: T#(1,1)
+  type:                  file-scope type#2: U#(1,2)
+
+file-scope variable#1
+  name:                  file-scope id-name#1: "var"
+  decl_position.seq:     7
+template_info:           file-scope variable-template-info#1
+
+file-scope expr-node#1
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            24
+
+file-scope expr-node#2
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            25
+
+file-scope expr-node#3
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            26
+
+file-scope expr-node#4
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            27
+
+file-scope expr-node#5
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            28
+
+file-scope expr-node#6
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            29
+
+file-scope variable#3
+  name:                  file-scope id-name#2: "i"
+  decl_position.seq:     23
+
+file-scope variable-template-info#2
+template_arg_list:       
+  type:                  file-scope type#3: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#3: int
+
+file-scope variable#2
+  name:                  file-scope id-name#1: "var"
+  decl_position.seq:     7
+template_info:           file-scope variable-template-info#2
+

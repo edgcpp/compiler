@@ -3,7 +3,7 @@
 This document describes the WebSocket protocol used by the AcknowlEDG server,
 the Vue client, and the `edgy-review` / `edg-bench-review` /
 `edg-acknowledg-cli` providers.
-The current protocol revision is **18**.
+The current protocol revision is **19**.
 
 All frames are JSON text. Implementations live in `edgacknowledg`
 (`dev_tools/pylibs/edgacknowledg`) and must stay in sync with the JavaScript
@@ -74,26 +74,50 @@ work can flow immediately. Providers may optionally send identity updates at
 any time (on dedicated sockets or nested in `batch.event`):
 
 ```json
-{ "t": "meta.section.name", "r": 18, "v": "<tab label>" }
+{ "t": "meta.section.name", "r": 19, "v": "<tab label>" }
 ```
 
 ```json
-{ "t": "meta.review.name", "r": 18, "v": "<review list title>" }
+{ "t": "meta.review.name", "r": 19, "v": [ <rich name segments> ] }
 ```
 
 ```json
-{ "t": "meta.review.timestamp", "r": 18, "v": "<ISO-8601 datetime>" }
+{ "t": "meta.review.timestamp", "r": 19, "v": "<ISO-8601 datetime>" }
 ```
 
 - `meta.section.name` sets the display name for the section tab (shown in
   `review.connection-state` for sources)
-- `meta.review.name` sets the review list title if the review does not already
-  have one
+- `meta.review.name` sets the review's name, a [rich name](#rich-names), if
+  the review does not already have one
 - `meta.review.timestamp` sets `created_at` if the review does not already have
   one; it must be a parseable ISO-8601 datetime (a trailing `Z` is accepted)
 
 The first accepted `meta.review.name` / `meta.review.timestamp` wins; later
 messages are ignored once those fields are set.
+
+### Rich names
+
+A review's name is rich text: an array of segments, shown in order.
+
+```json
+[
+  { "type": "link", "url": "https://github.com/edgcpp/compiler/pull/329",
+    "text": "edgcpp/compiler#329" },
+  { "type": "text", "text": " CTAD through a template template parameter" }
+]
+```
+
+| Segment | Fields |
+| --- | --- |
+| `text` | `text` |
+| `link` | `url`, and optionally `text` (shown instead of the URL) |
+
+Every field is a non-empty string, and no other fields are allowed. A link's
+`url` must be `http` or `https`; reviewers' browsers open it in a new tab. A
+name has at least one and at most 32 segments, and at most 4096 characters of
+text and URLs in all. The server answers any other `meta.review.name` with
+`invalid` and leaves the name unset; the browser client also renders a link
+with any other URL as text.
 
 ## Section field `s`
 
@@ -163,6 +187,7 @@ Closing `/batch` cancels every subscription for that connection.
 | `invalid` | unused / `null` | Malformed request, bad slug, failed handshake, or unexpected tag |
 | `outdated-proto` | `null` | Peer `r` does not match |
 | `role-occupied` | `null` | Another provider already holds this UUID + slug |
+| `illegal-access` | see [Illegal access](#illegal-access) | A reviewer requested a file outside the section |
 | `test.missing-src` | `null` | Reviewer request needs a test source that is not connected |
 | `test.missing-edit` | `null` | Reviewer request needs a test editor that is not connected |
 | `bench.missing-src` | `null` | Reviewer request needs a bench source that is not connected |
@@ -179,7 +204,7 @@ On connect the server sends a full snapshot, then incremental patches.
 ```json
 {
   "id": "<uuid>",
-  "name": "<title or uuid if unnamed>",
+  "name": [ <rich name segments> ],
   "created_at": "<ISO-8601 or null>",
   "sockets": {
     "reviewer": 0,
@@ -191,9 +216,10 @@ On connect the server sends a full snapshot, then incremental patches.
 }
 ```
 
-`sockets` counts are `0` or `1` for providers (occupied or not) and the
-current reviewer connection count for `reviewer`. The list reports type
-presence, not every section name.
+`name` is the review's [rich name](#rich-names), or its id as a single text
+segment until a `meta.review.name` sets one. `sockets` counts are `0` or `1`
+for providers (occupied or not) and the current reviewer connection count for
+`reviewer`. The list reports type presence, not every section name.
 
 ### `list-reviews-patch`
 
@@ -212,6 +238,7 @@ connection-state updates, forwarded provider replies, or control tags.
 
 ```json
 {
+  "name": [ <rich name segments> ],
   "sources": [
     { "kind": "test" | "bench", "slug": "<slug>", "name": "<section_name>" }
   ],
@@ -221,7 +248,8 @@ connection-state updates, forwarded provider replies, or control tags.
 }
 ```
 
-Only occupied slots are listed.
+`name` is the review's name, as in the review list. Only occupied slots are
+listed.
 
 ### Reviewer requests
 
@@ -293,6 +321,22 @@ provider slug.
 ```
 
 `configs` is present only for test recording updates.
+
+### Illegal access
+
+When a reviewer's request names a file outside the section's tree (or, for
+content that isn't the provider user's own, one reached through a symlink),
+the provider doesn't answer the request. It reports the reviewer instead:
+
+```json
+{ "t": "illegal-access", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+```
+
+The server then closes that reviewer's socket with code **3001**, without
+any message: the reviewer UI never sends such requests, and doesn't reconnect
+by itself. For a reviewer in a `/batch` `review` subscription that is the
+whole `/batch` socket, ending every subscription on it. A provider can only
+report reviewers of its own review.
 
 ### Source `client_response` shapes (reviewer `v`)
 
@@ -397,8 +441,9 @@ match the representative.
 | `invalid` | server → any |
 | `outdated-proto` | server → any |
 | `role-occupied` | server → source/edit (or nested in `batch.event`) |
+| `illegal-access` | source/edit → server |
 | `meta.section.name` | provider → server (optional tab label) |
-| `meta.review.name` | provider → server (optional review title) |
+| `meta.review.name` | provider → server (optional review [rich name](#rich-names)) |
 | `meta.review.timestamp` | provider → server (optional created_at) |
 | `list-reviews` | server → list client |
 | `list-reviews-patch` | server → list client |

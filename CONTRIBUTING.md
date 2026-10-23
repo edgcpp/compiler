@@ -104,8 +104,9 @@ implementation characeristics).
 - [ ] You've put effort into maintaining code quality:
   - [ ] Your code is formatted in "EDG Style".
   - [ ] Your code has good comments.
-  - [ ] Your code has a Changes entry (not needed for `dev_tools` or build
-        system changes).
+  - [ ] Your code has a [Changes entry](#changes-entries) in
+        `pending_changes/` (not needed for `dev_tools` or build system
+        changes).
 - [ ] You used `edg-docker-test`:
   - [ ] You have added tests (or there are existing tests) that FAIL before
         your change but PASS after your change.
@@ -113,6 +114,31 @@ implementation characeristics).
         recorded outputs with `edg-test-run-diff` (or a similar tool).
   - [ ] You've updated the default recordings after reviewing differences
         with `edg-docker-test -W`.
+
+### Changes Entries
+
+The project includes a number of `Changes` files (effectively changelog/NEWS
+files).  Due to the number of concurrent changes, it has become impractical to
+directly maintain the `Changes` files (particularly `src/Changes`).
+
+Instead, there is a nightly job that updates the `Changes` files for all the
+work that happened over the last 24-hours.  To take advantage, add a file
+named `<something>.txt` (e.g., `gh-335-qualified-function-types.txt`)
+to the `pending_changes/` directory beside the `Changes` file your work belongs
+with:
+
+```text
+[GH #335]
+Type transformations of qualified function types
+
+Previously, the __add_lvalue_reference, __add_rvalue_reference, __add_pointer,
+and __decay intrinsics produced incorrect types for function types with cv- or
+ref-qualifiers.  They now leave such types unchanged.  For example, with
+--c++11:
+
+  using F = void() const;
+  using F = __add_pointer(F);  // Previously a spurious error, now okay.
+```
 
 ### Early Design Feedback
 

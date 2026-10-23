@@ -123,6 +123,14 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     selectBenchmark(anchor.id)
   }
 
+  // Baselines are updated by the section's editor; a section without one
+  // (e.g. served by acknowledg-forge) is read-only.
+  const canUpdateBaseline = computed(() => {
+    return (connectionState.value.editors ?? []).some((editor) => {
+      return editor.kind === 'bench' && editor.slug === reviewSectionSlug.value
+    })
+  })
+
   const updateBaseline = () => {
     if (!selectedBenchmarkId.value) {
       return
@@ -269,7 +277,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       next()
     } else if (event.key === 'p' || event.key === 'k') {
       previous()
-    } else if (event.key === 'Enter') {
+    } else if (event.key === 'Enter' && canUpdateBaseline.value) {
       event.preventDefault()
       updateBaseline()
     }
@@ -419,6 +427,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
           Previous (p/k)
         </app-button>
         <app-button
+            v-if="canUpdateBaseline"
             keyshortcuts="Enter"
             aria-label="Update baseline"
             @click="updateBaseline()">

@@ -1,2 +1,93 @@
 fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: <unnamed#1>#(1,1)
+
+file-scope type#2
+  name:                  file-scope id-name#1: "B"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope class-type-supplement#2
+template_arg_list:       
+  type:                  file-scope type#3: <unnamed#2>#(1,1)
+
+file-scope type#4
+  name:                  file-scope id-name#2: "P"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#2
+
+file-scope class-type-supplement#3
+
+file-scope type#5
+  name:                  file-scope id-name#3: "A"
+kind:                    tk_typeref
+typeref_type:            file-scope type#6: T#(1,1)
+kind:                    is_alias
+
+file-scope class-type-supplement#4
+template_arg_list:       
+  type:                  file-scope type#7: T::type
+  explicitly_specified:  TRUE
+
+file-scope type#8
+  name:                  file-scope id-name#1: "B"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#4
+
+file-scope type#9
+  name:                  file-scope id-name#4: "type"
+kind:                    tk_typeref
+typeref_type:            file-scope type#8: B<T::type>
+kind:                    is_alias
+
+file-scope class-type-supplement#5
+template_arg_list:       
+  type:                  file-scope type#9: C<T#(1,1)>::type
+  explicitly_specified:  TRUE
+
+file-scope type#10
+  name:                  file-scope id-name#2: "P"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#5
+
+file-scope type#11
+kind:                    tk_routine
+return_type:             file-scope type#10: P<C<T#(1,1)>::type>
+param_type_list:         file-scope param-type#1
+assoc_routine:           file-scope routine#1: f
+this_class:              file-scope type#12: C<T#(1,1)>
+
+file-scope routine#1
+  name:                  file-scope id-name#5: "f"
+type:                    file-scope type#11: P<C<T#(1,1)>::type> (int)
+
+file-scope class-type-supplement#6
+template_arg_list:       
+  type:                  file-scope type#6: T#(1,1)
+
+file-scope type#12
+  name:                  file-scope id-name#6: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#6
+
+file-scope class-type-supplement#7
+template_arg_list:       
+  type:                  file-scope type#13: T#(1,1)
+  explicitly_specified:  TRUE
+
+file-scope type#14
+  name:                  file-scope id-name#6: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#7
+
+file-scope class-type-supplement#8
+template_arg_list:       
+  type:                  file-scope type#15: C<T#(1,1)>::type
+  explicitly_specified:  TRUE
+
+file-scope type#16
+  name:                  file-scope id-name#2: "P"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#8
+

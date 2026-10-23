@@ -30,7 +30,9 @@ From `edgacknowledg.client` (`__all__`):
 - `ConnectionStatusListener` — `connected` / `attempting_reconnect` /
   `disconnected`
 - `ReviewClient` (structural **Protocol**): `review_id`, `name`, `timestamp`,
-  `sections()`, `add_section` / `remove_section`
+  `sections()`, `add_section` / `remove_section`. `name` is a `RichName`
+  (segments built with `rich_text` / `rich_link` from `edgacknowledg`; see
+  PROTOCOL.md "Rich names"); a plain title is `[rich_text(title)]`
 - URL/env helpers: `add_endpoint_arguments`, `form_section_http_url`,
   `default_*` host/port helpers
 - Shared: `BackgroundWorkerPool`, errors

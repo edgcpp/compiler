@@ -1,0 +1,37 @@
+[project]
+name = "edg-acknowledg-forge-github"
+version = "2026.10.15.0"
+requires-python = ">=3.11"
+dependencies = [
+  "aiosqlite",
+  "alembic",
+  "httpx",
+  "hypercorn",
+  "quart",
+  "sqlalchemy[asyncio]>=2.0",
+  "websockets",
+]
+
+[project.optional-dependencies]
+postgresql = ["asyncpg"]
+
+[project.scripts]
+acknowledg-forge-github = "acknowledg_forge_github.__main__:main"
+
+[dependency-groups]
+dev = ["pytest", "pytest-asyncio"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = [
+  "acknowledg_forge_github*",
+  "edgacknowledg*",
+  "edgtest*",
+  "edgutil*",
+]
+
+[tool.setuptools.package-data]
+"edgacknowledg.forge.db" = ["migrations/script.py.mako"]

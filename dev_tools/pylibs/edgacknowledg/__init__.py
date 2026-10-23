@@ -10,7 +10,8 @@ import uuid
 
 from collections.abc import Mapping
 from datetime import datetime, timezone
-from typing import Any, Dict, FrozenSet, Optional, Tuple, Union
+from typing import Any, Dict, FrozenSet, List, Optional, Tuple, Union
+from urllib.parse import urlsplit
 
 # If you change these values, make sure to update the JavaScript client code.
 #
@@ -26,6 +27,9 @@ class RequestTags:
   INVALID_REQUEST = 'invalid'
   OUTDATED_PROTOCOL = 'outdated-proto'
   ROLE_OCCUPIED = 'role-occupied'
+  # A reviewer asked a provider for a file it may not read: provider ->
+  # server (naming the reviewer), which closes that reviewer's connection.
+  ILLEGAL_ACCESS = 'illegal-access'
   META_SECTION_NAME = 'meta.section.name'
   META_REVIEW_NAME = 'meta.review.name'
   META_REVIEW_TIMESTAMP = 'meta.review.timestamp'
@@ -117,7 +121,7 @@ ALLOWED_REVIEWER_REQUEST_TAGS = (
   ALLOWED_BENCH_EDIT_TAGS
 )
 
-PROTOCOL_REVISION = 18
+PROTOCOL_REVISION = 19
 
 # 10MiB
 MAX_MESSAGE_SIZE = 10485760
@@ -139,6 +143,72 @@ def review_display_name(name: Optional[str] = None) -> str:
     return name
   from edgdocker import render_user_name
   return f"Review opened by {render_user_name()}"
+
+# A review's name is rich text: segments composed in order, each either
+# {'type': 'text', 'text': ...} or {'type': 'link', 'url': ..., 'text': ...}
+# (a link's text is optional; its URL is shown without it). See PROTOCOL.md.
+RichName = List[Dict[str, str]]
+
+MAX_RICH_NAME_SEGMENTS = 32
+# Characters, across every segment's text and URL.
+MAX_RICH_NAME_LENGTH = 4096
+
+_RICH_SEGMENT_FIELDS = {
+  'text': ({'type', 'text'}, {'type', 'text'}),
+  'link': ({'type', 'url'}, {'type', 'url', 'text'}),
+}
+
+def rich_text(text: str) -> Dict[str, str]:
+  return {'type': 'text', 'text': text}
+
+def rich_link(url: str, text: Optional[str] = None) -> Dict[str, str]:
+  segment = {'type': 'link', 'url': url}
+  if text is not None:
+    segment['text'] = text
+  return segment
+
+def _is_web_url(url: str) -> bool:
+  try:
+    parts = urlsplit(url)
+  except ValueError:
+    return False
+  return parts.scheme in ('http', 'https') and parts.netloc != ''
+
+def is_valid_rich_name(value: Any) -> bool:
+  '''Return whether ``value`` is a well-formed rich name: a non-empty list
+  of known segments with only their fields, all non-empty strings, and
+  links only to http(s) URLs, within the size limits.
+  '''
+  if not isinstance(value, list):
+    return False
+  if len(value) == 0 or len(value) > MAX_RICH_NAME_SEGMENTS:
+    return False
+  length = 0
+  for segment in value:
+    if not isinstance(segment, dict):
+      return False
+    segment_type = segment.get('type')
+    if segment_type not in _RICH_SEGMENT_FIELDS:
+      return False
+    required, allowed = _RICH_SEGMENT_FIELDS[segment_type]
+    keys = set(segment)
+    if not (required <= keys <= allowed):
+      return False
+    for key, field in segment.items():
+      if not isinstance(field, str) or field == '':
+        return False
+      if key != 'type':
+        length += len(field)
+    if segment['type'] == 'link' and not _is_web_url(segment['url']):
+      return False
+  return length <= MAX_RICH_NAME_LENGTH
+
+def rich_name_text(name: RichName) -> str:
+  '''Return ``name`` as plain text (e.g. for terminal output).'''
+  return ''.join(
+    segment['text'] if segment.get('text') else segment.get('url', '')
+    for segment in name
+  )
 
 def utc_now_iso() -> str:
   '''Return the current UTC time as an ISO-8601 timestamp.'''

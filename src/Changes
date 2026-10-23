@@ -1,16 +1,138 @@
 Version 7.1
 
-10/16/26 [GH #303]
-C++20 modules: gnu emulation modes and extended floating-point types
+10/22/26 [GH #305]
+Attribute namespaces that only start like a known one are not recognized
 
-Module interface units compiled in a gnu or clang emulation mode always
-failed with a catastrophic error indicating that an IFC file could not be
-produced:  the predeclared typedefs of extended floating-point types
-(e.g., "_Float16") entered by those modes have no IFC encoding.
-Predeclared typedefs are now skipped when the members of a scope are
-written to an IFC file (they are re-created by any importing translation
-unit), and the "_Float16", "_Float32", "_Float64", and "_Float128" type
-families can now be written to and read from IFC files.
+An attribute namespace was treated as known if it was merely the first part
+of the name of a known namespace; the whole name must now match.
+For example:
+
+  [[cl::x]] int a;    // Warning: attribute namespace "cl" is unrecognized
+  [[g::y]] int b;     // Previously, the namespace was accepted.
+
+
+10/22/26 [GH #183]
+GNU compatibility: "inline" combined with "noinline" on a definition
+
+In GNU and Clang C++ modes, the front end warned that a routine is both
+"inline" and "noinline" when a function definition was declared "inline" and
+had the GNU "noinline" attribute, but GCC accepts that combination silently
+(it is used, e.g., by Boost through "BOOST_NOINLINE inline").  For example:
+
+  inline __attribute__((noinline)) int f(int x) {  // No warning now.
+    return x;
+  }
+
+In C modes, where GCC and Clang warn about the combination in all of those
+cases, the behavior is unchanged.
+
+Also, instantiating a function template (or a member function of a class
+template) that is both "inline" and "noinline" no longer repeats the warning
+"At end of source" for each instance, only the template declarations are
+checked.
+
+
+10/21/26 [GH #335]
+Type transformations of qualified function types
+
+Previously, the __add_lvalue_reference, __add_rvalue_reference, __add_pointer,
+and __decay intrinsics produced incorrect types for function types with cv- or
+ref-qualifiers.  They now leave such types unchanged.  For example, with
+--c++11:
+
+  using F = void() const;
+  using F = __add_pointer(F);  // Previously a spurious error, now okay.
+
+
+10/20/26 [GH #38]
+Integer value limits for a 128-bit host integer representation
+
+When INTEGER_VALUE_REPR_IS_A_HOST_INTEGER is TRUE and __int128 extensions are
+allowed, the integer value types default to the 128-bit types, but
+MAX_INTEGER_VALUE, MIN_INTEGER_VALUE, and MAX_UNSIGNED_INTEGER_VALUE still
+defaulted to 64-bit limits.  As a result, constant arithmetic on __int128
+values that did not fit in 64 bits could be wrongly diagnosed as overflowing.
+For example, with --gnu_version 150200:
+
+  constexpr __int128 s = (__int128)1 << 100;
+  static_assert(s * 4 == ((__int128)1 << 102), "");  // Previously an error.
+
+This is now fixed.
+
+
+10/20/26 [GH #173]
+CTAD through a template template parameter of an alias template
+
+With the changes for EDGcpfe/28857 (in version 6.9), a decltype in an alias
+template that deduces class template arguments through one of the alias
+template's template template parameters could trigger an internal error due to
+a failed assertion in generic_cast_operand, when the alias was used with
+dependent arguments, for example in a requires expression.  For example, with
+--c++20:
+
+  template<typename T> struct S { S(T); };
+  template<template<typename> class TT> using A = decltype(TT(0));
+  template<template<typename> class TT>
+  constexpr bool b = requires { typename A<TT>; };
+  static_assert(b<S>);  // Previously an internal error, now okay.
+
+In addition, deduction now succeeds when the template bound to the template
+template parameter has more parameters (with default arguments or packs) than
+the parameter itself, and a mismatch is now treated as a deduction failure
+rather than an error in contexts where errors are not issued.
+
+
+10/19/26  [GH #218]
+Reachability after a temporary with a "noreturn" constructor or destructor
+
+An expression statement that constructs a temporary of a class type whose
+constructor or destructor is declared "noreturn" was not recognized as not
+returning.  Consequently, a spurious warning could be issued when control
+reached the end of an enclosing "noreturn" or non-void function.  That is now
+fixed.  For example, with --c++11:
+
+  struct A { [[noreturn]] A(); };
+  struct B { [[noreturn]] ~B(); };
+  [[noreturn]] void f() { A{}; }  // Previously warned that f returns.
+  int g() { B{}; }                // Previously warned about missing return.
+
+
+10/15/26  [GH #309]
+Position of (lowered) cleanups at the end of a function body
+
+The cleanup actions (e.g., destructor calls) performed when control reaches
+the end of a function body were attributed to the source position of the
+preceding statement instead of to that of the closing brace of the function
+body.  That is now fixed.  For example:
+
+  int v = 0;
+  struct D { ~D() { v = v + 1; } };
+  void f() {
+    D d;
+    v = 2;
+  }  // The call of d's destructor is now positioned on this line.
+     // Previously it was positioned on the line with "v = 2;" above.
+
+
+10/16/26 [GH #302]
+Incorrect order of base-class initializers in class template
+
+Previously, in the IL for prototype instantiations of class templates,
+base-class mem-initializers with non-type template arguments could appear after
+the initializers for other base classes.  Such initializers are now recorded in
+base-class declaration order when the base class can be identified.
+Initializers for base classes that cannot yet be identified now retain their
+source order relative to the next initializer for an identified nonvirtual
+direct base class.  For example, with --c++11:
+
+  template<int> struct A { };
+  struct B { };
+  template<int N> struct C : A<N>, B {
+    C() : A<N>(), B() { }      // Previously recorded as "B(), A<N>()".
+    C(int) : A<+N>(), B() { }  // Previously recorded as "B(), A<+N>()".
+  };
+
+Both initializer lists are now recorded in the order shown.
 
 
 10/16/26 [GH #229]

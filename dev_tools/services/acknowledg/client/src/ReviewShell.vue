@@ -11,6 +11,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
   import AppButton from './AppButton.vue'
   import Notice from './Notice.vue'
+  import RichName from './RichName.vue'
   import { acquireSocketForReview } from './sockets.js'
 
   const route = useRoute()
@@ -21,6 +22,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
   const socketOpen = ref(true)
   const connectionState = ref({
+    name: [],
     sources: [],
     editors: []
   })
@@ -96,6 +98,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
         return `${count} - ${formatPendingTaskLabel(taskId, count)}`
       })
       .join('\n')
+  })
+
+  // A rich name (see PROTOCOL.md); the id until the server sends it.
+  const reviewName = computed(() => {
+    const name = connectionState.value.name
+    return name?.length ? name : [{ type: 'text', text: reviewId }]
   })
 
   const sectionSources = computed(() => {
@@ -237,6 +245,15 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   </div>
   <div v-if="socketOpen" class="shell">
     <nav class="tabs cell-colors" aria-label="Review sections">
+      <div class="review-info"
+           tabindex="0"
+           aria-label="Review information"
+           aria-describedby="review-info-popover">
+        <span class="review-info-icon" aria-hidden="true">i</span>
+        <div id="review-info-popover" class="review-info-popover cell-colors">
+          <rich-name :name="reviewName" />
+        </div>
+      </div>
       <app-button
           v-for="source in sectionSources"
           :key="`${source.kind}:${source.slug}`"
@@ -300,6 +317,69 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     border-radius: 8px;
     align-items: center;
     border-bottom: 1px solid rgba(127, 127, 127, 0.35);
+  }
+  .review-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 4px;
+    margin-right: 4px;
+    border-radius: 9px;
+  }
+  .review-info:focus-visible {
+    outline: 2px solid skyblue;
+    outline-offset: 2px;
+  }
+  .review-info-icon {
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    border-radius: 9px;
+    font-family: serif;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    background-color: darkgrey;
+    cursor: default;
+    transition: background-color .4s;
+  }
+  .review-info:hover .review-info-icon,
+  .review-info:focus-within .review-info-icon {
+    background-color: black;
+  }
+  .review-info-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    width: max-content;
+    max-width: min(600px, 70vw);
+    padding: 6px 12px;
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .2s, visibility .2s;
+  }
+  /* Spans the gap to the icon, so the pointer can move onto the popover
+     (e.g. to follow a link) without it closing. */
+  .review-info-popover::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 8px;
+  }
+  /* Kept open while focus is inside it, e.g. on a link. */
+  .review-info:hover .review-info-popover,
+  .review-info:focus-within .review-info-popover {
+    visibility: visible;
+    opacity: 1;
   }
   .tabs-end {
     margin-left: auto;

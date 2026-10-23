@@ -9358,9 +9358,11 @@ typedef struct a_template_param_type_supplement {
 		*template_symbol;
 			/* For templates (including C++/CLI generics) points
 			   to the sk_class_template or sk_function_template
-			   symbol of which this is a type parameter.  NULL
-			   otherwise.  Used in the front end only; cannot
-			   be used in back ends. */
+			   symbol of which this is a type parameter.  For a
+			   placeholder type naming a type template template
+			   parameter, points to the bound template argument,
+			   if any.  NULL otherwise.  Used in the front end
+			   only; cannot be used in back ends. */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   a_generic_constraint_ptr
 		generic_constraints;

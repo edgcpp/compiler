@@ -1,2 +1,173 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope type#1
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#2: A
+is_reference:            TRUE
+
+file-scope type#3
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#2: A
+is_reference:            TRUE
+
+file-scope type#4
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#5: const A
+is_reference:            TRUE
+
+file-scope type#6
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#7: A::fn
+is_reference:            FALSE
+
+file-scope type#8
+kind:                    tk_routine
+param_type_list:         file-scope param-type#1
+
+file-scope type#9
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#8: int (int)
+is_reference:            FALSE
+
+file-scope type#10
+kind:                    tk_routine
+param_type_list:         file-scope param-type#2
+
+file-scope type#11
+kind:                    tk_routine
+param_type_list:         file-scope param-type#3
+
+file-scope type#2
+  name:                  file-scope id-name#1: "A"
+  decl_position.seq:     11
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope variable-template-info#1
+template_arg_list:       
+  type:                  file-scope type#12: T#(1,1)
+
+file-scope variable#1
+  name:                  file-scope id-name#2: "var"
+  decl_position.seq:     9
+type:                    file-scope type#13: int
+
+file-scope expr-node#1
+type:                    file-scope type#13: int
+kind:                    enk_variable
+variable:                file-scope variable#2: var
+position.seq:            17
+
+file-scope expr-node#2
+type:                    file-scope type#13: int
+kind:                    enk_variable
+variable:                file-scope variable#3: var
+position.seq:            18
+
+file-scope variable#4
+  name:                  file-scope id-name#3: "i"
+  decl_position.seq:     16
+type:                    file-scope type#13: int
+
+file-scope param-type#4
+type:                    file-scope type#7: A::fn
+declared_type:           file-scope type#7: A::fn
+name:                    file-scope id-name#4: "p"
+param_num:               1
+
+file-scope type#14
+kind:                    tk_routine
+param_type_list:         file-scope param-type#4
+
+file-scope type#15
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#14: int (A::fn)
+is_reference:            FALSE
+
+file-scope variable-template-info#2
+template_arg_list:       
+  type:                  file-scope type#15: int (*)(A::fn)
+  explicitly_specified:  TRUE
+
+file-scope variable#2
+  name:                  file-scope id-name#2: "var"
+  decl_position.seq:     9
+type:                    file-scope type#13: int
+
+file-scope param-type#5
+type:                    file-scope type#6: A::fn *
+declared_type:           file-scope type#6: A::fn *
+name:                    file-scope id-name#4: "p"
+param_num:               1
+
+file-scope type#16
+kind:                    tk_routine
+param_type_list:         file-scope param-type#5
+
+file-scope type#17
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#16: int (A::fn *)
+is_reference:            FALSE
+
+file-scope variable-template-info#3
+template_arg_list:       
+  type:                  file-scope type#17: int (*)(A::fn *)
+  explicitly_specified:  TRUE
+
+file-scope variable#3
+  name:                  file-scope id-name#2: "var"
+  decl_position.seq:     9
+type:                    file-scope type#13: int
+
+file-scope type#18
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#19: void
+is_reference:            FALSE
+
+file-scope type#20
+kind:                    tk_routine
+param_type_list:         file-scope param-type#6
+
+file-scope type#21
+kind:                    tk_routine
+param_type_list:         file-scope param-type#7
+
+file-scope type#22
+kind:                    tk_routine
+param_type_list:         file-scope param-type#8
+
+file-scope type#23
+kind:                    tk_routine
+param_type_list:         file-scope param-type#9
+
+file-scope type#24
+kind:                    tk_routine
+param_type_list:         file-scope param-type#10
+
+file-scope type#25
+kind:                    tk_routine
+param_type_list:         file-scope param-type#11
+
+file-scope type#26
+kind:                    tk_routine
+param_type_list:         file-scope param-type#12
+
+file-scope type#27
+kind:                    tk_routine
+param_type_list:         file-scope param-type#13
+
+file-scope type#28
+kind:                    tk_routine
+param_type_list:         file-scope param-type#14
+
+file-scope type#29
+kind:                    tk_routine
+param_type_list:         file-scope param-type#15
+
+file-scope type#30
+kind:                    tk_routine
+param_type_list:         file-scope param-type#16
+
+file-scope type#31
+kind:                    tk_routine
+param_type_list:         file-scope param-type#17
+

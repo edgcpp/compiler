@@ -7,17 +7,29 @@
 #
 #   edg-docker-test --posture=extensive --non-interactive
 #
-# inside the edgcpp/ci-runner image. Jobs are staged so GitHub can schedule
+# inside the ghcr.io/edgcpp/ci-runner image. Jobs are staged so GitHub can schedule
 # them in parallel, with each test leg waiting only on its own build (and the
 # shared timestamp, which runs alongside the builds):
 #
 #   prepare ───────────────┬──► test-gcc  ──┐
 #   build-gcc ─────────────┘                ├──► publish (on failure)
-#   prepare ───────────────┬──► test-i686 ──┘
-#   build-i686 ────────────┘
+#   prepare ───────────────┬──► test-i686 ──┤
+#   build-i686 ────────────┘                └──► coverage
+#   bench (pull requests only; independent)
 #
 # A shared run timestamp keeps results under the same tests/runs/<timestamp>/
 # tree; the publish job republishes failure artifacts from all test legs.
+# The bench job runs the cachegrind benchmarks the way
+# `edg-docker-bench --posture=release` does and uploads them as bench-results
+# (c/ and cpp/ runs, for comparison against the checked-in
+# benchmarks/baselines/project/release-{c,cpp}).
+#
+# The debug builds are instrumented for gcov (EDG_CPFE_USE_GCOV) and ship
+# their .gcno files with the build products. Each test leg turns the .gcda
+# files its run produces into a gcovr JSON report for src/; the coverage job
+# merges the reports of all test legs and uploads one report to Codecov
+# (see .github/codecov.yml). The coverage steps never fail the run; only
+# edgy's results do.
 
 name: Build & Test CI
 
@@ -25,7 +37,18 @@ on:
   push:
     branches:
       - main
+    # The nightly collect-changes job's commits only move Changes entries.
+    paths-ignore:
+      - '**/Changes'
+      - '**/pending_changes/**'
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+env:
+  GCOVR_VERSION: '8.7'
 
 jobs:
   prepare:
@@ -46,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: docker.io/edgcpp/ci-runner@sha256:73be12d128b8507f5feb9e73c25f48f14e6b041940ef165bce5fda8efe2b605c
+      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
@@ -58,7 +81,7 @@ jobs:
       - name: Configure linux-gcc-debug
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --preset linux-gcc-debug
+        run: cmake --preset linux-gcc-debug -DEDG_CPFE_USE_GCOV=ON
 
       - name: Build linux-gcc-debug
         env:
@@ -67,7 +90,8 @@ jobs:
 
       # Runtime layout only: environment.sh / eccp need bin/, lib/, and the
       # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
-      # lib_<target>). lib_src is build-only and omitted.
+      # lib_<target>). lib_src is build-only and omitted. The .gcno files
+      # let the test legs produce coverage reports.
       - name: Upload build products
         uses: actions/upload-artifact@v7
         with:
@@ -78,6 +102,7 @@ jobs:
             build/gcc/lib_linux_*
             build/gcc/lib_win*
             build/gcc/environment.sh
+            build/gcc/src/**/*.gcno
           if-no-files-found: error
           retention-days: 1
           compression-level: 6
@@ -87,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: docker.io/edgcpp/ci-runner@sha256:73be12d128b8507f5feb9e73c25f48f14e6b041940ef165bce5fda8efe2b605c
+      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
@@ -99,7 +124,7 @@ jobs:
       - name: Configure linux-i686-gcc-debug
         env:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --preset linux-i686-gcc-debug
+        run: cmake --preset linux-i686-gcc-debug -DEDG_CPFE_USE_GCOV=ON
 
       - name: Build linux-i686-gcc-debug
         env:
@@ -116,6 +141,7 @@ jobs:
             build/gcc-i686/lib_linux_*
             build/gcc-i686/lib_win*
             build/gcc-i686/environment.sh
+            build/gcc-i686/src/**/*.gcno
           if-no-files-found: error
           retention-days: 1
           compression-level: 6
@@ -134,7 +160,7 @@ jobs:
           - edg_x86_64
           - edg_x86_64_cp
     container:
-      image: docker.io/edgcpp/ci-runner@sha256:73be12d128b8507f5feb9e73c25f48f14e6b041940ef165bce5fda8efe2b605c
+      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
       # Required for setarch ... -R (disable ASLR) used by the test harness.
       options: --privileged
     defaults:
@@ -188,6 +214,51 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
+      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
+      # the downloaded .gcno files under build/gcc/src. Each leg saves a gcovr
+      # JSON report; the coverage job merges them and uploads to Codecov.
+      # Coverage problems must never fail the test leg, hence
+      # continue-on-error.
+      - name: Install gcovr
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      # cpfe and cpfe-cp compile the same sources; separate function merging
+      # keeps gcovr from rejecting functions seen at different lines. A few
+      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
+      # instead of failing.
+      - name: Generate coverage report
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          CONFIG: ${{ matrix.config }}
+        run: |
+          mkdir -p coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --filter 'src/' \
+            --merge-mode-functions=separate \
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
+            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
+            -j "$(nproc)" \
+            --json "coverage/${CONFIG}.json" \
+            --print-summary \
+            build/gcc
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.config }}
+          path: coverage/${{ matrix.config }}.json
+          if-no-files-found: warn
+          retention-days: 1
+
   test-i686:
     name: Test ${{ matrix.config }}
     needs:
@@ -202,7 +273,7 @@ jobs:
           - edg_x86_32
           - edg_x86_32_cp
     container:
-      image: docker.io/edgcpp/ci-runner@sha256:73be12d128b8507f5feb9e73c25f48f14e6b041940ef165bce5fda8efe2b605c
+      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
       # Required for setarch ... -R (disable ASLR) used by the test harness.
       options: --privileged
     defaults:
@@ -256,6 +327,51 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
+      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
+      # the downloaded .gcno files under build/gcc-i686/src. Each leg saves a gcovr
+      # JSON report; the coverage job merges them and uploads to Codecov.
+      # Coverage problems must never fail the test leg, hence
+      # continue-on-error.
+      - name: Install gcovr
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      # cpfe and cpfe-cp compile the same sources; separate function merging
+      # keeps gcovr from rejecting functions seen at different lines. A few
+      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
+      # instead of failing.
+      - name: Generate coverage report
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          CONFIG: ${{ matrix.config }}
+        run: |
+          mkdir -p coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --filter 'src/' \
+            --merge-mode-functions=separate \
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
+            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
+            -j "$(nproc)" \
+            --json "coverage/${CONFIG}.json" \
+            --print-summary \
+            build/gcc-i686
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.config }}
+          path: coverage/${{ matrix.config }}.json
+          if-no-files-found: warn
+          retention-days: 1
+
   publish-test-results:
     name: Publish aggregated test results
     needs:
@@ -277,10 +393,165 @@ jobs:
           path: aggregated-test-results
           merge-multiple: true
 
+      # Record which commit was tested so consumers of the artifact (e.g.
+      # acknowledg-forge) can check out the matching tree. For pull requests
+      # this is the merge commit, not the PR head.
+      - name: Record CI metadata
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python3 - > aggregated-test-results/ci-meta.json <<'EOF'
+          import json, os
+          print(json.dumps({
+            'tested_sha': os.environ['TESTED_SHA'],
+            'head_sha': os.environ['HEAD_SHA'],
+            'run_id': int(os.environ['RUN_ID']),
+            'run_attempt': int(os.environ['RUN_ATTEMPT']),
+          }, indent = 2))
+          EOF
+
       - name: Upload elist, elog, and .rt.tar.gz results
         uses: actions/upload-artifact@v7
         with:
           name: test-results-all
           path: aggregated-test-results/
           if-no-files-found: warn
+          retention-days: 14
+
+  coverage:
+    name: Publish coverage to Codecov
+    needs:
+      - test-gcc
+      - test-i686
+    # Like publish-test-results, merge whatever the test legs produced,
+    # whether or not their tests passed. The number of configs is not
+    # fixed: every coverage-* artifact is merged into one report and
+    # uploaded once.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Download per-config coverage reports
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-*
+          path: coverage
+          merge-multiple: true
+
+      - name: Install gcovr
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      - name: Merge coverage reports
+        if: ${{ hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        run: |
+          ls -l coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --merge-mode-functions=separate \
+            --json-add-tracefile 'coverage/*.json' \
+            --cobertura coverage.xml \
+            --print-summary
+
+      # Pull requests from forks have no access to secrets; the Codecov
+      # action then falls back to a tokenless upload, which Codecov accepts
+      # for public repositories.
+      #
+      # The report is complete as generated by gcovr, so skip the CLI's own
+      # gcov run (plugins: noop) and its "file fixes" pass, which opens every
+      # file git tracks and crashes on the dangling symlinks used as test
+      # inputs (e.g. tests/.../embed___has_embed/embed___has_embed.c).
+      - name: Upload coverage to Codecov
+        if: ${{ hashFiles('coverage.xml') != '' }}
+        continue-on-error: true
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          disable_search: true
+          disable_file_fixes: true
+          network_filter: src/
+          plugins: noop
+          fail_ci_if_error: true
+          verbose: true
+
+  bench:
+    name: Benchmark linux-gcc-release
+    if: ${{ github.event_name == 'pull_request' }}
+    # Benchmark infrastructure problems shouldn't fail a pull request's CI.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
+    defaults:
+      run:
+        shell: edg-container-exec "bash -eo pipefail {0}"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Configure linux-gcc-release
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+        run: cmake --preset linux-gcc-release
+
+      - name: Build linux-gcc-release
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+        run: cmake --build build/gcc-release --target cpfe cpfe-cp
+
+      - name: Run benchmarks
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+          EDG_BENCH_RUNS_KEPT: '0'
+        run: |
+          # Use the pull request's own benchmark tooling.
+          export PATH="${GITHUB_WORKSPACE}/dev_tools/bin:${PATH}"
+          export PYTHONPATH="${GITHUB_WORKSPACE}/dev_tools/pylibs"
+          mkdir -p bench-results
+          for run in c:bin/cpfe cpp:bin/cpfe-cp; do
+            name="${run%%:*}"
+            binary="${run#*:}"
+            (cd build/gcc-release && source environment.sh &&
+             edg-bench "${binary}")
+            latest="$(ls -1d benchmarks/runs/*/ | sort | tail -n 1)"
+            mv "${latest}" "bench-results/${name}"
+          done
+
+      - name: Record CI metadata
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python3 - > bench-results/ci-meta.json <<'EOF'
+          import json, os
+          print(json.dumps({
+            'tested_sha': os.environ['TESTED_SHA'],
+            'head_sha': os.environ['HEAD_SHA'],
+            'run_id': int(os.environ['RUN_ID']),
+            'run_attempt': int(os.environ['RUN_ATTEMPT']),
+          }, indent = 2))
+          EOF
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v7
+        with:
+          name: bench-results
+          path: bench-results/
+          if-no-files-found: error
           retention-days: 14

@@ -30972,11 +30972,14 @@ set to TRUE and FALSE is returned.
   if (is_template_template_param_symbol(ct_sym)) {
     /* Class template argument deduction for a template template parameter: use
        guides synthesized from the class or alias template argument. */
-    a_symbol_ptr  bound_tttp_arg_sym;
+    a_symbol_ptr  bound_tttp_arg_sym, target_sym;
     a_boolean     is_deducible_template;
 
+    target_sym = placeholder_type->variant.template_param.extra_info
+                                 ->template_symbol;
     bound_tttp_arg_sym = bound_template_template_argument(
-                                               ct_sym, &is_deducible_template);
+                                      target_sym != NULL ? target_sym : ct_sym,
+                                      &is_deducible_template);
     if (bound_tttp_arg_sym == NULL) {
       /* Still dependent. */
       *still_dependent = TRUE;
@@ -30984,7 +30987,10 @@ set to TRUE and FALSE is returned.
       goto done;
     } else if (!is_deducible_template || bound_tttp_arg_sym->is_error) {
       /* Template argument does not name a deducible template. */
-      pos_sy_error(ec_no_class_template_guide, source_pos, bound_tttp_arg_sym);
+      if (expr_error_should_be_issued()) {
+        pos_sy_error(ec_no_class_template_guide, source_pos,
+                     bound_tttp_arg_sym);
+      }  /* if */
       *still_dependent = FALSE;
       result = FALSE;
       goto done;
@@ -31046,7 +31052,9 @@ set to TRUE and FALSE is returned.
     guide_set = ct_tssp->variant.class_template.deduction_guides;
   }  /* if */
   if (guide_set == NULL) {
-    pos_sy_error(ec_no_class_template_guide, source_pos, ct_sym);
+    if (expr_error_should_be_issued()) {
+      pos_sy_error(ec_no_class_template_guide, source_pos, ct_sym);
+    }  /* if */
   } else {
     selected_sym = select_overloaded_function(
                                         guide_set,

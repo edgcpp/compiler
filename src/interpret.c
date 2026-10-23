@@ -20597,7 +20597,7 @@ See do_constexpr_intrinsic_call for the meaning of the parameters.
 
 /*
 The enumerators of std::meta::operators, in the order in which
-<experimental/meta> declares them, each paired with the operator-name kind
+<meta> declares them, each paired with the operator-name kind
 that denotes the same operator in the front end.  An enumerator's value is its
 position in this list, counting from one, and its symbol is the spelling that
 opname_names records for the operator-name kind, so both directions of the
@@ -20720,7 +20720,7 @@ Implement std::meta::operator_of(info): the std::meta::operators enumerator for
 the operator function represented by the argument (which may be an operator
 function or operator function template).  The result is stored as the value of
 that enumerator, whose ordinal matches the enumerator sequence declared in
-<experimental/meta> (the enumeration has an integer underlying type, so the
+<meta> (the enumeration has an integer underlying type, so the
 value is written in integer form).  The evaluation fails if the reflection does
 not designate an operator function.
 

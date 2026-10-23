@@ -12,6 +12,9 @@ packages=()
 # Add required packages for checkout to function
 packages+=("nodejs")
 
+# Add valgrind (cachegrind) for the CI benchmark job.
+packages+=("valgrind")
+
 # Install the core packages (dnf fetches the package database on install,
 # so forcing an update here, particularly for development is counter
 # productive to image build time -- nearly doubling it on a MacBook Pro

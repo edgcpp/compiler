@@ -1,0 +1,111 @@
+fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 Test_name.c
+file-scope type#1
+  name:                  file-scope id-name#1: "U"
+kind:                    tk_template_param
+kind:                    tptk_param
+
+file-scope type#2
+  name:                  file-scope id-name#2: "T"
+kind:                    tk_template_param
+kind:                    tptk_param
+
+file-scope class-type-supplement#1
+
+file-scope type#3
+  name:                  file-scope id-name#3: "B"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope class-type-supplement#2
+template_arg_list:       
+  type:                  file-scope type#2: T#(1,1)
+  type:                  file-scope type#1: U#(1,2)
+
+file-scope type#4
+  name:                  file-scope id-name#4: "A"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#2
+
+file-scope type#5
+  name:                  file-scope id-name#3: "B"
+kind:                    tk_template_param
+kind:                    tptk_member
+
+file-scope type#6
+  name:                  file-scope id-name#5: "E"
+kind:                    tk_template_param
+kind:                    tptk_member
+
+file-scope class-type-supplement#3
+
+file-scope type#7
+  name:                  file-scope id-name#3: "B"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#3
+
+file-scope class-type-supplement#4
+template_arg_list:       
+  type:                  file-scope type#8: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#8: int
+
+file-scope type#9
+  name:                  file-scope id-name#4: "A"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#4
+
+file-scope expr-node#1
+type:                    file-scope type#10: unsigned int
+kind:                    enk_sizeof
+type:                    file-scope type#9: A<int, int>
+position.seq:            26
+
+file-scope variable#1
+  name:                  file-scope id-name#6: "a"
+type:                    file-scope type#10: unsigned int
+constant:                file-scope constant#1: 1U
+
+file-scope expr-node#2
+type:                    file-scope type#10: unsigned int
+kind:                    enk_sizeof
+type:                    file-scope type#9: A<int, int>
+position.seq:            27
+
+file-scope variable#2
+  name:                  file-scope id-name#7: "a1"
+type:                    file-scope type#10: unsigned int
+constant:                file-scope constant#2: 1U
+
+file-scope expr-node#3
+type:                    file-scope type#10: unsigned int
+kind:                    enk_sizeof
+type:                    file-scope type#9: A<int, int>
+position.seq:            28
+
+file-scope variable#3
+  name:                  file-scope id-name#8: "a2"
+type:                    file-scope type#10: unsigned int
+constant:                file-scope constant#3: 1U
+
+file-scope expr-node#4
+type:                    file-scope type#10: unsigned int
+kind:                    enk_sizeof
+type:                    file-scope type#9: A<int, int>
+position.seq:            30
+
+file-scope variable#4
+  name:                  file-scope id-name#9: "aa1"
+type:                    file-scope type#10: unsigned int
+constant:                file-scope constant#4: 1U
+
+file-scope expr-node#5
+type:                    file-scope type#10: unsigned int
+kind:                    enk_sizeof
+type:                    file-scope type#9: A<int, int>
+position.seq:            31
+
+file-scope variable#5
+  name:                  file-scope id-name#10: "aa2"
+type:                    file-scope type#10: unsigned int
+constant:                file-scope constant#5: 1U
+

@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++23
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^file-scope (base-class@|using-decl@|routine@.*special_kind: +sfk_deduction_guide)/' | grep -E -e '^(  name|  decl_position[.]seq|kind|type|orig_type|derived_class|direct|entity|special_kind|compiler_generated|is_explicit_constructor|is_template_function|is_inheriting_ctor|is_prototype_instantiation|is_explicit_constructor|is_deduction_guide_from_inheriting_ctor|qualifier[.]class_type|position[.]seq):' -e '^file-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (base-class@|using-decl@|routine@.*special_kind: +sfk_deduction_guide)/' | grep -E -e '^(  name|  decl_position[.]seq|kind|type|orig_type|derived_class|direct|entity|special_kind|compiler_generated|is_explicit_constructor|is_template_function|is_inheriting_ctor|is_prototype_instantiation|is_explicit_constructor|is_deduction_guide_from_inheriting_ctor|qualifier[.]class_type|position[.]seq):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename T>
 struct B

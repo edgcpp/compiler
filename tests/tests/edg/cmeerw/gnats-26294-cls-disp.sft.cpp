@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^(func|file)-scope (name-qualifier@|variable@|class-type-supplement@|type@.*\\nkind: +(tk_struct|tk_ptr_to_member|is_alias|is_template_alias|is_decltype|template_arg_list|name_qualifier))/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|qualifier|qualifier[.]class_type|extra_info|kind|type|declared_type|class_of_which_a_member|orig_class_of_which_a_member|typeref_type|template_arg_list|orig_template_arg_list|is_global_qualified_name):' -e '^(func|file)-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^(func|file)-scope (name-qualifier@|variable@|class-type-supplement@|type@.*\nkind: +(tk_struct|tk_ptr_to_member|is_alias|is_template_alias|is_decltype|template_arg_list|name_qualifier))/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|qualifier|qualifier[.]class_type|extra_info|kind|type|declared_type|class_of_which_a_member|orig_class_of_which_a_member|typeref_type|template_arg_list|orig_template_arg_list|is_global_qualified_name):' -e '^(func|file)-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename T, typename U = T>
 struct A

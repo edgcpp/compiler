@@ -45,15 +45,19 @@ Language: `--c++11` … `--c++26`. Emulation: `--gnu=XXYYZZ`,
 
 ## Editing `Changes` files
 
-Write every `Changes` file as **UTF-8** (`src/Changes`, `util/Changes`, and
-any other `Changes` in the tree). For non-UTF-8 example bytes, `«HHHH…»`
-markers, the required note line, encode/decode commands, and verification,
-follow skill **edg-changes-example** — do not invent a parallel procedure here.
+Add new entries as `pending_changes/*.txt` files beside the `Changes`
+file (usually `src/pending_changes/`), not in the `Changes` file itself; a
+nightly job collects them with `edg-collect-changes`. Write everything as
+**UTF-8**. For the entry format, `//allowed_words:`, `edg-collect-changes
+--check`, non-UTF-8 example bytes (`«HHHH…»` markers and the note line), and
+verification, follow skill **edg-changes-example** — do not invent a parallel
+procedure here.
 
 ## Related skills
 
 - **edg-cpfe-style** — coding style; [code_style.rst](../../../doc/source/code_style.rst).
-- **edg-changes-example** — UTF-8 Changes writes; `edg-changes-example` CLI.
+- **edg-changes-example** — Changes entries (`pending_changes/`), UTF-8;
+  `edg-collect-changes` and `edg-changes-example` CLIs.
 - **edg-cpfe-build-test** — rebuild, `edg-docker-test`, recording.
 - **edg-cpfe-bisect** — `edg-docker-test-bisect` between good/bad commits.
 - Do not invent a separate defect-tracker workflow; use the project's current

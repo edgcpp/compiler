@@ -7,6 +7,7 @@
 
 import argparse
 import contextlib
+import functools
 import re
 import json
 import shutil
@@ -19,6 +20,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, List, Optional, Set, Tuple
 
+import edgchanges
 import edgutil
 
 TOOL_PATH_ASPELL = shutil.which('aspell')
@@ -80,6 +82,9 @@ def find_the_the(path):
   with open(path, 'r', errors = 'replace') as handle:
     lines = handle.read().splitlines()
 
+  return _find_the_the_in_lines(lines)
+
+def _find_the_the_in_lines(lines: List[str]) -> List[str]:
   matches = []
   for regex, excludes in _FIND_THE_THE_CHECKS_COMPILED:
     # grep -w: match must be bounded by non-word characters (or line edges).
@@ -139,6 +144,40 @@ def check_spelling(old_file: Path, new_file: Path) -> Optional[List[str]]:
 
   return sorted(new_mispelled_words - old_mispelled_words)
 
+@functools.lru_cache(maxsize = None)
+def _changes_file_misspellings(changes_path: Path) -> Set[str]:
+  '''Return the words aspell rejects in changes_path (empty if there's no
+  such file).'''
+  if not changes_path.is_file():
+    return set()
+  return _run_spell_command(changes_path)
+
+def _check_fragment_spelling(repo_path: str,
+                             new_file: Path) -> Optional[List[str]]:
+  '''Report misspellings in a Changes entry.
+
+  The directives and the tag block aren't checked, and words the entry's
+  //allowed_words: directives list aren't reported.  Neither are words
+  already in the Changes file the entry will be collected into (so a term
+  like "constexpr" needn't be allowed in every entry).
+  '''
+  if not _is_aspell_working():
+    return None
+
+  allowed_words, prose_lines = edgchanges.read_prose(new_file)
+  with tempfile.TemporaryDirectory() as tmp_dir_str:
+    text_path = Path(tmp_dir_str) / 'prose.txt'
+    with open(text_path, 'w', encoding = 'utf-8') as handle:
+      handle.write('\n'.join(prose_lines) + '\n')
+    mispelled_words = _run_spell_command(text_path)
+
+  # Accept the words the entry allows and those its Changes file already
+  # uses.
+  target_path = edgchanges.target_changes_path(Path.cwd() / repo_path)
+  accepted_words = allowed_words | _changes_file_misspellings(target_path)
+
+  return sorted(mispelled_words - accepted_words)
+
 def _file_check_config(file_path: Path):
   '''Return spelling/coding/line-length check settings for a path.'''
   suffix = file_path.suffix
@@ -149,7 +188,7 @@ def _file_check_config(file_path: Path):
   if suffix in CODE_FILE_EXTENSIONS:
     check_for_coding_errors = True
     check_for_overlong_lines = True
-  elif suffix == 'txt':
+  elif suffix == '.txt':
     pass
   else:
     check_for_overlong_lines = True
@@ -184,14 +223,18 @@ def _check_coding_errors(new_file: Path) -> Any:
 
   return coding_errors
 
-def _check_overlong_lines(new_file: Path) -> Any:
+def _check_overlong_lines(new_file: Path,
+                          ignore_trailing_whitespace: bool = False) -> Any:
   '''Report lines longer than 79 columns after tab expansion.'''
   overlong_lines = {}
 
   with open(new_file, 'r', errors = 'replace') as file_handle:
     lines = file_handle.readlines()
     for line_no, line in enumerate(lines, start = 1):
-      if len(line.rstrip('\n').expandtabs()) <= 79:
+      checked_line = (
+        line.rstrip() if ignore_trailing_whitespace else line.rstrip('\n')
+      )
+      if len(checked_line.expandtabs()) <= 79:
         continue
 
       overlong_lines[line_no] = [
@@ -201,11 +244,41 @@ def _check_overlong_lines(new_file: Path) -> Any:
 
   return overlong_lines
 
-def check_file(old_file: Path, new_file: Path) -> Any:
+def check_changes_fragment(repo_path: str, new_file: Path) -> Any:
+  '''Check new_file, the contents of the pending Changes entry repo_path.
+
+  Besides the usual checks, its format is checked (see edgchanges).  Its
+  spelling is checked against the Changes file it will be collected into, not
+  against an old version of the entry (see _check_fragment_spelling), and
+  trailing whitespace (stripped when the entry is collected) doesn't count
+  toward the line length.
+  '''
+  _, format_errors = edgchanges.parse_fragment(
+    new_file,
+    check_line_length = False
+  )
+  _, prose_lines = edgchanges.read_prose(new_file)
+  return {
+    'format_errors': format_errors,
+    'misspellings': _check_fragment_spelling(repo_path, new_file),
+    'typos': _find_the_the_in_lines(prose_lines),
+    'coding_errors': {},
+    'overlong_lines': _check_overlong_lines(
+      new_file,
+      ignore_trailing_whitespace = True
+    )
+  }
+
+def check_file(repo_path: str, old_file: Path, new_file: Path) -> Any:
+  '''Check new_file, the new contents of repo_path, against old_file.'''
+  if edgchanges.is_fragment_path(repo_path):
+    return check_changes_fragment(repo_path, new_file)
+
   check_for_coding_errors, check_for_overlong_lines = (
     _file_check_config(new_file)
   )
   return {
+    'format_errors': [],
     'misspellings': check_spelling(old_file, new_file),
     'typos': find_the_the(new_file),
     'coding_errors': (
@@ -237,10 +310,14 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
   args = parse_args()
 
-  TOOL_PATH_GET_COMMENTS.exit_if_not_found()
-
   with open(args.input_spec, 'r', encoding = 'utf-8') as file_handle:
     input_dict = json.load(file_handle)
+
+  # Only code files need get-comments, so checking just Changes entries (as
+  # CI does) works without the built tools.
+  if any(Path(new_file).suffix in CODE_FILE_EXTENSIONS
+         for _, new_file in input_dict.values()):
+    TOOL_PATH_GET_COMMENTS.exit_if_not_found()
 
   output_dict = dict.fromkeys(input_dict)
 
@@ -251,6 +328,7 @@ def main() -> None:
     for key, (old_file, new_file) in input_dict.items():
       output_dict[key] = executor.submit(
         check_file,
+        key,
         cwd.joinpath(old_file),
         cwd.joinpath(new_file)
       )

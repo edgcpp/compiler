@@ -1,14 +1,16 @@
 ---
 name: edg-changes-example
 description: >-
-  Encodes and decodes non-UTF-8 example bytes in Changes changelogs with
-  edg-changes-example («HHHH...» markers) and writes Changes files as UTF-8.
-  Use when editing any Changes file (src/Changes, util/Changes, …), adding
+  Writes Changes entries as pending_changes/*.txt files (collected
+  nightly by edg-collect-changes, checked with edg-collect-changes --check),
+  and encodes/decodes non-UTF-8 example bytes with edg-changes-example
+  («HHHH...» markers). Use when adding a Changes entry, editing any Changes
+  file (src/Changes, util/Changes, …) or pending_changes/ entry, adding
   examples with Latin-1/EUC-JP/Shift-JIS/other non-UTF-8 bytes, or verifying
   changelog encoding.
 ---
 
-# `edg-changes-example` and Changes files
+# Changes entries, `edg-collect-changes`, and `edg-changes-example`
 
 ## Policy (all `Changes` files)
 
@@ -74,7 +76,50 @@ bytes. No other escapes are interpreted.
 
 ## Workflow for a new changelog entry
 
-1. Draft the entry as UTF-8 prose.
+New entries are **not** written into a `Changes` file. Each `Changes` file
+has a `pending_changes/` directory beside it (`src/pending_changes/`,
+`util/pending_changes/`, …); add one entry file there per change, named
+`*.txt` (suggested: `gh-<N>-<short-slug>.txt`). A nightly job
+(`.github/workflows/collect-changes.yml`, midnight US Eastern) runs
+`edg-collect-changes`, which moves every entry into its `Changes` file under
+the newest `Version x.y` line, adds the date, orders that night's entries by
+summary line, and deletes the entry files.
+
+Entry file format:
+
+```text
+//allowed_words: reflectable memoized
+[GH #335]
+Type transformations of qualified function types
+
+Previously, the __add_lvalue_reference, __add_rvalue_reference, ...
+For example, with --c++11:
+
+  using F = void() const;
+  using F = __add_pointer(F);  // Previously a spurious error, now okay.
+```
+
+- Optional leading `//key: value` directives (EDG C++ line directive
+  syntax). `//allowed_words:` lists space-separated words the spell check
+  should accept (identifiers, jargon); repeat the line as needed. Words the
+  target `Changes` file already uses (`constexpr`, `lvalue`, …) are accepted
+  without it. Directives are dropped when the entry is collected.
+- The tag block: one or more comma-separated `GH #N` tags in brackets
+  (`[GH #12,GH #34]`; only `GH #N`, never `[]`). It may wrap onto several
+  lines; the tool re-wraps it the way existing entries are wrapped.
+- **No date.** The tool adds it (`m/d/yy`, padded to 8 columns) in front of
+  the tags.
+- The summary line, one blank line, then the description, in the same style
+  as existing entries (unindented prose wrapped at 79 columns, two spaces
+  after periods, examples indented 2 spaces).
+- UTF-8, no tabs, at most **79** columns per line. Trailing whitespace is
+  tolerated (it's stripped on collection).
+
+Steps:
+
+1. Draft the entry as UTF-8 prose in
+   `<dir>/pending_changes/<name>.txt` (the `pending_changes/` beside
+   the `Changes` file the entry belongs in, usually `src/`).
 2. If an example needs non-UTF-8 bytes, author the example in a small raw
    file (or produce the markers by hand only when the bytes are already
    known), then run `edg-changes-example encode` and paste the UTF-8 result
@@ -83,20 +128,35 @@ bytes. No other escapes are interpreted.
 
    `Note: The above example must be decoded using the edg-changes-example tool.`
 
-4. Insert the entry into the appropriate `Changes` file with a **UTF-8**
-   write (keep the rest of the file valid UTF-8).
-5. Verify the file still decodes as UTF-8 (raises on failure):
+4. Check the entry (format, spelling, typos, line length). This is the
+   check `edg-check-file-changes` does for `pending_changes/*.txt` files,
+   which pull request CI runs and which makes the pre-push hook refuse the
+   push (no override) if anything is wrong:
 
    ```bash
-   python3 -c "open('path/to/Changes', encoding='utf-8').read()"
+   edg-exec -- edg-collect-changes --check src/Changes src/pending_changes
    ```
 
-   Use the real path (for example `src/Changes`). A clean exit means the
-   whole file is valid UTF-8; a `UnicodeDecodeError` means the write
-   introduced non-UTF-8 bytes and must be fixed before continuing.
+   (Name the `Changes` file and `pending_changes/` directory the entry is
+   in. `edg-exec` runs it in the dev-env container, which has `aspell`.) For
+   misspellings that are really identifiers or terms, add them to an
+   `//allowed_words:` line at the very top of the entry, as the failure
+   message shows; fix real misspellings instead.
+5. Optionally preview the result without changing anything:
+   `edg-collect-changes --dry-run src/Changes src/pending_changes`.
+
+Edit a `Changes` file directly only to correct an entry that has already
+been collected; then write it as **UTF-8** and verify the file still decodes
+(raises on failure):
+
+```bash
+python3 -c "open('path/to/Changes', encoding='utf-8').read()"
+```
 
 ## Do not
 
+- Add new entries directly to a `Changes` file, or put a date in a
+  `pending_changes/` entry.
 - Commit raw Latin-1 / Shift-JIS / etc. bytes inside a `Changes` file.
 - Invent alternate note wording; match the existing sentence above.
 - Run `encode` on the entire historical `src/Changes` and rewrite it unless

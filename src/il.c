@@ -3284,12 +3284,15 @@ set).
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
   } else if (rp->never_inline && gnu_mode &&
+             (!rp->is_template_function || rp->is_specialized ||
+              rp->is_prototype_instantiation) &&
              (!rp->source_corresp.is_class_member ||
               rp->defined_outside_of_parent ||
               find_attribute(ak_always_inline, rp->source_corresp.attributes)
                                                                     != NULL)) {
     /* Was explicitly marked "noinline" previously and is now explicitly
-       marked inline. */
+       marked inline.  (An instance generated from a template is not
+       checked: the declarations of the template itself were.) */
     pos_warning(ec_inline_gnu_noinline_conflict, &error_position);
 #endif /* GNU_EXTENSIONS_ALLOWED */
   }  /* if */
@@ -11172,11 +11175,15 @@ vk_ext, ...) and, for vk_ext, its size_constant.
 #endif /* GNU_VECTOR_TYPES_ALLOWED */
 
 a_type_ptr make_class_template_placeholder(a_symbol_ptr      class_template,
-                                           a_source_position *pos)
+                                           a_source_position *pos,
+                         /* Defaulted: */  a_symbol_ptr      bound_template)
 /*
 Create a type entry representing a class template used for C++ 17 class
 template argument deduction.  The result is a special kind of tk_template_param
-entry.  pos is used to establish the type entry's position information.
+entry.  pos is used to establish the type entry's position information.  When
+class_template is a type template template parameter, bound_template (or the
+current argument bound to class_template if bound_template is NULL) is recorded
+in the supplement's template_symbol field.
 */
 {
   a_symbol_ptr	sym;
@@ -11188,6 +11195,16 @@ entry.  pos is used to establish the type entry's position information.
   a_template_symbol_supplement_ptr
                 tssp = template_supplement_for_symbol(class_template);
 
+  if (bound_template == NULL) {
+    /* When not created by placeholder substitution, check whether an enclosing
+       instantiation has bound an argument to a template template parameter
+       (when unbound, argument_template points to class_template itself). */
+    a_symbol_ptr  arg_sym = template_argument_if_template_template_param(
+                                                               class_template);
+    if (arg_sym != class_template) {
+      bound_template = arg_sym;
+    }  /* if */
+  }  /* if */
   if (!alias_ctad_enabled && alias_ctad_allowed &&
       is_alias_template_symbol(class_template)) {
     if (clang_mode ||
@@ -11210,7 +11227,11 @@ entry.  pos is used to establish the type entry's position information.
   sym->decl_scope = class_template->decl_scope;
   sym->variant.type.ptr = type;
   tpcp->depth = CLASS_TEMPLATE_PLACEHOLDER_NESTING_DEPTH;
+  /* For a template template parameter, CTAD keeps using the parameter's own
+     parameter list and defaults, while substitution goes through the template
+     bound to it. */
   tptsp->constraint.class_template_symbol = class_template;
+  tptsp->template_symbol = bound_template;
   set_type_size(type);
   set_source_corresp(&type->source_corresp, sym);
   if (!class_template->is_error &&

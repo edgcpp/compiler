@@ -51,8 +51,17 @@ BUILDABLE_IMAGES = (
   'native-tools',
   'legacy-native-tools',
   'softfloat',
-  'ci-runner'
+  'ci-runner',
+  'acknowledg-forge'
 )
+
+# The registry namespace EDG images are published under (the GitHub
+# organization's container registry).
+IMAGE_NAMESPACE = 'ghcr.io/edgcpp'
+
+def get_image_repository(image_name: str) -> str:
+  '''Return the registry repository an internal image is published to.'''
+  return f"{IMAGE_NAMESPACE}/{image_name}"
 
 def get_docker_file_dir(image_name: str) -> Path:
   '''Return the expected directory of the Dockerfile for an image name.'''
@@ -86,11 +95,12 @@ def get_latest_image_tag(image_name: str, *,
   their pinned name If you want the generic latest tag, use respect_pins =
   False.  The default value is controlled by use_image_pinning(), for uses
   that expect a particular format, the caller should explicitly specify.'''
+  repository = get_image_repository(image_name)
   if respect_pins and image_name in IMAGE_PINS:
     # This is an officially maintained image synchronized between developers.
-    return f"docker.io/edgcpp/{image_name}@sha256:{IMAGE_PINS[image_name]}"
+    return f"{repository}@sha256:{IMAGE_PINS[image_name]}"
   else:
-    return f"docker.io/edgcpp/{image_name}:latest"
+    return f"{repository}:latest"
 
 def has_image_tagged(image_name: str) -> bool:
   '''Return TRUE if there is a docker image already build on this system.'''

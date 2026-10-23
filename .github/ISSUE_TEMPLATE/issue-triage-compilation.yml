@@ -1,0 +1,118 @@
+# Mirrors .github/DISCUSSION_TEMPLATE/issue-triage-compilation.yml: keep the
+# body: sections identical (dev_tools/bin/edg-check-issue-templates checks
+# this).
+name: Compilation issue
+description: The front end mis-compiles, rejects, accepts, or crashes on source code (most issues).
+type: Bug
+body:
+  - type: textarea
+    attributes:
+      label: Issue Summary
+      description: Provide a high level description of what you believe is going wrong and how it is impacting you.
+      placeholder: In rare instances when using lambdas inside of class templates, the front end refuses to instantiate the template.  This code compiles fine with GCC and Clang.  I had to adapt the code to work around the issue, but I prefer the implementation strategy I am sharing in this report.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproducing Source Code
+      description: |
+        Provide the source code reproducing the issue.
+
+        *Please*:
+        1. Reduce the translation unit to the smallest possible reproducing case.
+        2. Upload the source code file(s) as a: `.cpp`, `.zip`, or `.tar.gz`.
+        3. DO NOT paste a large code block here (a small legally-unencumbered code block is okay in place of an upload).
+
+        > [!TIP]
+        > If you would like to reduce the issue but do not know how, checkout the [cvise](https://github.com/marxin/cvise/) project as this is VERY helpful for automatic issue reduction.  Additionally, in many cases AI agents can successfully create a reduced test case (that is similar enough to still reproduce the problem) in a fraction of the time.
+
+        > [!IMPORTANT]
+        > If this source code is not compatible with the [project license](https://edgcpp.org/LICENSE.txt), please include a LICENSE.txt file or license disclosure comment at the start of all relevant files.
+      placeholder: |
+        [reproducer.zip](https://github.com/user-attachments/files/...)
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Command-line Options
+      description: Provide the command-line options needed for reproducing the problem.
+      placeholder: cpfe --c++26 test.cpp
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Type of Issue
+      options:
+        - |
+          [Front End] This code *SHOULD* compile with these options.
+        - |
+          [Front End] This code *SHOULD NOT* compile with these options.
+        - |
+          [Front End] I do not care but this code *CRASHES* the compiler.
+        - |
+          [Back End] There is a problem with the generated C code.
+        - |
+          [Back End] There is a problem with the generated C++ code.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Details
+      description: Provide any additional clarifying details that might help us better understand what is currently happening and what you expect to happen.
+      placeholder: The generated C code does not compile with gcc 14.
+  - type: dropdown
+    attributes:
+      label: Reproducing (Standard) Configuration(s)
+      description: |
+        What CMake preset-based configurations have you observed reproducing this issue (if any)?
+
+        > [!NOTE]
+        > While you can select any configuration you know to reproduce the problem, you do not need to check every configuration.
+      multiple: true
+      options:
+        - macos-arm-clang-debug
+        - macos-arm-clang-release
+        - macos-x86-clang-debug
+        - macos-x86-clang-multi-thread-debug
+        - macos-x86-clang-release
+        - linux-clang-debug
+        - linux-clang-lsp
+        - linux-clang-release
+        - linux-clang-debuggable-release
+        - linux-gcc-debug
+        - linux-i686-gcc-debug
+        - linux-gcc-multi-thread-debug
+        - linux-gcc-multi-thread-release
+        - linux-gcc-release
+        - linux-gcc-debuggable-release
+        - linux-gcc-reflection-release
+        - windows-msvc-debug
+        - windows-msvc-release
+  - type: textarea
+    attributes:
+      label: Reproducing (Non-standard) Configuration
+      description: |
+        If this problem does not reproduce in one of the above "standard" configurations, please provide the output obtained when using the `--dump_configuration` command-line option with the EDG front end you are using.
+
+        > [!TIP]
+        > Consider contributing a new build & testing configuration to increase coverage and make it easier to report (and reproduce) any future issues.
+      placeholder: |
+        [config.txt](https://github.com/user-attachments/files/...)
+  - type: checkboxes
+    attributes:
+      label: "I acknowledge that:"
+      options:
+        - label: I have checked open issues and existing discussions before filing this report.
+          required: true
+        - label: The reproducing source code that I have provided does not depend on headers that I have not included with my submission.
+          required: true
+        - label: I have reduced the reproducing source code to the best of my ability.
+          required: true
+        - label: I have selected at least one standard configuration or uploaded a non-standard configuration dump.
+          required: true
+        - label: I understand code shared via this form is NOT confidential.
+          required: true
+        - label: I have permission to share the reproducing source code and grant permission for the project to use the source code (or derivatives of the source code) to create tests.
+          required: true
+        - label: I agree that any tests created using the reproducing source code (or deriatives of it) will be licensed under [project license](https://edgcpp.org/LICENSE.txt) unless I included a `LICENSE.txt` file in my `.zip` or `.tar.gz` upload. If I included a `LICENSE.txt` file, any tests created using the reproducing source code will be governed by the terms of the license I provided instead.
+          required: true

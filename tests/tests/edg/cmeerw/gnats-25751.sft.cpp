@@ -1,7 +1,7 @@
 //type:fp
 //options_all:--c++14 --clang --il --no_il_lowering
-//filter:sed -e 's/name: [^"]*/name: /' -e 's/@[0-9a-f]*//' | grep -E '^\(initializer_in_class:\|is_template_variable:\|is_specialized:\|  name: "t?var\)'
-// | sed -e 's|:[^"]\+"|: "|'
+//filter:sed -e 's/name: [^"]*/name: /' -e 's/@[0-9a-f]*//' | grep -E '^(initializer_in_class:|is_template_variable:|is_specialized:|  name: "t?var)'
+// | sed -e 's|:[^"]+"|: "|'
 struct C
 {
   template<int J> static const int tvar1 = 1;

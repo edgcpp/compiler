@@ -23,6 +23,7 @@ from edgacknowledg.client import (
   add_endpoint_arguments,
   form_section_http_url,
 )
+from edgacknowledg.client.shared import SandboxContext
 from edgacknowledg.client.test import TestEditHandler, TestSourceHandler
 from edgacknowledg import IncompatibleProtocolVersion
 from edgutil import eprint
@@ -161,11 +162,18 @@ def main() -> None:
         status_listener = _CliConnectionStatusListener()
       ) as session:
         review = await session.create_review(
-          run_id, review_name, created_at
+          run_id, [edgacknowledg.rich_text(review_name)], created_at
         )
-        await review.add_section(
-          TestSourceHandler(args.section_name, slug, test_home, run_dir)
-        )
+        # The run (given with --root, it may lie elsewhere) and the test
+        # home are all a review may read.
+        context = SandboxContext(test_home, run_dir)
+        await review.add_section(TestSourceHandler(
+          args.section_name,
+          slug,
+          context,
+          context.subpath(test_home),
+          context.subpath(run_dir)
+        ))
         await review.add_section(
           TestEditHandler(args.section_name, slug, worker_pool)
         )

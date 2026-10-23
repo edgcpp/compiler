@@ -1,6 +1,6 @@
 //type:fp
 //options:--c++20 --no_il_lower --il_display
-//filter:awk '/^file-scope template@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(kind|template_decl|routine|prototype_template|  name|  decl_position\.seq):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:awk '/^file-scope template@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(kind|template_decl|routine|prototype_template|  name|  decl_position.seq):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
 
 template<typename T>
 struct C

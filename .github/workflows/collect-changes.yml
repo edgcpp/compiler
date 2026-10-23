@@ -1,0 +1,135 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Nightly (midnight US Eastern) collection of the pending Changes entries:
+# edg-collect-changes moves every <dir>/pending_changes/*.txt entry into
+# <dir>/Changes, dated with the day that just ended, and this job commits and
+# pushes the result to main.  The directories are listed in CHANGES_DIRS
+# below (keep it in step with the one in changes-fragments.yml).
+#
+# Malformed entries are left in place and fail the run (after the good ones
+# are pushed), so they get noticed.
+#
+# One-time setup (repository/organization admin):
+#
+#   1. Create a GitHub App for the organization with only the "Contents:
+#      Read and write" repository permission, and install it on this
+#      repository only.
+#   2. Add the repository secrets CHANGELOG_APP_CLIENT_ID (the App's client
+#      ID) and CHANGELOG_APP_PRIVATE_KEY (a private key generated for it).
+#   3. Add the App to the bypass list of the ruleset protecting main, as
+#      "Always allow".  (Classic branch protection doesn't document Apps as
+#      bypass actors; move main to a ruleset.)
+#
+# If an App isn't an option, a deploy key with write access can be the
+# ruleset bypass actor instead: drop the token step and check out with
+# `ssh-key: ${{ secrets.CHANGELOG_DEPLOY_KEY }}`.
+
+name: Collect Changes Entries
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+      timezone: 'America/New_York'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date for the entries (YYYY-MM-DD; default: yesterday, US Eastern)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: collect-changes
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: collect-changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+      # Each holds a Changes file and its pending_changes/ directory.
+      CHANGES_DIRS: src util lib_src include_c++ nt_util
+    steps:
+      - name: Create App token
+        id: app
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.CHANGELOG_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CHANGELOG_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - name: Check out main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          token: ${{ steps.app.outputs.token }}
+
+      - name: Determine the entry date
+        id: date
+        env:
+          INPUT_DATE: ${{ inputs.date }}
+        run: |
+          # The day that just ended; a late start doesn't change it.
+          date="${INPUT_DATE:-$(TZ=America/New_York date -d yesterday +%F)}"
+          echo "date=${date}" >> "${GITHUB_OUTPUT}"
+
+      - name: Collect pending Changes entries
+        id: collect
+        env:
+          ENTRY_DATE: ${{ steps.date.outputs.date }}
+        run: |
+          # A released newest version gets a new section for the version
+          # src/Changes has open.
+          status=0
+          for dir in ${CHANGES_DIRS}; do
+            dev_tools/bin/edg-collect-changes \
+              --date "${ENTRY_DATE}" --version-from src/Changes \
+              "${dir}/Changes" "${dir}/pending_changes" || status=1
+          done
+          echo "status=${status}" >> "${GITHUB_OUTPUT}"
+
+      - name: Commit and push
+        env:
+          ENTRY_DATE: ${{ steps.date.outputs.date }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        run: |
+          # Stage the updated Changes files and the deleted entries.
+          for dir in ${CHANGES_DIRS}; do
+            git add -- "${dir}/Changes" "${dir}/pending_changes"
+          done
+          if git diff --cached --quiet; then
+            echo 'No pending Changes entries.'
+            exit 0
+          fi
+
+          bot_user_id="$(gh api "/users/${APP_SLUG}%5Bbot%5D" --jq .id)"
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email \
+            "${bot_user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git commit -m "Collect pending Changes entries for ${ENTRY_DATE} []"
+
+          # Retry if main moved on while this ran; a real conflict (e.g., a
+          # hand edit of a Changes file) stops the rebase and fails the job.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git pull --rebase origin main
+          done
+          echo 'Could not push to main.' >&2
+          exit 1
+
+      - name: Report malformed entries
+        if: steps.collect.outputs.status != '0'
+        run: |
+          echo 'edg-collect-changes left malformed entries in place; see the' \
+               '"Collect pending Changes entries" step.' >&2
+          exit 1

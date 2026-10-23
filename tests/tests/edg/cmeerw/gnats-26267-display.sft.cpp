@@ -1,6 +1,6 @@
 //type:fp
 //options:--c++20 --no_il_lower --il_display
-//filter:awk '/^file-scope constant@/{f=1; next}/^$/{if (f) print "|"; f=0}f{print $0 " "}' | grep -E -e '^(  name|type|coordinates\.[^:]*):' -e '^[|]$' | sed -e 's/@[0-9a-f]*:/:/' -e 's/^  *//' -e 's/:  */: /' -e 's/ file-scope / /' | tr -d '\\n' | tr '|' '\\n' | sort
+//filter:awk '/^file-scope constant@/{f=1; next}/^$/{if (f) print "|"; f=0}f{print $0 " "}' | grep -E -e '^(  name|type|coordinates.[^:]*):' -e '^[|]$' | sed -e 's/@[0-9a-f]*:/:/' -e 's/^  *//' -e 's/:  */: /' -e 's/ file-scope / /' | tr -d '\n' | tr '|' '\n' | sort
 
 using INT = int;
 using CINT = const INT;

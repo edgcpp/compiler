@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+file-scope base-class#1
+type:                    file-scope type#1: B1
+derived_class:           file-scope type#2: C<T#(1,1)...>
+direct:                  TRUE
+
+file-scope base-class#2
+type:                    file-scope type#3: B2<<expression>>
+derived_class:           file-scope type#2: C<T#(1,1)...>
+direct:                  TRUE
+
+file-scope base-class#3
+type:                    file-scope type#4: B2<(0U + <expression>)>
+derived_class:           NULL
+direct:                  TRUE
+
+func-scope constructor-init#1
+base_class:              file-scope base-class#1: B1 (in C<T#(1,1)...>)
+
+func-scope constructor-init#2
+base_class:              file-scope base-class#3: B2<(0U + <expression>)>
+

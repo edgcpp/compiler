@@ -1,7 +1,7 @@
 //type:fp
 //options:--clang_version 210100 --target linux_riscv32:--gn 150100 --target linux_riscv32:--clang_version 210100 --target linux_riscv64:--gn 150100 --target linux_riscv64
 //options_all:-w --c++20 --il_display
-//filter:awk '/^func-scope variable@/{print $0; f=1; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  enclosing_routine|type):' -e '^func-scope ' -e '^$' | enumerate_addrs
+//filter:awk '/^func-scope variable@/{print $0; f=1; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  enclosing_routine|type):' -e '^func-scope ' -e '^$' | edg-enumerate-il-addrs
 
 void f(__rvv_bool64_t v) { }
 void f(__rvv_bool32_t v) { }

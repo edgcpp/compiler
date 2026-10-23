@@ -1,0 +1,138 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Publish the acknowledg-forge container image and deploy it:
+#
+#   test     the acknowledg-forge typecheck and tests (acknowledg-forge.yml)
+#   publish  build the image (build-edg-env acknowledg-forge) and push it to
+#            ghcr.io/edgcpp/acknowledg-forge:latest (deployments use the
+#            pushed digest)
+#   deploy   over SSH, run the host's deploy helper (an administrator-
+#            installed copy of
+#            dev_tools/services/acknowledg-forge/deploy-remote.py, the only
+#            thing the deploy user may run as root) to point the service at
+#            the pushed digest, set its AcknowlEDG API and UI URLs, and
+#            restart it (only if any of those changed)
+#
+# The image is public and holds no credentials or configuration: the publish
+# job has no access to the deployment's secrets. Everything else about the
+# service (its unit, tokens, API key) is configured on the host.
+#
+# Host, user, and SSH credentials come from secrets in the
+# `acknowledg-forge` environment; the public AcknowlEDG URLs come from
+# repository variables shared with acknowledg-deploy.yml (see
+# dev_tools/services/acknowledg-forge/README.md).
+
+name: acknowledg-forge Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # The image freezes all of dev_tools/bin and dev_tools/pylibs.
+      - dev_tools/bin/**
+      - dev_tools/pylibs/**
+      - dev_tools/services/acknowledg-forge/**
+      - dev_tools/docker/acknowledg-forge/**
+      - .github/workflows/acknowledg-forge.yml
+      - .github/workflows/acknowledg-forge-deploy.yml
+  workflow_dispatch:
+
+concurrency:
+  group: acknowledg-forge-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/acknowledg-forge.yml
+
+  publish:
+    name: Publish image
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.push.outputs.image }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Build image
+        env:
+          PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+        run: dev_tools/bin/build-edg-env --quiet acknowledg-forge
+
+      - name: Push image
+        id: push
+        env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          image=ghcr.io/edgcpp/acknowledg-forge
+          printf '%s' "${REGISTRY_TOKEN}" \
+            | docker login ghcr.io --username "${GITHUB_ACTOR}" \
+                --password-stdin
+          docker push --quiet "${image}:latest"
+          docker logout ghcr.io
+          digest="$(docker inspect \
+            --format '{{range .RepoDigests}}{{println .}}{{end}}' \
+            "${image}:latest" | grep "^${image}@sha256:" | head -n 1)"
+          echo "Pushed ${digest}"
+          echo "image=${digest}" >> "${GITHUB_OUTPUT}"
+
+  deploy:
+    name: Deploy
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: acknowledg-forge
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_HOST: ${{ secrets.ACKNOWLEDG_FORGE_SSH_HOST }}
+          SSH_USER: ${{ secrets.ACKNOWLEDG_FORGE_SSH_USER }}
+          SSH_PORT: ${{ secrets.ACKNOWLEDG_FORGE_SSH_PORT || '22' }}
+          SSH_PRIVATE_KEY: ${{ secrets.ACKNOWLEDG_FORGE_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.ACKNOWLEDG_FORGE_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          printf '%s\n' "${SSH_PRIVATE_KEY}" > ~/.ssh/deploy_key
+          printf '%s\n' "${SSH_KNOWN_HOSTS}" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host acknowledg-forge
+            HostName ${SSH_HOST}
+            User ${SSH_USER}
+            Port ${SSH_PORT}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            BatchMode yes
+          EOF
+          chmod 600 ~/.ssh/config ~/.ssh/known_hosts
+
+      - name: Update and restart the service
+        env:
+          SERVICE: ${{ secrets.ACKNOWLEDG_FORGE_SERVICE || 'acknowledg-forge-github' }}
+          IMAGE: ${{ needs.publish.outputs.image }}
+          API_URL: ${{ vars.ACKNOWLEDG_API_HOST }}
+          UI_URL: ${{ vars.ACKNOWLEDG_UI_HOST }}
+        run: |
+          # The arguments are deliberately expanded (and quoted) here.
+          # shellcheck disable=SC2029
+          ssh acknowledg-forge "sudo -n /usr/local/libexec/acknowledg-forge-deploy \
+            $(printf '%q ' "${SERVICE}" "${IMAGE}" "${API_URL}" \
+              "${UI_URL}")"

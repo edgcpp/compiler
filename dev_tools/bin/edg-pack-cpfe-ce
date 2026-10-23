@@ -192,8 +192,7 @@ def _add_experimental_headers_to_base(tar: tarfile.TarFile,
   '''
   header_dir = source_dir / 'include_c++' / 'experimental'
   if not header_dir.exists():
-    eprint(f"{header_dir} does not exist")
-    sys.exit(1)
+    return
 
   edgpack.add_header_files_to_tar(
     tar,

@@ -8,6 +8,7 @@
 import argparse
 import asyncio
 import os
+import traceback
 import uuid
 
 from types import TracebackType
@@ -35,6 +36,7 @@ from edgacknowledg import (
   IncompatibleProtocolVersion,
   ProtocolMessage,
   RequestTags,
+  RichName,
   RoleOccupied,
   batch_event_message,
   decode_response,
@@ -45,10 +47,12 @@ from edgacknowledg import (
 )
 from edgacknowledg.client.shared import (
   BackgroundWorkerPool,
+  Channel,
+  IllegalFileAccessError,
   ReviewClientHandler,
   announce_section,
 )
-from edgutil import get_running_event_loop
+from edgutil import eprint, get_running_event_loop
 from edgacknowledg.client.websocket import (
   ConnectionStatusListener,
   DEFAULT_OPEN_TIMEOUT_S,
@@ -176,6 +180,11 @@ DEFAULT_UI_PORT = 5173
 DEFAULT_REMOTE_API_PORT = 80
 DEFAULT_REMOTE_UI_PORT = 80
 
+# How long to wait for the server to acknowledge a batch subscribe or
+# unsubscribe before giving up on it.
+SUBSCRIBE_TIMEOUT_S = 30.0
+UNSUBSCRIBE_TIMEOUT_S = 10.0
+
 
 def default_api_host() -> str:
   '''Return ``EDG_ACKNOWLEDG_API_HOST``, or ``DEFAULT_API_HOST``.'''
@@ -285,7 +294,7 @@ if Protocol is not None:
     def review_id(self) -> uuid.UUID: ...
 
     @property
-    def name(self) -> str: ...
+    def name(self) -> RichName: ...
 
     @property
     def timestamp(self) -> str: ...
@@ -304,7 +313,7 @@ class _ClientReview:
 
   def __init__(self,
                review_id: uuid.UUID,
-               name: str,
+               name: RichName,
                timestamp: str) -> None:
     self._review_id = review_id
     self._name = name
@@ -316,7 +325,7 @@ class _ClientReview:
     return self._review_id
 
   @property
-  def name(self) -> str:
+  def name(self) -> RichName:
     return self._name
 
   @property
@@ -377,13 +386,74 @@ class _DirectChannel:
     await self._websocket.send(encode_message(msg))
 
 
+async def _send_reply_best_effort(channel: Channel,
+                                  reply: ProtocolMessage) -> None:
+  '''Send ``reply`` to a failed request, ignoring any failure but a lost
+  connection (which the caller handles).
+  '''
+  try:
+    await channel.send(reply)
+  except (ConnectionClosed, NotConnectedError):
+    raise
+  except Exception:
+    pass
+
+
+async def _reply_to_failed_request(channel: Channel,
+                                   handler: ReviewClientHandler) -> None:
+  '''Answer a request whose handler raised, and log why.
+
+  The section keeps serving afterwards: one bad request (which a reviewer
+  can trigger) shouldn't take the whole section down.
+  '''
+  eprint(
+    f"Request to section {handler.subscription_type}/{handler.slug} failed:"
+  )
+  traceback.print_exc()
+  await _send_reply_best_effort(channel, message(RequestTags.INVALID_REQUEST))
+
+
+async def _report_illegal_access(channel: Channel,
+                                 handler: ReviewClientHandler,
+                                 error: IllegalFileAccessError) -> None:
+  '''Report the reviewer whose request asked for a file outside the
+  section, so the server drops their connection. The section keeps serving
+  everyone else.
+  '''
+  if error.reviewer_id is None:
+    # Not traced to a reviewer; just a failed request.
+    await _reply_to_failed_request(channel, handler)
+  else:
+    eprint(
+      f"Reviewer {error.reviewer_id} of section "
+      f"{handler.subscription_type}/{handler.slug} requested a file outside "
+      f"it; having the server disconnect them: {error}"
+    )
+    await _send_reply_best_effort(channel, message(
+      RequestTags.ILLEGAL_ACCESS,
+      value = {'reviewer_id': error.reviewer_id}
+    ))
+
+
+async def _await_acknowledgement(future: asyncio.Future,
+                                 timeout: float,
+                                 action: str) -> Any:
+  '''Wait for the server to acknowledge ``action``, up to ``timeout`` s.'''
+  try:
+    return await asyncio.wait_for(future, timeout)
+  except asyncio.TimeoutError:
+    raise ClientError(
+      f"timed out waiting for the server to {action}"
+    ) from None
+
+
 class _BatchClientReview:
   '''A review served over a ``BatchClientSession`` ``/batch`` connection.'''
 
   def __init__(self,
                client: 'BatchClientSession',
                review_id: uuid.UUID,
-               name: str,
+               name: RichName,
                timestamp: str) -> None:
     self._client = client
     self._review = _ClientReview(review_id, name, timestamp)
@@ -395,7 +465,7 @@ class _BatchClientReview:
     return self._review.review_id
 
   @property
-  def name(self) -> str:
+  def name(self) -> RichName:
     return self._review.name
 
   @property
@@ -407,19 +477,23 @@ class _BatchClientReview:
 
   async def add_section(self, handler: ReviewClientHandler) -> None:
     '''Register handler and subscribe it on the batch socket.'''
-    self._review.register_handler(handler)
-    try:
-      await self.subscribe_section(handler)
-    except Exception:
-      self._review.discard_handler(handler)
-      raise
+    # Serialized with reconnect restores so a section added mid-restore is
+    # subscribed exactly once.
+    async with self._client._subscriptions_lock:
+      self._review.register_handler(handler)
+      try:
+        await self.subscribe_section(handler)
+      except Exception:
+        self._review.discard_handler(handler)
+        raise
 
   async def remove_section(self, handler: ReviewClientHandler) -> None:
     '''Unsubscribe, then unregister.'''
-    if handler not in self._review.sections():
-      raise SectionNotRegisteredError(handler.slug)
-    await self.unsubscribe_section(handler)
-    self._review.discard_handler(handler)
+    async with self._client._subscriptions_lock:
+      if handler not in self._review.sections():
+        raise SectionNotRegisteredError(handler.slug)
+      await self.unsubscribe_section(handler)
+      self._review.discard_handler(handler)
 
   async def _run_handler_loop(self,
                               channel: _SubscriptionChannel,
@@ -437,12 +511,10 @@ class _BatchClientReview:
         except IncompatibleProtocolVersion as ex:
           self._client.abort(ex)
           raise
+        except IllegalFileAccessError as ex:
+          await _report_illegal_access(channel, handler, ex)
         except Exception:
-          try:
-            await channel.send(message(RequestTags.INVALID_REQUEST))
-          except Exception:
-            pass
-          raise
+          await _reply_to_failed_request(channel, handler)
     finally:
       self._client._inbounds.pop(channel.subscription_id, None)
       self._subscription_tasks.pop(channel.subscription_id, None)
@@ -463,9 +535,24 @@ class _BatchClientReview:
         pass
 
   async def _restore_subscriptions(self) -> None:
-    '''Re-subscribe every registered section on a fresh batch socket.'''
+    '''Re-subscribe every registered section on a fresh batch socket.
+
+    Sections already subscribed on this socket are skipped, and one section
+    failing to subscribe doesn't keep the rest from being restored.
+    '''
     for handler in self._review.sections():
-      await self.subscribe_section(handler)
+      if id(handler) in self._subscriptions:
+        continue
+      try:
+        await self.subscribe_section(handler)
+      except (ConnectionClosed, NotConnectedError, asyncio.CancelledError):
+        raise
+      except Exception:
+        eprint(
+          f"Failed to restore section "
+          f"{handler.subscription_type}/{handler.slug}:"
+        )
+        traceback.print_exc()
 
   async def subscribe_section(self, handler: ReviewClientHandler) -> None:
     handler_key = id(handler)
@@ -545,7 +632,7 @@ class _DirectClientReview:
   def __init__(self,
                client: 'DirectClientSession',
                review_id: uuid.UUID,
-               name: str,
+               name: RichName,
                timestamp: str) -> None:
     self._client = client
     self._review = _ClientReview(review_id, name, timestamp)
@@ -557,7 +644,7 @@ class _DirectClientReview:
     return self._review.review_id
 
   @property
-  def name(self) -> str:
+  def name(self) -> RichName:
     return self._review.name
 
   @property
@@ -592,12 +679,10 @@ class _DirectClientReview:
       except (RoleOccupied, ConnectionClosed, asyncio.CancelledError,
               IncompatibleProtocolVersion):
         raise
+      except IllegalFileAccessError as ex:
+        await _report_illegal_access(channel, handler, ex)
       except Exception:
-        try:
-          await channel.send(message(RequestTags.INVALID_REQUEST))
-        except Exception:
-          pass
-        raise
+        await _reply_to_failed_request(channel, handler)
 
   def _signal_section_ready(self, handler_key: int) -> None:
     ready = self._section_first_ready.get(handler_key)
@@ -775,6 +860,8 @@ class BatchClientSession:
     self._inbounds: Dict[uuid.UUID, asyncio.Queue] = {}
     self._reviews: Dict[uuid.UUID, _BatchClientReview] = {}
     self._session_ready = asyncio.Event()
+    # Held while sections are (re)subscribed or unsubscribed.
+    self._subscriptions_lock = asyncio.Lock()
 
   def abort(self, error: BaseException) -> None:
     '''End the session; ``stopped()`` will raise ``error``.'''
@@ -868,8 +955,9 @@ class BatchClientSession:
 
   async def _restore_subscriptions(self) -> None:
     '''Re-establish every review section on a fresh batch socket.'''
-    for review in list(self._reviews.values()):
-      await review._restore_subscriptions()
+    async with self._subscriptions_lock:
+      for review in list(self._reviews.values()):
+        await review._restore_subscriptions()
 
   async def _connection_loop(self,
                              connection: ResilientWebsocket) -> None:
@@ -986,7 +1074,11 @@ class BatchClientSession:
     self._pending_subscribe[key] = future
     try:
       await self._send(message(RequestTags.BATCH_SUBSCRIBE, value = payload))
-      echo = await future
+      echo = await _await_acknowledgement(
+        future,
+        SUBSCRIBE_TIMEOUT_S,
+        f"subscribe {key[1]}/{key[2]}"
+      )
     except Exception:
       self._pending_subscribe.pop(key, None)
       if not future.done():
@@ -1004,7 +1096,11 @@ class BatchClientSession:
         RequestTags.BATCH_UNSUBSCRIBE,
         value = { 'subscription_id': str(subscription_id) }
       ))
-      await future
+      await _await_acknowledgement(
+        future,
+        UNSUBSCRIBE_TIMEOUT_S,
+        f"unsubscribe {subscription_id}"
+      )
     except Exception:
       self._pending_unsubscribe.pop(subscription_id, None)
       if not future.done():
@@ -1017,7 +1113,7 @@ class BatchClientSession:
 
   async def create_review(self,
                           review_id: uuid.UUID,
-                          name: str,
+                          name: RichName,
                           timestamp: str) -> ReviewClient:
     '''Construct a review served over this session's batch transport.'''
     if review_id in self._reviews:
@@ -1150,7 +1246,7 @@ class DirectClientSession:
 
   async def create_review(self,
                           review_id: uuid.UUID,
-                          name: str,
+                          name: RichName,
                           timestamp: str) -> ReviewClient:
     '''Construct a review served over this session's direct sockets.'''
     self._require_connected()

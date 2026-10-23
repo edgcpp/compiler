@@ -1,3 +1,19 @@
+Version 7.1
+
+10/15/26  [GH #307]
+Suppress the blocks macros in make_predef_macro_table output
+
+The __BLOCKS__ and __block macros are now suppressed when running
+make_predef_macro_table with --clang (so these don't end up in a
+predefined_macros.txt file).  Clang defines them together when the blocks
+extension is enabled (the default for Apple clang), but the front end does not
+support that extension, and the system headers that test __BLOCKS__ (the macOS
+SDK declares atexit_b, qsort_b and others under it) would then use block
+pointer types.  They have also been removed from the predefined_macros.txt
+files of the macOS clang bases.
+
+
+-------------------------------------------------------------------------------
 Version 7.0, September 28, 2026
 
 9/27/26  [EDGcpfe/29061]

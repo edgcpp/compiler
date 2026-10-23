@@ -1,0 +1,202 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# One acknowledg-forge deployment (one forge): four containers from the same
+# image, each seeing only what its role needs (see SANDBOXING.md).
+#
+#   service    the service (acknowledg-forge-<forge>): the forge token,
+#              webhook secret, database, and clones; a client of the
+#              builder and publisher servers
+#   builder    a runner server (python -m edgacknowledg.forge.builder): runs
+#              edg-rematerialize-test-run over pull request content
+#   publisher  the publisher server (python -m edgacknowledg.forge.publisher):
+#              answers reviewers via AcknowlEDG, in its pool processes; a
+#              client of tools
+#   tools      a runner server (python -m edgacknowledg.forge.tools): runs
+#              ifc-dump and cg_annotate for the publisher
+#
+# Containers talk over WebSockets on networks of their own, one per pair:
+# each server is reachable only by its one client (test_containers.py checks
+# that), and the builder and tools runners have no other network, so no way
+# out. Only the webhook port is published, and only on 127.0.0.1, for the
+# host's reverse proxy.
+#
+# The host's systemd unit (README.md) runs it, with these variables (from
+# --env-file):
+#
+#   FORGE            github or gitlab
+#   IMAGE            the image, pinned by digest (set by deploy-remote.py)
+#   FORGE_UID/GID    the host account owning STATE_DIR; every container runs
+#                    as it
+#   STATE_DIR        the deployment's state (ACKNOWLEDG_FORGE_HOME)
+#   SETTINGS_FILE    the service's settings (ACKNOWLEDG_FORGE_*)
+#   CREDENTIALS_DIR  the credentials systemd decrypted (the service's only)
+#   EDG_ACKNOWLEDG_{API,UI}_{HOST,PORT}  AcknowlEDG (set by deploy-remote.py)
+
+name: acknowledg-forge
+
+x-container: &container
+  image: ${IMAGE:-ghcr.io/edgcpp/acknowledg-forge:latest}
+  user: "${FORGE_UID:?}:${FORGE_GID:?}"
+  # Every container is unprivileged, and stays so.
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  read_only: true
+  # Reaps what commands leave behind; the runners kill strays themselves.
+  init: true
+  tmpfs:
+    # Bounded (sandbox.TMPFS_SIZE): it's memory.
+    - /tmp:size=512m,mode=1777
+  pids_limit: 512
+  mem_limit: 1g
+
+x-environment: &environment
+  HOME: /tmp
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+x-python: &python /edg/acknowledg-forge/${FORGE:-github}/bin/python
+
+services:
+  service:
+    <<: *container
+    command: ["acknowledg-forge-${FORGE:-github}"]
+    env_file:
+      - ${SETTINGS_FILE:?}
+    environment:
+      <<: *environment
+      ACKNOWLEDG_FORGE_HOME: /var/lib/acknowledg-forge
+      CREDENTIALS_DIRECTORY: /run/credentials
+      ACKNOWLEDG_FORGE_BUILDER_SERVICE_URL: ws://builder:2730
+      ACKNOWLEDG_FORGE_PUBLISHER_SERVICE_URL: ws://publisher:2731
+      EDG_ACKNOWLEDG_API_HOST: ${EDG_ACKNOWLEDG_API_HOST:-localhost}
+      EDG_ACKNOWLEDG_API_PORT: ${EDG_ACKNOWLEDG_API_PORT:-2727}
+      EDG_ACKNOWLEDG_UI_HOST: ${EDG_ACKNOWLEDG_UI_HOST:-localhost}
+      EDG_ACKNOWLEDG_UI_PORT: ${EDG_ACKNOWLEDG_UI_PORT:-5173}
+    volumes:
+      # One bind for all of the state, so builds move into reviews by
+      # rename. (Missing directories are an error, not created as root.)
+      - type: bind
+        source: ${STATE_DIR:?}
+        target: /var/lib/acknowledg-forge
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${CREDENTIALS_DIR:?}
+        target: /run/credentials
+        read_only: true
+        bind: {create_host_path: false}
+    ports:
+      # Webhooks, for a reverse proxy on the host, which is what faces the
+      # internet. Only ever on the loopback address: Docker's published
+      # ports bypass the host's firewall (e.g. ufw), so any other address
+      # would expose the service whatever the firewall says. Nothing else
+      # is published.
+      - 127.0.0.1:${WEBHOOK_PORT:-2728}:2728
+    networks:
+      # For webhooks, bind only here: ACKNOWLEDG_FORGE_WEBHOOK_BIND=
+      # service-frontend:2728.
+      frontend:
+        aliases: [service-frontend]
+      build: {}
+      publish: {}
+    depends_on: [builder, publisher]
+    mem_limit: 2g
+
+  builder:
+    <<: *container
+    command:
+      - *python
+      - -m
+      # A runner server with the builder role (runner.roles: what it
+      # allows, as without containers).
+      - edgacknowledg.forge.builder
+      - --home=/var/lib/acknowledg-forge
+      - --tools-dir=/edg/tools
+      # Its only network is the one it shares with its client.
+      - --host=0.0.0.0
+      - --port=2730
+      - --container
+    environment:
+      <<: *environment
+    volumes:
+      - type: bind
+        source: ${STATE_DIR:?}/reviews
+        target: /var/lib/acknowledg-forge/reviews
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIR:?}/build-staging
+        target: /var/lib/acknowledg-forge/build-staging
+        bind: {create_host_path: false}
+    networks: [build]
+    mem_limit: 2g
+
+  publisher:
+    <<: *container
+    command:
+      - *python
+      - -m
+      - edgacknowledg.forge.publisher
+      # Only on the network it shares with the service (not, say, the tools
+      # runner's).
+      - --host=publisher-publish
+      - --port=2731
+      # Pool processes answering reviewers, and how long each may take on a
+      # request before it is replaced (the defaults).
+      - --processes=4
+      - --request-timeout=150
+    environment:
+      <<: *environment
+      ACKNOWLEDG_FORGE_TOOLS_SERVICE_URL: ws://tools:2732
+    volumes:
+      - type: bind
+        source: ${STATE_DIR:?}/reviews
+        target: /var/lib/acknowledg-forge/reviews
+        read_only: true
+        bind: {create_host_path: false}
+    networks:
+      publish:
+        aliases: [publisher-publish]
+      tools: {}
+      egress: {}
+    depends_on: [tools]
+    # The server and its pool processes.
+    mem_limit: 2g
+
+  tools:
+    <<: *container
+    command:
+      - *python
+      - -m
+      # A runner server with the tools role.
+      - edgacknowledg.forge.tools
+      - --home=/var/lib/acknowledg-forge
+      - --tools-dir=/edg/tools
+      # Its only network is the one it shares with its client.
+      - --host=0.0.0.0
+      - --port=2732
+      - --container
+    environment:
+      <<: *environment
+    volumes:
+      - type: bind
+        source: ${STATE_DIR:?}/reviews
+        target: /var/lib/acknowledg-forge/reviews
+        read_only: true
+        bind: {create_host_path: false}
+    networks: [tools]
+
+networks:
+  # The service's: the forge, and webhooks from the host.
+  frontend: {}
+  # The publisher server's: AcknowlEDG.
+  egress: {}
+  # One per pair; internal networks have no route out.
+  build:
+    internal: true
+  publish:
+    internal: true
+  tools:
+    internal: true

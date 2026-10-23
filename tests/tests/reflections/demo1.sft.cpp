@@ -1,6 +1,6 @@
 //type:rp
 //use_system_includes: true
-//edg_header_pack: exp_meta
+//edg_header_pack: meta
 
 /*
 Output should be:
@@ -8,7 +8,7 @@ $ ./a.out
 0 1 2
 */
 
-#include <experimental/meta>
+#include <meta>
 
 using namespace std::meta;
 #include <stdio.h>
