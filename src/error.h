@@ -1022,7 +1022,9 @@ NORETURN extern void end_command_line_error(a_diagnostic_ptr dp);
 extern void syntax_error(an_error_code error_code);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long show_error_space_used(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 namespace detail {

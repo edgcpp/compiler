@@ -444,10 +444,12 @@ extern void construct_node_unchecked(an_ifc_Node_type  *result,
                                      an_ifc_Index_type idx);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 extern void db_decl_cache(an_ifc_decl_index decl_idx);
 extern void db_print_indent(unsigned amount);
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void ifc_modules_read_one_time_init();

@@ -186,8 +186,10 @@ extern a_boolean is_valid_identifier(a_const_char     *id_start,
 extern void choose_raw_or_expanded_arg(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Show and return the amount of space used by macro entries. */
 extern unsigned long show_macro_space_used(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void macro_one_time_init(void);

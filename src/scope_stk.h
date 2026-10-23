@@ -2744,6 +2744,7 @@ extern void scope_stk_trans_unit_init(void);
 extern void scope_stk_init(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_pack_tokens(a_pack_expansion_descr_ptr	pedp);
 
 extern int db_scope_kind(a_scope_kind sck);
@@ -2765,6 +2766,7 @@ extern void db_decl_pos_info(a_symbol_ptr sym);
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 extern unsigned long db_show_scope_stack_space_used(unsigned long grand_total);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if DO_IL_LOWERING

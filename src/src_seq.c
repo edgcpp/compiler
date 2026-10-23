@@ -27,6 +27,7 @@ BEGIN_EDG_NAMESPACE
 #if !STANDALONE_UTILITY_PROGRAM
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_source_sequence_entry(a_source_sequence_entry_ptr  ssep)
 /*
@@ -537,6 +538,7 @@ debugging purposes.
   }  /* if */
 }  /* db_ss_list_for_scope */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void fixup_function_scope_source_sequence_list(a_scope_ptr  sp)
@@ -624,6 +626,7 @@ separate sublists.
     }  /* if */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     if (sp->src_seq_sublist_list == NULL) {
       fputs("fixup: no change to source sequence list for ", f_debug);
@@ -634,6 +637,7 @@ separate sublists.
       db_ss_list_for_scope(sp);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* fixup_function_scope_source_sequence_list */
@@ -835,6 +839,7 @@ will go on a sublist if it was allocated in the file-scope memory region.
   check_assertion(scope_stack_ptr->module_load_context_count == 0);
 #endif /* CHECKING || DEBUG || TEMPLATE_INSTANTIATIONS_IN_SOURCE_... */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     a_scope_depth  depth_ss_list_scope =
                      (depth_innermost_function_scope == NO_SCOPE_DEPTH) ?
@@ -853,6 +858,7 @@ will go on a sublist if it was allocated in the file-scope memory region.
     fputs(":\n  ", f_debug);
     db_source_sequence_entry(new_ssep);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (scope_stack[depth_scope_stack].source_sequence_list == NULL) {
     scope_stack[depth_scope_stack].source_sequence_list = new_ssep;
@@ -1035,10 +1041,12 @@ entry that has already been created and linked in for this entity.
     add_source_sequence_entry_to_list(new_ssep);
   } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("empty ss entry changed to ", f_debug);
       db_source_sequence_entry(new_ssep);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   db_exit();
@@ -1168,12 +1176,14 @@ sequence list.
           ss_list->next->prev = ss_list;
           tssp->variant.class_template.source_sequence_list = ss_list;
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
             fputs("ss-list for prototype instantiation of ", f_debug);
             db_type_name(tp);
             fputs(":\n", f_debug);
             db_ss_list_for_prototype_instantiation(ss_list, 2);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
       }  /* if */
@@ -1210,6 +1220,7 @@ end; otherwise, insert it immediately before insert_before.
     scope_stack_ptr = NULL;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     a_source_sequence_entry_ptr  after_tail = tail->next;
 
@@ -1232,6 +1243,7 @@ end; otherwise, insert it immediately before insert_before.
     db_ss_list(head);
     tail->next = after_tail;
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (insert_before == NULL) {
     check_assertion(scope_stack_ptr != NULL);
@@ -1284,12 +1296,14 @@ fixup_function_scope_source_sequence_list has been called.)
     a_scope_stack_entry_ptr  scope_stack_ptr = &scope_stack[depth];
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("removing from source sequence list for ", f_debug);
       db_scope(scope_stack_ptr->il_scope);
       fputs(":\n  ", f_debug);
       db_source_sequence_entry(ssep);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS
     if (scope_stack_ptr->ss_list_instantiation_insert_point == ssep) {
@@ -1755,6 +1769,7 @@ innermost such class.
 
   db_enter(4, "find_instantiation_insert_scope");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     fputs("finding insert point for ", f_debug);
     db_source_sequence_entry(ssep);
@@ -1762,6 +1777,7 @@ innermost such class.
     db_scope_stack_entry_at_depth((a_scope_depth)(curr_sse_ptr - scope_stack));
     fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Identify IL entity that is being instantiated. */
   entity_kind = ss_entry_kind(ssep);
@@ -1807,6 +1823,7 @@ innermost such class.
     parent_scope_depth = find_innermost_namespace_scope_depth(curr_sse_ptr);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     fputs("  entity: ", f_debug);
     if (scp->assoc_info == NULL) {
@@ -1827,6 +1844,7 @@ innermost such class.
       fputs("\n", f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   for (ref_scope_depth = depth_scope_stack;
        ref_scope_depth > NO_SCOPE_DEPTH;
@@ -1910,11 +1928,13 @@ innermost such class.
         unexpected_condition();
     }  /* switch */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("  entity type: ", f_debug);
       db_type_name(entity_type);
       fputs("\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
    for (; ref_scope_depth > NO_SCOPE_DEPTH; ref_scope_depth--) {
       if (parent_scope_depth != NO_SCOPE_DEPTH &&
@@ -1934,12 +1954,14 @@ innermost such class.
                                      depth_in_scope_stack == NO_SCOPE_DEPTH);
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
           fprintf(f_debug, "  checking ref scope%s: ",
                            members_only ? " (members only)" : "");
           db_scope_stack_entry_at_depth(ref_scope_depth);
           fputs("\n", f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (type_involves_specific_class_type(entity_type, class_type,
                                               members_only) ||
@@ -1982,6 +2004,7 @@ innermost such class.
                                         : scope_stack[insert_scope_depth]
                                           .ss_list_instantiation_insert_point;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
     fprintf(f_debug, "insert point found: %s list for ",
                      insert_point == NULL ? "at end of" : "in");
@@ -1993,6 +2016,7 @@ innermost such class.
       fputs("\n", f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return insert_scope_depth;
@@ -2144,6 +2168,7 @@ declared_type points to a type that should be recorded in the entry.
     sssdp->specialized_with_new_syntax = TRUE;
 #endif /* BACK_END_IS_CP_GEN_BE */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("partial instantiation of ",
             f_debug);
@@ -2151,6 +2176,7 @@ declared_type points to a type that should be recorded in the entry.
                                        source_corresp.assoc_info);
       fputs("\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
     switch_to_file_scope_region(&region_to_switch_back_to);
     ssep = alloc_source_sequence_entry();
@@ -2167,12 +2193,14 @@ declared_type points to a type that should be recorded in the entry.
          entry to the source sequence list at this time; it will be done
          later. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("deferring addition to ss-list for", f_debug);
         fputs(" partial instantiation of \"", f_debug);
         db_name(&((a_routine_ptr)ptr)->source_corresp);
         fputs("\"\n", f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
       sym->variant.routine.instance_ptr->partial_instantiation = ssep;
     } else
@@ -3105,10 +3133,12 @@ associated with the indicated sck_function scope.
          because there is no secondary source sequence entry to fall
          back on. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("dropping: ", f_debug);
         db_source_sequence_entry(ssep);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       remove_src_seq_entry(ssep);
       /* The source-sequence entry pointer in the routine needs to be
@@ -3388,10 +3418,12 @@ successor of ssep.
 #endif /* CHECKING */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("checking nonautonomous tag: ", f_debug);
       db_source_sequence_entry(ssep);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 check_next_ssep:
     /* Note: we may loop back to this point for the special case of an
@@ -3406,10 +3438,12 @@ check_next_ssep:
          skip over any that intervene between the struct/enum definition
          and whatever follows. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("skipping: ", f_debug);
         db_source_sequence_entry(next_ssep);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       next_ssep = next_ssep->next;
     }  /* while */
@@ -3488,10 +3522,12 @@ check_next_ssep:
         sssdp->declared_in_func_prototype = FALSE;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("marked autonomous: ", f_debug);
         db_source_sequence_entry(ssep);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -3613,10 +3649,12 @@ scope that are not really needed in the IL.
       if (kind == iek_variable || kind == iek_routine || kind == iek_type ||
           kind == iek_instantiation_directive) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
           fputs("dropping: ", f_debug);
           db_source_sequence_entry(ssep);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* If the entry about to be dropped is for a primary declarator (i.e.,
            not one appearing after the first in a comma-separated list) and a
@@ -3661,6 +3699,7 @@ scope that are not really needed in the IL.
     }  /* if */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_active) {
     /* Display source sequence lists for debug purposes. */
     if (debug_level >= 3 || db_flag_is_set("dump_elim") ||
@@ -3669,6 +3708,7 @@ scope that are not really needed in the IL.
       db_ss_list_for_scope(scope);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* eliminate_unneeded_source_sequence_entries */
 

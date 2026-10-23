@@ -5081,12 +5081,14 @@ defined.  Detailed position information is recorded in *decl_pos_block.
         dpsp->identifier_range = local_decl_pos_block.identifier_range;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (delayed_nested_class_def) {
         if (debug_level >= 3 || db_flag_is_set("dump_decl_pos_info")) {
           fprintf(f_debug, "decl-pos info for delayed nested class def\n");
           db_decl_pos_info(tag_sym);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -5182,9 +5184,11 @@ defined.  Detailed position information is recorded in *decl_pos_block.
 done:
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED || SUN_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(tag_sym, "tag_sym: ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   dps->sym = tag_sym;
   db_exit();
@@ -5987,11 +5991,13 @@ is updated to reflect relevant positions of this definition.
       } else {
 #if GENERATE_SOURCE_SEQUENCE_LISTS
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (!source_sequence_entries_disallowed &&
             (debug_level >= 4 || db_flag_is_set("dump_ss_full"))) {
           fprintf(f_debug, "enum_specifier: empty ss entry for \"%s\":\n",
                   locator_for_curr_id.symbol_header->identifier);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         enum_con_ssep = add_empty_source_sequence_entry();
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
@@ -13553,6 +13559,7 @@ exit_loop:
   if (err || declares_something) *output_flags |= DSO_DECLARES_SOMETHING;
   if (defines_something) *output_flags |= DSO_DEFINES_SOMETHING;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fputs("type_ptr: ", f_debug);
     if (*type_ptr == NULL) {
@@ -13562,6 +13569,7 @@ exit_loop:
     }  /* if */
     (void)fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   state->storage_class = state->declared_storage_class;
   state->decl_specifiers_error = err;

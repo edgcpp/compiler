@@ -8586,7 +8586,9 @@ Set up for use of the il_to_str routines.
   octl.output_str = put_str_to_display;
   octl.gen_pcc_code = il_header.pcc_compatibility_mode;
 #if DEBUG
+/* GCOVR_EXCL_START */
   octl.debug_output = TRUE;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* init_for_il_to_str_output */
 
@@ -8788,13 +8790,17 @@ the IL associated with the entity that was bound to the pragma.
   init_front_end_f_display();
   if (sym_ptr != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_sym(sym_ptr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     entry_ptr = il_entry_for_symbol_null_okay(sym_ptr, &kind);
   }  /* if */
   if (stmt_ptr != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_statement(stmt_ptr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     entry_ptr = (char*)stmt_ptr;
     kind = (an_il_entry_kind)iek_statement;
@@ -8887,9 +8893,11 @@ where file.cil specifies the IL file.  Output is to stdout.
   int                    optind = 1;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Initialize the file variable used for debug output.  This should be
      done before anything else that could potentially produce debug output. */
   f_debug = stderr;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Initialize the components of the front end needed by standalone
      utility programs; further initialization is done after the il_header
@@ -8904,12 +8912,14 @@ where file.cil specifies the IL file.  Output is to stdout.
     /* Scan options.  There's a limited set, so we don't use getopt. */
     switch (argv[optind][1]) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       case 'd':
         /* Scan debug argument */
         if (proc_debug_option(argv[optind]+2)) {
           command_line_error(ec_cl_error_in_debug_option_argument);
         }  /* if */
         break;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       default:
         str_command_line_error(ec_cl_invalid_option, argv[optind]);

@@ -4219,10 +4219,13 @@ Do C99 lowering on the indicated expression.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   unsigned long         checksum = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("lower_expr")) {
     checksum = compute_checksum_for_expr(expr);
     (void)fprintf(f_debug, "C99 Expression before lowering");
@@ -4230,9 +4233,11 @@ Do C99 lowering on the indicated expression.
     fputs(":\n", f_debug);
     db_expression(expr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   lower_c99_expr_full(expr, (a_statement_ptr)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("lower_expr") &&
       (checksum != compute_checksum_for_expr(expr))) {
     (void)fprintf(f_debug, "C99 Expression after lowering");
@@ -4240,6 +4245,7 @@ Do C99 lowering on the indicated expression.
     fputs(":\n", f_debug);
     db_expression(expr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* lower_c99_expr */
 
@@ -4552,7 +4558,9 @@ Do C99 lowering on the indicated statement.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   unsigned long      checksum = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   if (statement != NULL) {
@@ -4561,11 +4569,13 @@ Do C99 lowering on the indicated statement.
     a_source_position saved_error_position, saved_code_pos;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("lower_statement")) {
       checksum = compute_checksum_for_statement(statement);
       (void)fprintf(f_debug, "C99 Statement before lowering: ");
       db_statement(statement);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     pending_stmk_init_statements = NULL;
     /* Track the source position. */
@@ -4706,11 +4716,13 @@ Do C99 lowering on the indicated statement.
     error_position = saved_error_position;
     code_pos_for_lowering = saved_code_pos;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("lower_statement") &&
         (checksum != compute_checksum_for_statement(statement))) {
       (void)fprintf(f_debug, "C99 Statement after lowering: ");
       db_statement(statement);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* lower_c99_statement */

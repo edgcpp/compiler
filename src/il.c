@@ -143,6 +143,7 @@ END_EDG_NAMESPACE
 BEGIN_EDG_NAMESPACE
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 #if !STANDALONE_UTILITY_PROGRAM
 
 /*
@@ -151,6 +152,7 @@ Number of times the based_types lists of types are searched for related types.
 STATIC_THREAD unsigned long
 		num_get_based_type_calls;
 #endif /* !STANDALONE_UTILITY_PROGRAM */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -246,12 +248,14 @@ STATIC_THREAD a_constant_ptr
 			   initialized. */ 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_shareable_constants,
 		num_func_shareable_constants,
 		num_used_shareable_constant_buckets,
 		num_searches_for_shareable_constants,
 		num_compares_for_shareable_constants;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -270,11 +274,14 @@ typedef struct a_based_type_fixup {
 } a_based_type_fixup;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_based_type_fixups_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_template_arg_list(a_template_arg_ptr tap)
 /*
@@ -399,6 +406,7 @@ template arguments on template classes.
   db_name_full(sc, iek_none);
 }  /* db_name */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
@@ -412,6 +420,7 @@ Output a string into the db_name_str buffer.
 }  /* put_str_into_text_buffer */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 /*
 Buffer into which names are written for db_name_str
@@ -533,9 +542,11 @@ entity is not from the primary translation unit.
   return db_name_str_full(scp, kind, /*include_func_params=*/TRUE);
 }  /* db_name_str */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !STANDALONE_UTILITY_PROGRAM
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void subst_fail_intercept(void)
 /*
@@ -3255,6 +3266,7 @@ Dump statements recursively (to a pre-set limit).
   db_statement_list(statement, 0, "", 10);
 }  /* db_statements */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void set_inline_flag(a_routine_ptr  rp,
@@ -3595,6 +3607,7 @@ necessary.
 }  /* build_seq_number_lookup_table */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_seq_number_lookup_table(void)
 /*
@@ -3662,6 +3675,7 @@ of the translation unit.
           at_end_of_source);
 }  /* db_source_file_for_seq_info */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if !STANDALONE_UTILITY_PROGRAM
@@ -3673,9 +3687,11 @@ Change the current IL memory region to "region_number".
 {
   curr_il_region_number = region_number;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Switching to IL region %d.\n", curr_il_region_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* switch_il_region */
 
@@ -3804,12 +3820,14 @@ memory region and a pointer to it is returned.
     sp->prev = top_scope;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("new_function_scope")) {
     db_scope(sp);
     fprintf(f_debug, ", region=%ld, function_def=%ld\n",
             (long)assoc_routine->memory_region,
             (long)assoc_routine->function_def_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return sp;
 }  /* new_function_scope */
@@ -3851,12 +3869,14 @@ is used.
   a_seq_number_lookup_entry_ptr	snlep;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("seq_number_lookup")) {
     fprintf(f_debug,
            "Created seq lookup %lu for file %s seq %lu line %lu\n",
             il_header.num_seq_number_lookup_entries, source_file->file_name,
             (unsigned long)seq_number,(unsigned long)line_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (curr_seq_number_lookup_entry != NULL &&
       curr_seq_number_lookup_entry->first == seq_number) {
@@ -3953,6 +3973,7 @@ a file that contains metadata).
 
   db_enter(5, "record_start_of_source_file");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "file = \"%s\", seq = %lu\n", file_name,
             (unsigned long)seq_number);
@@ -3995,6 +4016,7 @@ a file that contains metadata).
     curr_translation_unit->is_partially_sequenced = TRUE;
   }
 #endif /* EXPENSIVE_CHECKING */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Allocate the new file block. */
   *new_file = sfp = alloc_source_file();
@@ -4246,9 +4268,11 @@ by recording that the last sequence number contained therein is seq_number.
 {
   db_enter(5, "record_end_of_source_file");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "seq = %lu\n", (unsigned long)seq_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   curr_file->last_seq_number = seq_number;
   /* Clear the cached sequence number conversion information. */
@@ -4267,6 +4291,7 @@ by recording that the last sequence number contained therein is seq_number.
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 void db_indent(size_t indent)
 /*
 Indent the current line by "indent" characters.
@@ -4297,6 +4322,7 @@ Display the sequence number information associated with a source file.
     }  /* if */
   }  /* for */
 }  /* db_source_file_seq_info */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -4316,9 +4342,11 @@ Convert a sequence number into the containing primary source file.
 #if CHECKING
     if (curr_file == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level > 0) {
         fprintf(f_debug, "seq number = %lu\n", (unsigned long)seq_number);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("find_file_for_seq: bad seq number");
     }  /* if */
@@ -4362,6 +4390,7 @@ number conversions.
   seq_cache.physical_line = physical_line;
   seq_cache.source_file = source_file; 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Cached source sequence conversion information:\n");
     fprintf(f_debug, "  file=%s\n", source_file->file_name);
@@ -4372,6 +4401,7 @@ number conversions.
     fprintf(f_debug, "  line_offset: %ld\n", seq_cache.line_offset);
     fprintf(f_debug, "  physical_line: %d\n", seq_cache.physical_line);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* update_seq_cache */
 
@@ -4625,9 +4655,11 @@ physical line position for the sequence number.
 
   db_enter(5, "source_file_for_seq");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     db_source_file_seq_info(il_header.primary_source_file, 0);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *at_end_of_source = FALSE;
   *line_number = 0;
@@ -4656,12 +4688,14 @@ physical line position for the sequence number.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 ||
       db_flag_is_set("source_file_for_seq")) {
     fprintf(f_debug, "File=%s, Line=%lu, sequence number=%lu\n",
             curr_file == NULL ? "<NULL>" : curr_file->file_name,
             (unsigned long)*line_number, (unsigned long)seq_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return curr_file;
@@ -4702,6 +4736,7 @@ number to 0.  Return the source file pointer associated with seq_number.
     *full_name = proper_file->full_name;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     if (*line_number == 0) {
       fprintf(f_debug, "seq %lu is outside of all source.\n",
@@ -4713,6 +4748,7 @@ number to 0.  Return the source file pointer associated with seq_number.
       if (*at_end_of_source) fprintf(f_debug, "(really: at end of source)\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return proper_file;
@@ -4746,6 +4782,7 @@ or not.  Return TRUE if so, FALSE otherwise.
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 a_line_number db_line_for_seq(a_seq_number seq_number)
 /*
@@ -4763,6 +4800,7 @@ print the file name and line number.
   return line_number;
 }  /* db_line_for_seq */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !STANDALONE_UTILITY_PROGRAM
 
@@ -5173,8 +5211,10 @@ STATIC_THREAD a_copy_remap_entry_ptr
 			/* Copy remap entries freed and available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_copy_remap_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -5212,7 +5252,9 @@ the entry to the remapped_entries list of the control block cblock.
     /* Allocate a new entry. */
     crep = (a_copy_remap_entry_ptr)alloc_fe(sizeof(a_copy_remap_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_copy_remap_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Clear the entry and add it to the front of the remapped_entries list. */
@@ -7983,10 +8025,12 @@ Return the hash value for the indicated constant.
     hash_value += hash_type(cp->type);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "hash_constant, hash_value = %u\n",
                      (unsigned int)hash_value);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return hash_value;
 }  /* hash_constant */
@@ -8260,8 +8304,10 @@ are done.
   a_boolean         eq = FALSE;
   an_itf_flag_set   itf_options;
 #if DEBUG
+/* GCOVR_EXCL_START */
   STATIC_THREAD size_t db_level = 0;
   db_level++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   itf_options = itf_flags_for_cc_options(options);
@@ -8681,6 +8727,7 @@ are done.
   }  /* if */
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_level--;
   if (!eq && db_flag_is_set("compare_expressions") && node1 != NULL) {
     fprintf(f_debug, "compare_expressions:\n");
@@ -8696,6 +8743,7 @@ done:
       fprintf(f_debug, "\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return eq;
 }  /* compare_expressions */
@@ -9909,7 +9957,9 @@ put it on a list of constants).
   a_constant_ptr        *list_ptr;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_searches_for_shareable_constants++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if DO_IL_LOWERING && ASSIGN_STRING_LITERAL_SEQUENCE_NUMBERS
   if (cp->kind == (a_constant_repr_kind)ck_string &&
@@ -10000,7 +10050,9 @@ put it on a list of constants).
            scp != NULL;
            prev_scp = scp, scp = scp->next) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         num_compares_for_shareable_constants++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Compare the constant in the list with the desired constant. */
         if (identical_constants(scp, cp)) {
@@ -10031,6 +10083,7 @@ put it on a list of constants).
       copy_constant(cp, scp);
       fix_memory_region_problems_in_copied_constant(scp);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (list_ptr != NULL) {
         if (alloc_in_function_scope) {
           num_func_shareable_constants++;
@@ -10041,6 +10094,7 @@ put it on a list of constants).
           }  /* if */
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     if (list_ptr != NULL) {
@@ -10075,7 +10129,9 @@ result of a string literal, but, e.g., of a call to a built-in function).
        scp != NULL;
        prev_scp = scp, scp = scp->next) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_compares_for_shareable_constants++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Compare the constant in the list with the desired constant. */
     if (identical_constants(scp, cp)) {
@@ -10099,11 +10155,13 @@ result of a string literal, but, e.g., of a call to a built-in function).
     (void)strcpy((char*)scp->variant.string.value, cp->variant.string.value);
     fix_memory_region_problems_in_copied_constant(scp);
 #if DEBUG
+/* GCOVR_EXCL_START */
     check_assertion(list_ptr != NULL);
     num_shareable_constants++;
     if (*list_ptr == NULL) {
       num_used_shareable_constant_buckets++;
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   check_assertion(list_ptr != NULL);
@@ -11325,6 +11383,7 @@ There must be a derivation so marked.
 #if !STANDALONE_UTILITY_PROGRAM
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static a_base_class_derivation_ptr direct_virtual_derivation_of(
                                                          a_base_class_ptr  bcp)
 /*
@@ -11343,6 +11402,7 @@ set to TRUE.
   }  /* while */
   return bcdp;
 }  /* direct_virtual_derivation_of */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -11900,11 +11960,13 @@ rather than determined directly.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("dump_type_lists")) {
       fprintf(f_debug, "Added to types list:  ");
       db_abbreviated_type(type_ptr);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* add_to_types_list */
@@ -11989,11 +12051,13 @@ determined directly.
       type_ptr->next = NULL;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("dump_type_lists")) {
       fprintf(f_debug, "Moved to end of list: ");
       db_abbreviated_type(type_ptr);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* move_to_end_of_types_list */
@@ -13365,6 +13429,7 @@ std::strong_ordering::equal, etc.
 }  /* initialize_ordering_constants */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_based_types(a_type_ptr  tp)
 /*
@@ -13380,6 +13445,7 @@ Print the "based types" associated with the given type to the debug output.
   }  /* for */
 }  /* db_based_types */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void do_based_type_fixup(void)
@@ -13457,7 +13523,9 @@ that points to base_type.  If none is found, create one and add it to the list.
     /* Falling through means a match was not found. */
     btfp = (a_based_type_fixup_ptr)alloc_fe(sizeof(a_based_type_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_based_type_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     btfp->base_type = base_type;
     /* Add the entry to the start of the list. */
@@ -13503,7 +13571,9 @@ frequently-asked-for based types at the front of the list.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_get_based_type_calls++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   ptr = (kind == (a_based_type_kind)btk_pointer);
@@ -14488,12 +14558,14 @@ qual_pos must be non-NULL.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ref_to_ref")) {
       fprintf(f_debug, "Ref-to-ref resulted in (line %lu): ",
               (unsigned long)pos_curr_token.seq);
       db_type(result);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -18677,6 +18749,7 @@ STATIC_THREAD sizeof_t
 #define MAX_N_SCHEDULED_ROUTINE_MOVES  100
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_scheduled_routine_moves(void)
 /*
@@ -18694,6 +18767,7 @@ Display the current list of moves to perform.
   }  /* for */
 }  /* db_scheduled_routine_moves */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_boolean compare_routine_move(a_routine_move_descr const &x,
@@ -28016,11 +28090,13 @@ related to "needed" flags.
     rout->defined = TRUE;
 #if MAINTAIN_NEEDED_FLAGS
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("needed_flags", rout, iek_routine)) {
       fprintf(f_debug, "Setting defined on rout ");
       db_name_full(&rout->source_corresp, iek_routine);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If the definition_needed flag was set previously, set it again so
        the function body will be scanned.  The fact that rout->defined was
@@ -28386,6 +28462,7 @@ appropriate scope on the scope stack (as specified by pragma_scope_depth).
   pp->is_microsoft_pragma_operator = is_microsoft_pragma_operator;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("add_pragma_to_il")) {
     fprintf(f_debug,
             "Adding non-entity pragma at seq=%u, col=%u to scope %d "
@@ -28394,6 +28471,7 @@ appropriate scope on the scope stack (as specified by pragma_scope_depth).
             scope_stack[pragma_scope_depth].number,
             pragma_scope_depth);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   append_pragma(scope_stack[pragma_scope_depth].il_scope,
                 scope_stack[pragma_scope_depth].assoc_pointers_block,
@@ -28477,6 +28555,7 @@ be set appropriately.
   pp->entity.kind = entity_kind;
   pp->entity.ptr = entity_ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("add_pragma_to_il")) {
     fprintf(f_debug,
             "Adding entity pragma at seq=%u, col=%u to scope %d "
@@ -28484,6 +28563,7 @@ be set appropriately.
             pp->position.seq, (unsigned)pp->position.column, il_scope->number,
             il_scope->depth_in_scope_stack);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   append_pragma(il_scope, pointers_block, pp);
   if (region_to_switch_back_to != NO_MEMORY_REGION_NUMBER) {
@@ -28733,9 +28813,11 @@ node instead.
        dynamic init entry to its destructions list. */
     add_to_destructions_list(dip, olp);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       db_pending_destructions(dip, (an_object_lifetime_ptr)NULL);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   db_exit();
@@ -28829,6 +28911,7 @@ object lifetime.
 }  /* promote_lifetime_contents_to_curr_object_lifetime */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_destruction(a_dynamic_init_ptr  dip)
 /*
@@ -29044,6 +29127,7 @@ destructions under it.
   }  /* if */
 }  /* db_object_lifetime_tree */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void free_object_lifetime(an_object_lifetime_ptr  olp)
@@ -29221,9 +29305,11 @@ lifetimes, since those are never bound.
     *lifetime_addr = olp;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_lifetimes")) {
     db_object_lifetime_with_indentation(olp, "Binding: ");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* bind_object_lifetime */
 
@@ -29348,14 +29434,18 @@ entry is needed.)
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_lifetimes")) {
     db_object_lifetime_with_indentation(olp, "Push or repush: ");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Now set the new entry to be the current object lifetime. */
   curr_object_lifetime = olp;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) db_object_lifetime_stack();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* push_or_repush_object_lifetime */
@@ -29733,10 +29823,12 @@ okay if a lifetime being left in the IL is not bound to an IL entry.
 
   db_enter(3, "pop_object_lifetime_full");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fputs("curr_object_lifetime = ", f_debug);
     db_object_lifetime(curr_object_lifetime);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   olp = curr_object_lifetime;
   /* Pop the lifetime entry -- that is, update curr_object_lifetime to
@@ -29757,12 +29849,14 @@ okay if a lifetime being left in the IL is not bound to an IL entry.
      modify all related pointers and then return it to an available list. */
   if (is_useless_object_lifetime(olp)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("dump_lifetimes")) {
       if (olp->kind != (an_object_lifetime_kind)olk_expr_temporary ||
           long_lifetime_temps) {
         db_object_lifetime_with_indentation(olp, "Discarding: ");
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Unlink the object lifetime entry from its parent, children, and
        siblings. */
@@ -29845,15 +29939,19 @@ okay if a lifetime being left in the IL is not bound to an IL entry.
       olp->parent_lifetime->has_implicit_child = TRUE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("dump_lifetimes")) {
       db_object_lifetime_with_indentation(olp, "Keeping: ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("dump_lifetimes")) {
     db_object_lifetime_stack();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit()
   return is_retained_in_il;
@@ -29878,6 +29976,7 @@ olk_block_after_label.
 }  /* innermost_block_object_lifetime */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_scope(a_scope_ptr sp)
 /*
@@ -29984,6 +30083,7 @@ purposes.  indent indicates the indentation level.
   }  /* for */
 }  /* db_type_lists */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 #if !STANDALONE_UTILITY_PROGRAM
@@ -30278,11 +30378,13 @@ eliminate_unneeded_scope_orphaned_list_entries).
   a_memory_region_number  n;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_trace("dump_elim", rp, iek_routine)) {
     fprintf(f_debug, "Removing function body for ");
     db_name_full(&rp->source_corresp, iek_routine);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Reset the routine entry to undefined state.
      (Note that the corresponding symbol remains marked as "defined" so that
@@ -30377,16 +30479,19 @@ list of its parent.  If olp is NULL, do nothing.
     olp->next = NULL;
     olp->parent_destruction_sublist = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fputs("lifetime unlinked:\n", f_debug);
       db_object_lifetime(olp);
       db_object_lifetime(parent);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* detach_from_object_lifetime_tree */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_class_list(a_class_list_entry_ptr list)
 /*
@@ -30446,6 +30551,7 @@ Display a class list for debugging purposes.
   }  /* if */
 }  /* db_classes_in_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if MAINTAIN_NEEDED_FLAGS
@@ -30480,6 +30586,7 @@ friends pointer in class_type's type supplement will also be cleared.
         /* This class was removed from the IL already. */
         check_assertion(!il_entry_prefix_of(friend_class).keep_in_il);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4 ||
             db_trace("dump_elim", friend_class, iek_type)) {
           fputs("  Befriended ", f_debug);
@@ -30487,6 +30594,7 @@ friends pointer in class_type's type supplement will also be cleared.
           fputs(" is already eliminated", f_debug);
           fputc('\n', f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else {
         /* Go through the list of classes that have specified friend_class
@@ -30504,6 +30612,7 @@ friends pointer in class_type's type supplement will also be cleared.
               prev_clep->next = next_clep;
             }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 4 ||
                 db_trace("dump_elim", friend_class, iek_type) ||
                 db_trace("friendship", friend_class, iek_type)) {
@@ -30516,6 +30625,7 @@ friends pointer in class_type's type supplement will also be cleared.
                 db_class_list(friend_ctsp->befriending_classes);
               }  /* if */
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             /* Break out of the inner loop and continue the outer loop,
                moving to the next class declared as a friend of class_type. */
@@ -30527,6 +30637,7 @@ friends pointer in class_type's type supplement will also be cleared.
 #if CHECKING
         if (clep == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           fprintf(f_debug, "class type: ");
           db_abbreviated_type(class_type);
           fprintf(f_debug, "\nfriend class: ");
@@ -30534,6 +30645,7 @@ friends pointer in class_type's type supplement will also be cleared.
           fprintf(f_debug, "\n");
           fprintf(f_debug, "befriending_classes of friend class:\n");
           db_class_list(friend_ctsp->befriending_classes);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           unexpected_condition_str2(
                  "eliminate_references_from_befriended_entities",
@@ -30554,6 +30666,7 @@ friends pointer in class_type's type supplement will also be cleared.
         if (clep->class_type == class_type) {
           /* A match -- link around it. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4 ||
               db_trace("dump_elim", friend_rout, iek_routine) ||
               db_trace("friendship", friend_rout, iek_routine)) {
@@ -30567,6 +30680,7 @@ friends pointer in class_type's type supplement will also be cleared.
               db_class_list(rout_befriending_classes(friend_rout));
             }  /* if */
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           if (prev_clep == NULL) {
             friend_rout->friends_or_originator.befriending_classes = next_clep;
@@ -30583,6 +30697,7 @@ friends pointer in class_type's type supplement will also be cleared.
 #if CHECKING
       if (clep == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         fprintf(f_debug, "class type: ");
         db_abbreviated_type(class_type);
         fprintf(f_debug, "\nfriend rout: ");
@@ -30590,6 +30705,7 @@ friends pointer in class_type's type supplement will also be cleared.
         fprintf(f_debug, "\n");
         fprintf(f_debug, "befriending_classes of friend rout:\n");
         db_class_list(rout_befriending_classes(friend_rout));
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         unexpected_condition_str2(
                "eliminate_references_from_befriended_entities",
@@ -30617,6 +30733,7 @@ friends pointer in class_type's type supplement will also be cleared.
             prev_clep->next = next_clep;
           }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4 ||
               db_trace("dump_elim", friend_template, iek_template)) {
             db_template_name(friend_template);
@@ -30628,6 +30745,7 @@ friends pointer in class_type's type supplement will also be cleared.
               db_class_list(friend_tssp->befriending_classes);
             }  /* if */
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           /* Break out of the inner loop and continue the outer loop,
              moving to the next class declared as a friend of class_type. */
@@ -30639,6 +30757,7 @@ friends pointer in class_type's type supplement will also be cleared.
 #if CHECKING
       if (clep == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         fprintf(f_debug, "class type: ");
         db_abbreviated_type(class_type);
         fprintf(f_debug, "\nfriend template: ");
@@ -30646,6 +30765,7 @@ friends pointer in class_type's type supplement will also be cleared.
         fprintf(f_debug, "\n");
         fprintf(f_debug, "befriending_classes of friend template:\n");
         db_class_list(friend_tssp->befriending_classes);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         unexpected_condition_str2(
                "eliminate_references_from_befriended_entities",
@@ -30690,9 +30810,11 @@ some attribute of the type tree.
         check_assertion(olp != NULL);
         detach_from_object_lifetime_tree(olp);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3 || db_flag_is_set("dump_elim")) {
           fputs("Unlinking default arg object lifetime\n", f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Avoid processing this default argument more than once. */
         ptp->default_arg_expr = NULL;
@@ -30942,18 +31064,22 @@ entry into one representing a nondefining declaration.
 {
   db_enter(4, "turn_class_definition_into_declaration");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_trace("dump_elim", class_type, iek_type)) {
     fputs("Removing definition of ", f_debug);
     db_abbreviated_type(class_type);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
   if (class_definition_needed_flag_is_set(class_type)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     fprintf(f_debug, "Class type: ");
     db_abbreviated_type(class_type);
     fprintf(f_debug, "\n");
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("turn_class_definition_into_declaration: class def needed");
   }  /* if */
@@ -31113,12 +31239,14 @@ keep_in_il because, for example, they appear on orphan lists.
       for (vp = solhp->orphaned_variables; vp != NULL; vp = next_vp) {
         next_vp = vp->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3 || db_trace("dump_elim", vp, iek_variable)) {
           fprintf(f_debug, "%semoving orphaned variable ",
                   il_entry_prefix_of(vp).keep_in_il ? "Not r" : "R");
           db_name_full(&vp->source_corresp, iek_variable);
           fputc('\n', f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (!il_entry_prefix_of(vp).keep_in_il) {
           /* Remove it from the variables list by linking around it. */
@@ -31139,12 +31267,14 @@ keep_in_il because, for example, they appear on orphan lists.
         next_tp = tp->next;
         keep = type_is_to_be_kept_in_il(tp);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3 || db_trace("dump_elim", tp, iek_type)) {
           fprintf(f_debug, "%semoving orphaned type ",
                   keep ? "Not r" : "R");
           db_abbreviated_type(tp);
           fputc('\n', f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (!keep) {
           /* Remove it from the types list by linking around it. */
@@ -31163,12 +31293,14 @@ keep_in_il because, for example, they appear on orphan lists.
       for (na = solhp->orphaned_namespaces; na != NULL; na = next_na) {
         next_na = na->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3 || db_trace("dump_elim", na, iek_namespace)) {
           fprintf(f_debug, "%semoving orphaned namespace ",
                   il_entry_prefix_of(na).keep_in_il ? "Not r" : "R");
           db_name_full(&vp->source_corresp, iek_namespace);
           fputc('\n', f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (!il_entry_prefix_of(na).keep_in_il) {
           /* Remove it from the namespaces list by linking around it. */
@@ -31418,12 +31550,14 @@ eliminated, if appropriate.
   for (vp = scope->variables; vp != NULL; vp = next_vp) {
     next_vp = vp->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3 || db_trace("dump_elim", vp, iek_variable)) {
       fprintf(f_debug, "%semoving variable ",
               il_entry_prefix_of(vp).keep_in_il ? "Not r" : "R");
       db_name_full(&vp->source_corresp, iek_variable);
       fputc('\n', f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (!il_entry_prefix_of(vp).keep_in_il) {
       /* Remove any object lifetimes that may be associated with its default
@@ -31453,12 +31587,14 @@ eliminated, if appropriate.
   for (rp = scope->routines; rp != NULL; rp = next_rp) {
     next_rp = rp->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3 || db_trace("dump_elim", rp, iek_routine)) {
       fprintf(f_debug, "%semoving routine ",
               il_entry_prefix_of(rp).keep_in_il ? "Not r" : "R");
       db_name_full(&rp->source_corresp, iek_routine);
       fputc('\n', f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (!il_entry_prefix_of(rp).keep_in_il) {
       /* Remove any object lifetimes that may be associated with its default
@@ -31491,6 +31627,7 @@ eliminated, if appropriate.
     next_tp = tp->next;
     keep = type_is_to_be_kept_in_il(tp);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3 || db_trace("dump_elim", tp, iek_type)) {
       fprintf(f_debug, "%semoving ",
               keep ? "Not r" : "R");
@@ -31501,6 +31638,7 @@ eliminated, if appropriate.
       }  /* if */
       fputc('\n', f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (!keep) {
       /* Remove it from the types list by linking around it. */
@@ -31542,6 +31680,7 @@ eliminated, if appropriate.
   for (hnp = scope->hidden_names; hnp != NULL; hnp = next_hnp) {
     next_hnp = hnp->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3 ||
         db_trace("dump_elim", hnp->entity.ptr,
                               (an_il_entry_kind)hnp->entity.kind)) {
@@ -31556,6 +31695,7 @@ eliminated, if appropriate.
       }  /* if */
       fputc('\n', f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (!il_entry_prefix_of(hnp->entity.ptr).keep_in_il) {
       if (prev_hnp == NULL) {
@@ -32479,6 +32619,7 @@ Given a routine pointer, return the list of parameter types.
 }  /* get_routine_param_types */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_il_space_used(void)
 /*
@@ -32517,6 +32658,7 @@ Display and return the amount of space used for various IL tables.
   return grand_total;
 }  /* show_il_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if UPC_EXTENSIONS_ALLOWED
 
@@ -33152,7 +33294,9 @@ node, and report any failure as an internal error.
     /* At least one of the operands is an lvalue when an rvalue is
        expected or vice-versa. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("is_lvalue incorrectly set");
   }  /* if */
@@ -33162,7 +33306,9 @@ node, and report any failure as an internal error.
   if (op == (an_expr_operator_kind)eok_cast && is_pointer_type(expr->type) &&
       is_array_type(operand_1->type)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("eok_cast used for array-to-ptr decay");
   }  /* if */
@@ -33203,8 +33349,10 @@ node, and report any failure as an internal error.
         } else {
           /* The flag is set incorrectly. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           db_expression(expr);
           db_expression(op_node);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           internal_error("result_is_not_used set wrong on operand");
         }  /* if */
@@ -33219,7 +33367,9 @@ node, and report any failure as an internal error.
       !pointer_type_is_consistent(expr->type, operand_1->type,
                                   /*targ_type_is_prvalue=*/FALSE)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("wrong result type for &");
   }  /* if */
@@ -33228,7 +33378,9 @@ node, and report any failure as an internal error.
       !pointer_type_is_consistent(expr->type, operand_1->type,
                                   /*targ_type_is_prvalue=*/FALSE)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("wrong result type for %");
   }  /* if */
@@ -33239,7 +33391,9 @@ node, and report any failure as an internal error.
                          expr->type,
                          /*targ_type_is_prvalue=*/!is_glvalue_node(expr))) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("wrong result type for subscript");
   }  /* if */
@@ -33260,7 +33414,9 @@ node, and report any failure as an internal error.
                          operand_1->type, result_type,
                          /*targ_type_is_prvalue=*/!is_glvalue_node(expr))) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("wrong result type for *");
     }  /* if */
@@ -33301,7 +33457,9 @@ node, and report any failure as an internal error.
           is_template_dependent_type(op_type_2))) {
       /* The types of the two operands must be consistent. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("types for operation are not consistent");
     }  /* if */
@@ -33322,7 +33480,9 @@ node, and report any failure as an internal error.
     if (expr->variant.operation.type_kind != (a_type_kind)tk_vector ||
         !is_vector_type(expr->type)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("types for vector operation are not consistent");
     }  /* if */
@@ -33333,7 +33493,9 @@ node, and report any failure as an internal error.
          C_mode()) {
       /* These operations should only appear in C++ mode. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       internal_error("vector operation in wrong mode");
     }  /* if */
@@ -33501,6 +33663,7 @@ instantiation, a nonreal instantiation, or a template-dependent type.
 
 #if !STANDALONE_UTILITY_PROGRAM
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long db_show_il_c_fe_space_used(unsigned long grand_total)
 /*
@@ -33518,6 +33681,7 @@ Display memory use for entities in front end memory in this file (il.c).
   return grand_total;
 }  /* db_show_il_c_fe_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -33777,6 +33941,7 @@ IL lowering.
       }  /* if */
     }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
     { unsigned long new_n_types =
                 ((unsigned long)(next_type_reordering_slot - type_reordering));
       if (new_n_types != n_types &&
@@ -33792,6 +33957,7 @@ IL lowering.
         }  /* for */
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     check_assertion(
       (unsigned long)(next_type_reordering_slot - type_reordering) == n_types);
@@ -34225,8 +34391,10 @@ in il_init.)
 
   /* Initialize certain global variables declared in il.h. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   db_name_str_buffer = NULL;
   db_qualifiers_str_buffer = NULL;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   /* Save variables from il.h and il.c that are needed for precompiled
@@ -34302,6 +34470,7 @@ in il_init.)
       pch_saved_var_array_elem(max_upc_block_size),
 #endif /* UPC_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_searches_for_shareable_constants),
       pch_saved_var_array_elem(num_compares_for_shareable_constants),
       pch_saved_var_array_elem(num_func_shareable_constants),
@@ -34310,6 +34479,7 @@ in il_init.)
       pch_saved_var_array_elem(num_used_shareable_constant_buckets),
       pch_saved_var_array_elem(num_based_type_fixups_allocated),
       pch_saved_var_array_elem(num_copy_remap_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_elem(avail_copy_remap_entries),
 #if MODULE_ID_NEEDED
@@ -34577,6 +34747,7 @@ of the front end.
 {
   last_routine_scope_variable_found = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_shareable_constants                = 0;
   num_func_shareable_constants           = 0;
   num_used_shareable_constant_buckets    = 0;
@@ -34585,6 +34756,7 @@ of the front end.
   num_get_based_type_calls               = 0;
   num_based_type_fixups_allocated        = 0;
   num_copy_remap_entries_allocated       = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if UPC_EXTENSIONS_ALLOWED
   max_upc_block_size = MAX_UPC_BLOCK_SIZE;

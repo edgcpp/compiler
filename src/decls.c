@@ -351,8 +351,10 @@ STATIC_THREAD a_decl_parse_state_ptr
 			/* Pointer to state entries available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_decl_parse_states_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -370,7 +372,9 @@ return a pointer to it.
   } else {
     dps = alloc_fe_of_type(a_decl_parse_state);
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_decl_parse_states_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   init_decl_parse_state(dps);
@@ -466,8 +470,10 @@ STATIC_THREAD a_decl_parse_callback_ptr
 			/* Pointer to callback entries available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_decl_parse_callbacks_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -489,7 +495,9 @@ performed for declarations associated with subsequent secondary declarators.
   } else {
     entry = alloc_fe_of_type(a_decl_parse_callback);
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_decl_parse_callbacks_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   entry->callback_fn = fn;
@@ -576,8 +584,10 @@ STATIC_THREAD an_auto_param_descr_ptr
 			   available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_auto_param_descriptions_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -600,7 +610,9 @@ preceding the "auto" token (NULL if none).
   } else {
     entry = alloc_fe_of_type(an_auto_param_descr);
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_auto_param_descriptions_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   entry->next = dps->variant.auto_params;
@@ -3971,6 +3983,7 @@ when the declaration is a friend declaration within a class.
   }  /* if */
 done:;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (idlbp->linked_symbol != NULL) {
       db_symbol(idlbp->linked_symbol, "linked symbol: ", 2);
@@ -3986,6 +3999,7 @@ done:;
                 "prior decl in enclosing scope: ", 2);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* find_linked_symbol */
@@ -4254,6 +4268,7 @@ information in the specified id-linkage block.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "Linkage for %s is ",
                      is_error_locator(*idlbp->locator) ?
@@ -4267,6 +4282,7 @@ information in the specified id-linkage block.
     }  /* switch */
     putc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (idlbp->linkage == idl_none) {
     /* If there's no linkage, be sure the linked_symbol is NULL. */
@@ -8037,9 +8053,11 @@ for use in generating cross-reference output describing this declaration.
     depth_innermost_namespace_scope = saved_depth_innermost_namespace_scope;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* decl_variable */
@@ -10865,9 +10883,11 @@ skip_overloading:;
     depth_innermost_namespace_scope = saved_depth_innermost_namespace_scope;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* decl_routine */
@@ -11780,9 +11800,11 @@ definition of a member function of a class template.
   /* Return the function template symbol. */
   *symbol_ptr = sym;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(sym, "", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* decl_function_template */
@@ -12111,9 +12133,11 @@ the symbol through dps->sym and its linkage (which is always "none") through
   *linkage_ptr = idl_none;
   dps->sym = sym;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* define_static_data_member */
@@ -12976,9 +13000,11 @@ symbol entry, and return a pointer to it in state->sym.
      declaration. */
   process_curr_construct_pragmas(sym, (a_statement_ptr)NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(state->sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* decl_typedef */
@@ -13094,9 +13120,11 @@ symbol has already been entered as an undefined symbol.
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
   switch_back_to_original_region(region_to_switch_back_to);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(dps.sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* decl_default_function */
@@ -13195,9 +13223,11 @@ is being scanned as part of a GNU local label declaration.
 
   copy_source_position(start_pos, error_position);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(label_sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return(label_sym->variant.label.ptr);
@@ -15989,10 +16019,12 @@ it's a definition and NULL otherwise).
   }  /* if */
 #if GENERATE_SOURCE_SEQUENCE_LISTS
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (!source_sequence_entries_disallowed &&
       (debug_level >= 4 || db_flag_is_set("dump_ss_full"))) {
     fputs("namespace_declaration: adding empty ss entry\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   { /* Namespace entries are always allocated in file scope memory.  Any
        source sequence entry pointing to it must therefore also be allocated
@@ -17956,10 +17988,12 @@ prototype scope associated with func_info to the current scope.
       if (tail->next == NULL) break;
     }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("declaration: moving ss list from func info to curr scope\n",
             f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Append the list to the list for the current scope. */
     insert_src_seq_list(head, tail, depth_scope_stack,
@@ -20293,12 +20327,14 @@ if one is present.
   }  /* if */
 #if EXTRA_SOURCE_POSITIONS_IN_IL
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("dump_decl_pos_info")) {
     if (is_variable_def && is_static_data_member) {
       fprintf(f_debug, "decl-pos info for static data member def\n");
       db_decl_pos_info(state->sym);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   copy_source_position(locator->source_position, error_position);
@@ -23056,9 +23092,11 @@ Do one-time initialization of static variables defined in this file.
       pch_saved_var_array_elem(avail_decl_parse_callbacks),
       pch_saved_var_array_elem(avail_auto_param_descriptions),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_decl_parse_states_allocated),
       pch_saved_var_array_elem(num_decl_parse_callbacks_allocated),
       pch_saved_var_array_elem(num_auto_param_descriptions_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -23076,9 +23114,11 @@ initialization for each compilation.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_decl_parse_states_allocated = 0;
   num_decl_parse_callbacks_allocated = 0;
   num_auto_param_descriptions_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   avail_decl_parse_states = NULL;
   avail_decl_parse_callbacks = NULL;
@@ -23087,6 +23127,7 @@ initialization for each compilation.
 }  /* decls_init */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_decl_space_used(void)
 /*
@@ -23113,6 +23154,7 @@ entities.
   return grand_total;
 }  /* show_decl_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */

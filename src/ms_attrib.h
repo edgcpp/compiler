@@ -135,8 +135,10 @@ extern void ms_attrib_one_time_init(void);
 extern void ms_attrib_init(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_microsoft_attribute(an_ms_attribute_ptr	msap);
 extern unsigned long db_show_ms_attrib_space_used(unsigned long grand_total);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 EXTERN_THREAD a_boolean

@@ -349,6 +349,7 @@ EXTERN_THREAD a_pragma_kind_description_ptr
 			   add_pragma_description call. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 extern void db_pragma_list(a_pragma_ptr pp);
 
@@ -365,6 +366,7 @@ initialized and the results reported in lexical.c.
 EXTERN_THREAD unsigned long
 		num_pragmas_allocated,
 		num_pragma_descriptions_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if INCLUDE_EDG_TEST_PRAGMAS

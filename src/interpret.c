@@ -2249,6 +2249,7 @@ Release the storage stack pointed to by sss for reuse.
 }  /* release_constexpr_stack */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_live_set(void  *interpreter_state)
 /*
@@ -2268,6 +2269,7 @@ Output the current live set record in ips.
   (void)fprintf(f_debug, "\n");
 }  /* db_live_set */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -2453,6 +2455,7 @@ storage.
   get_mapped_ptr(&(ips)->map, iptr, sptr)
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_data_map(void  *map_address)
 /*
@@ -2476,6 +2479,7 @@ Output some information about a data map's contents
   }  /* for */
 }  /* db_data_map */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void expand_ptr_map(a_data_map  *map)
@@ -2540,7 +2544,9 @@ from a map.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   fprintf(f_debug, "\nMap activity for %p: %s\n", traced_iptr, msg);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* interpreter_map_intercept */
 
@@ -3820,7 +3826,9 @@ redo:
       if (result == 0) {
         /* This class type does not have an interpreter layout yet. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         check_assertion(ips != NULL);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (tp->variant.class_struct_union.is_nonreal_class &&
             !tp->variant.class_struct_union.is_empty_class) {
@@ -3853,7 +3861,9 @@ redo:
         }  /* if */
       } else if (result > MAX_CONSTEXPR_TYPE_SIZE) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         check_assertion(ips != NULL);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (result == CONSTEXPR_TYPE_SIZE_INPUT_ERROR) {
           ips->input_error = TRUE;
@@ -3869,7 +3879,9 @@ redo:
       get_mapped_byte_count(&persistent_map, tp, result);
       if (result == 0) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         check_assertion(ips != NULL);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (tp->variant.class_struct_union.is_nonreal_class) {
           result = value_bytes_for_type_failure(ec_constexpr_type_invalid,
@@ -3882,7 +3894,9 @@ redo:
         }  /* if */
       } else if (result > MAX_CONSTEXPR_TYPE_SIZE) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         check_assertion(ips != NULL);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (result == CONSTEXPR_TYPE_SIZE_INPUT_ERROR) {
           ips->input_error = TRUE;
@@ -3910,7 +3924,9 @@ redo:
         } else if (n_elems > MAX_CONSTEXPR_TYPE_SIZE/result ||
                    n_elems > MAX_ARRAY_LENGTH) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           check_assertion(ips != NULL);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           result = value_bytes_for_type_failure(ec_constexpr_type_too_large,
                                                 ips, tp, p_result);
@@ -3941,7 +3957,9 @@ redo:
       break;
     case tk_error:
 #if DEBUG
+/* GCOVR_EXCL_START */
       check_assertion(ips != NULL);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       ips->input_error = TRUE;
       FALLTHROUGH
@@ -4376,7 +4394,9 @@ that type.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define debug_scramble(ptr, n_bytes) (void)memset(ptr, 0xdb, n_bytes)
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define debug_scramble(ptr, n_bytes) /*nothing*/
 #endif /* DEBUG */
@@ -5245,6 +5265,7 @@ done:
 }  /* eq_subobjects */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 uintptr_t db_hash_ptr(void  *ptr)
 /*
@@ -5618,6 +5639,7 @@ Return a pointer to the stack storage associated with the given pointer.
   return bytes;
 }  /* db_stack_storage */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -7826,6 +7848,7 @@ be removed.
 }  /* do_constexpr_alloc_variable */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_var_chain(an_interpreter_state  *ips,
                   a_variable_ptr        vp)
@@ -7850,6 +7873,7 @@ activations of the given variable.
   }  /* if */
 }  /* db_var_chain */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void do_constexpr_unmap_variable(an_interpreter_state  *ips,
@@ -34729,6 +34753,7 @@ std::is_constant_evaluated.)
 }  /* register_constexpr_intrinsic */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long db_show_interpret_fe_space_used(unsigned long  grand_total)
 /*
@@ -34769,6 +34794,7 @@ Display memory use for entities in front end memory in this file (interpret.c).
   return grand_total;
 }  /* db_show_interpret_fe_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void interpret_trans_unit_init(void)

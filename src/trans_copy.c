@@ -229,11 +229,13 @@ needed.
         /* Set the flag to request copying. */
         set_entry_needs_copy_flag(ptr);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", ptr, kind)) {
           fprintf(f_debug, "assigned addr for copy to primary at %p:\n",
                   (a_void_ptr)copy);
           db_entity_info(ptr, kind);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (!known_will_process_in_curr_walk) {
           /* We don't know for sure that the entry will be processed in the
@@ -486,10 +488,12 @@ and remap the pointers in the copy.
       tucp->canonical = copy;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("trans_copy", ptr, kind)) {
       fprintf(f_debug, "copying from secondary to %p:\n", (a_void_ptr)copy);
       db_entity_info(ptr, kind);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if MAINTAIN_NEEDED_FLAGS
@@ -944,7 +948,9 @@ source correspondence field is scp and whose kind is "kind" are consistent.
         (scp->name_linkage == (a_name_linkage_kind)nlk_external ||
          scp->name_linkage == (a_name_linkage_kind)nlk_cplusplus_external)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_entity_info((char *)scp, kind);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str(
                     "entity with external linkage does not have corresp info");
@@ -956,8 +962,10 @@ source correspondence field is scp and whose kind is "kind" are consistent.
         /* The primary IL entry is the canonical one, but the current entry
            is better.  That means the correspondence information is wrong. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         db_entity_info(tucp->primary, kind);
         db_entity_info((char *)scp, kind);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         unexpected_condition_str("primary entry should not be canonical");
       }  /* if */
@@ -1031,11 +1039,13 @@ before this routine is called.
     /* Set the flag to request copying. */
     set_entry_needs_copy_flag(ptr);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("trans_copy", ptr, kind)) {
       fprintf(f_debug, "assigned addr for copy in secondary at %p:\n",
               (a_void_ptr)copy);
       db_entity_info(ptr, kind);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* f_mark_to_merge */
@@ -1606,7 +1616,9 @@ to the secondary translation unit.
   prev_type = NULL;
   for (type = scope->types; type != NULL; type = type->next) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     a_type_ptr trace_type = type;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     check_correspondences(&type->source_corresp, iek_type);
     keep_on_list = TRUE;
@@ -1642,6 +1654,7 @@ to the secondary translation unit.
       keep_on_list = FALSE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("trans_copy", trace_type, iek_type)) {
       fprintf(f_debug, "prepare_for_trans_unit_copy, ");
       fprintf(f_debug, "%skeeping on list, ", keep_on_list ? "" : "not ");
@@ -1649,6 +1662,7 @@ to the secondary translation unit.
                        entry_to_be_merged(type) ? "" : "not ");
       db_entity_info((char *)type, iek_type);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (keep_on_list) {
       prev_type = type;
@@ -1721,6 +1735,7 @@ to the secondary translation unit.
       keep_on_list = FALSE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("trans_copy", variable, iek_variable)) {
       fprintf(f_debug, "prepare_for_trans_unit_copy, ");
       fprintf(f_debug, "%skeeping on list, ", keep_on_list ? "" : "not ");
@@ -1728,6 +1743,7 @@ to the secondary translation unit.
                        entry_to_be_merged(variable) ? "" : "not ");
       db_entity_info((char *)variable, iek_variable);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (keep_on_list) {
       prev_variable = variable;
@@ -1818,6 +1834,7 @@ to the secondary translation unit.
       keep_on_list = FALSE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("trans_copy", routine, iek_routine)) {
       fprintf(f_debug, "prepare_for_trans_unit_copy, ");
       fprintf(f_debug, "%skeeping on list, ", keep_on_list ? "" : "not ");
@@ -1825,6 +1842,7 @@ to the secondary translation unit.
                        entry_to_be_merged(routine) ? "" : "not ");
       db_entity_info((char *)routine, iek_routine);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (keep_on_list) {
       prev_routine = routine;
@@ -2365,12 +2383,14 @@ with the current translation unit set to the primary translation unit.
         a_type_ptr primary_type =
                   (a_type_ptr)checked_trans_unit_copy_address_of(corresp_type);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", corresp_type, iek_type)) {
           fprintf(f_debug,
                   "finish_trans_unit_copy, merging into %p after copy:\n",
                   (void *)primary_type);
           db_entity_info((char *)corresp_type, iek_type);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         add_to_list = FALSE;
         if (!entry_should_overwrite_primary_entry(type)) {
@@ -2411,11 +2431,13 @@ with the current translation unit set to the primary translation unit.
       if (add_to_list) {
         /* Add the type to the end of the list. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", corresp_type, iek_type)) {
           fprintf(f_debug,
                   "finish_trans_unit_copy, adding to list after copy:\n");
           db_entity_info((char *)corresp_type, iek_type);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (is_class_scope && last_type == NULL) {
           /* Determine the last type the first time it is needed. */
@@ -2482,12 +2504,14 @@ with the current translation unit set to the primary translation unit.
                      (a_variable_ptr)checked_trans_unit_copy_address_of(
                                                              corresp_variable);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", corresp_variable, iek_variable)) {
           fprintf(f_debug,
                   "finish_trans_unit_copy, merging into %p after copy:\n",
                   (void *)primary_variable);
           db_entity_info((char *)corresp_variable, iek_variable);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         add_to_list = FALSE;
         if (!entry_should_overwrite_primary_entry(variable)) {
@@ -2540,11 +2564,13 @@ with the current translation unit set to the primary translation unit.
           }  /* if */
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", corresp_variable, iek_variable)) {
           fprintf(f_debug,
                   "finish_trans_unit_copy, adding to list after copy:\n");
           db_entity_info((char *)corresp_variable, iek_variable);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Add the variable to the end of the list. */
         if (last_variable == NULL) {
@@ -2605,12 +2631,14 @@ with the current translation unit set to the primary translation unit.
                    (a_routine_ptr)checked_trans_unit_copy_address_of(
                                                               corresp_routine);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", corresp_routine, iek_routine)) {
           fprintf(f_debug,
                   "finish_trans_unit_copy, merging into %p after copy:\n",
                   (void *)primary_routine);
           db_entity_info((char *)corresp_routine, iek_routine);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         add_to_list = FALSE;
         if (!entry_should_overwrite_primary_entry(routine)) {
@@ -2661,11 +2689,13 @@ with the current translation unit set to the primary translation unit.
           }  /* if */
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", corresp_routine, iek_routine)) {
           fprintf(f_debug,
                   "finish_trans_unit_copy, adding to list after copy:\n");
           db_entity_info((char *)corresp_routine, iek_routine);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Add the routine to the end of the list. */
         if (last_routine == NULL) {
@@ -2940,20 +2970,24 @@ inline functions, if appropriate.
       if (primary_routine->on_inline_function_list) {
         /* There is already a list entry for the routine in the primary IL. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", primary_routine, iek_routine)) {
           fprintf(f_debug,
                   "ensure_routine_is_on_inline_list: already on list:\n");
           db_entity_info((char *)primary_routine, iek_routine);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else {
         /* Add an entry for the routine. */
         add_to_inline_function_list(primary_routine);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("trans_copy", primary_routine, iek_routine)) {
           fprintf(f_debug, "ensure_routine_is_on_inline_list: adding:\n");
           db_entity_info((char *)primary_routine, iek_routine);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if MAINTAIN_NEEDED_FLAGS
         /* If the suppress_inline_body flag indicates that this function
@@ -3242,20 +3276,24 @@ therefore will not be copied.
     a_boolean   any_removed_function_bodies = FALSE;
     switch_translation_unit(tup);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       fprintf(f_debug, "Preparing copy from sec trans unit %s:\n",
               curr_translation_unit->source_file->name_as_written);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     top_scope = il_header.primary_scope;
     check_assertion(!il_entry_prefix_of(top_scope).il_lowering_flag);
     (void)prepare_for_trans_unit_copy(top_scope, &any_removed_function_bodies);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       fprintf(f_debug,
               "Done preparing copy from sec trans unit %s\n",
               curr_translation_unit->source_file->name_as_written);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   in_trans_copy_setup = FALSE;
@@ -3263,10 +3301,12 @@ therefore will not be copied.
   for (tup = translation_units->next; tup != NULL; tup = tup->next) {
     switch_translation_unit(tup);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       fprintf(f_debug, "Copying from sec trans unit %s:\n",
               curr_translation_unit->source_file->name_as_written);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     top_scope = il_header.primary_scope;
     copy_from_secondary_to_primary_IL();
@@ -3275,11 +3315,13 @@ therefore will not be copied.
     /* Also remap pointers in bodies of functions. */
     copy_function_bodies_from_secondary_to_primary_IL(top_scope);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       fprintf(f_debug,
               "Done copying from sec trans unit %s\n",
               curr_translation_unit->source_file->name_as_written);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   switch_translation_unit(translation_units);
@@ -3288,10 +3330,12 @@ therefore will not be copied.
      primary translation unit. */
   for (tup = translation_units->next; tup != NULL; tup = tup->next) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       fprintf(f_debug, "Wrapping up copy from sec trans unit %s:\n",
                        curr_translation_unit->source_file->name_as_written);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     top_scope = tup->primary_scope;
     finish_trans_unit_copy(top_scope);
@@ -3300,10 +3344,12 @@ therefore will not be copied.
     finish_scope_orphaned_list_processing(
                                    tup->il_header.scope_orphaned_list_headers);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       fprintf(f_debug, "Done wrapping up copy from sec trans unit %s:\n",
                        curr_translation_unit->source_file->name_as_written);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   if (!C_mode()) {

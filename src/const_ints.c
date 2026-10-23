@@ -2387,6 +2387,7 @@ final null character).
 }  /* f_unsigned_to_string_buf */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 a_number_buffer db_format_integer_value(an_integer_value  *value)
 /*
@@ -2420,6 +2421,7 @@ Print a signed integer value representation in decimal form.
                                  value, /*is_signed=*/TRUE, &host_val, &err);
   (void)fprintf(f_debug, "%ld %s\n", (long)host_val, err ? "(Error)" : "");
 }  /* db_signed_integer_value */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 

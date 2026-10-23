@@ -290,7 +290,9 @@ a_boolean fold_constexpr_member_selection(an_expr_node_ptr  expr,
 extern a_boolean is_static_init_constant(a_constant_ptr  con);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern unsigned long db_show_folding_fe_space_used(unsigned long grand_total);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void folding_one_time_init(void);

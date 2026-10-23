@@ -26847,12 +26847,14 @@ from the primary source file name in the IL information.
     /* Scan options.  There's a limited set, so we don't use getopt. */
     switch (argv[optind][1]) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       case 'd':
         /* Scan debug argument */
         if (proc_debug_option(argv[optind]+2)) {
           command_line_error(ec_cl_error_in_debug_option_argument);
         }  /* if */
         break;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       default:
         str_command_line_error(ec_cl_invalid_option, argv[optind]);

@@ -41,10 +41,12 @@ pointer to the sublist header.
 #define assoc_sublist_of(ssep) ss_entry_ptr((ssep), a_src_seq_sublist_ptr)
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_source_sequence_entry(a_source_sequence_entry_ptr  ssep);
 extern void db_ss_list(a_source_sequence_entry_ptr  ssep);
 extern void db_ss_list_for_scope_depth(a_scope_depth  depth);
 extern void db_ss_list_for_scope(a_scope_ptr  sp);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void fixup_function_scope_source_sequence_list(a_scope_ptr  sp);

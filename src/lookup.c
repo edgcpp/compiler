@@ -1108,6 +1108,7 @@ routine.
   }  /* if */
   set_class_membership(sym, scp, class_type);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Created: ");
     db_symbol(sym, "", 0);
@@ -1118,6 +1119,7 @@ routine.
               scp->qualified_unknown_base_member ? "true" : "false");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sym;
@@ -1211,11 +1213,13 @@ This routine is given the original symbol and creates the nonreal version.
     add_to_types_list(templ_param_type, DEPTH_OF_FILE_SCOPE);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("cnvont")) {
     fprintf(f_debug, "Created nonreal nested type:\n");
     db_symbol(nonreal_sym, "  Nonreal symbol: ", 4);
     db_symbol(orig_sym, "  Original symbol: ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* create_nonreal_version_of_nested_type */
 
@@ -1291,9 +1295,11 @@ should be used to satisfy the lookup.
      is also an immediate reference. */
   dps.sym->variant.routine.ptr->source_corresp.referenced = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(dps.sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return dps.sym;
 }  /* enter_sym_for_out_of_scope_routine */
@@ -1328,9 +1334,11 @@ should be used to satisfy the lookup.
      is also an immediate reference. */
   dps.sym->variant.variable.ptr->source_corresp.referenced = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_symbol(dps.sym, "", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return dps.sym;
 }  /* enter_sym_for_out_of_scope_variable */
@@ -1783,6 +1791,7 @@ In Sun compatibility mode, the symbols need not be from the same scope.
 }  /* check_for_tag_hiding */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static unsigned long functions_represented_by_symbol(a_symbol_ptr	sym)
 /*
@@ -1802,6 +1811,7 @@ it also returns a value of 1 for non-function symbols too.
   return result;
 }  /* functions_represented_by_symbol */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static
@@ -1840,6 +1850,7 @@ contains only invisible symbols, a NULL symbol can be returned.
   /* Make sure the lookup set points to the fundamental symbol. */
   new_sym = fundamental_symbol_of(new_sym);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("lookup_set")) {
     a_decl_sequence_number decl_seq_of_symbol;
     /* Get the declaration sequence number to be used for this symbol.  For
@@ -1857,6 +1868,7 @@ contains only invisible symbols, a NULL symbol can be returned.
     fprintf(f_debug, "  decl_seq_of_symbol=%lu\n",
             (unsigned long)decl_seq_of_symbol);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
   if (curr_sym == NULL) {
     if (is_function_or_template_symbol(new_sym)) {
@@ -1983,6 +1995,7 @@ contains only invisible symbols, a NULL symbol can be returned.
   }  /* if */
 #endif /* EXPENSIVE_CHECKING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("lookup_set")) {
     if (curr_sym != NULL) {
       db_symbol(curr_sym, "add_symbol_to_lookup_set:", 0);
@@ -1995,6 +2008,7 @@ contains only invisible symbols, a NULL symbol can be returned.
       }  /* if */
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return curr_sym;
 }  /* add_symbol_to_lookup_set */
@@ -2420,6 +2434,7 @@ which the using-directives apply.
   a_boolean	result = TRUE;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("gpp_lookup")) {
     an_active_using_directive_ptr	audp;
     fprintf(f_debug, "g++ using-dir lookup:\n");
@@ -2437,6 +2452,7 @@ which the using-directives apply.
       }  /* if */
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   visible_using_dir = 
             nssp->using_dir_decl_seq <= lookup_state->using_dir_decl_seq ||
@@ -3374,10 +3390,12 @@ NULL.
     return_type = rout_type->variant.routine.return_type;
     param_list = tssp->variant.function.decl_cache->decl_info->parameters;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("conversion_lookup")) {
       fprintf(f_debug, "Looking for conversion template match with:\n");
       db_symbol(sym, "", 2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* See if the type specified matches the return type of the conversion
        function. */
@@ -3704,10 +3722,12 @@ routine.
      scope.  Otherwise, search part of the active list to look for an
      active symbol. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("scope_stack_lookup")) {
     fprintf(f_debug, "Scope stack lookup of %s, initial lookup scope=%d\n",
             locator->symbol_header->identifier, depth_of_initial_lookup_scope);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (lookup_state->inclass_exception_spec &&
       (gpp_version_is(<120000) ||
@@ -3733,10 +3753,12 @@ routine.
     }  /* if */
     kind = ssep->kind;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5 || db_flag_is_set("scope_stack_lookup")) {
       fprintf(f_debug, "Doing lookup in ");
       db_scope_stack_entry(ssep);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CFRONT_GLOBAL_VS_MEMBER_NAME_LOOKUP_BUG
     /* Record the depth of the scope in which the symbol is being sought. */
@@ -3951,10 +3973,12 @@ routine.
     }  /* if */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("scope_stack_lookup")) {
     fprintf(f_debug, "Scope stack lookup returning ");
     db_symbol(sym, "", 0);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return sym;
 }  /* scope_stack_lookup */
@@ -4059,6 +4083,7 @@ routine.
   a_boolean               do_not_look_in_common_scopes = FALSE;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("instantiation_lookup")) {
     fprintf(f_debug,
             "doing instantiation lookup of %s: def_start=%d, ref_start=%d, ",
@@ -4066,6 +4091,7 @@ routine.
             def_start, ref_start);
     fprintf(f_debug, "common=%d\n", common_depth);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (gpp_using_directive_lookup) {
     /* f_get_effective_decl_seq is used to force the declaration sequence
@@ -4181,6 +4207,7 @@ routine.
     sym = def_sym;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("instantiation_lookup")) {
     fprintf(f_debug, "instantiation lookup: ");
     if (sym == NULL) {
@@ -4189,6 +4216,7 @@ routine.
       db_symbol(sym, "", 4);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return sym;
 }  /* instantiation_context_lookup */
@@ -4302,10 +4330,12 @@ after a call to this routine.
   db_enter(4, "normal_id_lookup");
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("normal_id_lookup")) {
     fprintf(f_debug, "Normal lookup of %s\n",
             locator->symbol_header->identifier);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   sym = locator->specific_symbol;
   if (sym != NULL) {
@@ -4421,7 +4451,9 @@ after a call to this routine.
       /* Fast algorithm: just search the active symbol list. */
        a_symbol_ptr		type_tag_symbol = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
       num_fast_id_lookups++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /*lint --e{446,850} sym modified in loop (LINTBUG) */
       for (sym = active_symbol_list; sym != NULL; sym = sym->next) {
@@ -4456,7 +4488,9 @@ after a call to this routine.
       /* There are inactive symbols and they may be visible, so the more
          complicated search is required. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       num_slow_id_lookups++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* In C mode, slow lookups should only occur when the file scope has
          been reactivated. */
@@ -4693,6 +4727,7 @@ after a call to this routine.
     sym = nonreal_type_if_nested_prototype_type(sym);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     if (sym != NULL) {
       fprintf(f_debug, "normal_id_lookup: found %s\n",
@@ -4702,6 +4737,7 @@ after a call to this routine.
       fprintf(f_debug, "normal_id_lookup: not found\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sym;
@@ -5683,6 +5719,7 @@ end_lookup:
   }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "class_qualified_id_lookup: id = %s, %s\n",
                      (locator->symbol_header != NULL) ?
@@ -5690,6 +5727,7 @@ end_lookup:
                                            "NULL",
                      (sym != NULL) ? "found" : "not found");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sym;
@@ -6093,11 +6131,13 @@ is found is returned, or NULL if no matching symbol is found.
     locator->specific_symbol = sym;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "enum_qualified_id_lookup: id = %s, %s\n",
                      locator->symbol_header->identifier,
                      (sym != NULL) ? "found" : "not found");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sym;
@@ -6535,11 +6575,13 @@ namespace.  This routine is used only in C++ mode.
      projection symbol. */
   if (sym != NULL) reduce_projection_symbol_to_fundamental_symbol(sym);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "namespace_qualified_id_lookup: id = %s, %s\n",
                      locator->symbol_header->identifier,
                      (sym != NULL) ? "found" : "not found");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sym;
@@ -6801,11 +6843,13 @@ found_sym:
     locator->specific_symbol = sym;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "file_scope_id_lookup: id = %s, %s\n",
                      locator->symbol_header->identifier,
                      (sym != NULL) ? "found" : "not found");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* If the symbol is a projection symbol, reduce it to the fundamental
      symbol.  The specific_symbol in the locator stays pointing to the
@@ -6997,6 +7041,7 @@ list pointer in type_list.  *type_list should be NULL on the first call.
     }  /* switch */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("add_to_arg_dependent_lookup_list")) {
     fprintf(f_debug, "add_to_arg_dependent_lookup_list:\n");
     for (tlep = *type_list; tlep != NULL; tlep = tlep->next) {
@@ -7005,6 +7050,7 @@ list pointer in type_list.  *type_list should be NULL on the first call.
       fprintf(f_debug, "\n");
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_to_arg_dependent_lookup_list */
 
@@ -7650,6 +7696,7 @@ NULL.
     symbol_list = slep;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("argument_dependent_lookup")) {
     int	i;
     fprintf(f_debug, "argument_dependent_lookup:\n");
@@ -7678,6 +7725,7 @@ NULL.
       fprintf(f_debug, "\n");
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Free the lists used to create the symbol list. */
   free_list_of_type_list_entries(*type_list);

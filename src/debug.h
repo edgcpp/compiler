@@ -16,6 +16,7 @@ debug.h -- Declarations related to debugging.
 #define DEBUG_H 1
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 /* Conditionally open the "edg" namespace. */
 BEGIN_EDG_NAMESPACE
@@ -166,6 +167,7 @@ Return TRUE if a db flag is set for colorization.
 }  /* db_color_flag_is_set */
 
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */

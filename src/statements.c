@@ -114,11 +114,13 @@ STATIC_THREAD a_statement_ptr
 #endif /* UPC_EXTENSIONS_ALLOWED */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of tables allocated, to track total use of memory.
 */
 STATIC_THREAD unsigned long
 		num_control_flow_descrs_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -317,6 +319,7 @@ expression, issue an error at the indicated source position.
 }  /* statement_not_allowed_inside_statement_expression */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void db_cfd(a_control_flow_descr_ptr cfdp)
 /*
@@ -558,13 +561,16 @@ dump_control_flow has been enabled at the command line.
   fprintf(f_debug, "ssk_%s\n", str);
 }  /* db_ssse_with_indentation */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		cfd_id_number;
 			/* Identifier number used in control flow debug
 			   output. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_control_flow_descr_ptr alloc_control_flow_descr(
@@ -586,7 +592,9 @@ to it.
     /* Allocate a new entry. */
     cfdp = (a_control_flow_descr_ptr)alloc_fe(sizeof(a_control_flow_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_control_flow_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Set the entry's fields to default values. */
@@ -596,7 +604,9 @@ to it.
   cfdp->kind = kind;
   cfdp->source_pos = error_position;
 #if DEBUG
+/* GCOVR_EXCL_START */
   cfdp->id_number = ++cfd_id_number;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if UPC_EXTENSIONS_ALLOWED
   cfdp->enclosing_forall = NULL;
@@ -673,6 +683,7 @@ pointers) and move the list as a whole to the available list.
   db_enter(5, "remove_list_of_control_flow_descrs");
   if (head != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       a_control_flow_descr_ptr cfdp = head;
       fprintf(f_debug, "Removing entire list:\n");
@@ -691,6 +702,7 @@ pointers) and move the list as a whole to the available list.
         }  /* if */
       }  /* for */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Reset the next pointer of the entry on the list that precedes head, or
        if there is no preceding entry reset the list head pointer. */
@@ -724,10 +736,12 @@ forth, are decremented.
 {
   db_enter(5, "remove_control_flow_descr");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "Removing: ");
     db_cfd(cfdp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Reset the next pointer of the entry on the list that precedes cfdp, or
      if there is no preceding entry reset the list head pointer. */
@@ -886,10 +900,12 @@ that is being generated.
 
   db_enter(4, "report_switch_past_init");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "block = ");
     db_cfd(block);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Start at the first entry within the block. */
   cfdp = block->next;
@@ -1314,10 +1330,12 @@ initializing declarations.
 
   db_enter(4, "add_to_control_flow_descr_list");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Candidate to add to list: ");
     db_cfd(new_cfdp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (control_flow_descr_list == NULL) {
     /* Add this entry to the start of the list. */
@@ -1515,10 +1533,12 @@ initializing declarations.
       }  /* switch */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "Adding:  ");
       db_cfd_and_parents(new_cfdp);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Actually append it to the list. */
     end_of_control_flow_descr_list->next = new_cfdp;
@@ -1537,16 +1557,20 @@ initializing declarations.
     remove_unneeded_set_vla_size_control_flow_entries(new_cfdp);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_control_flow")) {
     db_cfd_with_indentation(new_cfdp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 done:;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "Tail of control_flow_descr_list:\n");
     db_cfd_list(end_of_control_flow_descr_list,10,0);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* add_to_control_flow_descr_list */
@@ -2220,11 +2244,13 @@ may produce enk_vla_dealloc entries from those elsewhere).
   expr->variant.vla_variable = vla_var;
   result = alloc_expr_statement(expr);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("  creating vla-dealloc statement for \"", f_debug);
     db_name(&vla_var->source_corresp);
     fputs("\"\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(C_mode());
   return result;
@@ -2248,6 +2274,7 @@ by traversing the control-flow list backwards from *start to *end.
   db_enter(4, "collect_vla_dealloc_stmts");
   check_assertion(vla_deallocations_in_il);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level == 4) {
     fputs("  start = ", f_debug);
     db_cfd(start);
@@ -2258,6 +2285,7 @@ by traversing the control-flow list backwards from *start to *end.
       db_cfd(end);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   cfdp = start;
   parent = cfdp->parent;
@@ -2275,10 +2303,12 @@ by traversing the control-flow list backwards from *start to *end.
     check_assertion(parent != NULL);
     if (!parent->variant.block.any_vla_variables) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level == 4) {
         fputs("  skipping block (no vla vars): ", f_debug);
         db_cfd(parent);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (parent == end_parent) {
         done = TRUE;
@@ -2294,12 +2324,14 @@ by traversing the control-flow list backwards from *start to *end.
         stop_at = parent;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level == 4) {
         fputs("  inner loop: first entry = ", f_debug);
         db_cfd(cfdp);
         fputs("  stop_at = ", f_debug);
         db_cfd(stop_at);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Back up from *cfdp to *stop_at, looking for VLA variable
          declarations. */
@@ -2333,18 +2365,22 @@ by traversing the control-flow list backwards from *start to *end.
           /* Skip a nested block. */
           cfdp = cfdp->variant.start_of_block;
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level == 4) {
             fputs("  skipping nested block: ", f_debug);
             db_cfd(cfdp);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         }  /* if */
         cfdp = cfdp->prev;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level == 4) {
           fputs("  inner loop: next entry = ", f_debug);
           db_cfd(cfdp);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* while */
       /* cpfe now points to the start of a block.  Keep stepping through
@@ -2465,10 +2501,12 @@ the goto, and label_cfsp describes the associated label.
 
   db_enter(4, "add_vla_dealloc_stmts_for_goto");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level == 4) {
     db_cfd(goto_cfdp);
     db_cfd(label_cfdp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* If the last entry on the control flow list is goto_cfdp, then the
      label has already been defined and this is a backwards goto; otherwise
@@ -2504,6 +2542,7 @@ the goto, and label_cfsp describes the associated label.
     if (forward_goto) outermost_noncommon_parent = goto_parent;
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level == 4) {
     fputs("common_parent = ", f_debug);
     if (common_parent == NULL) {
@@ -2518,6 +2557,7 @@ the goto, and label_cfsp describes the associated label.
       db_cfd(outermost_noncommon_parent);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* There are 2 orthogonal sets of criteria for determining how to search
      for VLAs that need to be deallocated.  There is the direction of the
@@ -2749,6 +2789,7 @@ function should only be called in C++ mode.
   db_enter(4, "common_object_lifetime");
   if (olp1 != olp2) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       db_object_lifetime_stack();
       fputs("olp1 = ", f_debug);
@@ -2756,6 +2797,7 @@ function should only be called in C++ mode.
       fputs("olp2 = ", f_debug);
       db_object_lifetime(olp2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* The outer loop follows olp2 and its parent lifetimes. */
     for (; olp2 != function_scope_object_lifetime;
@@ -2767,10 +2809,12 @@ function should only be called in C++ mode.
         if (olp == olp2) {
           /* Found a match. */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (debug_level >= 4) {
             fputs("common = ", f_debug);
             db_object_lifetime(olp2);
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           goto done;
         }  /* if */
@@ -3028,9 +3072,11 @@ statement is the top block of a GNU statement expression ({ ... }).
   sssep->p_start_pos = NULL;
   sssep->fallthrough_statement = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_control_flow")) {
     db_ssse_with_indentation(kind, "pushing ");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (kind == ssk_compound && !block_stmt_is_cfront_dependent_stmt(sp)) {
     sssep->depth_of_assoc_scope = depth_scope_stack;
@@ -3465,9 +3511,11 @@ a structured statement has ended.
   break_label = sssep->break_label;
   break_statements = sssep->break_statements;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("dump_control_flow")) {
     db_ssse_with_indentation(kind, "popping ");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Pop the stack. */
   depth_stmt_stack--;
@@ -6051,12 +6099,14 @@ generated.
 
   db_enter(4, "report_goto_past_init");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "start_cfdp = ");
     db_cfd(start_cfdp);
     fprintf(f_debug, "end_cfdp = ");
     db_cfd(end_cfdp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (end_cfdp->parent != start_cfdp->parent) {
     report_goto_past_init(start_cfdp, end_cfdp->parent->prev, error_pos,
@@ -6067,6 +6117,7 @@ generated.
   /*lint --e{850} cfdp modified in loop */
   for (cfdp = start_cfdp; ; cfdp = cfdp->next) {
 #if DEBUG
+/* GCOVR_EXCL_START */
 #if CHECKING
     if (cfdp->parent != end_cfdp->parent ||
         cfdp->id_number > end_cfdp->id_number) {
@@ -6079,6 +6130,7 @@ generated.
       internal_error("report_goto_past_init: start > end or parent mismatch");
     }  /* if */
 #endif /* CHECKING */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (cfdp->kind == (a_control_flow_descr_kind)cfdk_init) {
       an_error_severity  severity = es_none;
@@ -6167,10 +6219,12 @@ generated.
     if (cfdp->kind == (a_control_flow_descr_kind)cfdk_block) {
       cfdp = cfdp->variant.block.end_of_block;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         fprintf(f_debug, "jumped over block -- cfdp = ");
         db_cfd(cfdp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (cfdp == end_cfdp) break;
     }  /* if */
@@ -6207,6 +6261,7 @@ diagnose the condition.
   }  /* if */
   start_cfdp = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "checking %s jump from:  ",
             is_forward ? "forward" : "backwards");
@@ -6214,6 +6269,7 @@ diagnose the condition.
     fprintf(f_debug, "...and jumping to:  ");
     db_cfd_and_parents(label_cfdp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if UPC_EXTENSIONS_ALLOWED
   if (label_cfdp->enclosing_forall != goto_cfdp->enclosing_forall) {
@@ -6328,10 +6384,12 @@ diagnose the condition.
       common_parent = common_parent->parent;
     }  /* while */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fprintf(f_debug, " common parent = ");
       db_cfd(common_parent);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* For forward gotos, start looking for initializing declarations at the
        point immediately following the outermost block that both contains the
@@ -7722,25 +7780,31 @@ Each has the form
   switch (curr_token) {
     case tok_upc_notify:
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, "UPC notify statement\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       kind = (a_statement_kind)stmk_upc_notify;
       break;
     case tok_upc_wait:
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, "UPC wait statement\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       kind = (a_statement_kind)stmk_upc_wait;
       break;
     case tok_upc_barrier:
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, "UPC barrier statement\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       kind = (a_statement_kind)stmk_upc_barrier;
       break;
@@ -8615,6 +8679,7 @@ is being parsed within the context of the __extension__ keyword.
   }  /* if */
   remove_stop_token(tok_rbrace);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 ||
       (at_function_level && db_flag_is_set("dump_stmts"))) {
     int  how_deep = 3;
@@ -8629,6 +8694,7 @@ is being parsed within the context of the __extension__ keyword.
     }  /* if */
     db_statement_list(block, /*indent=*/0, "", how_deep);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return block;
@@ -8712,6 +8778,7 @@ is in effect a wrapper around compound_statement.
   add_to_control_flow_descr_list(
      alloc_control_flow_descr((a_control_flow_descr_kind)cfdk_end_of_block));
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("dump_stmts")) {
     int  how_deep = 3;
     fputs("terminating compound statement for ", f_debug);
@@ -8723,6 +8790,7 @@ is in effect a wrapper around compound_statement.
     if (debug_level < 3) how_deep = 100;
     db_statement_list(sp, /*indent=*/0, "", how_deep);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sp;
@@ -8763,6 +8831,7 @@ before the fixup can be done for pointers in goto and label statements.
 }  /* wrapup_control_flow_processing */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_statements_space_used(void)
 /*
@@ -8784,6 +8853,7 @@ Display and return the amount of space used for various statements tables.
   return (grand_total);
 }  /* show_statements_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void statements_one_time_init(void)
@@ -8796,7 +8866,9 @@ One-time initialization for statements.c static variables.
     STATIC_THREAD a_pch_saved_variable saved_vars[] = {
       pch_saved_var_array_elem(avail_control_flow_descrs),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_control_flow_descrs_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -8851,8 +8923,10 @@ of the front end.
 {
   avail_control_flow_descrs = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_control_flow_descrs_allocated = 0;
   cfd_id_number = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* statements_init */
 

@@ -118,12 +118,14 @@ STATIC_THREAD a_boolean
 #endif /* CHECKING */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_translation_unit_stack_entries_allocated,
 		num_export_trans_unit_stack_entries_allocated,
 		num_translation_units_allocated,
 		num_trans_unit_corresps_allocated,
 		num_variable_registrations_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -142,7 +144,9 @@ and return a pointer to it.
   } else {
     tucp = alloc_fe_of_type(a_trans_unit_corresp);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_trans_unit_corresps_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   tucp->canonical = NULL;
@@ -188,7 +192,9 @@ a pointer to the entry created.
     /* Allocate a new entry. */
     tusep = alloc_general_of_type(a_translation_unit_stack_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_translation_unit_stack_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   tusep->next = NULL;
@@ -214,7 +220,9 @@ fields, and return a pointer to the entry created.
     /* Allocate a new entry. */
     tusep = alloc_general_of_type(an_export_trans_unit_stack_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_export_trans_unit_stack_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   tusep->next = NULL;
@@ -233,7 +241,9 @@ a pointer to the entry created.
 
   vrp = alloc_general_of_type(a_variable_registration);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_variable_registrations_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   vrp->next = NULL;
   vrp->ptr = NULL;
@@ -501,6 +511,7 @@ the proper global variable addresses.
 }  /* fix_up_translation_unit */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_translation_unit(a_translation_unit_ptr	tup)
 /*
@@ -532,6 +543,7 @@ Display the translation unit stack, for debugging purposes.
   } while (tup != NULL);
 }  /* db_translation_unit_stack */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void switch_translation_unit(a_translation_unit_ptr	tup)
@@ -696,7 +708,9 @@ a pointer to the entry created.
 #endif /* CHECKING */
   tup = alloc_fe_of_type(a_translation_unit);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_translation_units_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tup->next = NULL;
   /* Allocate the variable block for this translation unit. */
@@ -771,9 +785,11 @@ treated as separate translation units of a single compilation.
   a_translation_unit_ptr	trans_unit;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 1 || db_flag_is_set("trans_unit")) {
     fprintf(f_debug, "Processing translation unit %s\n", file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
 #if CHECKING
   if (!is_primary && exported_file == NULL) {
@@ -864,9 +880,11 @@ treated as separate translation units of a single compilation.
   /* Remove this entry from the translation unit stack. */
   pop_translation_unit_stack();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 1 || db_flag_is_set("trans_unit")) {
     fprintf(f_debug, "Done processing translation unit %s\n", file_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
 #if COMPILE_MULTIPLE_TRANSLATION_UNITS
   if (is_primary) {
@@ -880,6 +898,7 @@ treated as separate translation units of a single compilation.
 }  /* process_translation_unit */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long db_show_trans_unit_space_used(unsigned long grand_total)
 /*
@@ -910,6 +929,7 @@ routines is reported as part of the symbol table memory used.
   return grand_total;
 }  /* db_show_trans_unit_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -925,7 +945,9 @@ One-time initialization for trans_unit variables.
       pch_saved_var_array_elem(translation_units),
       pch_saved_var_array_elem(translation_units_tail),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_trans_unit_corresps_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -970,11 +992,13 @@ of the front end are called.
   avail_export_template_translation_unit_stack_entries = NULL;
   avail_trans_unit_corresps = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_translation_unit_stack_entries_allocated = 0;
   num_export_trans_unit_stack_entries_allocated = 0;
   num_translation_units_allocated = 0;
   num_variable_registrations_allocated = 0;
   num_trans_unit_corresps_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CHECKING
   any_translation_units_allocated = FALSE;

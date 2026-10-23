@@ -266,6 +266,7 @@ fxp_descr describes the format of the value being stored.
       source = (char*)&(mp->parts[source_part]) + source_byte;
       *dest = *source;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("fxp_store")) {
         long  source_offset, dest_offset;
         source_offset = (long)(source - (char *)(&mp->parts[0]));
@@ -274,6 +275,7 @@ fxp_descr describes the format of the value being stored.
                 source_offset, dest_offset,
                 (unsigned int)(unsigned char)*dest);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* for */
   } else {
@@ -577,12 +579,14 @@ the value is already known to be too large.  Set *err on overflow.  Set
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("fxp_conv")) {
     fprintf(f_debug, "fxp hex value: ");
     db_mantissa(mp);
     fprintf(f_debug, "exponent=%ld, nonfract=%ld, shift=%ld\n",
             exponent, nonfract_bits, shift_count);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (overflow) {
     /* On overflow, return an error flag and set the result value to a

@@ -3276,6 +3276,7 @@ These two fields are normally consecutive members of the given "type", but
 #if CHECKING
       if (field->offset < rounded_after_field) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (prev_field != NULL) {
           fprintf(f_debug, "curr field     %s\n",
                   prev_field->source_corresp.name);
@@ -3285,6 +3286,7 @@ These two fields are normally consecutive members of the given "type", but
         }  /* if */
         fprintf(f_debug, "next offset    %lu\n", (unsigned long)field->offset);
         fprintf(f_debug, "next alignment %lu\n", (unsigned long)alignment);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error("field_padding: negative padding required");
       }  /* if */
@@ -5445,7 +5447,9 @@ type of the variable to which it refers.
   }  /* if */
   if (!types_match) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("check_type_of_variable_node: enk_variable has wrong type");
   }  /* if */
@@ -6463,7 +6467,9 @@ process_assignment:
           { a_type_ptr op2_type = skip_typerefs(operand_2->type);
             if (!il_identical_types(op2_type, expr_type)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
               db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
               internal_error("dump_expr: bad type on eok_comma");
             }  /* if */
@@ -6574,7 +6580,9 @@ process_assignment:
             if (!il_identical_types(op2_type, expr_type) ||
                 !il_identical_types(op3_type, expr_type)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
               db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
               internal_error("dump_expr: bad type on eok_question");
             }  /* if */
@@ -6855,7 +6863,9 @@ done_with_unary_operation:;
 #if CHECKING && !STANDALONE_UTILITY_PROGRAM
         if (operand_2 != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           internal_error("dump_expr: unary operator has wrong # of operands");
         }  /* if */
@@ -6865,7 +6875,9 @@ done_with_binary_operation:;
 #if CHECKING && !STANDALONE_UTILITY_PROGRAM
         if (operand_2->next != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           internal_error("dump_expr: binary operator has wrong # of operands");
         }  /* if */
@@ -6905,7 +6917,9 @@ done_with_operation:
       if (!il_identical_types(expr->type,
                               expr->variant.object_lifetime.expr->type)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         db_expression(expr);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error("dump_expr: bad type on enk_object_lifetime");
       }  /* if */
@@ -11817,7 +11831,9 @@ must be redone for each generated C file.
   last_known_good_file = NULL;
   in_comment = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   annotate = db_active;
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
   annotate = FALSE;
 #endif /* DEBUG */
@@ -12171,12 +12187,14 @@ from the primary source file name in the IL information.
     /* Scan options.  There's a limited set, so we don't use getopt. */
     switch (argv[optind][1]) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       case 'd':
         /* Scan debug argument */
         if (proc_debug_option(argv[optind]+2)) {
           command_line_error(ec_cl_error_in_debug_option_argument);
         }  /* if */
         break;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if !C_GEN_BE_GENERATES_ANSI_C
       case 'i':

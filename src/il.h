@@ -3994,6 +3994,7 @@ extern a_scope_ptr scope_for_routine_or_null(a_routine_ptr rout);
 extern a_scope_ptr scope_for_routine(a_routine_ptr rout);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_indent(size_t indent);
 
 extern void db_template_arg_list(a_template_arg_ptr tap);
@@ -4129,6 +4130,7 @@ extern void put_str_to_f_debug(a_const_char                          *str,
                                an_il_to_str_output_control_block_ptr octl);
 
 extern void subst_fail_intercept(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -4137,8 +4139,10 @@ In DEBUG configurations, this also calls subst_fail_intercept, to ease tracking
 of substitution failures in a debugger.
 */
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*lint -emacro(505,subst_fail)*/
 #define subst_fail(x) (subst_fail_intercept(), (x) = TRUE) 
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define subst_fail(x) ((x) = TRUE)
 #endif /* DEBUG */

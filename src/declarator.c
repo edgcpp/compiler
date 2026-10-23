@@ -545,11 +545,13 @@ array-to-pointer decay).
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fputs("declared type: ", f_debug);
     db_type(declared_type);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return declared_type;
@@ -908,6 +910,7 @@ the specifiers and declarator that formed the new type.
 
   db_enter(3, "add_to_derived_type_list");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("declarators")) {
     fprintf(f_debug, "At start of add_to_derived_type_list:\n");
     fprintf(f_debug, "  new_type_ptr = ");
@@ -920,6 +923,7 @@ the specifiers and declarator that formed the new type.
     db_type(*bottom_derived_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Note that while derived types are being built up, the derived-type
      entries are connected to one another from the top down, which
@@ -1315,6 +1319,7 @@ the specifiers and declarator that formed the new type.
   *bottom_derived_type = find_bottom_of_type(*bottom_derived_type);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "At end of add_to_derived_type_list:\n");
     fprintf(f_debug, "  new_type_ptr = ");
@@ -1327,6 +1332,7 @@ the specifiers and declarator that formed the new type.
     if (*bottom_derived_type != NULL) db_type(*bottom_derived_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* add_to_derived_type_list */
@@ -3660,6 +3666,7 @@ an error if a default argument expression is encountered.
              be a function definition, it will be needed (in C++ unnamed
              parameters are allowed). */
 #if DEBUG
+/* GCOVR_EXCL_START */
           if (!source_sequence_entries_disallowed &&
               (debug_level >= 4 || db_flag_is_set("dump_ss_full"))) {
             if (!is_error_locator(param_locator)) {
@@ -3668,6 +3675,7 @@ an error if a default argument expression is encountered.
                       param_locator.symbol_header->identifier);
             }  /* if */
           }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           param_state.source_sequence_entry =
                                             add_empty_source_sequence_entry();
@@ -6221,6 +6229,7 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
     /* Keep looping as long as there are pointer declarators. */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     if (!same_entities(complete_type, specifiers_type)) {
       fputs("pointer/reference type: ", f_debug);
@@ -6228,6 +6237,7 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
       (void)fputc('\n', f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if MICROSOFT_EXTENSIONS_ALLOWED || NEAR_AND_FAR_ALLOWED
   /* Return unbound qualifiers to the caller. */
@@ -7856,6 +7866,7 @@ etc.).
       check_assertion(locator != NULL);
 #if GENERATE_SOURCE_SEQUENCE_LISTS
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (!source_sequence_entries_disallowed &&
           (debug_level >= 4 || db_flag_is_set("dump_ss_full"))) {
         fprintf(f_debug, "declarator: empty ss entry for \"%s\":\n",
@@ -7863,6 +7874,7 @@ etc.).
                   locator_for_curr_id.symbol_header->identifier :
                   token_names[(int)curr_token]);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       *declarator_ssep = add_empty_source_sequence_entry();
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
@@ -8658,6 +8670,7 @@ past_postfix_declarator_operators:
   *p_complete_type = complete_type;
   *p_bottom_derived_type = bottom_derived_type;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fputs("complete_type: ", f_debug);
     if (complete_type == NULL) {
@@ -8667,6 +8680,7 @@ past_postfix_declarator_operators:
     }  /* if */
     (void)fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* r_declarator */
