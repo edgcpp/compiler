@@ -184,7 +184,7 @@ Closing `/batch` cancels every subscription for that connection.
 
 | Tag | `v` | When |
 | --- | --- | --- |
-| `invalid` | unused / `null` | Malformed request, bad slug, failed handshake, or unexpected tag |
+| `invalid` | unused / `null`; from a provider, see [Failed requests](#failed-requests) | Malformed request, bad slug, failed handshake, or unexpected tag; from a provider, a reviewer's request it failed |
 | `outdated-proto` | `null` | Peer `r` does not match |
 | `role-occupied` | `null` | Another provider already holds this UUID + slug |
 | `illegal-access` | see [Illegal access](#illegal-access) | A reviewer requested a file outside the section |
@@ -338,6 +338,23 @@ by itself. For a reviewer in a `/batch` `review` subscription that is the
 whole `/batch` socket, ending every subscription on it. A provider can only
 report reviewers of its own review.
 
+### Failed requests
+
+When a provider fails to handle a reviewer's request (other than for illegal
+access), it doesn't answer the request either. It tells the reviewer it
+failed, through the server, and keeps serving the section:
+
+```json
+{ "t": "invalid", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+```
+
+The server sends `invalid` to that reviewer alone, with `v` `null` and `s`
+set to the provider's slug. As with illegal access, a provider can only reach
+reviewers of its own review. The server drops a provider's `invalid` whose
+`reviewer_id` is missing or isn't a UUID, without answering it: answering
+with another `invalid` could bounce between the two for as long as the
+section is served.
+
 ### Source `client_response` shapes (reviewer `v`)
 
 Display payloads that carry file text use `content` (string or `null` if
@@ -438,7 +455,7 @@ match the representative.
 
 | Tag | Direction |
 | --- | --- |
-| `invalid` | server → any |
+| `invalid` | server → any; source/edit → server |
 | `outdated-proto` | server → any |
 | `role-occupied` | server → source/edit (or nested in `batch.event`) |
 | `illegal-access` | source/edit → server |

@@ -81,6 +81,17 @@ Auth header: `X-AcknowlEDG-API-Key` (never put the key in query strings).
 `RoleOccupied`: discard that handler / stop reconnecting that section; keep
 other sections running.
 
+Batch subscribe / unsubscribe answers are not timed: the server answers at
+once, and a lost connection (keepalive pings notice) fails what is pending
+as `NotConnectedError`; `add_section` keeps the section registered, and the
+next session restores it.
+
+`IncompatibleProtocolVersion` carries the peer's `revision` (the server's
+`outdated-proto` says its own) and `peer_is_newer`. It stops a session;
+`BatchClient(wait_for_server_update=True)` instead waits out an older
+server, reconnecting every `SERVER_UPDATE_RETRY_S` (5 s) with its sections
+still registered. A newer server still stops it: the client must be updated.
+
 ## Batch subscription maps
 
 `_BatchClientReview` tracks:

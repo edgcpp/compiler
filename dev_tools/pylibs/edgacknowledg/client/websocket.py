@@ -26,7 +26,10 @@ except ImportError:
 import websockets
 
 try:
-  from websockets.asyncio.client import ClientConnection, connect  # type: ignore
+  from websockets.asyncio.client import (  # type: ignore
+    ClientConnection,
+    connect,
+  )
   _LEGACY_WEBSOCKETS = False
 except Exception:
   from websockets.client import connect  # type: ignore
@@ -287,5 +290,15 @@ class ResilientWebsocket:
     websocket = self._websocket
     if websocket is None:
       raise _connection_closed()
+    async with self._send_lock:
+      await websocket.send(data)
+
+  async def send_if_connected(self, data: Any) -> None:
+    '''Send on the current connection, if there is one; otherwise drop
+    ``data``, for what doesn't outlast a connection.
+    '''
+    websocket = self._websocket
+    if websocket is None:
+      return
     async with self._send_lock:
       await websocket.send(data)

@@ -7,10 +7,22 @@
 publisher server: JSON objects, one per WebSocket text message.
 
 The client sends one initialization message (settings and the API key,
-kept out of any command line or environment), then requests ({'op': 'sync'
-| 'remove', ...}), one at a time; the server answers each ({'ok': true} or
-{'error': 'unavailable' | 'failed', 'message'}) and, at any time, reports
-its AcknowlEDG connection ({'event': 'connected' | 'disconnected'}).
+kept out of any command line or environment), then requests, one at a
+time:
+
+- ``{'op': 'sync', 'review', 'sections'}`` serves exactly a review's
+  sections; with none, it stops serving the review.
+- ``{'op': 'delist', 'review_id'}`` stops serving a review whose sections
+  are still stored in the database, as its files are about to go.
+- ``{'op': 'prune', 'keep': [review_id, ...]}`` stops serving every other
+  review. What the server publishes outlasts a connection, so on
+  connecting, after serving every review stored in the service's
+  database, the client sends this, so that nothing else (e.g. what an
+  earlier service served) stays published.
+
+The server answers each ({'ok': true} or {'error': 'failed', 'message'})
+once it has queued what to publish, whether or not it is connected to
+AcknowlEDG: it publishes what is queued once it is.
 '''
 
 import uuid

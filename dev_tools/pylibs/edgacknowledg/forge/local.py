@@ -24,28 +24,28 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import AsyncIterator
 
-from websockets.asyncio.server import Server
+from quart import Blueprint
 
-from edgacknowledg.forge.publisher.server import PublisherServer
+from edgacknowledg.forge import serving
+from edgacknowledg.forge.publisher.protocol import MESSAGE_LIMIT
+from edgacknowledg.forge.publisher.server import create_publisher
 from edgacknowledg.forge.runner.client import RunnerClient
 from edgacknowledg.forge.runner.roles import ROLES
-from edgacknowledg.forge.runner.server import RunnerServer
+from edgacknowledg.forge.runner.server import MAX_REQUEST_BYTES, create_runner
+from edgacknowledg.forge.serving import Listening
 
 HOST = '127.0.0.1'
 
 
-def _url(server: Server) -> str:
-  port = next(iter(server.sockets)).getsockname()[1]
-  return f"ws://{HOST}:{port}"
-
-
 @contextlib.asynccontextmanager
-async def _serving(server: Server) -> AsyncIterator[Server]:
+async def _serving(server: Blueprint,
+                   max_message_size: int) -> AsyncIterator[Listening]:
+  listening = await serving.start(server, host = HOST, port = 0,
+                                  max_message_size = max_message_size)
   try:
-    yield server
+    yield listening
   finally:
-    server.close()
-    await server.wait_closed()
+    await listening.close()
 
 
 @dataclass(frozen = True)
@@ -53,7 +53,6 @@ class LocalDeployment:
   builder: RunnerClient
   tools: RunnerClient
   publisher_service_url: str
-  publisher_server: PublisherServer
 
 
 @contextlib.asynccontextmanager
@@ -64,13 +63,10 @@ async def local_runner(role: str,
   '''Serve ``role``'s runner server (see ``runner.roles``) for the
   deployment in ``home``; yield its client.
   '''
-  server = RunnerServer(ROLES[role](home = home, tools_dir = tools_dir))
-  async with _serving(await server.start(HOST, 0)) as listening:
-    client = RunnerClient(_url(listening))
-    try:
-      yield client
-    finally:
-      await client.close()
+  runner = create_runner(ROLES[role](home = home, tools_dir = tools_dir))
+  async with (_serving(runner, MAX_REQUEST_BYTES) as listening,
+              RunnerClient(listening.url()) as client):
+    yield client
 
 
 @contextlib.asynccontextmanager
@@ -87,15 +83,13 @@ async def local_deployment(*,
     tools = await stack.enter_async_context(
       local_runner('tools', home = home, tools_dir = tools_dir)
     )
-    publisher_server = PublisherServer(tools_service_url = tools.url)
-    # Its pool stops once it stops listening.
-    stack.push_async_callback(publisher_server.close)
-    listening = await stack.enter_async_context(
-      _serving(await publisher_server.start(HOST, 0))
-    )
+    # Its pool runs while it serves.
+    listening = await stack.enter_async_context(_serving(
+      create_publisher(tools_service_url = tools.url),
+      MESSAGE_LIMIT
+    ))
     yield LocalDeployment(
       builder = builder,
       tools = tools,
-      publisher_service_url = _url(listening),
-      publisher_server = publisher_server
+      publisher_service_url = listening.url()
     )

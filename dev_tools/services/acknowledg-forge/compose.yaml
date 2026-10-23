@@ -59,6 +59,23 @@ x-environment: &environment
 
 x-python: &python /edg/acknowledg-forge/${FORGE:-github}/bin/python
 
+# Every container's healthcheck: a GET of its /healthz
+# (edgacknowledg.forge.serving). Every server is a Quart app, and answers it
+# beside its WebSocket at /, so a probe never opens a connection.
+# Dependents wait until healthy, so a client's first connection finds its
+# server listening. (A runner's clean-up may kill a probe; the retries
+# cover it.)
+x-health-probe: &health_probe |-
+  import sys, urllib.request
+  urllib.request.urlopen(sys.argv[1], timeout = 3).close()
+
+x-healthcheck: &healthcheck
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 60s
+  start_interval: 1s
+
 services:
   service:
     <<: *container
@@ -71,6 +88,9 @@ services:
       CREDENTIALS_DIRECTORY: /run/credentials
       ACKNOWLEDG_FORGE_BUILDER_SERVICE_URL: ws://builder:2730
       ACKNOWLEDG_FORGE_PUBLISHER_SERVICE_URL: ws://publisher:2731
+      # The web app: health checks, and webhooks with
+      # ACKNOWLEDG_FORGE_WEBHOOKS=1. Only on frontend (see networks).
+      ACKNOWLEDG_FORGE_SERVICE_BIND: service-frontend:2728
       EDG_ACKNOWLEDG_API_HOST: ${EDG_ACKNOWLEDG_API_HOST:-localhost}
       EDG_ACKNOWLEDG_API_PORT: ${EDG_ACKNOWLEDG_API_PORT:-2727}
       EDG_ACKNOWLEDG_UI_HOST: ${EDG_ACKNOWLEDG_UI_HOST:-localhost}
@@ -95,13 +115,23 @@ services:
       # is published.
       - 127.0.0.1:${WEBHOOK_PORT:-2728}:2728
     networks:
-      # For webhooks, bind only here: ACKNOWLEDG_FORGE_WEBHOOK_BIND=
-      # service-frontend:2728.
+      # The web app binds only here (ACKNOWLEDG_FORGE_SERVICE_BIND).
       frontend:
         aliases: [service-frontend]
       build: {}
       publish: {}
-    depends_on: [builder, publisher]
+    # Healthy once everything has started.
+    healthcheck:
+      <<: *healthcheck
+      test:
+        - CMD
+        - *python
+        - -c
+        - *health_probe
+        - http://service-frontend:2728/healthz
+    depends_on:
+      builder: {condition: service_healthy}
+      publisher: {condition: service_healthy}
     mem_limit: 2g
 
   builder:
@@ -131,6 +161,9 @@ services:
         target: /var/lib/acknowledg-forge/build-staging
         bind: {create_host_path: false}
     networks: [build]
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, *python, -c, *health_probe, "http://127.0.0.1:2730/healthz"]
     mem_limit: 2g
 
   publisher:
@@ -161,7 +194,17 @@ services:
         aliases: [publisher-publish]
       tools: {}
       egress: {}
-    depends_on: [tools]
+    # Listening only once its pool has started.
+    healthcheck:
+      <<: *healthcheck
+      test:
+        - CMD
+        - *python
+        - -c
+        - *health_probe
+        - http://publisher-publish:2731/healthz
+    depends_on:
+      tools: {condition: service_healthy}
     # The server and its pool processes.
     mem_limit: 2g
 
@@ -187,6 +230,9 @@ services:
         read_only: true
         bind: {create_host_path: false}
     networks: [tools]
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, *python, -c, *health_probe, "http://127.0.0.1:2732/healthz"]
 
 networks:
   # The service's: the forge, and webhooks from the host.
