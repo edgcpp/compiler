@@ -40,6 +40,7 @@ from edgacknowledg.client.shared import (
   ConfinedPath,
   IllegalFileAccessError,
   SandboxContext,
+  reviewer_of,
   trunc_display_content,
 )
 from edgutil import eprint
@@ -206,6 +207,9 @@ async def run_test_source_handler(channel: Channel,
 
     return test_home.joinpath('tests', *test_id_parts)
 
+  # Only a reviewer's request is answered: one naming none is the
+  # server's, e.g. its error for a reply it refused, and answering it would
+  # only bounce back and forth.
   if request_value is not None and 'reviewer_id' in request_value:
     reviewer_id = request_value['reviewer_id']
 
@@ -568,13 +572,11 @@ async def run_test_source_handler(channel: Channel,
           }
         ))
     except Exception as ex:
-      if isinstance(ex, IllegalFileAccessError):
-        ex.reviewer_id = reviewer_id
+      # Whom the failure reply (or the illegal-access report) is for.
+      setattr(ex, 'reviewer_id', reviewer_id)
       if sys.version_info >= (3, 11):
         ex.add_note(f"request triggered by reviewer: \"{reviewer_id}\"")
       raise ex
-  else:
-    await channel.send(message(RequestTags.INVALID_REQUEST))
 
 
 class TestSourceHandler:
@@ -702,7 +704,10 @@ async def handle_test_edit_request(
         }
       )
 
-  return message(RequestTags.INVALID_REQUEST)
+  return message(
+    RequestTags.INVALID_REQUEST,
+    value = {'reviewer_id': request_value['reviewer_id']}
+  )
 
 
 class TestEditHandler:
@@ -729,6 +734,8 @@ class TestEditHandler:
 
   async def handle_request(self, channel: Channel) -> None:
     request = await channel.recv()
+    if reviewer_of(request) is None:
+      return
 
     async def edit_job() -> None:
       reply = await handle_test_edit_request(request)

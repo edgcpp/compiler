@@ -26,7 +26,10 @@ except ImportError:
 import websockets
 
 try:
-  from websockets.asyncio.client import ClientConnection, connect  # type: ignore
+  from websockets.asyncio.client import (  # type: ignore
+    ClientConnection,
+    connect,
+  )
   _LEGACY_WEBSOCKETS = False
 except Exception:
   from websockets.client import connect  # type: ignore

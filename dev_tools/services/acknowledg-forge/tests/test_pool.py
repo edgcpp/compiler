@@ -35,10 +35,12 @@ from edgacknowledg.forge.runner.client import RunnerClient
 
 from conftest import make_tools_dir
 
-# Stands in for ifc-dump in the tools runner: hangs on files named slow*.
+# Stands in for ifc-dump in the tools runner: hangs on files named slow*,
+# and takes a second on files named medium*.
 STUB_IFC_DUMP = '''#!/bin/sh
 case "$1" in
   */slow*) sleep 60 ;;
+  */medium*) sleep 1 ;;
 esac
 echo "dumped $(basename "$1")"
 '''
@@ -57,7 +59,7 @@ async def env(tmp_path: Path) -> AsyncIterator[_Env]:
   home = tmp_path / 'home'
   tests_home = home / 'reviews' / str(uuid.uuid4()) / 'base' / 'tests'
   (tests_home / 'tests' / 'suite').mkdir(parents = True)
-  for name in ('a.ifc', 'slow.ifc'):
+  for name in ('a.ifc', 'medium.ifc', 'slow.ifc'):
     (tests_home / 'tests' / 'suite' / name).write_text('ifc\n')
   root = tests_home / 'runs' / 'r1'
   (root / 'edg_x86_64').mkdir(parents = True)
@@ -146,6 +148,52 @@ async def test_a_slow_request_is_cut_off_alone(env: _Env,
   assert pool.pids()[0] != pids[0] and pool.pids()[1] == pids[1]
 
 
+async def test_an_abandoned_requests_answer_is_dropped(
+    env: _Env,
+    make_pool: Any) -> None:
+  pool = await make_pool(processes = 1)
+  [pid] = pool.pids()
+  # Cancelled while its process works on it (as when its section is
+  # removed): the process still answers it...
+  medium = asyncio.create_task(
+    pool.answer(env.section, _show_source('suite/medium.ifc'))
+  )
+  await asyncio.sleep(0.3)
+  medium.cancel()
+  with pytest.raises(asyncio.CancelledError):
+    await medium
+  # ...but the next request, on the same process, gets its own answer.
+  answer = await pool.answer(env.section, _show_source('suite/a.ifc'))
+  assert 'dumped a.ifc' in _content(answer)
+  assert pool.pids() == [pid]
+
+
+async def test_abandoned_requests_dont_crowd_out_the_next(
+    env: _Env,
+    make_pool: Any) -> None:
+  # Its deadline (1.5 s) would be missed, were the abandoned requests' work
+  # (1 s each) counted in it.
+  pool = await make_pool(processes = 1, request_timeout = 1.5)
+  [pid] = pool.pids()
+  first, second = (
+    asyncio.create_task(
+      pool.answer(env.section, _show_source('suite/medium.ifc'))
+    )
+    for _ in range(2)
+  )
+  await asyncio.sleep(0.3)
+  # One being answered, one still queued: the first keeps its process busy
+  # until answered; the second is never given to it.
+  first.cancel()
+  second.cancel()
+  await asyncio.gather(first, second, return_exceptions = True)
+  started = time.monotonic()
+  answer = await pool.answer(env.section, _show_source('suite/a.ifc'))
+  assert 'dumped a.ifc' in _content(answer)
+  assert time.monotonic() - started < 1.5
+  assert pool.pids() == [pid]
+
+
 async def test_an_exited_process_is_replaced(env: _Env,
                                              make_pool: Any) -> None:
   pool = await make_pool(processes = 1)
@@ -222,12 +270,19 @@ async def test_the_stand_in_handler_relays_and_raises(
     await handler.handle_request(channel)  # type: ignore[arg-type]
   assert caught.value.reviewer_id == REVIEWER
 
-  # Any other failure: the client library sends its failure reply.
+  # Any other failure: the client library sends its failure reply, to the
+  # reviewer.
   broken = UnixSocketHandler(
     SectionRecord(**{**env.section.__dict__, 'kind': 'no-such-kind'}),
     pool
   )
-  with pytest.raises(PoolError, match = 'failed'):
+  with pytest.raises(PoolError, match = 'failed') as failed:
     await broken.handle_request(  # type: ignore[arg-type]
       _Channel(_show_source('suite/a.ifc'))
     )
+  assert failed.value.reviewer_id == REVIEWER
+
+  # The server's own messages (naming no reviewer) aren't answered.
+  channel = _Channel(encode_message(message('invalid')))
+  await handler.handle_request(channel)  # type: ignore[arg-type]
+  assert channel.sent == []

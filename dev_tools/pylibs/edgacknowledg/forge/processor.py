@@ -20,12 +20,12 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path, PurePosixPath
-from typing import Awaitable, Callable, Optional
+from typing import Any, Awaitable, Callable, Iterable, Optional
 
 import edgtest
 import edgutil
 
-from edgacknowledg import rich_link, rich_text, section_slug
+from edgacknowledg import section_slug
 from edgacknowledg.forge import (
   ArtifactInfo,
   CIConclusion,
@@ -43,7 +43,6 @@ from edgacknowledg.forge.publisher import (
   KIND_TEST_FAILURES,
   Publisher,
   PublisherUnavailableError,
-  ReviewIdentity,
 )
 from edgacknowledg.forge.sandbox import Sandbox
 from edgacknowledg.forge.workspace import (
@@ -71,6 +70,11 @@ BENCH_SECTIONS = (
 )
 
 CI_METADATA_FILE = 'ci-meta.json'
+# The largest that file may be, and the most (in bytes) the changes.elist
+# files of a failures artifact may hold: their test ids are kept in its
+# section's details, which go to the publisher in one message.
+MAX_CI_METADATA_BYTES = 64 * 1024
+MAX_TEST_IDS_BYTES = 4 * 1024 * 1024
 
 # Retries for a failing pull request: 1 min, 2 min, ... up to 1 h; give up
 # after this many attempts until the pull request changes again.
@@ -110,9 +114,39 @@ def _reusable(section: Optional[SectionRecord],
   return section
 
 
-def _changes_test_ids(changes_elist: Path) -> list[str]:
-  with open(changes_elist, encoding = 'utf-8', errors = 'replace') as handle:
-    return [line.strip() for line in handle if line.strip()]
+def _changes_test_ids(changes_elists: Iterable[Path]) -> list[str]:
+  '''The test ids ``changes_elists`` name, within ``MAX_TEST_IDS_BYTES``
+  (together); ``WorkspaceError`` beyond.
+  '''
+  test_ids = []
+  remaining = MAX_TEST_IDS_BYTES
+  for changes_elist in changes_elists:
+    with open(changes_elist, 'rb') as handle:
+      content = handle.read(remaining + 1)
+    remaining -= len(content)
+    if remaining < 0:
+      raise WorkspaceError(
+        f"CI's changes.elist files are over {MAX_TEST_IDS_BYTES} bytes"
+      )
+    text = content.decode('utf-8', errors = 'replace')
+    test_ids += [line.strip() for line in text.splitlines() if line.strip()]
+  return test_ids
+
+
+def _read_ci_metadata(path: Path) -> dict[str, Any]:
+  '''The CI metadata ``path`` holds (an object), if it's there.'''
+  metadata: dict[str, Any] = {}
+  if path.is_file():
+    with open(path, 'rb') as handle:
+      content = handle.read(MAX_CI_METADATA_BYTES + 1)
+    if len(content) > MAX_CI_METADATA_BYTES:
+      raise WorkspaceError(
+        f"{CI_METADATA_FILE} is over {MAX_CI_METADATA_BYTES} bytes"
+      )
+    value = json.loads(content)
+    if isinstance(value, dict):
+      metadata = value
+  return metadata
 
 
 @dataclass
@@ -156,7 +190,9 @@ class Processor:
   # Loop
 
   async def run(self) -> None:
-    '''Restore what was being served, then process changes forever.'''
+    '''Once the publisher serves what is stored, clean up after a restart,
+    then process changes forever.
+    '''
     await self._publisher.wait_connected()
     await self.restore()
     last_maintenance = self._clock()
@@ -198,28 +234,35 @@ class Processor:
           return
         generation = record.generation
         label = f"{record.info.repository}#{record.info.number}"
+        if await self._store.begin_attempt(
+            pull_request_id,
+            generation,
+            now = self._clock(),
+            max_attempts = MAX_ATTEMPTS,
+            base_delay = RETRY_BASE_DELAY,
+            max_delay = RETRY_MAX_DELAY):
+          _log.error('giving up on %s until it changes again (last error: '
+                     '%s)', label, record.last_error)
+          return
         try:
           await self.process(record)
         except PublisherUnavailableError as ex:
           # Not the pull request's fault; it stays dirty and is retried
           # once the connection is back.
           _log.warning('deferring %s: %s', label, ex)
+          await self._store.refund_attempt(record)
           return
         except asyncio.CancelledError:
+          # The service is stopping: not the pull request's fault either.
+          await self._store.refund_attempt(record)
           raise
         except Exception as ex:
           _log.exception('processing %s failed', label)
-          gave_up = await self._store.mark_failed(
+          await self._store.mark_failed(
             pull_request_id,
             generation,
-            f"{type(ex).__name__}: {ex}",
-            now = self._clock(),
-            max_attempts = MAX_ATTEMPTS,
-            base_delay = RETRY_BASE_DELAY,
-            max_delay = RETRY_MAX_DELAY
+            f"{type(ex).__name__}: {ex}"
           )
-          if gave_up:
-            _log.error('giving up on %s until it changes again', label)
           return
         await self._store.mark_processed(pull_request_id, generation)
         # It may have changed while it was processed.
@@ -228,26 +271,13 @@ class Processor:
       self._in_flight.pop(pull_request_id, None)
 
   async def restore(self) -> None:
-    '''Re-serve what was served before a restart, without rebuilding.
-
-    Pull requests whose files are gone are marked to be rebuilt instead;
-    since section fingerprints are content-derived, rebuilding yields the
-    same state (and so no comment).
+    '''Clean up after a restart: drop builds it interrupted. (Serving again
+    what was served is the publisher client's, on connecting.)
     '''
-    # Builds interrupted by the restart.
     staging_root = self._workspaces.build_staging_dir
     if staging_root.is_dir():
       for leftover in staging_root.iterdir():
         remove_tree(leftover)
-    for record in await self._store.open_pull_requests(self._forge.name):
-      sections = await self._store.sections(record.id)
-      if len(sections) == 0:
-        continue
-      if all(section.root.is_dir() for section in sections):
-        await self._publisher.sync(self._identity(record), sections)
-      else:
-        await self._store.mark_dirty(record.id)
-    _log.info('restored previously served reviews')
 
   async def maintain(self) -> None:
     '''Periodic git housekeeping for every repository.'''
@@ -264,18 +294,6 @@ class Processor:
         _log.exception('maintenance of %s failed', repository)
 
   # Processing
-
-  def _identity(self, record: PullRequestRecord) -> ReviewIdentity:
-    info = record.info
-    return ReviewIdentity(
-      review_id = record.review_id,
-      # The pull request reference links to it; the title is only text.
-      name = [
-        rich_link(info.url, f"{info.repository}#{info.number}"),
-        rich_text(f" {info.title}"),
-      ],
-      timestamp = record.head_changed_at.isoformat()
-    )
 
   async def process(self, record: PullRequestRecord) -> None:
     info = record.info
@@ -301,19 +319,22 @@ class Processor:
       desired.append(changes)
     desired += await self._ci_sections(record, head_sha, current)
 
-    await self._publisher.sync(self._identity(record), desired)
+    # The database leads: once it stores the new sections, nothing needs
+    # the old trees; the publisher catches up with what is stored.
     await self._store.replace_sections(record.id, desired)
-
     kept_run_dirs = {section.details.get('run_dir') for section in desired}
     for section in current.values():
       run_dir = section.details.get('run_dir')
       if run_dir is not None and run_dir not in kept_run_dirs:
         remove_tree(Path(run_dir))
+    await self._publisher.sync_one(record.review_id)
 
   async def _tear_down(self, record: PullRequestRecord) -> None:
     '''Stop serving a pull request and free its disk space; no comment.'''
     info = record.info
-    await self._publisher.remove(record.review_id)
+    # Not served from here on, though still stored until its files are
+    # completely removed.
+    await self._publisher.delist(record.review_id)
     await self._workspaces.remove_review(info, record.review_id)
     await self._store.replace_sections(record.id, [])
     await self._workspaces.collect_garbage(
@@ -476,12 +497,10 @@ class Processor:
         zip_path.unlink(missing_ok = True)
 
       tested_sha = None
-      metadata_path = staging / CI_METADATA_FILE
-      if metadata_path.is_file():
-        metadata = json.loads(metadata_path.read_text(encoding = 'utf-8'))
-        value = metadata.get('tested_sha')
-        if isinstance(value, str) and len(value) in (40, 64):
-          tested_sha = value
+      metadata = _read_ci_metadata(staging / CI_METADATA_FILE)
+      value = metadata.get('tested_sha')
+      if isinstance(value, str) and len(value) in (40, 64):
+        tested_sha = value
       return _StagedArtifact(staging, fingerprint, tested_sha)
     except BaseException:
       remove_tree(staging)
@@ -589,8 +608,7 @@ class Processor:
       changes_files = {}
       if staged_failures is not None:
         changes_files = edgtest.find_changes_files(staged_failures.directory)
-        for changes_file in changes_files.values():
-          failed_tests += _changes_test_ids(changes_file)
+        failed_tests += _changes_test_ids(changes_files.values())
       if kept_failures is not None:
         failed_tests += kept_failures.details.get('tests', [])
 

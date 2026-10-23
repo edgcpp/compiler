@@ -87,8 +87,11 @@ class ForgeServiceConfig:
   api_url: Optional[str]
   # Seconds between polls; 0 polls once at startup only.
   poll_interval: float
-  # 'host:port' to serve webhooks on; None runs no web server at all.
-  webhook_bind: Optional[str]
+  # 'host:port' to serve the web app (serving) on: health checks, and webhooks
+  # if enabled; None serves none.
+  service_bind: Optional[str]
+  # Whether the web app receives webhooks.
+  webhooks: bool
   comments: bool
   # CI workflow (GitHub workflow file or id; GitLab: unused) whose runs are
   # tracked; None disables CI tracking.
@@ -182,6 +185,22 @@ class ForgeServiceConfig:
     if max_concurrency < 1:
       raise ConfigError(f"{ENV_PREFIX}MAX_CONCURRENCY must be at least 1")
 
+    service_bind = get('SERVICE_BIND')
+    if service_bind is not None:
+      host, _, port = service_bind.rpartition(':')
+      if host == '' or not port.isdigit():
+        raise ConfigError(f"{ENV_PREFIX}SERVICE_BIND must be host:port")
+    webhooks = get_flag('WEBHOOKS')
+    if get('WEBHOOK_BIND') is not None:
+      raise ConfigError(
+        f"{ENV_PREFIX}WEBHOOK_BIND is gone: set {ENV_PREFIX}SERVICE_BIND "
+        f"(compose.yaml does) and {ENV_PREFIX}WEBHOOKS=1 instead"
+      )
+    if webhooks and service_bind is None:
+      raise ConfigError(
+        f"{ENV_PREFIX}WEBHOOKS is set, but {ENV_PREFIX}SERVICE_BIND is not"
+      )
+
     unsandboxed = get_flag('UNSANDBOXED')
     builder_service_url = service_url('BUILDER', environ = environ)
     publisher_service_url = service_url('PUBLISHER', environ = environ)
@@ -208,7 +227,8 @@ class ForgeServiceConfig:
       base_branches = frozenset(get_list('BASE_BRANCHES') or ('main',)),
       api_url = get('API_URL'),
       poll_interval = get_number('POLL_INTERVAL', 300),
-      webhook_bind = get('WEBHOOK_BIND'),
+      service_bind = service_bind,
+      webhooks = webhooks,
       comments = get_flag('COMMENTS'),
       ci_workflow = get('CI_WORKFLOW'),
       settle_timeout = get_number('SETTLE_TIMEOUT', 2 * 60 * 60),

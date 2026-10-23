@@ -32,6 +32,7 @@ import re
 import secrets
 import shutil
 import stat
+import struct
 import tarfile
 import urllib.parse
 import zipfile
@@ -55,6 +56,22 @@ _DIFF_HEADER = re.compile(r'^diff --git a/(.*) b/(.*)$')
 _TEST_HOME_PATTERNS = ('/tests/.edgy/', '/tests/expectations/')
 
 BENCH_BASELINE_PATTERNS = ('/benchmarks/baselines/',)
+
+# The longest file name (in bytes) a test can have; a longer one names no
+# file, so it needs no pattern (and its patterns would be quadratic in its
+# length, one per dot, each as long as the name).
+_NAME_MAX = 255
+# The most sparse-checkout patterns a checkout may have: matching costs
+# patterns x paths, and they are built from pull request content.
+MAX_PATTERNS = 20_000
+# The largest diff (of tests/, in bytes) a pull request may have: it is
+# held in memory, and copied and split into lines more than once.
+MAX_DIFF_BYTES = 16 * 1024 * 1024
+# The most entries an artifact may have (its zip's, and its tarballs'
+# together), and the largest its zip's central directory may be: zipfile
+# reads all of that directory into memory, before we can count.
+MAX_ARTIFACT_ENTRIES = 100_000
+MAX_CENTRAL_DIRECTORY_BYTES = 16 * 1024 * 1024
 
 
 class WorkspaceError(Exception):
@@ -90,6 +107,8 @@ def patterns_for_test(test_path: PurePosixPath) -> list[str]:
   as 'tests/tests/suite/dir/name.sft.cpp'): the test file and its recordings,
   or the whole directory of a multi-file test.
   '''
+  if len(test_path.name.encode()) > _NAME_MAX:
+    return []
   directory = _escape_pattern(str(test_path.parent))
   if '.mft.' in test_path.name:
     return [f"/{directory}/"]
@@ -133,7 +152,7 @@ def changes_patterns(diff: str) -> list[str]:
   '''Sparse-checkout patterns for rematerializing ``diff`` (of tests/) on
   the base tree: the test home and every affected test.
   '''
-  patterns = list(_TEST_HOME_PATTERNS)
+  patterns = dict.fromkeys(_TEST_HOME_PATTERNS)
   current_suite: Optional[str] = None
   for line in diff.splitlines():
     match = _DIFF_HEADER.match(line)
@@ -141,7 +160,7 @@ def changes_patterns(diff: str) -> list[str]:
       path = PurePosixPath(match.group(1))
       current_suite = None
       if path.parts[:2] == ('tests', 'tests'):
-        patterns += _patterns_for_changed_test_file(path)
+        _add_patterns(patterns, _patterns_for_changed_test_file(path))
       elif (path.parts[:2] == ('tests', 'expectations') and
             path.suffix == '.log'):
         # Expectation lines name tests relative to the suite.
@@ -152,27 +171,34 @@ def changes_patterns(diff: str) -> list[str]:
     if line.startswith(('-', '+')):
       test_name = line[1:].split(':')[0].strip()
       if test_name:
-        patterns += patterns_for_test(
+        _add_patterns(patterns, patterns_for_test(
           PurePosixPath('tests', 'tests', current_suite, test_name)
-        )
-  return _unique(patterns)
+        ))
+  return list(patterns)
 
 
 def failures_patterns(test_ids: Iterable[str]) -> list[str]:
   '''Sparse-checkout patterns for serving CI results naming ``test_ids``
   ('<suite>/<path>', as in .elist files), plus bench baselines.
   '''
-  patterns = [*_TEST_HOME_PATTERNS, *BENCH_BASELINE_PATTERNS]
+  patterns = dict.fromkeys([*_TEST_HOME_PATTERNS, *BENCH_BASELINE_PATTERNS])
   for test_id in test_ids:
     test_path = PurePosixPath('tests', 'tests', test_id)
     if '..' in test_path.parts or test_path.is_absolute():
       continue
-    patterns += patterns_for_test(test_path)
-  return _unique(patterns)
+    _add_patterns(patterns, patterns_for_test(test_path))
+  return list(patterns)
 
 
-def _unique(items: Iterable[str]) -> list[str]:
-  return list(dict.fromkeys(items))
+def _add_patterns(patterns: dict[str, None], more: list[str]) -> None:
+  '''Add ``more`` to ``patterns`` (an ordered set), within
+  ``MAX_PATTERNS``.
+  '''
+  patterns.update(dict.fromkeys(more))
+  if len(patterns) > MAX_PATTERNS:
+    raise WorkspaceError(
+      f"more than {MAX_PATTERNS} sparse-checkout patterns (too many tests)"
+    )
 
 
 def ensure_real_directory(root: Path, relative: PurePosixPath) -> Path:
@@ -262,23 +288,57 @@ def remove_tree(path: Path) -> None:
     path.unlink()
 
 
-class _ByteBudget:
-  def __init__(self, limit: int) -> None:
-    self.remaining = limit
+class _Budget:
+  '''What extracting an artifact may still spend: bytes, and entries.'''
+  def __init__(self, max_bytes: int) -> None:
+    self.bytes = max_bytes
+    self.entries = MAX_ARTIFACT_ENTRIES
 
   def spend(self, count: int) -> None:
-    self.remaining -= count
-    if self.remaining < 0:
+    self.bytes -= count
+    if self.bytes < 0:
       raise UnsafeArchiveError('artifact exceeds the extracted size limit')
 
+  def count_entry(self) -> None:
+    self.entries -= 1
+    if self.entries < 0:
+      raise UnsafeArchiveError(
+        f"artifact has more than {MAX_ARTIFACT_ENTRIES} entries"
+      )
 
-def _check_inner_tarball(path: Path, budget: _ByteBudget) -> None:
-  '''Charge a (gzipped) tarball's decompressed size to ``budget``; reviewers'
-  requests decompress these, so they're bombs-in-waiting otherwise.
+
+def _central_directory_size(zip_path: Path) -> Optional[int]:
+  '''The size of ``zip_path``'s central directory, as its end records give
+  it (found as zipfile finds them); ``None`` if it has none.
+  '''
+  # The end of central directory record (22 bytes, then a comment of up to
+  # 64 KiB), maybe preceded by a ZIP64 locator (20 bytes) and record (56).
+  with open(zip_path, 'rb') as handle:
+    size = handle.seek(0, os.SEEK_END)
+    start = max(0, size - (22 + 0xFFFF + 20 + 56))
+    handle.seek(start)
+    tail = handle.read()
+  end = tail.rfind(b'PK\x05\x06', 0, len(tail) - 22 + 4)
+  if end < 0:
+    return None
+  directory_size: int = struct.unpack_from('<I', tail, end + 12)[0]
+  locator = end - 20
+  if locator >= 56 and tail[locator:locator + 4] == b'PK\x06\x07':
+    record = locator - 56
+    if tail[record:record + 4] == b'PK\x06\x06':
+      directory_size = struct.unpack_from('<Q', tail, record + 40)[0]
+  return directory_size
+
+
+def _check_inner_tarball(path: Path, budget: _Budget) -> None:
+  '''Charge a (gzipped) tarball's decompressed size and entries to
+  ``budget``; reviewers' requests decompress these, so they're
+  bombs-in-waiting otherwise.
   '''
   try:
     with tarfile.open(path, 'r:*') as archive:
       for member in archive:
+        budget.count_entry()
         if not (member.isfile() or member.isdir()):
           raise UnsafeArchiveError(f"{path.name} contains a link or device")
         budget.spend(member.size)
@@ -293,14 +353,22 @@ def extract_artifact(zip_path: Path,
   '''Safely extract a CI artifact zip into the (new, empty) ``destination``.
 
   Rejects absolute or escaping paths and symlinks, and stops once more than
-  ``max_bytes`` would be written (counting the decompressed contents of
-  inner tarballs too).
+  ``max_bytes`` would be written, or ``MAX_ARTIFACT_ENTRIES`` entries made
+  (counting inner tarballs' contents too).
   '''
-  budget = _ByteBudget(max_bytes)
+  directory_size = _central_directory_size(zip_path)
+  if (directory_size is not None and
+      directory_size > MAX_CENTRAL_DIRECTORY_BYTES):
+    raise UnsafeArchiveError(
+      f"artifact's central directory is over "
+      f"{MAX_CENTRAL_DIRECTORY_BYTES} bytes"
+    )
+  budget = _Budget(max_bytes)
   tarballs = []
   try:
     with zipfile.ZipFile(zip_path) as archive:
       for info in archive.infolist():
+        budget.count_entry()
         name = info.filename
         member_path = PurePosixPath(name)
         if (member_path.is_absolute() or '\\' in name or
@@ -384,7 +452,11 @@ class Workspaces:
                 git_dir: Optional[Path] = None,
                 cwd: Optional[Path] = None,
                 stdin: Optional[str] = None,
-                check: bool = True) -> GitResult:
+                check: bool = True,
+                max_output: Optional[int] = None) -> GitResult:
+    '''Run git; with ``max_output``, its output may be at most that many
+    bytes (it is stopped, and ``WorkspaceError`` raised, beyond).
+    '''
     command = ['git']
     if git_dir is not None:
       command += ['--git-dir', str(git_dir)]
@@ -400,9 +472,18 @@ class Workspaces:
       cwd = cwd,
       env = self._git_env()
     )
-    stdout, stderr = await process.communicate(
-      stdin.encode() if stdin is not None else None
-    )
+    if max_output is None:
+      stdout, stderr = await process.communicate(
+        stdin.encode() if stdin is not None else None
+      )
+    else:
+      assert stdin is None
+      bounded = await _communicate_bounded(process, max_output)
+      if bounded is None:
+        raise WorkspaceError(
+          f"git {args[0]}'s output is over {max_output} bytes"
+        )
+      stdout, stderr = bounded
     assert process.returncode is not None
     result = GitResult(
       process.returncode,
@@ -508,7 +589,8 @@ class Workspaces:
       result = await self.git(
         'diff', '--no-renames', '--no-color', '--no-ext-diff', '--no-textconv',
         base, head, '--', *paths,
-        git_dir = self.clone_dir(repository)
+        git_dir = self.clone_dir(repository),
+        max_output = MAX_DIFF_BYTES
       )
       return result.stdout
 
@@ -592,6 +674,28 @@ class Workspaces:
         return
       await self.git('worktree', 'prune', git_dir = clone_dir)
       await self.git('gc', '--auto', '--quiet', git_dir = clone_dir)
+
+
+async def _communicate_bounded(process: asyncio.subprocess.Process,
+                               limit: int) -> Optional[tuple[bytes, bytes]]:
+  '''``process``'s output (stdout, stderr), once it exits; ``None``, having
+  killed it, should its stdout be over ``limit`` bytes.
+  '''
+  assert process.stdout is not None and process.stderr is not None
+  errors = asyncio.create_task(process.stderr.read())
+  chunks: list[bytes] = []
+  size = 0
+  try:
+    while chunk := await process.stdout.read(64 * 1024):
+      size += len(chunk)
+      if size > limit:
+        process.kill()
+        return None
+      chunks.append(chunk)
+    return b''.join(chunks), await errors
+  finally:
+    errors.cancel()
+    await process.wait()
 
 
 def basic_auth_header(user: str, password: str) -> str:

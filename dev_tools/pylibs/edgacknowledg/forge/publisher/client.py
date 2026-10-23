@@ -11,20 +11,20 @@ through the publisher server in the publisher container (see
 import asyncio
 import json
 import logging
-import time
 import uuid
 
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from websockets.asyncio.client import ClientConnection, connect
-from websockets.exceptions import ConnectionClosed, InvalidHandshake
+from websockets.exceptions import ConnectionClosed
 
 from edgacknowledg.client import DEFAULT_OPEN_TIMEOUT_S
-from edgacknowledg.forge.db import SectionRecord
+from edgacknowledg.forge.db import ForgeStore, SectionRecord
 from edgacknowledg.forge.publisher import (
   PublisherUnavailableError,
   ReviewIdentity,
+  review_identity,
   section_url,
 )
 from edgacknowledg.forge.publisher.protocol import (
@@ -37,9 +37,7 @@ _log = logging.getLogger(__name__)
 
 
 class _Connection:
-  '''The client's end of a connection to the publisher server, which keeps
-  one publisher for it, for as long as it lasts.
-  '''
+  '''The client's end of a connection to the publisher server.'''
 
   def __init__(self, connection: ClientConnection) -> None:
     self._connection = connection
@@ -60,7 +58,6 @@ class _Connection:
     return message.encode() if isinstance(message, str) else message
 
   def abort(self) -> None:
-    # Dropping the connection makes the server drop its publisher.
     self._connection.transport.abort()
 
   async def close(self) -> None:
@@ -70,11 +67,13 @@ class _Connection:
 class PublisherClient:
   '''Publishes through the publisher server at ``url``.
 
-  Each connection gets a publisher of its own on the server, which sees
-  the review trees, read-only, and has the network (for AcknowlEDG), but
-  not the service's home, database, credentials, or clones; its reviewer
-  commands run in the tools container. Should the connection go, the
-  client connects again and serves every review's sections again.
+  The server's publisher sees the review trees, read-only, and has the
+  network (for AcknowlEDG), but not the service's home, database,
+  credentials, or clones; its reviewer commands run in the tools
+  container. It serves what is stored in the service's database
+  (``store``) for ``forge_name``: when told a review's sections stored in
+  the database changed (``sync_one``), and on every connection, every
+  review stored in the database (``sync_all``).
   '''
 
   def __init__(self,
@@ -86,9 +85,9 @@ class PublisherClient:
                ui_host: str,
                ui_port: int,
                reviews_dir: Path,
-               request_timeout: float = 15 * 60.0,
-               restart_delay: float = 1.0,
-               max_restart_delay: float = 60.0) -> None:
+               store: ForgeStore,
+               forge_name: str,
+               request_timeout: float = 15 * 60.0) -> None:
     self._url = url
     self._api_host = api_host
     self._api_port = api_port
@@ -96,22 +95,19 @@ class PublisherClient:
     self._ui_host = ui_host
     self._ui_port = ui_port
     self._reviews_dir = reviews_dir
+    self._store = store
+    self._forge_name = forge_name
     self._request_timeout = request_timeout
-    self._restart_delay = restart_delay
-    self._max_restart_delay = max_restart_delay
 
-    # The current connection, if any.
+    # The current connection, if any; set once it has served every review
+    # stored in the database.
     self._connection: Optional[_Connection] = None
     self._connected = asyncio.Event()
-    # Serializes requests (so at most one awaits a reply), and replaying
-    # after reconnecting.
+    # Serializes requests (so at most one awaits a reply), and serving the
+    # reviews stored in the database on connecting.
     self._lock = asyncio.Lock()
     self._reply: Optional[asyncio.Future[dict[str, Any]]] = None
-    # What each review should serve, to replay after reconnecting.
-    self._desired: dict[uuid.UUID,
-                        tuple[ReviewIdentity, list[SectionRecord]]] = {}
-    self._needs_replay = False
-    self._replay_task: Optional[asyncio.Task[None]] = None
+    self._sync_all_task: Optional[asyncio.Task[None]] = None
 
   # Publisher
 
@@ -123,20 +119,25 @@ class PublisherClient:
                   section: SectionRecord) -> Optional[str]:
     return section_url(self._ui_host, self._ui_port, review_id, section)
 
-  async def sync(self,
-                 review: ReviewIdentity,
-                 sections: Sequence[SectionRecord]) -> None:
+  async def sync_one(self, review_id: uuid.UUID) -> None:
     async with self._lock:
       if not self._connected.is_set():
-        raise PublisherUnavailableError('not connected to AcknowlEDG')
-      await self._sync(review, sections)
+        raise PublisherUnavailableError(
+          'not connected to the publisher server'
+        )
+      record = await self._store.find_pull_request_by_review(review_id)
+      if record is None:
+        raise LookupError(f"no pull request has review {review_id}")
+      await self._sync(review_identity(record),
+                       await self._store.sections(record.id))
 
-  async def remove(self, review_id: uuid.UUID) -> None:
+  async def delist(self, review_id: uuid.UUID) -> None:
     async with self._lock:
-      # A new connection's publisher serves nothing for it either way.
-      self._desired.pop(review_id, None)
-      if self._connection is not None:
-        await self._request({'op': 'remove', 'review_id': str(review_id)})
+      if not self._connected.is_set():
+        raise PublisherUnavailableError(
+          'not connected to the publisher server'
+        )
+      await self._request({'op': 'delist', 'review_id': str(review_id)})
 
   async def _sync(self,
                   review: ReviewIdentity,
@@ -146,10 +147,6 @@ class PublisherClient:
       'review': encode_review(review),
       'sections': [encode_section(section) for section in sections],
     })
-    if len(sections) == 0:
-      self._desired.pop(review.review_id, None)
-    else:
-      self._desired[review.review_id] = (review, list(sections))
 
   # Requests
 
@@ -185,8 +182,6 @@ class PublisherClient:
       self._reply = None
 
     error = answer.get('error')
-    if error == 'unavailable':
-      raise PublisherUnavailableError(str(answer.get('message')))
     if error is not None:
       raise RuntimeError(f"publisher server: {answer.get('message')}")
 
@@ -198,39 +193,48 @@ class PublisherClient:
     if not isinstance(value, dict):
       _log.error('bad message from the publisher server: %r', line[:200])
       return
-    event = value.get('event')
-    if event == 'connected':
-      if self._replay_task is None or self._replay_task.done():
-        self._replay_task = asyncio.create_task(self._on_connected())
-    elif event == 'disconnected':
-      self._connected.clear()
-    elif self._reply is not None and not self._reply.done():
+    if self._reply is not None and not self._reply.done():
       self._reply.set_result(value)
     else:
       _log.error('unexpected answer from the publisher server: %r',
                  line[:200])
 
-  async def _on_connected(self) -> None:
-    '''Once the publisher is connected to AcknowlEDG, serve again what the
-    last connection's served; only then accept new requests.
+  async def sync_all(self) -> None:
+    '''On connecting, serve every open pull request's sections stored in
+    the database (the publisher may have restarted, losing what it served),
+    and have it stop serving anything else (what it serves outlasts a
+    connection, so it may still serve what an earlier service did); only
+    then accept new requests. Those it can't serve (their files are gone,
+    or serving failed) it stops serving, and marks to be rebuilt; since
+    section fingerprints are content-derived, rebuilding yields the same
+    state (and so no comment).
     '''
     async with self._lock:
-      if self._needs_replay:
-        for review, sections in list(self._desired.values()):
+      try:
+        served: list[str] = []
+        for record in await self._store.open_pull_requests(self._forge_name):
+          sections = await self._store.sections(record.id)
+          if len(sections) == 0:
+            continue
+          review = review_identity(record)
           try:
+            if not all(section.root.is_dir() for section in sections):
+              raise FileNotFoundError('its files are gone')
             await self._sync(review, sections)
-          except PublisherUnavailableError as ex:
-            _log.warning('serving the reviews again failed (%s); will '
-                         'retry on the next connection', ex)
-            return
-          except Exception:
-            # Don't let one review hold up every other one; it is served
-            # again once its pull request changes.
-            _log.exception('serving review %s again failed; dropping it',
-                           review.review_id)
-            self._desired.pop(review.review_id, None)
-        self._needs_replay = False
-      _log.info('connected to AcknowlEDG')
+            served.append(str(review.review_id))
+          except PublisherUnavailableError:
+            raise
+          except Exception as ex:
+            _log.warning('rebuilding %s#%s: %s', record.info.repository,
+                         record.info.number, ex)
+            await self._sync(review, [])
+            await self._store.mark_dirty(record.id)
+        await self._request({'op': 'prune', 'keep': served})
+      except PublisherUnavailableError as ex:
+        _log.warning('serving the reviews failed (%s); will retry on the '
+                     'next connection', ex)
+        return
+      _log.info('connected to the publisher server')
       self._connected.set()
 
   # Connection
@@ -240,48 +244,28 @@ class PublisherClient:
       'api_host': self._api_host,
       'api_port': self._api_port,
       'api_key': self._api_key,
-      'ui_host': self._ui_host,
-      'ui_port': self._ui_port,
       'reviews_dir': str(self._reviews_dir),
     }
 
   async def run(self) -> None:
-    '''Stay connected to the publisher server, reconnecting whenever the
-    connection goes, until cancelled.
+    '''Stay connected to the publisher server, until cancelled: the
+    websockets library reconnects whenever the connection goes, backing off
+    exponentially while it can't reach the server.
     '''
     self._reviews_dir.mkdir(parents = True, exist_ok = True)
-    delay = self._restart_delay
-    while True:
-      started = time.monotonic()
-      try:
-        await self._run_connection()
-      except asyncio.CancelledError:
-        raise
-      except (OSError, ConnectionClosed, InvalidHandshake,
-              asyncio.TimeoutError) as ex:
-        _log.warning("couldn't reach the publisher server: %r", ex)
-      except Exception:
-        _log.exception('the publisher connection failed')
-      if time.monotonic() - started > self._max_restart_delay:
-        delay = self._restart_delay
-      _log.warning('lost the publisher server; reconnecting in %.0f s',
-                   delay)
-      await asyncio.sleep(delay)
-      delay = min(delay * 2, self._max_restart_delay)
+    async for connection in connect(
+        self._url,
+        max_size = MESSAGE_LIMIT,
+        open_timeout = DEFAULT_OPEN_TIMEOUT_S):
+      await self._run_connection(_Connection(connection))
+      _log.warning('lost the publisher server; reconnecting')
 
-  async def _open(self) -> _Connection:
-    connection = await connect(
-      self._url,
-      max_size = MESSAGE_LIMIT,
-      open_timeout = DEFAULT_OPEN_TIMEOUT_S
-    )
-    return _Connection(connection)
-
-  async def _run_connection(self) -> None:
-    connection = await self._open()
+  async def _run_connection(self, connection: _Connection) -> None:
+    '''Serve ``connection`` until it goes.'''
     self._connection = connection
     try:
       await connection.send(self._init_message())
+      self._sync_all_task = asyncio.create_task(self.sync_all())
       while self._connection is connection:
         message = await connection.receive()
         if message is None:
@@ -291,12 +275,11 @@ class PublisherClient:
       if self._connection is connection:
         self._connection = None
       self._connected.clear()
-      self._needs_replay = True
       if self._reply is not None and not self._reply.done():
         self._reply.set_exception(
           PublisherUnavailableError('the publisher connection closed')
         )
       connection.abort()
       await connection.close()
-      if self._replay_task is not None:
-        self._replay_task.cancel()
+      if self._sync_all_task is not None:
+        self._sync_all_task.cancel()

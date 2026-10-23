@@ -13,10 +13,13 @@ containers.
 '''
 
 import asyncio
+import dataclasses
+import json
+import urllib.request
 import uuid
 
 from pathlib import Path
-from typing import Any, AsyncIterator, Optional
+from typing import Any, AsyncIterator, Callable, Optional
 
 import pytest
 import pytest_asyncio
@@ -29,7 +32,9 @@ from edgacknowledg import (
   rich_link,
   rich_text,
 )
-from edgacknowledg.forge.db import SectionRecord
+from edgacknowledg.forge import serving
+from edgacknowledg.forge.db import ForgeStore, SectionRecord
+from edgacknowledg.forge.ingest import utc_now
 from edgacknowledg.forge.local import LocalDeployment, local_deployment
 from edgacknowledg.forge.publisher import (
   KIND_TEST_CHANGES,
@@ -38,12 +43,15 @@ from edgacknowledg.forge.publisher import (
 )
 from edgacknowledg.forge.publisher.client import PublisherClient
 from edgacknowledg.forge.publisher.protocol import (
+  MESSAGE_LIMIT,
   decode_review,
   encode_review,
 )
-from edgacknowledg.forge.publisher.server import PublisherServer
+from edgacknowledg.forge.publisher.server import create_publisher
+from edgacknowledg.forge.serving import HEALTH_PATH, Listening
 
-from conftest import make_tools_dir
+from conftest import make_tools_dir, pull_request_info
+from fakes import REPOSITORY, FakeForge
 from test_acknowledg_integration import (
   Server,
   _wait_for_sources,
@@ -104,12 +112,27 @@ async def deployment(tmp_path: Path) -> AsyncIterator[_Deployment]:
     yield local, reviews, section
 
 
-def _url(listening: Any) -> str:
-  return f"ws://127.0.0.1:{next(iter(listening.sockets)).getsockname()[1]}"
+async def _store(store: ForgeStore,
+                 number: int,
+                 sections: list[SectionRecord]) -> uuid.UUID:
+  '''Store pull request ``number`` with ``sections`` as served, as the
+  processor does; its review.
+  '''
+  await store.upsert_pull_request(
+    FakeForge.name,
+    pull_request_info(number, 'a' * 40, 'b' * 40),
+    now = utc_now(),
+    settle_timeout = 0
+  )
+  record = await store.find_pull_request(FakeForge.name, REPOSITORY, number)
+  assert record is not None
+  await store.replace_sections(record.id, sections)
+  return record.review_id
 
 
 def _client(url: str,
             reviews: Path,
+            store: ForgeStore,
             *,
             api_port: int,
             **kwargs: Any) -> PublisherClient:
@@ -121,71 +144,231 @@ def _client(url: str,
     ui_host = 'ui.example',
     ui_port = 443,
     reviews_dir = reviews,
+    store = store,
+    forge_name = FakeForge.name,
     **kwargs
   )
 
 
-@pytest.mark.parametrize('ending', ['server drops it', 'client drops it'])
-async def test_publishing_survives_reconnecting(deployment: _Deployment,
+def _empty_sync() -> dict[str, Any]:
+  '''A request serving nothing for a review nothing serves.'''
+  return {
+    'op': 'sync',
+    'review': encode_review(ReviewIdentity(uuid.uuid4(), NAME, '')),
+    'sections': [],
+  }
+
+
+async def _wait_for(condition: Callable[[], bool]) -> None:
+  for _ in range(300):
+    if condition():
+      return
+    await asyncio.sleep(0.05)
+  raise AssertionError('timed out')
+
+
+async def test_publishing_outlasts_reconnecting(deployment: _Deployment,
                                                 server: Server,
-                                                ending: str) -> None:
+                                                store: ForgeStore) -> None:
   local, reviews, section = deployment
-  publisher = _client(local.publisher_service_url, reviews,
-                      api_port = server.port, restart_delay = 0.1)
+  publisher = _client(local.publisher_service_url, reviews, store,
+                      api_port = server.port)
   task = asyncio.create_task(publisher.run())
   try:
     await asyncio.wait_for(publisher.wait_connected(), 30)
-    review = ReviewIdentity(uuid.uuid4(), NAME, '')
-    await publisher.sync(review, [section])
-    await _wait_for_sources(server.port, review.review_id, ['test-changes'])
-    value = await _show_source(server.port, review.review_id)
-    assert 'int a;' in str(value)
+    review_id = await _store(store, 1, [section])
+    await publisher.sync_one(review_id)
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
 
-    # The connection goes (the server's side, or the client gave up on
-    # it): its publisher, and what it served, go with it, and come back
-    # with the next connection's.
-    if ending == 'server drops it':
-      local.publisher_server.drop_connection()
-    else:
-      connection = publisher._connection
-      assert connection is not None
-      connection.abort()
-    await _wait_for_sources(server.port, review.review_id, [])
+    # The connection goes; what it published stays, and still does once
+    # the client connects again.
+    connection = publisher._connection
+    assert connection is not None
+    connection.abort()
+    await _wait_for(lambda: publisher._connection is not connection)
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
     await asyncio.wait_for(publisher.wait_connected(), 30)
-    await _wait_for_sources(server.port, review.review_id, ['test-changes'])
-
-    await publisher.remove(review.review_id)
-    await _wait_for_sources(server.port, review.review_id, [])
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
+    value = await _show_source(server.port, review_id)
+    assert 'int a;' in str(value)
   finally:
     task.cancel()
     await asyncio.gather(task, return_exceptions = True)
 
 
+async def test_connecting_serves_what_is_stored(deployment: _Deployment,
+                                               server: Server,
+                                               store: ForgeStore) -> None:
+  local, reviews, section = deployment
+  served = await _store(store, 1, [section])
+  # Its files are gone (as after a disk cleanup).
+  gone = await _store(store, 2, [
+    dataclasses.replace(section, root = section.root.parent / 'gone')
+  ])
+  for record in await store.open_pull_requests(FakeForge.name):
+    await store.mark_processed(record.id, record.generation)
+
+  publisher = _client(local.publisher_service_url, reviews, store,
+                      api_port = server.port)
+  task = asyncio.create_task(publisher.run())
+  try:
+    await asyncio.wait_for(publisher.wait_connected(), 30)
+    await _wait_for_sources(server.port, served, ['test-changes'])
+    await _wait_for_sources(server.port, gone, [])
+    # Not served, but rebuilt.
+    dirty = {
+      record.review_id: record.is_dirty
+      for record in await store.open_pull_requests(FakeForge.name)
+    }
+    assert dirty == {served: False, gone: True}
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+
+
+async def test_a_new_service_drops_what_it_does_not_store(
+    deployment: _Deployment,
+    server: Server,
+    store: ForgeStore) -> None:
+  local, reviews, section = deployment
+  earlier = _client(local.publisher_service_url, reviews, store,
+                    api_port = server.port)
+  task = asyncio.create_task(earlier.run())
+  try:
+    await asyncio.wait_for(earlier.wait_connected(), 30)
+    review_id = await _store(store, 1, [section])
+    await earlier.sync_one(review_id)
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+
+  # The publisher still serves it, until a service whose database doesn't
+  # store it connects.
+  await _wait_for_sources(server.port, review_id, ['test-changes'])
+  other_store = await ForgeStore.open('sqlite+aiosqlite://')
+  later = _client(local.publisher_service_url, reviews, other_store,
+                  api_port = server.port)
+  task = asyncio.create_task(later.run())
+  try:
+    await asyncio.wait_for(later.wait_connected(), 30)
+    await _wait_for_sources(server.port, review_id, [])
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+    await other_store.aclose()
+
+
+async def test_delisting_stops_serving_what_is_still_stored(
+    deployment: _Deployment,
+    server: Server,
+    store: ForgeStore) -> None:
+  local, reviews, section = deployment
+  publisher = _client(local.publisher_service_url, reviews, store,
+                      api_port = server.port)
+  task = asyncio.create_task(publisher.run())
+  try:
+    await asyncio.wait_for(publisher.wait_connected(), 30)
+    review_id = await _store(store, 1, [section])
+    await publisher.sync_one(review_id)
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
+
+    # As when tearing it down, before its files go.
+    await publisher.delist(review_id)
+    await _wait_for_sources(server.port, review_id, [])
+    record = await store.find_pull_request_by_review(review_id)
+    assert record is not None and len(await store.sections(record.id)) == 1
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+
+
+async def test_connections_share_the_publisher(deployment: _Deployment,
+                                               server: Server,
+                                               store: ForgeStore) -> None:
+  local, reviews, section = deployment
+  publisher = _client(local.publisher_service_url, reviews, store,
+                      api_port = server.port)
+  task = asyncio.create_task(publisher.run())
+  try:
+    await asyncio.wait_for(publisher.wait_connected(), 30)
+    review_id = await _store(store, 1, [section])
+    await publisher.sync_one(review_id)
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
+
+    # Another connection's requests go to the same publisher, and its
+    # opening and closing change nothing it publishes.
+    async with websockets.connect(local.publisher_service_url) as other:
+      await other.send(json.dumps(publisher._init_message()))
+      await other.send(json.dumps(_empty_sync()))
+      answer = json.loads(await asyncio.wait_for(other.recv(), 30))
+      assert answer == {'ok': True}
+    await _wait_for_sources(server.port, review_id, ['test-changes'])
+    await publisher.sync_one(await _store(store, 1, []))
+    await _wait_for_sources(server.port, review_id, [])
+  finally:
+    task.cancel()
+    await asyncio.gather(task, return_exceptions = True)
+
+
+async def _start_publisher(tools_service_url: str) -> Listening:
+  return await serving.start(
+    create_publisher(tools_service_url = tools_service_url, processes = 1),
+    host = '127.0.0.1',
+    port = 0,
+    max_message_size = MESSAGE_LIMIT
+  )
+
+
 async def test_publishing_needs_no_tools_runner(
     tmp_path: Path,
+    store: ForgeStore,
     unreachable_port: int,
     unreachable_url: str) -> None:
   reviews, _ = _layout(tmp_path)
   # Only requests running a command need the tools runner; the connection
   # is served without it.
-  publisher_server = PublisherServer(tools_service_url = unreachable_url,
-                                     processes = 1)
-  listening = await publisher_server.start('127.0.0.1', 0)
-  client = _client(_url(listening), reviews, api_port = unreachable_port)
-  connection = asyncio.create_task(client._run_connection())
+  listening = await _start_publisher(unreachable_url)
+  client = _client(listening.url(), reviews, store,
+                   api_port = unreachable_port)
+  connection = asyncio.create_task(client.run())
   try:
-    for _ in range(100):
-      if client._connection is not None:
-        break
-      await asyncio.sleep(0.05)
-    await asyncio.wait_for(client.remove(uuid.uuid4()), 30)
+    await asyncio.wait_for(client.wait_connected(), 30)
+    await asyncio.wait_for(client.sync_one(await _store(store, 1, [])), 30)
     assert not connection.done()
   finally:
     connection.cancel()
     await asyncio.gather(connection, return_exceptions = True)
-    listening.close()
-    await listening.wait_closed()
-    await publisher_server.close()
+    await listening.close()
+
+
+def _get(url: str) -> int:
+  with urllib.request.urlopen(url, timeout = 10) as response:
+    return int(response.status)
+
+
+async def test_health_checks_leave_the_connection(
+    tmp_path: Path,
+    unreachable_port: int,
+    unreachable_url: str) -> None:
+  # A health check is a route of its own: it leaves the connection
+  # serving.
+  listening = await _start_publisher(unreachable_url)
+  try:
+    async with websockets.connect(listening.url()) as connection:
+      await connection.send(json.dumps({
+        'api_host': '127.0.0.1', 'api_port': unreachable_port,
+        'api_key': None, 'ui_host': 'ui.invalid', 'ui_port': 443,
+        'reviews_dir': str(tmp_path),
+      }))
+      health = listening.url('http') + HEALTH_PATH
+      assert await asyncio.to_thread(_get, health) == 200
+      # The connection still serves its publisher.
+      await connection.send(json.dumps(_empty_sync()))
+      answer = json.loads(await asyncio.wait_for(connection.recv(), 30))
+      assert answer == {'ok': True}
+  finally:
+    await listening.close()
 
 
 class _SilentConnection:
@@ -210,24 +393,25 @@ class _SilentConnection:
 
 async def test_unanswered_request_drops_the_connection(
     tmp_path: Path,
+    store: ForgeStore,
     unreachable_port: int,
     unreachable_url: str) -> None:
   reviews, section = _layout(tmp_path)
-  publisher = _client(unreachable_url, reviews, api_port = unreachable_port,
-                      request_timeout = 0.1)
+  publisher = _client(unreachable_url, reviews, store,
+                      api_port = unreachable_port, request_timeout = 0.1)
   connection = _SilentConnection()
   publisher._connection = connection  # type: ignore[assignment]
   publisher._connected.set()
-  review = ReviewIdentity(uuid.uuid4(), NAME, '')
+  review_id = await _store(store, 1, [section])
   with pytest.raises(PublisherUnavailableError, match = 'stopped answering'):
-    await publisher.sync(review, [section])
+    await publisher.sync_one(review_id)
   assert connection.aborted
 
   # Its late answer isn't taken for the next request's: nothing more is
   # sent on it.
   publisher._handle_message(b'{"ok": true}\n')
   with pytest.raises(PublisherUnavailableError, match = 'not connected'):
-    await publisher.sync(review, [section])
+    await publisher.sync_one(review_id)
   assert len(connection.sent) == 1
 
 
