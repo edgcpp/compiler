@@ -400,8 +400,12 @@ async def _send_reply_best_effort(channel: Channel,
 
 
 async def _reply_to_failed_request(channel: Channel,
-                                   handler: ReviewClientHandler) -> None:
-  '''Answer a request whose handler raised, and log why.
+                                   handler: ReviewClientHandler,
+                                   error: BaseException) -> None:
+  '''Tell the reviewer whose request failed with ``error`` (the handler
+  records them on it, in ``reviewer_id``) that it did, through the server,
+  and log why. With no reviewer to tell, it is only logged: the server
+  could forward the reply to no one.
 
   The section keeps serving afterwards: one bad request (which a reviewer
   can trigger) shouldn't take the whole section down.
@@ -410,7 +414,12 @@ async def _reply_to_failed_request(channel: Channel,
     f"Request to section {handler.subscription_type}/{handler.slug} failed:"
   )
   traceback.print_exc()
-  await _send_reply_best_effort(channel, message(RequestTags.INVALID_REQUEST))
+  reviewer_id = getattr(error, 'reviewer_id', None)
+  if reviewer_id is not None:
+    await _send_reply_best_effort(channel, message(
+      RequestTags.INVALID_REQUEST,
+      value = {'reviewer_id': reviewer_id}
+    ))
 
 
 async def _report_illegal_access(channel: Channel,
@@ -422,7 +431,7 @@ async def _report_illegal_access(channel: Channel,
   '''
   if error.reviewer_id is None:
     # Not traced to a reviewer; just a failed request.
-    await _reply_to_failed_request(channel, handler)
+    await _reply_to_failed_request(channel, handler, error)
   else:
     eprint(
       f"Reviewer {error.reviewer_id} of section "
@@ -476,16 +485,24 @@ class _BatchClientReview:
     return self._review.sections()
 
   async def add_section(self, handler: ReviewClientHandler) -> None:
-    '''Register handler and subscribe it on the batch socket.'''
+    '''Register handler and subscribe it on the batch socket; while not
+    connected, it is subscribed once the session (re)connects, with every
+    other registered section.
+    '''
     # Serialized with reconnect restores so a section added mid-restore is
     # subscribed exactly once.
     async with self._client._subscriptions_lock:
       self._review.register_handler(handler)
-      try:
-        await self.subscribe_section(handler)
-      except Exception:
-        self._review.discard_handler(handler)
-        raise
+      # Not connected (sending would wait for it): the next session's
+      # restore subscribes it.
+      if self._client._session_ready.is_set():
+        try:
+          await self.subscribe_section(handler)
+        except NotConnectedError:
+          pass
+        except Exception:
+          self._review.discard_handler(handler)
+          raise
 
   async def remove_section(self, handler: ReviewClientHandler) -> None:
     '''Unsubscribe, then unregister.'''
@@ -513,8 +530,8 @@ class _BatchClientReview:
           raise
         except IllegalFileAccessError as ex:
           await _report_illegal_access(channel, handler, ex)
-        except Exception:
-          await _reply_to_failed_request(channel, handler)
+        except Exception as ex:
+          await _reply_to_failed_request(channel, handler, ex)
     finally:
       self._client._inbounds.pop(channel.subscription_id, None)
       self._subscription_tasks.pop(channel.subscription_id, None)
@@ -681,8 +698,8 @@ class _DirectClientReview:
         raise
       except IllegalFileAccessError as ex:
         await _report_illegal_access(channel, handler, ex)
-      except Exception:
-        await _reply_to_failed_request(channel, handler)
+      except Exception as ex:
+        await _reply_to_failed_request(channel, handler, ex)
 
   def _signal_section_ready(self, handler_key: int) -> None:
     ready = self._section_first_ready.get(handler_key)

@@ -44,7 +44,7 @@ from edgacknowledg.client.test import (
 from edgacknowledg.forge.db import ForgeStore, SectionRecord
 from edgtest.runtest import RunTestOutput, RunTestOutputLinkError
 from edgacknowledg.forge.publisher import KIND_BENCH, KIND_TEST_FAILURES
-from edgacknowledg.forge.publisher.acknowledg import AcknowledgPublisher
+from edgacknowledg.forge.publisher.acknowledg import _build_handler
 from edgacknowledg.forge.publisher.pool import ProcessPool
 from edgacknowledg.forge.workspace import (
   WorkspaceError,
@@ -324,17 +324,31 @@ async def test_illegal_access_is_reported(tmp_path: Path,
     message(RequestTags.ILLEGAL_ACCESS, value = {'reviewer_id': 'reviewer-1'})
   ]
 
-  # ...unless it can't be traced to one, like any other failure.
+  # ...unless it can't be traced to one: like any other failure, with no
+  # reviewer to tell, it is only logged.
   for send in (
       lambda c: _report_illegal_access(  # type: ignore
         c, handler, IllegalFileAccessError('outside')),
-      lambda c: _reply_to_failed_request(c, handler)):  # type: ignore
-    invalid = channel()
+      lambda c: _reply_to_failed_request(  # type: ignore
+        c, handler, ValueError('broken'))):
+    untraced = channel()
     try:
       raise ValueError('broken')
     except ValueError:
-      await send(invalid)
-    assert invalid.sent == [message(RequestTags.INVALID_REQUEST)]
+      await send(untraced)
+    assert untraced.sent == []
+
+  # A failure traced to a reviewer is reported to them.
+  failed = channel()
+  error = ValueError('broken')
+  setattr(error, 'reviewer_id', 'reviewer-1')
+  try:
+    raise error
+  except ValueError:
+    await _reply_to_failed_request(failed, handler, error)  # type: ignore
+  assert failed.sent == [
+    message(RequestTags.INVALID_REQUEST, value = {'reviewer_id': 'reviewer-1'})
+  ]
 
 
 def test_confined_path(tmp_path: Path, secret: Path) -> None:
@@ -620,26 +634,17 @@ def test_permitted_roots(tmp_path: Path, secret: Path) -> None:
 def test_publisher_requires_real_section_directories(
     tmp_path: Path,
     secret: Path,
-    unreachable_port: int,
     unreachable_url: str) -> None:
   reviews = tmp_path / 'home' / 'reviews'
   worktree = reviews / str(uuid.uuid4()) / 'head'
   (worktree / 'benchmarks' / 'runs' / 'ci-1' / 'c').mkdir(parents = True)
-  publisher = AcknowledgPublisher(
-    api_host = '127.0.0.1',
-    api_port = unreachable_port,
-    api_key = None,
-    ui_host = 'ui.example',
-    ui_port = 443,
-    # Never started: no request is answered here.
-    pool = ProcessPool(tools_service_url = unreachable_url),
-    reviews_dir = reviews
-  )
+  # Never started: no request is answered here.
+  pool = ProcessPool(tools_service_url = unreachable_url)
 
   # A test home that is a link (as if a pull request committed 'tests').
   os.symlink(secret.parent, worktree / 'tests')
   with pytest.raises(WorkspaceError):
-    publisher._build_handler(SectionRecord(
+    _build_handler(SectionRecord(
       kind = KIND_TEST_FAILURES,
       name = 'Test - Failures',
       slug = 'test-failures',
@@ -647,12 +652,12 @@ def test_publisher_requires_real_section_directories(
       content_fingerprint = 'f',
       root = worktree / 'tests' / 'runs' / 'ci-1',
       home = worktree / 'tests',
-    ))
+    ), pool, reviews)
 
   # Baselines outside the bench home.
   (tmp_path / 'elsewhere').mkdir()
   with pytest.raises(WorkspaceError):
-    publisher._build_handler(SectionRecord(
+    _build_handler(SectionRecord(
       kind = KIND_BENCH,
       name = 'Bench - C',
       slug = 'bench-c',
@@ -664,7 +669,7 @@ def test_publisher_requires_real_section_directories(
         'baseline_dir': str(tmp_path / 'elsewhere'),
         'tag': 'release-c',
       },
-    ))
+    ), pool, reviews)
 
 
 def test_bench_session_trees(tmp_path: Path) -> None:

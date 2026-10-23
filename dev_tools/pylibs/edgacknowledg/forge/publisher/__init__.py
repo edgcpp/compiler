@@ -7,10 +7,9 @@
 
 - ``Publisher`` is what the service publishes through (and tests fake).
 - The publisher container runs the publisher server (``server``), which
-  serves the service's requests with an ``AcknowledgPublisher``
-  (``acknowledg``): one AcknowlEDG connection, and the handlers that answer
-  reviewers by reading pull request content. Its commands go to the tools
-  runner.
+  queues the service's requests for ``acknowledg.publish``: one AcknowlEDG
+  batch session, and the handlers that answer reviewers by reading pull
+  request content. Its commands go to the tools runner.
 - The service reaches it with the publisher client (``client``), which
   implements ``Publisher``; ``protocol`` is the messages between them.
 '''
@@ -18,11 +17,11 @@
 import uuid
 
 from dataclasses import dataclass
-from typing import Optional, Protocol, Sequence
+from typing import Optional, Protocol
 
-from edgacknowledg import RichName
+from edgacknowledg import RichName, rich_link, rich_text
 from edgacknowledg.client import form_section_http_url
-from edgacknowledg.forge.db import SectionRecord
+from edgacknowledg.forge.db import PullRequestRecord, SectionRecord
 
 # Section kinds and the AcknowlEDG subscription type serving each.
 KIND_TEST_CHANGES = 'test.changes'
@@ -37,7 +36,9 @@ SUBSCRIPTION_TYPES = {
 
 
 class PublisherUnavailableError(Exception):
-  '''Raised when AcknowlEDG can't be reached right now (retry later).'''
+  '''Raised when the publisher can't take a request right now (retry
+  later).
+  '''
 
 
 @dataclass(frozen = True)
@@ -47,19 +48,40 @@ class ReviewIdentity:
   timestamp: str
 
 
+def review_identity(record: PullRequestRecord) -> ReviewIdentity:
+  '''The review of a pull request, as published.'''
+  info = record.info
+  return ReviewIdentity(
+    review_id = record.review_id,
+    # The pull request reference links to it; the title is only text.
+    name = [
+      rich_link(info.url, f"{info.repository}#{info.number}"),
+      rich_text(f" {info.title}"),
+    ],
+    timestamp = record.head_changed_at.isoformat()
+  )
+
+
 class Publisher(Protocol):
-  '''Where review sections are served (AcknowlEDG, or a test double).'''
+  '''Where review sections are served (AcknowlEDG, or a test double):
+  what is stored in the service's database.
+  '''
 
   async def wait_connected(self) -> None:
     ...
 
-  async def sync(self,
-                 review: ReviewIdentity,
-                 sections: Sequence[SectionRecord]) -> None:
-    '''Serve exactly ``sections`` for ``review``.'''
+  async def sync_one(self, review_id: uuid.UUID) -> None:
+    '''Serve what is now stored in the database for the review (none: stop
+    serving it); once this returns, the publisher has queued it, and stops
+    serving what was stored in the database before moments later.
+    '''
     ...
 
-  async def remove(self, review_id: uuid.UUID) -> None:
+  async def delist(self, review_id: uuid.UUID) -> None:
+    '''Stop serving the review, though its sections are still stored in
+    the database: their files are about to go (and, after them, what is
+    stored in the database).
+    '''
     ...
 
   def section_url(self,

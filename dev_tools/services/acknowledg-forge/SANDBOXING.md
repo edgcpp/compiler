@@ -68,7 +68,7 @@ flowchart TB
   end
 
   subgraph publisher [Container: publisher]
-    publisherserver[publisher server:<br/>a publisher per connection] -->|each request,<br/>round-robin| poolprocess[pool processes:<br/>the stock handlers]
+    publisherserver[publisher server:<br/>one publisher, for every connection] -->|each request, to the<br/>next free process| poolprocess[pool processes:<br/>the stock handlers]
     poolprocess --> toolsclient[tools runner client]
   end
 
@@ -93,7 +93,7 @@ flowchart TB
   rematerialize -.->|reads, read-only| reviews
   rematerialize -.->|writes the rebuilt run| staging
   processor -.->|checks the run,<br/>renames it into place| staging
-  processor -->|sync, remove| publisherclient
+  processor -->|review changed| publisherclient
   processor -->|after each sweep| announcer
   announcer -->|comments with section links| forge
   publisherclient <-->|network: publish| publisherserver
@@ -121,9 +121,9 @@ edgacknowledg.forge.<container>`), what listens in it is a `…Server`
 | Container | Runs | Its server | Its client, in |
 | --- | --- | --- | --- |
 | `service` | `acknowledg-forge-github` (`edgacknowledg.forge.service`, `processor`, …) | (webhooks only) | — |
-| `builder` | `edgacknowledg.forge.builder` | `RunnerServer` with the builder role (`runner.server`, `runner.roles`) | `RunnerClient` (`runner.client`), in the service, through `Sandbox.run` |
-| `publisher` | `edgacknowledg.forge.publisher` | `PublisherServer` (`publisher.server`), hosting an `AcknowledgPublisher` (`publisher.acknowledg`) per connection, and the `ProcessPool` (`publisher.pool`) of pool processes (`publisher.pool_process`) answering its reviewers | `PublisherClient` (`publisher.client`), in the service |
-| `tools` | `edgacknowledg.forge.tools` | `RunnerServer` with the tools role | `RunnerClient`, in each pool process, through `Sandbox.context_for` |
+| `builder` | `edgacknowledg.forge.builder` | the runner server (`create_runner` in `runner.server`) with the builder role (`runner.roles`) | `RunnerClient` (`runner.client`), in the service, through `Sandbox.run` |
+| `publisher` | `edgacknowledg.forge.publisher` | the publisher server (`create_publisher` in `publisher.server`), publishing what every connection queues (`publish` in `publisher.acknowledg`), and the `ProcessPool` (`publisher.pool`) of pool processes (`publisher.pool_process`) answering its reviewers | `PublisherClient` (`publisher.client`), in the service |
+| `tools` | `edgacknowledg.forge.tools` | the runner server with the tools role | `RunnerClient`, in each pool process, through `Sandbox.context_for` |
 
 The builder and tools containers run the same server, the runner, with a
 role each. `publisher.protocol` is the publisher's messages; `publisher`
@@ -152,7 +152,7 @@ need no translation.
 | --- | --- | --- | --- | --- | --- |
 | `service` | the service (`acknowledg-forge-github` or `-gitlab`) | the whole state directory | the whole state directory | `frontend` (the forge; webhooks from the host), `build`, `publish` | the credentials |
 | `builder` | a runner server (builder role): `edg-rematerialize-test-run` only | `reviews/` | `build-staging/` only | `build` (internal) | nothing |
-| `publisher` | the publisher server: `AcknowledgPublisher`, and pool processes running the stock handlers | `reviews/` | nothing | `publish` (internal), `tools` (internal), `egress` (AcknowlEDG) | the API key, in the server's memory |
+| `publisher` | the publisher server: `publish`, and pool processes running the stock handlers | `reviews/` | nothing | `publish` (internal), `tools` (internal), `egress` (AcknowlEDG) | the API key, in the server's memory |
 | `tools` | a runner server (tools role): `ifc-dump` and `cg_annotate` only | `reviews/` | nothing | `tools` (internal) | nothing |
 
 - **Networks.** Each pair of containers that talk shares a network of its
@@ -160,8 +160,9 @@ need no translation.
   runner, nor they it. Internal networks have no route out, so the builder
   and tools runner can reach nothing but their one client. A listener on a
   container with several networks binds only on its pair's (the publisher
-  server on `publish`; the webhook receiver, with
-  `ACKNOWLEDG_FORGE_WEBHOOK_BIND=service-frontend:2728`, on `frontend`).
+  server on `publish`; the service's web app (health checks and webhooks),
+  with `ACKNOWLEDG_FORGE_SERVICE_BIND=service-frontend:2728`, on
+  `frontend`).
   That is what keeps each server to its one client: the connections carry
   no credentials of their own, so `tests/test_containers.py` checks every
   pairing, and a change to the networks in `compose.yaml` that breaks one
@@ -196,8 +197,11 @@ carry, so commands run concurrently over it. For each, the runner:
 The service has one runner client, for its builds. Each pool process has
 one too, for the commands its handlers run: they run every command through
 their `SandboxContext` (`run_command`), whose command runner is that
-client. A client connects when first used, and again when its connection
-goes, which fails the commands in flight on it.
+client. A client keeps one connection to its runner, which all its
+commands share (each request carries an id its answer and output come back
+with), and reconnects whenever it goes, backing off while the runner can't
+be reached; a command waits for the connection, within its time limit, and
+the connection going fails the commands in flight on it.
 
 ### Trade-offs
 
@@ -227,8 +231,8 @@ hands them to the publisher to serve.
 
 ```mermaid
 flowchart TB
-  start([start]) --> connected1[wait until the publisher<br/>is connected to AcknowlEDG]
-  connected1 --> restore[restore: serve the stored sections again,<br/>or mark their pull requests dirty if their files are gone]
+  start([start]) --> connected1[wait until the publisher client<br/>has served the stored sections]
+  connected1 --> restore[restore: drop builds<br/>the restart interrupted]
   restore --> connected2[wait until connected]
   connected2 --> due[start processing every dirty pull request,<br/>a few at a time]
   due --> maintain{6 h since the<br/>last maintenance?}
@@ -239,7 +243,7 @@ flowchart TB
   due -.-> process
   subgraph process [Processing one pull request]
     open{open, against a<br/>served branch?}
-    open -->|no| teardown[remove its review,<br/>delete its worktrees]
+    open -->|no| teardown[stop serving its review,<br/>delete its worktrees]
     open -->|yes| fetchbuild[fetch it, build its sections]
     fetchbuild --> sync[sync the sections]
     sync -->|ok| record[record the sections,<br/>delete superseded runs]
@@ -273,14 +277,16 @@ sequenceDiagram
   B-->>S: output, exit status
   Note over S: check_plain_tree(staging),<br/>no hard links either
   Note over S: rename staging into the worktree
+  Note over S: record the sections,<br/>delete superseded run directories
   S->>P: sync(review, sections)
   P-->>S: ok
-  Note over S: record the sections,<br/>delete superseded run directories
 ```
 
-A failed check fails the section rather than serving it. Superseded run
-directories are deleted only after the publisher confirms it no longer
-serves them. Staging directories a restart interrupted are deleted at startup.
+A failed check fails the section rather than serving it. Once the new
+sections are recorded, nothing needs the superseded run directories, so
+they are deleted before the publisher is told; until it catches up, a
+reviewer's request for one gets the handler's failure reply. Staging
+directories a restart interrupted are deleted at startup.
 
 ## Serving reviewers
 
@@ -330,20 +336,25 @@ through the service.
 
 ## The publisher
 
-The publisher container runs the publisher server (`PublisherServer`),
-which serves reviewers with `AcknowledgPublisher`, acknowledg-forge's
-AcknowlEDG client. It holds one batch connection to AcknowlEDG and manages
-each review's sections; the stock providers from `edgacknowledg.client`
+The publisher container runs the publisher server (`create_publisher`),
+which serves reviewers with `publish`, acknowledg-forge's AcknowlEDG
+client. It holds one batch session with AcknowlEDG (the client library's
+`BatchClient`, which keeps it connected) and manages each review's
+sections; the stock providers from `edgacknowledg.client`
 (`TestSourceHandler`, `BenchReviewSession`), the same handlers that
 `edgy-review` and `edg-bench-review` use, answer reviewers' requests in its
 process pool. The service drives it through the publisher client
 (`PublisherClient`), which implements the same `Publisher` interface, so
 the rest of the service doesn't know the publisher is elsewhere.
 
-Each connection from the client gets an `AcknowledgPublisher` of its own,
-made from the settings the client sends first; when the connection goes, so
-does that publisher, with everything it served. A new connection replaces
-the current one.
+Connections only queue what their client asks to publish (`Wanted`, in
+the order asked), and answer; one publishing task (`publish`,
+with the settings a client sends first) works through the queue, whether
+or not AcknowlEDG is reachable just then. What it serves is what the
+service's database stores: the processor stores a review's sections, then
+tells the publisher client the review changed, and the client sends what is
+stored; on every connection (the publisher may have restarted), it sends
+every stored review.
 
 ### The process pool
 
@@ -356,43 +367,42 @@ which its event loop never waits on for more than a request's deadline:
   for the section's handler: it passes each request, with the section it
   is for, to the pool, and relays the replies.
 - The pool keeps a fixed number of pool processes (`--processes`, 4), each
-  with one end of a socket pair as its channel, and sends each request to
-  the next one in turn (round-robin). A process answers one request at a
-  time, building the section's handler for it and dropping it afterwards;
-  requests for a busy process wait their turn.
+  with one end of a socket pair as its channel. Requests queue, in order;
+  each process has a dispatcher that gives it the next one only once it
+  has answered the last, so a process answers one request at a time,
+  building the section's handler for it and dropping it afterwards, and a
+  slow request holds up only its own process. Each request carries an id
+  its answer carries back; a request abandoned before its turn (as when
+  its section is removed) is skipped, and one abandoned while answered
+  still keeps its process busy until then, its answer dropped.
 - A request has a deadline (`--request-timeout`, 150 s, longer than the
-  tools runner's 2 min), counted from when its process starts on it. A
+  tools runner's 2 min), counted from when its process is given it. A
   process that misses it is killed, with whatever it started, and
   replaced; so is one that exits. Either way that request fails, and the
   client library answers the reviewer with its failure reply; a request
   for a file outside the section still gets the reviewer dropped.
 - A process that exits before it is ready has failed to start: the next
-  try waits, doubling from 1 s up to 60 s, and until then requests for it
-  fail at once. The server doesn't start unless every process does.
+  try waits, doubling from 1 s up to 60 s; meanwhile the other processes
+  take the requests, and while none can, requests fail at once. The server doesn't start unless every process does.
 
 The client library answers one request at a time per section, so one
 section's requests occupy at most one process at a time.
 
 ### Reconnect loop
 
-The publisher client keeps one connection up, and makes sure the next
-connection's publisher serves whatever the last one did:
+The publisher client keeps one connection up, and on each one has the
+publisher serve exactly what the service's database stores as served:
 
 ```mermaid
 flowchart TB
-  spawn[connect to the publisher server;<br/>it makes a publisher<br/>for the connection]
+  spawn[connect to the publisher server]
   spawn --> init[send the settings,<br/>with the API key]
-  init --> read[read the server's messages]
-  read -->|connected| replay{replay needed?}
-  replay -->|yes| resync[sync every review's<br/>desired sections again]
-  resync --> ready
-  replay -->|no| ready[accept requests]
-  ready --> read
-  read -->|disconnected| notready[refuse requests:<br/>unavailable]
-  notready --> read
-  read -->|request unanswered<br/>for 15 min| kill[drop the connection,<br/>and its publisher;<br/>send it nothing more]
+  init --> serve[sync every open pull request's<br/>stored sections; stop serving<br/>those it can't, to be rebuilt]
+  serve --> prune[prune: stop serving<br/>every other review]
+  prune --> ready[accept requests]
+  ready -->|request unanswered<br/>for 15 min| kill[drop the connection;<br/>send it nothing more]
   kill --> exited
-  read -->|connection closed| exited[fail the request in flight<br/>as unavailable;<br/>replay needed]
+  ready -->|connection closed| exited[fail the request in flight<br/>as unavailable]
   exited --> backoff[wait 1 s, doubling<br/>up to 60 s; back to 1 s<br/>after a long run]
   backoff --> spawn
 ```
@@ -415,8 +425,10 @@ message (`publisher.protocol`).
 
 #### Requests
 
-After the settings, the service sends a request each time a review's
-sections change, and waits for its answer:
+After the settings, the service serves every review its database stores as
+served, and has the publisher stop serving every other one; then it sends
+a request each time a review's stored sections change, and waits for its
+answer:
 
 ```mermaid
 sequenceDiagram
@@ -424,16 +436,20 @@ sequenceDiagram
   participant P as Publisher server
 
   S->>P: settings, including the AcknowlEDG API key
-  loop each time a review's sections change
-    alt the review serves sections
+  loop every review it serves
+    S->>P: {"op": "sync", "review": ..., "sections": [...]}
+    P-->>S: {"ok": true}
+  end
+  S->>P: {"op": "prune", "keep": [review ids]}
+  P-->>S: {"ok": true}
+  loop each time a review's sections change, or it is torn down
+    alt its stored sections changed
       S->>P: {"op": "sync", "review": ..., "sections": [...]}
-    else the review is gone
-      S->>P: {"op": "remove", "review_id": ...}
+    else torn down (its files about to go)
+      S->>P: {"op": "delist", "review_id": ...}
     end
-    alt served
+    alt queued
       P-->>S: {"ok": true}
-    else not connected to AcknowlEDG
-      P-->>S: {"error": "unavailable", "message": ...}
     else failed
       P-->>S: {"error": "failed", "message": ...}
     end
@@ -444,28 +460,25 @@ sequenceDiagram
   environment, where `/proc` would show it, nor a file in the publisher
   container.
 - Requests go one at a time, so each answer belongs to the request in
-  flight. `unavailable` defers the pull request until the connection is
-  back; `failed` fails it.
-
-#### Connection events
-
-Separately, and only when its AcknowlEDG connection changes, the
-connection's publisher reports it, at any time between answers:
-
-```mermaid
-sequenceDiagram
-  participant S as Service<br/>(publisher client)
-  participant P as Publisher server
-
-  opt the publisher connects to AcknowlEDG
-    P-->>S: {"event": "connected"}
-    Note over S: replay sections if needed,<br/>then accept requests
-  end
-  opt the publisher loses AcknowlEDG
-    P-->>S: {"event": "disconnected"}
-    Note over S: refuse requests as unavailable<br/>until it reconnects
-  end
-```
+  flight. `failed` fails the pull request; if the publisher server can't
+  be reached, the pull request is deferred until it can.
+- The server queues a request whether or not it is connected to
+  AcknowlEDG: the client library serves what it publishes once connected
+  (again). Sections it no longer serves, it withdraws as soon as the
+  publishing task reaches the update.
+- The service's database leads: the processor stores a review's sections,
+  deletes the trees of the sections they replace (nothing needs them
+  then), and only then tells the publisher; should the publisher not take
+  it, the pull request is processed again, and the next connection serves
+  what is stored anyway. Until the publisher catches up, a reviewer's
+  request for a deleted tree is answered with the handler's failure
+  reply. Tearing a review down goes the other way: the publisher is told
+  to stop serving it (`delist`) while it is still stored, then its files
+  go, and only then what is stored.
+- What the publisher serves outlasts the connection, so on connecting,
+  after serving every review it stores, the service has it stop serving
+  every other one (`prune`): nothing an earlier service served, and this
+  one doesn't, stays published.
 
 ## Symlinks and links
 

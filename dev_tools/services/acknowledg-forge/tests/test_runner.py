@@ -13,9 +13,10 @@ containers add (mounts, no network, no capabilities).
 import asyncio
 import os
 import shutil
-import socket
 import subprocess
 import time
+import urllib.error
+import urllib.request
 
 from pathlib import Path
 from typing import AsyncIterator
@@ -23,6 +24,8 @@ from typing import AsyncIterator
 import pytest
 import pytest_asyncio
 
+from edgacknowledg.forge import serving
+from edgacknowledg.forge.runner import client as runner_client
 from edgacknowledg.forge.runner.client import RunnerClient, RunnerError
 from edgacknowledg.forge.runner.roles import (
   RunnerPolicy,
@@ -30,21 +33,17 @@ from edgacknowledg.forge.runner.roles import (
   tools_policy,
 )
 from edgacknowledg.forge.runner.server import (
+  MAX_REQUEST_BYTES,
   RequestError,
-  RunnerServer,
   check_request,
+  create_runner,
   stray_processes,
 )
 from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
+from edgacknowledg.forge.serving import HEALTH_PATH
 from edgacknowledg.forge.workspace import Workspaces
 
 from fakes import FakeForge
-
-
-def _free_port() -> int:
-  with socket.socket() as sock:
-    sock.bind(('127.0.0.1', 0))
-    return int(sock.getsockname()[1])
 
 
 def _alive(pid: int) -> bool:
@@ -76,19 +75,15 @@ class _Running:
 async def runner(tmp_path: Path) -> AsyncIterator[_Running]:
   root = tmp_path / 'reviews'
   root.mkdir()
-  port = _free_port()
-  server = RunnerServer(_policy(root))
-  task = asyncio.create_task(server.serve('127.0.0.1', port))
-  for _ in range(100):
-    try:
-      _, writer = await asyncio.open_connection('127.0.0.1', port)
-      writer.close()
-      break
-    except OSError:
-      await asyncio.sleep(0.05)
-  yield _Running(root, RunnerClient(f"ws://127.0.0.1:{port}"))
-  task.cancel()
-  await asyncio.gather(task, return_exceptions = True)
+  listening = await serving.start(create_runner(_policy(root)),
+                                  host = '127.0.0.1', port = 0,
+                                  max_message_size = MAX_REQUEST_BYTES)
+  client = RunnerClient(listening.url())
+  client.start()
+  yield _Running(root, client)
+  # Its connection first: the server's shutdown waits for it.
+  await client.close()
+  await listening.close()
 
 
 # What's allowed
@@ -168,6 +163,26 @@ async def test_relays_output_and_status(runner: _Running) -> None:
   assert result.returncode != 0
 
 
+async def test_output_kept_is_capped(runner: _Running,
+                                     monkeypatch: pytest.MonkeyPatch) -> None:
+  monkeypatch.setattr(runner_client, 'MAX_OUTPUT_BYTES', 10)
+  monkeypatch.setattr(runner_client, 'OUTPUT_TAIL_BYTES', 4)
+  streamed = bytearray()
+  result = await runner.client.run(
+    ['sh', '-c', 'printf 0123456789; printf abcdefgh; printf WXYZ'],
+    timeout = 10,
+    output = streamed.extend
+  )
+  # Its start, and its end (where its errors are), within the limit.
+  assert result.output == b'012345\n[... 12 bytes of output dropped ...]\nWXYZ'
+  # What streams isn't cut.
+  assert streamed == b'0123456789abcdefghWXYZ'
+
+  result = await runner.client.run(['sh', '-c', 'printf 0123456789'],
+                                   timeout = 10)
+  assert result.output == b'0123456789'
+
+
 async def test_environment_is_cleared(runner: _Running,
                                       monkeypatch: pytest.MonkeyPatch) -> None:
   monkeypatch.setenv('EDG_SECRET', 'leaked')
@@ -241,11 +256,13 @@ async def test_losing_the_connection_kills_its_commands(
     timeout = 60
   ))
   command = await _started(pid_file)
-  await runner.client.close()
+  connection = runner.client._connection
+  assert connection is not None
+  connection.transport.abort()
   with pytest.raises(RunnerError, match = 'lost'):
     await run
   assert await _gone(command)
-  # The next request connects again.
+  # The client connects again by itself.
   result = await runner.client.run(['true'], timeout = 10)
   assert result.returncode == 0
 
@@ -263,6 +280,25 @@ async def test_one_connection_carries_every_command(runner: _Running) -> None:
   assert time.monotonic() - started < 3
   # ...each answer reaching its own request.
   assert [r.output for r in results] == [f"{n}\n".encode() for n in range(4)]
+  assert runner.client._connection is connection
+
+
+def _get(url: str) -> int:
+  with urllib.request.urlopen(url, timeout = 10) as response:
+    return int(response.status)
+
+
+async def test_answers_health_checks_beside_its_client(
+    runner: _Running) -> None:
+  await runner.client.run(['true'], timeout = 10)
+  connection = runner.client._connection
+  url = runner.client.url.replace('ws://', 'http://') + HEALTH_PATH
+  assert await asyncio.to_thread(_get, url) == 200
+  # Anything else is still a WebSocket handshake.
+  with pytest.raises(urllib.error.HTTPError):
+    await asyncio.to_thread(_get, url.replace(HEALTH_PATH, '/'))
+  result = await runner.client.run(['true'], timeout = 10)
+  assert result.returncode == 0
   assert runner.client._connection is connection
 
 
@@ -328,7 +364,10 @@ def test_roles_serve_the_workspace_layout(tmp_path: Path) -> None:
   )
   tools = tools_policy(home = home, tools_dir = tools_dir)
   assert tools.roots == (workspaces.reviews_dir,)
-  assert {prefix[0] for prefix in tools.commands} == {'ifc-dump', 'cg_annotate'}
+  assert {prefix[0] for prefix in tools.commands} == {
+    'ifc-dump',
+    'cg_annotate',
+  }
 
 
 def test_missing_programs_are_refused_not_fatal(tmp_path: Path) -> None:

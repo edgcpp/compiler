@@ -8,10 +8,13 @@
 import hashlib
 import hmac
 import json
+import shutil
 import zipfile
 
 from http import HTTPStatus
 from pathlib import Path
+
+import pytest
 
 from edgacknowledg.forge import (
   ArtifactInfo,
@@ -19,8 +22,11 @@ from edgacknowledg.forge import (
   PullRequestTouched,
   CIRunTouched,
 )
+from edgacknowledg.forge.config import ConfigError
 from edgacknowledg.forge.db import ForgeStore
-from edgacknowledg.forge.webhooks import EventQueue, create_app
+from edgacknowledg.forge.serving import HEALTH_PATH
+from edgacknowledg.forge.serving import create_app
+from edgacknowledg.forge.webhooks import EventQueue, create_receiver
 
 from conftest import (
   Harness,
@@ -72,12 +78,36 @@ async def test_failures_back_off_then_give_up(store: ForgeStore,
   )
   record = await store.find_pull_request('fake', REPOSITORY, 1)
   assert record is not None
-  for attempt in range(3):
-    gave_up = await store.mark_failed(
-      record.id, record.generation, 'boom',
+
+  async def attempt() -> bool:
+    return await store.begin_attempt(
+      record.id, record.generation,
       now = clock(), max_attempts = 3, base_delay = 60, max_delay = 3600
     )
-    assert gave_up == (attempt == 2)
+
+  # An attempt counts before it starts, so one that never finishes (the
+  # service killed part-way) counts too, and isn't retried at once.
+  assert not await attempt()
+  assert await store.due_pull_requests('fake', clock()) == []
+  record = await store.get_pull_request(record.id)
+  assert record is not None and record.error_count == 1
+  assert record.last_error is not None
+  assert 'never finished' in record.last_error
+
+  # One taken back (not the pull request's fault) doesn't count.
+  before = record
+  assert not await attempt()
+  await store.refund_attempt(before)
+  record = await store.get_pull_request(record.id)
+  assert record is not None and record.error_count == 1
+
+  # Failed ones count, then it gives up.
+  for _ in range(2):
+    assert not await attempt()
+    await store.mark_failed(record.id, record.generation, 'boom')
+  record = await store.get_pull_request(record.id)
+  assert record is not None and record.last_error == 'boom'
+  assert await attempt()
   assert await store.due_pull_requests('fake', clock()) == []
 
   # A new push makes it due again immediately.
@@ -102,10 +132,51 @@ async def test_publisher_outage_defers_without_counting(
   await harness.step()
   record = await store.find_pull_request('fake', REPOSITORY, 1)
   assert record is not None and record.is_dirty and record.error_count == 0
+  # Stored all the same: the database leads, and the publisher client
+  # serves what it stores once it can.
+  assert [s.name for s in await store.sections(record.id)] == [
+    'Test - Changes'
+  ]
 
   harness.publisher.available = True
   await harness.step()
   assert harness.publisher.served_names(record.review_id) == [
+    'Test - Changes'
+  ]
+
+
+async def test_connecting_stops_serving_what_is_gone(tmp_path: Path,
+                                                    origin: Origin,
+                                                    forge: FakeForge,
+                                                    store: ForgeStore,
+                                                    clock: Clock) -> None:
+  config = make_config(tmp_path / 'home')
+  harness = Harness(store, forge, config, clock)
+  await harness.start()
+  head = origin.push_pull_request(1, PR_FILES)
+  forge.set_pull_request(pull_request_info(1, head, origin.main_sha))
+  await harness.step()
+  record = await store.find_pull_request('fake', REPOSITORY, 1)
+  assert record is not None
+  assert harness.publisher.served_names(record.review_id) == [
+    'Test - Changes'
+  ]
+
+  # Its files go while the service is down; the publisher, which outlasts
+  # it, still serves them until the service connects again.
+  [section] = harness.publisher.reviews[record.review_id]
+  shutil.rmtree(section.root)
+  restarted = Harness(store, forge, config, clock,
+                      publisher = harness.publisher,
+                      commenter = harness.commenter)
+  await restarted.start()
+  assert restarted.publisher.served_names(record.review_id) == []
+  record = await store.find_pull_request('fake', REPOSITORY, 1)
+  assert record is not None and record.is_dirty
+
+  # Rebuilt, it is served again.
+  await restarted.step()
+  assert restarted.publisher.served_names(record.review_id) == [
     'Test - Changes'
   ]
 
@@ -240,7 +311,10 @@ class _SignedWebhooks:
 
 async def test_webhook_endpoint_verifies_and_queues() -> None:
   queue = EventQueue()
-  app = create_app(_SignedWebhooks(b'secret'), queue)  # type: ignore[arg-type]
+  app = create_app(create_receiver(
+    _SignedWebhooks(b'secret'),  # type: ignore[arg-type]
+    queue
+  ))
   client = app.test_client()
   body = json.dumps({'repository': REPOSITORY, 'number': 3}).encode()
 
@@ -257,8 +331,31 @@ async def test_webhook_endpoint_verifies_and_queues() -> None:
   assert response.status_code == HTTPStatus.ACCEPTED
   assert queue._queue.get_nowait() == PullRequestTouched(REPOSITORY, 3)
 
-  response = await client.get('/healthz')
+  response = await client.get(HEALTH_PATH)
   assert response.status_code == HTTPStatus.OK
+
+
+async def test_app_without_webhooks_answers_only_health_checks() -> None:
+  # As the service serves it without ACKNOWLEDG_FORGE_WEBHOOKS.
+  client = create_app().test_client()
+  response = await client.get(HEALTH_PATH)
+  assert response.status_code == HTTPStatus.OK
+  assert await response.get_data(as_text = True) == 'ok\n'
+  response = await client.post('/webhook', data = b'{}')
+  assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_webhooks_need_the_service_bind(tmp_path: Path) -> None:
+  config = make_config(tmp_path / 'home', SERVICE_BIND = '127.0.0.1:0',
+                       WEBHOOKS = '1')
+  assert config.service_bind == '127.0.0.1:0' and config.webhooks
+  config = make_config(tmp_path / 'home', SERVICE_BIND = '127.0.0.1:0')
+  assert not config.webhooks
+  with pytest.raises(ConfigError, match = 'SERVICE_BIND is not'):
+    make_config(tmp_path / 'home', WEBHOOKS = '1')
+  # The old setting isn't silently ignored.
+  with pytest.raises(ConfigError, match = 'WEBHOOK_BIND is gone'):
+    make_config(tmp_path / 'home', WEBHOOK_BIND = '127.0.0.1:0')
 
 
 async def test_bench_sections_from_ci_artifact(tmp_path: Path,
