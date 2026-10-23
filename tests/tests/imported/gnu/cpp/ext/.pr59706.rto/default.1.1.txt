@@ -1,15 +1,7 @@
 fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
-"Test_name.c", line 12: warning: unrecognized GCC pragma
-    #pragma GCC ivdep
-                ^
-
 "Test_name.c", line 13: error: incomplete type "S" is not allowed
     while (s)	// { dg-error "could not convert" }
            ^
-
-"Test_name.c", line 20: warning: unrecognized GCC pragma
-    #pragma GCC ivdep
-                ^
 
 "Test_name.c", line 21: error: expression must have bool type (or be convertible to bool)
     while (t)	// { dg-error "could not convert" }
