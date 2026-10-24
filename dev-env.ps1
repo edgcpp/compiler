@@ -21,18 +21,19 @@ $edgToolDirs = @(
   (Join-Path $edgRepoRoot 'dev_tools\bin')
 )
 
-# Add each tool directory that is not already on the PATH (preserving the
-# order above, so the ".bat" shims take precedence over the extensionless
-# scripts).
-$edgMissingDirs = @()
+# Prepend the tool directories if either is missing (a duplicate entry is
+# harmless) so that "dev_tools\win-bin" stays ahead of "dev_tools\bin" in
+# the search order and the ".bat" shims keep precedence over the
+# extensionless scripts.
+$edgNeedPrepend = $false
 foreach ($edgToolDir in $edgToolDirs) {
   $edgOnPath = @($env:Path -split ';' | Where-Object { $_ -ieq $edgToolDir })
   if ($edgOnPath.Count -eq 0) {
-    $edgMissingDirs += $edgToolDir
+    $edgNeedPrepend = $true
   }
 }
-if ($edgMissingDirs.Count -gt 0) {
-  $env:Path = "$($edgMissingDirs -join ';');$env:Path"
+if ($edgNeedPrepend) {
+  $env:Path = "$($edgToolDirs -join ';');$env:Path"
 }
 
 $edgPyLibs = Join-Path $edgRepoRoot 'dev_tools\pylibs'
@@ -46,4 +47,4 @@ if (-not (@($env:PYTHONPATH -split ';' |
 }
 
 Remove-Variable -Name edgRepoRoot, edgToolDirs, edgToolDir, edgOnPath, `
-  edgMissingDirs, edgPyLibs -ErrorAction SilentlyContinue
+  edgNeedPrepend, edgPyLibs -ErrorAction SilentlyContinue

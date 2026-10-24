@@ -298,7 +298,11 @@ class PrePushChecker:
         )
 
       if file_change_check_proc.returncode != 0:
-        sys.exit(1)
+        # Record the failure and return (rather than exiting) so that the
+        # status propagates through checker.run() and main(), allowing the
+        # delegate window pause to run.
+        self.errors = 1
+        return
 
       with open(output_file, 'r') as file_handle:
         results = json.load(file_handle)
