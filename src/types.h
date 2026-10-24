@@ -54,6 +54,19 @@ this routine should not be used when checking type qualifiers.
 }  /* skip_typerefs */
 
 
+INLINE a_float_kind float16_kind(void)
+/*
+Return the floating-point kind used for the type name "_Float16" in the
+current mode:  GNU versions 13 and later and Clang versions 15 and later
+use the standard "_Float16" type, and other modes use the GNU extension
+type.
+*/
+{
+  return (gnu_version_is(>= 130000) || clang_version_is(>= 150000)) ?
+             fk_std_float16 : fk_float16;
+}  /* float16_kind */
+
+
 INLINE a_boolean is_lexical_typeref(a_type_ptr tp)
 /*
 Return TRUE if tp is a trk_template_arg_list or trk_name_qualifier typeref,
