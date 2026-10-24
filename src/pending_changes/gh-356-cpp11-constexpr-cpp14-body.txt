@@ -1,0 +1,18 @@
+[GH #356]
+C++11 constexpr templates with C++14-style statements
+
+In GNU (12.0 and later) and Clang (3.3 and later) C++11 modes, a statement
+that C++14 allows in a constexpr function or constructor of a template (an
+"if" statement, for example) is accepted with a warning.  The function was
+nevertheless treated as not constexpr, so it could not be used in constant
+expressions.  For example, with --c++11 --gnu_version 150000:
+
+  template <class T> struct A {
+    T x;
+    constexpr A(T i) : x(i) {
+      if (sizeof(T) == 0) {}  // Warning
+    }
+  };
+  constexpr A<int> a(5);       // Previously an error.
+
+This is now fixed.

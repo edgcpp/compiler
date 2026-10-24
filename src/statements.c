@@ -7806,6 +7806,7 @@ this statement was preceded by the GNU keyword __extension__.
   a_boolean          prev_was_label = FALSE;
   a_boolean          get_another_statement;
   a_boolean          can_appear_in_constexpr_body = relaxed_constexpr_enabled;
+  a_boolean          allowed_by_relaxed_constexpr = TRUE;
   an_error_severity  in_constexpr_body_sev = es_error;
   a_source_position  start_pos;
   an_il_entity_list_entry_ptr
@@ -7891,13 +7892,15 @@ rescan_statement:
     case tok_for_each:
       /* "for each" statement (ECMA-372 section 16.2.1). */
       for_each_statement();
-      can_appear_in_constexpr_body = FALSE;
+      can_appear_in_constexpr_body = allowed_by_relaxed_constexpr = FALSE;
       break;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case tok_goto:
       /* Goto statement. */
       goto_statement();
-      if (!cpp23_mode) can_appear_in_constexpr_body = FALSE;
+      if (!cpp23_mode) {
+        can_appear_in_constexpr_body = allowed_by_relaxed_constexpr = FALSE;
+      }  /* if */
       break;
     case tok_continue:
       /* Continue statement. */
@@ -7921,7 +7924,7 @@ rescan_statement:
     case tok_microsoft_asm:
       /* Asm "declaration" or Microsoft mode asm block. */
       asm_statement();
-      can_appear_in_constexpr_body = cpp20_mode;
+      can_appear_in_constexpr_body = allowed_by_relaxed_constexpr = cpp20_mode;
       if (!can_appear_in_constexpr_body && cpp14_mode &&
           gpp_version_is(>= 100000)) {
         /* Newer versions of GCC only warn about asm declarations in constexpr
@@ -7933,18 +7936,19 @@ rescan_statement:
       /* C++ try block. */
       try_block_statement((a_statement_ptr)NULL,
                           /*explicit_return_type=*/FALSE);
-      can_appear_in_constexpr_body = constexpr_try_enabled;
+      can_appear_in_constexpr_body = allowed_by_relaxed_constexpr =
+                                                         constexpr_try_enabled;
       break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case tok_microsoft_try:
       /* Microsoft try-finally or try-except statement. */
       microsoft_try_statement();
-      can_appear_in_constexpr_body = FALSE;
+      can_appear_in_constexpr_body = allowed_by_relaxed_constexpr = FALSE;
       break;
     case tok_leave:
       /* Microsoft __leave. */
       leave_statement();
-      can_appear_in_constexpr_body = FALSE;
+      can_appear_in_constexpr_body = allowed_by_relaxed_constexpr = FALSE;
       break;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case tok_case:
@@ -8091,6 +8095,9 @@ expr_statement:
           sssep->prefix_attributes = NULL;
         }  /* if */
         decl_statement(marked_as_gnu_extension, &can_appear_in_constexpr_body);
+        /* Declarations are not checked against the C++14 rules here, so do
+           not assume that they would be valid in C++14. */
+        allowed_by_relaxed_constexpr = can_appear_in_constexpr_body;
         if (!can_appear_in_constexpr_body && relaxed_constexpr_allowed()) {
           /* This can be true in Clang-C++11-mode system headers. */
           in_constexpr_body_sev = es_warning;
@@ -8144,6 +8151,7 @@ expr_statement:
   }  /* switch */
   if (current_rp != NULL && current_rp->is_constexpr &&
       !can_appear_in_constexpr_body) {
+    a_boolean  constexpr_still_possible = FALSE;
     if (current_rp->is_declared_constexpr || current_rp->is_consteval) {
       /* Report an error if the statement is not one that is allowed in a
          constexpr function or constexpr constructor. */
@@ -8156,6 +8164,10 @@ expr_statement:
       } else if ((gpp_version_is(>=120000) || clangcpp_version_is(>=30300)) &&
                  current_rp->is_template_function) {
         in_constexpr_body_sev = es_warning;
+        /* GCC and Clang accept a statement that C++14 allows as an
+           extension, and the function can still be used in constant
+           expressions. */
+        constexpr_still_possible = allowed_by_relaxed_constexpr;
       }  /* if */
       pos_diagnostic(in_constexpr_body_sev,
                      special_kind_is(current_rp, sfk_constructor) ?
@@ -8163,7 +8175,9 @@ expr_statement:
                                 ec_invalid_statement_in_constexpr_function,
                      &start_pos);
     }  /* if */
-    scope_stack[depth_innermost_function_scope].constexpr_ruled_out = TRUE;
+    if (!constexpr_still_possible) {
+      scope_stack[depth_innermost_function_scope].constexpr_ruled_out = TRUE;
+    }  /* if */
   }  /* if */
   /* Loop if we just got a label and not an actual statement. */
   if (get_another_statement) {
