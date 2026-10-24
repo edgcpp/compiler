@@ -379,38 +379,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     static_assert(!__is_trivially_destructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
                                                ^
 
-"Test_name.c", line 3482: error: static assertion failed with "integrals are"
-  static_assert(__has_unique_object_representations(volatile int), "integrals are");
-  ^
-
-"Test_name.c", line 3483: error: static assertion failed with "integrals are"
-  static_assert(__has_unique_object_representations(const volatile int), "integrals are");
-  ^
-
-"Test_name.c", line 3502: error: static assertion failed with "even function pointers"
-  static_assert(__has_unique_object_representations(volatile FP), "even function pointers");
-  ^
-
-"Test_name.c", line 3503: error: static assertion failed with "even function pointers"
-  static_assert(__has_unique_object_representations(const volatile FP), "even function pointers");
-  ^
-
-"Test_name.c", line 3507: error: static assertion failed with "and pointer to members"
-  static_assert(__has_unique_object_representations(volatile PMF), "and pointer to members");
-  ^
-
-"Test_name.c", line 3508: error: static assertion failed with "and pointer to members"
-  static_assert(__has_unique_object_representations(const volatile PMF), "and pointer to members");
-  ^
-
-"Test_name.c", line 3512: error: static assertion failed with "and pointer to members"
-  static_assert(__has_unique_object_representations(volatile PMD), "and pointer to members");
-  ^
-
-"Test_name.c", line 3513: error: static assertion failed with "and pointer to members"
-  static_assert(__has_unique_object_representations(const volatile PMD), "and pointer to members");
-  ^
-
 "Test_name.c", line 3544: error: an incomplete class type is not allowed
   static_assert(!__has_unique_object_representations(AnIncompleteType));
                  ^
@@ -434,14 +402,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 3739: warning: signed bit field of length 1
     char d : 1;
          ^
-
-"Test_name.c", line 3777: error: static assertion failed with "Bitfield padding"
-  static_assert(!__has_unique_object_representations(UnnamedBitfield), "Bitfield padding");
-  ^
-
-"Test_name.c", line 3778: error: static assertion failed with "Bitfield padding"
-  static_assert(!__has_unique_object_representations(UnnamedBitfieldPacked), "Bitfield padding");
-  ^
 
 "Test_name.c", line 3790: warning: declared size for bit field is larger than the size of the bit field type; truncated to 8 bits
     bool b : 16;
@@ -695,5 +655,5 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   #error Programming model currently unsupported; please add a new entry.
    ^
 
-124 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+114 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
 Compilation terminated.

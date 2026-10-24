@@ -1,0 +1,36 @@
+[GH #327]
+__has_unique_object_representations fixes
+
+A base class that declares no nonstatic data members of its own but inherits
+some (and is therefore not empty) was treated as an empty base class.  Its
+size was then counted as tail padding, so the trait was incorrectly FALSE for
+classes derived from it.  For example, with --c++11:
+
+  struct A { char i; };
+  struct B : A {};
+  struct C : B {};
+  static_assert(__has_unique_object_representations(C), "");  // Previously
+                                                              // failed.
+
+This is now fixed.  In addition:
+
+  - An unnamed bit-field of nonzero width is now treated as padding, as the
+    standard requires, except in g++ modes before 13.1 (other than 10.5,
+    11.4, and 12.3) and in Clang modes before 17.  For example:
+
+      struct S { char a; char : 8; char b; };
+      static_assert(!__has_unique_object_representations(S), "");
+
+  - In a union, an unnamed bit-field overlaps the other members, so the
+    rule above does not apply; as before, a bit-field narrower than the
+    union is treated as padding, except in Clang modes.  Microsoft mode now
+    also does not treat it as padding, matching MSVC.  For example,
+    with --microsoft:
+
+      union U { int x : 3; };
+      static_assert(__has_unique_object_representations(U), "");
+
+  - Volatile-qualified non-class types (e.g., "volatile int") are treated as
+    not having unique object representations only in g++ modes before
+    version 10 (previously this was done for all g++ versions, including
+    Clang modes).

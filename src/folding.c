@@ -8939,6 +8939,27 @@ with cssp are trivial.
 }  /* all_copy_constructors_trivial */
 
 
+static a_boolean unnamed_bit_field_is_padding(void)
+/*
+Return TRUE if an unnamed bit-field of non-zero width is considered padding
+by type_has_unique_object_representations.  That is the standard behavior;
+it is not done by Clang before version 17 or by g++ before 13.1 (except for
+the backports to g++ 10.5, 11.4, and 12.3).
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (clang_mode) {
+    result = clang_version >= 170000;
+  } else if (gpp_mode) {
+    result = gnu_version >= 120300 ||
+             (gnu_version >= 110400 && gnu_version < 120000) ||
+             (gnu_version >= 100500 && gnu_version < 110000);
+  }  /* if */
+  return result;
+}  /* unnamed_bit_field_is_padding */
+
+
 static a_boolean type_has_unique_object_representations(
                                    a_type_ptr     type,
                                    a_targ_size_t  *after_base_members,
@@ -8999,8 +9020,7 @@ architectures for which these assumptions are not valid.
           if (bcp->offset != end_of_last_subobject) {
             /* There's padding between base class subobjects. */
             result = FALSE;
-          } else if (bcp->type->variant.class_struct_union.field_list ==
-                                                                        NULL) {
+          } else if (is_empty_class_type(bcp->type)) {
             /* An empty base class: treat it as having size 0 and do not
                check type_has_unique_object_representation, since an empty
                class will consist of nothing but padding.  If it was not
@@ -9027,13 +9047,21 @@ architectures for which these assumptions are not valid.
       for (field = type->variant.class_struct_union.field_list;
            result && field != NULL; field = field->next) {
         a_type_ptr field_type = skip_typerefs(field->type);
-        if (type->kind == (a_type_kind)tk_union &&
+        if (type_is(type, tk_union) &&
             ((prev_field != NULL && field_type->size != prev_field_size) ||
-             (field->is_bit_field && !clang_mode &&
+             (field->is_bit_field && !clang_mode && !microsoft_mode &&
               field->bit_size < type->size * targ_char_bit))) {
           /* There will be padding in a union if not all fields are the
-             same size or (for g++, not clang) if a bit-field is shorter
-             than the size of the union. */
+             same size or (except for Clang and Microsoft) if a bit-field
+             is shorter than the size of the union. */
+          result = FALSE;
+        } else if (!type_is(type, tk_union) &&
+                   field->is_bit_field && field->bit_size != 0 &&
+                   unnamed_bit_field_is_padding() &&
+                   symbol_for(field) == get_unnamed_field_symbol()) {
+          /* An unnamed bit-field of non-zero width is padding.  (In a
+             union, an unnamed bit-field overlaps the other members, so
+             it is handled by the size test above instead.) */
           result = FALSE;
         } else if (field->offset != end_of_last_subobject ||
             field->offset_bit_remainder != bit_offset_of_end) {
@@ -9043,7 +9071,7 @@ architectures for which these assumptions are not valid.
           if (!type_has_unique_object_representations(field_type, NULL)) {
             result = FALSE;
           }  /* if */
-          if (type->kind == (a_type_kind)tk_union) {
+          if (type_is(type, tk_union)) {
             /* Do not update end_of_last_subobject: each subobject begins
                at offset 0.  The previous field size is the same as that
                of the union; otherwise, it would have failed the bit_size
@@ -9061,7 +9089,7 @@ architectures for which these assumptions are not valid.
         }  /* if */
       }  /* for */
       /* Finally, check for tail padding. */
-      if (type->kind == (a_type_kind)tk_union) {
+      if (type_is(type, tk_union)) {
         if (type->variant.class_struct_union.field_list == NULL) {
           /* An empty union still has has a non-zero size, which counts as
              padding. */
@@ -9078,9 +9106,10 @@ architectures for which these assumptions are not valid.
         }  /* if */
       }  /* if */
     }  /* if */
-  } else if (gpp_mode && is_volatile_qualified_type(orig_type)) {
-    /* g++ treats volatile-qualified types as not having unique object
-       representations. */
+  } else if (gpp_version_is(< 100000) &&
+             is_volatile_qualified_type(orig_type)) {
+    /* g++ before version 10 treats volatile-qualified non-class types as
+       not having unique object representations. */
     result = FALSE;
   } else {
     /* A non-class type. */
