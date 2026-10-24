@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --set_flag=reflection Test_name.c
+"Test_name.c", line 37: error: conversion to inaccessible base class "C" is not allowed
+    int a = e.[:^^C::pub:];                       // error: inaccessible base
+            ^
+
+"Test_name.c", line 38: error: conversion to inaccessible base class "C" is not allowed
+    int b = f.[:member_named(^^C, "prot"):];      // error: inaccessible base
+            ^
+
+"Test_name.c", line 39: error: conversion to inaccessible base class "C" is not allowed
+    int c = (&f)->[:member_named(^^C, "pub"):];   // error: inaccessible base
+            ^
+
+"Test_name.c", line 40: error: member "C::prot" (declared at line 28) is inaccessible
+    static_assert(^^C::prot != info{});           // error: inaccessible
+                       ^
+
+4 errors detected in the compilation of "Test_name.c".
