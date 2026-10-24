@@ -239,13 +239,16 @@ def is_interactive_terminal() -> bool:
   import ctypes
   import msvcrt
 
-  kernel32 = ctypes.WinDLL('kernel32', use_last_error = True)
+  # Both "WinDLL" and "get_osfhandle" only exist on Windows; the type
+  # ignores cover typechecking on other platforms.
+  kernel32 = ctypes.WinDLL(  # type: ignore[attr-defined]
+                    'kernel32', use_last_error = True)
   kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
   kernel32.GetConsoleMode.restype = ctypes.c_int
-  stdin_handle = msvcrt.get_osfhandle(sys.stdin.fileno())
+  stdin_handle = msvcrt.get_osfhandle(  # type: ignore[attr-defined]
+                                    sys.stdin.fileno())
   console_mode = ctypes.c_uint(0)
   return bool(kernel32.GetConsoleMode(stdin_handle, ctypes.byref(console_mode)))
-
 def get_application_files_dir(app_name: str) -> Path:
   platform_name = platform.system()
   if platform_name == 'Linux':
