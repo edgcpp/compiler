@@ -1,0 +1,11 @@
+[GH #106]
+C++26: returning a reference bound to a temporary is not allowed
+
+A return statement that binds the returned reference to a temporary is not
+allowed in C++26 (P2748).  The front end only issued a warning.  It is now an
+error in C++26 (still a warning when emulating GCC versions before 14 or
+Clang versions before 19, which do the same).  For example, with --c++26:
+
+  const int& f() { return 1; }  // Now an error.
+
+Returning a reference to a local variable is still only a warning.

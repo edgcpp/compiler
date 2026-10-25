@@ -25428,7 +25428,8 @@ non-const to the indicated (rvalue) operand.
 static void check_for_returning_reference_to_local_entity(an_operand *operand)
 /*
 operand is the entity being bound to a reference in a return statement.
-Issue a warning if it is a local entity.
+Issue a warning if it is a local entity.  Binding the returned reference to
+a temporary is an error in C++26 (P2748).
 */
 {
   a_boolean is_temp;
@@ -25439,9 +25440,18 @@ Issue a warning if it is a local entity.
       /* The expression is a glvalue or class prvalue (object) for a local
          entity.  Use a different message for temporaries and local
          variables. */
-      expr_pos_warning(is_temp ? ec_return_ref_init_requires_temp :
-                                 ec_returning_ref_to_local_variable,
-                       &operand->position);
+      if (!is_temp) {
+        expr_pos_warning(ec_returning_ref_to_local_variable,
+                         &operand->position);
+      } else if (cpp26_mode && !gpp_version_is(<140000) &&
+                 !clangcpp_version_is(<190000)) {
+        /* GCC 14 and Clang 19 implement P2748.  Earlier versions only issue
+           a warning. */
+        expr_pos_error(ec_return_ref_init_requires_temp, &operand->position);
+      } else {
+        expr_pos_warning(ec_return_ref_init_requires_temp,
+                         &operand->position);
+      }  /* if */
     }  /* if */
   }  /* if */
 }  /* check_for_returning_reference_to_local_entity */
