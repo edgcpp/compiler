@@ -1,9 +1,10 @@
 fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
-"Test_name.c", line 6: warning: returning reference to local temporary
+"Test_name.c", line 6: error: returning reference to local temporary
     return 42; // expected-error{{returning reference to local temporary object}}
            ^
 
-"Test_name.c", line 10: warning: returning reference to local temporary
+"Test_name.c", line 10: error: returning reference to local temporary
     return x; // expected-error{{returning reference to local temporary object}}
            ^
 
+2 errors detected in the compilation of "Test_name.c".

@@ -19,4 +19,8 @@ fe_only -DTEST_NUMBER=3 --c++26 --clang_version 190000 Test_name.c
   const int& f5() { int i = 0; return i; }  // Local variable: only a warning.
                                       ^
 
+"Test_name.c", line 20: warning: returning reference to local temporary
+  const int *const *const &f6() { return pp; }
+                                         ^
+
 4 errors detected in the compilation of "Test_name.c".

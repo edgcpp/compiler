@@ -25425,11 +25425,16 @@ non-const to the indicated (rvalue) operand.
 }  /* microsoft_can_bind_ref_to_rvalue */
 
 
-static void check_for_returning_reference_to_local_entity(an_operand *operand)
+static void check_for_returning_reference_to_local_entity(
+                                          an_operand  *operand,
+                                          a_boolean   similar_lvalue_source)
 /*
 operand is the entity being bound to a reference in a return statement.
 Issue a warning if it is a local entity.  Binding the returned reference to
-a temporary is an error in C++26 (P2748).
+a temporary is an error in C++26 (P2748).  similar_lvalue_source is TRUE if
+the original initializer was an lvalue of a type similar to the referenced
+type; the reference should then bind to it directly (Core issue 2352), so
+a temporary found here only gets the warning.
 */
 {
   a_boolean is_temp;
@@ -25443,8 +25448,8 @@ a temporary is an error in C++26 (P2748).
       if (!is_temp) {
         expr_pos_warning(ec_returning_ref_to_local_variable,
                          &operand->position);
-      } else if (cpp26_mode && !gpp_version_is(<140000) &&
-                 !clangcpp_version_is(<190000)) {
+      } else if (cpp26_mode && !similar_lvalue_source &&
+                 !gpp_version_is(<140000) && !clangcpp_version_is(<190000)) {
         /* GCC 14 and Clang 19 implement P2748.  Earlier versions only issue
            a warning. */
         expr_pos_error(ec_return_ref_init_requires_temp, &operand->position);
@@ -25624,6 +25629,7 @@ the conversion.
   a_boolean    ref_to_const = FALSE;
   a_boolean    ref_to_const_volatile = FALSE;
   a_boolean    operand_was_rvalue, operand_is_function_lvalue;
+  a_boolean    similar_lvalue_source;
   a_boolean    warn = FALSE, template_case = FALSE;
   a_boolean    initializing_variable =
                        (conv_context & CCO_INITIALIZING_VARIABLE) != 0;
@@ -25721,6 +25727,11 @@ the conversion.
   }  /* if */
   base_dest_type = type_pointed_to(dest_type);
   operand_was_rvalue = is_an_rvalue(source_operand);
+  /* An lvalue whose type is similar to the referenced type, e.g., an "int **"
+     lvalue for a "const int *const *const &".  The reference binds directly
+     to it (Core issue 2352). */
+  similar_lvalue_source = !operand_was_rvalue &&
+                          types_are_similar(orig_source_type, base_dest_type);
   operand_is_function_lvalue = is_a_function_designator(source_operand);
   adj_base_dest_type = base_dest_type;
   if (bitwise_assignment_param) {
@@ -26326,7 +26337,8 @@ the conversion.
   } else if ((conv_context & CCO_INITIALIZING_RETURN_VALUE) &&
              !template_case) {
     /* Check for returning a reference to a local entity. */
-    check_for_returning_reference_to_local_entity(source_operand);
+    check_for_returning_reference_to_local_entity(source_operand,
+                                                  similar_lvalue_source);
   }  /* if */
   if (!leave_as_object) {
     /* Final step: add the reference-to to turn the glvalue or class prvalue
