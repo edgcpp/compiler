@@ -1,1 +1,6 @@
 fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 8: error: comparison between two arrays is not allowed
+    if (array1 == array2) { } // not-cxx20-warning {{comparison between two arrays compare their addresses}} cxx20-warning {{comparison between two arrays is deprecated}}
+               ^
+
+1 error detected in the compilation of "Test_name.c".
