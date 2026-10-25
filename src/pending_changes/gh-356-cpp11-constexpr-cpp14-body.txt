@@ -2,10 +2,10 @@
 C++11 constexpr templates with C++14-style statements
 
 In GNU (12.0 and later) and Clang (3.3 and later) C++11 modes, a statement
-that C++14 allows in a constexpr function or constructor of a template (an
-"if" statement, for example) is accepted with a warning.  The function was
-nevertheless treated as not constexpr, so it could not be used in constant
-expressions.  For example, with --c++11 --gnu_version 150000:
+that C++14 allows in a constexpr constructor or function of a template (an
+"if" statement, for example) is accepted with a warning.  The constructor or
+function was nevertheless treated as not constexpr, so it could not be used
+in constant expressions.  For example, with --c++11 --gnu_version 150000:
 
   template <class T> struct A {
     T x;
@@ -15,4 +15,6 @@ expressions.  For example, with --c++11 --gnu_version 150000:
   };
   constexpr A<int> a(5);       // Previously an error.
 
-This is now fixed.
+This is now fixed for constexpr constructors and, in Clang mode (like
+Clang), for constexpr functions.  As with GCC, such a constexpr function
+still cannot be used in constant expressions in GNU mode.

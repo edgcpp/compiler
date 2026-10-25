@@ -8164,10 +8164,14 @@ expr_statement:
       } else if ((gpp_version_is(>=120000) || clangcpp_version_is(>=30300)) &&
                  current_rp->is_template_function) {
         in_constexpr_body_sev = es_warning;
-        /* GCC and Clang accept a statement that C++14 allows as an
-           extension, and the function can still be used in constant
-           expressions. */
-        constexpr_still_possible = allowed_by_relaxed_constexpr;
+        /* GCC and Clang accept a statement that C++14 allows in a constexpr
+           constructor as an extension, and the constructor can still be used
+           in constant expressions.  Clang does the same for a constexpr
+           function; GCC does not. */
+        constexpr_still_possible =
+              allowed_by_relaxed_constexpr &&
+              (clangcpp_version_is(>=30300) ||
+               special_kind_is(current_rp, sfk_constructor));
       }  /* if */
       pos_diagnostic(in_constexpr_body_sev,
                      special_kind_is(current_rp, sfk_constructor) ?
