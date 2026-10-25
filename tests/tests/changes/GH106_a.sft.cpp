@@ -12,3 +12,8 @@ const int& f2(long l) { return l; }       // Temporary from a conversion.
 const int& f3() { return S().x; }         // Member of a temporary.
 int&& f4() { return 1; }                  // Rvalue reference to a temporary.
 const int& f5() { int i = 0; return i; }  // Local variable: only a warning.
+
+// Core issue 2352: the reference binds directly to pp, so this is not
+// diagnosed as an error.
+int **pp;
+const int *const *const &f6() { return pp; }
