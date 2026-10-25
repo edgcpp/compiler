@@ -32487,6 +32487,30 @@ different enum types (or, in C, have different affiliated enum types).
 }  /* diagnose_comparison_if_different_enum_types */
 
 
+static void check_for_array_comparison(an_operand         *opnd1,
+                                       an_operand         *opnd2,
+                                       a_source_position  *operator_pos)
+/*
+opnd1 and opnd2 are the operands of a built-in equality or relational
+operator at operator_pos, before the array-to-pointer conversion.  If both
+have array type, issue a diagnostic: such comparisons are deprecated in C++20
+and not allowed in C++26 (P2865).
+*/
+{
+  if (cpp20_mode && is_array_type(opnd1->type) &&
+      is_array_type(opnd2->type)) {
+    if (cpp26_mode && !gpp_version_is(<150000) &&
+        !clangcpp_version_is(<200000)) {
+      /* GCC 15 and Clang 20 implement P2865.  Earlier versions only issue a
+         deprecation warning. */
+      expr_pos_error(ec_array_comparison_not_allowed, operator_pos);
+    } else {
+      expr_pos_warning(ec_array_comparison_deprecated, operator_pos);
+    }  /* if */
+  }  /* if */
+}  /* check_for_array_comparison */
+
+
 static void process_rel_operator(an_operand               *opnd1,
                                  an_operand               *opnd2,
                                  a_token_kind             operator_token,
@@ -32532,6 +32556,7 @@ describe the location of the operator.
   }  /* if */
   if (!processed) {
     /* Non-operator-function cases. */
+    check_for_array_comparison(opnd1, opnd2, operator_pos);
     /* The first operand must be an arithmetic or enum type or a pointer. */
     do_operand_transformations(opnd1, TOPT_NO_OPTIONS);
     opnd1_is_pointer = FALSE;
@@ -33036,6 +33061,7 @@ operator_tsn describe the location of the operator.
   }  /* if */
   if (!processed) {
     /* Non-operator-function cases. */
+    check_for_array_comparison(opnd1, opnd2, operator_pos);
     /* The first operand must be an arithmetic or enum type or a pointer. */
     do_operand_transformations(opnd1, TOPT_NO_OPTIONS);
     if (is_arithmetic_or_enum_type(opnd1->type)) {

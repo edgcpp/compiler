@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=2 --c++26 --gnu_version 150000 Test_name.c
+"Test_name.c", line 10: error: comparison between two arrays is not allowed
+  bool x1 = a == b;  // Two arrays: diagnosed.
+              ^
+
+"Test_name.c", line 11: error: comparison between two arrays is not allowed
+  bool x2 = a != b;
+              ^
+
+"Test_name.c", line 12: error: comparison between two arrays is not allowed
+  bool x3 = a < b;
+              ^
+
+"Test_name.c", line 13: error: comparison between two arrays is not allowed
+  bool x4 = a >= b;
+              ^
+
+4 errors detected in the compilation of "Test_name.c".
