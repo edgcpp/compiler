@@ -83,7 +83,8 @@ def check_commit_subject(message: str) -> Optional[str]:
   (e.g. "[[always_inline]]") is not checked.'''
   lines = message.splitlines()
   subject = lines[0] if len(lines) != 0 else ''
-  if len(lines) > 1 and lines[1] != '':
+  # Like git, count a whitespace-only line as blank.
+  if len(lines) > 1 and lines[1].strip() != '':
     return 'subject must be a single line; wrap the body after a blank line'
 
   match = _SUBJECT_TAGS_REGEX.search(subject)

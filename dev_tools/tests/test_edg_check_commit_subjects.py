@@ -38,9 +38,14 @@ class CommitSubjectTests(unittest.TestCase):
       'Drop [[always_inline]] on setjmp [GH #176]',
       'Fix thing [GH #1]\n',
       'Fix thing [GH #1]\n\nBody mentions [nope]',
+      # A whitespace-only line is blank, so stripping the message (as the
+      # pre-push hook does) can't change the verdict.
+      'Fix thing [GH #1]\n  ',
+      'Fix thing [GH #1]\n  \nBody',
     ):
       with self.subTest(message = message):
         self.assertIsNone(edgchanges.check_commit_subject(message))
+        self.assertIsNone(edgchanges.check_commit_subject(message.strip()))
 
   def test_invalid_subjects(self) -> None:
     for message in (
@@ -58,6 +63,7 @@ class CommitSubjectTests(unittest.TestCase):
     ):
       with self.subTest(message = message):
         self.assertIsNotNone(edgchanges.check_commit_subject(message))
+        self.assertIsNotNone(edgchanges.check_commit_subject(message.strip()))
 
   def test_tool_reports_only_violations(self) -> None:
     with tempfile.TemporaryDirectory() as tmp_dir_str:
