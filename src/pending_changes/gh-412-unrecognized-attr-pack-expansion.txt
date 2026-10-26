@@ -1,0 +1,20 @@
+[GH #412]
+Unrecognized attribute with a pack expansion in its arguments
+
+In a variadic template, an unrecognized attribute whose arguments referenced a
+parameter pack (e.g., in a pack expansion) was treated as a pack expansion of
+the attribute as a whole.  As a result, the C++-generating back end could put
+out a spurious "..." after the attribute when generating a template from its
+IL, and instantiations could receive the wrong number of copies of the
+attribute (e.g., one per pack element, or none for an empty pack).  For
+example, in Clang mode:
+
+  template <class... M> struct scoped_lock {
+    scoped_lock(M&... m) __attribute__((acquire_capability(m...))) {}
+  };
+
+could be generated as
+
+  scoped_lock(M &...m) __attribute((acquire_capability(m ... )...)) { }
+
+That is now fixed.

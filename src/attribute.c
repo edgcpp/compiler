@@ -2632,12 +2632,15 @@ that appeared in a previous "using" prefix.  Can return NULL on error.
       { a_pack_expansion_descr_ptr pedep;
         if (pesep != NULL &&
             (*p_attribute == NULL || is_unrecognized_attr(*p_attribute))) {
-          /* For an unknown attribute, we do not know if packs encountered
-             within the attribute arguments were expanded within the pack or
-             should be expanded with the attribute as a whole.  By recording
-             the presence of an ellipsis, we avoid spurious diagnostics. */
-          record_pack_expansion_ellipsis_position(&pos_curr_token);
-          pesep->expansion_with_no_packs_diagnostic_issued = TRUE;
+          /* An unknown attribute's arguments are raw tokens, in which packs
+             may already be expanded (e.g., "attr(args...)"). */
+          if (curr_token == tok_ellipsis) {
+            /* A pack expansion, but packs in raw tokens may go undetected. */
+            suppress_expansion_with_no_packs_diagnostic(pesep);
+          } else {
+            /* Not a pack expansion. */
+            discard_pack_references_for_context(pesep);
+          }  /* if */
         }  /* if */
         pedep = end_potential_pack_expansion_context(pesep,
                                                      /*is_declarator=*/FALSE);

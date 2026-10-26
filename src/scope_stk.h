@@ -2667,6 +2667,9 @@ extern a_pack_expansion_descr_ptr end_potential_pack_expansion_context(
 			a_pack_expansion_stack_entry_ptr	pesep,
 			a_boolean				is_declarator);
 
+extern void discard_pack_references_for_context(
+			a_pack_expansion_stack_entry_ptr	pesep);
+
 extern void begin_tentative_pack_expansion_context(void);
 
 extern void end_tentative_pack_expansion_context(a_boolean);
