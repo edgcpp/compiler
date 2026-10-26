@@ -1,0 +1,55 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Run the unit tests of the dev_tools (dev_tools/tests).  Checking the pending
+# Changes entries themselves is changes-fragments.yml.
+
+name: Dev Tools Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/dev-tools-tests.yml
+      - dev_tools/bin/edg-check-commit-subjects
+      - dev_tools/bin/edg-check-file-changes
+      - dev_tools/bin/edg-collect-changes
+      - dev_tools/pylibs/edgchanges/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/tests/**
+  pull_request:
+    paths:
+      - .github/workflows/dev-tools-tests.yml
+      - dev_tools/bin/edg-check-commit-subjects
+      - dev_tools/bin/edg-check-file-changes
+      - dev_tools/bin/edg-collect-changes
+      - dev_tools/pylibs/edgchanges/**
+      - dev_tools/pylibs/edgutil/**
+      - dev_tools/tests/**
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: dev-tools-unit-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      # The same dictionary as the dev-env image
+      # (dev_tools/docker/dev-env/setup-scripts/install-software.sh).
+      - name: Install aspell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aspell aspell-en
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s dev_tools/tests -v

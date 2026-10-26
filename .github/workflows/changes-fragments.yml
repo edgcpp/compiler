@@ -5,8 +5,10 @@
 #
 # Check the pending Changes entries (*/pending_changes/*.txt) with
 # `edg-collect-changes --check` (format, spelling, typos, line length), so a
-# bad entry is caught before the nightly collect-changes job meets it, and run
-# the unit tests of the tools involved.
+# bad entry is caught before the nightly collect-changes job meets it.  This
+# checks the entries, not the tools; their unit tests are dev-tools-tests.yml.
+# The tool paths below are triggers only so that a change to the checks is
+# tried against the entries already pending.
 
 name: Pending Changes Entries
 
@@ -21,7 +23,6 @@ on:
       - dev_tools/bin/edg-collect-changes
       - dev_tools/pylibs/edgchanges/**
       - dev_tools/pylibs/edgutil/**
-      - dev_tools/tests/**
   pull_request:
     paths:
       - '**/pending_changes/**'
@@ -30,7 +31,6 @@ on:
       - dev_tools/bin/edg-collect-changes
       - dev_tools/pylibs/edgchanges/**
       - dev_tools/pylibs/edgutil/**
-      - dev_tools/tests/**
 
 permissions:
   contents: read
@@ -55,9 +55,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y aspell aspell-en
-
-      - name: Run unit tests
-        run: python3 -m unittest discover -s dev_tools/tests -v
 
       - name: Check pending Changes entries
         run: |

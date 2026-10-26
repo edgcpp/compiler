@@ -36,7 +36,6 @@
 import json
 import os
 import platform
-import re
 import shutil
 import subprocess
 import sys
@@ -96,10 +95,6 @@ def _is_excluded_file_path(path_str: str) -> bool:
   return any(
     path_str.startswith(prefix) for prefix in EXCLUDES_PATH_PREFIXES
   )
-
-COMMIT_SUBJECT_POLICY_REGEX = re.compile(
-  r'^.*\[(GH #[0-9]+|(EDG[cfjp]+fe/([0-9]+))|,)*\].*$'
-)
 
 TOOL_PATH_GIT = shutil.which('git')
 
@@ -201,11 +196,10 @@ class PrePushChecker:
       print_indented(show_output, '  ')
       print('')
 
-      subject = git_output(['show', '--no-patch', '--format=%s', commit])
-      if COMMIT_SUBJECT_POLICY_REGEX.match(subject) is None:
-        print(
-          "  [POLICY] Commit message doesn't contain valid PR number (or [])."
-        )
+      message = git_output(['show', '--no-patch', '--format=%B', commit])
+      problem = edgchanges.check_commit_subject(message)
+      if problem is not None:
+        print(f"  [POLICY] Commit subject: {problem}.")
         sys.exit(1)
 
       first_new_commit = commit

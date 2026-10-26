@@ -1,0 +1,66 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Check the subjects of the new commits pushed to main and of every pull
+# request's commits with edg-check-commit-subjects (the same policy the
+# pre-push hook applies, from edgchanges).  Only commits with a violation are
+# reported.
+#
+# A pull request is checked from its base commit to its head commit.  A push
+# is checked from the previous tip of main.  If that tip is unavailable (e.g.
+# after a force-push), the job fails rather than check nothing.
+#
+# Merge commits are rejected too.  A fork that wants them sets the repository
+# variable ALLOW_MERGE_COMMITS to 'true' (Settings > Secrets and variables >
+# Actions > Variables).
+
+name: Commit Subjects
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check-commit-subjects
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Check commit subjects
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          ALLOW_MERGE_COMMITS: ${{ vars.ALLOW_MERGE_COMMITS }}
+        run: |
+          if [[ "${EVENT_NAME}" == pull_request ]]; then
+            range=("${PR_BASE_SHA}..HEAD")
+          elif [[ "${PUSH_BEFORE_SHA}" != 0000000000000000000000000000000000000000 ]] &&
+               git cat-file -e "${PUSH_BEFORE_SHA}^{commit}" 2> /dev/null; then
+            range=("${PUSH_BEFORE_SHA}..HEAD")
+          else
+            echo "::error::No previous tip of the branch to compare against" \
+                 "(push before: ${PUSH_BEFORE_SHA}); the pushed commits" \
+                 "were not checked."
+            exit 1
+          fi
+          options=()
+          if [[ "${ALLOW_MERGE_COMMITS}" == true ]]; then
+            options+=(--allow-merges)
+          fi
+          dev_tools/bin/edg-check-commit-subjects "${options[@]}" "${range[@]}"
