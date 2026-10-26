@@ -16328,6 +16328,7 @@ Floating-point types require additional run-time checking for NaN (see below).
   an_expr_node_ptr  op2 = op1->next;
   an_expr_node_ptr  temp1, temp2, one, zero, minus_one, cmp, unordered, eptr;
   a_boolean         op1_has_side_effects, op2_has_side_effects;
+  a_boolean         temp1_used, temp2_used;
   a_type_kind       type_kind = expr->variant.operation.type_kind;
   
   one = spaceship_result_constant_expr(1, expr->type);
@@ -16360,15 +16361,24 @@ Floating-point types require additional run-time checking for NaN (see below).
     minus_one = spaceship_result_constant_expr(-1, expr->type);
     op1_has_side_effects = node_has_side_effects(op1, (a_boolean *)NULL);
     op2_has_side_effects = node_has_side_effects(op2, (a_boolean *)NULL);
-    temp1 = make_reusable_copy(op1, op1_has_side_effects);
-    temp2 = make_reusable_copy(op2, op2_has_side_effects);
+    temp1 = make_reusable_copy_full(op1, op1_has_side_effects, &temp1_used,
+                                    /*treat_as_potential_prvalue=*/FALSE);
+    temp2 = make_reusable_copy_full(op2, op2_has_side_effects, &temp2_used,
+                                    /*treat_as_potential_prvalue=*/FALSE);
     if (type_kind_is_simple_float_like(type_kind)) {
       /* If either operand is a NaN, then return
-         std::partial_ordering::unordered:
-        (__isnan(temp1 = x) || __isnan(temp2 = y)) ? RT(unordered) :
+         std::partial_ordering::unordered.  Each operand is evaluated
+         exactly once, and the NaN test and the comparisons use the same
+         operand values:
+        ((temp1 = x), (temp2 = y), __isnan(temp1) | __isnan(temp2))
+                                                   ? RT(unordered) :
                                      temp1 < temp2 ? RT(-1) :
                                      temp2 < temp1 ? RT(1)
                                                    : RT(0)
+         An operand that needs a temporary is assigned to it before the NaN
+         test.  An operand that needs no temporary is used directly, and its
+         assignment to temp1 or temp2 is omitted; it is read only by the NaN
+         test and the comparisons.
       */
       /* Note that the value of std::partial_ordering::unordered can vary
          based on the implementation.  Look for its definition in the headers
@@ -16386,6 +16396,22 @@ Floating-point types require additional run-time checking for NaN (see below).
       check_assertion(!ovflo);
       unordered = spaceship_result_constant_expr((int)unordered_val,
                                                  expr->type);
+      /* Make "__isnan(temp1) | __isnan(temp2)". */
+      eptr = make_isnan_call(make_reusable_copy(temp1,
+                                                /*vars_can_change=*/FALSE));
+      eptr->next = make_isnan_call(make_reusable_copy(temp2,
+                                                /*vars_can_change=*/FALSE));
+      eptr = make_operator_node(eok_or, integer_type(ik_int), eptr);
+      /* Evaluate the operands that were copied to temporaries before the
+         NaN test. */
+      op1->next = NULL;
+      op2->next = NULL;
+      if (temp2_used) {
+        eptr = make_comma_node(op2, eptr);
+      }  /* if */
+      if (temp1_used) {
+        eptr = make_comma_node(op1, eptr);
+      }  /* if */
       temp2->next = temp1;
       cmp = make_operator_node(eok_lt, integer_type(ik_int), temp2);
       cmp->next = one;
@@ -16398,11 +16424,6 @@ Floating-point types require additional run-time checking for NaN (see below).
       cmp = make_operator_node(eok_lt, integer_type(ik_int), temp1);
       cmp->next = minus_one;
       cmp = make_operator_node(eok_question, expr->type, cmp);
-      op2->next = NULL;
-      eptr = make_isnan_call(op2);
-      op1->next = NULL;
-      eptr->next = make_isnan_call(op1);
-      eptr = make_operator_node(eok_lor, integer_type(ik_int), eptr);
       unordered->next = cmp;
       eptr->next = unordered;
       set_node_operator(expr, eok_question, expr->type, expr->is_lvalue, eptr);
