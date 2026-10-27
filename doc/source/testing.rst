@@ -245,6 +245,19 @@ IFC file should be force-generated for (this is unusual).  These module
 source files are compiled under the ``--module_internal_partition`` flag to
 generate both an IFC and a ``.obj`` file.
 
+Note that when testing modules in a compiler emulation mode (e.g., with
+``--gnu_version=150100`` added to ``//options_all:``), the ``--modules``
+option must also be specified:  emulation modes disable the module keywords
+by default to match the emulated compiler (no version of g++ enables them
+without ``-fmodules-ts``).  For example:
+
+.. code:: text
+
+  //options_all:--c++20 --gnu_version=150100 --modules
+
+See the ``modules/eifc/modules/import-function-gnu`` and
+``modules/eifc/modules/export-float16-gnu`` tests for examples.
+
 If ``//script:`` is specified, that script is executed instead of any other
 commands.  In general, the test type does not matter for script files except
 for checking the return code.  For example, a ``cp`` test will expect a zero
