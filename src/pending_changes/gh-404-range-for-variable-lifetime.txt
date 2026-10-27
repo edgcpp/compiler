@@ -1,0 +1,17 @@
+[GH #404]
+Lifetime of the variable of a range-based for-statement in constant evaluation
+
+During constant evaluation, the variable declared by the for-range-declaration
+of a range-based for-statement was not destroyed at the end of each
+iteration.  For example, with --c++20:
+
+  struct R { int* p; constexpr ~R() { ++*p; } };
+  constexpr int g() {
+    int n = 0;
+    R a[2] = {{&n}, {&n}};
+    for (R r : a) {}
+    return n;
+  }
+  static_assert(g() == 2);  // Previously failed.
+
+This is now fixed.

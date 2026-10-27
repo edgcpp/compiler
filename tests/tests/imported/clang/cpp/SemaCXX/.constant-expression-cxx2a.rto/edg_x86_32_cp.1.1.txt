@@ -364,20 +364,6 @@ Note: access to uninitialized object
     }
     ^
 
-"SemaCXX/constant-expression-cxx2a.cpp", line 609: error: expression must have a constant value
-    constexpr int s1 = switch_var(1);
-                       ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 601: note: attempt to access run-time storage
-        a = n;
-          ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 610: error: expression must have a constant value
-    constexpr int s2 = switch_var(2);
-                       ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 605: note: attempt to access run-time storage
-        a = n;
-          ^
-
 "SemaCXX/constant-expression-cxx2a.cpp", line 615: warning: statement is unreachable
         if (int n; false) {
         ^
@@ -385,13 +371,6 @@ Note: access to uninitialized object
 "SemaCXX/constant-expression-cxx2a.cpp", line 623: warning: missing return statement at end of non-void function "Uninit::switch_into_init_stmt"
     }
     ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 624: error: expression must have a constant value
-    static_assert(switch_into_init_stmt());
-                  ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 618: note: attempt to access run-time storage
-            n = m = 1;
-                  ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 685: error: expression must have a constant value
     static_assert(dtor_calls_dtor());
@@ -409,10 +388,6 @@ Note: access to uninitialized object
 "SemaCXX/constant-expression-cxx2a.cpp", line 689: warning: local class member function "Indestructible::~Indestructible" requires a definition
         constexpr ~Indestructible();
                   ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 732: error: static assertion failed
-    static_assert(check_abnormal_termination());
-    ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 752: error: expression must have a constant value
       new int;

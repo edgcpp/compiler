@@ -1,0 +1,23 @@
+[GH #403]
+Lifetime of condition variables in constant evaluation
+
+During constant evaluation, a variable declared in the condition of an if-,
+switch-, while-, or for-statement was destroyed before the substatement
+(and, for a for-statement, the increment expression) was evaluated, instead
+of at the end of the statement (or, for a loop, of the iteration).  The same
+was true for a variable declared in the init-statement of an if- or
+switch-statement.  For example, with --c++20:
+
+  struct S {
+    int* p;
+    constexpr ~S() { *p = *p * 10 + 2; }
+    constexpr explicit operator bool() const { return true; }
+  };
+  constexpr int f() {
+    int n = 0;
+    if (S s{&n}) n = n * 10 + 1;
+    return n;
+  }
+  static_assert(f() == 12);  // Previously failed.
+
+This is now fixed.
