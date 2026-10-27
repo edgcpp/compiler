@@ -8,9 +8,11 @@
 # pre-push hook applies, from edgchanges).  Only commits with a violation are
 # reported.
 #
-# A pull request is checked from its base commit to its head commit.  A push
-# is checked from the previous tip of main.  If that tip is unavailable (e.g.
-# after a force-push), the job fails rather than check nothing.
+# A pull request is checked from its base commit to its head commit, and a
+# merge queue entry from the branch it is merged into to its tip (so the
+# commits the queue creates are checked too).  A push is checked from the
+# previous tip of main.  If that tip is unavailable (e.g. after a force-push),
+# the job fails rather than check nothing.
 #
 # The checker and the commits come from one checkout of github.sha, the same
 # commit GitHub loads this workflow from.  For a pull request that is the merge
@@ -28,6 +30,7 @@ on:
     branches:
       - main
   pull_request:
+  merge_group:
 
 permissions:
   contents: read
@@ -58,11 +61,15 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          QUEUE_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          QUEUE_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
           PUSH_BEFORE_SHA: ${{ github.event.before }}
           ALLOW_MERGE_COMMITS: ${{ vars.ALLOW_MERGE_COMMITS }}
         run: |
           if [[ "${EVENT_NAME}" == pull_request ]]; then
             range=("${PR_BASE_SHA}..${PR_HEAD_SHA}")
+          elif [[ "${EVENT_NAME}" == merge_group ]]; then
+            range=("${QUEUE_BASE_SHA}..${QUEUE_HEAD_SHA}")
           elif [[ "${PUSH_BEFORE_SHA}" != 0000000000000000000000000000000000000000 ]] &&
                git cat-file -e "${PUSH_BEFORE_SHA}^{commit}" 2> /dev/null; then
             range=("${PUSH_BEFORE_SHA}..HEAD")
