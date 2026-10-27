@@ -291,13 +291,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
               if (false)
               ^
 
-"Test_name.c", line 704: error: static assertion failed with ""
-    static_assert(f(5) == 5, "");
-    ^
-"Test_name.c", line 704: note: the final comparison was 9 == 5
-    static_assert(f(5) == 5, "");
-                       ^
-
 "Test_name.c", line 788: error: expression must have a constant value
     constexpr int k = a.temporary++; // expected-error {{constant expression}} expected-note {{outside the expression that created the temporary}}
                       ^
@@ -727,4 +720,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     static const void *q = &(*(const struct sysrq_key_op *)0);
                        ^
 
-71 errors detected in the compilation of "Test_name.c".
+70 errors detected in the compilation of "Test_name.c".

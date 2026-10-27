@@ -1132,18 +1132,39 @@ typedef struct a_call_frame {
 			/* When we're about to evaluate a call initializing
 			   a variable, the allocation sequence number of that
 			   variable plus one.  Otherwise, 0. */
-  a_bit_field	return_active:1;
-			/* TRUE while backtracking from a return statement. */
-  a_bit_field	loop_break_active:1;
-			/* TRUE while backtracking from a break statement
-			   that applies to a loop statement. */
-  a_bit_field	continue_active:1;
-			/* TRUE while backtracking from a continue
-			   statement. */
-  a_bit_field	switch_break_active:1;
-			/* TRUE while backtracking from a break statement
-			   that applies to a switch statement. */
 } a_call_frame;
+
+
+/*
+Kinds of control transfers.  The interpretation of a statement can end
+abnormally because of a break, continue, or return statement, and the
+interpretation of a statement or an expression can end abnormally because an
+exception is thrown.  Such a transfer is recorded in the interpreter state
+(see an_interpreter_state::transfer) while it is pending: The work items
+between the origin of the transfer and its target are then visited only to
+perform their cleanup, and the target completes the transfer.
+*/
+typedef enum a_control_transfer_kind {
+  ctk_none,		/* No control transfer is pending. */
+  ctk_loop_break,	/* A break statement that applies to a loop. */
+  ctk_switch_break,	/* A break statement that applies to a switch
+			   statement. */
+  ctk_continue,		/* A continue statement. */
+  ctk_return,		/* A return statement.  The return value (if any) has
+			   been stored at the result location of the innermost
+			   call frame for a routine. */
+  ctk_throw		/* A thrown exception. */
+} a_control_transfer_kind;
+
+
+/*
+Description of a pending control transfer.
+*/
+typedef struct a_control_transfer {
+  a_control_transfer_kind
+		kind;	/* The kind of transfer (ctk_none if no transfer is
+			   pending). */
+} a_control_transfer;
 
 
 /*
@@ -1359,11 +1380,34 @@ typedef struct a_stmt_work {
 		saved_stack;
 			/* The storage stack as it was before the statement
 			   allocated its temporaries. */
+  a_storage_stack_state
+		cond_saved_stack;
+			/* For a for-statement, the storage stack as it was
+			   before its condition variable was allocated. */
+  a_storage_stack_state
+		cond_iter_stack;
+			/* For a while-statement or a for-statement with a
+			   condition variable, the storage stack as it was
+			   before the current evaluation of the loop test (if
+			   cond_iter_saved is TRUE): Restoring it destroys the
+			   condition variable.  Similarly, for a range-based
+			   for-statement, the storage stack as it was before
+			   the variable of the for-range-declaration was
+			   initialized for the current iteration. */
   a_byte	*expr_value;
 			/* Storage for the value of the statement's
 			   expression or loop test. */
+  a_byte	*incr_value;
+			/* For a for-statement or a range-based for-statement,
+			   storage for the value of the increment
+			   expression. */
   a_boolean	has_cond_var;
 			/* TRUE if a condition variable was allocated. */
+  a_boolean	cond_iter_saved;
+			/* TRUE if cond_iter_stack holds a saved state. */
+  a_boolean	loop_vars_mapped;
+			/* For a range-based for-statement, TRUE if its
+			   iteration variables have been mapped. */
   a_boolean	restore_consteval;
 			/* TRUE if allow_consteval_routine_node must be
 			   restored when the statement completes. */
@@ -1443,9 +1487,11 @@ struct an_interpreter_work_item {
 			/* Allocation sequence number of result_storage. */
   a_boolean	needs_cleanup;
 			/* TRUE if this item must still be visited after
-			   interpretation has failed, because it has to
-			   restore a saved storage stack, pop a call frame,
-			   or unmap parameters. */
+			   interpretation has failed or while a control
+			   transfer is pending, because it has to restore a
+			   saved storage stack, pop a call frame, unmap
+			   parameters, or because it can be the target of a
+			   control transfer. */
   union {
     an_expr_work
 		expr;
@@ -1948,7 +1994,22 @@ typedef struct an_interpreter_state {
   a_bit_field
 		failed:1;
 			/* TRUE if the current work-stack interpretation has
-			   failed. */
+			   failed.  A failure cannot be recovered from by the
+			   interpreted code (unlike a control transfer), so
+			   transfer.kind is ctk_none whenever failed is
+			   TRUE. */
+  a_control_transfer
+		transfer;
+			/* The control transfer (break, continue, return, or
+			   exception) that is pending in the current work-stack
+			   interpretation, if any. */
+  a_statement_ptr
+		switch_entry;
+			/* While a switch statement transfers control to one of
+			   its case labels, the stmk_switch_case statement for
+			   that label; NULL otherwise.  The statements
+			   enclosing the label are entered (without running
+			   their initial parts) until the label is reached. */
   a_const_eval_reattempt_state
 		reattempt_state;
 			/* The associated reattempt information. */
@@ -1962,6 +2023,20 @@ typedef struct an_interpreter_state {
 			/* Pointer to a doubly-linked list of allocations
 			   performed during the evaluation. */
 } an_interpreter_state;
+
+
+/*
+Return TRUE if a control transfer is pending in the given interpreter state.
+*/
+#define transfer_pending(ips)  ((ips)->transfer.kind != ctk_none)
+
+/*
+Return TRUE if the work items pushed by the current work item of the given
+interpreter state completed normally, i.e., without failing and without
+initiating a control transfer.
+*/
+#define work_completed_normally(ips)                                         \
+  (!(ips)->failed && !transfer_pending(ips))
 
 
 STATIC_THREAD unsigned long
@@ -2057,14 +2132,16 @@ static INLINE void end_work_visit(an_interpreter_state  *ips,
                                   a_boolean             pop_when_done)
 /*
 End a visit to the top work item of the work stack of *ips.  The item is
-popped, and a result of FALSE then means that the interpretation has failed,
-unless pop_when_done is FALSE: The item stays on the stack in that case, to be
-visited again once the items it pushed have been interpreted, and result says
-nothing about it yet.
+popped, and a result of FALSE then means that the interpretation has failed
+-- unless a control transfer is pending, in which case the item has merely
+completed abnormally and the transfer propagates to the items below.  If
+pop_when_done is FALSE, the item stays on the stack, to be visited again once
+the items it pushed have been interpreted, and result says nothing about it
+yet.
 */
 {
   if (pop_when_done) {
-    if (!result) ips->failed = TRUE;
+    if (!result && !transfer_pending(ips)) ips->failed = TRUE;
     pop_work(ips);
   }  /* if */
 }  /* end_work_visit */
@@ -2328,10 +2405,6 @@ Macros to push and pop call frames.
     (p_frame)->result_loc = (result_cap);                                    \
     (p_frame)->entry_seq_number = (ips)->curr_alloc_seq_number;              \
     (p_frame)->dest_seq_number_plus_one = 0;                                 \
-    (p_frame)->return_active = FALSE;                                        \
-    (p_frame)->loop_break_active = FALSE;                                    \
-    (p_frame)->continue_active = FALSE;                                      \
-    (p_frame)->switch_break_active = FALSE;                                  \
     (ips)->curr_call_frame = (p_frame);                                      \
     (ips)->call_seen = TRUE;                                                 \
   }
@@ -2385,10 +2458,6 @@ call frame).
     (p_frame)->variant.expr = (stmt_expr);                                   \
     (p_frame)->result_loc = (result_cap);                                    \
     (p_frame)->entry_seq_number = (ips)->curr_alloc_seq_number;              \
-    (p_frame)->return_active = FALSE;                                        \
-    (p_frame)->loop_break_active = FALSE;                                    \
-    (p_frame)->continue_active = FALSE;                                      \
-    (p_frame)->switch_break_active = FALSE;                                  \
     (ips)->curr_call_frame = (p_frame);                                      \
     (ips)->call_seen = FALSE;                                                \
   }
@@ -2987,6 +3056,8 @@ result of calls to std::is_constant_evaluated().
   ips->disallow_mutable_field_load = FALSE;
   ips->allow_consteval_routine_node = FALSE;
   ips->failed = FALSE;
+  ips->transfer.kind = ctk_none;
+  ips->switch_entry = NULL;
   ips->reattempt_state = {};
   ips->dyn_allocations = NULL;
   n_active_interpreter_states += 1;
@@ -3337,13 +3408,25 @@ Macros to save and restore an allocation stack state.
 }
 
 
+/*
+Restore the storage stack state saved in state, after performing the
+destructions registered since it was saved.  That is done if result_flag is
+TRUE, but also if a control transfer is pending (that has not failed): The
+destructions are then part of unwinding the state.  result_flag is set to FALSE
+if a destruction fails or throws.
+*/
 #define restore_storage_stack(ips, state, result_flag)                       \
 {                                                                            \
-  a_byte  *curr_large_blocks;                                                \
-  if ((ips)->storage_stack.destructions != NULL && (result_flag)) {          \
-    (result_flag) = perform_destructions(ips);                               \
+  a_byte     *curr_large_blocks;                                             \
+  a_boolean  unwind_storage = (result_flag) ||                               \
+                              (!(ips)->failed && transfer_pending(ips));     \
+  if ((ips)->storage_stack.destructions != NULL && unwind_storage) {         \
+    if (!perform_destructions(ips)) {                                        \
+      (result_flag) = FALSE;                                                 \
+      unwind_storage = transfer_pending(ips);                                \
+    }  /* if */                                                              \
   }  /* if */                                                                \
-  if ((result_flag)) {                                                       \
+  if (unwind_storage) {                                                      \
     curr_large_blocks = (ips)->storage_stack.large_blocks;                   \
     remove_from_live_set(&(ips)->live_set,                                   \
                          (ips)->storage_stack.alloc_seq());                  \
@@ -5981,7 +6064,12 @@ static a_boolean do_constexpr_dynamic_init(
 
 static a_boolean perform_destructions(an_interpreter_state  *ips)
 /*
-Perform the destructions for the current storage stack.
+Perform the destructions for the current storage stack, and return TRUE if
+they all completed normally.  Return FALSE if one of them failed (in which case
+the remaining ones are abandoned) or exited by throwing an exception (in which
+case the remaining ones are still performed, while the exception propagates).
+A control transfer that is pending when this is called is preserved (see
+run_pushed_work).
 */
 {
   a_boolean  result = TRUE;
@@ -6011,7 +6099,7 @@ Perform the destructions for the current storage stack.
                              sub_obj + (a_byte_count)(k-1)*size,
                              complete_obj, nonvirtual)) {
         result = FALSE;
-        goto done;
+        if (!transfer_pending(ips)) goto done;
       }  /* if */
     }  /* for */
     dlist = dlist->next;
@@ -6203,21 +6291,18 @@ move, or NULL.
 }  /* push_dyn_init_work */
 
 
-static INLINE a_boolean control_transfer_active(an_interpreter_state  *ips)
+static a_boolean routine_body_completed(an_interpreter_state  *ips)
 /*
-Return TRUE if the current call frame has an unresolved return, break, or
-continue.
+The top-level block of a routine that was pushed as a work item has just been
+interpreted.  Complete a pending return statement, and return TRUE if the
+block completed normally or through such a return statement.
 */
 {
-  a_call_frame_ptr  frame = ips->curr_call_frame;
-  a_boolean         active = FALSE;
-
-  if (frame != NULL) {
-    active = frame->return_active || frame->loop_break_active ||
-             frame->continue_active || frame->switch_break_active;
+  if (ips->transfer.kind == ctk_return) {
+    ips->transfer.kind = ctk_none;
   }  /* if */
-  return active;
-}  /* control_transfer_active */
+  return work_completed_normally(ips);
+}  /* routine_body_completed */
 
 
 static void process_expr_work(an_interpreter_state      *ips,
@@ -6276,30 +6361,50 @@ static a_boolean run_pushed_work(an_interpreter_state      *ips,
                                  an_interpreter_work_item  *base)
 /*
 Interpret the work items that were pushed on top of base, which is the item
-that was topmost before, and return TRUE if they all succeeded.  Once
-interpretation has failed, the remaining items are discarded without being
-interpreted, except for those that still have cleanup to perform.  ips->failed
-describes the interpretation that base belongs to and is left unchanged, so
-that a caller which recovers from a failure of the pushed work can continue.
+that was topmost before, and return TRUE if they all completed normally.  Once
+interpretation has failed, or while a control transfer is pending, the
+remaining items are discarded without being interpreted, except for those that
+still have cleanup to perform (or that can be the target of the transfer).
+ips->failed describes the interpretation that base belongs to and is left
+unchanged, so that a caller which recovers from a failure of the pushed work
+can continue.
+
+A control transfer that is pending on entry (e.g., while destructors run during
+the unwinding for that transfer) is set aside during the interpretation of the
+pushed items.  If they complete normally, it is reinstated, and TRUE is
+returned.  If they initiate a control transfer of their own that is not
+completed within them, FALSE is returned with that transfer pending, and it
+replaces the one set aside.  If they fail, FALSE is returned with no transfer
+pending.
 */
 {
-  a_work_stack  *stack = ips->work_stack;
-  a_boolean     saved_failed = ips->failed;
-  a_boolean     result;
+  a_work_stack        *stack = ips->work_stack;
+  a_boolean           saved_failed = ips->failed;
+  a_control_transfer  saved_transfer = ips->transfer;
+  a_boolean           result;
 
   ips->failed = FALSE;
+  ips->transfer.kind = ctk_none;
   while (stack->top != base) {
     an_interpreter_work_item  *item = stack->top;
     /* The walk has to stay above base: Otherwise this loop would unwind the
        stack past its floor. */
     check_assertion(item->depth > base->depth);
-    if (ips->failed && !item->needs_cleanup) {
+    if ((ips->failed || transfer_pending(ips)) && !item->needs_cleanup) {
       pop_work(ips);
     } else {
       process_work_item(ips, item);
     }  /* if */
   }  /* while */
-  result = !ips->failed;
+  if (ips->failed) {
+    ips->transfer.kind = ctk_none;
+    result = FALSE;
+  } else if (!transfer_pending(ips)) {
+    ips->transfer = saved_transfer;
+    result = TRUE;
+  } else {
+    result = FALSE;
+  }  /* if */
   ips->failed = saved_failed;
   return result;
 }  /* run_pushed_work */
@@ -7854,6 +7959,32 @@ activations of the given variable.
 
 #endif /* DEBUG */
 
+static a_var_postfix *var_postfix_for(an_interpreter_state  *ips,
+                                      a_variable_ptr        vp,
+                                      a_byte                *var_storage)
+/*
+Return a pointer to the postfix of var_storage, the storage mapped to the
+variable vp.
+*/
+{
+  a_boolean     result = TRUE;
+  a_type_ptr    vtp = skip_typerefs(vp->type);
+  a_byte_count  n_bytes = value_bytes_for_type(ips, vtp, &result);
+
+  do_host_alignment(&n_bytes);
+  return (a_var_postfix*)(var_storage+n_bytes);
+}  /* var_postfix_for */
+
+
+/*
+Return TRUE if the variable storage with the given postfix was allocated in
+the current call frame (rather than for an activation of the variable that
+precedes it, such as in an outer recursive call).
+*/
+#define var_storage_is_in_curr_frame(ips, postfix)                           \
+  ((postfix)->alloc_seq_number >= (ips)->curr_call_frame->entry_seq_number)
+
+
 static void do_constexpr_unmap_variable(an_interpreter_state  *ips,
                                         a_variable_ptr        vp)
 /*
@@ -7865,13 +7996,8 @@ mapping if there was one.
 
   get_mapped_ptr(&ips->map, vp, var_storage);
   if (var_storage != NULL) {
-    a_boolean      result = TRUE;
-    a_type_ptr     vtp = skip_typerefs(vp->type);
-    a_byte_count   n_bytes = value_bytes_for_type(ips, vtp, &result);
-    a_var_postfix  *postfix;
-    do_host_alignment(&n_bytes);
-    postfix = (a_var_postfix*)(var_storage+n_bytes);
-    if (postfix->alloc_seq_number < ips->curr_call_frame->entry_seq_number) {
+    a_var_postfix  *postfix = var_postfix_for(ips, vp, var_storage);
+    if (!var_storage_is_in_curr_frame(ips, postfix)) {
       /* The current activation precedes the current call frame.  In other
          words, the given variable was not activated in this frame and hence
          its storage should not be unmapped. */
@@ -8258,15 +8384,17 @@ static a_boolean do_constexpr_condition(a_boolean             has_cond_var,
 Evaluate a condition expression (expr) of a statement (i.e., the <expr> in
 "if (<expr>) ...", "switch (<expr>) ...", etc.) and place the result in the
 storage pointed to by value.  If has_cond_var is TRUE, expr is an enk_condition
-node (such nodes are not handled by do_constexpr_expression).  expr_type is
-skip_typerefs(expr->type).
+node (such nodes are not handled by do_constexpr_expression), and the
+destructions of the variables it declares are registered on the current storage
+stack: They are performed when the statement completes (when the state saved by
+do_constexpr_condition_alloc is restored), or, for a loop, at the end of the
+iteration (see eval_loop_test).  expr_type is skip_typerefs(expr->type).
 */
 {
   a_boolean              result = TRUE;
   a_storage_stack_state  saved_stack_for_full_expr;
   an_expr_node_ptr       expr_to_evaluate;
 
-  save_storage_stack((ips), saved_stack_for_full_expr);
   if (has_cond_var) {
     a_condition_supplement_ptr  csp = expr->variant.condition;
     a_dynamic_init_ptr          cond_var_init = csp->dynamic_init;
@@ -8282,6 +8410,7 @@ skip_typerefs(expr->type).
             if (!do_constexpr_init_variable(
                                          ips, vp, (a_byte*)NULL,
                                          &vp->source_corresp.decl_position)) {
+              result = FALSE;
               break;
             }  /* if */
           }  /* if */
@@ -8306,6 +8435,7 @@ skip_typerefs(expr->type).
         check_assertion(local_result);
         get_stack_bytes(ips, cond_var, var_bytes);
         memzero(var_bytes, size_t_arg(n_bytes));
+        result = FALSE;
       }  /* if */
     }  /* if */
     expr_to_evaluate = csp->expr;
@@ -8314,12 +8444,15 @@ skip_typerefs(expr->type).
     expr_to_evaluate = expr;
   }  /* if */
   if (result) {
+    save_storage_stack(ips, saved_stack_for_full_expr);
     if (do_constexpr_expression(ips, expr_to_evaluate, value, value)) {
       release_address_structures(expr, expr_type, value);
-      restore_storage_stack(ips, saved_stack_for_full_expr, result);
     } else {
       result = FALSE;
     }  /* if */
+    /* This only has an effect if the evaluation succeeded or a control
+       transfer is propagating out of it. */
+    restore_storage_stack(ips, saved_stack_for_full_expr, result);
   }  /* if */
   return result;
 }  /* do_constexpr_condition */
@@ -8414,16 +8547,67 @@ be called for the local static variables associated with constructs like
 }  /* init_static_variables */
 
 
+static a_statement_ptr substatement_leading_to_switch_entry(
+                                                  an_interpreter_state  *ips,
+                                                  a_statement_ptr       stmt)
+/*
+A switch statement is transferring control to the case label ips->switch_entry,
+which should be nested in stmt.  Return the statement nested directly in stmt
+that is or contains that case label, or NULL if there is none.
+*/
+{
+  a_statement_ptr  substmt = ips->switch_entry;
+
+  while (substmt != NULL && substmt->parent != stmt) {
+    substmt = substmt->parent;
+  }  /* while */
+  return substmt;
+}  /* substatement_leading_to_switch_entry */
+
+
+static a_boolean statement_can_be_entered_by_switch(a_statement_ptr  stmt,
+                                                    a_statement_ptr  substmt)
+/*
+A switch statement is transferring control to a case label within substmt,
+which is nested directly in stmt.  Return TRUE if stmt is a statement that can
+be entered that way: A block, an if-statement, or a loop other than a
+range-based for loop (the latter cannot be entered without bypassing the
+initialization of its variables), entered through its body.
+*/
+{
+  a_boolean  result;
+
+  switch (stmt->kind) {
+    case stmk_block:
+    case stmk_if:
+      result = TRUE;
+      break;
+    case stmk_while:
+    case stmk_end_test_while:
+      result = (substmt == stmt->variant.loop_statement);
+      break;
+    case stmk_for:
+      result = (substmt == stmt->variant.for_loop.statement);
+      break;
+    default:
+      result = FALSE;
+  }  /* switch */
+  return result;
+}  /* statement_can_be_entered_by_switch */
+
+
 static void process_block_work(an_interpreter_state      *ips,
                                an_interpreter_work_item  *item)
 /*
 Perform the next visit to the given iwk_block work item, interpreting the
-statements of its block one per visit.
+statements of its block one per visit.  If a switch statement is transferring
+control to a case label within the block, interpretation starts with the
+statement that is or contains that label.
 */
 {
   a_statement_ptr  block_stmt = (a_statement_ptr)item->il_entry;
   a_scope_ptr      scope = item->variant.block.scope;
-  a_boolean        result = !ips->failed;
+  a_boolean        result = work_completed_normally(ips);
   a_boolean        pop_when_done = TRUE;
   a_boolean        local_storage;
   a_statement_ptr  stmt;
@@ -8465,6 +8649,14 @@ statements of its block one per visit.
         }  /* if */
       }  /* if */
     }  /* if */
+    if (result && ips->switch_entry != NULL) {
+      stmt = substatement_leading_to_switch_entry(ips, block_stmt);
+      if (stmt == NULL) {
+        info_with_pos(ec_constexpr_statement_cannot_be_interpreted,
+                      &block_stmt->position, ips);
+        do_constexpr_fail(result);
+      }  /* if */
+    }  /* if */
     item->variant.block.has_local_storage = local_storage;
     item->variant.block.next_stmt = stmt;
     item->phase = iwp_1st_resume;
@@ -8473,7 +8665,7 @@ statements of its block one per visit.
   }  /* if */
   if (result) {
     stmt = item->variant.block.next_stmt;
-    if (stmt != NULL && !control_transfer_active(ips)) {
+    if (stmt != NULL) {
       item->variant.block.next_stmt = stmt->next;
       push_stmt_work(ips, stmt);
       pop_when_done = FALSE;
@@ -8483,14 +8675,23 @@ statements of its block one per visit.
   /* Release and unmap the local storage if necessary. */
   if (local_storage) {
     a_variable_ptr  vp = scope->nonstatic_variables;
+    a_boolean       vars_initialized =
+                              result || (transfer_pending(ips) &&
+                                         ips->transfer.kind != ctk_throw);
     for (; vp != NULL; vp = vp->next) {
       if (skip_typerefs(vp->type)->kind == (a_type_kind)tk_pointer) {
         a_byte  *var_bytes;
         get_stack_bytes(ips, vp, var_bytes);
-        if (var_bytes != NULL && result) {
-          /* If interpretation failed, the initialization state of var_bytes
-             is uncertain.  Rely on reclaim_variant_path_entries to recover
-             entries in that case. */
+        if (var_bytes != NULL && vars_initialized &&
+            var_storage_is_in_curr_frame(
+                                ips, var_postfix_for(ips, vp, var_bytes)) &&
+            complete_object_is_initialized(var_bytes)) {
+          /* Release the variant path of a pointer variable of this block
+             that has a value.  The variable may not have been reached (or
+             been given a value) if a control transfer left the block early.
+             If interpretation failed or an exception was thrown, the
+             initialization state of var_bytes is uncertain.  Rely on
+             reclaim_variant_path_entries to recover entries in that case. */
           release_variant_path_if_needed(var_bytes);
         }  /* if */
       }  /* if */
@@ -8517,186 +8718,215 @@ Interpret the given block statement and its associated scope (if any).
 }  /* do_constexpr_block_statement */
 
 
-static a_boolean do_constexpr_for_statement(an_interpreter_state  *ips,
-                                            a_statement_ptr       stmt,
-                                            a_boolean             do_continue)
+static a_boolean continue_loop_after_body(an_interpreter_state  *ips,
+                                          a_boolean             *p_result)
 /*
-Interpret the given for-statement.  If do_continue is TRUE, we have jumped
-into the body of the loop and encountered a "continue" statement: Skip the
-initialization and execute the increment before the main iteration.
+The body of a loop statement has just been interpreted, and *p_result is TRUE
+if it completed normally.  Complete a pending break or continue statement that
+applies to the loop, and return TRUE if the loop proceeds to its next iteration
+(i.e., to its increment expression, if any, and its test).  Otherwise,
+*p_result is TRUE if the loop has completed normally (because of a break
+statement), and FALSE if its interpretation failed or a control transfer
+propagates out of it.
 */
 {
-  a_boolean              result = TRUE;
-  a_storage_stack_state  saved_stack, cond_saved_stack;
-  a_for_loop_ptr         loop_info = stmt->variant.for_loop.extra_info;
-  a_statement_ptr        init = loop_info->initialization;
+  a_boolean  proceed = *p_result;
 
-  /* We may have to allocate storage for the increment expression result and/or
-     variables declared in the for-init declaration.  Save the current storage
-     state to enable deallocation when we're done. */
-  save_storage_stack(ips, saved_stack);
-  /* Run the initialization statement (if any). */
-  if (init != NULL && !do_continue && !do_constexpr_statement(ips, init)) {
-    do_constexpr_fail(result);
-  } else {
-    an_expr_node_ptr  expr = stmt->expr, incr = loop_info->increment;
-    a_byte            *expr_value, *incr_value;
-    a_type_ptr        tp, incr_type;
-    a_byte_count      n_bytes;
-    a_boolean         ovfl, has_cond_var = FALSE;
-    a_host_large_integer
-                      bool_val = FALSE;
-    if (expr != NULL) {
-      /* Allocate storage for the test expression result (a boolean). */
-      tp = skip_typerefs(expr->type);
-      n_bytes = expr_result_size(ips, expr, tp, &result);
-      if (!result) goto unmap_storage;
-      result = alloc_complete_object(ips, n_bytes, tp, expr_value);
-      if (!result) goto unmap_storage;
-      /* Check if we have to allocate a condition variable. */
-      has_cond_var = node_is(expr, enk_condition);
-      if (has_cond_var &&
-          !do_constexpr_condition_alloc(ips, expr, &cond_saved_stack)) {
-        do_constexpr_fail(result);
-        has_cond_var = FALSE;
-        goto unmap_storage;
-      }  /* if */
-    } else {
-      /* Needed only to avoid spurious GNU compiler optimizer
-         warnings. */
-      tp = NULL;
-      expr_value = NULL;
-    }  /* if */
-    incr = loop_info->increment;
-    if (incr != NULL) {
-      incr_type = skip_typerefs(incr->type);
-      n_bytes = expr_result_size(ips, incr, incr_type, &result);
-      if (!result) goto unmap_storage;
-      result = alloc_complete_object(ips, n_bytes, incr_type, incr_value);
-      if (!result) goto unmap_storage;
-      if (do_continue) {
-        /* This function was called to implement a "continue" statement after
-           having jumped into the loop body (through a switch statement). The
-           loop increment has to be executed first. */
-        do_constexpr_full_expression(
-                                   ips, incr, incr_value, incr_value, result);
-        if (result) {
-          release_address_structures(incr, incr_type, incr_value);
-        } else {
-          /* The initialization state of incr_value is uncertain.
-             Rely on reclaim_variant_path_entries to recover entries
-             in that case. */
-        }  /* if */
-      }  /* if */
-    } else {
-      /* To avoid spurious warnings from certain tools. */
-      incr_type = NULL;
-      incr_value = expr_value;
-    }  /* if */
-    do {
-      /* Evaluate the test expression. */
-      if (cost_exceeded(ips)) {
-        report_excessive_cost(ips);
-        do_constexpr_fail(result);
-      } else if (expr != NULL) {
-        result = do_constexpr_condition(has_cond_var, ips, expr, tp,
-                                        expr_value);
-        ips->cost += 1;
-      }  /* if */
-      if (result) {
-        /* Evaluation of the test expression succeeded.  Get its value
-           to see if the dependent statement should be executed. */
-        if (expr != NULL) {
-          get_int_val_from(expr_value, tp, bool_val, ovfl);
-        } else {
-          bool_val = TRUE;
-          ovfl = FALSE;
-        }  /* if */
-        if (!ovfl && bool_val) {
-          /* Execute the dependent statement. */
-          result = do_constexpr_statement(
-                                       ips, stmt->variant.for_loop.statement);
-          if (result) {
-            /* Execution of the dependent statement succeeded, so evaluate
-               the increment expression (if any) unless we hit a branching
-               statement. */
-            if (ips->curr_call_frame->return_active) {
-              /* Stop the loop (leave the flag active since we may have to
-                 break out of other constructs). */
-              bool_val = FALSE;
-            } else if (ips->curr_call_frame->loop_break_active) {
-              /* Stop the loop (which completes the execution of the break
-                 statement). */
-              ips->curr_call_frame->loop_break_active = FALSE;
-              bool_val = FALSE;
-            } else {
-              if (ips->curr_call_frame->continue_active) {
-                /* Continue, but clear the continue_active flag since we've
-                   reached the point of continuation. */
-                ips->curr_call_frame->continue_active = FALSE;
-              }  /* if */
-              if (incr != NULL) {
-                do_constexpr_full_expression(
-                                   ips, incr, incr_value, incr_value, result);
-                if (result) {
-                  release_address_structures(incr, incr_type, incr_value);
-                } else {
-                  /* The initialization state of incr_value is uncertain.
-                     Rely on reclaim_variant_path_entries to recover entries
-                     in that case. */
-                }  /* if */
-              }  /* if */
-            }  /* if */
-          }  /* if */
-        }  /* if */
-      }   /* if */
-      if (has_cond_var) {
-        do_constexpr_condition_cleanup(ips, expr);
-      }  /* if */
-    } while (result && bool_val);
-unmap_storage:
-    if (has_cond_var) {
-      do_constexpr_condition_dealloc(ips, expr, &cond_saved_stack, &result);
+  if (!proceed && !ips->failed) {
+    if (ips->transfer.kind == ctk_continue) {
+      ips->transfer.kind = ctk_none;
+      proceed = TRUE;
+      *p_result = TRUE;
+    } else if (ips->transfer.kind == ctk_loop_break) {
+      ips->transfer.kind = ctk_none;
+      *p_result = TRUE;
     }  /* if */
   }  /* if */
-  { /* Unmap the local storage if necessary. */
-    a_scope_ptr  init_scope = loop_info->for_init_scope;
-    if (init_scope != NULL) {
-      a_variable_ptr  vp = init_scope->nonstatic_variables;
-      while (vp != NULL) {
-        do_constexpr_unmap_variable(ips, vp);
-        vp = vp->next;
-      }  /* while */
-    }  /* if */
-  }
-  restore_storage_stack(ips, saved_stack, result);
-  return result;
-}  /* do_constexpr_for_statement */
+  return proceed;
+}  /* continue_loop_after_body */
 
 
-static a_boolean do_constexpr_range_based_for_statement(
-                                                   an_interpreter_state  *ips,
-                                                   a_statement_ptr       stmt)
+static void end_cond_var_iteration(an_interpreter_state  *ips,
+                                   a_stmt_work           *sw,
+                                   a_boolean             *p_result)
 /*
-Interpret the given range-based for-statement.
+An iteration of a while-statement or a for-statement whose loop test declares
+a condition variable, or of a range-based for-statement, has ended: Destroy
+the condition variable or the variable of the for-range-declaration (if it
+was initialized), by restoring sw->cond_iter_stack.  Set *p_result to FALSE if
+that fails.
+*/
+{
+  if (sw->cond_iter_saved) {
+    sw->cond_iter_saved = FALSE;
+    restore_storage_stack(ips, sw->cond_iter_stack, *p_result);
+  }  /* if */
+}  /* end_cond_var_iteration */
+
+
+static a_boolean eval_loop_test(an_interpreter_state  *ips,
+                                a_stmt_work           *sw,
+                                an_expr_node_ptr      expr,
+                                a_boolean             *p_result)
+/*
+Evaluate the test expression expr of a while-statement or a for-statement into
+sw->expr_value (sw->has_cond_var indicates whether expr declares a condition
+variable), and return TRUE if the body of the loop is to be interpreted.  expr
+is NULL for a for-statement without a test expression.  *p_result is set to
+FALSE if the evaluation fails or exits by a control transfer.  The condition
+variable of the previous iteration (if any) is destroyed first.
+*/
+{
+  a_boolean  enter_body = FALSE;
+
+  if (sw->has_cond_var) {
+    end_cond_var_iteration(ips, sw, p_result);
+    if (*p_result) {
+      save_storage_stack(ips, sw->cond_iter_stack);
+      sw->cond_iter_saved = TRUE;
+    }  /* if */
+  }  /* if */
+  if (!*p_result) {
+    /* The destruction of the previous condition variable failed. */
+  } else if (cost_exceeded(ips)) {
+    report_excessive_cost(ips);
+    do_constexpr_fail(*p_result);
+  } else if (expr == NULL) {
+    enter_body = TRUE;
+  } else {
+    a_type_ptr  tp = skip_typerefs(expr->type);
+    *p_result = do_constexpr_condition(sw->has_cond_var, ips, expr, tp,
+                                       sw->expr_value);
+    ips->cost += 1;
+    if (*p_result) {
+      a_host_large_integer  bool_val;
+      a_boolean             ovfl;
+      get_int_val_from(sw->expr_value, tp, bool_val, ovfl);
+      enter_body = !ovfl && bool_val;
+    }  /* if */
+  }  /* if */
+  return enter_body;
+}  /* eval_loop_test */
+
+
+static a_boolean eval_loop_increment(an_interpreter_state  *ips,
+                                     an_expr_node_ptr      incr,
+                                     a_byte                *incr_value)
+/*
+Evaluate the increment expression incr (if not NULL) of a for-statement or a
+range-based for-statement into incr_value.  Return TRUE if it completed
+normally.
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (incr != NULL) {
+    a_type_ptr  incr_type = skip_typerefs(incr->type);
+    do_constexpr_full_expression(ips, incr, incr_value, incr_value, result);
+    if (result) {
+      release_address_structures(incr, incr_type, incr_value);
+    } else {
+      /* The initialization state of incr_value is uncertain.  Rely on
+         reclaim_variant_path_entries to recover entries in that case. */
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* eval_loop_increment */
+
+
+static a_boolean begin_for_loop(an_interpreter_state  *ips,
+                                a_stmt_work           *sw,
+                                a_statement_ptr       stmt)
+/*
+The initialization (if any) of the given for-statement has been interpreted.
+Allocate the storage for the test expression, the condition variable, and the
+increment expression of the loop.  Return TRUE if successful.
+*/
+{
+  a_boolean         result = TRUE;
+  an_expr_node_ptr  expr = stmt->expr,
+                    incr = stmt->variant.for_loop.extra_info->increment;
+  a_type_ptr        tp;
+  a_byte_count      n_bytes;
+
+  sw->expr_value = NULL;
+  sw->incr_value = NULL;
+  if (expr != NULL) {
+    /* Allocate storage for the test expression result (a boolean). */
+    tp = skip_typerefs(expr->type);
+    n_bytes = expr_result_size(ips, expr, tp, &result);
+    if (result) {
+      result = alloc_complete_object(ips, n_bytes, tp, sw->expr_value);
+    }  /* if */
+    /* Check if we have to allocate a condition variable. */
+    if (result && node_is(expr, enk_condition)) {
+      if (do_constexpr_condition_alloc(ips, expr, &sw->cond_saved_stack)) {
+        sw->has_cond_var = TRUE;
+      } else {
+        do_constexpr_fail(result);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  if (result && incr != NULL) {
+    tp = skip_typerefs(incr->type);
+    n_bytes = expr_result_size(ips, incr, tp, &result);
+    if (result) {
+      result = alloc_complete_object(ips, n_bytes, tp, sw->incr_value);
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* begin_for_loop */
+
+
+static void end_for_loop(an_interpreter_state  *ips,
+                         a_stmt_work           *sw,
+                         a_statement_ptr       stmt,
+                         a_boolean             *p_result)
+/*
+The interpretation of the given for-statement has ended.  Release the storage
+allocated for it, and unmap the variables declared in its for-init-statement.
+Set *p_result to FALSE if that fails (due to a failing destructor evaluation).
+*/
+{
+  a_scope_ptr  init_scope = stmt->variant.for_loop.extra_info->for_init_scope;
+
+  if (sw->has_cond_var) {
+    end_cond_var_iteration(ips, sw, p_result);
+    do_constexpr_condition_dealloc(ips, stmt->expr, &sw->cond_saved_stack,
+                                   p_result);
+  }  /* if */
+  if (init_scope != NULL) {
+    a_variable_ptr  vp = init_scope->nonstatic_variables;
+    for (; vp != NULL; vp = vp->next) {
+      do_constexpr_unmap_variable(ips, vp);
+    }  /* for */
+  }  /* if */
+  restore_storage_stack(ips, sw->saved_stack, *p_result);
+}  /* end_for_loop */
+
+
+static a_boolean begin_range_based_for(an_interpreter_state  *ips,
+                                       a_stmt_work           *sw,
+                                       a_statement_ptr       stmt)
+/*
+The initialization (if any) of the given range-based for-statement has been
+interpreted.  Allocate its iteration variables, initialize the range variable
+and its delimiters, and allocate the storage for the loop test and the
+increment expression.  Return TRUE if successful.
 */
 {
   a_boolean              result = TRUE;
-  a_storage_stack_state  saved_stack;
   a_range_based_for_loop_ptr
                          loop_info =
                                 stmt->variant.range_based_for_loop.extra_info;
+  an_expr_node_ptr       expr = loop_info->ne_call_expr,
+                         incr = loop_info->incr_call_expr;
   a_variable_ptr         vp[4];
   a_byte                 *var_storage[4];
+  a_type_ptr             tp;
+  a_byte_count           n_bytes;
   int                    k;
-  a_dynamic_init_ptr     dip = NULL;
 
-  save_storage_stack(ips, saved_stack);
-  if (loop_info->initialization != NULL &&
-      !do_constexpr_statement(ips, loop_info->initialization)) {
-    do_constexpr_fail(result);
-    goto done;
-  }  /* if */
   /* Acquire storage for the iteration variables. */
   vp[0] = loop_info->iterator;
   vp[1] = loop_info->range;
@@ -8708,149 +8938,137 @@ Interpret the given range-based for-statement.
     do_constexpr_fail(result);
     goto done;
   }  /* if */
+  sw->loop_vars_mapped = TRUE;
   for (k = 0; k<4; ++k) {
     var_storage[k] = do_constexpr_alloc_variable(ips, vp[k], &result);
     if (result) mark_complete_object_initialized(var_storage[k]);
   }  /* for */
-  if (!result) goto unmap_storage;
+  if (!result) goto done;
   /* Initialize the range and its delimiters: */
   for (k = 1; k<4; ++k) {
     if (!do_constexpr_init_variable(ips, vp[k], var_storage[k],
                                     &stmt->position)) {
       do_constexpr_fail(result);
-      break;
+      goto done;
     }  /* if */
   }  /* for */
-  if (result) {
-    an_expr_node_ptr  expr = loop_info->ne_call_expr,
-                      incr = loop_info->incr_call_expr;
-    a_byte            *expr_value, *incr_value;
-    a_type_ptr        tp = skip_typerefs(expr->type),
-                      incr_type = skip_typerefs(incr->type);
-    a_byte_count      n_bytes;
-    a_boolean         ovfl;
-    a_host_large_integer
-                      bool_val;
-    /* Allocate storage for the loop-test result (a boolean) and the
-       incrementation result. */
-    n_bytes = expr_result_size(ips, expr, tp, &result);
-    if (!result) goto unmap_storage;
-    result = alloc_complete_object(ips, n_bytes, tp, expr_value);
-    if (!result) goto unmap_storage;
-    n_bytes = expr_result_size(ips, incr, incr_type, &result);
-    if (!result) goto unmap_storage;
-    result = alloc_complete_object(ips, n_bytes, incr_type, incr_value);
-    if (!result) goto unmap_storage;
-    if (vp[0]->init_kind != (an_init_kind)initk_dynamic ||
-        vp[0]->initializer.dynamic == NULL) {
-      /* This is possible in some error situations. */
-      do_constexpr_fail(result);
-      expect_error();
-    } else {
-      dip = vp[0]->initializer.dynamic;
-    }  /* if */
-    if (!result) goto unmap_storage;
-    do {
-      /* Evaluate the test expression. */
-      if (cost_exceeded(ips)) {
-        report_excessive_cost(ips);
-        do_constexpr_fail(result);
-      } else {
-        do_constexpr_full_expression(
-                                   ips, expr, expr_value, expr_value, result);
-        release_address_structures(expr, tp, expr_value);
-        ips->cost += 1;
-      }  /* if */
-      if (result) {
-        /* Evaluation of the test expression succeeded.  Get its value
-           to see if the dependent statement should be executed. */
-        get_int_val_from(expr_value, tp, bool_val, ovfl);
-        if (!ovfl && bool_val) {
-          /* Initialize the iterator variable: */
-          a_constexpr_address  var_addr;
-          set_active_address(ips, &var_addr, var_storage[0], var_storage[0]);
-          check_assertion(dip != NULL);
-          if (!do_constexpr_dynamic_init(ips, dip, &stmt->position,
-                                         var_addr)) {
-            do_constexpr_fail(result);
-            break;
-          }  /* if */
-          /* Execute the dependent statement. */
-          result = do_constexpr_statement(
-                           ips, stmt->variant.range_based_for_loop.statement);
-          if (result) {
-            /* Execution of the dependent statement succeeded, so evaluate
-               the increment expression (if any) unless we hit a branching
-               statement. */
-            if (ips->curr_call_frame->return_active) {
-              /* Break out of the loop (leave the flag active since we may
-                 have to break out of other constructs). */
-              break;
-            } else if (ips->curr_call_frame->loop_break_active) {
-              /* Break out of the loop (which completes the execution of
-                 the break statement). */
-              ips->curr_call_frame->loop_break_active = FALSE;
-              break;
-            } else if (ips->curr_call_frame->continue_active) {
-              /* Continue, but clear the continue_active flag since we've
-                 reached the point of continuation. */
-              ips->curr_call_frame->continue_active = FALSE;
-            }  /* if */
-            do_constexpr_full_expression(
-                                   ips, incr, incr_value, incr_value, result);
-            release_address_structures(incr, incr_type, incr_value);
-          }  /* if */
-        }  /* if */
-      }   /* if */
-    } while (result && bool_val);
-  }  /* if */
-unmap_storage:
-  /* Unmap the local storage. */
-  for (k = 4; k--;) {
-    do_constexpr_unmap_variable(ips, vp[k]);
+  /* Allocate storage for the loop-test result (a boolean) and the
+     incrementation result. */
+  tp = skip_typerefs(expr->type);
+  n_bytes = expr_result_size(ips, expr, tp, &result);
+  if (!result) goto done;
+  result = alloc_complete_object(ips, n_bytes, tp, sw->expr_value);
+  if (!result) goto done;
+  tp = skip_typerefs(incr->type);
+  n_bytes = expr_result_size(ips, incr, tp, &result);
+  if (!result) goto done;
+  result = alloc_complete_object(ips, n_bytes, tp, sw->incr_value);
+  if (!result) goto done;
+  if (vp[0]->init_kind != (an_init_kind)initk_dynamic ||
+      vp[0]->initializer.dynamic == NULL) {
+    /* This is possible in some error situations. */
+    do_constexpr_fail(result);
+    expect_error();
   }  /* if */
 done:
-  restore_storage_stack(ips, saved_stack, result);
   return result;
-}  /* do_constexpr_range_based_for_statement */
+}  /* begin_range_based_for */
 
 
-static a_boolean do_constexpr_switch(an_interpreter_state  *ips,
-                                     a_statement_ptr       stmt)
+static a_boolean range_based_for_test(an_interpreter_state  *ips,
+                                      a_stmt_work           *sw,
+                                      a_statement_ptr       stmt,
+                                      a_boolean             *p_result)
 /*
-Interpret the given switch statement.  Return TRUE if the statement was
-successfully interpreted, FALSE otherwise.
+Evaluate the loop test of the given range-based for-statement, and return TRUE
+if its body is to be interpreted, after initializing the variable of its
+for-range-declaration for that iteration.  *p_result is set to FALSE if that
+fails or exits by a control transfer.
+*/
+{
+  a_boolean         result = TRUE, enter_body = FALSE;
+  a_range_based_for_loop_ptr
+                    loop_info = stmt->variant.range_based_for_loop.extra_info;
+  an_expr_node_ptr  expr = loop_info->ne_call_expr;
+  a_type_ptr        tp = skip_typerefs(expr->type);
+  a_byte            *expr_value = sw->expr_value;
+
+  if (cost_exceeded(ips)) {
+    report_excessive_cost(ips);
+    do_constexpr_fail(result);
+  } else {
+    do_constexpr_full_expression(ips, expr, expr_value, expr_value, result);
+    if (result) release_address_structures(expr, tp, expr_value);
+    ips->cost += 1;
+  }  /* if */
+  if (result) {
+    a_host_large_integer  bool_val;
+    a_boolean             ovfl;
+    get_int_val_from(expr_value, tp, bool_val, ovfl);
+    if (!ovfl && bool_val) {
+      /* Initialize the iterator variable.  Its destruction (if any) is
+         registered on a new storage state, which end_cond_var_iteration
+         restores at the end of the iteration. */
+      save_storage_stack(ips, sw->cond_iter_stack);
+      sw->cond_iter_saved = TRUE;
+      if (do_constexpr_init_variable(ips, loop_info->iterator,
+                                     (a_byte*)NULL, &stmt->position)) {
+        enter_body = TRUE;
+      } else {
+        do_constexpr_fail(result);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  if (!result) *p_result = FALSE;
+  return enter_body;
+}  /* range_based_for_test */
+
+
+static void end_range_based_for(an_interpreter_state  *ips,
+                                a_stmt_work           *sw,
+                                a_statement_ptr       stmt,
+                                a_boolean             *p_result)
+/*
+The interpretation of the given range-based for-statement has ended.  Destroy
+the variable of its for-range-declaration (if it is still alive), unmap its
+iteration variables, and release the storage allocated for it.  Set *p_result
+to FALSE if that fails (due to a failing destructor evaluation).
+*/
+{
+  end_cond_var_iteration(ips, sw, p_result);
+  if (sw->loop_vars_mapped) {
+    a_range_based_for_loop_ptr
+                    loop_info = stmt->variant.range_based_for_loop.extra_info;
+    do_constexpr_unmap_variable(ips, loop_info->end);
+    do_constexpr_unmap_variable(ips, loop_info->begin);
+    do_constexpr_unmap_variable(ips, loop_info->range);
+    do_constexpr_unmap_variable(ips, loop_info->iterator);
+  }  /* if */
+  restore_storage_stack(ips, sw->saved_stack, *p_result);
+}  /* end_range_based_for */
+
+
+static a_boolean find_switch_case(an_interpreter_state  *ips,
+                                  a_statement_ptr       stmt,
+                                  a_byte                *expr_value,
+                                  a_statement_ptr       *p_case_stmt)
+/*
+The condition of the given switch statement has been evaluated into expr_value.
+Set *p_case_stmt to the stmk_switch_case statement for the case label that it
+selects, or to NULL if it selects none.  Return TRUE if successful.
 */
 {
   a_boolean                result = TRUE;
-  an_expr_node_ptr         expr = stmt->expr;
-  a_byte                   *expr_value = NULL, *case_value;
-  a_storage_stack_state    saved_stack;
-  a_type_ptr               tp;
-  a_byte_count             n_bytes;
-  a_statement_ptr          substmt;
-  a_switch_case_entry_ptr  scep = stmt->variant.switch_stmt.extra_info
-                                      ->sorted_cases;
-  a_boolean                is_signed, has_cond_var;
+  a_switch_stmt_descr_ptr  ssdp = stmt->variant.switch_stmt.extra_info;
+  a_switch_case_entry_ptr  scep = ssdp->sorted_cases;
+  a_type_ptr               tp = skip_typerefs(stmt->expr->type);
+  a_byte_count             n_bytes = value_bytes_for_type(ips, tp, &result);
+  a_boolean                is_signed = int_type_is_signed(tp);
+  a_byte                   *case_value;
   a_constexpr_address      case_cap;
 
-  has_cond_var = node_is(expr, enk_condition);
-  if (has_cond_var &&
-      !do_constexpr_condition_alloc(ips, expr, &saved_stack)) {
-    has_cond_var = FALSE;
-    goto done_with_switch;
-  }  /* if */
-  tp = skip_typerefs(expr->type);
-  n_bytes = value_bytes_for_type(ips, tp, &result);
-  if (result) {
-    result = alloc_complete_object(ips, n_bytes, tp, expr_value) &&
-             do_constexpr_condition(has_cond_var, ips, expr, tp,
-                                    expr_value);
-  }  /* if */
-  if (!result) {
-    goto done_with_switch;
-  }  /* if */
-  is_signed = int_type_is_signed(tp);
+  *p_case_stmt = NULL;
+  if (!result) goto done;
   /* Search through the ordered list of case labels for the one selected
      by the switch expression. */
   (void)alloc_complete_object(ips, n_bytes, tp, case_value);
@@ -8859,9 +9077,7 @@ successfully interpreted, FALSE otherwise.
     int             cmp;
     a_constant_ptr  case_con = scep->case_value;
     result = extract_value_from_constant(ips, case_con, case_cap);
-    if (!result) {
-      goto done_with_switch;
-    }  /* if */
+    if (!result) goto done;
     cmp = cmp_integer_values((an_integer_value*)expr_value, is_signed,
                              (an_integer_value*)case_value, is_signed);
     if (cmp == 0) {
@@ -8874,9 +9090,7 @@ successfully interpreted, FALSE otherwise.
 #if GNU_EXTENSIONS_ALLOWED
     } else if (scep->range_end != NULL) {
       result = extract_value_from_constant(ips, scep->range_end, case_cap);
-      if (!result) {
-        goto done_with_switch;
-      }  /* if */
+      if (!result) goto done;
       cmp = cmp_integer_values((an_integer_value*)expr_value, is_signed,
                                (an_integer_value*)case_value, is_signed);
       if (cmp <= 0) {
@@ -8888,148 +9102,12 @@ successfully interpreted, FALSE otherwise.
   }  /* for */
   if (scep == NULL) {
     /* No case found: Use the default (if any). */
-    scep = stmt->variant.switch_stmt.extra_info->default_case;
-    if (scep == NULL) {
-      /* No default. */
-      goto done_with_switch;
-    }  /* if */
+    scep = ssdp->default_case;
   }  /* if */
-  substmt = scep->stmt;
-  /* Continue execution at the labeled statement.  Note that we don't
-     have to activate intervening block scopes because they cannot
-     contain variable declarations (errors are issued for case labels
-     that enable branching past an initialized variable, and declaring
-     uninitialized variables is not allowed in constexpr function
-     definitions). */
-  for (;;) {
-    /* Move to the next statement.  The first time around, this means
-       moving past the selected switch-case statement. */
-    if (ips->curr_call_frame->switch_break_active) {
-      /* Break out of the switch statements (which completes the
-         execution of the break statement). */
-      ips->curr_call_frame->switch_break_active = FALSE;
-      break;
-    } else if (ips->curr_call_frame->loop_break_active) {
-      /* This is usually a break out of a loop enclosing the switch statement.
-         However, if we switched into the body of an inner loop, it could also
-         be a break out of that loop.  Traverse the parent statements to see
-         which case it is. */
-      for (;;) {
-        substmt = substmt->parent;
-        if (substmt == stmt) {
-          /* We're breaking out of the switch statement itself. */
-          goto done_with_switch;
-        } else if (substmt->kind == stmk_while ||
-                   substmt->kind == stmk_end_test_while ||
-                   substmt->kind == stmk_for) {
-          /* We're breaking out of an inner loop.  This completes the
-             execution of the break statement. */
-          ips->curr_call_frame->loop_break_active = FALSE;
-          break;
-        }  /* if */
-      }  /* for */
-    } else if (ips->curr_call_frame->continue_active) {
-      /* This is similar to the loop_break_active case, except the loop is
-         continued. */
-      for (;;) {
-        substmt = substmt->parent;
-        if (substmt == stmt) {
-          /* We're continuing out of the switch statement itself. */
-          goto done_with_switch;
-        } else if (substmt->kind == stmk_while ||
-                   substmt->kind == stmk_end_test_while ||
-                   substmt->kind == stmk_for) {
-          /* We're continuing an inner loop.  This completes the
-             execution of the continue statement. */
-          ips->curr_call_frame->continue_active = FALSE;
-          if (substmt->kind == stmk_for) {
-            result = do_constexpr_for_statement(ips, substmt,
-                                                /*do_continue=*/TRUE);
-          } else {
-            result = !do_constexpr_statement(ips, substmt);
-          }  /* if */
-          if (!result) {
-            goto done_with_switch;
-          }  /* if */
-          break;
-        }  /* if */
-      }  /* for */
-    } else if (ips->curr_call_frame->return_active) {
-      /* Return statements end the execution of the switch, but
-         they are not completed by the switch. */
-      break;
-    }  /* if */
-    if (substmt->next != NULL) {
-      /* The statement just interpreted is followed by another one.
-         We'll interpret it next. */
-      substmt = substmt->next;
-    } else {
-      /* There are no more statements in this sequence.  Move up to the
-         parent sequence if appropriate. */
-      for (;;) {
-        a_statement_ptr  next_stmt;
-        substmt = substmt->parent;
-        if (substmt == stmt) {
-          /* We're flowing off the switch statement itself. */
-          goto done_with_switch;
-        } else if (substmt->kind == stmk_while) {
-          /* We jumped into a simple while loop.  Continue the loop. */
-          break;
-        } else if (substmt->kind == stmk_end_test_while) {
-          /* We jumped into a do...while loop.  Evaluate the loop condition to
-             decide whether the loop should be continued.  Since the condition
-             is an integral value (bool), we can reuse the case_value
-             storage. */
-          a_host_large_integer  bool_val;
-          a_boolean             ovfl;
-          expr = substmt->expr;
-          tp = skip_typerefs(expr->type);
-          do_constexpr_full_expr(ips, expr, case_cap, result);
-          release_address_structures(expr, tp, case_value);
-          if (!result) {
-            goto done_with_switch;
-          }  /* if */
-          get_int_val_from(case_value, tp, bool_val, ovfl);
-          if (ovfl || bool_val) {
-            /* Continue the loop. */
-            break;
-          } else {
-            /* Keep looking for the next statement to execute. */
-          }  /* if */
-        } else if (substmt->kind == stmk_for) {
-          /* We jumped into a "for" loop.  Continue the loop, but skip
-             its initialization. */
-          if (!do_constexpr_for_statement(ips, substmt,
-                                          /*do_continue=*/TRUE)) {
-            result = FALSE;
-            goto done_with_switch;
-          }  /* if */
-        }  /* if */
-        next_stmt = substmt->next;
-        /* Skip over label statements because some compiler-generated labels
-           do not have the right parent statement for our purposes. */
-        while (next_stmt != NULL && next_stmt->kind == stmk_label) {
-          next_stmt = next_stmt->next;
-        }  /* if */
-        if (next_stmt != NULL) {
-          substmt = next_stmt;
-          break;
-        }  /* if */
-        /* Continue up the parent chain. */
-      }  /* for */
-    }  /* if */
-    if (!do_constexpr_statement(ips, substmt)) {
-      result = FALSE;
-      break;
-    }  /* if */
-  }  /* for */
-done_with_switch:
-  if (has_cond_var) {
-    do_constexpr_condition_cleanup(ips, expr);
-    do_constexpr_condition_dealloc(ips, expr, &saved_stack, &result);
-  }  /* if */
+  if (scep != NULL) *p_case_stmt = scep->stmt;
+done:
   return result;
-}  /* do_constexpr_switch */
+}  /* find_switch_case */
 
 
 static a_boolean eval_bool_assertion(an_interpreter_state  *ips,
@@ -9199,13 +9277,18 @@ static void process_stmt_work(an_interpreter_state      *ips,
 /*
 Perform the next visit to the given iwk_stmt work item.  Statements whose
 interpretation involves interpreting an expression, a nested statement, or a
-loop body push a work item for it and continue in a later phase.
+loop body push a work item for it and continue in a later phase.  Loops and
+switch statements, which are the targets of break and continue statements, and
+statements that have storage to release are visited again when a control
+transfer propagates from the items they pushed: They then complete the
+transfer, or perform their cleanup and let it propagate further.
 */
 {
   a_stmt_work       *sw = &item->variant.stmt;
   a_statement_ptr   stmt = (a_statement_ptr)item->il_entry;
-  a_boolean         result = !ips->failed;
+  a_boolean         result = work_completed_normally(ips);
   a_boolean         pop_when_done = TRUE;
+  a_statement_ptr   entry_substmt = NULL;
   an_expr_node_ptr  expr;
   a_byte            *expr_value;
   a_type_ptr        tp;
@@ -9214,6 +9297,26 @@ loop body push a work item for it and continue in a later phase.
 
   if (item->phase != iwp_start) goto resume;
   if (!result) goto done;
+  if (ips->switch_entry != NULL) {
+    if (stmt == ips->switch_entry) {
+      /* Control has reached the case label selected by a switch statement. */
+      ips->switch_entry = NULL;
+    } else {
+      /* A switch statement is transferring control to a case label nested in
+         this statement: Enter the substatement that leads to it, without
+         interpreting the parts of this statement that precede it.  (The front
+         end has diagnosed such transfers that would bypass the initialization
+         of a variable.) */
+      entry_substmt = substatement_leading_to_switch_entry(ips, stmt);
+      if (entry_substmt == NULL ||
+          !statement_can_be_entered_by_switch(stmt, entry_substmt)) {
+        info_with_pos(ec_constexpr_statement_cannot_be_interpreted,
+                      &stmt->position, ips);
+        do_constexpr_fail(result);
+        goto done;
+      }  /* if */
+    }  /* if */
+  }  /* if */
   switch (stmt->kind) {
     case stmk_expr:
       {
@@ -9247,6 +9350,26 @@ loop body push a work item for it and continue in a later phase.
         a_statement_ptr       then_statement, else_statement;
         a_statement_ptr       chosen;
         sw->restore_consteval = FALSE;
+        if (entry_substmt != NULL) {
+          /* A switch statement is transferring control into one of the
+             dependent statements.  The condition is not evaluated, but the
+             variables declared in it (without initialization, which the
+             transfer cannot bypass) are allocated. */
+          sw->has_cond_var = node_is(stmt->expr, enk_condition);
+          if (sw->has_cond_var) {
+            if (!do_constexpr_condition_alloc(ips, stmt->expr,
+                                              &sw->saved_stack)) {
+              sw->has_cond_var = FALSE;
+              do_constexpr_fail(result);
+              goto done;
+            }  /* if */
+            item->needs_cleanup = TRUE;
+          }  /* if */
+          push_stmt_work(ips, entry_substmt);
+          item->phase = iwp_1st_resume;
+          pop_when_done = FALSE;
+          goto done;
+        }  /* if */
         if (stmt->kind == (a_statement_kind)stmk_constexpr_if) {
           then_statement = stmt->variant.constexpr_if->then_statement;
           else_statement = stmt->variant.constexpr_if->else_statement;
@@ -9264,6 +9387,7 @@ loop body push a work item for it and continue in a later phase.
               bool_val = 1;
               sw->saved_consteval = ips->allow_consteval_routine_node;
               sw->restore_consteval = TRUE;
+              item->needs_cleanup = TRUE;
               ips->allow_consteval_routine_node = TRUE;
             } else {
               bool_val = 0;
@@ -9323,8 +9447,11 @@ loop body push a work item for it and continue in a later phase.
           do_constexpr_fail(result);
           break;
         }  /* if */
-        if (has_cond_var) item->needs_cleanup = TRUE;
+        /* The loop is the target of the break and continue statements in its
+           body. */
+        item->needs_cleanup = TRUE;
         sw->has_cond_var = has_cond_var;
+        sw->cond_iter_saved = FALSE;
         /* The type of the test expression is known to be bool. */
         tp = skip_typerefs(expr->type);
         n_bytes = value_bytes_for_type(ips, tp, &result);
@@ -9332,25 +9459,33 @@ loop body push a work item for it and continue in a later phase.
         if (!result) goto resume;
         (void)alloc_complete_object(ips, n_bytes, tp, expr_value);
         sw->expr_value = expr_value;
+        if (entry_substmt != NULL) {
+          /* A switch statement is transferring control into the body. */
+          push_stmt_work(ips, entry_substmt);
+          item->phase = iwp_2nd_resume;
+          pop_when_done = FALSE;
+          goto done;
+        }  /* if */
         goto resume;
       }
     case stmk_goto:
       /* An actual "goto" statement is not valid.  However, stmk_goto
          statements generated for other branch statements ("break" and
-         "continue") are okay.  For those, we activate a flag in the
-         interpreter state depending on the kind of label we are branching to.
-         These flags are consulted to determine the control flow during loop
-         and switch statements. */
+         "continue") are okay.  For those, we initiate a control transfer
+         depending on the kind of label we are branching to.  It is completed
+         by the loop or switch statement that is its target. */
       if (stmt->variant.label.ptr->switch_break_label) {
-        ips->curr_call_frame->switch_break_active = TRUE;
+        ips->transfer.kind = ctk_switch_break;
       } else if (stmt->variant.label.ptr->break_label) {
-        ips->curr_call_frame->loop_break_active = TRUE;
+        ips->transfer.kind = ctk_loop_break;
       } else if (stmt->variant.label.ptr->continue_label) {
-        ips->curr_call_frame->continue_active = TRUE;
+        ips->transfer.kind = ctk_continue;
       } else {
         info_with_pos(ec_constexpr_goto, &stmt->position, ips);
         do_constexpr_fail(result);
+        break;
       }  /* if */
+      result = FALSE;
       break;
     case stmk_label:
       /* Nothing to do. */
@@ -9367,11 +9502,11 @@ loop body push a work item for it and continue in a later phase.
           }  /* if */
         }  /* while */
         if (!result) break;
+        item->phase = iwp_1st_resume;
         if (stmt->expr != NULL) {
           save_storage_stack(ips, sw->saved_stack);
           item->needs_cleanup = TRUE;
           push_expr_work(ips, stmt->expr, frame->result_loc);
-          item->phase = iwp_1st_resume;
           pop_when_done = FALSE;
           goto done;
         } else if (stmt->variant.return_dynamic_init != NULL) {
@@ -9383,7 +9518,6 @@ loop body push a work item for it and continue in a later phase.
             tp = skip_typerefs(fn_type->variant.routine.return_type);
             init_subobject_to_zero(ips, frame->result_loc.address, tp,
                                    frame->result_loc.complete_object);
-            frame->return_active = TRUE;
           } else {
             if (dip->is_result_for_class_rvalue_question_mark &&
                 microsoft_mode) {
@@ -9392,7 +9526,6 @@ loop body push a work item for it and continue in a later phase.
             }  /* if */
             push_dyn_init_work(ips, dip, &stmt->position, frame->result_loc,
                                /*implied_src=*/NULL);
-            item->phase = iwp_1st_resume;
             pop_when_done = FALSE;
             goto done;
           }  /* if */
@@ -9422,10 +9555,9 @@ loop body push a work item for it and continue in a later phase.
             info_with_pos(ec_constexpr_missing_return_value, pos, ips);
             do_constexpr_fail(result);
           }  /* if */
-          frame->return_active = TRUE;
         }  /* if */
+        goto resume;
       }
-      break;
     case stmk_stmt_expr_result:
       { a_call_frame_ptr  frame = ips->curr_call_frame;
         if (stmt->expr != NULL) {
@@ -9481,23 +9613,102 @@ loop body push a work item for it and continue in a later phase.
         if (!result) break;
         (void)alloc_complete_object(ips, n_bytes, tp, expr_value);
         sw->expr_value = expr_value;
+        /* The loop is the target of the break and continue statements in its
+           body. */
+        item->needs_cleanup = TRUE;
         push_stmt_work(ips, stmt->variant.loop_statement);
         item->phase = iwp_1st_resume;
         pop_when_done = FALSE;
         goto done;
       }
     case stmk_for:
-      result = do_constexpr_for_statement(ips, stmt, /*do_continue=*/FALSE);
-      break;
+      { a_statement_ptr  init = stmt->variant.for_loop.extra_info
+                                                          ->initialization;
+        /* We may have to allocate storage for the increment expression result
+           and/or variables declared in the for-init declaration.  Save the
+           current storage state to enable deallocation when we're done.  The
+           loop is also the target of the break and continue statements in its
+           body. */
+        save_storage_stack(ips, sw->saved_stack);
+        item->needs_cleanup = TRUE;
+        sw->has_cond_var = FALSE;
+        sw->cond_iter_saved = FALSE;
+        item->phase = iwp_1st_resume;
+        if (init != NULL) {
+          if (entry_substmt == NULL) {
+            /* Run the initialization statement. */
+            push_stmt_work(ips, init);
+            pop_when_done = FALSE;
+            goto done;
+          } else if (init->kind == stmk_decl) {
+            /* A switch statement is transferring control into the body: The
+               variables declared by the initialization statement (without
+               initialization, which the transfer cannot bypass) are
+               allocated. */
+            an_il_entity_list_entry_ptr  p = init->variant.decl.entities;
+            for (; p != NULL && result; p = p->next) {
+              if (p->entity.kind == iek_variable) {
+                (void)do_constexpr_alloc_variable(
+                                 ips, (a_variable_ptr)p->entity.ptr, &result);
+              }  /* if */
+            }  /* for */
+          }  /* if */
+        }  /* if */
+        goto resume;
+      }
     case stmk_range_based_for:
-      result = do_constexpr_range_based_for_statement(ips, stmt);
-      break;
+      { a_statement_ptr  init = stmt->variant.range_based_for_loop.extra_info
+                                                          ->initialization;
+        save_storage_stack(ips, sw->saved_stack);
+        item->needs_cleanup = TRUE;
+        sw->loop_vars_mapped = FALSE;
+        sw->cond_iter_saved = FALSE;
+        item->phase = iwp_1st_resume;
+        if (init != NULL) {
+          /* Run the initialization statement. */
+          push_stmt_work(ips, init);
+          pop_when_done = FALSE;
+          goto done;
+        }  /* if */
+        goto resume;
+      }
     case stmk_switch_case:
       /* Nothing to do. */
       break;
     case stmk_switch:
-      result = do_constexpr_switch(ips, stmt);
-      break;
+      { a_boolean        has_cond_var;
+        a_statement_ptr  case_stmt = NULL;
+        expr = stmt->expr;
+        has_cond_var = node_is(expr, enk_condition);
+        if (has_cond_var &&
+            !do_constexpr_condition_alloc(ips, expr, &sw->saved_stack)) {
+          do_constexpr_fail(result);
+          break;
+        }  /* if */
+        /* The switch statement is the target of the break statements in its
+           body. */
+        item->needs_cleanup = TRUE;
+        sw->has_cond_var = has_cond_var;
+        tp = skip_typerefs(expr->type);
+        n_bytes = value_bytes_for_type(ips, tp, &result);
+        if (result) {
+          result = alloc_complete_object(ips, n_bytes, tp, expr_value) &&
+                   do_constexpr_condition(has_cond_var, ips, expr, tp,
+                                          expr_value) &&
+                   find_switch_case(ips, stmt, expr_value, &case_stmt);
+        }  /* if */
+        item->phase = iwp_1st_resume;
+        if (result && case_stmt != NULL) {
+          /* Continue execution at the selected case label: The statements
+             enclosing it are entered without interpreting their initial parts
+             (see the handling of ips->switch_entry above). */
+          ips->switch_entry = case_stmt;
+          push_stmt_work(ips, stmt->variant.switch_stmt.body_statement);
+          pop_when_done = FALSE;
+          goto done;
+        }  /* if */
+        goto resume;
+      }
     case stmk_init:
       { a_dynamic_init_ptr  dip = stmt->variant.dynamic_init;
         a_variable_ptr      vp = dip->variable;
@@ -9581,49 +9792,17 @@ resume:
     case stmk_while:
       if (item->phase == iwp_2nd_resume) {
         /* The body has completed. */
-        if (result) {
-          if (ips->curr_call_frame->return_active) {
-            /* Stop the loop (leave the flag active since we may have to
-               break out of other constructs). */
-            result = TRUE;
-            goto while_cleanup;
-          } else if (ips->curr_call_frame->loop_break_active) {
-            /* Stop the loop (which completes the execution of the break
-               statement). */
-            ips->curr_call_frame->loop_break_active = FALSE;
-            goto while_cleanup;
-          } else if (ips->curr_call_frame->continue_active) {
-            /* Continue, but clear the continue_active flag since we've
-               reached the point of continuation. */
-            ips->curr_call_frame->continue_active = FALSE;
-          }  /* if */
-        }  /* if */
         if (sw->has_cond_var) {
           do_constexpr_condition_cleanup(ips, expr);
         }  /* if */
-        if (!result) goto while_cleanup;
-        item->phase = iwp_1st_resume;
+        if (!continue_loop_after_body(ips, &result)) goto while_cleanup;
       }  /* if */
       if (result) {
-        a_host_large_integer  bool_val = FALSE;
-        expr_value = sw->expr_value;
-        tp = skip_typerefs(expr->type);
-        if (cost_exceeded(ips)) {
-          report_excessive_cost(ips);
-          do_constexpr_fail(result);
-        } else {
-          result = do_constexpr_condition(sw->has_cond_var, ips, expr, tp,
-                                          expr_value);
-          ips->cost += 1;
-        }  /* if */
-        if (result) {
-          get_int_val_from(expr_value, tp, bool_val, ovfl);
-          if (!ovfl && bool_val) {
-            push_stmt_work(ips, stmt->variant.loop_statement);
-            item->phase = iwp_2nd_resume;
-            pop_when_done = FALSE;
-            goto done;
-          }  /* if */
+        if (eval_loop_test(ips, sw, expr, &result)) {
+          push_stmt_work(ips, stmt->variant.loop_statement);
+          item->phase = iwp_2nd_resume;
+          pop_when_done = FALSE;
+          goto done;
         }  /* if */
         if (sw->has_cond_var) {
           do_constexpr_condition_cleanup(ips, expr);
@@ -9631,19 +9810,20 @@ resume:
       }  /* if */
 while_cleanup:
       if (sw->has_cond_var) {
+        end_cond_var_iteration(ips, sw, &result);
         do_constexpr_condition_dealloc(ips, expr, &sw->saved_stack, &result);
       }  /* if */
       break;
     case stmk_return:
-      { a_call_frame_ptr  frame = ips->curr_call_frame;
-        if (item->needs_cleanup) {
-          restore_storage_stack(ips, sw->saved_stack, result);
-        }  /* if */
-        while (frame != NULL && frame->routine == NULL) {
-          frame = frame->parent;
-        }  /* while */
-        if (frame != NULL) frame->return_active = TRUE;
-      }
+      if (item->needs_cleanup) {
+        restore_storage_stack(ips, sw->saved_stack, result);
+      }  /* if */
+      if (result) {
+        /* The return value (if any) has been stored: Return from the innermost
+           routine, which completes the transfer. */
+        ips->transfer.kind = ctk_return;
+        result = FALSE;
+      }  /* if */
       break;
     case stmk_stmt_expr_result:
       if (item->needs_cleanup) {
@@ -9651,38 +9831,114 @@ while_cleanup:
       }  /* if */
       break;
     case stmk_end_test_while:
-      {
+      /* The body has completed. */
+      if (continue_loop_after_body(ips, &result)) {
         a_host_large_integer  bool_val = FALSE;
+        expr_value = sw->expr_value;
+        tp = skip_typerefs(expr->type);
+        if (cost_exceeded(ips)) {
+          report_excessive_cost(ips);
+          do_constexpr_fail(result);
+        } else {
+          do_constexpr_full_expression(
+                                 ips, expr, expr_value, expr_value, result);
+          if (result) release_address_structures(expr, tp, expr_value);
+          ips->cost += 1;
+        }  /* if */
         if (result) {
-          if (ips->curr_call_frame->return_active) {
-            break;
-          } else if (ips->curr_call_frame->loop_break_active) {
-            ips->curr_call_frame->loop_break_active = FALSE;
-            break;
-          } else if (ips->curr_call_frame->continue_active) {
-            ips->curr_call_frame->continue_active = FALSE;
-          }  /* if */
-          expr_value = sw->expr_value;
-          tp = skip_typerefs(expr->type);
-          if (cost_exceeded(ips)) {
-            report_excessive_cost(ips);
-            do_constexpr_fail(result);
-          } else {
-            do_constexpr_full_expression(
-                                   ips, expr, expr_value, expr_value, result);
-            release_address_structures(expr, tp, expr_value);
-            ips->cost += 1;
-          }  /* if */
-          if (result) {
-            get_int_val_from(expr_value, tp, bool_val, ovfl);
-            if (bool_val) {
-              push_stmt_work(ips, stmt->variant.loop_statement);
-              pop_when_done = FALSE;
-              goto done;
-            }  /* if */
+          get_int_val_from(expr_value, tp, bool_val, ovfl);
+          if (bool_val) {
+            push_stmt_work(ips, stmt->variant.loop_statement);
+            pop_when_done = FALSE;
+            goto done;
           }  /* if */
         }  /* if */
-      }
+      }  /* if */
+      break;
+    case stmk_for:
+      if (item->phase == iwp_1st_resume) {
+        /* The initialization (if any) has completed. */
+        if (result) result = begin_for_loop(ips, sw, stmt);
+        if (!result) goto for_cleanup;
+        if (ips->switch_entry != NULL) {
+          /* A switch statement is transferring control into the body. */
+          push_stmt_work(ips, stmt->variant.for_loop.statement);
+          item->phase = iwp_2nd_resume;
+          pop_when_done = FALSE;
+          goto done;
+        }  /* if */
+      } else {
+        /* The body has completed.  The condition variable (if any) is still
+           available to the increment expression. */
+        a_boolean  proceed = continue_loop_after_body(ips, &result);
+        if (proceed) {
+          a_for_loop_ptr  loop_info = stmt->variant.for_loop.extra_info;
+          result = eval_loop_increment(ips, loop_info->increment,
+                                       sw->incr_value);
+        }  /* if */
+        if (sw->has_cond_var) {
+          do_constexpr_condition_cleanup(ips, expr);
+        }  /* if */
+        if (!proceed || !result) goto for_cleanup;
+      }  /* if */
+      if (eval_loop_test(ips, sw, expr, &result)) {
+        push_stmt_work(ips, stmt->variant.for_loop.statement);
+        item->phase = iwp_2nd_resume;
+        pop_when_done = FALSE;
+        goto done;
+      }  /* if */
+      if (sw->has_cond_var) {
+        do_constexpr_condition_cleanup(ips, expr);
+      }  /* if */
+for_cleanup:
+      end_for_loop(ips, sw, stmt, &result);
+      break;
+    case stmk_range_based_for:
+      if (item->phase == iwp_1st_resume) {
+        /* The initialization (if any) has completed. */
+        if (result) result = begin_range_based_for(ips, sw, stmt);
+      } else if (continue_loop_after_body(ips, &result)) {
+        end_cond_var_iteration(ips, sw, &result);
+        if (result) {
+          result = eval_loop_increment(
+                         ips, stmt->variant.range_based_for_loop.extra_info
+                                                              ->incr_call_expr,
+                         sw->incr_value);
+        }  /* if */
+      } else {
+        goto range_based_for_cleanup;
+      }  /* if */
+      if (result && range_based_for_test(ips, sw, stmt, &result)) {
+        push_stmt_work(ips, stmt->variant.range_based_for_loop.statement);
+        item->phase = iwp_2nd_resume;
+        pop_when_done = FALSE;
+        goto done;
+      }  /* if */
+range_based_for_cleanup:
+      end_range_based_for(ips, sw, stmt, &result);
+      break;
+    case stmk_switch:
+      if (ips->switch_entry != NULL) {
+        /* The body was abandoned before control reached the selected case
+           label. */
+        ips->switch_entry = NULL;
+        if (result) {
+          info_with_pos(ec_constexpr_statement_cannot_be_interpreted,
+                        &stmt->position, ips);
+          do_constexpr_fail(result);
+        }  /* if */
+      }  /* if */
+      if (!result && !ips->failed &&
+          ips->transfer.kind == ctk_switch_break) {
+        /* Break out of the switch statement (which completes the execution of
+           the break statement). */
+        ips->transfer.kind = ctk_none;
+        result = TRUE;
+      }  /* if */
+      if (sw->has_cond_var) {
+        do_constexpr_condition_cleanup(ips, expr);
+        do_constexpr_condition_dealloc(ips, expr, &sw->saved_stack, &result);
+      }  /* if */
       break;
     default:
       unexpected_condition();
@@ -12900,11 +13156,22 @@ static INLINE a_boolean run_function_body(an_interpreter_state  *ips,
                                           a_scope_ptr           callee_scope)
 /*
 The given scope is a function scope.  Execute its associated compound
-statement.
+statement, and return TRUE if it completed normally or through a return
+statement.  A control transfer that is pending on entry is preserved.
 */
 {
-  return do_constexpr_block_statement(ips, function_body_block(callee_scope),
-                                      callee_scope);
+  a_control_transfer  saved_transfer = ips->transfer;
+  a_boolean           result;
+
+  ips->transfer.kind = ctk_none;
+  result = do_constexpr_block_statement(ips, function_body_block(callee_scope),
+                                        callee_scope);
+  if (!result && ips->transfer.kind == ctk_return) {
+    ips->transfer.kind = ctk_none;
+    result = TRUE;
+  }  /* if */
+  if (result) ips->transfer = saved_transfer;
+  return result;
 }  /* run_function_body */
 
 
@@ -22862,7 +23129,7 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
   a_boolean               is_member_call;
 
   if (item->phase != iwp_start) {
-    result = !ips->failed;
+    result = routine_body_completed(ips);
     finish_call_work(ips, item, result);
     goto done;
   }  /* if */
@@ -23438,9 +23705,12 @@ after the constructor body has been interpreted.
     implied_src = NULL;
   }  /* if */
   callee = dip->variant.constructor.ptr;
-  if (item->phase == iwp_2nd_resume) goto apply_cleanup;
+  if (item->phase == iwp_2nd_resume) {
+    result = routine_body_completed(ips);
+    goto apply_cleanup;
+  }  /* if */
   if (item->phase == iwp_1st_resume) {
-    result = !ips->failed;
+    result = work_completed_normally(ips);
     goto continue_mem_inits;
   }  /* if */
 
@@ -23956,7 +24226,7 @@ apply_cleanup:
 
     /* A failure recorded in "result" above has not reached ips->failed yet,
        so both have to be consulted here. */
-    if (ips->failed) result = FALSE;
+    if (!work_completed_normally(ips)) result = FALSE;
     this_var = callee_scope->variant.routine.this_param_variable;
     if (result) note_routine_interpreted(callee);
     release_address_structures_for_args(args, p_arg_ptr);
@@ -24132,7 +24402,7 @@ apply_cleanup:
     a_type_ptr              class_type = parent_class_of(callee);
     a_constructor_init_ptr  dtor_init;
 
-    result = !ips->failed;
+    result = routine_body_completed(ips);
     /* Run the "constructor initializers" that describe subobject
        destructions. */
     unmark_complete_object_initialized(complete_object);
@@ -27033,7 +27303,7 @@ a reused value, if any, in the iwp_1st_resume visit.
     implied_src = NULL;
   }  /* if */
   if (item->phase == iwp_1st_resume) {
-    result = !ips->failed;
+    result = work_completed_normally(ips);
     goto finish;
   }  /* if */
   switch (dip->kind) {
@@ -27175,12 +27445,12 @@ each of them recognizes in its own case below.
     }  /* if */
   } else if (node_is(expr, enk_statement)) {
     a_call_frame_ptr  frame = ips->curr_call_frame;
-    result = !ips->failed;
-    if (frame->parent == NULL &&
-        (frame->return_active || frame->loop_break_active ||
-         frame->continue_active || frame->switch_break_active)) {
-      /* A branch is still active, but we're no longer in a statement
-         context.  That is not valid. */
+    result = work_completed_normally(ips);
+    if (frame->parent == NULL && transfer_pending(ips) &&
+        ips->transfer.kind != ctk_throw) {
+      /* A break or continue is still pending, but we're no longer in a
+         statement context.  That is not valid. */
+      ips->transfer.kind = ctk_none;
       info_with_pos(ec_branch_out_of_constant, &expr->position, ips);
       do_constexpr_fail(result);
     }  /* if */
@@ -31768,7 +32038,7 @@ the value representation of the integer value.
                and must be interpreted into the result storage directly. */
             { a_boolean  skip_first;
               if (phase == iwp_2nd_resume) {
-                result = !ips->failed;
+                result = work_completed_normally(ips);
                 restore_value_category(&ew->saved_result_opnd);
                 break;
               }  /* if */
@@ -32158,7 +32428,7 @@ the value representation of the integer value.
               if (phase == iwp_2nd_resume) {
                 /* The selected operand has been interpreted into the result
                    storage. */
-                result = !ips->failed;
+                result = work_completed_normally(ips);
                 restore_value_category(&ew->saved_result_opnd);
                 break;
               }  /* if */
@@ -32474,7 +32744,7 @@ the value representation of the integer value.
         a_byte_count         prefix_size;
         a_boolean            temp_lifetime;
         if (phase != iwp_start) {
-          result = !ips->failed;
+          result = work_completed_normally(ips);
           tmp_bytes = ew->temp_storage;
           tmp_complete_obj = ew->temp_complete_object;
           dip = ew->temp_init;

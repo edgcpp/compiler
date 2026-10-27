@@ -1,0 +1,25 @@
+[GH #411]
+For loops entered through a case label in constant evaluation
+
+During constant evaluation, when a switch statement transferred control to a
+case label in the body of a for loop that was followed by other statements,
+the loop was not continued after the body completed: The loop condition was
+not evaluated again.  For example, with --c++20:
+
+  constexpr int f(int k) {
+    bool b = false;
+    int z = 0;
+    switch (k) {
+      for (; b;) {
+        return 5;
+      case 1:
+        b = true;
+        z = 9;
+      }
+      return z;
+    }
+    return -1;
+  }
+  static_assert(f(1) == 5);  // Previously failed.
+
+This is now fixed.
