@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 20: error: initialization is not constant
+  constexpr D d;
+              ^
+"Test_name.c", line 20: note: cannot call non-constexpr function "D::D() noexcept" (declared implicitly)
+  constexpr D d;
+              ^
+
+"Test_name.c", line 20: error: a constexpr variable must have a literal type or a reference type
+  constexpr D d;
+  ^
+
+"Test_name.c", line 21: error: expression must have a constant value
+  static_assert(dynamic_cast<const Good*>((const B*)&d) == (const Good*)&d);
+                ^
+"Test_name.c", line 21: note: cannot fold operation involving virtual base class ("B")
+  static_assert(dynamic_cast<const Good*>((const B*)&d) == (const Good*)&d);
+                                          ^
+
+"Test_name.c", line 22: error: expression must have a constant value
+  static_assert(dynamic_cast<const P*>((const B*)&d) ==
+                ^
+"Test_name.c", line 22: note: cannot fold operation involving virtual base class ("B")
+  static_assert(dynamic_cast<const P*>((const B*)&d) ==
+                                       ^
+
+"Test_name.c", line 24: error: expression must have a constant value
+  static_assert(dynamic_cast<const D*>((const B*)&d) == nullptr);
+                ^
+"Test_name.c", line 24: note: cannot fold operation involving virtual base class ("B")
+  static_assert(dynamic_cast<const D*>((const B*)&d) == nullptr);
+                                       ^
+
+"Test_name.c", line 25: error: initialization is not constant
+  constexpr D2 d2;
+               ^
+"Test_name.c", line 25: note: cannot call non-constexpr function "D2::D2() noexcept" (declared implicitly)
+  constexpr D2 d2;
+               ^
+
+"Test_name.c", line 25: error: a constexpr variable must have a literal type or a reference type
+  constexpr D2 d2;
+  ^
+
+"Test_name.c", line 26: error: expression must have a constant value
+  static_assert(dynamic_cast<const Good2*>((const B*)&d2) == (const Good2*)&d2);
+                ^
+"Test_name.c", line 26: note: cannot fold operation involving virtual base class ("B")
+  static_assert(dynamic_cast<const Good2*>((const B*)&d2) == (const Good2*)&d2);
+                                           ^
+
+"Test_name.c", line 35: error: expression must have a constant value
+  static_assert(local());
+                ^
+"Test_name.c", line 29: note: cannot call non-constexpr function "D::D() noexcept" (declared implicitly)
+    D x;
+      ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -26107,10 +26107,12 @@ represented by an entry of type a_constant (ck_address or ck_integer).
             new_con->variant.address.offset -=
                                             (a_targ_ptrdiff_t)prev_bcp->offset;
             if (type_is(tp, tk_void) ||
-                same_entities(tp, prev_bcp->derived_class)) {
+                (same_entities(tp, prev_bcp->derived_class) &&
+                 prev_bcp->has_public_derivation)) {
               /* A cast to the most-derived class (either by casting to void*
                  or because the destination type happens to match the most-
-                 derived class type). */
+                 derived class type, of which the operand is a public base
+                 class subobject). */
               remove_trailing_subobject_path_entry(new_con);
               clear_runtime_constant_address(result_storage, new_con);
               goto done;
@@ -26123,7 +26125,28 @@ represented by an entry of type a_constant (ck_address or ck_integer).
               bcdp = bcdp->next;
               for (; dsp != tail->next; dsp = dsp->next) {
                 if (same_entities(dsp->base_class->type, tp)) {
-                  if (new_bcp == NULL) {
+                  a_derivation_step_ptr  step;
+                  a_type_ptr             step_class = dsp->base_class->type;
+                  a_boolean              is_public_base = TRUE;
+                  /* The operand must be a public base class subobject of the
+                     destination subobject (but not necessarily of the
+                     most-derived object).  The base classes of the derivation
+                     steps are relative to the most-derived class, so check the
+                     corresponding direct base classes instead. */
+                  for (step = dsp->next; step != tail->next;
+                       step = step->next) {
+                    a_base_class_ptr  direct_bcp =
+                                      find_direct_base_class_of(
+                                          step_class, step->base_class->type);
+                    if (!direct_bcp->has_public_derivation) {
+                      is_public_base = FALSE;
+                    }  /* if */
+                    step_class = step->base_class->type;
+                  }  /* for */
+                  if (!is_public_base) {
+                    /* Ignore this derivation path.  Another path may reach
+                       the same virtual base class subobject publicly. */
+                  } else if (new_bcp == NULL) {
                     new_bcp = dsp->base_class;
                   } else if (dsp->base_class != new_bcp) {
                     /* The subobject on the derivation path is not unambiguous.
@@ -26149,7 +26172,11 @@ represented by an entry of type a_constant (ck_address or ck_integer).
                                        &expr->position, new_bcp->type, ips);
                   }  /* if */
                   goto done;
-                } else if (!is_accessible_base_class(new_bcp)) {
+                } else if (!prev_bcp->has_public_derivation ||
+                           !new_bcp->has_public_derivation) {
+                  /* The operand must be a public base class subobject of the
+                     most-derived object, and the destination a public base
+                     class of the most-derived type. */
                   if (pointer_case) {
                     clear_address(result_storage, NULL);
                   } else {
@@ -26199,6 +26226,7 @@ represented by an entry of type a_constant (ck_address or ck_integer).
       a_base_class_ptr  bcp, baseward_bcp;
       a_type_ptr        dtp;
       a_byte            *subobj = opnd_addr->address;
+      a_boolean         is_public_base = TRUE;
       /* Check for the null address case first. */
       if (subobj == NULL) {
         /* Casting a null pointer value results in a null pointer value. */
@@ -26215,8 +26243,8 @@ represented by an entry of type a_constant (ck_address or ck_integer).
         do_constexpr_fail(result);
         goto done;
       }  /* if */
-      if (type_is(tp, tk_void) &&
-          (baseward_bcp = find_base_in_type(opnd_type, tp))!= NULL) {
+      if (!type_is(tp, tk_void) &&
+          (baseward_bcp = find_base_in_type(opnd_type, tp)) != NULL) {
         /* The dynamic cast is actually a (static) derived-to-base cast. */
         if (baseward_bcp->ambiguous) {
           do_constexpr_fail(result);
@@ -26240,13 +26268,17 @@ represented by an entry of type a_constant (ck_address or ck_integer).
         a_byte_count  offset;
         get_mapped_byte_count(&persistent_map, bcp, offset);
         result_addr->address -= offset;
+        if (!bcp->has_public_derivation) is_public_base = FALSE;
         dtp = bcp->derived_class;
         if (same_entities(dtp, tp)) {
           /* We found a derived subobject of the right type.  Since types with
              virtual bases cannot be literal types (and thus cannot be stored
              in interpreter memory), there is no concern about this being
-             ambiguous. */
-          goto done;
+             ambiguous.  The cast succeeds only if the operand is a public base
+             class subobject of it; otherwise, it also is not a public base
+             class subobject of the most-derived object, and so the cast fails
+             below. */
+          if (is_public_base) goto done;
         }  /* if */
         if (is_initialized(result_addr)) {
           bcp = *(a_base_class_ptr*)result_addr->address;
@@ -26263,11 +26295,13 @@ represented by an entry of type a_constant (ck_address or ck_integer).
         goto done;
       }  /* if */
       /* We've reached the most derived type (dtp) without encountering the
-         destination type.  This might still be a "sideways" cast. */
+         destination type as a class of which the operand is a public base
+         class subobject.  This might still be a "sideways" cast. */
       baseward_bcp = find_base_in_type(dtp, tp);
       if (baseward_bcp != NULL) {
         /* There is a subobject of the right kind: Verify that it is
-           unambiguous and accessible. */
+           unambiguous and that it and the operand are public base class
+           subobjects of the most-derived object. */
         if (baseward_bcp->ambiguous) {
           if (pointer_case) {
             clear_address(result_storage, NULL);
@@ -26277,7 +26311,7 @@ represented by an entry of type a_constant (ck_address or ck_integer).
                                &expr->position, tp, ips);
           }  /* if */
           goto done;
-        } else if (!is_accessible_base_class(baseward_bcp)) {
+        } else if (!is_public_base || !baseward_bcp->has_public_derivation) {
           if (pointer_case) {
             clear_address(result_storage, NULL);
           } else {
