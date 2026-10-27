@@ -47,13 +47,14 @@ DATE_WIDTH = 8
 
 TAG_REGEX = re.compile(r'^GH #[0-9]+$')
 
-# The internal issue tracker form of a tag; accepted in commit subjects but
+# The internal issue tracker form of a tag; accepted in commit messages but
 # not in Changes entries.
 EDG_TAG_REGEX = re.compile(r'^EDG[cfjp]+fe/[0-9]+$')
 
-# The bracketed group at the end of a commit subject; see
-# check_commit_subject.
-_SUBJECT_TAGS_REGEX = re.compile(r'\[([^\[\]]*)\]\s*$')
+# The bracketed group at the end of a commit subject, which may be followed by
+# the closing quotes of a git revert subject (Revert "...", nested to any
+# depth); see check_commit_message.
+_SUBJECT_TAGS_REGEX = re.compile(r'\[([^\[\]]*)\]"*$')
 
 # A problem with an entry's format; line_no is None for the whole file.
 FormatError = NamedTuple(
@@ -72,17 +73,28 @@ def _is_subject_tag(tag: str) -> bool:
   return (TAG_REGEX.match(tag) is not None or
           EDG_TAG_REGEX.match(tag) is not None)
 
-def check_commit_subject(message: str) -> Optional[str]:
-  '''Return a description of the problem with the subject of a commit message,
-  or None if it's acceptable.
+def check_commit_message(message: str) -> Optional[str]:
+  '''Return a description of the problem with a commit message, or None if
+  it's acceptable.
 
   The subject is the first line, which must stand alone (be followed by a
   blank line, if anything) and end with a bracketed group that is either empty
   (for work with no issue) or a comma-separated list of tags: "GH #N" (as in a
   Changes entry) or the internal form "EDGcpfe/N".  Earlier bracketed text
-  (e.g. "[[always_inline]]") is not checked.'''
-  lines = message.splitlines()
-  subject = lines[0] if len(lines) != 0 else ''
+  (e.g. "[[always_inline]]") is not checked.  Nothing in the message may break
+  a line other than \n.'''
+  # Keep the history friendly to simple line-based tooling: only \n may break
+  # a line (git's rule), so splitlines and split('\n') agree.  This also
+  # rejects CRLF, which git's default cleanup never leaves in a message.
+  # The trailing newlines are dropped because only split yields their empty
+  # final element.
+  text = message.rstrip('\n')
+  lines = text.split('\n')
+  if text != '' and lines != text.splitlines():
+    return ('message must not contain line-break characters other than'
+            ' newline (e.g. carriage return)')
+
+  subject = lines[0]
   # Like git, count a whitespace-only line as blank.
   if len(lines) > 1 and lines[1].strip() != '':
     return 'subject must be a single line; wrap the body after a blank line'

@@ -3,8 +3,8 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''Tests for the commit policy: edgchanges.check_commit_subject (shared with
-the pre-push hook) and edg-check-commit-subjects.
+'''Tests for the commit policy: edgchanges.check_commit_message (shared with
+the pre-push hook) and edg-check-commit-messages.
 
 Run with: python3 -m unittest discover -s dev_tools/tests
 (with dev_tools/pylibs on PYTHONPATH).
@@ -21,13 +21,13 @@ import edgchanges
 from pathlib import Path
 
 DEV_TOOLS_DIR = Path(__file__).resolve().parents[1]
-SUBJECTS_TOOL_PATH = DEV_TOOLS_DIR / 'bin' / 'edg-check-commit-subjects'
+MESSAGES_TOOL_PATH = DEV_TOOLS_DIR / 'bin' / 'edg-check-commit-messages'
 
-class CommitSubjectTests(unittest.TestCase):
-  '''The commit subject policy, shared by the pre-push hook and
-  edg-check-commit-subjects.'''
+class CommitMessageTests(unittest.TestCase):
+  '''The commit message policy, shared by the pre-push hook and
+  edg-check-commit-messages.'''
 
-  def test_valid_subjects(self) -> None:
+  def test_valid_messages(self) -> None:
     for message in (
       'Fix thing [GH #213]',
       'Fix thing [EDGcpfe/29032]',
@@ -37,17 +37,23 @@ class CommitSubjectTests(unittest.TestCase):
       'No issue []',
       'Drop [[always_inline]] on setjmp [GH #176]',
       'Fix thing [GH #1]\n',
+      # git revert and Reapply subjects, nested ones included.
+      'Revert "Fix thing [GH #1]"\n\nThis reverts commit 0123abcd.',
+      'Reapply "Fix thing [EDGcpfe/28806]"',
+      'Revert "Revert "Fix thing [GH #1]""',
+      'Revert "Fix thing []"',
       'Fix thing [GH #1]\n\nBody mentions [nope]',
-      # A whitespace-only line is blank, so stripping the message (as the
-      # pre-push hook does) can't change the verdict.
+      # Trailing newlines (git show adds some) don't change the verdict.
       'Fix thing [GH #1]\n  ',
       'Fix thing [GH #1]\n  \nBody',
     ):
       with self.subTest(message = message):
-        self.assertIsNone(edgchanges.check_commit_subject(message))
-        self.assertIsNone(edgchanges.check_commit_subject(message.strip()))
+        self.assertIsNone(edgchanges.check_commit_message(message))
+        self.assertIsNone(
+          edgchanges.check_commit_message(message.rstrip('\n'))
+        )
 
-  def test_invalid_subjects(self) -> None:
+  def test_invalid_messages(self) -> None:
     for message in (
       '',
       'No tag at all',
@@ -58,12 +64,26 @@ class CommitSubjectTests(unittest.TestCase):
       'Last wins [GH #7] but [nope]',
       'Tag not at the end [GH #1] of the subject',
       'Wrapped subject\n[GH #1]',
+      # Trailing whitespace on the subject isn't tolerated.
+      'Fix thing [GH #1] ',
+      'Fix thing [GH #1] \n\nBody',
+      'Revert "Fix thing [GH #1]" ',
+      'Revert "Fix thing"',
+      'Revert "Fix thing [GH 1]"',
+      'Revert "Fix thing [GH #1] and more"',
       'Wrapped subject [GH #1]\ncontinued',
       'No tag here\n\nBut the body has [GH #1]',
+      # Anything but \n that splitlines treats as a line break, anywhere.
+      'Fix thing [GH #1]\r\n\r\nBody',
+      'Fix thing [GH #1]\n\nBody\rmore',
+      'Fix\x0cthing [GH #1]',
+      'Fix thing [GH #1]\n\nBody\u2028more',
     ):
       with self.subTest(message = message):
-        self.assertIsNotNone(edgchanges.check_commit_subject(message))
-        self.assertIsNotNone(edgchanges.check_commit_subject(message.strip()))
+        self.assertIsNotNone(edgchanges.check_commit_message(message))
+        self.assertIsNotNone(
+          edgchanges.check_commit_message(message.rstrip('\n'))
+        )
 
   def test_tool_reports_only_violations(self) -> None:
     with tempfile.TemporaryDirectory() as tmp_dir_str:
@@ -77,7 +97,7 @@ class CommitSubjectTests(unittest.TestCase):
         )
       def run_tool(*args: str) -> 'subprocess.CompletedProcess[str]':
         return subprocess.run(
-          [sys.executable, str(SUBJECTS_TOOL_PATH), *args],
+          [sys.executable, str(MESSAGES_TOOL_PATH), *args],
           cwd = tmp_dir_str,
           capture_output = True,
           text = True,
@@ -151,7 +171,7 @@ class CommitSubjectTests(unittest.TestCase):
           input = content, capture_output = True, check = True
         ).stdout.decode().strip()
       result = subprocess.run(
-        [sys.executable, str(SUBJECTS_TOOL_PATH), parent],
+        [sys.executable, str(MESSAGES_TOOL_PATH), parent],
         cwd = tmp_dir_str,
         capture_output = True,
         text = True,

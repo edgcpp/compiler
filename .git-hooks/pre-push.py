@@ -177,7 +177,7 @@ class PrePushChecker:
     As commits are walked, check to make sure they match formatting guidance.
 
     Returns the oldest new commit hash, or None if there are no new commits.
-    Exits immediately if a commit subject fails the PR-number policy.
+    Exits immediately if a commit message fails the policy.
     '''
     first_new_commit = None
 
@@ -196,10 +196,15 @@ class PrePushChecker:
       print_indented(show_output, '  ')
       print('')
 
-      message = git_output(['show', '--no-patch', '--format=%B', commit])
-      problem = edgchanges.check_commit_subject(message)
+      # Read bytes: text mode would turn any \r into \n, hiding it from the
+      # check.  Don't strip: that would also remove \r, \x0c, etc. at the ends
+      # of the message.
+      message = run_git(
+        ['show', '--no-patch', '--format=%B', commit], text = False
+      ).stdout.decode('utf-8', errors = 'replace')
+      problem = edgchanges.check_commit_message(message)
       if problem is not None:
-        print(f"  [POLICY] Commit subject: {problem}.")
+        print(f"  [POLICY] Commit message: {problem}.")
         sys.exit(1)
 
       first_new_commit = commit
