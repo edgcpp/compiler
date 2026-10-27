@@ -43,6 +43,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       # The same dictionary as the dev-env image
       # (dev_tools/docker/dev-env/setup-scripts/install-software.sh).

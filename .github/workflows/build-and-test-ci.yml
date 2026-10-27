@@ -43,6 +43,9 @@ on:
       - '**/pending_changes/**'
   pull_request:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
@@ -77,6 +80,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-gcc-debug
         env:
@@ -120,6 +125,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-i686-gcc-debug
         env:
@@ -170,6 +177,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Download linux-gcc-debug build
         uses: actions/download-artifact@v7
@@ -283,6 +292,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Download linux-i686-gcc-debug build
         uses: actions/download-artifact@v7
@@ -436,6 +447,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Download per-config coverage reports
         continue-on-error: true
@@ -502,6 +515,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-gcc-release
         env:

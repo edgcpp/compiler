@@ -39,6 +39,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Compare issue and discussion forms
         run: python3 dev_tools/bin/edg-check-issue-templates
