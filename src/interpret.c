@@ -9500,6 +9500,13 @@ loop body push a work item for it and continue in a later phase.
       { a_dynamic_init_ptr  dip = stmt->variant.dynamic_init;
         a_variable_ptr      vp = dip->variable;
         a_byte              *var_storage;
+        if (var_has_static_or_thread_storage_duration(vp)) {
+          /* A local static variable (e.g., a default-initialized one of
+             class type) that is usable in constant expressions (see
+             stmk_decl below): its value is obtained when it is
+             referenced. */
+          break;
+        }  /* if */
         /* Allocate and bind storage for the variable. */
         var_storage = do_constexpr_alloc_variable(ips, vp, &result);
         if (!result) break;
