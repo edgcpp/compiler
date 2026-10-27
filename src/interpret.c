@@ -6005,9 +6005,11 @@ Perform the destructions for the current storage stack.
       check_assertion(result);
       nonvirtual = TRUE;
     }  /* if */
-    for (int k = 0; k<n; ++k, sub_obj += size) {
-      if (!do_constexpr_dtor(ips, dtor, pos, sub_obj, complete_obj,
-                             nonvirtual)) {
+    /* The elements of an array are destroyed in reverse order. */
+    for (int k = n; k > 0; --k) {
+      if (!do_constexpr_dtor(ips, dtor, pos,
+                             sub_obj + (a_byte_count)(k-1)*size,
+                             complete_obj, nonvirtual)) {
         result = FALSE;
         goto done;
       }  /* if */
@@ -24147,8 +24149,9 @@ apply_cleanup:
         get_mapped_byte_count(&persistent_map, bcp, offset);
         sub_dip = dtor_init->initializer;
       }  /* if */
-      sub_bytes = result_storage+offset;
-      for (int k = 0; k<n; ++k) {
+      /* The elements of an array are destroyed in reverse order. */
+      for (int k = n; k > 0; --k) {
+        sub_bytes = result_storage+offset+(a_byte_count)(k-1)*elem_size;
         /* Clear the derivation/active-field state. */
         *(void**)sub_bytes = NULL;
         if (!do_constexpr_dtor(ips, sub_dip->destructor, pos, sub_bytes,
@@ -24158,7 +24161,6 @@ apply_cleanup:
         } else {
           mark_subobject_uninitialized(sub_bytes, complete_object);
         }  /* if */
-        sub_bytes += elem_size;
       }  /* for */
     }  /* for */
     if (!mark_whole_subobject_uninitialized(ips, result_storage, class_type,
@@ -26655,14 +26657,16 @@ Evaluate the given delete-expression.
   } else {
     /* Perform necessary destructions and mark subobject uninitialized. */
     a_dynamic_init_ptr  dip = ndsp->dynamic_init;
-    a_byte_count        k = 0, length = allocation->length, elem_size;
+    a_byte_count        k, length = allocation->length, elem_size;
     a_byte              *arr = (a_byte*)allocation+allocation->prefix_size,
-                        *elem = arr;
+                        *elem;
     a_type_ptr          elem_type = skip_typerefs(allocation->elem_type);
     elem_size = value_bytes_for_type(ips, elem_type, &result);
     if (!result) goto done;
     unmark_complete_object_initialized(arr);
-    for (; k<length; ++k, elem += elem_size) {
+    /* The elements of an array are destroyed in reverse order. */
+    for (k = length; k > 0; --k) {
+      elem = arr + (k-1)*elem_size;
       if (dip != NULL) {
         /* Run the destructor.  For the non-array case, this might be a virtual
            call: Make sure we start from the original address since

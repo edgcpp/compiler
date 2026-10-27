@@ -1,0 +1,23 @@
+[GH #400]
+Order of destruction of array elements in constant evaluation
+
+During constant evaluation, the elements of an array (including an array
+member and an array destroyed by a delete[] expression) were destroyed in
+increasing order of their index instead of in decreasing order.  For
+example, with --c++20:
+
+  struct S {
+    int* log;
+    int id;
+    constexpr ~S() { *log = *log * 10 + id; }
+  };
+  constexpr int f() {
+    int log = 0;
+    {
+      S a[3] = {{&log, 1}, {&log, 2}, {&log, 3}};
+    }
+    return log;
+  }
+  static_assert(f() == 321);  // Previously failed.
+
+This is now fixed.
