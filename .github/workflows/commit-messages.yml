@@ -12,6 +12,11 @@
 # is checked from the previous tip of main.  If that tip is unavailable (e.g.
 # after a force-push), the job fails rather than check nothing.
 #
+# The checker and the commits come from one checkout of github.sha, the same
+# commit GitHub loads this workflow from.  For a pull request that is the merge
+# commit, so the checker is there even if the pull request's branch predates
+# it.
+#
 # Merge commits are rejected too.  A fork that wants them sets the repository
 # variable ALLOW_MERGE_COMMITS to 'true' (Settings > Secrets and variables >
 # Actions > Variables).
@@ -40,20 +45,21 @@ jobs:
         with:
           fetch-depth: 0
           # Only commit messages are read, so skip the blobs and check out
-          # just the validator.
+          # just the checker.
           filter: blob:none
           sparse-checkout: dev_tools
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
 
       - name: Check commit messages
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PUSH_BEFORE_SHA: ${{ github.event.before }}
           ALLOW_MERGE_COMMITS: ${{ vars.ALLOW_MERGE_COMMITS }}
         run: |
           if [[ "${EVENT_NAME}" == pull_request ]]; then
-            range=("${PR_BASE_SHA}..HEAD")
+            range=("${PR_BASE_SHA}..${PR_HEAD_SHA}")
           elif [[ "${PUSH_BEFORE_SHA}" != 0000000000000000000000000000000000000000 ]] &&
                git cat-file -e "${PUSH_BEFORE_SHA}^{commit}" 2> /dev/null; then
             range=("${PUSH_BEFORE_SHA}..HEAD")
