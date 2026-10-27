@@ -16497,8 +16497,30 @@ no corresponding type, return an error type.
             }
             break;
           case ifc_tbs_float:
-            check_assertion(precision == ifc_tps_default);
-            result = float_type((a_float_kind)fk_float);
+            switch (precision) {
+              case ifc_tps_default:
+                result = float_type(fk_float);
+                break;
+              case ifc_tps_bit16:
+                result = float_type(fk_std_float16);
+                break;
+              case ifc_tps_bit32:
+                result = float_type(fk_std_float32);
+                break;
+              case ifc_tps_bit64:
+                result = float_type(fk_std_float64);
+                break;
+              case ifc_tps_bit128:
+                result = float_type(fk_std_float128);
+                break;
+              default:
+                { a_string err_msg("Unexpected ", str_for(precision),
+                                   " for ", str_for(basis));
+
+                  ifc_unexpected(module_of(itf), err_msg);
+                }
+                goto invalid;
+            }  /* switch */
             break;
           case ifc_tbs_double:
             if (precision == ifc_tps_long) {
@@ -24588,8 +24610,37 @@ this is needed.
             }  /* switch */
             break;
           case ifc_tbs_float:
-            check_assertion(precision == ifc_tps_default);
-            cache_token(cache, tok_float);
+            switch (precision) {
+              case ifc_tps_default:
+                cache_token(cache, tok_float);
+                break;
+              case ifc_tps_bit16:
+                /* These types have no keyword spelling that is correct for
+                   every dialect, so cache the resolved type directly
+                   (mirroring the direct type loader). */
+                cache_resolved_type_token(cache,
+                                          float_type(fk_std_float16));
+                break;
+              case ifc_tps_bit32:
+                cache_resolved_type_token(cache,
+                                          float_type(fk_std_float32));
+                break;
+              case ifc_tps_bit64:
+                cache_resolved_type_token(cache,
+                                          float_type(fk_std_float64));
+                break;
+              case ifc_tps_bit128:
+                cache_resolved_type_token(cache,
+                                          float_type(fk_std_float128));
+                break;
+              default:
+                { a_string err_msg("Unexpected ", str_for(precision),
+                                   " for ", str_for(basis));
+
+                  ifc_unexpected(module_of(type), err_msg);
+                }
+                goto invalid;
+            }  /* switch */
             break;
           case ifc_tbs_double:
             if (precision == ifc_tps_long) {
