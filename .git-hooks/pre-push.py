@@ -40,31 +40,37 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
+# Git invokes this hook with the ambient environment, which does not
+# necessarily have PYTHONPATH configured (e.g., on Windows).  Locate
+# "dev_tools/pylibs" relative to this script so "edgutil" can be imported.
+sys.path.insert(
+  0, str(Path(__file__).resolve().parents[1] / 'dev_tools' / 'pylibs')
+)
 
 import edgchanges
 import edgutil
 
-from pathlib import Path
-
 if platform.system() == 'Windows':
-  # On Windows we need to use the kernel API to detect if this script is
-  # running in a standalone console window (if so, there will be only one
-  # processes at this point).
-  import ctypes
-
-  kernel32 = ctypes.WinDLL('kernel32', use_last_error = True)
-  process_array = (ctypes.c_uint * 2)()
-  num_processes = kernel32.GetConsoleProcessList(process_array, 2)
-  if num_processes != 1:
-    # When not running in a standalone console window, the script relaunches
-    # itself to make sure the user has an interactive shell.  Then it forwards
-    # the exit code from the delegate process.
+  # The standard input of this hook carries the push ref list supplied by
+  # git, so it cannot be used to prompt the user.  When a console is
+  # attached, open the console input device directly ("CONIN$" is the
+  # Windows counterpart of "/dev/tty") so that all prompts and output stay
+  # in the user's current terminal.
+  try:
+    sys.stdin = open('CONIN$', 'r')
+  except OSError:
+    # No console is attached (e.g., a GUI git client or a pseudo terminal
+    # such as mintty).  Relaunch in a standalone console window so that the
+    # user can still respond to interactive prompts.
     delegate_proc = subprocess.run(
       [
         sys.executable,
         __file__
       ],
-      creationflags = subprocess.CREATE_NEW_CONSOLE
+      creationflags = subprocess.CREATE_NEW_CONSOLE,
+      env = {**os.environ, 'EDG_PREPUSH_DELEGATE': '1'}
     )
     sys.exit(delegate_proc.returncode)
 else:
@@ -133,6 +139,7 @@ class PrePushChecker:
 
   def __init__(self):
     self.errors = 0
+    self.abort = False
 
   def confirm_okay(self):
     '''Ask the user whether a policy warning is acceptable.
@@ -155,7 +162,8 @@ class PrePushChecker:
         return
       if response == 'q':
         self.errors = 1
-        sys.exit(1)
+        self.abort = True
+        return
 
       print(
         "Please answer 'y' (to accept), 'n' (to continue check) or "
@@ -164,7 +172,9 @@ class PrePushChecker:
       tries += 1
       if tries >= 10:
         print('Too many attempts.')
-        sys.exit(1)
+        self.errors = 1
+        self.abort = True
+        return
 
   def reject(self):
     '''Record a problem that can't be accepted, without asking.'''
@@ -176,8 +186,9 @@ class PrePushChecker:
 
     As commits are walked, check to make sure they match formatting guidance.
 
-    Returns the oldest new commit hash, or None if there are no new commits.
-    Exits immediately if a commit message fails the policy.
+    Returns the oldest new commit hash, or None if there are no new commits
+    (or if a commit subject fails the PR-number policy, in which case an
+    error is recorded and the check sequence is aborted).
     '''
     first_new_commit = None
 
@@ -205,7 +216,9 @@ class PrePushChecker:
       problem = edgchanges.check_commit_message(message)
       if problem is not None:
         print(f"  [POLICY] Commit message: {problem}.")
-        sys.exit(1)
+        self.errors = 1
+        self.abort = True
+        return None
 
       first_new_commit = commit
 
@@ -284,12 +297,18 @@ class PrePushChecker:
         )
 
       if file_change_check_proc.returncode != 0:
-        sys.exit(1)
+        # Record the failure and return (rather than exiting) so that the
+        # status propagates through checker.run() and main(), allowing the
+        # delegate window pause to run.
+        self.errors = 1
+        return
 
       with open(output_file, 'r') as file_handle:
         results = json.load(file_handle)
 
       for file_path_str, file_results in results.items():
+        if self.abort:
+          break
         print(f"  Checking file: {file_path_str}")
 
         # A pending Changes entry with any of these problems fails the
@@ -308,6 +327,8 @@ class PrePushChecker:
           for error in format_errors:
             print(f"    - {edgchanges.describe_error(file_path_str, error)}")
           confirm_okay()
+          if self.abort:
+            break
 
         misspellings = file_results['misspellings']
         if misspellings is None:
@@ -326,6 +347,8 @@ class PrePushChecker:
             )
             print_indented('\n'.join(hint_lines), '    ')
           confirm_okay()
+          if self.abort:
+            break
 
         typos = file_results['typos']
         if len(typos) != 0:
@@ -333,6 +356,8 @@ class PrePushChecker:
           for typo in typos:
             print(f"    - {typo}")
           confirm_okay()
+          if self.abort:
+            break
 
         coding_errors = file_results['coding_errors']
         if len(coding_errors) != 0:
@@ -341,36 +366,58 @@ class PrePushChecker:
             print(f"    Missing comment on #endif:")
             print_indented('\n'.join(endif_hits), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
           else_hits = coding_errors['missing_elses']
           if len(else_hits) != 0:
             print(f"    Missing comment on #else:")
             print_indented('\n'.join(else_hits), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
           closing_comments = coding_errors['closing_comments']
           if len(closing_comments) != 0:
             print_indented('\n'.join(closing_comments), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
         overlong_lines = file_results['overlong_lines']
         if len(overlong_lines) != 0:
           for line in edgutil.format_overlong_lines(overlong_lines, '    '):
             print(line)
           confirm_okay()
+          if self.abort:
+            break
 
-  def run(self) -> bool:
-    '''Execute the full pre-push check sequence.'''
+  def run(self) -> int:
+    '''Execute the full pre-push check sequence.  Return the exit status.'''
     first_new_commit = self.check_commits()
 
     # Skip per file checks if we didn't actually detect a new commit.
-    if first_new_commit is not None:
+    if not self.abort and first_new_commit is not None:
       self.check_changed_files(first_new_commit)
 
-    return self.errors == 0
+    return 0 if (self.errors == 0 and not self.abort) else 1
+
+def pause_delegate_window() -> None:
+  '''When running as a relaunch delegate, wait for the user before the
+  standalone console window closes so that failure output can be read.'''
+  if os.environ.get('EDG_PREPUSH_DELEGATE') != '1':
+    return
+
+  try:
+    input('Push checks failed; press Enter to close this window. ')
+  except EOFError:
+    pass
 
 def main():
   checker = PrePushChecker()
-  sys.exit(0 if checker.run() else 1)
+  returncode = checker.run()
+  if returncode != 0:
+    pause_delegate_window()
+  sys.exit(returncode)
 
 main()

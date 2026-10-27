@@ -223,6 +223,36 @@ def print_env_var(env_var: str) -> None:
   var_value = os.environ.get(env_var) or ''
   print(f"Using \"{env_var}\": \"{var_value}\"")
 
+def is_interactive_terminal() -> bool:
+  '''Return TRUE if standard input is attached to an interactive terminal.
+
+  On Windows, "os.isatty" (and "sys.stdin.isatty") returns TRUE for some
+  character devices that are not consoles (e.g., "NUL", which is used when
+  a caller passes "subprocess.DEVNULL" as standard input), which would
+  incorrectly request TTY attachment for a container.  A real console
+  handle can be identified by "GetConsoleMode", which fails for all other
+  devices.
+  '''
+  if platform.system() != 'Windows':
+    return os.isatty(sys.stdin.fileno())
+
+  import ctypes
+  import msvcrt
+
+  # Both "WinDLL" and "get_osfhandle" only exist on Windows; the type
+  # ignores cover typechecking on other platforms.
+  kernel32 = ctypes.WinDLL(  # type: ignore[attr-defined]
+                    'kernel32', use_last_error = True)
+  kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+  kernel32.GetConsoleMode.restype = ctypes.c_int
+  stdin_handle = msvcrt.get_osfhandle(  # type: ignore[attr-defined]
+                                    sys.stdin.fileno())
+  console_mode = ctypes.c_uint(0)
+  return bool(kernel32.GetConsoleMode(
+    stdin_handle,
+    ctypes.byref(console_mode)
+  ))
+
 def get_application_files_dir(app_name: str) -> Path:
   platform_name = platform.system()
   if platform_name == 'Linux':

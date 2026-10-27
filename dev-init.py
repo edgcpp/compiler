@@ -214,7 +214,25 @@ async def check_edg_python() -> InitResult:
 
     if platform.system() == 'Windows':
       find_edgy.add_failure_commentary(
-        'Open the Windows environment variable settings:'
+        'For the current PowerShell session only, run (from the repository '
+        'root):'
+      )
+      find_edgy.add_failure_commentary(
+        '  . .\\dev-env.ps1',
+        allow_wrap = False
+      )
+      find_edgy.add_failure_commentary(
+        'and re-run this script; or, to configure new terminals '
+        'permanently, run:'
+      )
+      find_edgy.add_failure_commentary(
+        '  [Environment]::SetEnvironmentVariable("Path", '
+        '[Environment]::GetEnvironmentVariable("Path", "User") '
+        f"+ ';{script_path}', 'User')",
+        allow_wrap = False
+      )
+      find_edgy.add_failure_commentary(
+        'Alternatively, open the Windows environment variable settings:'
       )
       find_edgy.add_failure_commentary(
         '  "C:\\Windows\\system32\\rundll32.exe" '
@@ -271,7 +289,25 @@ async def check_edg_python() -> InitResult:
 
     if platform.system() == 'Windows':
       find_edg_tools.add_failure_commentary(
-        'Open the Windows environment variable settings:'
+        'For the current PowerShell session only, run (from the repository '
+        'root):'
+      )
+      find_edg_tools.add_failure_commentary(
+        '  . .\\dev-env.ps1',
+        allow_wrap = False
+      )
+      find_edg_tools.add_failure_commentary(
+        'and re-run this script; or, to configure new terminals '
+        'permanently, run (appending to any existing user PYTHONPATH):'
+      )
+      find_edg_tools.add_failure_commentary(
+        '  [Environment]::SetEnvironmentVariable("PYTHONPATH", '
+        '((@([Environment]::GetEnvironmentVariable("PYTHONPATH", "User"), '
+        f"'{pylibs_path}') | Where-Object {{ $_ }}) -join ';'), 'User')",
+        allow_wrap = False
+      )
+      find_edg_tools.add_failure_commentary(
+        'Alternatively, open the Windows environment variable settings:'
       )
       find_edg_tools.add_failure_commentary(
         '  "C:\\Windows\\system32\\rundll32.exe" '

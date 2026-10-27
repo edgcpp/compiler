@@ -27,6 +27,30 @@ If direnv is not an option, manually add `<EDG PROJECT DIR>/dev_tools/bin` (or
 variables respectively.  This will make the EDG development tools and their
 supporting Python libraries available.
 
+For Windows users, a PowerShell counterpart of the direnv setup is provided
+at the root of the repository; from a PowerShell prompt dot source it to
+configure the current session:
+
+```
+. .\dev-env.ps1
+```
+
+(If PowerShell script execution is disabled, first run
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, or use the manual
+environment variable configuration described above.)
+
+> [!WARNING]
+>
+> Windows users should ensure their clone uses LF line endings, e.g., by
+> setting `git config --global core.autocrlf input` before cloning (an
+> existing clone can be repaired by setting that configuration for the
+> repository -- `git config core.autocrlf input`, run inside it -- and
+> re-checking out the tree).  The default Windows Git configuration
+> (`core.autocrlf true`) produces a CRLF checkout, which breaks both the
+> build (e.g., `mk_errinfo` cannot parse `src/error_msg.txt`) and the
+> Docker based workflow (scripts mounted into the container fail on CRLF
+> shebangs).
+
 ## Docker Based (Recommended)
 
 To get started with Docker, it is recommended that Windows and MacOS users

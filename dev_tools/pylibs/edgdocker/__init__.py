@@ -251,7 +251,18 @@ def _check_parents(mapped_dirs: List[Path], workspace_dir: Path) -> None:
   This can be valid (from a Docker perspective), but it's an advanced use case
   and can be a dangerous mistake (so we don't permit it).
   '''
+  # Resolve the workspace so that a relative path cannot bypass the drive
+  # comparison below (and "normcase" so that Windows drive letters that
+  # differ only in case compare equal).
+  workspace_dir = workspace_dir.resolve()
+  workspace_drive = os.path.normcase(os.path.splitdrive(str(workspace_dir))[0])
   for mapped_dir in mapped_dirs:
+    mapped_drive = os.path.normcase(os.path.splitdrive(str(mapped_dir))[0])
+    if mapped_drive != workspace_drive:
+      # The two paths are on different drives (which can only happen on
+      # Windows), so neither path can contain the other and the check below
+      # does not apply.
+      continue
     common_dir = Path(os.path.commonpath([mapped_dir, workspace_dir]))
     if common_dir == workspace_dir:
       print('Current workspace is the parent of a mapped dir:')
@@ -400,7 +411,7 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
     f"EDG_USER_NAME={render_user_name()}"
   ]
 
-  if os.isatty(sys.stdin.fileno()):
+  if edgutil.is_interactive_terminal():
     # Make the container interactive.
     docker_args.append('-it')
   else:
@@ -483,13 +494,15 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
 
   if platform.system() == 'Windows':
     # Windows does not properly handle the execvp. Instead, keep this process
-    # around, and simply forward on stdin, stdout, and stderr.
-    subprocess.run(
+    # around, and simply forward on stdin, stdout, and stderr.  Forward the
+    # exit status of the container so that callers observe failures.
+    completed_proc = subprocess.run(
       docker_args,
       stdin = sys.stdin,
       stdout = sys.stdout,
       stderr = sys.stderr
     )
+    sys.exit(completed_proc.returncode)
   else:
     # Execute the docker command, replacing the current process.
     os.execvp('docker', docker_args)
