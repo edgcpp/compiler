@@ -22554,10 +22554,13 @@ if *p_this_arg is not initialized.)
        constructor has not completely run yet, or because the object has
        been partially destroyed). */
   } else {
-    a_routine_ptr     callee = *p_callee;
+    /* The final overrider is a member of the class of the subobject from which
+       it is found, and that subobject is the object for the call. */
+    a_byte  *callee_subobj = subobj;
     do {
       a_base_class_ptr  bcp = *(a_base_class_ptr*)subobj;
-      a_byte_count      offset;
+      a_byte_count      offset, retval_offset_step = 0;
+      a_routine_ptr     overrider = NULL;
       an_overriding_virtual_function_ptr
                         ovfp;
       if (bcp == NULL) {
@@ -22568,29 +22571,32 @@ if *p_this_arg is not initialized.)
       check_assertion(!bcp->is_pack_expansion);
       ovfp = bcp->variant.overriding_virtual_functions;
       for (; ovfp != NULL; ovfp = ovfp->next) {
-        if (ovfp->primary_function == callee) {
+        if (ovfp->primary_function == *p_callee) {
           a_base_class_ptr  ret_base = ovfp->return_adjustment_base_class;
-          a_byte_count      retval_offset_step;
           if (ret_base != NULL) {
             /* A covariant return override.  The return value will need
-               adjustment. */
-            get_mapped_byte_count(&persistent_map, bcp, retval_offset_step);
-            *p_retval_offset += retval_offset_step;
+               adjustment (possibly to an indirect base class). */
+            retval_offset_step = compute_interpreter_base_offset(
+                                           ret_base, (a_base_class_ptr*)NULL);
           }  /* if */
-          callee = ovfp->overriding_function;
+          overrider = ovfp->overriding_function;
           break;
         }  /* if */
       }  /* for */
       get_mapped_byte_count(&persistent_map, bcp, offset);
       subobj -= offset;
+      if (overrider != NULL) {
+        *p_callee = overrider;
+        *p_retval_offset += retval_offset_step;
+        callee_subobj = subobj;
+      }  /* if */
       if (!subobject_is_initialized(subobj, complete_obj)) {
         /* The next-enclosing subobject is not constructed.  Do not dispatch
            from it. */
         break;
       }  /* if */
     } while (subobj != complete_obj);
-    *p_callee = callee;
-    this_val->address = subobj;
+    this_val->address = callee_subobj;
   }  /* if */
   return result;
 }  /* adjust_virtual_callee */
@@ -22793,10 +22799,12 @@ was charged up front to the actual cost of the call.
   a_byte_count      *arg_size = (a_byte_count*)cw->arg_sizes;
 
   if (result) {
-    if (cw->retval_offset != 0) {
+    if (cw->retval_offset != 0 &&
+        ((a_constexpr_address*)item->result_storage)->address != NULL) {
       /* A virtual call dispatching to an overriding function with a covariant
-         return type.  The return value is an address that must be updated to
-         match the static type of the expression. */
+         return type.  The return value is an address (other than a null
+         pointer) that must be updated to match the static type of the
+         expression. */
       ((a_constexpr_address*)item->result_storage)->address +=
                                                             cw->retval_offset;
     }  /* if */

@@ -48,21 +48,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                                  ^
           detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::C]" at line 203
 
-"SemaCXX/constant-expression-cxx2a.cpp", line 207: warning: integer conversion resulted in a change of sign
-    static_assert(cb1->f()->a == 'A');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 207: error: static assertion failed
-    static_assert(cb1->f()->a == 'A');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 207: note: the final comparison was 0 == 65
-    static_assert(cb1->f()->a == 'A');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 208: error: static assertion failed
-    static_assert(cb1->f() == (B*)&cb.d);
-    ^
-
 "SemaCXX/constant-expression-cxx2a.cpp", line 209: error: static assertion failed
     static_assert(cb1->f()->f() == 'D');
     ^
@@ -70,70 +55,11 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     static_assert(cb1->f()->f() == 'D');
                                 ^
 
-"SemaCXX/constant-expression-cxx2a.cpp", line 210: warning: integer conversion resulted in a change of sign
-    static_assert(cb2->f()->b == 'B');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 210: error: static assertion failed
-    static_assert(cb2->f()->b == 'B');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 210: note: the final comparison was VALUE == 66
-    static_assert(cb2->f()->b == 'B');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 211: error: static assertion failed
-    static_assert(cb2->f() == &cb.d);
-    ^
-
 "SemaCXX/constant-expression-cxx2a.cpp", line 212: error: static assertion failed
     static_assert(cb2->f()->f() == 'D');
     ^
 "SemaCXX/constant-expression-cxx2a.cpp", line 212: note: the final comparison was 66 == 68
     static_assert(cb2->f()->f() == 'D');
-                                ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 216: warning: integer conversion resulted in a change of sign
-    static_assert(cc1->f()->a == 'A');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 216: error: static assertion failed
-    static_assert(cc1->f()->a == 'A');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 216: note: the final comparison was 0 == 65
-    static_assert(cc1->f()->a == 'A');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 217: error: static assertion failed
-    static_assert(cc1->f() == (C*)&cc.d);
-    ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 218: error: static assertion failed
-    static_assert(cc1->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 218: note: the final comparison was 65 == 68
-    static_assert(cc1->f()->f() == 'D');
-                                ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 219: warning: integer conversion resulted in a change of sign
-    static_assert(cc2->f()->c == 'C');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 219: error: static assertion failed
-    static_assert(cc2->f()->c == 'C');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 219: note: the final comparison was 0 == 67
-    static_assert(cc2->f()->c == 'C');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 220: error: static assertion failed
-    static_assert(cc2->f() == &cc.d);
-    ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 221: error: static assertion failed
-    static_assert(cc2->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 221: note: the final comparison was 67 == 68
-    static_assert(cc2->f()->f() == 'D');
                                 ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 232: error: initialization is not constant

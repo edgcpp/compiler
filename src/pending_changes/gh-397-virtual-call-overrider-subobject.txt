@@ -1,0 +1,21 @@
+[GH #397]
+Constant evaluation of virtual calls to an overrider in a base class
+
+During constant evaluation, a virtual function call whose final overrider is
+a member of an intermediate base class (rather than of the most derived
+class) was evaluated with the complete object as the object expression,
+instead of the base class subobject of which the overrider is a member.  For
+example, with --c++20:
+
+  struct A { constexpr virtual int f() const { return 1; } int a = 1; };
+  struct B : A { constexpr int f() const override { return a + 2; } };
+  struct E { int e = 0; };
+  struct F : E, B {};
+  constexpr int g() { F f; A& r = f; return r.f(); }
+  static_assert(g() == 3);  // Previously failed.
+
+This is now fixed.  In addition, the adjustment of the result of a call to
+an overrider with a covariant return type (e.g., from a pointer to a derived
+class to a pointer to its base class) was computed incorrectly, and was
+applied even to a null pointer result (which could cause the front end to
+crash); this is also fixed.
