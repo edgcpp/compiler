@@ -156,19 +156,19 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0);
                          ^
 
-"SemaCXX/constant-expression-cxx2a.cpp", line 264: error: expression must have a constant value
-    static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
-                  ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 264: note: base class "DynamicCast::A" is ambiguous
-    static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
-                   ^
-
 "SemaCXX/constant-expression-cxx2a.cpp", line 267: error: expression must have a constant value
     static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g);
                   ^
 "SemaCXX/constant-expression-cxx2a.cpp", line 267: note: base class "DynamicCast::A" is ambiguous
     static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g);
                    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 274: error: expression must have a constant value
+    constexpr int e_f = (dynamic_cast<F&>((E&)g), 0);
+                        ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 274: note: conversion to inaccessible base class "DynamicCast::F" is not allowed
+    constexpr int e_f = (dynamic_cast<F&>((E&)g), 0);
+                         ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 278: error: expression must have a constant value
     constexpr int b_e = (dynamic_cast<E&>((B&)g), 0);

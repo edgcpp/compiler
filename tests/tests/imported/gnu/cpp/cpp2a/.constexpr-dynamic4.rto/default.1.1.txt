@@ -13,6 +13,13 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g); // { dg-error "non-constant condition for static assertion|reference .dynamic_cast. failed" }
                  ^
 
+"Test_name.c", line 46: error: expression must have a constant value
+  constexpr int e_f = (dynamic_cast<F&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                      ^
+"Test_name.c", line 46: note: conversion to inaccessible base class "F" is not allowed
+  constexpr int e_f = (dynamic_cast<F&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+
 "Test_name.c", line 50: error: expression must have a constant value
   constexpr int b_e = (dynamic_cast<E&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
                       ^
@@ -54,4 +61,4 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   constexpr int e_unrelated = (dynamic_cast<Unrelated&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
                 ^
 
-5 errors detected in the compilation of "Test_name.c".
+6 errors detected in the compilation of "Test_name.c".
