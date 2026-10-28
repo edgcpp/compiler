@@ -73,6 +73,9 @@ static a_boolean is_unmodifiable_initonly_field_operand(
 static void mark_init_component_as_permanently_allocated(
                                                        an_init_component *icp);
 static void prep_generic_init_component_list(an_arg_list_elem_ptr list);
+static void make_template_param_object_operand(a_constant_ptr  cp,
+                                               an_operand      *operand,
+                                               a_boolean       copy_constant);
 
 
 /*
@@ -4913,6 +4916,7 @@ in *bound_function_selector.
   an_expr_node_ptr              orig_expr = expr;
   an_expr_node_ptr              expr_copy = NULL;
   a_boolean                     rescanned_case = FALSE;
+  a_boolean                     is_template_param_object = FALSE;
   a_constant_ptr                constant = local_constant();
   a_constant_ptr                alloc_con = NULL;
   an_expr_rescan_info_entry_ptr eriep;
@@ -4964,11 +4968,35 @@ in *bound_function_selector.
       /* The operand was already built above. */
     } else {
       if (expr_copy == NULL) {
-        /* The result is a constant, so return a constant operand. */
-        if (alloc_con != NULL) {
-          make_constant_operand(alloc_con, operand);
+        a_constant_ptr  cp = alloc_con != NULL ? alloc_con : constant;
+        if (is_constant_node(expr) &&
+            constant_is(node_constant(expr), ck_template_param) &&
+            tpck_is(node_constant(expr), tpck_param) &&
+            constant_is(cp, ck_aggregate)) {
+          /* A C++20 nontype template parameter of class type has been
+             replaced by its argument value.  As when such a parameter is
+             referenced in an instantiation (see make_sym_constant_operand),
+             the result is an lvalue designating the template parameter
+             object.  That object is identified by the argument value
+             itself, i.e., without the "const" that substitution adds to
+             the value. */
+          if (cp != constant) {
+            /* cp may be the template argument itself (if the argument value
+               was produced by an earlier substitution), so it must not be
+               modified. */
+            copy_constant(cp, constant);
+            cp = constant;
+          }  /* if */
+          if (cp->variant.aggregate.added_const_for_template_param) {
+            cp->type = remove_qualifiers(cp->type, TQ_CONST);
+            cp->variant.aggregate.added_const_for_template_param = FALSE;
+          }  /* if */
+          make_template_param_object_operand(cp, operand,
+                                             /*copy_constant=*/TRUE);
+          is_template_param_object = TRUE;
         } else {
-          make_constant_operand(constant, operand);
+          /* The result is a constant, so return a constant operand. */
+          make_constant_operand(cp, operand);
         }  /* if */
       } else {
         /* Return an expression operand. */
@@ -4991,6 +5019,15 @@ in *bound_function_selector.
     } else {
       /* Normal case: restore everything. */
       restore_operand_info_from_expr_rescan_info_entry(operand, eriep);
+    }  /* if */
+    if (is_template_param_object && orig_expr->extra.rescan_info != NULL) {
+      /* The rescan information on the template parameter constant was
+         saved before the reference was identified as an id-expression
+         (possibly parenthesized).  That is recorded on the node that makes
+         the reference an lvalue (see make_sym_constant_operand), and it
+         matters, e.g., for decltype. */
+      restore_operand_id_details(operand,
+                                 &orig_expr->extra.rescan_info->saved_operand);
     }  /* if */
   }  /* if */
   release_local_constant(&constant);
@@ -8467,11 +8504,15 @@ STATIC_THREAD a_template_param_object_map
 			   object. */
 
 static void make_template_param_object_operand(a_constant_ptr  cp,
-                                               an_operand      *operand)
+                                               an_operand      *operand,
+                                               a_boolean       copy_constant)
 /*
 Make operand an lvalue expression operand for the template parameter object
 associated with the constant cp.  If needed, create that object (as a variable
-entry).
+entry).  copy_constant is TRUE if cp is a local constant (rather than an
+allocated IL constant): If the object is created, its value is then a copy of
+cp, including its subconstants (which may be shared with other constants),
+allocated in the file scope memory region.
 */
 {
   a_constant_handle  ch = { cp };
@@ -8480,6 +8521,15 @@ entry).
   if (vp == NULL) {
     a_symbol_ptr  sym = make_template_param_object_sym(&error_position);
     a_type_ptr    vtp = cp->type;
+    if (copy_constant) {
+      a_memory_region_number  region_to_switch_back_to;
+      switch_to_file_scope_region(&region_to_switch_back_to);
+      cp = copy_constant_full(cp, (a_constant *)NULL,
+                              CE_SRC_CONSTANT_IS_NOT_ALLOC_IN_IL);
+      switch_back_to_original_region(region_to_switch_back_to);
+      break_constant_source_corresp(cp);
+      ch.ptr = cp;
+    }  /* if */
     vp = make_variable(vtp, sc_unspecified, DEPTH_OF_FILE_SCOPE);
     vp->is_template_param_object = TRUE;
     vp->is_constexpr = TRUE;
@@ -8541,7 +8591,8 @@ The position of the current token will be used as the operand position.
     /* A C++20 nontype template parameter instantiated with a class type
        constant.  Create a variable operand referring to the underlying
        template parameter object. */
-    make_template_param_object_operand(con_ptr, operand);
+    make_template_param_object_operand(con_ptr, operand,
+                                       /*copy_constant=*/FALSE);
   } else {
     /* Normal (non-reference) case. */
     make_constant_operand(&constant, operand);

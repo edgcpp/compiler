@@ -1,0 +1,21 @@
+[GH #414]
+Class-type template parameter objects in function template signatures
+
+A nontype template parameter of class type denotes a template parameter
+object, which is a const lvalue.  When such a parameter was used in the
+signature of a function template, substituting template arguments treated
+it as a prvalue instead.  As a result, decltype applied to the
+parenthesized parameter name produced the class type rather than a const
+lvalue reference to it (causing a spurious "unexpected function type"
+error), member accesses through the parameter had the wrong value category,
+and taking the address of the parameter caused substitution to fail.  That
+is now fixed.  For example, with --c++20:
+
+  struct A { };
+  template <A V> void f(decltype((V)) v) { }
+  template <A V> auto g() -> decltype(&V);
+  void h() {
+    constexpr A a;
+    f<a>(a);  // Previously an "unexpected function type" error.
+    g<a>();   // Previously, no instance of g matched.
+  }
