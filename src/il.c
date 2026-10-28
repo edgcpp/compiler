@@ -20691,10 +20691,10 @@ static a_boolean bind_template_params_for_lambda_rescan(
                        size_t                             *p_num_saved)
 /*
 If an instantiation scope for template_param_list is active and lambda names
-one of the parameters, bind those that have a value in template_arg_list for
-the rescan of tokens.  *p_saved and *p_num_saved get the state to restore
-afterwards (NULL and 0 if nothing is bound).  Return FALSE if a named
-parameter has no value yet.  Generic lambdas and packs are not handled yet.
+a parameter, bind those with a value in template_arg_list for the rescan of
+tokens; *p_saved and *p_num_saved get the state to restore (NULL if none).
+Return FALSE if a named parameter has no value (lookup would skip it and find
+an outer entity of that name).  Generic lambdas and packs are not handled.
 */
 {
   a_template_param_ptr  tpp;
