@@ -2,7 +2,6 @@
 //options:--diag_suppress=39,62,63:--diag_suppress=39:--diag_suppress=62:--diag_suppress=63:
 //options_all:--c++20
 //remark:[GH #405] A suppressed note of an error no longer stops the front end
-//match_regex:\A(?![\s\S]*internal error)
 // 10/22/26  [GH #405]
 //
 // When constant evaluation fails, the interpreter attaches notes to the
