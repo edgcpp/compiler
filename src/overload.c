@@ -25440,11 +25440,12 @@ a temporary found here only gets the warning.
   a_boolean is_temp;
 
   if (is_expression_operand(operand)) {
-    if (is_glvalue_for_auto_object(operand->variant.expression, &is_temp) ||
+    if (is_glvalue_for_auto_object_or_temp_subobject(
+                                    operand->variant.expression, &is_temp) ||
         is_prvalue_for_auto_object(operand->variant.expression, &is_temp)) {
       /* The expression is a glvalue or class prvalue (object) for a local
-         entity.  Use a different message for temporaries and local
-         variables. */
+         entity (possibly a subobject of a temporary).  Use a different
+         message for temporaries and local variables. */
       if (!is_temp) {
         expr_pos_warning(ec_returning_ref_to_local_variable,
                          &operand->position);
@@ -26335,8 +26336,12 @@ the conversion.
                                     source_operand,
                                     (conv_context & CCO_STATIC_LIFETIME) != 0);
   } else if ((conv_context & CCO_INITIALIZING_RETURN_VALUE) &&
+             (conv_context & CCO_TYPE_TRAITS_CHECK) == 0 &&
              !template_case) {
-    /* Check for returning a reference to a local entity. */
+    /* Check for returning a reference to a local entity.  This is not done
+       for the invented function of the is_convertible check: P2748, which
+       makes binding a returned reference to a temporary ill-formed in C++26,
+       does not apply to it. */
     check_for_returning_reference_to_local_entity(source_operand,
                                                   similar_lvalue_source);
   }  /* if */

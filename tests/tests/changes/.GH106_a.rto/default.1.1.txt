@@ -7,6 +7,10 @@ fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
   const int& f2(long l) { return l; }       // Temporary from a conversion.
                                  ^
 
+"Test_name.c", line 12: warning: returning reference to local temporary
+  const int& f3() { return S().x; }         // Member of a temporary.
+                           ^
+
 "Test_name.c", line 13: warning: returning reference to local temporary
   int&& f4() { return 1; }                  // Rvalue reference to a temporary.
                       ^
