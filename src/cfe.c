@@ -90,9 +90,11 @@ MAKE_FRONT_END_CALLABLE is TRUE.
      (including an internal error). */
   f_error = default_error_output_file();
 #if DEBUG
+/* GCOVR_EXCL_START */
   /* Initialize the file variable used for debug output.  This should be
      done before anything else that could potentially produce debug output. */
   f_debug = f_error;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Do early (before command-line processing) initialization. */
   fe_early_init();

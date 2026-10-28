@@ -341,11 +341,13 @@ Array version of register_trans_unit_variable_with_field.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern unsigned long db_show_trans_unit_space_used(unsigned long grand_total);
 
 extern void db_translation_unit(a_translation_unit_ptr tup);
 
 extern void db_translation_unit_stack(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Conditionally close the "edg" namespace. */

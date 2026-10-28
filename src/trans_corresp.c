@@ -308,6 +308,7 @@ sym.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 The following variable can be set to point to an IL entry from within a 
 debugger.  When that IL entry's correspondence is modified, corresp_intercept
@@ -348,6 +349,7 @@ canonical entry (or NULL if none).
   return result;
 }  /* db_corresp */
 
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 
 #define trace_corresp_check(ptr)  /* Nothing */
@@ -355,6 +357,7 @@ canonical entry (or NULL if none).
 #endif /* DEBUG */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_sym_list(a_symbol_list_entry_ptr  entries)
 /*
@@ -387,6 +390,7 @@ Dump a short summary of the symbols in the given list.
   }  /* while */
 }  /* db_sym_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -399,6 +403,7 @@ given entity.
 {
   check_assertion(entity != NULL);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (tcp->kind != (an_il_entry_kind)iek_base_class &&
       (db_trace("trans_corresp", entity, tcp->kind) ||
        (tcp->canonical != NULL &&
@@ -414,6 +419,7 @@ given entity.
       fprintf(f_debug, " is canonical.\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tcp->canonical = entity;
 }  /* f_change_canonical_entry */
@@ -611,10 +617,12 @@ exact criteria).
                  instantiations should be reattached to the new canonical
                  entry. */
 #if DEBUG
+/* GCOVR_EXCL_START */
               if (db_trace("trans_corresp", templ, iek_template) ||
                   db_trace("trans_corresp", corresp_templ, iek_template)) {
                 fprintf(f_debug, "all_instantiations transferred because\n");
               }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
               if (corresp_tssp->all_instantiations == NULL) {
                 corresp_tssp->all_instantiations = tssp->all_instantiations;
@@ -752,6 +760,7 @@ this routine will create such a correspondence entry.
                       "f_set_trans_unit_corresp: bad input");
   trace_corresp_check(entity1);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (kind != (an_il_entry_kind)iek_base_class &&
       db_trace("trans_corresp", entity1, kind)) {
     db_scp(entity1);
@@ -759,6 +768,7 @@ this routine will create such a correspondence entry.
     db_scp(entity2);
     fprintf(f_debug, ".\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (kind == (an_il_entry_kind)iek_base_class) {
     /* Base class entries are the only entries with a correspondence pointer
@@ -883,11 +893,13 @@ has not yet been examined for a matching entry in another translation unit.
 
   trace_corresp_check(entity);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (kind != (an_il_entry_kind)iek_base_class &&
       db_trace("trans_corresp", entity, kind)) {
     db_scp(entity);
     fprintf(f_debug, " has no correspondence.\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tcp = detach_trans_unit_corresp(kind, entity);
   if (*tcp == NULL) {
@@ -1947,6 +1959,7 @@ its corresponding primary template supplement will be used instead.
   tssp->all_instantiations = slep;
   slep->symbol = inst;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_sym_trace("trans_corresp", inst)) {
     a_line_number  line;
     a_const_char   *file_name, *full_name;
@@ -1971,6 +1984,7 @@ its corresponding primary template supplement will be used instead.
       fprintf(f_debug, "unknown symbol\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_instantiation */
 
@@ -2358,8 +2372,10 @@ symbols are listed under the same header).
             (sym1->kind == (a_symbol_kind)sk_routine &&
              rout_befriending_classes(sym1->variant.routine.ptr) != NULL))) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         db_sym(sym1);
         db_sym(sym2);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         unexpected_condition_str("Expected a class member");
       }  /* if */
@@ -5536,9 +5552,11 @@ translation unit correspondence pointer if one is found.
     if (trans_unit_corresp_of(nsp) == NULL) {
       /* Mark this namespace as visited to avoid infinite recursion. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_trace("trans_corresp", nsp, iek_namespace)) {
         fprintf(f_debug, "Guard: ");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       set_no_trans_unit_corresp(iek_namespace, nsp);
     }  /* if */

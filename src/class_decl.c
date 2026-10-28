@@ -188,6 +188,7 @@ STATIC_THREAD a_class_fixup_ptr
                 avail_class_fixup;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counters to track total use of memory.
 */
@@ -226,6 +227,7 @@ symbol table memory used.
   return grand_total;
 }  /* db_show_class_fixups_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -246,7 +248,9 @@ initialize it.
     rfp = (a_routine_fixup_ptr)alloc_fe(sizeof(a_routine_fixup));
     new (&rfp->function_body_token_cache) a_shared_token_cache();
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_routine_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Clear the entity. */
@@ -768,7 +772,9 @@ initialize it.
     /* Allocate memory for a new entity. */
     cfp = (a_class_fixup_ptr)alloc_fe(sizeof(a_class_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_class_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Clear the entity. */
@@ -839,6 +845,7 @@ STATIC_THREAD an_initializer_fixup_ptr
 			   reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_initializer_fixups_allocated;
 			/* Number of initializer fixup entries allocated
@@ -859,6 +866,7 @@ of the symbol table memory used.
   return grand_total;
 }  /* db_show_initializer_fixups_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static an_initializer_fixup_ptr alloc_initializer_fixup(void)
@@ -877,7 +885,9 @@ initialize it.
     /* Allocate memory for a new entity. */
     ifp = alloc_fe_of_type(an_initializer_fixup);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_initializer_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Clear the entity. */
@@ -949,6 +959,7 @@ STATIC_THREAD an_override_registry_entry_ptr
                 avail_override_registry_entries;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_override_registry_entries_allocated;
 
@@ -968,6 +979,7 @@ of the symbol table memory used.
   return grand_total;
 }  /* db_show_override_registry_entries_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -987,7 +999,9 @@ fields.
     orep = (an_override_registry_entry_ptr)alloc_fe(
                                            sizeof(an_override_registry_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_override_registry_entries_allocated += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Initialize its fields. */
@@ -1091,6 +1105,7 @@ STATIC_THREAD a_quasi_override_descr_ptr
 			/* Available list of "quasi-override" descriptions. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_quasi_override_descrs_allocated;
 
@@ -1110,6 +1125,7 @@ as part of the symbol table memory used.
   return grand_total;
 }  /* db_show_quasi_override_descrs_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -1134,7 +1150,9 @@ to by *p_list (which is NULL if the list is empty).  Initialize the new entry
     qodp =
          (a_quasi_override_descr_ptr)alloc_fe(sizeof(a_quasi_override_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_quasi_override_descrs_allocated += 1;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Initialize its fields. */
@@ -1599,6 +1617,7 @@ STATIC_THREAD a_pending_exception_check_entry_ptr
 			   other declarations only after exception
 			   specifications are known to be established. */
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 /*
 Counter to track total use of memory.
@@ -1618,6 +1637,7 @@ unsigned long db_show_pending_exception_check_entries_used(
   return grand_total;
 }  /* db_show_pending_exception_check_entries_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void record_pending_exception_check(a_symbol_ptr       sym,
@@ -1640,7 +1660,9 @@ record with the given information.
     pecp = (a_pending_exception_check_entry_ptr)
                            alloc_fe(sizeof(a_pending_exception_check_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_pending_exception_check_entries;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   pecp->next = pending_exception_check_entries;
@@ -1790,6 +1812,7 @@ STATIC_THREAD a_covariant_override_ptr
 			/* Available list of covariant override entries. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 /*
 Counter to track total use of memory.
@@ -1806,6 +1829,7 @@ unsigned long db_show_covariant_overrides_used(unsigned long grand_total)
   return grand_total;
 }  /* db_show_covariant_overrides_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void record_covariant_override(a_class_def_state_ptr  cdsp,
@@ -1826,7 +1850,9 @@ pointed to by cdsp.  Initialize the record with the given information.
   } else {
     cop = (a_covariant_override_ptr)alloc_fe(sizeof(a_covariant_override));
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_covariant_overrides_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   cop->next = NULL;
@@ -3154,11 +3180,13 @@ and for member functions of template classes.
       cssp->default_arg_fixup_pass_1_started = TRUE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fputs("default-arg fixup for class \"", f_debug);
       db_type_name(class_type);
       fputs("\"\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (class_type->variant.class_struct_union.is_template_class &&
         class_type->variant.class_struct_union.is_nonreal_class) {
@@ -3190,12 +3218,14 @@ and for member functions of template classes.
          definition. */
       if (class_type->source_corresp.source_sequence_entry != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
           fputs("forcing ss-entries for instantiations triggered ", f_debug);
           fputs("by default args to precede\n  class \"", f_debug);
           db_type_name(class_type);
           fputs("\"\n", f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Determine the scope into which instantiations will be inserted.
            It will be the innermost active namespace scope that is a parent
@@ -3289,9 +3319,11 @@ and for member functions of template classes.
            function type. */
         sym = rfp->symbol;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           db_symbol(sym, "scanning default args for ", 2);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (fixup_class_is_nonreal_template_instantiation) {
           /* Prototype instantiation. */
@@ -3783,11 +3815,13 @@ nested class.
 #endif /* EXPENSIVE_CHECKING */
   if (cssp->routine_fixup_list != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fputs("inline function fixup for class \"", f_debug);
       db_type_name(class_type);
       fputs("\"\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (class_type->variant.class_struct_union.is_template_class &&
         class_type->variant.class_struct_union.is_nonreal_class) {
@@ -3842,12 +3876,14 @@ nested class.
               sseocp = (a_src_seq_end_of_construct_ptr)tail->entity.ptr;
               if (sseocp->entity.ptr == (char *)class_type) {
 #if DEBUG
+/* GCOVR_EXCL_START */
                 if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
                   fputs("adding fixup entries following body of class \"",
                         f_debug);
                   db_type_name(class_type);
                   fputs("\"\n", f_debug);
                 }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
                 insert_point = tail->next;
                 break;
@@ -3939,9 +3975,11 @@ nested class.
         a_boolean  injected = symbol_is(sym, sk_member_function) &&
                               func_sym_routine(sym)->from_injected_tokens;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           db_symbol(sym, "scanning function body for ", 2);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         is_friend = fixup_is_for_friend(rfp);
         if (!same_entities(curr_scope_class_type, rfp->class_type)) {
@@ -5135,6 +5173,7 @@ after a class instantiation.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 static void db_virtual_function_override(
                                        an_overriding_virtual_function_ptr ovfp)
 /*
@@ -5204,6 +5243,7 @@ Dump a sequence of virtual function numbers, for debug purposes.
     }  /* for */
   }  /* if */
 }  /* db_virtual_function_number_sequence */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -5252,6 +5292,7 @@ ambiguity.
        scan the list to look for duplicate primary functions. */
     ovfp = bcp->variant.overriding_virtual_functions;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       if (ovfp != NULL) {
         fprintf(f_debug, "vfnum sequence (base class %s of class %s): ",
@@ -5261,6 +5302,7 @@ ambiguity.
         (void)fputc('\n', f_debug);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     while (ovfp != NULL) {
       /* Compare the primary function for the current overriding virtual
@@ -5298,11 +5340,13 @@ ambiguity.
                          ec_ambiguous_virtual_function_override, sym);
         }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fputs("  vfnum sequence after pruning: ", f_debug);
           db_virtual_function_number_sequence(bcp);
           (void)fputc('\n', f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
       /* Advance to the next entry on the list. */
@@ -5385,6 +5429,7 @@ for the class to which they belong.
     ovfp->next = new_ovfp;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("virtual function sequence for base class ", f_debug);
     db_type_name(base_class->type);
@@ -5392,6 +5437,7 @@ for the class to which they belong.
     db_virtual_function_number_sequence(base_class);
     (void)fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* insert_in_virtual_function_override_list */
@@ -5526,12 +5572,14 @@ new_direct_bcp->derived_class.
       new_ovfp->return_adjustment_base_class =
                                 ovfp_to_copy->return_adjustment_base_class;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         fputs("copy for base class ", f_debug);
         db_type_name(new_bcp->type);
         fputs(": ", f_debug);
         db_virtual_function_override(ovfp_to_copy);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Add it to the new list. */
       insert_in_virtual_function_override_list(new_bcp, new_ovfp);
@@ -6206,19 +6254,23 @@ appears on a linked list pointed to from base_class.
       }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         fputs("existing entry: ", f_debug);
         db_virtual_function_override(ovfp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       ovfp->overriding_function = overriding_func;
       ovfp->base_class = NULL;
       ovfp->return_adjustment_base_class = return_adjustment_bcp;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         fputs("after modification: ", f_debug);
         db_virtual_function_override(ovfp);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* There can be more than one override entry from previous base classes
          in a case like this:
@@ -6238,10 +6290,12 @@ appears on a linked list pointed to from base_class.
       while (ovfp->next != NULL &&
              ovfp->next->primary_function == primary_func) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fputs("removing: ", f_debug);
           db_virtual_function_override(ovfp->next);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         ovfp->next = ovfp->next->next;
       }  /* while */
@@ -6255,10 +6309,12 @@ appears on a linked list pointed to from base_class.
     ovfp->overriding_function = overriding_func;
     ovfp->return_adjustment_base_class = return_adjustment_bcp;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       fputs("newly created: ", f_debug);
       db_virtual_function_override(ovfp);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     insert_in_virtual_function_override_list(base_class, ovfp);
   }  /* if */
@@ -8210,6 +8266,7 @@ a pointer to it.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 void db_path(a_derivation_path     path,
              a_boolean             show_offset)
 /*
@@ -8356,6 +8413,7 @@ Dump a linked list of base class entries, for debug purposes.
   }  /* if */
 }  /* db_base_class_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if EXPENSIVE_CHECKING
 
@@ -8432,18 +8490,22 @@ with class_state.
   db_enter(5, "verify_virt_func_override_list");
   ovfp = base_class->variant.overriding_virtual_functions;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     if (ovfp != NULL) {
       fputs("base class = ", f_debug);
       db_base_class(base_class, /*show_offset=*/FALSE);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   for (; ovfp != NULL; ovfp = ovfp->next) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       db_virtual_function_override(ovfp);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (ovfp->base_class == NULL) {
       /* The overriding function is in the derived class, which is only
@@ -8478,12 +8540,14 @@ identical.
 
   db_enter(4, "congruent_paths");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("comparing ", f_debug);
     db_path(path1, /*show_offset=*/FALSE);
     fputs(" and ", f_debug);
     db_path(path2, /*show_offset=*/FALSE);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   congruent = FALSE;
   /* Only the start of a derivation and the end of a derivation can be
@@ -8515,9 +8579,11 @@ identical.
     }  /* for */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, " : %scongruent\n", congruent ? "" : "not ");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return congruent;
@@ -9159,6 +9225,7 @@ duplicate paths.  The copy will be a base class of new_class.
            classes list for the new class.  No new base class entry needs to
            be created. */
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 3) {
           fputs("  reencountering virtual base class \"", f_debug);
           db_type_name(bcp->type);
@@ -9166,6 +9233,7 @@ duplicate paths.  The copy will be a base class of new_class.
           db_abbreviated_type(new_class);
           fputc('\n', f_debug);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         if (access == as_public &&
             directly_derived_bcp->has_public_derivation) {
@@ -9177,6 +9245,7 @@ duplicate paths.  The copy will be a base class of new_class.
     }  /* for */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fputs("  creating indirect base class \"", f_debug);
     db_type_name(base_class_to_copy->type);
@@ -9184,6 +9253,7 @@ duplicate paths.  The copy will be a base class of new_class.
     db_abbreviated_type(new_class);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Create a new base class entry. */
   new_bcp = alloc_base_class();
@@ -10207,12 +10277,14 @@ to FALSE before returning).
                                         (a_derivation_step_ptr)NULL },
                                       access);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("base_specifiers")) {
     db_abbreviated_type(bcp_type);
     fputs(" is direct base class of ", f_debug);
     db_abbreviated_type(class_type);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if CFRONT_OBJECT_CODE_COMPATIBILITY
   /* When cfront lays out a class with base classes, the subobject for the
@@ -10293,11 +10365,13 @@ to FALSE before returning).
       if (!bcp->is_pack_expansion &&
           bcp->variant.overriding_virtual_functions != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fputs("copying virtual function override list from ", f_debug);
           db_base_class(bcp, FALSE);
           db_virtual_function_override_list(bcp);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* Copy the virtual function override entries from bcp (which is
            on the base classes list for bcp_type) to the
@@ -10305,11 +10379,13 @@ to FALSE before returning).
            classes list for class_type). */
         copy_virtual_function_override_list(bcp, new_bcp, direct_bcp);
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           fputs("new base class ", f_debug);
           db_base_class(new_bcp, FALSE);
           db_virtual_function_override_list(new_bcp);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
     }  /* for */
@@ -10433,11 +10509,13 @@ can only contain CLI interfaces.
 
   db_enter(3, "scan_base_specifier_list");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("base_specifiers")) {
     fputs("scanning base classes for ", f_debug);
     db_abbreviated_type(type_ptr);
     fputc('\n', f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   scope_stack_top().in_base_specifier_list = TRUE;
   if (type_is(type_ptr, tk_union)) {
@@ -11289,7 +11367,9 @@ implicitly as part of the dispose pattern implementation.
                                                    source_sequence_entry;
     if (ssep != NULL && ssep->next != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       a_source_sequence_entry_ptr   prev = ssep->prev;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
       /* Unlink the source sequence entry for the current class and
@@ -11297,6 +11377,7 @@ implicitly as part of the dispose pattern implementation.
       move_src_seq_entry(ssep, depth_scope_stack,
                          (a_source_sequence_entry_ptr)NULL, depth_scope_stack);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 ||
           db_flag_is_set("dump_ss_full") ||
           db_flag_is_set("base_specifiers")) {
@@ -11307,6 +11388,7 @@ implicitly as part of the dispose pattern implementation.
                       prev->next :
                       scope_stack[depth_scope_stack].source_sequence_list);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -11314,9 +11396,11 @@ implicitly as part of the dispose pattern implementation.
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
   class_symbol_supp(symbol_for(type_ptr))->base_classes_fixed = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 || db_flag_is_set("base_specifiers")) {
     db_base_class_list(type_ptr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if EXPENSIVE_CHECKING
   if (!type_is(type_ptr, tk_union) &&
@@ -11473,6 +11557,7 @@ information (if available; it may be NULL).
         ctsp->friends = ielep;
       }
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_trace("friendship", class_type, iek_type) ||
           db_trace("friendship", friend_class_type, iek_type)) {
         db_abbreviated_type(friend_class_type);
@@ -11492,6 +11577,7 @@ information (if available; it may be NULL).
                                                           extra_info->friends);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
 #if GENERATE_SOURCE_SEQUENCE_LISTS
@@ -12007,6 +12093,7 @@ that the lexical class of the definition can be recovered.
   rlep->next = ctsp->friends;
   ctsp->friends = rlep;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_trace("friendship", rout_ptr, iek_routine) ||
       db_trace("friendship", class_type, iek_type)) {
     db_name_full(&rout_ptr->source_corresp, iek_routine);
@@ -12020,6 +12107,7 @@ that the lexical class of the definition can be recovered.
       db_class_list(rout_befriending_classes(rout_ptr));
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* update_friend_function_info */
 
@@ -17172,7 +17260,9 @@ implicitly declared member functions.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) db_symbol(sym, "", 4);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   treat_declaration_as_okay_in_property_or_event(class_state);
   db_exit();
@@ -19569,7 +19659,9 @@ template declaration and is NULL otherwise.
     curr_routine_fixup->symbol = sym;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) db_symbol(sym, "", 4);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* decl_static_data_member */
@@ -19801,9 +19893,11 @@ be the last in the anonymous-union-parent chain.
   }  /* for */
   if (new_apo_sym == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       db_symbol(apo_sym, "cloning: ", 2);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* None was found, so create a new one. */
     new_apo_sym = make_anonymous_parent_object_symbol((a_symbol_kind)sk_field,
@@ -20045,6 +20139,7 @@ nonstandard anonymous unions is_nonstd is TRUE.
                              "check_anonymous_union_symbols: bad symbol kind");
   }  /* switch */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("adding symbols to ", f_debug);
     if (class_type != NULL) {
@@ -20056,6 +20151,7 @@ nonstandard anonymous unions is_nonstd is TRUE.
     db_abbreviated_type(assoc_object_type);
     db_symbol(assoc_object_sym, ":\n  ", 4);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (reuse_symbol && !C_mode() && !is_nonstd) {
     ctsp = assoc_object_type->variant.class_struct_union.extra_info;
@@ -20131,10 +20227,12 @@ nonstandard anonymous unions is_nonstd is TRUE.
     next_sym = sym->next_in_scope;
     if (reuse_symbol) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         db_symbol(sym, (char *)(is_function_symbol(sym) ? "discarding: "
                                                         : "promoting: "), 2);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Disjoin the symbol from the list.  It will be added to another
          list when it is reentered in the symbol table. */
@@ -20153,9 +20251,11 @@ nonstandard anonymous unions is_nonstd is TRUE.
       }  /* if */
     } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         db_symbol(sym, "cloning: ", 2);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Creation of a new symbol is only implemented for fields, because it
          can only happen in C mode or with C++ classes that have no C++
@@ -20311,6 +20411,7 @@ nonstandard anonymous unions is_nonstd is TRUE.
                         "check_anonymous_union_symbols: unexpected sym kind");
     }  /* switch */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       if (is_function_symbol(sym)) {
         /* Nothing. */
@@ -20320,6 +20421,7 @@ nonstandard anonymous unions is_nonstd is TRUE.
         db_symbol(sym, "new symbol: ", 2);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   /* Just to be safe, clear the next pointers on any anonymous union parent
@@ -21947,11 +22049,13 @@ be entered.
   }  /* if */
   class_state->is_first_field = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (member_sym != NULL) {
       db_symbol(member_sym, "", 2);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return field;
@@ -26165,6 +26269,7 @@ destination type is not yet on the current class's conversion list.
           assoc_pointers_block_of(&scope_stack[depth_scope_stack])->symbols;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     a_class_symbol_supplement_ptr cssp = 
                                    symbol_supplement_for_class(class_type);
@@ -26184,6 +26289,7 @@ destination type is not yet on the current class's conversion list.
       db_symbol(slep->symbol, "  ", 4);
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* project_base_class_conversion_functions */
@@ -27251,6 +27357,7 @@ are:   A<T> for A<int>, A<T>::B for A<int>::B, and A<T>::B::C for A<int>::B::C.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (corresp_prototype_tag_sym != NULL) {
       fputs("returning symbol for ", f_debug);
@@ -27258,6 +27365,7 @@ are:   A<T> for A<int>, A<T>::B for A<int>::B, and A<T>::B::C for A<int>::B::C.
       fputc('\n', f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return corresp_prototype_tag_sym;
@@ -32996,12 +33104,14 @@ wrap_up_class_definition.
          record where it was defined, not where it was initially declared. */
       move_to_end_of_types_list(class_type, effective_decl_level);
 #if DEBUG
+/* GCOVR_EXCL_START */
     } else {
       if (db_flag_is_set("dump_type_lists")) {
         fprintf(f_debug, "Not moving to end of type list: ");
         db_abbreviated_type(class_type);
         fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -36353,11 +36463,13 @@ have been processed.
 #endif /* MAINTAIN_NEEDED_FLAGS */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fputs("external linkage given to member function \"", f_debug);
       db_name(&rp->source_corresp);
       fputs("\"\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   check_type_for_linkage_change(rp->type, count);
@@ -36433,11 +36545,13 @@ are entailed in its definition and marks them external as well.
     (*count)++;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fputs("external linkage given to class \"", f_debug);
     db_type_name(type);
     fputs("\"\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Be sure any class types involved in the definitions of subobjects
      of the class are marked external, too. */
@@ -36474,11 +36588,13 @@ are entailed in its definition and marks them external as well.
         vp->storage_class = (a_storage_class)sc_extern;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fputs("external linkage given to static data member \"", f_debug);
         db_name(&vp->source_corresp);
         fputs("\"\n", f_debug);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       check_type_for_linkage_change(vp->type, count);
     }  /* if */
@@ -36753,11 +36869,13 @@ because they were used in declaring an external function or variable.
       continue;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fputs("file scope type: ", f_debug);
       db_abbreviated_type(tp);
       fputc('\n', f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (is_immediate_class_type(tp)) {
       /* Found a class. */
@@ -36903,6 +37021,7 @@ One-time initialization for class_decl.c static variables.
       pch_saved_var_array_elem(deferred_friend_fixup_list_tail),
       pch_saved_var_array_elem(use_deferred_friend_fixup_list),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_routine_fixups_allocated),
       pch_saved_var_array_elem(num_class_fixups_allocated),
       pch_saved_var_array_elem(num_override_registry_entries_allocated),
@@ -36911,6 +37030,7 @@ One-time initialization for class_decl.c static variables.
       pch_saved_var_array_elem(num_quasi_override_descrs_allocated),
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       pch_saved_var_array_elem(num_pending_exception_check_entries),
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -36965,10 +37085,13 @@ Initializations for class declaration processing.
 #if IA64_ABI
   avail_covariant_overrides = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_covariant_overrides_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* IA64_ABI */
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_routine_fixups_allocated = 0;
   num_class_fixups_allocated = 0;
   num_override_registry_entries_allocated = 0;
@@ -36977,6 +37100,7 @@ Initializations for class declaration processing.
   num_quasi_override_descrs_allocated = 0;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   num_pending_exception_check_entries = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   abbr_mem_func_templates = alloc_fe_of_type(an_abbr_mem_func_templ_map);
   construct(abbr_mem_func_templates, /*mask_width=*/10u);

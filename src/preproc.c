@@ -82,10 +82,12 @@ STATIC_THREAD a_hash_table_ptr
 			   entries.  NULL if no such aliases exist. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_include_aliases_allocated;
 			/* Count of include aliases allocated, for space used
 			   purposes. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -131,7 +133,9 @@ pointer to it.
 
   iap = alloc_fe_of_type(an_include_alias);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_include_aliases_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_include_alias(iap);
   return iap;
@@ -237,10 +241,12 @@ which an include_alias pragma has been seen.
                                        /*create=*/FALSE);
     if (iap != NULL) result = iap->short_file_name;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("include_alias")) {
       fprintf(f_debug, "Looking for alias for %s, found %s\n", buf->buffer,
               result == NULL ? "NULL" : result);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return result;
@@ -594,9 +600,11 @@ Scan and process an #endif directive.
       }  /* if */
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 3) {
       fprintf(f_debug, "endif, pp_if_stack_depth = %ld\n", pp_if_stack_depth);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     pp_if_stack_depth--;
     /* Set things up for the check for extra text on the end of the line. */
@@ -625,9 +633,11 @@ Push a new entry on the preprocessing-if stack (pp_if_stack).
                        pp_if_stack[pp_if_stack_depth].if_pos);
   pp_if_stack[pp_if_stack_depth].else_encountered = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "push, pp_if_stack_depth = %ld\n", pp_if_stack_depth);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* push_pp_if_stack */
 
@@ -822,9 +832,11 @@ then return.
 {
   db_enter(3, "perform_if");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "perform_if, condition = %d\n", condition);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   push_pp_if_stack();
   if (condition) {
@@ -1720,11 +1732,13 @@ in the metadata file.
       char              *buffer;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("dump_metadata") ||
           db_flag_is_set("dump_full_metadata")) {
         fprintf(f_debug, "Importing metadata from '%s' returns %x.\n",
                 cmfp->full_name, (unsigned int)cmfp->assembly_index);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Import the top level declarations. */
       fetch_pp_tokens = FALSE;
@@ -2805,9 +2819,11 @@ there.
   /* Copy the string to IL memory. */
   ppp->pragma_text = make_copy_of_token_string();
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("pragma_string")) {
     fprintf(f_debug, "Saved pragma string: '%s'\n", ppp->pragma_text);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* convert_pragma_to_string */
@@ -2953,9 +2969,11 @@ or __pragma, but not #pragma).
       ppp->pragma_text = copy_string_to_region(file_scope_region_number,
                                                pp_dir_string_buffer);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("pragma_string")) {
         fprintf(f_debug, "pp-token pragma string: '%s'\n", ppp->pragma_text);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   } else {
@@ -3092,10 +3110,12 @@ short_name.
                                        fn_for_function(compare_include_alias));
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("include_alias")) {
     fprintf(f_debug, "Creating include alias for %s to %s\n", long_name,
             short_name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Create an entry for long_name and short_name.  If an entry already
      exists for long_name, it will be updated to refer to the (possibly new)
@@ -4026,11 +4046,13 @@ typedef struct a_gcc_pragma_options_entry {
 } a_gcc_pragma_options_entry;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of entries allocated, to track total use of memory.
 */
 STATIC_THREAD unsigned long
 		num_gcc_pragma_options_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD a_gcc_pragma_options_entry_ptr
@@ -4051,7 +4073,9 @@ Allocate and return a GCC pragma options entry.
     avail_gcc_pragma_options_stack_entries = gpoep->next;
   } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_gcc_pragma_options_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     gpoep = alloc_fe_of_type(a_gcc_pragma_options_entry);
   }  /* if */
@@ -4340,11 +4364,13 @@ typedef struct a_upc_pragma_stack_entry {
 } a_upc_pragma_stack_entry;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of entries allocated, to track total use of memory.
 */
 STATIC_THREAD unsigned long
 		num_upc_pragma_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD a_upc_pragma_stack_entry_ptr
@@ -4369,7 +4395,9 @@ Push an entry onto the top of the stack.
     avail_upc_pragma_stack_entries = upsep->next;
   } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_upc_pragma_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     upsep = (a_upc_pragma_stack_entry_ptr)alloc_fe(
                                             sizeof(a_upc_pragma_stack_entry));
@@ -4742,8 +4770,10 @@ typedef struct a_forScope_stack_entry {
 } a_forScope_stack_entry;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_forScope_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 STATIC_THREAD a_forScope_stack_entry_ptr
@@ -4772,7 +4802,9 @@ Record the given name and the current conformance state in that entry.
     fssep = (a_forScope_stack_entry_ptr)alloc_fe(
                                sizeof(a_forScope_stack_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     ++num_forScope_stack_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   fssep->next = forScope_stack;
@@ -5408,6 +5440,7 @@ is asked to act like cpp.
 }  /* cpp_driver */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_preproc_space_used(void)
 /*
@@ -5448,6 +5481,7 @@ Display and return the amount of space used for preprocessing structures.
   return (grand_total);
 }  /* show_preproc_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void preproc_one_time_init(void)
@@ -5461,7 +5495,9 @@ One-time initialization for preproc.c and preproc.h variables.
 #if UPC_EXTENSIONS_ALLOWED
       pch_saved_var_array_elem(avail_upc_pragma_stack_entries),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_upc_pragma_stack_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
 #endif /* UPC_EXTENSIONS_ALLOWED */
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -5469,13 +5505,17 @@ One-time initialization for preproc.c and preproc.h variables.
       pch_saved_var_array_elem(forScope_stack),
       pch_saved_var_array_elem(avail_forScope_stack_entries),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_forScope_stack_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
       pch_saved_var_array_elem(avail_gcc_pragma_options_stack_entries),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_gcc_pragma_options_stack_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* GNU_EXTENSIONS_ALLOWED */
       pch_saved_var_array_terminating_elem()
@@ -5556,7 +5596,9 @@ init_predefined_macros.)
 #if UPC_EXTENSIONS_ALLOWED
   avail_upc_pragma_stack_entries = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_upc_pragma_stack_entries_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* UPC_EXTENSIONS_ALLOWED */
   header_name_buffer = alloc_text_buffer(256);
@@ -5564,14 +5606,18 @@ init_predefined_macros.)
   avail_forScope_stack_entries = NULL;
   include_alias_hash_table = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_forScope_stack_entries_allocated = 0;
   num_include_aliases_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if GNU_EXTENSIONS_ALLOWED
   avail_gcc_pragma_options_stack_entries = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_gcc_pragma_options_stack_entries_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* GNU_EXTENSIONS_ALLOWED */
 }  /* preproc_init */

@@ -102,6 +102,7 @@ initialize its variant fields.
 }  /* clear_symbol */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Information used to gather performance statistics on the symbol table:
 */
@@ -155,6 +156,7 @@ STATIC_THREAD unsigned long
 		num_constexpr_if_cache_info_allocated,
 		num_exception_spec_error_descrs_allocated;
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -367,6 +369,7 @@ is done according to the output control block octl.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define DEBUG_LINE_LENGTH 79
 /* Macros used within db_symbol, referencing local variables defined
    in that routine. */
@@ -1536,6 +1539,7 @@ Shorthand for db_template_param_list.
   db_template_param_list(tpp);
 }  /* db_tpp */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void set_source_corresp_name(a_source_correspondence	*sc,
@@ -1997,7 +2001,9 @@ Allocate a new symbol header, and return a pointer to it.
 
   ptr = (a_symbol_header_ptr)alloc_fe(sizeof(a_symbol_header));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_symbol_headers_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ptr->next              = NULL;
   ptr->identifier        = NULL;
@@ -2055,7 +2061,9 @@ Allocate a new conversion header and return a pointer to it.
   db_enter(5, "alloc_conversion_header");
   ptr = (a_conversion_header_ptr)alloc_fe(sizeof(a_conversion_header));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_conversion_headers_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ptr->next          = NULL;
   ptr->symbol_header = NULL;
@@ -2083,7 +2091,9 @@ is not needed by make_literal_opname_locator.
   ptr = (a_literal_operator_header_ptr)
                                    alloc_fe(sizeof(a_literal_operator_header));
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++num_literal_operator_headers_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ptr->next = literal_operator_header_list;
   literal_operator_header_list = ptr;
@@ -2106,7 +2116,9 @@ Allocate a new type list entry and return a pointer to it.
   ptr = (a_substituted_type_list_entry_ptr)
                                alloc_fe(sizeof(a_substituted_type_list_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_substituted_type_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ptr->next = NULL;
   ptr->templ_arg_list = NULL;
@@ -2132,7 +2144,9 @@ Allocate a new symbol list entry and return a pointer to it.
     /* Allocate a new entry. */
     ptr = (a_symbol_list_entry_ptr)alloc_fe(sizeof(a_symbol_list_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_symbol_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   ptr->next    = NULL;
@@ -2184,7 +2198,9 @@ value such as <unnamed>).
   hdr_ptr->identifier_length = length;
   hdr_ptr->is_unnamed = is_unnamed;
 #if DEBUG
+/* GCOVR_EXCL_START */
   symbol_name_string_space += (unsigned long)(length + 1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* set_identifier_for_symbol_header */
 
@@ -2233,7 +2249,9 @@ its fields and return a pointer to it.
 
   peahlp = alloc_fe_of_type(a_prop_or_event_accessor_header_lookup);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_prop_or_event_accessor_header_lookups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_prop_or_event_accessor_header_lookup(peahlp);
   return peahlp;
@@ -2330,6 +2348,7 @@ header is returned if one exists.  Otherwise, a new header is created.
 }  /* get_property_or_event_accessor_symbol_header */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_hide_by_sig_list(a_hide_by_sig_list_entry_ptr	hbslep)
 /*
@@ -2357,6 +2376,7 @@ Display a hide-by-sig list, for debugging purposes.
   }  /* if */
 }  /* db_hide_by_sig_list */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static void free_list_of_hide_by_sig_list_entries(
@@ -2395,7 +2415,9 @@ to it.
     /* Allocate a new entry. */
     hbslep = alloc_fe_of_type(a_hide_by_sig_list_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_hide_by_sig_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   hbslep->next = NULL;
@@ -2745,9 +2767,11 @@ static method.  The list is returned in *p_hide_by_sig_list.
     sym->hide_by_sig_lookup_done = TRUE;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("hbs")) {
     db_hide_by_sig_list(result_list);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Return the list if a pointer to the list pointer was provided by
      the caller. */
@@ -2773,7 +2797,9 @@ Allocate a new type list entry and return a pointer to it.
     /* Allocate a new entry. */
     ptr = (a_type_list_entry_ptr)alloc_fe(sizeof(a_type_list_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_type_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   ptr->next    = NULL;
@@ -2803,6 +2829,7 @@ be NULL, in which case nothing is done.
 }  /* free_list_of_type_list_entries */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_type_entries(a_type_list_entry_ptr  tlep,
                      int                    indent = 0)
@@ -2821,6 +2848,7 @@ db_type_list because that name was in use already.)
   }  /* for */
 }  /* db_type_entries */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 a_symbol_ptr find_symbol(a_const_char     *identifier,
@@ -2845,7 +2873,9 @@ caller may have to set it directly.
 
   db_enter(4, "find_symbol");
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_searches_for_symbols++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   /* Hash the symbol's identifier.  This is not a particularly strong hash,
@@ -2862,7 +2892,9 @@ caller may have to set it directly.
     prev_hdr_ptr = NULL;
     do {
 #if DEBUG
+/* GCOVR_EXCL_START */
       num_compares_for_symbols++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (length == hdr_ptr->identifier_length) {
         /*lint -e{670}*/
@@ -2887,13 +2919,17 @@ caller may have to set it directly.
      allocate a symbol header for it. */
   hdr_ptr = alloc_symbol_header();
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_symbol_headers_in_hash_table++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   /* Link the new header onto the front of the appropriate bucket of the symbol
      table. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (symbol_table[bucket_number] == NULL) num_used_symbol_buckets++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   hdr_ptr->next = symbol_table[bucket_number];
   symbol_table[bucket_number] = hdr_ptr;
@@ -3055,7 +3091,9 @@ Allocate a namespace list entry and return a pointer to it.
     /* Allocate a new entry. */
     ptr = (a_namespace_list_entry_ptr)alloc_fe(sizeof(a_namespace_list_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_namespace_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   ptr->next = NULL;
@@ -3354,7 +3392,9 @@ fields, and return a pointer to it.
   new (&oocpsp->cache) a_template_cache();
   clear_template_cache(&oocpsp->cache);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_out_of_class_partial_specs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   return oocpsp;
@@ -3378,7 +3418,9 @@ fields, and return a pointer to it.  Reuse a freed entry if possible.
     /* Allocate a template declaration information entry. */
     tdip = (a_template_decl_info_ptr)alloc_fe(sizeof(a_template_decl_info));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_template_decl_info_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   tdip->parameters = NULL;
@@ -3424,7 +3466,9 @@ fields, and return a pointer to it.
   tsxp->token_sequence_number = NO_TOKEN_SEQUENCE_NUMBER;
   tsxp->entry = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_token_sequence_xrefs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return tsxp;
 }  /* alloc_token_sequence_xref */
@@ -3438,7 +3482,9 @@ fields, and return a pointer to it.
 {
   a_constexpr_if_cache_info_ptr  cicip = new_fe<a_constexpr_if_cache_info>();
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_constexpr_if_cache_info_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return cicip;
 }  /* alloc_constexpr_if_cache_info */
@@ -3462,7 +3508,9 @@ fields, and return a pointer to it.
   ndcip->symbol = NULL;
   ndcip->reversed_opnds = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_nondependent_call_info_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return ndcip;
 }  /* alloc_nondependent_call_info */
@@ -3541,6 +3589,7 @@ position disambiguator on tsn if non-zero.
     ssep->next_nondependent_call = list_ptr;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("nondep_call")) {
     fprintf(f_debug, "Searching for nondependent call at %ld", (long)tsn);
     if (depth != 0) {
@@ -3553,6 +3602,7 @@ position disambiguator on tsn if non-zero.
       fprintf(f_debug, "\n");
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result;
 }  /* get_nondependent_call_info */
@@ -3584,6 +3634,7 @@ implicit reversal of operands.
      current context. */
   tdip = get_specified_template_decl_info(/*innermost=*/TRUE);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("nondep_call")) {
     fprintf(f_debug, "Recording nondependent call at %ld ", (long)tsn);
     if (depth != 0) {
@@ -3593,6 +3644,7 @@ implicit reversal of operands.
     if (symbol != NULL) db_symbol_name(symbol);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Create a nondependent call entry. */
   ndcip = alloc_nondependent_call_info();
@@ -3679,7 +3731,9 @@ and return a pointer to it.
   tfip->symbol = NULL;
   tfip->token_number = NO_TOKEN_SEQUENCE_NUMBER;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_templ_friend_info_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return tfip;
 }  /* alloc_templ_friend_info */
@@ -3708,7 +3762,9 @@ return a pointer to it.
   nssp->visited_by_qualified_lookup = FALSE;
   nssp->within_unnamed_namespace = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_namespace_symbol_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_scope_pointers_block(&nssp->pointers_block);
 
@@ -3756,7 +3812,9 @@ and return a pointer to it.
   tssp = (a_template_symbol_supplement_ptr)
                    alloc_fe(sizeof(a_template_symbol_supplement));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_template_symbol_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Initialize its fields. */
   tssp->pending_instantiations = 0;
@@ -3926,7 +3984,9 @@ null.  (Used for C++/CLI properties.)
   psssp = (a_property_set_symbol_supplement_ptr)
                            alloc_fe(sizeof(a_property_set_symbol_supplement));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_property_set_symbol_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Initialize its fields. */
   psssp->properties = NULL;
@@ -3951,7 +4011,9 @@ This function should normally only be called through the macro get_sdm_supp.
   new (&sdmsp->token_cache) a_shared_token_cache();
   sdmsp->prototype_member = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_static_data_member_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   sdm_sym->variant.static_data_member.extra_info = sdmsp;
   return sdmsp;
@@ -3996,7 +4058,9 @@ state.
         essp = (an_enum_symbol_supplement_ptr)alloc_fe(
                                             sizeof(an_enum_symbol_supplement));
 #if DEBUG
+/* GCOVR_EXCL_START */
         num_enum_symbol_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         sym_ptr->variant.enumeration.extra_info = essp;
         essp->dependent_type_fixup_list = NULL;
@@ -4020,7 +4084,9 @@ state.
         cssp = (a_class_symbol_supplement_ptr)alloc_fe(
                                             sizeof(a_class_symbol_supplement));
 #if DEBUG
+/* GCOVR_EXCL_START */
         num_class_symbol_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         sym_ptr->variant.class_struct_union.extra_info = cssp;
         /* Note: Some of the fields cleared below must also be cleared in
@@ -4175,7 +4241,9 @@ state.
         fssp->is_first_variant_member = FALSE;
         fssp->is_last_variant_member = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
         num_field_symbol_supplements_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         sym_ptr->variant.field.extra_info = fssp;
       }
@@ -4196,7 +4264,9 @@ state.
         esdp = (an_extern_symbol_descr_ptr)alloc_fe(
                                                sizeof(an_extern_symbol_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
         num_extern_symbol_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         sym_ptr->variant.extern_symbol_descr = esdp;
         esdp->type = NULL;
@@ -4213,7 +4283,9 @@ state.
       { a_projection_descr *pdp;
         pdp = (a_projection_descr_ptr)alloc_fe(sizeof(a_projection_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
         num_projection_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         pdp->fundamental_symbol     = NULL;
         pdp->fundamental_base_class = NULL;
@@ -4348,7 +4420,9 @@ hdr_ptr == NULL indicates that an error symbol should be constructed.
 
   sym_ptr = (a_symbol_ptr)alloc_fe(sizeof(a_symbol));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_symbols_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if EXPENSIVE_CHECKING
   /* Add the symbol to the list of allocated symbols to check. */
@@ -4442,9 +4516,11 @@ Remove a symbol from the symbol table, i.e., unlink it from either the main
 #if CHECKING
       if (ptr == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level > 0) {
           fprintf(f_debug, "Symbol name = %s\n", hdr_ptr->identifier);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error(
                   "unlink_symbol_from_symbol_table: cannot find symbol entry");
@@ -4534,7 +4610,9 @@ return a pointer to it.
 
   shlep = alloc_fe_of_type(a_symbol_header_lookup_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_symbol_header_lookup_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_symbol_header_lookup_entry(shlep);
   return shlep;
@@ -4608,8 +4686,10 @@ created if needed.
       break;
     default:
 #if DEBUG
+/* GCOVR_EXCL_START */
       fprintf(f_debug, "Bad scope kind:\n");
       (void)db_scope_kind(kind);
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
       unexpected_condition_str("is_scope_kind_with_lookup_table");
       break;
@@ -4647,9 +4727,11 @@ Remove the given symbol from the list of symbols for its scope.
 #if CHECKING
       if (ssep == &scope_stack[0]) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level > 0) {
           fprintf(f_debug, "Symbol name = %s\n", sym_ptr->header->identifier);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error("remove_symbol_from_scope_list: bad scope");
       }  /* if */
@@ -5402,9 +5484,11 @@ Add the given symbol to its symbol header's inactive list.
   a_symbol_header_ptr sym_hdr = sym_ptr->header;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     db_symbol(sym_ptr, "add_symbol_to_inactive_list: ", 2);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion_str(sym_ptr->kind != (a_symbol_kind)sk_extern_variable &&
                       sym_ptr->kind != (a_symbol_kind)sk_extern_routine,
@@ -5953,6 +6037,7 @@ found, or NULL if no entry is found.
       tsxp = *p_tsxp;
       result = (a_constexpr_if_cache_info_ptr)tsxp->entry;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("ccicht")) {
         fprintf(f_debug,
                 "Found constexpr_if cache tsn=%lu, else=%lu, ending=%lu\n",
@@ -5960,6 +6045,7 @@ found, or NULL if no entry is found.
                 (unsigned long)result->else_start_tsn,
                 (unsigned long)result->end_start_tsn);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -6031,8 +6117,10 @@ it.
     case sck_class_reactivation: size=5; break;
     default:
 #if DEBUG
+/* GCOVR_EXCL_START */
       fprintf(f_debug, "Bad scope kind:\n");
       (void)db_scope_kind(kind);
+/* GCOVR_EXCL_STOP */
 #endif  /* DEBUG */
       unexpected_condition_str("create_name_lookup_table");
       break;
@@ -7924,7 +8012,9 @@ is none, create a new one.
                  name.length());
     ((char*)sym_hdr->identifier)[sym_hdr->identifier_length] = '\0';
 #if DEBUG
+/* GCOVR_EXCL_START */
     symbol_name_string_space += (unsigned long)(sym_hdr->identifier_length);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   return conv_hdr->symbol_header;
@@ -11329,7 +11419,9 @@ Allocate a new alternate name entry and return a pointer to it.
   ptr = (an_ms_attr_alt_name_entry_ptr)alloc_fe(
                                            sizeof(an_ms_attr_alt_name_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_ms_attr_alt_name_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ptr->next            = NULL;
   ptr->original_header = NULL;
@@ -11387,7 +11479,9 @@ is none, create a new one.
     /* Terminate the string. */
     alternate_name[length] = '\0';
 #if DEBUG
+/* GCOVR_EXCL_START */
     symbol_name_string_space += (unsigned long)(length + 1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Find the symbol header for the alternate name. */
     clear_locator(&locator, &null_source_position);
@@ -11464,7 +11558,9 @@ used for C++ constructs like "operator+".  Use pos as the source position.
                  opstr);
     hdr_ptr->variant.opname = opname;
 #if DEBUG
+/* GCOVR_EXCL_START */
     symbol_name_string_space += (unsigned long)(opname_length + 1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   locator->symbol_header = hdr_ptr;
@@ -11512,7 +11608,9 @@ ud_suffix (of length ud_suffix_len).  Use pos as the source position
     sym_hdr_ptr->identifier = str;
     lo_hdr_ptr->symbol_header = sym_hdr_ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
     symbol_name_string_space += (unsigned long)(len + 1);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (*ud_suffix != '_') {
       /* ud-suffixes that do not begin with "_" are reserved. */
@@ -12118,6 +12216,7 @@ next_delete_symbol:;
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     db_symbol(op_new_sym, "operator new is: ", 2);
     if (class_type != NULL) {
@@ -12132,6 +12231,7 @@ next_delete_symbol:;
                 "corresponding operator delete is: ", 2);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return corresp_op_delete_sym;
@@ -13013,6 +13113,7 @@ FALSE.
 }  /* is_symbol_currently_lookup_visible */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 char *db_canonical_ptr_for_symbol(a_symbol_ptr	sym_ptr)
 /*
@@ -13029,6 +13130,7 @@ with the IL entry; otherwise return NULL.
   }  /* if */
   return entity_ptr;
 }  /* db_canonical_ptr_for_symbol */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -14398,7 +14500,9 @@ Allocate an access error description entry.  Reuse a freed entry if possible.
     /* Allocate a new entry. */
     aedp = (an_access_error_descr_ptr)alloc_fe(sizeof(an_access_error_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_access_error_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   aedp->next = NULL;
@@ -15284,7 +15388,9 @@ Allocate a progenitor entry, initialize its fields, and return a pointer to it.
     /* Nothing on the available list to use. */
     pp = (a_progenitor_ptr)alloc_fe(sizeof(a_progenitor));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_progenitors_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     /* Use the entry that heads the available list. */
@@ -15363,11 +15469,13 @@ the lookup should consider C++/CLI interface classes.
 
   db_enter(4, "find_progenitor_in_base_class");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "looking for \"%s\" in base class \"%s\"\n",
                      locator->symbol_header->identifier,
                      base_type->source_corresp.name);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* First look in the scope of the base class itself. */
   scope = base_type->variant.class_struct_union.extra_info->assoc_scope;
@@ -15445,7 +15553,9 @@ the lookup should consider C++/CLI interface classes.
   if (sym != NULL) {
     /* Found in the base class itself. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) db_symbol(sym, "found: ", 2);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     progenitor = alloc_progenitor();
     progenitor->sym = sym;
@@ -16325,12 +16435,14 @@ created if a projected symbol cannot be found in any of the real bases.
 
   db_enter(4, "find_projected_symbol");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "looking for projection of \"%s\" into class \"%s\"\n",
                      locator->symbol_header->identifier,
                      class_ptr->source_corresp.name != NULL ?
                          class_ptr->source_corresp.name : "<unnamed>");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   class_sym = (a_symbol_ptr)class_ptr->source_corresp.assoc_info;
   cssp = class_sym->variant.class_struct_union.extra_info;
@@ -16457,10 +16569,12 @@ created if a projected symbol cannot be found in any of the real bases.
 #if CHECKING
           if (ssep == &scope_stack[0]) {
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level > 0) {
               fprintf(f_debug, "symbol name = %s\n",
                                 new_sym->header->identifier);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
             internal_error("find_projected_symbol: bad scope");
           }  /* if */
@@ -16473,7 +16587,9 @@ created if a projected symbol cannot be found in any of the real bases.
         add_symbol_to_lookup_table(new_sym, cssp->pointers_block.lookup_table);
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) db_symbol(new_sym, "symbol created: ", 2);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     check_assertion(path != NULL);
@@ -16508,7 +16624,9 @@ fixup entry to the end of the vla_fixup_list of the current scope stack entry.
   } else {
     vfp = (a_vla_fixup_ptr)alloc_fe(sizeof(a_vla_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_vla_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if CHECKING
@@ -16583,7 +16701,9 @@ should act like a stack if the same entity has several fixups).
 
   ptr = (an_extern_type_fixup_ptr)alloc_fe(sizeof(an_extern_type_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_extern_type_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   ptr->next            = scope_stack[depth_scope_stack].extern_type_fixup_list;
   ptr->type            = NULL;
@@ -16614,7 +16734,9 @@ locator_for_curr_id.
     /* Allocate a new entry. */
     pip = (a_param_id_ptr)alloc_fe(sizeof(a_param_id));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_param_ids_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Set the entry's fields to default values. */
@@ -16843,7 +16965,9 @@ incomplete type the diagnostic is associated with.
   esedp = (an_exception_spec_error_descr_ptr)alloc_fe(
                                       sizeof(an_exception_spec_error_descr));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_exception_spec_error_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   esedp->next       = NULL;
   esedp->position   = *pos;
@@ -16983,7 +17107,9 @@ defined.
     dtfp = (a_dependent_type_fixup_ptr)alloc_fe(
                                             sizeof(a_dependent_type_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_dependent_type_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   dtfp->fixup_kind = fixup_kind;
@@ -17280,6 +17406,7 @@ of the class.
     }  /* for */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5 || db_flag_is_set("operator_namespaces")) {
     a_namespace_list_entry_ptr	nlep = cssp->operator_lookup_namespaces;
     fprintf(f_debug, "operator namespaces for class: ");
@@ -17295,6 +17422,7 @@ of the class.
       fprintf(f_debug, "\n");
     }  /* for */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* determine_operator_lookup_namespaces */
 
@@ -17449,7 +17577,9 @@ and return a pointer to it.
   db_enter(5, "alloc_template_param");
   ptr = (a_template_param_ptr)alloc_fe(sizeof(a_template_param));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_template_params_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(sym != NULL);
   ptr->next           = NULL;
@@ -17497,7 +17627,9 @@ pointer to it.
 
   mip = (a_master_instance_ptr)alloc_fe(sizeof(a_master_instance));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_master_instances_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   mip->next                        = NULL;
   mip->instance                    = NULL;
@@ -17521,7 +17653,9 @@ Allocate a new function instantiation entry and return a pointer to it.
   db_enter(5, "alloc_template_instance");
   tip = (a_template_instance_ptr)alloc_fe(sizeof(a_template_instance));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_template_instances_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   tip->next                        = NULL;
   tip->next_in_instantiation_list  = NULL;
@@ -18176,7 +18310,9 @@ Allocate a new saved macro state entry and return a pointer to it.
     /* Allocate a new entry. */
     smsp = alloc_fe_of_type(a_saved_macro_state);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_saved_macro_states_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   smsp->next = NULL;
@@ -18438,7 +18574,9 @@ allocated or NO_MEMORY_REGION_NUMBER if general memory should be used.
   htep->next = NULL;
   htep->data = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_hash_table_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return htep;
 }  /* alloc_hash_table_entry */
@@ -18478,8 +18616,10 @@ value with an element of the table.
                 alloc_general_or_in_region(memory_region, table_size_in_bytes);
   memzero((a_void_ptr)htp->table, size_t_arg(table_size_in_bytes));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_hash_tables_allocated++;
   total_hash_table_size += (unsigned long)table_size_in_bytes;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return htp;
 }  /* alloc_hash_table */
@@ -18505,11 +18645,13 @@ holds.  Allocate a larger table and rehash the existing entries.
                                alloc_general_or_in_region(htp->memory_region,
                                                           table_size_in_bytes);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("hash")) {
     fprintf(f_debug, "Resizing hash table at %p, old_size=%lu, new_size=%lu\n",
             (void*)htp, (unsigned long)htp->num_buckets,
             (unsigned long)new_buckets);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   memzero((a_void_ptr)new_table, size_t_arg(table_size_in_bytes));
   old_table_size_in_bytes = sizeof(a_hash_table_entry_ptr) *
@@ -18534,8 +18676,10 @@ holds.  Allocate a larger table and rehash the existing entries.
   }  /* if */
   htp->table = new_table;
 #if DEBUG
+/* GCOVR_EXCL_START */
   total_hash_table_size += (unsigned long)(table_size_in_bytes -
                                            old_table_size_in_bytes);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* resize_hash_table */
 
@@ -18601,6 +18745,7 @@ appropriate user-defined entry.
 }  /* hash_find */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_hash_statistics(a_hash_table_ptr	table)
 /*
@@ -18639,6 +18784,7 @@ Display statistics about a hash table.
   }  /* for */
 }  /* db_hash_statistics */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 a_hash_value hash_source_string(a_void_ptr  key)
@@ -18672,6 +18818,7 @@ a special version of the message that refers to the global namespace.
 }  /* namespace_has_no_actual_member_error */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long show_symbol_space_used(void)
 /*
@@ -18837,6 +18984,7 @@ for space tracking purposes.
 }  /* show_symbol_space_used */
 
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -20152,6 +20300,7 @@ are handled in symbol_tbl_init.)
       pch_saved_var_array_elem(next_named_register_id),
 #endif /* NAMED_REGISTERS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_access_error_descrs_allocated),
       pch_saved_var_array_elem(num_active_using_directives_allocated),
       pch_saved_var_array_elem(num_generated_entity_blocks_allocated),
@@ -20201,6 +20350,7 @@ are handled in symbol_tbl_init.)
                          num_prop_or_event_accessor_header_lookups_allocated),
       pch_saved_var_array_elem(num_ms_attr_alt_name_entries_allocated),
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
       pch_saved_var_array_elem(inst_counters),
       pch_saved_var_array_terminating_elem()
@@ -20378,6 +20528,7 @@ of the front end.
   dummy_undefined_symbol = NULL;
   sb_counter = 0;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_symbols_allocated                         = 0;
   num_symbol_headers_allocated                  = 0;
   num_symbol_headers_in_hash_table              = 0;
@@ -20431,6 +20582,7 @@ of the front end.
                                                 = 0;
   num_ms_attr_alt_name_entries_allocated        = 0;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   inst_counters = alloc_fe_of_type(Dyn_array<an_inst_count>);
   construct(inst_counters, /*cap=*/256u);
@@ -20508,6 +20660,7 @@ unit.
       a_memory_region_number prefix_region = prefix->file_scope_region_number;
       if (sym_tu_region != prefix_region) {
 #if DEBUG
+/* GCOVR_EXCL_START */
         fputs("the following symbol:\n    ", f_debug);
         db_symbol(sym, "", 6);
 
@@ -20516,6 +20669,7 @@ unit.
                          "actually allocated in the TU correspoding to ",
                          prefix_region);
         print(err_msg, f_debug);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         any_errors = TRUE;
       }  /* if */

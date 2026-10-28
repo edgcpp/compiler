@@ -31,6 +31,7 @@ STATIC_THREAD a_def_arg_expr_fixup_ptr
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counter to track use of memory.
 */
@@ -50,6 +51,7 @@ entries, for debugging purposes.  Also return the total amount.
   return grand_total;
 }  /* db_show_def_arg_expr_fixups_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 static a_def_arg_expr_fixup_ptr alloc_def_arg_expr_fixup(void)
@@ -68,7 +70,9 @@ entry and initialize it.
     /* Allocate memory for a new entity. */
     daefp = (a_def_arg_expr_fixup_ptr)alloc_fe(sizeof(a_def_arg_expr_fixup));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_def_arg_expr_fixups_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Clear the entity. */
@@ -458,7 +462,9 @@ One-time initialization for def_arg.c static variables.
     STATIC_THREAD a_pch_saved_variable saved_vars[] = {
       pch_saved_var_array_elem(avail_def_arg_expr_fixup),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_def_arg_expr_fixups_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* if DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -475,7 +481,9 @@ Initializations for class declaration processing.
   /* Initialize the list of freed delayed-scan-fixup entries. */
   avail_def_arg_expr_fixup = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_def_arg_expr_fixups_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return;
 }  /* def_arg_init */

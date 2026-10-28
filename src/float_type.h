@@ -375,8 +375,10 @@ subsequent inclusions with a different floating-point type.
 #define ONE                   CONCAT(one_, FPT_NAME)
 #define DEC                   CONCAT(dec_, FPT_NAME)
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define DB_BINARY_FN          CONCAT(db_binary_, FPT_NAME)
 #define DB_DUMP               CONCAT(db_dump_, FPT_NAME)
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Special mode for some stand-alone floating-point tests. */
@@ -734,6 +736,7 @@ Set *bin to the minimum subnormal value.
 }  /* MAKE_MIN_SUBNORMAL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void DB_BINARY_FN(unsigned char *tgt)
 /*
@@ -789,6 +792,7 @@ type.
   }  /* if */
 }  /* DB_DUMP */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /* Internal macros */
@@ -1526,8 +1530,10 @@ zero).
 #undef ONE
 #undef DEC
 #if DEBUG
+/* GCOVR_EXCL_START */
 #undef DB_BINARY_FN
 #undef DB_DUMP
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #undef FRAC_BITS

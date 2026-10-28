@@ -90,6 +90,7 @@ struct a_module_entity {
 };  /* a_module_entity */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 EXTERN_THREAD unsigned long
                 num_module_decls_attempted;
@@ -101,6 +102,7 @@ EXTERN_THREAD unsigned long
                         /* The number of declarations that process_ifc_decl
                            attempted to process, but marked invalid. */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 inline a_boolean is_module_entity_globally_visible(a_module_entity_ptr mep)
@@ -602,10 +604,12 @@ Cleanup after the token cache.
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (!this->valid && db_flag_is_set("invalid_token_cache")) {
     fprintf(f_debug, "Discarded invalid module cache:\n");
     db_tokens(&(this->underlying_cache));
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* a_module_token_cache::~a_module_token_cache() */
 
@@ -840,6 +844,7 @@ extern a_shared_token_cache get_field_initializer_for_module_write(
                                                                a_field_ptr fp);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 extern void db_tokens(a_module_token_cache_ptr cache);
 
@@ -865,6 +870,7 @@ extern void db_module_stack();
 
 extern void db_mep_stack();
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 extern void modules_pch_reset();

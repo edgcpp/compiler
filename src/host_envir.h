@@ -81,14 +81,18 @@ Consider the following use cases when employing these macros:
 */
 #ifndef USE_INLINE_EXPANSION
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define USE_INLINE_EXPANSION FALSE
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define USE_INLINE_EXPANSION TRUE
 #endif /* DEBUG */
 #endif /* ifndef USE_INLINE_EXPANSION */
 #ifndef USE_INLINING_HINTS
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define USE_INLINING_HINTS FALSE
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define USE_INLINING_HINTS TRUE
 #endif /* DEBUG */
@@ -646,7 +650,9 @@ This must be TRUE for the --il_display command-line option to be enabled.
 #else /* !STANDALONE_IL_DISPLAY */
 #ifndef NEED_IL_DISPLAY
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define NEED_IL_DISPLAY TRUE
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define NEED_IL_DISPLAY FALSE
 #endif /* DEBUG */
@@ -1081,7 +1087,9 @@ able to handle a large call depth.
 */
 #ifndef DEFAULT_MAX_DEPTH_CONSTEXPR_CALL
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define DEFAULT_MAX_DEPTH_CONSTEXPR_CALL 256
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
 #define DEFAULT_MAX_DEPTH_CONSTEXPR_CALL 512
 #endif /* DEBUG */
@@ -3434,9 +3442,11 @@ typedef unsigned an_open_file_flag_set;
 			/* TRUE if an open failure should be reported as a
 			   command-line error. */
 #if DEBUG
+/* GCOVR_EXCL_START */
 #define OFF_FORCE_ERROR		0x80000000u
 			/* TRUE if the open operation should be considered to
 			   have failed.  For debugging purposes. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*
@@ -4212,7 +4222,9 @@ extern void set_cpu_time_limit(int	seconds);
 #endif /* !EDG_WIN32 && !MULTIPLE_THREAD_COMPILATION */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_incl_search_path(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 EXTERN_THREAD a_boolean

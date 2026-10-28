@@ -4573,6 +4573,7 @@ enum a_character_kind : a_byte {
 #endif /* NUM_BITS_FOR_CHARACTER_KIND < 3 */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Table of names corresponding to special function kinds, for debug purposes.
 */
@@ -4599,6 +4600,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, db_special_function_kinds, sfk_last + 1)
 }
 #endif /* VAR_INITIALIZERS */
 EXTERN_CONSTINIT_ARRAY_END(db_special_function_kinds)
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -6750,8 +6752,10 @@ enum a_pragma_kind : a_byte {
   pk_checking_pragma,
 #endif /* ADD_CHECKING_PRAGMAS_FOR_INTERNAL_TESTING */
 #if DEBUG
+/* GCOVR_EXCL_START */
   pk_db_opt,		/* Used to specify a debugging option string. */
   pk_db_name,		/* Used to specify a debug entity name. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if NEED_IL_DISPLAY
   pk_il_display,        /* To display the IL of an IL entity. */
@@ -6860,8 +6864,10 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, pragma_ids, pk_last + 1)
 /* pk_checking_pragma */        "checking_pragma",
 #endif /* ADD_CHECKING_PRAGMAS_FOR_INTERNAL_TESTING */
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* pk_db_opt */			"db_opt",
 /* pk_db_name */		"db_name",
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if NEED_IL_DISPLAY
 /* pk_il_display */		"il_display",
@@ -10996,6 +11002,7 @@ typedef struct a_type {
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Table of storage class names, for debug purposes.
 */
@@ -11006,6 +11013,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, db_storage_class_names, sc_last + 1)
 }
 #endif /* VAR_INITIALIZERS */
 EXTERN_CONSTINIT_ARRAY_END(db_storage_class_names)
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 enum an_init_kind : a_byte {
@@ -19128,6 +19136,7 @@ EXTERN_THREAD an_il_header il_header;
 #endif /* NEAR_AND_FAR_ALLOWED */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Table of debug names for expression operators. */
 EXTERN_CONSTINIT_ARRAY(a_const_char*, db_operator_names, eok_last + 1)
 #if VAR_INITIALIZERS
@@ -19186,6 +19195,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, db_operator_names, eok_last + 1)
 }
 #endif /* VAR_INITIALIZERS */
 EXTERN_CONSTINIT_ARRAY_END(db_operator_names)
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*

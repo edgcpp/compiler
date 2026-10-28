@@ -86,6 +86,7 @@ STATIC_THREAD a_boolean
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Counts of tables allocated, to track total use of memory.
 */
@@ -449,6 +450,7 @@ Display some statistics about the scope stack.
   fprintf(f_debug, "%24s: %8lu\n", "TOTAL", total);
 }  /* db_scope_stack_stats */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 #if NEED_NAME_MANGLING
@@ -1111,7 +1113,9 @@ Allocate and initialize a string literal table for scope stack entry "ssep".
   if (avail_string_literal_tables == NULL) {
     sltp = alloc_fe_of_type(a_string_literal_table);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_string_literal_tables_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   } else {
     sltp = avail_string_literal_tables;
@@ -1194,7 +1198,9 @@ assign one now.
       sltep->next = *bucket;
       *bucket = sltep;
 #if DEBUG
+/* GCOVR_EXCL_START */
       num_string_literal_table_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
     cp->variant.string.sequence_number = sltep->sequence_number;
@@ -1221,7 +1227,9 @@ scope.
     fsctp = alloc_fe_of_type(a_function_shareable_constants_table);
     memzero((char *)fsctp->table, sizeof(fsctp->table));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_function_shareable_constants_tables_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   fsctp->next = NULL;
@@ -1281,8 +1289,10 @@ STATIC_THREAD a_c99_inline_definition_locator_ptr
 			   in use. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
 		num_c99_inline_definition_locators_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void check_c99_inline_definition(a_variable_ptr     var,
@@ -1329,7 +1339,9 @@ the suspect construct is a reference to a file-scope static entity.
       if (avail_c99_inline_definition_locators == NULL) {
         to_check = alloc_fe_of_type(a_c99_inline_definition_locator);
 #if DEBUG
+/* GCOVR_EXCL_START */
         ++num_c99_inline_definition_locators_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       } else {
         to_check = avail_c99_inline_definition_locators;
@@ -1551,7 +1563,9 @@ return a pointer to the new entry. Reuse a freed entry if possible.
     audp = (an_active_using_directive_ptr)
                                   alloc_fe(sizeof(an_active_using_directive));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_active_using_directives_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   audp->entry = NULL;
@@ -1680,6 +1694,7 @@ using-directives specified after the point of definition of the template.
     audp->effective_decl_seq = effective_decl_seq;
     ssep->active_using_directives = audp;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("using_dir")) {
       fprintf(f_debug,
               "adding using-dir at depth %d for namespace %s applies at %d",
@@ -1689,6 +1704,7 @@ using-directives specified after the point of definition of the template.
       fprintf(f_debug, ", decl_seq %lu\n",
               (unsigned long)effective_decl_seq);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Add the using directive to the list for scope at which this using
        directive applies. */
@@ -2376,6 +2392,7 @@ specified after the point of definition of the template.
         new_depth = NO_SCOPE_DEPTH;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("using_dir")) {
         fprintf(f_debug,
                 "%s using-dir at depth %d for namespace %s applies at %d",
@@ -2386,6 +2403,7 @@ specified after the point of definition of the template.
         fprintf(f_debug, ", decl_seq %lu\n",
                 (unsigned long)effective_decl_seq);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Record the scope depth of the innermost active using directive for
          this namespace.  If we are clearing the flags, reset this depth
@@ -3915,6 +3933,7 @@ the scope being pushed.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   ++scope_kind_stats[ssep->kind];
   if (depth_scope_stack > max_depth_scope_stack) {
     max_depth_scope_stack = depth_scope_stack;
@@ -3922,6 +3941,7 @@ the scope being pushed.
   if (debug_level >= 3) {
     db_scope_stack();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return sp;
@@ -5935,6 +5955,7 @@ class to be defined.
     }  /* if */
   }
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("instantiation_scope")) {
     fprintf(f_debug, "Pushed instantiation scope for: ");
     db_symbol(instance_sym, "", 0);
@@ -5945,6 +5966,7 @@ class to be defined.
     fprintf(f_debug, "scope stack after instantiation scope:\n");
     db_scope_stack();
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   /* Return TRUE if a scope was pushed. */
@@ -7617,6 +7639,7 @@ curr_routine points to the routine entry; otherwise, it is NULL.
         }  /* for */
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("hash_stats")) {
         a_hash_table_ptr	htp;
         /* Display statistics about any templates with a large number of
@@ -7629,6 +7652,7 @@ curr_routine points to the routine entry; otherwise, it is NULL.
           db_hash_statistics(htp);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }
       break;
@@ -8032,6 +8056,7 @@ about the scope being popped.
 
   db_enter(3, "wrapup_scope");
 #if DEBUG
+/* GCOVR_EXCL_START */
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   if (debug_level >= 3 || db_flag_is_set("dump_decl_pos_info")) {
     switch(kind) {
@@ -8047,6 +8072,7 @@ about the scope being popped.
     }  /* switch */
   }  /* if */
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Save values from the pointers block that will be used later.  This is
      done to guard against the scope stack being reallocated (e.g., by
@@ -8146,6 +8172,7 @@ about the scope being popped.
        Check for unreferenced symbols, and issue warnings for those. */
     for (sym = symbol_list; sym != NULL; sym = sym->next_in_scope) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_active && 
           (debug_level >= 3 ||
            db_flag_is_set("dump_symbols"))) {
@@ -8164,6 +8191,7 @@ about the scope being popped.
           db_symbol(sym, "", 2);
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       if (kind == (a_scope_kind)sck_func_prototype && !is_tag_symbol(sym)) {
         /* Don't check on symbols entered in the scope of a function prototype.
@@ -8519,9 +8547,11 @@ been completed.
   if (scope->kind == (a_scope_kind)sck_file) {
     /* Top-level call. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("needed_flags")) {
       fprintf(f_debug, "Start of set_needed_flags_at_end_of_file_scope\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     end_of_file_scope_needed_flags_phase = TRUE;
   } else {
@@ -8606,9 +8636,11 @@ been completed.
       set_needed_flags_for_typedefs(scope);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("needed_flags")) {
       fprintf(f_debug, "End of set_needed_flags_at_end_of_file_scope\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     end_of_file_scope_needed_flags_phase = FALSE;
   }  /* if */
@@ -8932,12 +8964,14 @@ the scope stack is no longer available.
 
   db_enter(1, "finish_function_body_processing");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("ffbp") || debug_level >= 1 ||
       db_has_traced_name(routine, iek_routine)) {
     fprintf(f_debug, "Finishing function body processing for ");
     db_name_full(&routine->source_corresp, iek_routine);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(!scope->function_body_processing_finished);
   /* Do not do lowering and related processing of functions in secondary
@@ -9014,11 +9048,13 @@ the scope stack is no longer available.
     if (is_needed) {
       mark_as_needed((char *)routine, (an_il_entry_kind)iek_routine);
 #if DEBUG
+/* GCOVR_EXCL_START */
     } else if (debug_level >= 3) {
       fprintf(f_debug, "Not calling mark_as_needed for \"");
       db_name_full(&routine->source_corresp, iek_routine);
       fprintf(f_debug, "\", storage class is %s\n",
               db_storage_class_names[(int)routine->storage_class]);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }
@@ -9059,8 +9095,10 @@ STATIC_THREAD a_delayed_lowering_list_entry_ptr
                            available. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 STATIC_THREAD unsigned long
                 num_delayed_lowering_list_entries_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void lower_functions_waiting_for_module_id(void)
@@ -9487,7 +9525,9 @@ be lowered as soon as a module id becomes available (and TRUE is returned).
     a_delayed_lowering_list_entry *entry =
                                alloc_fe_of_type(a_delayed_lowering_list_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_delayed_lowering_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     entry->routine = routine;
     entry->next = NULL;
@@ -9902,6 +9942,7 @@ being popped.
     curr_routine = ssep->il_scope->variant.routine.ptr;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (pointers_block->symbols != NULL || debug_level >= 4) {
       fprintf(f_debug, "pop_scope: number = %ld, depth = %d",
@@ -9939,6 +9980,7 @@ being popped.
       (void)fputc('\n', f_debug);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   check_assertion(ssep->class_fixup_header.fixup_list == NULL);
   if (!(ssep->kind == (a_scope_kind)sck_file && ssep->is_reactivation)) {
@@ -10212,12 +10254,14 @@ being popped.
         fixup_function_scope_source_sequence_list(il_scope);
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3 ||
           db_flag_is_set("dump_ss") ||
           db_flag_is_set("dump_ss_full")) {
         /* Display source sequence lists for debug purposes. */
         db_ss_list_for_scope(il_scope);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }  /* if */
   }  /* if */
@@ -10253,6 +10297,7 @@ being popped.
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (kind == (a_scope_kind)sck_file ||
       kind == (a_scope_kind)sck_function) {
     /* Dump type list and object lifetime information. */
@@ -10268,6 +10313,7 @@ being popped.
       }  /* if */
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Determine and remember the current (old) memory region, to see
      if it changes when returning to the outer scope. */
@@ -10466,11 +10512,13 @@ being popped.
 #if GENERATE_SOURCE_SEQUENCE_LISTS
   if (ssep->source_sequence_list != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
       fputs("popping ", f_debug);
       db_scope_stack_entry_at_depth(depth_scope_stack);
       fputs("\n", f_debug);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS
     if (ssep->kind == (a_scope_kind)sck_template_instantiation &&
@@ -10487,12 +10535,14 @@ being popped.
     /* Do not add code here. */
     {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("dump_ss_full")) {
         fputs("moving source sequences to ", f_debug);
         db_scope_stack_entry_at_depth(depth_scope_stack-1);
         fputs(":\n", f_debug);
         db_ss_list_for_scope_depth(depth_scope_stack);
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     }
   }  /* if */
@@ -10785,10 +10835,12 @@ current scope is already a reactivation of the requested scope.
       set_template_decl_lookup_sequence(initial_depth);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("ns_react_on_templ_decl")) {
       fprintf(f_debug, "Scope stack after namespace reactivation:\n");
       db_scope_stack();
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* f_push_namespace_reactivation_scope */
@@ -11391,7 +11443,9 @@ in such cases.
     /* Allocate a new entry. */
     prp = alloc_fe_of_type(a_pack_reference);
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_pack_references_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   prp->next = NULL;
@@ -11504,7 +11558,9 @@ to it.
     /* Allocate a new entry. */
     pedp = alloc_fe_of_type(a_pack_expansion_descr);
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_pack_expansion_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   pedp->next = NULL;
@@ -11619,7 +11675,9 @@ pointer to it.
     /* Allocate a new entry. */
     pidp = alloc_fe_of_type(a_pack_instantiation_descr);
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_pack_instantiation_descrs_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   pidp->next = NULL;
@@ -11661,7 +11719,9 @@ to it.
     /* Allocate a new entry. */
     pesep = alloc_fe_of_type(a_pack_expansion_stack_entry);
 #if DEBUG
+/* GCOVR_EXCL_START */
    num_pack_expansion_stack_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   pesep->next = NULL;
@@ -11733,6 +11793,7 @@ Pop the current entry off of the pack expansion stack.
 }  /* pop_pack_expansion_stack */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static inline a_boolean is_pack_within_cache(a_token_cache_ptr          cache,
                                              a_pack_expansion_descr_ptr pedp)
@@ -11805,6 +11866,7 @@ Display the tokens that make up a pack expansion, for debugging purposes.
   }  /* if */
 }  /* db_pack_tokens */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -11840,10 +11902,12 @@ determine whether we are entering a pack expansion context.
   a_scope_stack_entry_ptr	ssep;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("packs")) {
     fprintf(f_debug, "Looking for pack expansion at TSN %ld\n",
             (long)curr_token_sequence_number);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   for (ssep = scope_stack_entry_for(depth_innermost_instantiation_scope);
        ssep != NULL; ssep = previous_scope_of(ssep)) {
@@ -11916,6 +11980,7 @@ determine whether we are entering a pack expansion context.
     }  /* if */
   }  /* for */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("packs")) {
     if (result_pedp != NULL) {
       fprintf(f_debug, "Found pack expansion from %ld to %ld\n",
@@ -11923,6 +11988,7 @@ determine whether we are entering a pack expansion context.
       db_pack_tokens(result_pedp);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   return result_pedp;
 }  /* get_pack_expansion_for_curr_context */
@@ -13942,11 +14008,13 @@ to expand the pack in a real instantiation.
   a_scope_stack_entry_ptr	ssep;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("packs")) {
     fprintf(f_debug, "Recording pack expansion from %ld to %ld\n",
             (long)pedp->first_token, (long)pedp->last_token);
     db_pack_tokens(pedp);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Get the template declaration information entry associated with the
      current context. */
@@ -14021,6 +14089,7 @@ that list to pedp.
       *p_first_prp = last_prp->next;
       last_prp->next = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_flag_is_set("packs")) {
         fprintf(f_debug, "Extracting references for:\n");
         for (prp = pedp->packs_referenced; prp != NULL; prp = prp->next) {
@@ -14030,6 +14099,7 @@ that list to pedp.
                   (unsigned long)prp->token_sequence_number);
         }  /* for */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       {
         /* Make sure the same symbol is not on the extracted list more than
@@ -14671,6 +14741,7 @@ form.
         if (*p_prp != NULL) prp->next = *p_prp;
         *p_prp = prp;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_flag_is_set("packs")) {
           fprintf(f_debug, "Recording pack reference for ");
           if (pack_symbol != NULL) {
@@ -14681,6 +14752,7 @@ form.
           fprintf(f_debug, " at tsn %lu\n",
                   (unsigned long)curr_token_sequence_number);
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       }  /* if */
       /* We don't associate pack references with contexts yet, but record
@@ -14934,6 +15006,7 @@ Return TRUE if source sequence entries might appear in the IL tree.
 }  /* src_seq_entries_permitted_in_il */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 unsigned long db_show_scope_stack_space_used(unsigned long grand_total)
 /*
@@ -14987,6 +15060,7 @@ routines is reported as part of the symbol table memory used.
   return grand_total;
 }  /* db_show_scope_stack_space_used */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 void scope_stk_one_time_init(void)
@@ -15022,22 +15096,28 @@ are handled in scope_stk_init.)
       pch_saved_var_array_elem(avail_string_literal_tables),
       pch_saved_var_array_elem(avail_string_literal_table_entries),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_string_literal_tables_allocated),
       pch_saved_var_array_elem(num_string_literal_table_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* DO_IL_LOWERING && ASSIGN_STRING_LITERAL_SEQUENCE_NUMBERS */
 #if DO_IL_LOWERING && MODULE_ID_NEEDED && !STANDALONE_UTILITY_PROGRAM
       pch_saved_var_array_elem(waiting_for_module_id_list_head),
       pch_saved_var_array_elem(waiting_for_module_id_list_tail),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_delayed_lowering_list_entries_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* DO_IL_LOWERING && MODULE_ID_NEEDED && !STANDALONE_UTILITY_PROGRAM */
       pch_saved_var_array_elem(c99_inline_definition_locators_to_check),
       pch_saved_var_array_elem(avail_c99_inline_definition_locators),
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(
                             num_c99_inline_definition_locators_allocated),
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -15148,24 +15228,30 @@ of the front end.
   avail_string_literal_tables = NULL;
   avail_string_literal_table_entries = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_string_literal_table_entries_allocated = 0;
   num_string_literal_tables_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* DO_IL_LOWERING && ASSIGN_STRING_LITERAL_SEQUENCE_NUMBERS */
   avail_c99_inline_definition_locators = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_c99_inline_definition_locators_allocated = 0;
   num_function_shareable_constants_tables_allocated = 0;
   num_pack_expansion_stack_entries_allocated = 0;
   num_pack_references_allocated = 0;
   num_pack_expansion_descrs_allocated = 0;
   num_pack_instantiation_descrs_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if DO_IL_LOWERING && MODULE_ID_NEEDED && !STANDALONE_UTILITY_PROGRAM
   waiting_for_module_id_list_head = NULL;
   waiting_for_module_id_list_tail = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_delayed_lowering_list_entries_allocated = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #endif /* DO_IL_LOWERING && MODULE_ID_NEEDED && !STANDALONE_UTILITY_PROGRAM */
   function_body_processing_delayed_on_some_func_in_primary_il = FALSE;

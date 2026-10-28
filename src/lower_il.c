@@ -372,6 +372,7 @@ etc.).  Return the type entry.  The type is a member of the file scope.
 }  /* make_lowered_class_type */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 void db_context(a_context_ptr context)
 /*
@@ -439,6 +440,7 @@ curr_context and dump each entry found by following the parent pointer).
   }  /* for */
 }  /* db_context_stack */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 a_boolean il_lowering_needed(void)
@@ -483,12 +485,14 @@ STATIC_THREAD a_scopeless_compound_stmt_ptr
 			   have been freed and are available for reuse. */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Count of entries allocated, for debugging purposes.
 */
 STATIC_THREAD unsigned long
 		num_temporary_list_entries_allocated,
 		num_scopeless_compound_stmts_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -723,7 +727,9 @@ statement, and add it to the list of memo entries.
     /* Allocate a new entry. */
     rmp = (a_return_memo_ptr)alloc_fe(sizeof(a_return_memo));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_return_memos_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   rmp->next = return_memo_list;
@@ -1100,11 +1106,13 @@ assumes base classes occur before fields).
            as the types are different). */
       } else {
 #if DEBUG
+/* GCOVR_EXCL_START */
         db_abbreviated_type(struct_type);
         fprintf(f_debug, ", offset = %lu, new field = %s, old field = ",
                          (unsigned long)field_offset, field_name);
         db_name(&next_field->source_corresp);
         fputc('\n', f_debug);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         internal_error("add_field: two fields have the same offset");
       }  /* if */
@@ -1832,7 +1840,9 @@ Add the indicated temporary variable to the list of reusable temporaries.
     tlep = (a_temporary_list_entry_ptr)
                                       alloc_fe(sizeof(a_temporary_list_entry));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_temporary_list_entries_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   tlep->var = temp_var;
@@ -2598,8 +2608,10 @@ class type.  Such a field must exist.
 #if CHECKING
   if (result == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     db_abbreviated_type(class_type);
     fprintf(f_debug, ", byte offset = %lu\n", (unsigned long)byte_offset);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     internal_error("field_at_offset: field not found");
   }  /* if */
@@ -5418,11 +5430,13 @@ have_vtbl_var:;
 #if ABI_CHANGES_FOR_CONSTRUCTION_VTBLS
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Count of entries allocated, for debugging purposes.
 */
 STATIC_THREAD unsigned long
 		num_construction_vtbls_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -5436,7 +5450,9 @@ values, and return a pointer to it.
 
   cvp = (a_construction_vtbl_ptr)alloc_fe(sizeof(a_construction_vtbl));
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_construction_vtbls_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   cvp->next = NULL;
   cvp->variant.base_class = NULL;
@@ -6216,11 +6232,13 @@ process only those bases below bcp.
              !base_class_has_vtbl(bcp)) {
     bcp->virtual_function_table_offset = *idx;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "Index %ld for virtual function table for ",
               (long)*idx);
       db_base_class(bcp, /*show_offset=*/TRUE);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     *idx += num_negative_vtable_entries(class_type, bcp);
     if (ctsp->highest_virtual_function_number != 
@@ -6895,6 +6913,7 @@ class_type is the class type whose vtbl is being constructed
 done:;
 #endif /* IA64_ABI */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_flag_is_set("vtbl")) {
 #if !IA64_ABI
     db_constant(entry_aggr);
@@ -6904,6 +6923,7 @@ done:;
 #endif /* IA64_ABI */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* add_vtbl_entry_init */
 
@@ -7203,14 +7223,17 @@ gives the offset to the virtual base class whose vtable is being made.
     }  /* if */
     offset -= (a_targ_ptrdiff_t)vbase_offset;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "  vcall entry (prepend):  ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_vtbl_entry_init(offset, (a_routine_ptr)NULL, /*typeinfo_entry=*/FALSE,
                         first_con, last_con, /*prepend=*/TRUE,
                         vbase->type);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "    vbase_offset = %ld\n", (long)vbase_offset);
       fprintf(f_debug, "    ");
@@ -7220,6 +7243,7 @@ gives the offset to the virtual base class whose vtable is being made.
         db_base_class(bcp, /*show_offset=*/TRUE);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
 }  /* add_vcall_offsets */
@@ -7579,19 +7603,23 @@ table.
     }  /* if */
     /* Create the vtable entry. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "  vbase entry (prepend):  ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_vtbl_entry_init(delta,
                         (a_routine_ptr)NULL, /*typeinfo_entry=*/FALSE,
                         first_con, last_con, /*prepend=*/TRUE,
                         class_whose_vtbl_is_being_made);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "    ");
       db_base_class(imm_bcp_in_complete, /*show_offset=*/TRUE);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* for */
   /* Add virtual call offsets to the beginning of the virtual table. */
@@ -7772,9 +7800,11 @@ table.
 #endif /* IA64_ABI */
     /* Create the initializing constants for this entry of the table. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "  function entry:         ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_vtbl_entry_init(delta,
 #if IA64_ABI
@@ -7788,9 +7818,11 @@ table.
 #if IA64_ABI
     if (second_func_to_call != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4 || db_flag_is_set("vtbl")) {
         fprintf(f_debug, "  second function entry:  ");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       add_vtbl_entry_init(delta,
 #if IA64_ABI
@@ -8031,6 +8063,7 @@ for the same virtual function table variable; see note below.
   if (definition_needed) {
     vtbl_var->vtable_defined = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "\nDefining virtual function table for ");
       if (bcp == NULL) {
@@ -8052,6 +8085,7 @@ for the same virtual function table variable; see note below.
 #endif /* IA64_ABI */
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     switch_to_file_scope_region(&region_to_switch_back_to);
     /* Start the initialization by creating a ck_aggregate constant and
@@ -8096,9 +8130,11 @@ for the same virtual function table variable; see note below.
     delta = -delta;
 #endif /* IA64_ABI */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "  top + typeinfo entries: ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_vtbl_entry_init(delta,
                         (a_routine_ptr)NULL,
@@ -8133,9 +8169,11 @@ for the same virtual function table variable; see note below.
     /* Put out the initialization for an extra zeroed entry at the end, for
        cfront compatibility. */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4 || db_flag_is_set("vtbl")) {
       fprintf(f_debug, "  zero entry:             ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_vtbl_entry_init((a_targ_ptrdiff_t)0, (a_routine_ptr)NULL,
                         /*typeinfo_entry=*/FALSE, first_con, last_con, 
@@ -15179,6 +15217,7 @@ bok_offsetof, which can include nonconstant subscripts.
 }  /* lower_builtin_operation */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 static void checksum_bytes(char                                *ptr,
                            unsigned long                       size,
@@ -15293,6 +15332,7 @@ given statement is subsequently modified.
   return tblock.checksum;
 }  /* compute_checksum_for_statement */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 a_boolean is_constant_valued_expression(an_expr_node_ptr expr,
@@ -16408,11 +16448,14 @@ cast.  See lower_expr for typical invocation.
   an_expr_node_ptr      temp_init_node;
   a_variable_ptr        var, temp_var;
 #if DEBUG
+/* GCOVR_EXCL_START */
   unsigned long         checksum = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   mark_as_visited(expr);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("lower_expr")) {
     checksum = compute_checksum_for_expr(expr);
     (void)fprintf(f_debug, "Expression before lowering");
@@ -16420,21 +16463,25 @@ cast.  See lower_expr for typical invocation.
     fputs(":\n", f_debug);
     db_expression(expr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   change_xvalue_node_to_lvalue(expr);
   if (expr->is_lvalue && expr->result_is_not_used) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("rewrite_expr") && !db_flag_is_set("lower_expr")) {
       (void)fprintf(f_debug, "Lvalue expression before re-writing");
       db_expr_range(expr);
       fputs(":\n", f_debug);
       db_expression(expr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If the result of the lvalue is discarded, rewrite the expression
        as an rvalue. */
     rewrite_discarded_lvalue_as_rvalue(expr);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("rewrite_expr") || db_flag_is_set("lower_expr")) {
       (void)fprintf(f_debug, "Expression after being re-written as an rvalue");
       db_expr_range(expr);
@@ -16443,6 +16490,7 @@ cast.  See lower_expr for typical invocation.
       /* Re-compute checksum. */
       checksum = compute_checksum_for_expr(expr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   lower_os_type(expr->type);
@@ -17319,6 +17367,7 @@ cast.  See lower_expr for typical invocation.
   }  /* if */
 #endif /* LOWER_VARIABLE_LENGTH_ARRAYS */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (db_flag_is_set("lower_expr") &&
       (checksum != compute_checksum_for_expr(expr))) {
     (void)fprintf(f_debug, "Expression after lowering");
@@ -17326,6 +17375,7 @@ cast.  See lower_expr for typical invocation.
     fputs(":\n", f_debug);
     db_expression(expr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 }  /* lower_expr_full */
 
@@ -17387,12 +17437,14 @@ expression statement, statement points to the statement; otherwise, it is NULL.
 #endif /* CHECKING */
   if (expr->is_lvalue && expr_to_lower->result_is_not_used) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("rewrite_expr")) {
       (void)fprintf(f_debug, "Top level lvalue expression before re-writing");
       db_expr_range(expr);
       fputs(":\n", f_debug);
       db_expression(expr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* A C++-style lvalue expression whose value is discarded (often because
        it is at the top level).  Rewrite as an rvalue. */
@@ -17404,6 +17456,7 @@ expression statement, statement points to the statement; otherwise, it is NULL.
       expr->is_lvalue = FALSE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("rewrite_expr")) {
       (void)fprintf(f_debug, 
                    "Top level expression after being re-written as an rvalue");
@@ -17411,6 +17464,7 @@ expression statement, statement points to the statement; otherwise, it is NULL.
       fputs(":\n", f_debug);
       db_expression(expr);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 #if !PRESERVE_TOP_LEVEL_CASTS_TO_VOID_IN_IL
@@ -18763,8 +18817,10 @@ Generate any cleanup actions required preceding the indicated goto statement.
 #if CHECKING
     if (curr_object_lifetime == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
       fprintf(f_debug, "common_lifetime:\n");
       db_object_lifetime(common_lifetime);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       unexpected_condition_str2("gen_goto_cleanup_actions:",
                        "curr_object_lifetime is NULL, common_lifetime is not");
@@ -18807,9 +18863,11 @@ Generate any cleanup actions required preceding the indicated goto statement.
 #if CHECKING
         if (outer_lifetime == NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
           fprintf(f_debug, "common_lifetime:\n");
           db_object_lifetime(common_lifetime);
           db_object_lifetime_stack();
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           unexpected_condition_str2(
                                 "gen_goto_cleanup_actions: common lifetime",
@@ -18853,7 +18911,9 @@ such statements attached to the current entry on the context stack.
     scsp = (a_scopeless_compound_stmt_ptr)
                                    alloc_fe(sizeof(a_scopeless_compound_stmt));
 #if DEBUG
+/* GCOVR_EXCL_START */
     num_scopeless_compound_stmts_allocated++;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Add the entry to the front of the list. */
@@ -20219,7 +20279,9 @@ Do IL lowering of the indicated statement and everything under it.
   an_expr_node_ptr   stmt_expr;
   a_source_position  saved_error_position, saved_code_pos;
 #if DEBUG
+/* GCOVR_EXCL_START */
   unsigned long      checksum = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   if (statement != NULL) {
@@ -20227,11 +20289,13 @@ Do IL lowering of the indicated statement and everything under it.
                                                   pending_stmk_init_statements;
     pending_stmk_init_statements = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("lower_statement")) {
       checksum = compute_checksum_for_statement(statement);
       (void)fprintf(f_debug, "Statement before lowering: ");
       db_statement(statement);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Track the source position. */
     saved_code_pos = code_pos_for_lowering;
@@ -20453,11 +20517,13 @@ Do IL lowering of the indicated statement and everything under it.
     error_position = saved_error_position;
     code_pos_for_lowering = saved_code_pos;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("lower_statement") &&
         (checksum != compute_checksum_for_statement(statement))) {
       (void)fprintf(f_debug, "Statement after lowering:  ");
       db_statement(statement);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 }  /* lower_statement */
@@ -20485,6 +20551,7 @@ Promote the constants on the constants list of the indicated scope
        constant = next_constant) {
     next_constant = constant->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       (void)fprintf(f_debug, "Promoting constant out of scope ");
       db_scope(scope);
@@ -20492,6 +20559,7 @@ Promote the constants on the constants list of the indicated scope
       db_name(&constant->source_corresp);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_to_constants_list(constant, /*at_file_scope=*/TRUE);
   }  /* for */
@@ -20523,6 +20591,7 @@ Promote the static variables on the variables list of the indicated scope
        variable = next_variable) {
     next_variable = variable->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       (void)fprintf(f_debug, "Promoting variable out of scope ");
       db_scope(scope);
@@ -20530,6 +20599,7 @@ Promote the static variables on the variables list of the indicated scope
       db_variable(variable);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_to_variables_list(variable, DEPTH_OF_FILE_SCOPE);
 #if IA64_ABI
@@ -20559,6 +20629,7 @@ or namespace scope) into the file scope.
   for (routine = scope->routines; routine != NULL; routine = next_routine) {
     next_routine = routine->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       (void)fprintf(f_debug, "Promoting routine out of scope ");
       db_scope(scope);
@@ -20566,6 +20637,7 @@ or namespace scope) into the file scope.
       db_name(&routine->source_corresp);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_to_routines_list(routine, DEPTH_OF_FILE_SCOPE);
 #if IA64_ABI
@@ -20579,6 +20651,7 @@ or namespace scope) into the file scope.
            rlep = rlep->next) {
         a_routine_ptr arout = rlep->routine;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           (void)fprintf(f_debug, "Promoting alternate entry out of scope ");
           db_scope(scope);
@@ -20586,6 +20659,7 @@ or namespace scope) into the file scope.
           db_name(&arout->source_corresp);
           (void)fprintf(f_debug, "\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         for (;;) {
           a_routine_ptr arout_next = arout->next;
@@ -20618,6 +20692,7 @@ Promote the asm entries on the asm_entries list of the indicated scope
        asm_entry = next_asm_entry) {
     next_asm_entry = asm_entry->next;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       (void)fprintf(f_debug, "Promoting asm entry out of scope ");
       db_scope(scope);
@@ -20625,6 +20700,7 @@ Promote the asm entries on the asm_entries list of the indicated scope
       db_name(&asm_entry->source_corresp);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     add_to_asm_entries_list(asm_entry);
   }  /* for */
@@ -20697,6 +20773,7 @@ end_local_types for later processing.
       promote_class_members(type, promotion_scope, insert_pointer);
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       (void)fprintf(f_debug, "Promoting type out of class: ");
       db_type_name(type);
@@ -20710,6 +20787,7 @@ end_local_types for later processing.
       }  /* if */
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (*insert_pointer == NULL) {
       type->next = promotion_scope->types;
@@ -20823,11 +20901,13 @@ namespace scope), at the position indicated by *insert_pointer, and
      or local types, promote them out of the class scope. */
   if (!scope_is_null_or_placeholder(scope)) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 4) {
       (void)fprintf(f_debug, "Promoting the members out of ");
       db_scope(scope);
       (void)fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Constants, static data members, and member functions are promoted
        to the file scope. */
@@ -20868,11 +20948,13 @@ and all subscopes.
   a_namespace_ptr nsp;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     (void)fprintf(f_debug, "do_scope_class_member_promotion on ");
     db_scope(scope);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Visit all types to find all classes. */
   /* Note that when processing a function or block scope we will be crossing
@@ -21216,6 +21298,7 @@ so they are left in the scope.
         continue;
       }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 4) {
         (void)fprintf(f_debug, "Promoting local type out of routine ");
         db_name(&routine->source_corresp);
@@ -21223,6 +21306,7 @@ so they are left in the scope.
         db_type_name(type);
         (void)fprintf(f_debug, "\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Mangle the name if necessary (e.g., if it is part of a template
          function). */
@@ -21251,9 +21335,11 @@ so they are left in the scope.
       if (is_immediate_enum_type(type)) {
         a_constant_ptr enum_con;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (debug_level >= 4) {
           (void)fprintf(f_debug, "Enum constants promoted too\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         for (enum_con = enum_constants(type);
              enum_con != NULL;
@@ -21350,6 +21436,7 @@ been removed from the scope variables list).
 */
 {
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     (void)fprintf(f_debug, "Promoting local variable out of routine ");
     db_name(&routine->source_corresp);
@@ -21357,6 +21444,7 @@ been removed from the scope variables list).
     db_variable(variable);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (!is_empty_pack_parameter(variable)) {
     /* Mangle the name if necessary (e.g., if it is part of a template
@@ -21688,11 +21776,13 @@ part of the lowering of the file scope memory region.
   a_boolean     do_type_promotion = FALSE, do_static_promotion = FALSE;
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 || db_has_traced_name(routine, iek_routine)) {
     (void)fprintf(f_debug, "Promoting local entities out of ");
     db_scope(scope);
     (void)fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE
   if (local_entities_should_be_promoted(scope)) {
@@ -22078,12 +22168,14 @@ Do IL lowering of the indicated scope and everything under it.
     innermost_function_scope = scope;
     routine = scope->variant.routine.ptr;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 1) {
       if (routine->source_corresp.name != NULL) {
         fprintf(f_debug, "lower_scope: function \"%s\"\n",
                          routine->source_corresp.name);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (routine->source_corresp.is_class_member) {
       /* Member function.  Make sure that the class it is a member of has
@@ -22776,6 +22868,7 @@ terms into C ones, so that a C back end can handle it without change.
       lowering_file_scope = FALSE;
     }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("lowering")) {
       fprintf(f_debug, "Lowering top level scope: ");
       db_scope(scope);
@@ -22796,6 +22889,7 @@ terms into C ones, so that a C back end can handle it without change.
         db_object_lifetime_tree(scope->lifetime);
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Put the file-scope context on the context stack.  This is also done
        for function scope memory regions so there will be a file-scope
@@ -23005,6 +23099,7 @@ The scope is the top scope in a memory region.
 
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 unsigned long show_lowering_space_used(void)
 /*
 Display and return the amount of space used for various IL lowering tables.
@@ -23050,6 +23145,7 @@ Display and return the amount of space used for various IL lowering tables.
 
   return grand_total;
 }  /* show_lowering_space_used */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -23098,6 +23194,7 @@ Do one-time initialization of variables related to IL lowering.
       pch_saved_var_array_elem(dynamic_cast_routine),
 #endif /* ABI_CHANGES_FOR_RTTI */
 #if DEBUG
+/* GCOVR_EXCL_START */
       pch_saved_var_array_elem(num_temporary_list_entries_allocated),
       pch_saved_var_array_elem(num_scopeless_compound_stmts_allocated),
       pch_saved_var_array_elem(num_init_pos_modifiers_allocated),
@@ -23107,6 +23204,7 @@ Do one-time initialization of variables related to IL lowering.
 #if ABI_CHANGES_FOR_CONSTRUCTION_VTBLS
       pch_saved_var_array_elem(num_construction_vtbls_allocated),
 #endif /* ABI_CHANGES_FOR_CONSTRUCTION_VTBLS */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       pch_saved_var_array_terminating_elem()
     };
@@ -23210,6 +23308,7 @@ for each compilation.
   avail_init_pos_modifiers = NULL;
   avail_destructible_entity_descrs = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   num_temporary_list_entries_allocated = 0;
   num_scopeless_compound_stmts_allocated = 0;
   num_init_pos_modifiers_allocated = 0;
@@ -23217,14 +23316,17 @@ for each compilation.
 #if ABI_CHANGES_FOR_CONSTRUCTION_VTBLS
   num_construction_vtbls_allocated = 0;
 #endif /* ABI_CHANGES_FOR_CONSTRUCTION_VTBLS */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   code_pos_for_lowering = null_source_position;
   avail_return_memos = NULL;
   avail_temporary_list_entries = NULL;
   avail_scopeless_compound_stmts = NULL;
 #if DEBUG
+/* GCOVR_EXCL_START */
   allocated_name_string_length  = 0;
   num_return_memos_allocated    = 0;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if ENSURE_LOWERED_TYPE_LIST_ORDERING
   /* If we are going to run the C-generating back end, the types list must be

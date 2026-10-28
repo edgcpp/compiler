@@ -184,6 +184,7 @@ they are referenced for purposes of tree walking.
   /* Ignore NULL pointers. */
   if (entry_ptr != NULL) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       a_const_char *s;
       switch (entry_kind) {
@@ -194,6 +195,7 @@ they are referenced for purposes of tree walking.
       }  /* switch */
       fprintf(f_debug, "Walking IL tree, string entry kind = %s\n", s);
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* Call the routine to process string entries only if there is one. */
     if (string_entry_process_func != NULL) {
@@ -639,6 +641,7 @@ definition of the routine is needed, and not just the declaration.
                         "set_routine_definition_needed: generated ctor");
     set_routine_definition_needed_flag(rout);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("needed_flags", rout, iek_routine)) {
 #if ONE_INSTANTIATION_PER_OBJECT
       if (needed_flag_bit_number != 0) {
@@ -653,6 +656,7 @@ definition of the routine is needed, and not just the declaration.
       db_name_full(&rout->source_corresp, iek_routine);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If the definition is present, walk it.  set_routine_defined and
        remark_routine_definition_needed take care of calling this again
@@ -850,6 +854,7 @@ definition of the class is needed, and not just the declaration.
     /* Set the flag if it is not set already. */
     set_class_definition_needed_flag(type);
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("needed_flags", type, iek_type)) {
 #if ONE_INSTANTIATION_PER_OBJECT
       if (needed_flag_bit_number != 0) {
@@ -864,6 +869,7 @@ definition of the class is needed, and not just the declaration.
       db_abbreviated_type(type);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     set_class_keep_definition_in_il(type);
     /* If the class is already marked as needed, redo the sweep for that,
@@ -1017,6 +1023,7 @@ as needed.
       /* The flag is not set, so set it and keep walking. */
       set_needed_flag(scp);
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (db_trace("needed_flags", entry_ptr, entry_kind)) {
         if (entry_kind == iek_type ||
             entry_kind == iek_variable ||
@@ -1051,6 +1058,7 @@ as needed.
           fprintf(f_debug, "\n");
         }  /* if */
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       /* Determine whether the subtree of this entry should be walked. */
       prune = !should_walk_subtree(
@@ -1571,11 +1579,13 @@ declaration.
     /* Set the flag if it is not set already. */
     rout->keep_definition_in_il = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("needed_flags", rout, iek_routine)) {
       fprintf(f_debug, "Setting keep_definition_in_il on rout ");
       db_name_full(&rout->source_corresp, iek_routine);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If the definition is present, walk it.  set_routine_defined takes
        care of calling this again later when the routine is defined
@@ -1703,11 +1713,13 @@ limit recursion depth.
         /* Set the flag if it is not set already. */
         type->variant.class_struct_union.keep_definition_in_il = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
         if (db_trace("needed_flags", type, iek_type)) {
           fprintf(f_debug, "Setting keep_definition_in_il on ");
           db_abbreviated_type(type);
           fprintf(f_debug, "\n");
         }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
         /* If the class is already marked to be kept in the IL, redo the sweep
            for that, because before the keep_definition_in_il flag is set the
@@ -1868,6 +1880,7 @@ to be kept.
     /* Set the flag. */
     il_entry_prefix_of(entry_ptr).keep_in_il = TRUE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_trace("needed_flags", entry_ptr, entry_kind)) {
       if (entry_kind == iek_type) {
         fprintf(f_debug, "Setting keep_in_il on type ");
@@ -1890,6 +1903,7 @@ to be kept.
         fprintf(f_debug, "\n");
       }  /* if */
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     /* If this is an entry that might be redeclared or redefined later,
        do not walk its subtree now. */
@@ -1955,9 +1969,11 @@ only the entries marked as "needed" are marked to keep in the IL.
     file_scope_walk = TRUE;
     il_entry_prefix_of(entry_ptr).keep_in_il = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("needed_flags")) {
       fprintf(f_debug, "Beginning file scope keep_in_il walk\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 
@@ -2008,9 +2024,11 @@ only the entries marked as "needed" are marked to keep in the IL.
              iek_macro_invocation_record_block);
 #endif /* MACRO_INVOCATION_TREE_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("needed_flags")) {
       fprintf(f_debug, "Ending file scope keep_in_il walk\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
 

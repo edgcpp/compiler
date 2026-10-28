@@ -3752,6 +3752,7 @@ iterator first.  Otherwise, return the iterator first + (last - middle).
 }  /* rotate */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 template<typename T>
 void db_f_print_t(FILE *stream, ARG_UNUSED const T &value)
@@ -3762,6 +3763,7 @@ Provide a generic printing interface for generic function diagnostics.
   fprintf(stream, "unspecified");
 }  /* db_f_print_t */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if EXPENSIVE_CHECKING && !STANDALONE_UTILITY_PROGRAM
 
@@ -3782,7 +3784,9 @@ minimize the number of operators that need to be implemented.
     if (!(last_value < curr_value || last_value == curr_value)) {
       fprintf(stderr, "Binary search element %td (", i);
 #if DEBUG
+/* GCOVR_EXCL_START */
       db_f_print_t(stderr, curr_value);
+/* GCOVR_EXCL_STOP */
 #else /* !DEBUG */
       fprintf(stderr, "unspecified");
 #endif /* DEBUG */
@@ -5462,7 +5466,9 @@ struct Ptr_map: private Allocator<Ptr_map_entry<a_Ptr_key, a_Value>> {
   INLINE auto number_of_elements() const -> size_t
     { return this->n_elements; }
 #if DEBUG
+/* GCOVR_EXCL_START */
   void db_ptrs() const;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   INLINE an_iterator begin() const
     /*lint -e{1535}*/
@@ -5936,6 +5942,7 @@ done:;
 }  /* Ptr_map::check_deleted_slot */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 template<typename a_Ptr_key, typename a_Value,
          template<typename> class Allocator>
@@ -5961,6 +5968,7 @@ Output some information about the map's key contents to f_debug.
   }  /* for */
 }  /* Ptr_map::db_ptrs */
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 /*

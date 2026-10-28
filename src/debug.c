@@ -23,6 +23,7 @@ debug.c -- Debug routines.
 /* The #if here is done after the inclusion of basics.h because basics.h
    may set DEBUG. */
 #if DEBUG
+/* GCOVR_EXCL_START */
 
 #include "fe_common.h"
 
@@ -829,6 +830,7 @@ must not make use of anything initialized there.
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 

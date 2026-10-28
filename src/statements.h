@@ -85,8 +85,10 @@ typedef struct a_control_flow_descr {
 		kind;
 			/* The kind of entry. */
 #if DEBUG
+/* GCOVR_EXCL_START */
   unsigned long id_number;
 			/* Unique identifying number for this entry. */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if UPC_EXTENSIONS_ALLOWED
   a_statement_ptr
@@ -614,8 +616,10 @@ extern void statements_trans_unit_init(void);
 extern void statements_init(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Show and return the amount of memory used by statements entries. */
 extern unsigned long show_statements_space_used(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG*/
 
 /* Conditionally close the "edg" namespace. */

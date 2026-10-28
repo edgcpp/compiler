@@ -2856,10 +2856,12 @@ given options and PREC_LOWEST precedence.
     saved_stack_lifetime = expr_stack->lifetime;
     expr_stack->lifetime = wrap_lifetime;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("dump_lifetimes")) {
       db_object_lifetime_with_indentation(curr_object_lifetime,
                                           "About to bundle: ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   /* Scan the initializer expression and put it into an init-component. */
@@ -2876,10 +2878,12 @@ given options and PREC_LOWEST precedence.
     curr_object_lifetime = saved_curr_lifetime;
     expr_stack->lifetime = saved_stack_lifetime;
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (db_flag_is_set("dump_lifetimes")) {
       db_object_lifetime_with_indentation(curr_object_lifetime,
                                           "Bundling done: ");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   }  /* if */
   icp->bundled = bundle;
@@ -13915,9 +13919,11 @@ address), in which case a conversion is not used.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_expression(expression);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 
@@ -19678,6 +19684,7 @@ there is an error.  func_arg_number is -1 if there was a previous error.
                   (func_arg_number >= first_arg_number &&
                    func_arg_number <= last_arg_number));
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "func_arg_number = %d, arg_type = ", func_arg_number);
     if (arg_type == NULL) {
@@ -19687,6 +19694,7 @@ there is an error.  func_arg_number is -1 if there was a previous error.
     }  /* if */
     fputs("\n", f_debug);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Loop through the remaining arguments, ignoring everything
      except the function name associated with the argument type -- i.e., the
@@ -42556,7 +42564,9 @@ which of the various keywords was used.
                                 (a_generated_entity_block_ptr)
                                     alloc_fe(sizeof(a_generated_entity_block));
 #if DEBUG
+/* GCOVR_EXCL_START */
       ++num_generated_entity_blocks_allocated;
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       gen_entity_block->function_name = NULL;
       gen_entity_block->pretty_function_name = NULL;
@@ -44995,9 +45005,11 @@ see expr.h).
 
   db_enter(4, "scan_expr_full");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fprintf(f_debug, "precedence level = %d\n", prec_level);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   if (curr_token == tok_pending_ifc_expr) {
@@ -46779,9 +46791,11 @@ case, just process that expression.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_expression(expression);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 
@@ -46905,6 +46919,7 @@ case, just process that expression.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (dip != NULL && *dip != NULL) {
       db_dynamic_initializer(*dip, /*level=*/0);
@@ -46912,6 +46927,7 @@ case, just process that expression.
       db_expression(expression);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 
@@ -46963,9 +46979,11 @@ the expression is also allowed to have that type.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 && expression != NULL) {
     db_expression(expression);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 
@@ -47235,9 +47253,11 @@ be recorded that the final comparison was 5 == 4.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_bool_constant_expression */
@@ -52186,9 +52206,11 @@ interpreter.)
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   if (gpp_mode && !parameters_visible_late) make_param_syms_invisible(FALSE);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_expression(node);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_default_arg_expr */
@@ -52398,10 +52420,12 @@ lowering or a back end to do the rewriting.
             possible = TRUE;
             func_scope->variant.routine.return_value_variable = return_var;
 #if DEBUG
+/* GCOVR_EXCL_START */
             if (debug_level >= 3) {
               fprintf(f_debug, "NRVO variable = %s\n",
                       return_var->source_corresp.name);
             }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
           }  /* if */
         }  /* if */
@@ -52410,9 +52434,11 @@ lowering or a back end to do the rewriting.
     if (!possible) {
       /* The return value optimization has been ruled out. */
 #if DEBUG
+/* GCOVR_EXCL_START */
       if (debug_level >= 3) {
         fprintf(f_debug, "NRVO ruled out.\n");
       }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
       ssep->return_value_optimization_possible = FALSE;
       func_scope->variant.routine.return_value_variable = NULL;
@@ -53048,9 +53074,11 @@ done:
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3 && expression != NULL) {
     db_expression(expression);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return expression;
@@ -53211,10 +53239,12 @@ Scan a pre-processor expression.  See sections 3.4 and 3.8.1 in the standard.
   curr_construct_end_position = result.end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_pp_expression */
@@ -53328,10 +53358,12 @@ is the value of an enumerator.  The value of the constant is returned in
   curr_construct_end_position = result.end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_integral_constant_expression_full */
@@ -53575,6 +53607,7 @@ expression context.  Return either *is_constant TRUE and a constant value in
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     if (*is_constant) {
       db_constant(constant);
@@ -53583,6 +53616,7 @@ expression context.  Return either *is_constant TRUE and a constant value in
     }  /* if */
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_nonconstant_dimension_expression */
@@ -53856,10 +53890,12 @@ memory region).  Do various error checks.
     constant->null_pointer_constant_ruled_out = TRUE;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* prep_nontype_template_argument_initializer */
@@ -54195,10 +54231,12 @@ are NULL by default.
 
   switch_back_to_original_region(region_to_switch_back_to);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_template_argument_constant_expression */
@@ -54273,9 +54311,11 @@ free_arg_operand_list to free the entry.
   curr_construct_end_position = opnd->end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_operand(opnd);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   curr_object_lifetime = saved_curr_object_lifetime;
   if (class_instantiation_sequence_number != initial_inst_seq_num) {
@@ -54408,10 +54448,12 @@ type will be obtained from the arg_operand.
   }  /* if */
   do_fs_constant_fixup(constant);
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* conv_nontype_template_arg_to_param_type */
@@ -56389,10 +56431,12 @@ standard form).  Assumes copy-initialization ("="-form).
                                    dps, (an_init_state *)NULL);
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   scope_stack_top().decl_parse_state = saved_dps;
   db_exit();
@@ -56509,10 +56553,12 @@ constants; assumes copy-initialization ("="-form).
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_constant(constant);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
 }  /* scan_constant_initializer_expression */
@@ -57270,9 +57316,11 @@ case, just process that expression.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     db_expression(expr);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
   db_exit();
@@ -57333,9 +57381,11 @@ the __uuidof keyword.
   curr_construct_end_position = result.end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 3) {
     fprintf(f_debug, "uuid_str = %s\n", uuid_str == NULL ? "<null>": uuid_str);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return uuid_str;

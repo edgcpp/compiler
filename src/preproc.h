@@ -61,6 +61,7 @@ enum a_pp_directive_kind {
 };
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /*
 Table of names of preprocessing directives, used as event kinds for PCH
 processing.  This is not the definition of the preprocessing directive
@@ -106,6 +107,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, pp_directive_kind_names,
   }
 #endif /* VAR_INITIALIZERS */
 EXTERN_CONSTINIT_ARRAY_END(pp_directive_kind_names)
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 
@@ -378,8 +380,10 @@ extern void preproc_trans_unit_init(void);
 extern void preproc_init(void);
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 /* Show and return the amount of memory used by preprocessing structures. */
 extern unsigned long show_preproc_space_used(void);
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG*/
 
 #if MICROSOFT_EXTENSIONS_ALLOWED

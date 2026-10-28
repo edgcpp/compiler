@@ -641,6 +641,7 @@ extern an_fp_return_type read_float128(unsigned char *val,
 #endif /* FLOAT128_ENABLING_POSSIBLE */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
 extern void db_binary_float16(unsigned char *val);
 extern void db_binary_float(unsigned char *val);
 extern void db_binary_double(unsigned char *val);
@@ -651,6 +652,7 @@ extern void db_binary_float80(unsigned char *val);
 #if FLOAT128_ENABLING_POSSIBLE
 extern void db_binary_float128(unsigned char *val);
 #endif /* FLOAT128_ENABLING_POSSIBLE */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
 
 EXTERN_THREAD a_boolean

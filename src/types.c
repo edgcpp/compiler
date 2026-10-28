@@ -5274,6 +5274,7 @@ step on the derivation list serves to confirm the match.
     goto found_in_cache;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4) {
     fputs("looking in \"", f_debug);
     db_type_name(new_class);
@@ -5284,6 +5285,7 @@ step on the derivation list serves to confirm the match.
       db_base_class(disambiguator, FALSE);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   /* Look for a match in the cache. */
   key = { base_class, new_class, disambiguator };
@@ -5391,6 +5393,7 @@ step on the derivation list serves to confirm the match.
   new_base_class = NULL;
 #if CHECKING
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level > 0) {
     fputs("cannot find base class", f_debug);
     db_base_class(base_class, /*show_offset=*/FALSE);
@@ -5406,6 +5409,7 @@ step on the derivation list serves to confirm the match.
       db_base_class(disambiguator, /*show_offset=*/FALSE);
     }  /* if */
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   internal_error("corresponding_base_class: base class not found");
 #endif /* CHECKING */
@@ -5415,11 +5419,13 @@ done:
   }  /* if */
 found_in_cache:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 4 &&
       !same_entities(base_class->derived_class, new_class)) {
     fputs("found base class: ", f_debug);
     db_base_class(new_base_class, /*show_offset=*/FALSE);
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return new_base_class;
@@ -9834,10 +9840,12 @@ check_typerefs:
   }  /* if */
 done:
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "f_types_are_compatible_full: %s\n",
             compat ? "TRUE":"FALSE");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return compat;
@@ -11438,6 +11446,7 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
 
   db_enter(5, "impl_pointer_conversion");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_pointer_conversion: source_type = ");
     db_abbreviated_type(source_type);
@@ -11445,6 +11454,7 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_std_conv_descr(std_conv);
   /* Assume a nontrivial conversion; the flag will be cleared later if in
@@ -11904,10 +11914,12 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_pointer_conversion: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -12078,6 +12090,7 @@ that information is not needed.  Doesn't cover boxing conversions
 
   db_enter(5, "impl_handle_conversion");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_handle_conversion: source_type = ");
     db_abbreviated_type(source_type);
@@ -12085,6 +12098,7 @@ that information is not needed.  Doesn't cover boxing conversions
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   if (std_conv != NULL) {
     clear_std_conv_descr(std_conv);
@@ -12187,10 +12201,12 @@ that information is not needed.  Doesn't cover boxing conversions
     }  /* if */
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_handle_conversion: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -12213,6 +12229,7 @@ conversion.  std_conv can be NULL if that information is not needed.
   db_enter(5, "boxing_conversion_possible");
   if (cli_or_cx_enabled) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "boxing_conversion_possible: source_type = ");
       db_abbreviated_type(source_type);
@@ -12220,6 +12237,7 @@ conversion.  std_conv can be NULL if that information is not needed.
       db_abbreviated_type(dest_type);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (std_conv != NULL) clear_std_conv_descr(std_conv);
     /* The source type has to be a value type, but not a pointer type.
@@ -12283,6 +12301,7 @@ can be NULL if that information is not needed.
   db_enter(5, "unboxing_conversion_possible");
   if (cli_or_cx_enabled) {
 #if DEBUG
+/* GCOVR_EXCL_START */
     if (debug_level >= 5) {
       fprintf(f_debug, "unboxing_conversion_possible: source_type = ");
       db_abbreviated_type(source_type);
@@ -12290,6 +12309,7 @@ can be NULL if that information is not needed.
       db_abbreviated_type(dest_type);
       fprintf(f_debug, "\n");
     }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
     if (std_conv != NULL) clear_std_conv_descr(std_conv);
     /* The source type has to be a handle type.  The destination type has
@@ -12776,6 +12796,7 @@ pointers to members).
  
   db_enter(5, "impl_ptr_to_member_conversion");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_ptr_to_member_conversion: source_type = ");
     db_abbreviated_type(source_type);
@@ -12783,6 +12804,7 @@ pointers to members).
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_std_conv_descr(std_conv);
   /* Assume a nontrivial conversion; the flag will be cleared later if in
@@ -12895,10 +12917,12 @@ pointers to members).
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_ptr_to_member_conversion: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -13034,6 +13058,7 @@ See conversion_possible.
 
   db_enter(5, "impl_conversion_possible");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_conversion_possible: source_type = ");
     db_abbreviated_type(source_type);
@@ -13041,6 +13066,7 @@ See conversion_possible.
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   clear_std_conv_descr(std_conv);
   /* Assume a nontrivial conversion; the flag will be cleared later if in
@@ -13424,10 +13450,12 @@ See conversion_possible.
     std_conv->is_mild_warning = TRUE;
   }  /* if */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "impl_conversion_possible: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -13806,6 +13834,7 @@ C++ mode.  See [expr.static.cast].
   saved_warning_on_lossy_conversion = warning_on_lossy_conversion;
   warning_on_lossy_conversion = FALSE;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "static_cast_conversion_possible_full: source_type = ");
     db_abbreviated_type(source_type);
@@ -13813,6 +13842,7 @@ C++ mode.  See [expr.static.cast].
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *warning_suggested = ec_no_error;
   *is_mild_warning = FALSE;
@@ -13918,10 +13948,12 @@ C++ mode.  See [expr.static.cast].
   }  /* if */
   warning_on_lossy_conversion = saved_warning_on_lossy_conversion;
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "static_cast_conversion_possible_full: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -14005,6 +14037,7 @@ well as C++ mode.
 
   db_enter(5, "reinterpret_cast_conversion_possible_full");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug,
             "reinterpret_cast_conversion_possible_full: source_type = ");
@@ -14013,6 +14046,7 @@ well as C++ mode.
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *warning_suggested = ec_no_error;
   *is_mild_warning = FALSE;
@@ -14236,10 +14270,12 @@ well as C++ mode.
   }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "reinterpret_cast_conversion_possible_full: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
@@ -14309,6 +14345,7 @@ set to TRUE (otherwise it is set to FALSE).
 
   db_enter(5, "expl_conversion_possible");
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "expl_conversion_possible: source_type = ");
     db_abbreviated_type(source_type);
@@ -14316,6 +14353,7 @@ set to TRUE (otherwise it is set to FALSE).
     db_abbreviated_type(dest_type);
     fprintf(f_debug, "\n");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   *reinterpret_cast_needed = FALSE;
   *warning_suggested = ec_no_error;
@@ -14388,10 +14426,12 @@ set to TRUE (otherwise it is set to FALSE).
   }  /* if */
 
 #if DEBUG
+/* GCOVR_EXCL_START */
   if (debug_level >= 5) {
     fprintf(f_debug, "expl_conversion_possible: %s\n",
                      okay ? "okay" : "not okay");
   }  /* if */
+/* GCOVR_EXCL_STOP */
 #endif /* DEBUG */
   db_exit();
   return okay;
