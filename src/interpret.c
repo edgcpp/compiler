@@ -22556,49 +22556,79 @@ if *p_this_arg is not initialized.)
        constructor has not completely run yet, or because the object has
        been partially destroyed). */
   } else {
-    /* The final overrider is a member of the class of the subobject from which
-       it is found, and that subobject is the object for the call. */
-    a_byte  *callee_subobj = subobj;
+    /* Find the outermost enclosing subobject from which the call is
+       dispatched (outer_subobj, of class outer_class). */
+    a_byte            *outer_subobj = subobj;
+    a_type_ptr        outer_class = NULL;
+    a_type_ptr        callee_class = skip_typerefs(parent_class_of(*p_callee));
+    a_base_class_ptr  bcp;
     do {
-      a_base_class_ptr  bcp = *(a_base_class_ptr*)subobj;
-      a_byte_count      offset, retval_offset_step = 0;
-      a_routine_ptr     overrider = NULL;
-      an_overriding_virtual_function_ptr
-                        ovfp;
+      a_byte_count  offset;
+      bcp = *(a_base_class_ptr*)outer_subobj;
       if (bcp == NULL) {
         /* A most derived subobject (i.e., a field or array element).  We are
            done. */
         break;
       }  /* if */
-      check_assertion(!bcp->is_pack_expansion);
-      ovfp = bcp->variant.overriding_virtual_functions;
-      for (; ovfp != NULL; ovfp = ovfp->next) {
-        if (ovfp->primary_function == *p_callee) {
-          a_base_class_ptr  ret_base = ovfp->return_adjustment_base_class;
-          if (ret_base != NULL) {
-            /* A covariant return override.  The return value will need
-               adjustment (possibly to an indirect base class). */
-            retval_offset_step = compute_interpreter_base_offset(
-                                           ret_base, (a_base_class_ptr*)NULL);
-          }  /* if */
-          overrider = ovfp->overriding_function;
+      get_mapped_byte_count(&persistent_map, bcp, offset);
+      outer_subobj -= offset;
+      outer_class = bcp->derived_class;
+      if (!subobject_is_initialized(outer_subobj, complete_obj)) {
+        /* The next-enclosing subobject is not constructed.  Do not dispatch
+           from anything enclosing it. */
+        break;
+      }  /* if */
+    } while (outer_subobj != complete_obj);
+    if (outer_class != NULL) {
+      /* The override information for the subobject of the callee's class
+         in outer_class gives the final overrider in outer_class (which may
+         be a member of an intermediate class).  The base class entry for
+         that subobject is identified by its offset, since the callee's
+         class can be a base class of outer_class more than once. */
+      an_overriding_virtual_function_ptr
+                        ovfp;
+      for (bcp = base_classes_of(outer_class); bcp != NULL; bcp = bcp->next) {
+        if (!bcp->is_pack_expansion &&
+            same_entities(skip_typerefs(bcp->type), callee_class) &&
+            outer_subobj + compute_interpreter_base_offset(
+                                         bcp, (a_base_class_ptr*)NULL) ==
+                                                                    subobj) {
           break;
         }  /* if */
       }  /* for */
-      get_mapped_byte_count(&persistent_map, bcp, offset);
-      subobj -= offset;
-      if (overrider != NULL) {
-        *p_callee = overrider;
-        *p_retval_offset += retval_offset_step;
-        callee_subobj = subobj;
-      }  /* if */
-      if (!subobject_is_initialized(subobj, complete_obj)) {
-        /* The next-enclosing subobject is not constructed.  Do not dispatch
-           from it. */
-        break;
-      }  /* if */
-    } while (subobj != complete_obj);
-    this_val->address = callee_subobj;
+      check_assertion(bcp != NULL);
+      do {
+        /* If the overrider found is a member of an intermediate class, it
+           is normally the final overrider, but a function that overrides
+           it without being recorded as overriding the original function
+           (e.g., because of an invalid covariant return type) is found
+           through the base class entry for that intermediate class. */
+        ovfp = bcp->variant.overriding_virtual_functions;
+        while (ovfp != NULL && ovfp->primary_function != *p_callee) {
+          ovfp = ovfp->next;
+        }  /* while */
+        if (ovfp != NULL) {
+          a_base_class_ptr  ret_base = ovfp->return_adjustment_base_class;
+          *p_callee = ovfp->overriding_function;
+          bcp = ovfp->base_class;
+          if (bcp == NULL) {
+            /* The overrider is a member of outer_class. */
+            this_val->address = outer_subobj;
+          } else {
+            this_val->address =
+                       outer_subobj +
+                       compute_interpreter_base_offset(bcp,
+                                                       (a_base_class_ptr*)NULL);
+          }  /* if */
+          if (ret_base != NULL) {
+            /* A covariant return override.  The return value will need
+               adjustment (possibly to an indirect base class). */
+            *p_retval_offset += compute_interpreter_base_offset(
+                                           ret_base, (a_base_class_ptr*)NULL);
+          }  /* if */
+        }  /* if */
+      } while (ovfp != NULL && bcp != NULL);
+    }  /* if */
   }  /* if */
   return result;
 }  /* adjust_virtual_callee */

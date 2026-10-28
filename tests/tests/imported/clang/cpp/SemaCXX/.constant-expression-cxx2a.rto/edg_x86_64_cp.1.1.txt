@@ -13,23 +13,9 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "SemaCXX/constant-expression-cxx2a.cpp", line 176: error: static assertion failed
     static_assert(d.ba == 'B');
     ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 176: note: the final comparison was 65 == 66
+"SemaCXX/constant-expression-cxx2a.cpp", line 176: note: the final comparison was 68 == 66
     static_assert(d.ba == 'B');
                        ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 181: error: static assertion failed
-    static_assert(a.f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 181: note: the final comparison was 65 == 68
-    static_assert(a.f() == 'D');
-                        ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 182: error: static assertion failed
-    static_assert(b.f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 182: note: the final comparison was 66 == 68
-    static_assert(b.f() == 'D');
-                        ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 186: error: expression must have a constant value
     static_assert(d_not_constexpr.f() == 'D');
@@ -47,20 +33,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       constexpr virtual const D *f() const { return &this->d; }
                                  ^
           detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::C]" at line 203
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 209: error: static assertion failed
-    static_assert(cb1->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 209: note: the final comparison was 65 == 68
-    static_assert(cb1->f()->f() == 'D');
-                                ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 212: error: static assertion failed
-    static_assert(cb2->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 212: note: the final comparison was 66 == 68
-    static_assert(cb2->f()->f() == 'D');
-                                ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 232: error: initialization is not constant
     constexpr PureVirtualCall pure_virtual_call;
