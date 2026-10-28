@@ -7,18 +7,35 @@
 #
 #   edg-docker-test --posture=extensive --non-interactive
 #
-# inside the ghcr.io/edgcpp/ci-runner image. Jobs are staged so GitHub can schedule
-# them in parallel, with each test leg waiting only on its own build (and the
-# shared timestamp, which runs alongside the builds):
+# inside the ghcr.io/edgcpp/ci-runner image. Each toolchain runs
+# ci-toolchain.yml, which builds its preset and then runs one test leg per
+# configuration; a test leg waits only on its own toolchain's build:
 #
-#   prepare ───────────────┬──► test-gcc  ──┐
-#   build-gcc ─────────────┘                ├──► publish (on failure)
-#   prepare ───────────────┬──► test-i686 ──┤
-#   build-i686 ────────────┘                └──► coverage
+#   prepare ─┬─► linux-gcc-debug:      build ─► Test ×2 ─┬─► publish (on failure)
+#            └─► linux-i686-gcc-debug: build ─► Test ×2 ─┴─► coverage
 #   bench (pull requests only; independent)
+#
+# The prepare job computes the shared run timestamp and test-input hash that
+# the toolchains take as inputs. Test legs report as "<preset> / Test
+# <config>" (e.g., "linux-gcc-debug / Test edg_x86_64").
 #
 # A shared run timestamp keeps results under the same tests/runs/<timestamp>/
 # tree; the publish job republishes failure artifacts from all test legs.
+#
+# The builds set EDG_BUILD_IDENTIFIER so that identical sources produce
+# byte-identical build products. Each test leg keys a cache entry on the
+# SHA-256 of the build products it downloaded, the test files its
+# configuration can read (edg-test-inputs-hash, so re-recording a test for
+# one configuration doesn't invalidate the others), and the git trees of the
+# other inputs it reads from the checkout (bases/, include_c++/,
+# util/eccp.sh, and the workflow files, computed once by the prepare job).
+# When a leg passes, it saves that entry along with its coverage report; a
+# later run on the same ref (a re-run, or a push that leaves the build
+# products and test inputs unchanged) restores it, skips edgy, and reuses
+# the coverage report.
+# actions/cache scopes entries to the ref that saved them (plus the default
+# branch), so one pull request can never vouch for another's build.
+#
 # The bench job runs the cachegrind benchmarks the way
 # `edg-docker-bench --posture=release` does and uploads them as bench-results
 # (c/ and cpp/ runs, for comparison against the checked-in
@@ -34,13 +51,6 @@
 name: Build & Test CI
 
 on:
-  push:
-    branches:
-      - main
-    # The nightly collect-changes job's commits only move Changes entries.
-    paths-ignore:
-      - '**/Changes'
-      - '**/pending_changes/**'
   pull_request:
   merge_group:
 
@@ -61,6 +71,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       run_timestamp: ${{ steps.timestamp.outputs.run_timestamp }}
+      test_inputs: ${{ steps.test-inputs.outputs.test_inputs }}
     steps:
       - name: Declare shared edgy run timestamp
         id: timestamp
@@ -68,333 +79,64 @@ jobs:
           # Match edgutil.RUN_TIMESTAMP_FORMAT (%Y.%m.%d-%H.%M.%S).
           echo "run_timestamp=$(date -u +'%Y.%m.%d-%H.%M.%S')" >> "${GITHUB_OUTPUT}"
 
-  build-gcc:
-    name: Build linux-gcc-debug
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
+      # Only the git trees are needed, so skip blobs and most of the
+      # working tree.
+      - name: Check out repository metadata
         uses: actions/checkout@v7
         with:
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout: .github
 
-      - name: Configure linux-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --preset linux-gcc-debug -DEDG_CPFE_USE_GCOV=ON
+      - name: Hash test inputs
+        id: test-inputs
+        run: |
+          # What the test legs read from the checkout, other than the build
+          # products and tests/ (which each leg hashes per configuration):
+          # EDG_BASE (whose include/ is include_c++/) and eccp. The workflow
+          # files cover the container image and the edgy options; edgy and
+          # the other tools come from that image, not from dev_tools/.
+          hash="$(git rev-parse HEAD:bases HEAD:include_c++ \
+                    HEAD:util/eccp.sh \
+                    HEAD:.github/workflows/build-and-test-ci.yml \
+                    HEAD:.github/workflows/ci-toolchain.yml |
+                  sha256sum | cut -c1-64)"
+          echo "test_inputs=${hash}" >> "${GITHUB_OUTPUT}"
 
-      - name: Build linux-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --build build/gcc
-
-      # Runtime layout only: environment.sh / eccp need bin/, lib/, and the
-      # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
-      # lib_<target>). lib_src is build-only and omitted. The .gcno files
-      # let the test legs produce coverage reports.
-      - name: Upload build products
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-linux-gcc-debug
-          path: |
-            build/gcc/bin
-            build/gcc/lib
-            build/gcc/lib_linux_*
-            build/gcc/lib_win*
-            build/gcc/environment.sh
-            build/gcc/src/**/*.gcno
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 6
-
-  build-i686:
-    name: Build linux-i686-gcc-debug
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Configure linux-i686-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --preset linux-i686-gcc-debug -DEDG_CPFE_USE_GCOV=ON
-
-      - name: Build linux-i686-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --build build/gcc-i686
-
-      - name: Upload build products
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-linux-i686-gcc-debug
-          path: |
-            build/gcc-i686/bin
-            build/gcc-i686/lib
-            build/gcc-i686/lib_linux_*
-            build/gcc-i686/lib_win*
-            build/gcc-i686/environment.sh
-            build/gcc-i686/src/**/*.gcno
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 6
-
-  test-gcc:
-    name: Test ${{ matrix.config }}
-    needs:
-      - prepare
-      - build-gcc
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
+  # Each toolchain builds its preset and then tests each of its
+  # configurations (see ci-toolchain.yml), so its test legs wait only on its
+  # own build. The legs report as "<preset> / Test <config>".
+  toolchain:
+    name: ${{ matrix.preset }}
+    needs: prepare
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - edg_x86_64
-          - edg_x86_64_cp
-    container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
-      # Required for setarch ... -R (disable ASLR) used by the test harness.
-      options: --privileged
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Download linux-gcc-debug build
-        uses: actions/download-artifact@v7
-        with:
-          name: build-linux-gcc-debug
-          # upload-artifact strips the shared build/gcc/ prefix, leaving
-          # bin/, lib/, and environment.sh at the artifact root.
-          path: build/gcc
-
-      - name: Restore execute bits on build binaries
-        run: |
-          # Artifact round-trip does not reliably preserve +x.
-          chmod -R a+x build/gcc/bin
-
-      - name: Run edgy (${{ matrix.config }})
-        env:
-          RUN_TIMESTAMP: ${{ needs.prepare.outputs.run_timestamp }}
-          CONFIG: ${{ matrix.config }}
-        run: |
-          mkdir -p .tmp
-          cat > .tmp/extensive-ci-edg-base.sh <<EOF
-          export EDG_BASE="${GITHUB_WORKSPACE}/bases/docker/dev-env/gcc"
-          EOF
-
-          cat > .tmp/extensive-ci.edgivk <<EOF
-          prefix_source TEST_${CONFIG} build/gcc/environment.sh
-          prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
-          exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
-          EOF
-
-          edg-prefix-env-loader .tmp/extensive-ci.edgivk
-
-      - name: Upload partial elist, elog, and .rt.tar.gz results
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: test-results-${{ matrix.config }}
-          path: |
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elist
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elog
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.rt.tar.gz
-          if-no-files-found: warn
-          retention-days: 1
-
-      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
-      # the downloaded .gcno files under build/gcc/src. Each leg saves a gcovr
-      # JSON report; the coverage job merges them and uploads to Codecov.
-      # Coverage problems must never fail the test leg, hence
-      # continue-on-error.
-      - name: Install gcovr
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        run: |
-          python3 -m venv "${RUNNER_TEMP}/gcovr"
-          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
-            "gcovr==${GCOVR_VERSION}"
-
-      # cpfe and cpfe-cp compile the same sources; separate function merging
-      # keeps gcovr from rejecting functions seen at different lines. A few
-      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
-      # instead of failing.
-      - name: Generate coverage report
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        env:
-          CONFIG: ${{ matrix.config }}
-        run: |
-          mkdir -p coverage
-          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
-            --root . \
-            --filter 'src/' \
-            --merge-mode-functions=separate \
-            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
-            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
-            -j "$(nproc)" \
-            --json "coverage/${CONFIG}.json" \
-            --print-summary \
-            build/gcc
-
-      - name: Upload coverage report
-        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-${{ matrix.config }}
-          path: coverage/${{ matrix.config }}.json
-          if-no-files-found: warn
-          retention-days: 1
-
-  test-i686:
-    name: Test ${{ matrix.config }}
-    needs:
-      - prepare
-      - build-i686
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - edg_x86_32
-          - edg_x86_32_cp
-    container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
-      # Required for setarch ... -R (disable ASLR) used by the test harness.
-      options: --privileged
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Download linux-i686-gcc-debug build
-        uses: actions/download-artifact@v7
-        with:
-          name: build-linux-i686-gcc-debug
-          # upload-artifact strips the shared build/gcc-i686/ prefix, leaving
-          # bin/, lib/, and environment.sh at the artifact root.
-          path: build/gcc-i686
-
-      - name: Restore execute bits on build binaries
-        run: |
-          # Artifact round-trip does not reliably preserve +x.
-          chmod -R a+x build/gcc-i686/bin
-
-      - name: Run edgy (${{ matrix.config }})
-        env:
-          RUN_TIMESTAMP: ${{ needs.prepare.outputs.run_timestamp }}
-          CONFIG: ${{ matrix.config }}
-        run: |
-          mkdir -p .tmp
-          cat > .tmp/extensive-ci-edg-base.sh <<EOF
-          export EDG_BASE="${GITHUB_WORKSPACE}/bases/docker/dev-env/gcc-i686"
-          EOF
-
-          cat > .tmp/extensive-ci.edgivk <<EOF
-          prefix_source TEST_${CONFIG} build/gcc-i686/environment.sh
-          prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
-          exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
-          EOF
-
-          edg-prefix-env-loader .tmp/extensive-ci.edgivk
-
-      - name: Upload partial elist, elog, and .rt.tar.gz results
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: test-results-${{ matrix.config }}
-          path: |
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elist
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elog
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.rt.tar.gz
-          if-no-files-found: warn
-          retention-days: 1
-
-      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
-      # the downloaded .gcno files under build/gcc-i686/src. Each leg saves a gcovr
-      # JSON report; the coverage job merges them and uploads to Codecov.
-      # Coverage problems must never fail the test leg, hence
-      # continue-on-error.
-      - name: Install gcovr
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        run: |
-          python3 -m venv "${RUNNER_TEMP}/gcovr"
-          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
-            "gcovr==${GCOVR_VERSION}"
-
-      # cpfe and cpfe-cp compile the same sources; separate function merging
-      # keeps gcovr from rejecting functions seen at different lines. A few
-      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
-      # instead of failing.
-      - name: Generate coverage report
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        env:
-          CONFIG: ${{ matrix.config }}
-        run: |
-          mkdir -p coverage
-          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
-            --root . \
-            --filter 'src/' \
-            --merge-mode-functions=separate \
-            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
-            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
-            -j "$(nproc)" \
-            --json "coverage/${CONFIG}.json" \
-            --print-summary \
-            build/gcc-i686
-
-      - name: Upload coverage report
-        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-${{ matrix.config }}
-          path: coverage/${{ matrix.config }}.json
-          if-no-files-found: warn
-          retention-days: 1
+        include:
+          - preset: linux-gcc-debug
+            build_dir: build/gcc
+            base: gcc
+            configs: '["edg_x86_64", "edg_x86_64_cp"]'
+          - preset: linux-i686-gcc-debug
+            build_dir: build/gcc-i686
+            base: gcc-i686
+            configs: '["edg_x86_32", "edg_x86_32_cp"]'
+    uses: ./.github/workflows/ci-toolchain.yml
+    with:
+      preset: ${{ matrix.preset }}
+      build_dir: ${{ matrix.build_dir }}
+      base: ${{ matrix.base }}
+      configs: ${{ matrix.configs }}
+      run_timestamp: ${{ needs.prepare.outputs.run_timestamp }}
+      test_inputs: ${{ needs.prepare.outputs.test_inputs }}
 
   publish-test-results:
     name: Publish aggregated test results
     needs:
       - prepare
-      - test-gcc
-      - test-i686
+      - toolchain
     # Republish whenever any test leg failed (partial artifacts may exist).
-    if: >-
-      ${{ always() &&
-      (needs.test-gcc.result == 'failure' ||
-       needs.test-i686.result == 'failure') }}
+    if: ${{ always() && needs.toolchain.result == 'failure' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -435,9 +177,7 @@ jobs:
 
   coverage:
     name: Publish coverage to Codecov
-    needs:
-      - test-gcc
-      - test-i686
+    needs: toolchain
     # Like publish-test-results, merge whatever the test legs produced,
     # whether or not their tests passed. The number of configs is not
     # fixed: every coverage-* artifact is merged into one report and
@@ -508,7 +248,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
+      image: ghcr.io/edgcpp/ci-runner@sha256:da140ca90c420977f187279d7939fe0c7cb3c4b656e5ab2dc0f6b9ac2a43a255
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"

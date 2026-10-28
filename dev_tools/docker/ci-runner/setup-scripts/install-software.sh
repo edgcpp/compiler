@@ -15,6 +15,10 @@ packages+=("nodejs")
 # Add valgrind (cachegrind) for the CI benchmark job.
 packages+=("valgrind")
 
+# Add zstd for actions/cache, which compresses its archives with it (and
+# otherwise falls back to gzip, which this image also lacks).
+packages+=("zstd")
+
 # Install the core packages (dnf fetches the package database on install,
 # so forcing an update here, particularly for development is counter
 # productive to image build time -- nearly doubling it on a MacBook Pro

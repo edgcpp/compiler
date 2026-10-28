@@ -1,0 +1,282 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Builds one toolchain's preset and tests it with each of its configurations.
+# Called once per toolchain by build-and-test-ci.yml, which describes the
+# overall job graph, the test cache, and coverage; each test leg waits only on
+# this workflow's build, so the toolchains are independent of one another.
+#
+# There is deliberately no concurrency group here: in a called workflow,
+# github.workflow is the caller's name, so a group would make the toolchains
+# cancel each other. The caller's group covers this workflow.
+
+name: CI Toolchain
+
+on:
+  workflow_call:
+    inputs:
+      preset:
+        description: The CMake preset to build (also names the build artifact)
+        required: true
+        type: string
+      build_dir:
+        description: The preset's build directory (e.g., build/gcc)
+        required: true
+        type: string
+      base:
+        description: The directory under bases/docker/dev-env/ for EDG_BASE
+        required: true
+        type: string
+      configs:
+        description: A JSON list of the edgy configurations to test
+        required: true
+        type: string
+      run_timestamp:
+        description: The edgy run timestamp shared by all test legs
+        required: true
+        type: string
+      test_inputs:
+        description: The hash of the test inputs (part of the test cache key)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# The steps refer to the inputs through these variables (in run scripts, as
+# shell variables rather than expressions).
+env:
+  GCOVR_VERSION: '8.7'
+  CI_PRESET: ${{ inputs.preset }}
+  CI_BUILD_DIR: ${{ inputs.build_dir }}
+  CI_BASE: ${{ inputs.base }}
+
+jobs:
+  build:
+    name: Build ${{ inputs.preset }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: &ci-runner-image ghcr.io/edgcpp/ci-runner@sha256:da140ca90c420977f187279d7939fe0c7cb3c4b656e5ab2dc0f6b9ac2a43a255
+    defaults: &container-defaults
+      run:
+        shell: edg-container-exec "bash -eo pipefail {0}"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Configure ${{ env.CI_PRESET }}
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/${{ env.CI_BASE }}
+        run: >-
+          cmake --preset "${CI_PRESET}" -DEDG_CPFE_USE_GCOV=ON
+          -DEDG_BUILD_IDENTIFIER=ci
+
+      - name: Build ${{ env.CI_PRESET }}
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/${{ env.CI_BASE }}
+        run: cmake --build "${CI_BUILD_DIR}"
+
+      # Runtime layout only: environment.sh / eccp need bin/, lib/, and the
+      # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
+      # lib_<target>). lib_src is build-only and omitted. The .gcno files
+      # let the test legs produce coverage reports.
+      - name: Upload build products
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ env.CI_PRESET }}
+          path: |
+            ${{ env.CI_BUILD_DIR }}/bin
+            ${{ env.CI_BUILD_DIR }}/lib
+            ${{ env.CI_BUILD_DIR }}/lib_linux_*
+            ${{ env.CI_BUILD_DIR }}/lib_win*
+            ${{ env.CI_BUILD_DIR }}/environment.sh
+            ${{ env.CI_BUILD_DIR }}/src/**/*.gcno
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 6
+
+  test:
+    name: Test ${{ matrix.config }}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJSON(inputs.configs) }}
+    container:
+      image: *ci-runner-image
+      # Required for setarch ... -R (disable ASLR) used by the test harness.
+      options: --privileged
+    defaults: *container-defaults
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Download ${{ env.CI_PRESET }} build
+        uses: actions/download-artifact@v7
+        with:
+          name: build-${{ env.CI_PRESET }}
+          # upload-artifact strips the shared build directory prefix, leaving
+          # bin/, lib/, and environment.sh at the artifact root.
+          path: ${{ env.CI_BUILD_DIR }}
+
+      - name: Restore execute bits on build binaries
+        run: |
+          # Artifact round-trip does not reliably preserve +x.
+          chmod -R a+x "${CI_BUILD_DIR}/bin"
+
+      - name: Compute test cache key
+        id: key
+        env:
+          CONFIG: ${{ matrix.config }}
+          TEST_INPUTS: ${{ inputs.test_inputs }}
+        run: |
+          # Hash the test files this configuration can read, using the
+          # image's tools (like edgy itself, so the selection rules match).
+          # The helper reads git trees, and git refuses a repository owned
+          # by another user (the workspace belongs to the runner's user, not
+          # the container's) unless it is marked safe.
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          tests="$(EDG_TEST_HOME="${GITHUB_WORKSPACE}/tests" \
+                   edg-test-inputs-hash --config "${CONFIG}")"
+          echo "Test files: ${tests}"
+          # Hash the names and contents of the downloaded build products.
+          build="$(cd "${CI_BUILD_DIR}" &&
+                   find . -type f -print0 | LC_ALL=C sort -z |
+                   xargs -0 sha256sum | sha256sum | cut -c1-64)"
+          echo "Build products: ${build}"
+          echo "key=tested-${CONFIG}-${TEST_INPUTS}-${tests}-${build}" \
+            >> "${GITHUB_OUTPUT}"
+
+      - name: Look for an earlier passing run of this build
+        id: tested
+        uses: actions/cache/restore@v6
+        with:
+          key: ${{ steps.key.outputs.key }}
+          path: .tmp/tested
+
+      - name: Reuse earlier results
+        if: ${{ steps.tested.outputs.cache-hit == 'true' }}
+        run: |
+          echo "::notice::This build already passed with the same test" \
+               "inputs: $(cat .tmp/tested/ci-meta.json)"
+          mkdir -p coverage
+          cp .tmp/tested/coverage/*.json coverage/ || true
+
+      - name: Run edgy (${{ matrix.config }})
+        id: edgy
+        if: ${{ steps.tested.outputs.cache-hit != 'true' }}
+        env:
+          RUN_TIMESTAMP: ${{ inputs.run_timestamp }}
+          CONFIG: ${{ matrix.config }}
+        run: |
+          mkdir -p .tmp
+          cat > .tmp/extensive-ci-edg-base.sh <<EOF
+          export EDG_BASE="${GITHUB_WORKSPACE}/bases/docker/dev-env/${CI_BASE}"
+          EOF
+
+          cat > .tmp/extensive-ci.edgivk <<EOF
+          prefix_source TEST_${CONFIG} ${CI_BUILD_DIR}/environment.sh
+          prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
+          exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
+          EOF
+
+          edg-prefix-env-loader .tmp/extensive-ci.edgivk
+
+      - name: Upload partial elist, elog, and .rt.tar.gz results
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.config }}
+          path: |
+            tests/runs/${{ inputs.run_timestamp }}/**/*.elist
+            tests/runs/${{ inputs.run_timestamp }}/**/*.elog
+            tests/runs/${{ inputs.run_timestamp }}/**/*.rt.tar.gz
+          if-no-files-found: warn
+          retention-days: 1
+
+      # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
+      # the downloaded .gcno files under the build directory's src/. Each leg
+      # saves a gcovr JSON report; the coverage job merges them and uploads
+      # to Codecov. Coverage problems must never fail the test leg, hence
+      # continue-on-error.
+      - name: Install gcovr
+        if: ${{ !cancelled() && steps.tested.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      # cpfe and cpfe-cp compile the same sources; separate function merging
+      # keeps gcovr from rejecting functions seen at different lines. A few
+      # hot loops exceed gcovr's "suspicious hits" threshold; warn about them
+      # instead of failing.
+      - name: Generate coverage report
+        if: ${{ !cancelled() && steps.tested.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        env:
+          CONFIG: ${{ matrix.config }}
+        run: |
+          mkdir -p coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --filter 'src/' \
+            --merge-mode-functions=separate \
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
+            --gcov-ignore-parse-errors=suspicious_hits.warn_once_per_file \
+            -j "$(nproc)" \
+            --json "coverage/${CONFIG}.json" \
+            --print-summary \
+            "${CI_BUILD_DIR}"
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() && hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.config }}
+          path: coverage/${{ matrix.config }}.json
+          if-no-files-found: warn
+          retention-days: 1
+
+      # Record the pass (with its coverage report, so a run that skips edgy
+      # still contributes coverage). Without a report, don't record it.
+      - name: Prepare record of this passing run
+        id: record
+        if: >-
+          ${{ steps.edgy.outcome == 'success' &&
+              hashFiles(format('coverage/{0}.json', matrix.config)) != '' }}
+        env:
+          CONFIG: ${{ matrix.config }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          TESTED_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p .tmp/tested/coverage
+          cp "coverage/${CONFIG}.json" .tmp/tested/coverage/
+          python3 - > .tmp/tested/ci-meta.json <<'EOF'
+          import json, os
+          print(json.dumps({
+            'tested_sha': os.environ['TESTED_SHA'],
+            'run_id': int(os.environ['RUN_ID']),
+            'run_attempt': int(os.environ['RUN_ATTEMPT']),
+          }))
+          EOF
+
+      - name: Save record of this passing run
+        if: ${{ steps.record.outcome == 'success' }}
+        uses: actions/cache/save@v6
+        with:
+          key: ${{ steps.key.outputs.key }}
+          path: .tmp/tested

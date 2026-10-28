@@ -3,16 +3,14 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
-# Check the messages of the new commits pushed to main and of every pull
-# request's commits with edg-check-commit-messages (the same policy the
-# pre-push hook applies, from edgchanges).  Only commits with a violation are
-# reported.
+# Check the messages of every pull request's commits and of every merge queue
+# entry with edg-check-commit-messages (the same policy the pre-push hook
+# applies, from edgchanges).  Only commits with a violation are reported.
 #
 # A pull request is checked from its base commit to its head commit, and a
 # merge queue entry from the branch it is merged into to its tip (so the
-# commits the queue creates are checked too).  A push is checked from the
-# previous tip of main.  If that tip is unavailable (e.g. after a force-push),
-# the job fails rather than check nothing.
+# commits the queue creates are checked too).  Commits land on main only
+# through the merge queue, so pushes to main are not checked again.
 #
 # The checker and the commits come from one checkout of github.sha, the same
 # commit GitHub loads this workflow from.  For a pull request that is the merge
@@ -26,9 +24,6 @@
 name: Commit Messages
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
   merge_group:
 
@@ -63,21 +58,12 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           QUEUE_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           QUEUE_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
-          PUSH_BEFORE_SHA: ${{ github.event.before }}
           ALLOW_MERGE_COMMITS: ${{ vars.ALLOW_MERGE_COMMITS }}
         run: |
           if [[ "${EVENT_NAME}" == pull_request ]]; then
             range=("${PR_BASE_SHA}..${PR_HEAD_SHA}")
-          elif [[ "${EVENT_NAME}" == merge_group ]]; then
-            range=("${QUEUE_BASE_SHA}..${QUEUE_HEAD_SHA}")
-          elif [[ "${PUSH_BEFORE_SHA}" != 0000000000000000000000000000000000000000 ]] &&
-               git cat-file -e "${PUSH_BEFORE_SHA}^{commit}" 2> /dev/null; then
-            range=("${PUSH_BEFORE_SHA}..HEAD")
           else
-            echo "::error::No previous tip of the branch to compare against" \
-                 "(push before: ${PUSH_BEFORE_SHA}); the pushed commits" \
-                 "were not checked."
-            exit 1
+            range=("${QUEUE_BASE_SHA}..${QUEUE_HEAD_SHA}")
           fi
           options=()
           if [[ "${ALLOW_MERGE_COMMITS}" == true ]]; then
