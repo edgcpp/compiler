@@ -9,13 +9,6 @@
 name: Strict Build Check
 
 on:
-  push:
-    branches:
-      - main
-    # The nightly collect-changes job's commits only move Changes entries.
-    paths-ignore:
-      - '**/Changes'
-      - '**/pending_changes/**'
   pull_request:
   merge_group:
 
@@ -165,7 +158,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
+      image: ghcr.io/edgcpp/ci-runner@sha256:da140ca90c420977f187279d7939fe0c7cb3c4b656e5ab2dc0f6b9ac2a43a255
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
@@ -192,7 +185,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
+      image: ghcr.io/edgcpp/ci-runner@sha256:da140ca90c420977f187279d7939fe0c7cb3c4b656e5ab2dc0f6b9ac2a43a255
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
@@ -219,7 +212,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
+      image: ghcr.io/edgcpp/ci-runner@sha256:da140ca90c420977f187279d7939fe0c7cb3c4b656e5ab2dc0f6b9ac2a43a255
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
@@ -246,7 +239,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: ghcr.io/edgcpp/ci-runner@sha256:14b3948c2ce12cfa5472e5a6c468393d15426f3a67685cc35d830ea5db2acdf8
+      image: ghcr.io/edgcpp/ci-runner@sha256:da140ca90c420977f187279d7939fe0c7cb3c4b656e5ab2dc0f6b9ac2a43a255
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"

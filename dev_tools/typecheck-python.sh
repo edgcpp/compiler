@@ -68,6 +68,7 @@ pushd bin/ > /dev/null
   check_types_strict edg-rematerialize-test-run
   check_types_strict edg-run-test
   check_types edg-scrape-compiler
+  check_types_strict edg-test-inputs-hash
   check_types_strict edg-test-run-diff
   check_types_strict edg-test-run-sonar
   check_types edg-walk-tests
@@ -123,6 +124,9 @@ pushd pylibs/ > /dev/null
   popd > /dev/null
   pushd edgtest/ > /dev/null
     check_types_strict __init__.py
+    pushd inputs/ > /dev/null
+      check_types_strict __init__.py
+    popd > /dev/null
     pushd runtest/ > /dev/null
       check_types_strict __init__.py
     popd > /dev/null
