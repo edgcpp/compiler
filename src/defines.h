@@ -304,6 +304,9 @@ Flags to be set for any version that uses the C++ generating back end.
 #ifndef BACK_END_IS_CP_GEN_BE
 #define BACK_END_IS_CP_GEN_BE 0
 #endif /* ifndef BACK_END_IS_CP_GEN_BE */
+#ifndef BACK_END_IS_GCC_GEN_BE
+#define BACK_END_IS_GCC_GEN_BE 0
+#endif /* ifndef BACK_END_IS_GCC_GEN_BE */
 #endif /* ifdef CP_GEN_BE_VERSION */
 
 #ifdef __sun

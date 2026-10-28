@@ -269,6 +269,10 @@ cc_only=0
 #
 fe_only=0
 #
+# When set to 1, use the native GCC (libgccjit) backend directly.
+#
+gcc_backend=${EDG_GCC_BACKEND-0}
+#
 # When set to 1, the front end is run in preprocessing mode only.
 # Among other things, the front end will not create or remove the .ii
 # file when only doing preprocessing
@@ -976,6 +980,9 @@ check_abbreviation()
 --func_prototype_tags
 --g++
 --gcc
+--gcc-be
+--gcc_be
+--gcc_gen_be
 --gcc89_inlining
 --gen_c_clang_version
 --gen_c_gnu_version
@@ -1370,6 +1377,12 @@ process_option()
 #     Run front end only.
       fe_only=1;
       keep_int_file=1;
+      ;;
+    --gcc-be | --gcc_be | --gcc_gen_be)
+#     Use the native libgccjit backend directly.
+      gcc_backend=1;
+      suppress_patch_munch=1;
+      feoptions=$feoptions" --gcc_gen_be";
       ;;
     -c | --compile)
 #     Run front end and cc producing a .o file.
@@ -2890,6 +2903,13 @@ do
       fi
     fi
   fi
+  if [ $gcc_backend -ne 0 -a $preprocessor_only -eq 0 ] ; then
+    if [ $fe_only -ne 0 ] ; then
+      gen_c_option="-S -o $output_file"
+    else
+      gen_c_option="-c -o $output_file"
+    fi
+  fi
   command="$CPFE $EDG_CPFE_DEFAULT_OPTIONS $feoptions $gen_c_option $ii_file_option $ti_file_option $instantiation_dir_option"
   if [ $compile_as_secondary -ne 0 ] ; then
     # Append the dummy primary file name.
@@ -3023,11 +3043,17 @@ do
 #   Execute cc unless explicitly told not to.
 #
   if [ $fe_status -eq 0 ] ; then
-    if [ $fe_only -ne 1 ]
+    if [ $fe_only -ne 1 -a $gcc_backend -eq 0 ]
     then
       # Compile the generate C file.
       try_debug_driver '# Compiling generated C file'
       compile_int_c "$gen_c_file_name" "$output_file" "$gen_c_file_disp_name"
+    elif [ $fe_only -ne 1 -a $gcc_backend -ne 0 ]
+    then
+      rofiles=$rofiles" "$output_file
+      if [ $nm_on_objects -eq 1 ] ; then
+        nm $output_file | $EDG_DECODE
+      fi
     fi
 #
 #   Compile the .int.c files for instantiation files that were generated

@@ -450,8 +450,14 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
           (!is_class_struct_union_type(param_var->type) ||
            is_ptr_to_member_function_constant_expr(arg))) {
         a_type_ptr arg_type = skip_typerefs(arg->type);
-#if BACK_END_IS_C_GEN_BE
-        if (gcc_or_clang_is_generated_code_target &&
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE
+        if ((
+#if BACK_END_IS_GCC_GEN_BE
+             TRUE
+#else /* !BACK_END_IS_GCC_GEN_BE */
+             gcc_or_clang_is_generated_code_target
+#endif /* BACK_END_IS_GCC_GEN_BE */
+             ) &&
             is_cast_operation_node(arg) &&
             is_pointer_type(arg_type) &&
             is_pointer_type(arg->variant.operation.operands->type) &&
@@ -468,7 +474,7 @@ evaluated from left-to-right unless eval_right_to_left is TRUE.
              identical to the function type (and the cast function pointer is
              used to make a call). */
         } else
-#endif /* BACK_END_IS_C_GEN_BE */
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE */
         /* Do not insert code here. */
         {
           /* The argument is constant-valued and the parameter is unmodified.

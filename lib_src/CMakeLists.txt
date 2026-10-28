@@ -43,7 +43,7 @@ set(BARE_FILE_NAMES array_del array_del_aligned array_new
     array_new_aligned array_nodel array_nodel_aligned array_nonew
     array_nonew_aligned array_pdel array_pnew bad_alloc
     del_virt delete delete_aligned delnothrow delnothrow_aligned
-    dtor_list edg_exit eh_util error exception exit guard main
+    dtor_list edg_exit eh_util error exception exit gcc_be_eh_rt guard main
     memzero munch_ctors munch_dtors new new_aligned newhandler
     newnothrow newnothrow_aligned placedel placenew pure_virt rtti
     set_new sized_array_del sized_array_del_aligned sized_del

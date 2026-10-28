@@ -646,7 +646,7 @@ curr_max_member_alignment.
     }  /* if */
   }  /* if */
 #endif /* DEBUG */
-#if BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE
   if (ppp->il_pragma_entry != NULL) {
     /* The C++-generating back end needs to track the current alignment
        in order to generate and revert #pragma pack directives.  (There
@@ -654,7 +654,7 @@ curr_max_member_alignment.
        the prototype instantiation of a template.) */
     ppp->il_pragma_entry->variant.alignment = curr_max_member_alignment;
   }  /* if */
-#endif /* BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE */
   db_exit();
 }  /* pack_pragma */
 
@@ -1203,9 +1203,9 @@ container when that size is smaller than the alignment.
       a_type_ptr  int_type = longest_integer_type_fitting_in_bit_field(field);
       container_size = int_type->size;
       container_alignment = field_alignment_for(int_type);
-#if BACK_END_IS_C_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE
       field->bit_field_alignment_type = int_type;
-#endif /* BACK_END_IS_C_GEN_BE */
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE */
       /* Force alignment. */
       overflow = !do_alignment(&lob->byte_offset, &lob->bit_offset,
                                container_alignment);

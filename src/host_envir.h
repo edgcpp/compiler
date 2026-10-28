@@ -517,6 +517,20 @@ be TRUE in the standalone IL display program.
 #define BACK_END_IS_C_GEN_BE TRUE  /* You can change this. */
 #endif /* ifndef BACK_END_IS_C_GEN_BE */
 
+#ifndef BACK_END_IS_GCC_GEN_BE
+#define BACK_END_IS_GCC_GEN_BE 0 /* Configured by CMake */
+#endif
+
+#if BACK_END_IS_CP_GEN_BE && BACK_END_IS_GCC_GEN_BE
+#undef BACK_END_IS_GCC_GEN_BE
+#define BACK_END_IS_GCC_GEN_BE 0
+#endif
+
+#if BACK_END_IS_GCC_GEN_BE
+#undef BACK_END_IS_C_GEN_BE
+#define BACK_END_IS_C_GEN_BE 0
+#endif
+
 /*
 This switch controls whether a post-pass is done after IL lowering to ensure
 that the types list is in order, in the sense that the C-generating back end
@@ -688,9 +702,9 @@ with a C back end.
 #endif /* defined(DOING_SOURCE_ANALYSIS) && DOING_SOURCE_ANALYSIS */
 #endif /* BACK_END_IS_CP_GEN_BE */
 #endif /* ifndef DO_IL_LOWERING */
-#if BACK_END_IS_C_GEN_BE && !DO_IL_LOWERING
- #error -- IL lowering must be done for the C-generating back end.
-#endif /* BACK_END_IS_C_GEN_BE && !DO_IL_LOWERING */
+#if (BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE) && !DO_IL_LOWERING
+ #error -- IL lowering must be done for the C/GCC-generating back end.
+#endif /* (BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE) && !DO_IL_LOWERING */
 #ifndef ALLOW_CPPCLI_AND_CPPCX_WITH_LOWERING
 #define ALLOW_CPPCLI_AND_CPPCX_WITH_LOWERING FALSE
 #endif /* ALLOW_CPPCLI_AND_CPPCX_WITH_LOWERING */
