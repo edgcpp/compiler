@@ -60,12 +60,38 @@ function(add_edg_cpp_rt_obj_file src_file_name obj_file_name)
     list(APPEND obj_file_deps ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/cpfe)
   endif()
 
+  # eccp runs in the object's directory (which is unique to the target
+  # platform), where --keep_gen_c leaves the generated C file.  Otherwise eccp
+  # would compile that file in a randomly named temporary directory, whose
+  # name would end up in the debug information and make the library
+  # irreproducible.
+  get_filename_component(obj_dir "${obj_file_name}" DIRECTORY)
+
+  # Generate debugging information only for the build types that have it.
+  # For a reproducible build, also record the source and build directories as
+  # relative paths in that information (as is done for the front end in the
+  # top-level CMakeLists.txt).  Each option is wrapped separately so that it
+  # disappears entirely in other build types.
+  set(debug_options "$<${EDG_HAS_DEBUG_INFO}:-g>")
+  if(NOT "$CACHE{EDG_BUILD_IDENTIFIER}" STREQUAL "")
+    list(APPEND debug_options
+      "$<${EDG_HAS_DEBUG_INFO}:--c_to_obj_option>"
+      "$<${EDG_HAS_DEBUG_INFO}:-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=.>"
+      "$<${EDG_HAS_DEBUG_INFO}:--c_to_obj_option>"
+      "$<${EDG_HAS_DEBUG_INFO}:-fdebug-prefix-map=${CMAKE_BINARY_DIR}=build>")
+  endif()
+
   add_custom_command(
     OUTPUT ${obj_file_name}
     COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/eccp
-    # Set the base options
-    --building_runtime --c++23 -g
-    # Set the compile definitons
+    # Set the base options.
+    --building_runtime --c++23
+    # Compile the generated C file in the working directory (see obj_dir
+    # above).
+    --keep_gen_c
+    # Add options related to debug builds (as needed).
+    ${debug_options}
+    # Set the compile definitons.
     -DCHECKING=1 -DDEBUG=1
     ${cmakedef_define_flags}
     # Add include dirs.
@@ -84,13 +110,23 @@ function(add_edg_cpp_rt_obj_file src_file_name obj_file_name)
     -o ${obj_file_name}
     -c ${src_file_name}
     DEPENDS ${obj_file_deps}
+    WORKING_DIRECTORY ${obj_dir}
+    # Drop the debug options whose generator expressions evaluate to nothing
+    # (rather than passing eccp empty arguments).
+    COMMAND_EXPAND_LISTS
   )
 endfunction()
 
 function(add_edg_cpp_rt_target target_name)
-  list(TRANSFORM EDG_CINCLDIR_LIST
-       PREPEND "--sys_include="
-       OUTPUT_VARIABLE edg_cinl_flags)
+  set(edg_cinl_flags "")
+  foreach(edg_cinl_dir IN LISTS EDG_CINCLDIR_LIST)
+    # Skip empty entries (e.g., from a trailing ":" in EDG_CINCLDIR).
+    if(NOT edg_cinl_dir STREQUAL "")
+      get_filename_component(edg_cinl_dir "${edg_cinl_dir}" ABSOLUTE
+                             BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+      list(APPEND edg_cinl_flags "--sys_include=${edg_cinl_dir}")
+    endif()
+  endforeach()
 
   if(UNIX AND NOT APPLE)
     # When building the library on Linux machines, we need to enable g++ mode

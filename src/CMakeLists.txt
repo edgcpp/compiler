@@ -146,6 +146,17 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   endif()
 endif()
 
+# Build identifier
+
+# Replace the build date and time shown by --version (and used to identify
+# precompiled headers) with a fixed string, so that rebuilding the same
+# sources produces the same executables.  (EDG_BUILD_IDENTIFIER is declared in
+# the top-level CMakeLists.txt.)
+if(NOT "$CACHE{EDG_BUILD_IDENTIFIER}" STREQUAL "")
+  add_compile_definitions(
+                     "BUILD_IDENTIFIER=\"$CACHE{EDG_BUILD_IDENTIFIER}\"")
+endif()
+
 # Enable colored output.
 
 if (${FORCE_COLORED_OUTPUT})
@@ -254,3 +265,33 @@ add_custom_target(cpfe-all)
 add_subdirectory(cmake/cpfe)
 add_subdirectory(cmake/cpfe-cp)
 add_subdirectory(cmake/cdisp)
+
+# GCC otherwise seeds some generated names and the gcov stamps in objects and
+# .gcno files with the time of compilation.  The seed should differ for every
+# file compiled, so derive it from each source's path relative to the
+# repository root (which, unlike the absolute path, is the same in every
+# checkout).
+if(NOT "$CACHE{EDG_BUILD_IDENTIFIER}" STREQUAL "" AND
+   CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  function(add_random_seeds_to_targets_in dir)
+    get_property(targets DIRECTORY "${dir}" PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(target IN LISTS targets)
+      get_target_property(sources "${target}" SOURCES)
+      get_target_property(source_dir "${target}" SOURCE_DIR)
+      foreach(source IN LISTS sources)
+        if(source MATCHES "\\.(c|cc|cpp)$")
+          get_filename_component(source_path "${source}" ABSOLUTE
+                                 BASE_DIR "${source_dir}")
+          file(RELATIVE_PATH seed "${CMAKE_SOURCE_DIR}" "${source_path}")
+          set_property(SOURCE "${source}" TARGET_DIRECTORY "${target}"
+                       PROPERTY COMPILE_OPTIONS "-frandom-seed=${seed}")
+        endif()
+      endforeach()
+    endforeach()
+    get_property(subdirs DIRECTORY "${dir}" PROPERTY SUBDIRECTORIES)
+    foreach(subdir IN LISTS subdirs)
+      add_random_seeds_to_targets_in("${subdir}")
+    endforeach()
+  endfunction()
+  add_random_seeds_to_targets_in("${CMAKE_CURRENT_SOURCE_DIR}")
+endif()

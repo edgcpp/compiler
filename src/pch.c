@@ -465,7 +465,7 @@ associated with this compiler version.
 {
   Small_string<PCH_ID_STRING_LENGTH>
                 temp_pch_str("EDG C/C++ version ",VERSION_NUMBER,
-                             " (", build_date, " ", build_time, ")\n");
+                             " (", build_stamp, ")\n");
 
   check_assertion_str2((size_t_arg(temp_pch_str.length()) <
                         size_t_arg(PCH_ID_STRING_LENGTH)),

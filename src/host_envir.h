@@ -2552,12 +2552,6 @@ left undefined.
 */
 
 /*
-The flag DEMO_VERSION_ID can be defined with a string identifying a demo
-version if this is a demo version.  The string is printed on startup with
-the -v option.
-*/
-
-/*
 Flag that provides the default value for null_chars_allowed_in_source,
 which controls whether null (zero) characters are allowed in source lines.
 */

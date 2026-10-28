@@ -26,6 +26,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# A generator expression that is true for the build types that generate
+# debugging information (for use as "$<${EDG_HAS_DEBUG_INFO}:...>").
+set(EDG_HAS_DEBUG_INFO "$<CONFIG:Debug,RelWithDebInfo>")
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   if (UNIX AND NOT APPLE)
@@ -33,8 +37,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     add_link_options("$<$<CONFIG:Release>:-static>")
   endif()
   # If we're building with GCC or any variant of Clang, use -g3 as our debug
-  # flag to include macro information in our debug builds.
-  add_compile_options("$<$<CONFIG:Debug>:-g3>")
+  # flag to include macro information in builds with debugging information.
+  add_compile_options("$<${EDG_HAS_DEBUG_INFO}:-g3>")
 endif()
 
 # Attempt to determine the best linker
@@ -95,6 +99,27 @@ set(EDG_EAGER_REBUILD_LIB FALSE CACHE BOOL
 
 # Support for 32-bit build
 set(32BIT_BUILD FALSE CACHE BOOL "Build cpfe as a 32-bit executable")
+
+# Support for reproducible builds.  A build identifier replaces the build date
+# and time in the front end (see src/CMakeLists.txt).
+set(EDG_BUILD_IDENTIFIER "" CACHE STRING
+    "Build identifier to use in place of the build date and time")
+if(NOT "$CACHE{EDG_BUILD_IDENTIFIER}" STREQUAL "" AND
+   (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+    CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+  # In builds with debugging information, record the source and build
+  # directories as relative paths in that information and in __FILE__, so the
+  # same sources produce the same executables wherever they are checked out
+  # and built.  The build directory is listed last so that it takes precedence
+  # when it is inside the source directory.  (-ffile-prefix-map is avoided
+  # because it also remaps the paths recorded for gcov, which coverage reports
+  # use to find the sources.)
+  add_compile_options(
+      "$<${EDG_HAS_DEBUG_INFO}:-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=.>"
+      "$<${EDG_HAS_DEBUG_INFO}:-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.>"
+      "$<${EDG_HAS_DEBUG_INFO}:-fdebug-prefix-map=${CMAKE_BINARY_DIR}=build>"
+      "$<${EDG_HAS_DEBUG_INFO}:-fmacro-prefix-map=${CMAKE_BINARY_DIR}=build>")
+endif()
 
 # Detect the defaults (macro configuration, EDG_BASE, etc.) for this host and
 # compiler, used when a configuration doesn't specify them.
