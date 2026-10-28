@@ -6472,8 +6472,8 @@ file.
 /* Print a banner. */
   fprintf(f_error,
           "/* Configuration data for Edison Design Group C/C++ Front End */\n"
-          "/* version %s, built on %s at %s. */\n\n",
-          VERSION_NUMBER, build_date, build_time);
+          "/* version %s (%s). */\n\n",
+          VERSION_NUMBER, build_stamp);
 /* Print the values of all configuration macros. */
 #if defined(ABI_CHANGES_FOR_ARRAY_NEW_AND_DELETE)
   define_numeric_valued_macro(ABI_CHANGES_FOR_ARRAY_NEW_AND_DELETE);
@@ -6718,6 +6718,11 @@ file.
 #else /* !defined(BOOL_ENABLING_POSSIBLE) */
   comment_undefined_macro_name(BOOL_ENABLING_POSSIBLE);
 #endif /* defined(BOOL_ENABLING_POSSIBLE) */
+#if defined(BUILD_IDENTIFIER)
+  define_string_valued_macro(BUILD_IDENTIFIER);
+#else /* !defined(BUILD_IDENTIFIER) */
+  comment_undefined_macro_name(BUILD_IDENTIFIER);
+#endif /* defined(BUILD_IDENTIFIER) */
 #if defined(BUILTIN_FUNCTIONS_ENABLED)
   define_string_valued_macro(BUILTIN_FUNCTIONS_ENABLED);
 #else /* !defined(BUILTIN_FUNCTIONS_ENABLED) */
@@ -7819,11 +7824,6 @@ file.
 #else /* !defined(DELETE_CAN_BE_FOLDED_INTO_DTOR) */
   comment_undefined_macro_name(DELETE_CAN_BE_FOLDED_INTO_DTOR);
 #endif /* defined(DELETE_CAN_BE_FOLDED_INTO_DTOR) */
-#if defined(DEMO_VERSION_ID)
-  define_string_valued_macro(DEMO_VERSION_ID);
-#else /* !defined(DEMO_VERSION_ID) */
-  comment_undefined_macro_name(DEMO_VERSION_ID);
-#endif /* defined(DEMO_VERSION_ID) */
 #if defined(DIRECTORY_SEPARATOR)
   define_string_valued_macro(DIRECTORY_SEPARATOR);
 #else /* !defined(DIRECTORY_SEPARATOR) */
@@ -10788,12 +10788,10 @@ Process the arguments on the command line that invoked the compiler.
         /* Print out compiler version. */
         check_assertion(opt_value == TRUE);
         fprintf(f_error,
-                "Edison Design Group C/C++ Front End, version %s (%s %s)\n",
-                VERSION_NUMBER, build_date, build_time);
-        fprintf(f_error, "Copyright 1988-2026 Edison Design Group, Inc.\n");
-#ifdef DEMO_VERSION_ID
-        fprintf(f_error, "Demonstration version for %s\n", DEMO_VERSION_ID);
-#endif /* ifdef DEMO_VERSION_ID */
+                "Edison Design Group C/C++ Front End, version %s (%s)\n",
+                VERSION_NUMBER, build_stamp);
+        fprintf(f_error, "Copyright 1988-2026 Edison Design Group, Inc. "
+                         "and Contributors\n");
         fputc('\n', f_error);
         source_file_name_optional = TRUE;
         break;

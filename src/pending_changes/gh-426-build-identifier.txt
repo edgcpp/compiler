@@ -1,0 +1,18 @@
+//allowed_words: CMake DEDG
+[GH #426]
+Reproducible builds and generated code
+
+The new configuration macro BUILD_IDENTIFIER (with CMake,
+-DEDG_BUILD_IDENTIFIER=<string>) is a string literal that replaces the
+build date and time in the --version and --dump_configuration output and
+in the precompiled header identification string, so rebuilding the same
+sources produces identical executables.  The runtime library is likewise
+reproducible: its archives are deterministic, and its generated C files no
+longer pass through randomly named temporary directories.
+
+Temporaries in generated C and C++ are now named from a per-file counter
+(e.g., "__T1") rather than from IL addresses, so the output no longer
+varies with address space layout randomization.
+
+DEMO_VERSION_ID has been removed, and the --version copyright line now
+credits contributors.

@@ -8563,15 +8563,44 @@ is properly maintained.  Do the output as indicated by octl.
 #endif /* BACK_END_IS_C_GEN_BE */
 
 #if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
-#if DEBUG
 
 STATIC_THREAD uintptr_t
                 unique_id_counter;
                         /* A ticket counter used by
-                           generate_unique_id_for_il_pointer to generate stable
+                           generate_unique_id_for_temporary to generate stable
                            unique identifiers for a given pointer. */
 
-using a_ptr_unique_id_map = Ptr_map<void*, uintptr_t, General_allocator>;
+namespace {
+
+enum class a_temporary_key : uintptr_t {};
+                        /* The key type of ptr_to_unique_id: an IL pointer
+                           converted to an integer.  It is a distinct type
+                           only so that it can have its own hash_ptr. */
+
+inline uintptr_t hash_ptr(a_temporary_key key)
+/*
+Return a hash value for the given temporary key that is appropriate for
+Ptr_map.  IL entries of a given kind tend to be allocated at regular intervals,
+so the default pointer hash (essentially the address itself) clusters badly in
+the low-order bits that Ptr_map uses for indexing.  Mix all the bits of the
+address into the low-order bits (Fibonacci hashing).  The multiplier is the
+golden-ratio constant scaled to the width of uintptr_t (simply truncating the
+64-bit constant would not preserve that ratio).
+*/
+{
+  constexpr unsigned  num_bits_total = sizeof(uintptr_t) * 8;
+  constexpr uintptr_t multiplier =
+                         (uintptr_t)(0x9E3779B97F4A7C15ull >>
+                                     (64 - num_bits_total));
+  uintptr_t           hash = (uintptr_t)key * multiplier;
+
+  return hash ^ (hash >> (num_bits_total / 2));
+}  /* hash_ptr */
+
+}  /* namespace */
+
+using a_ptr_unique_id_map = Ptr_map<a_temporary_key, uintptr_t,
+                                    General_allocator>;
                         /* The type of ptr_to_unique_id used to map an
                            arbitrary pointer to a unique identifier from the
                            unique_id_counter. */
@@ -8580,48 +8609,40 @@ STATIC_THREAD a_ptr_unique_id_map
                 *ptr_to_unique_id;
                         /* A map of a given pointer to its unique identifiers
                            from the unique_id_counter used by
-                           generate_unique_id_for_il_pointer. */
+                           generate_unique_id_for_temporary. */
 
 
 static uintptr_t generate_unique_id_for_temporary(void *ptr)
 /*
-Return an identifier unique to the current translation unit for the given IL
-pointer.
+Return an identifier unique to the current generated file for the given IL
+pointer.  Identifiers are assigned in order of first use, so (unlike the IL
+pointer itself) they do not depend on where the IL happens to be allocated,
+and the generated output is reproducible from run to run.
 */
 {
   uintptr_t result;
 
   if (ptr == NULL) {
     result = 0;
-  } else if (ptr_to_unique_id->get(ptr) == 0) {
-    result = ++unique_id_counter;
-    ptr_to_unique_id->map(ptr, result);
   } else {
-    result = ptr_to_unique_id->get(ptr);
+    a_temporary_key key = (a_temporary_key)(uintptr_t)ptr;
+
+    result = ptr_to_unique_id->get(key);
+    if (result == 0) {
+      result = ++unique_id_counter;
+      ptr_to_unique_id->map(key, result);
+    }  /* if */
   }  /* if */
   return result;
 }  /* generate_unique_id_for_temporary */
 
-#endif /* DEBUG */
 
 a_temp_var_name_buffer form_temporary_name_for_back_end(void *ptr)
 /*
 Return a temporary name generated for the given IL pointer.
 */
 {
-  uintptr_t unique_id;
-
-#if DEBUG
-  if (db_active) {
-    unique_id = generate_unique_id_for_temporary(ptr);
-  } else
-#endif /* DEBUG */
-  /* Do not add code here. */
-  {
-    unique_id = unique_id_for_il_pointer(ptr);
-  }  /* if */
-
-  a_temp_var_name_buffer result("__T", unique_id);
+  a_temp_var_name_buffer result("__T", generate_unique_id_for_temporary(ptr));
   return result;
 }  /* form_temporary_name_for_back_end */
 
@@ -8632,11 +8653,15 @@ Initialize the common logic for a C-like language generating back end.  These
 are initializations that must be redone for each generated file.
 */
 {
-#if DEBUG
   unique_id_counter = 0;
-  ptr_to_unique_id = alloc_general_of_type(a_ptr_unique_id_map);
-  construct(ptr_to_unique_id, /*mask_width=*/10u);
-#endif /* DEBUG */
+  if (ptr_to_unique_id == NULL) {
+    ptr_to_unique_id = alloc_general_of_type(a_ptr_unique_id_map);
+    construct(ptr_to_unique_id, /*mask_width=*/10u);
+  } else {
+    /* Reuse the map from the previous generated file rather than leaving it
+       allocated until general memory is released. */
+    ptr_to_unique_id->clear();
+  }  /* if */
 }  /* il_to_str_back_end_file_init */
 
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
@@ -8651,6 +8676,9 @@ One-time initialization for il_to_str static variables.
 #if BACK_END_IS_CP_GEN_BE
   avail_template_param_mappings = NULL;
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+  ptr_to_unique_id = NULL;
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
 #if BACK_END_IS_C_GEN_BE
 #if LONG_DOUBLE_AS_DOUBLE_IN_GENERATED_C
 #if ISSUE_WARNING_ON_LONG_DOUBLE_AS_DOUBLE

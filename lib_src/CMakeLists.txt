@@ -15,6 +15,16 @@ endif()
 # set the project name
 project(lib_src NONE)
 
+# Create deterministic archives (with zeroed timestamps, owners, and modes) on
+# Linux, where ar and ranlib are expected to be GNU binutils or compatible,
+# so that rebuilding the same sources produces the same libraries.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(CMAKE_CXX_ARCHIVE_CREATE
+      "<CMAKE_AR> qcD <TARGET> <LINK_FLAGS> <OBJECTS>")
+  set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> qD <TARGET> <LINK_FLAGS> <OBJECTS>")
+  set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -D <TARGET>")
+endif()
+
 # Add the default value of EDG_RUNTIME_LIB to the cache.
 if(NOT DEFINED CACHE{EDG_RUNTIME_LIB})
   # Use the same environment variables ECCP will be using.
