@@ -25254,13 +25254,14 @@ that identifies an object or a prvalue that is a pointer to an object.
 }  /* examine_expr_for_auto_object */
 
 
-a_boolean is_glvalue_for_auto_object(an_expr_node_ptr expr,
-                                     a_boolean        *is_temp)
+static a_boolean glvalue_for_auto_object(an_expr_node_ptr expr,
+                                         a_boolean        follow_prvalues,
+                                         a_boolean        *is_temp)
 /*
-Return TRUE if expr is a glvalue whose underlying object is known to
-be an automatic (stack-based) entity.  The safe answer is FALSE.  If the
-underlying entity is a temporary, return *is_temp set to TRUE.  
-is_temp can be NULL if that information is not needed.
+Do the work for is_glvalue_for_auto_object and
+is_glvalue_for_auto_object_or_temp_subobject.  If follow_prvalues is TRUE,
+the traversal continues through class prvalues, so that a subobject of a
+temporary (e.g., "S().x") is found.
 */
 {
   a_boolean is_auto_object = FALSE;
@@ -25271,12 +25272,39 @@ is_temp can be NULL if that information is not needed.
     clear_expr_or_stmt_traversal_block(&tblock);
     tblock.process_expr = examine_expr_for_auto_object;
     tblock.follow_addressing_path = TRUE;
+    tblock.follow_class_rvalue_addressing_path = follow_prvalues;
     traverse_expr(expr, &tblock);
     is_auto_object = tblock.result;
     if (is_temp != NULL) *is_temp = tblock.is_temp;
   }  /* if */
   return is_auto_object;
+}  /* glvalue_for_auto_object */
+
+
+a_boolean is_glvalue_for_auto_object(an_expr_node_ptr expr,
+                                     a_boolean        *is_temp)
+/*
+Return TRUE if expr is a glvalue whose underlying object is known to
+be an automatic (stack-based) entity.  The safe answer is FALSE.  If the
+underlying entity is a temporary, return *is_temp set to TRUE.  
+is_temp can be NULL if that information is not needed.
+*/
+{
+  return glvalue_for_auto_object(expr, /*follow_prvalues=*/FALSE, is_temp);
 }  /* is_glvalue_for_auto_object */
+
+
+a_boolean is_glvalue_for_auto_object_or_temp_subobject(
+                                                   an_expr_node_ptr expr,
+                                                   a_boolean        *is_temp)
+/*
+Like is_glvalue_for_auto_object, but also return TRUE (with *is_temp set to
+TRUE) if expr is a glvalue for a subobject of a class prvalue temporary,
+e.g., "S().x".
+*/
+{
+  return glvalue_for_auto_object(expr, /*follow_prvalues=*/TRUE, is_temp);
+}  /* is_glvalue_for_auto_object_or_temp_subobject */
 
 
 a_boolean is_prvalue_for_auto_object(an_expr_node_ptr expr,

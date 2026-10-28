@@ -6,6 +6,15 @@ allowed in C++26 (P2748).  The front end only issued a warning.  It is now an
 error in C++26 (still a warning when emulating GCC versions before 14 or
 Clang versions before 19, which do the same).  For example, with --c++26:
 
-  const int& f() { return 1; }  // Now an error.
+  struct S { int x; };
+  const int& f() { return 1; }      // Now an error.
+  const int& g() { return S().x; }  // Now an error.
 
-Returning a reference to a local variable is still only a warning.
+Returning a reference to a member of a temporary, as in g, was previously not
+diagnosed at all in the standard (non-GNU, non-Clang) modes; before C++26 it
+now gets the same warning as the other cases.  Returning a reference to a
+local variable is still only a warning.
+
+As P2748 specifies, this does not apply to the conversion checked by
+std::is_convertible (e.g., __is_convertible_to(long, const int&) is still
+true).

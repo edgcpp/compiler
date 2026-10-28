@@ -18,3 +18,8 @@ const int& f5() { int i = 0; return i; }  // Local variable: only a warning.
 // diagnosed as an error.
 int **pp;
 const int *const *const &f6() { return pp; }
+
+// P2748 does not apply to the invented function used for is_convertible.
+static_assert(__is_convertible_to(int, const int&), "");
+static_assert(__is_convertible_to(long, const int&), "");
+static_assert(__is_convertible_to(S, const S&), "");

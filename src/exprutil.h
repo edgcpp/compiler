@@ -3149,6 +3149,10 @@ extern a_boolean still_an_lvalue(a_type_ptr type_before_cast,
 extern a_boolean is_glvalue_for_auto_object(an_expr_node_ptr expr,
                                              a_boolean        *is_temp);
 
+extern a_boolean is_glvalue_for_auto_object_or_temp_subobject(
+                                                   an_expr_node_ptr expr,
+                                                   a_boolean        *is_temp);
+
 extern a_boolean is_prvalue_for_auto_object(an_expr_node_ptr expr,
                                             a_boolean        *is_temp);
 
