@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 16: error: expression must have a constant value
+  static_assert(f() == 0);
+                ^
+"Test_name.c", line 14: note: invalid access to inactive member "R::b" of union (member "R::a" is active)
+    return x.b;
+            ^
+
+1 error detected in the compilation of "Test_name.c".

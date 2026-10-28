@@ -5124,8 +5124,8 @@ within the given complete object).
         elem_size = value_bytes_for_type(ips, etp, &result);
         if (!result) goto done;
         for (k = 0; k<n_elems; k += 1) {
-          init_subobject_to_zero(ips, subobj, etp, complete_obj);
           mark_complete_class_object_if_needed(etp, subobj);
+          init_subobject_to_zero(ips, subobj, etp, complete_obj);
           subobj += elem_size;
         }  /* for */
       }
@@ -5158,8 +5158,8 @@ within the given complete object).
           a_type_ptr    ftp = skip_typerefs(fp->type);
           a_byte_count  offset;
           get_mapped_byte_count(&persistent_map, fp, offset);
-          init_subobject_to_zero(ips, subobj+offset, ftp, complete_obj);
           mark_complete_class_object_if_needed(ftp, subobj+offset);
+          init_subobject_to_zero(ips, subobj+offset, ftp, complete_obj);
         }  /* for */
         for (; bcp != NULL; bcp = bcp->next) {
           if (bcp->direct || bcp->is_virtual) {
@@ -5180,8 +5180,8 @@ within the given complete object).
           a_byte_count  offset;
           a_type_ptr    ftp = skip_typerefs(fp->type);
           get_mapped_byte_count(&persistent_map, fp, offset);
-          init_subobject_to_zero(ips, subobj+offset, ftp, complete_obj);
           mark_complete_class_object_if_needed(ftp, subobj+offset);
+          init_subobject_to_zero(ips, subobj+offset, ftp, complete_obj);
           /* Record the active field. */
           *(a_field_ptr*)subobj = fp;
         } else {
