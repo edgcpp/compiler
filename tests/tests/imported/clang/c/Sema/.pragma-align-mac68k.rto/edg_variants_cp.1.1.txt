@@ -1,0 +1,102 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/pragma-align-mac68k.c", line 19: error: the size of an array must be greater than zero
+  extern int a1_1[__builtin_offsetof(struct s1, f1) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 20: error: the size of an array must be greater than zero
+  extern int a1_2[sizeof(struct s1) == 6 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 21: error: the size of an array must be greater than zero
+  extern int a1_3[__alignof(struct s1) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 28: error: the size of an array must be greater than zero
+  extern int a2_1[__builtin_offsetof(struct s2, f1) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 29: error: the size of an array must be greater than zero
+  extern int a2_2[sizeof(struct s2) == 10 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 30: error: the size of an array must be greater than zero
+  extern int a2_3[__alignof(struct s2) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 37: error: the size of an array must be greater than zero
+  extern int a3_1[__builtin_offsetof(struct s3, f1) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 38: error: the size of an array must be greater than zero
+  extern int a3_2[sizeof(struct s3) == 18 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 39: error: the size of an array must be greater than zero
+  extern int a3_3[__alignof(struct s3) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 48: error: the size of an array must be greater than zero
+  extern int a4_3[__alignof(struct s4) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 55: error: the size of an array must be greater than zero
+  extern int a5_1[__alignof(struct s5) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 60: warning: struct or union declares no named members
+  };
+  ^
+
+"Sema/pragma-align-mac68k.c", line 62: error: the size of an array must be greater than zero
+  extern int a6_1[__alignof(struct s6) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 67: warning: struct or union declares no named members
+  };
+  ^
+
+"Sema/pragma-align-mac68k.c", line 68: error: the size of an array must be greater than zero
+  extern int a7_0[sizeof(struct s7) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 69: error: the size of an array must be greater than zero
+  extern int a7_1[__alignof(struct s7) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 76: error: the size of an array must be greater than zero
+  extern int a8_1[__alignof(struct s8) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 83: error: the size of an array must be greater than zero
+  extern int a9_0[sizeof(struct s9) == 6 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 84: error: the size of an array must be greater than zero
+  extern int a9_1[__alignof(struct s9) == 2 ? 1 : -1];
+                  ^
+
+"Sema/pragma-align-mac68k.c", line 89: error: the size of an array must be greater than zero
+  extern int a10_0[sizeof(struct s10) == 2 ? 1 : -1];
+                   ^
+
+"Sema/pragma-align-mac68k.c", line 90: error: the size of an array must be greater than zero
+  extern int a10_1[__alignof(struct s10) == 2 ? 1 : -1];
+                   ^
+
+"Sema/pragma-align-mac68k.c", line 97: error: the size of an array must be greater than zero
+  extern int a11_1[__builtin_offsetof(struct s11, f1) == 2 ? 1 : -1];
+                   ^
+
+"Sema/pragma-align-mac68k.c", line 98: error: the size of an array must be greater than zero
+  extern int a11_2[sizeof(struct s11) == 10 ? 1 : -1];
+                   ^
+
+"Sema/pragma-align-mac68k.c", line 99: error: the size of an array must be greater than zero
+  extern int a11_3[__alignof(struct s11) == 2 ? 1 : -1];
+                   ^
+
+"Sema/pragma-align-mac68k.c", line 110: error: the size of an array must be greater than zero
+    extern int a12[sizeof(struct s12) == 6 ? 1 : -1];
+                   ^
+
+23 errors detected in the compilation of "Test_name.c".

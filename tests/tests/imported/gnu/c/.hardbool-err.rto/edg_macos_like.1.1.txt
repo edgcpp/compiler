@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "__hardbool__"
+  typedef _Bool __attribute__ ((__hardbool__))
+                                ^
+
+"Test_name.c", line 9: warning: unknown attribute "__hardbool__"
+  typedef double __attribute__ ((__hardbool__))
+                                 ^
+
+"Test_name.c", line 12: warning: unknown attribute "__hardbool__"
+  typedef _Complex int __attribute__ ((__hardbool__))
+                                       ^
+
+"Test_name.c", line 12: error: _Complex can only be used with floating-point types
+  typedef _Complex int __attribute__ ((__hardbool__))
+  ^
+
+"Test_name.c", line 16: warning: unknown attribute "__hardbool__"
+  typedef enum x __attribute__ ((__hardbool__))
+                                 ^
+
+"Test_name.c", line 20: warning: unknown attribute "__hardbool__"
+  typedef struct s __attribute__ ((__hardbool__))
+                                   ^
+
+"Test_name.c", line 23: warning: unknown attribute "__hardbool__"
+  typedef int __attribute__ ((__hardbool__ (0, 0)))
+                              ^
+
+"Test_name.c", line 26: warning: unknown attribute "__hardbool__"
+  typedef int __attribute__ ((__hardbool__ (4, 16))) hb4x;
+                              ^
+
+"Test_name.c", line 32: warning: unknown attribute "vector_size"
+  hb4x __attribute__ ((vector_size (4 * sizeof (hb4x))))
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

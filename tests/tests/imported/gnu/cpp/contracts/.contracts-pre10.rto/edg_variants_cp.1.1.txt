@@ -1,0 +1,146 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./contracts/contracts-pre10.C", line 7: error: expected a ","
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre10.C", line 7: error: expected a "]"
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre10.C", line 7: error: expected a ";"
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre10.C", line 10: error: expected a ","
+    int g(int a) [[ pre: a > 0 ]]
+                       ^
+
+"./contracts/contracts-pre10.C", line 10: error: expected a "]"
+    int g(int a) [[ pre: a > 0 ]]
+                       ^
+
+"./contracts/contracts-pre10.C", line 10: error: expected a ";"
+    int g(int a) [[ pre: a > 0 ]]
+                       ^
+
+"./contracts/contracts-pre10.C", line 16: warning: parsing restarts here after previous syntax error
+    int f_arg(T a) [[ pre: a > 0 ]];
+                                   ^
+
+"./contracts/contracts-pre10.C", line 19: error: expected a ","
+    int g_arg(T a) [[ pre: a > 0 ]]
+                         ^
+
+"./contracts/contracts-pre10.C", line 19: error: expected a "]"
+    int g_arg(T a) [[ pre: a > 0 ]]
+                         ^
+
+"./contracts/contracts-pre10.C", line 19: error: expected a ";"
+    int g_arg(T a) [[ pre: a > 0 ]]
+                         ^
+
+"./contracts/contracts-pre10.C", line 25: warning: parsing restarts here after previous syntax error
+    T f_ret(int a) [[ pre: a > 0 ]];
+                                   ^
+
+"./contracts/contracts-pre10.C", line 28: error: expected a ","
+    T g_ret(int a) [[ pre: a > 0 ]]
+                         ^
+
+"./contracts/contracts-pre10.C", line 28: error: expected a "]"
+    T g_ret(int a) [[ pre: a > 0 ]]
+                         ^
+
+"./contracts/contracts-pre10.C", line 28: error: expected a ";"
+    T g_ret(int a) [[ pre: a > 0 ]]
+                         ^
+
+"./contracts/contracts-pre10.C", line 32: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"./contracts/contracts-pre10.C", line 41: error: class "M" has no member "f_arg"
+  int M::f_arg(T a)
+         ^
+
+"./contracts/contracts-pre10.C", line 47: error: class "M" has no member "f_ret"
+  T M::f_ret(int a)
+       ^
+
+"./contracts/contracts-pre10.C", line 56: error: expected a ","
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre10.C", line 56: error: expected a "]"
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre10.C", line 56: error: expected a ";"
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre10.C", line 59: error: expected a ","
+    int g(int a) [[ pre: a > 0 ]]
+                       ^
+
+"./contracts/contracts-pre10.C", line 59: error: expected a "]"
+    int g(int a) [[ pre: a > 0 ]]
+                       ^
+
+"./contracts/contracts-pre10.C", line 59: error: expected a ";"
+    int g(int a) [[ pre: a > 0 ]]
+                       ^
+
+"./contracts/contracts-pre10.C", line 63: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"./contracts/contracts-pre10.C", line 90: error: class "M" has no member "f_arg"
+      printf ("m.f_arg(-10): %d\n", m.f_arg(-10));
+                                      ^
+
+"./contracts/contracts-pre10.C", line 91: error: class "M" has no member "f_arg"
+      printf ("m.f_arg(-11.5): %d\n", m.f_arg(-11.5));
+                                        ^
+
+"./contracts/contracts-pre10.C", line 92: error: class "M" has no member "f_arg"
+      printf ("m.f_arg(10): %d\n", m.f_arg(10));
+                                     ^
+
+"./contracts/contracts-pre10.C", line 93: error: class "M" has no member "f_arg"
+      printf ("m.f_arg(11.5): %d\n", m.f_arg(11.5));
+                                       ^
+
+"./contracts/contracts-pre10.C", line 102: error: class "M" has no member "f_ret"
+      printf ("m.f_ret<int>(-10): %d\n", m.f_ret<int>(-10));
+                                           ^
+
+"./contracts/contracts-pre10.C", line 102: error: type name is not allowed
+      printf ("m.f_ret<int>(-10): %d\n", m.f_ret<int>(-10));
+                                                 ^
+
+"./contracts/contracts-pre10.C", line 103: error: class "M" has no member "f_ret"
+      printf ("m.f_ret<double>(-11.5): %f\n", m.f_ret<double>(-11.5));
+                                                ^
+
+"./contracts/contracts-pre10.C", line 103: error: type name is not allowed
+      printf ("m.f_ret<double>(-11.5): %f\n", m.f_ret<double>(-11.5));
+                                                      ^
+
+"./contracts/contracts-pre10.C", line 104: error: class "M" has no member "f_ret"
+      printf ("m.f_ret<int>(10): %d\n", m.f_ret<int>(10));
+                                          ^
+
+"./contracts/contracts-pre10.C", line 104: error: type name is not allowed
+      printf ("m.f_ret<int>(10): %d\n", m.f_ret<int>(10));
+                                                ^
+
+"./contracts/contracts-pre10.C", line 105: error: class "M" has no member "f_ret"
+      printf ("m.f_ret<double>(11.5): %f\n", m.f_ret<double>(11.5));
+                                               ^
+
+"./contracts/contracts-pre10.C", line 105: error: type name is not allowed
+      printf ("m.f_ret<double>(11.5): %f\n", m.f_ret<double>(11.5));
+                                                     ^
+
+32 errors detected in the compilation of "Test_name.c".

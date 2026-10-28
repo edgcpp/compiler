@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -DTEST_ONE Test_name.c
+"Test_name.c", line 62: warning: variable "x" was declared but never referenced
+    ATTR int x = 42;                     // expected-error {{only applies to}}
+             ^
+
+"Test_name.c", line 85: warning: variable "local_init" was declared but never referenced
+    ATTR static const int &local_init = non_global; // expected-error {{variable does not have a constant initializer}}
+                           ^
+
+"Test_name.c", line 93: warning: variable "global_init" was declared but never referenced
+    ATTR static const int &global_init = glvalue_int;
+                           ^
+
+"Test_name.c", line 94: warning: variable "temp_init" was declared but never referenced
+    ATTR static const int &temp_init = 42;
+                           ^
+
+"Test_name.c", line 155: warning: variable "pod" was declared but never referenced
+    ATTR static PODType pod; // expected-error {{variable does not have a constant initializer}}
+                        ^
+
+"Test_name.c", line 169: warning: variable "static_lit" was declared but never referenced
+    ATTR static LitType static_lit = l;
+                        ^
+
+"Test_name.c", line 176: warning: variable "tls" was declared but never referenced
+    ATTR thread_local LitType tls = 42;
+                              ^
+
+"Test_name.c", line 255: warning: variable "static_local" was declared but never referenced
+    ATTR static int static_local = 42;
+                    ^
+
+"Test_name.c", line 256: warning: variable "static_local2" was declared but never referenced
+    ATTR static int static_local2; // zero-initialization takes place
+                    ^
+
+"Test_name.c", line 258: warning: variable "tl_local" was declared but never referenced
+    ATTR thread_local int tl_local = 42;
+                          ^
+

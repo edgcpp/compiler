@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: nonstandard form for taking the address of a member function
+    A () { foo.~T (); }	// { dg-error "10:invalid use of member function|expected" }
+           ^
+
+"Test_name.c", line 10: error: invalid destructor name for type "A::T &(A::*)()" (aka "int &(A::*)()")
+    A () { foo.~T (); }	// { dg-error "10:invalid use of member function|expected" }
+               ^
+
+"Test_name.c", line 16: error: nonstandard form for taking the address of a member function
+    B () { foo.~T (); }	// { dg-error "10:invalid use of member" }
+           ^
+
+"Test_name.c", line 42: error: nonstandard form for taking the address of a member function
+    E () { foo.~U (); }	// { dg-error "10:invalid use of member" }
+           ^
+
+"Test_name.c", line 42: error: invalid destructor name for type "T &(E<T>::*)()"
+    E () { foo.~U (); }	// { dg-error "10:invalid use of member" }
+               ^
+
+"Test_name.c", line 16: error: invalid destructor name for type "int &(B<int>::*)()"
+    B () { foo.~T (); }	// { dg-error "10:invalid use of member" }
+               ^
+          detected during instantiation of "B<T>::B() [with T=int]" at line 19
+
+"Test_name.c", line 24: error: invalid destructor name for type "int"
+    C () { t.~S (); }	// { dg-error "13:is not of type" }
+             ^
+          detected during instantiation of "C<T, S>::C() [with T=int, S=long]" at line 27
+
+"Test_name.c", line 33: error: invalid destructor name for type "int"
+    D () { t.~U (); }	// { dg-error "10:is not of type" }
+             ^
+          detected during instantiation of "D<T>::D() [with T=int]" at line 36
+
+8 errors detected in the compilation of "Test_name.c".

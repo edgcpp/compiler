@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 8: error: invalid size for bit field
+    int a : -1; // expected-error{{bit-field 'a' has negative width}}
+            ^
+
+"Test_name.c", line 10: error: invalid size for bit field
+    int b : 33; // expected-error{{width of bit-field 'b' (33 bits) exceeds the width of its type (32 bits)}}
+            ^
+
+"Test_name.c", line 12: error: expression must be an integral constant expression
+    int c : (1 + 0.25); // expected-error{{integer constant expression must have integer type}}
+            ^
+
+"Test_name.c", line 15: error: zero-length bit field must be unnamed
+    int e : 0;  // expected-error {{bit-field 'e' has zero width}}
+        ^
+
+"Test_name.c", line 17: error: invalid type for a bit field
+    float xx : 4;  // expected-error {{bit-field 'xx' has non-integral type}}
+    ^
+
+"Test_name.c", line 20: error: incomplete type "enum e0" is not allowed
+    enum e0 f : 1; // expected-error {{field has incomplete type 'enum e0'}}
+            ^
+
+"Test_name.c", line 25: error: invalid size for bit field
+    char : 10;      // expected-error {{width of anonymous bit-field (10 bits) exceeds the width of its type (8 bits)}}
+           ^
+
+"Test_name.c", line 26: error: invalid size for bit field
+    unsigned : -2;  // expected-error {{anonymous bit-field has negative width (-2)}}
+               ^
+
+"Test_name.c", line 27: error: invalid type for a bit field
+    float : 12;     // expected-error {{anonymous bit-field has non-integral type 'float'}}
+    ^
+
+"Test_name.c", line 44: error: invalid type for a bit field
+    double : 2; // expected-error{{anonymous bit-field has non-integral type 'double'}}
+    ^
+
+"Test_name.c", line 45: warning: struct or union declares no named members
+  };
+  ^
+
+"Test_name.c", line 53: error: operand of sizeof may not be a bit field
+    (void) sizeof(t->bitX); // expected-error {{invalid application of 'sizeof' to bit-field}}
+                 ^
+
+"Test_name.c", line 54: error: operand of sizeof may not be a bit field
+    (void) sizeof((t->bitY)); // expected-error {{invalid application of 'sizeof' to bit-field}}
+                 ^
+
+"Test_name.c", line 67: warning: integer conversion resulted in a change of sign
+  struct Test5 sometest5 = {-1};
+                            ^
+
+"Test_name.c", line 76: error: invalid redeclaration of type name "Signed" (declared at line 63)
+  typedef __typeof__(+(++t5.n)) Signed; // FIXME: Increment is equivalent to compound-assignment.
+                                ^
+
+"Test_name.c", line 83: error: expected a declaration
+    : 0.0; // expected-error{{type name requires a specifier or qualifier}}
+    ^
+
+"Test_name.c", line 84: warning: struct or union declares no named members
+  };
+  ^
+
+"Test_name.c", line 87: warning: function "implicitly_declare_function" declared implicitly
+    int n : 1 ? 1 : implicitly_declare_function(); // expected-error {{call to undeclared function 'implicitly_declare_function'; ISO C99 and later do not support implicit function declarations}}
+                    ^
+
+14 errors detected in the compilation of "Test_name.c".

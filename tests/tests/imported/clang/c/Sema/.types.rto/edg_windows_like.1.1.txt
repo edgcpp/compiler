@@ -1,0 +1,134 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 14: error: "restrict" is not allowed
+  restrict S y; // expected-warning {{'restrict' qualifier on an array of pointers is a C23 extension}}
+  ^
+
+"Test_name.c", line 18: warning: variable "s" was declared but never referenced
+    __int128_t s;
+               ^
+
+"Test_name.c", line 19: warning: variable "t" was declared but never referenced
+    __uint128_t t;
+                ^
+
+"Test_name.c", line 24: warning: variable "__int128_t" was declared but never referenced
+    int __int128_t;
+        ^
+
+"Test_name.c", line 25: warning: variable "__uint128_t" was declared but never referenced
+    int __uint128_t;
+        ^
+
+"Test_name.c", line 32: error: invalid combination of type specifiers
+    long unsigned __int128 k; // expected-error {{'long __int128' is invalid}}
+                  ^
+
+"Test_name.c", line 33: error: invalid combination of type specifiers
+    int __int128; // expected-error {{cannot combine with previous}} expected-warning {{does not declare anything}}
+        ^
+
+"Test_name.c", line 34: warning: missing return statement at end of non-void function "c"
+  }
+  ^
+
+"Test_name.c", line 30: warning: variable "i" was declared but never referenced
+    __int128 i;
+             ^
+
+"Test_name.c", line 31: warning: variable "j" was declared but never referenced
+    unsigned __int128 j;
+                      ^
+
+"Test_name.c", line 38: error: invalid redeclaration of type name "check_int_128" (declared at line 36)
+  typedef int check_int_128; // expected-error {{different types ('int' vs '__int128_t' (aka '__int128'))}}
+              ^
+
+"Test_name.c", line 42: error: invalid redeclaration of type name "check_uint_128" (declared at line 40)
+  typedef int check_uint_128; // expected-error {{different types ('int' vs '__uint128_t' (aka 'unsigned __int128'))}}
+              ^
+
+"Test_name.c", line 51: error: declaration is incompatible with "int j[4]" (declared at line 50)
+  int j[42];   // expected-error {{redefinition of 'j' with a different type: 'int[42]' vs 'int[4]'}}
+      ^
+
+"Test_name.c", line 53: error: identifier "_Decimal32" is undefined
+  _Decimal32 x;  // expected-error {{GNU decimal type extension not supported}}
+  ^
+
+"Test_name.c", line 55: warning: unknown attribute "vector_size"
+  int __attribute__ ((vector_size (8), vector_size (8))) v;  // expected-error {{invalid vector element type}}
+                      ^
+
+"Test_name.c", line 55: warning: unknown attribute "vector_size"
+  int __attribute__ ((vector_size (8), vector_size (8))) v;  // expected-error {{invalid vector element type}}
+                                       ^
+
+"Test_name.c", line 58: warning: variable "c" was declared but never referenced
+    char c = (char __attribute__((aligned(8)))) i; // expected-warning {{'aligned' attribute ignored when parsing type}}
+         ^
+
+"Test_name.c", line 67: warning: variable "c" was declared but never referenced
+    char c = (char __attribute__((may_alias))) i;
+         ^
+
+"Test_name.c", line 71: warning: unknown attribute "vector_size"
+  int __attribute__((vector_size(123456))) v1;
+                     ^
+
+"Test_name.c", line 72: warning: unknown attribute "vector_size"
+  int __attribute__((vector_size(0x1000000000))) v2;         // expected-error {{vector size too large}}
+                     ^
+
+"Test_name.c", line 73: warning: unknown attribute "vector_size"
+  int __attribute__((vector_size((__int128_t)1 << 100))) v3; // expected-error {{vector size too large}}
+                     ^
+
+"Test_name.c", line 74: warning: unknown attribute "vector_size"
+  int __attribute__((vector_size(0))) v4;                    // expected-error {{zero vector size}}
+                     ^
+
+"Test_name.c", line 75: warning: unknown attribute "ext_vector_type"
+  typedef int __attribute__((ext_vector_type(123456))) e1;
+                             ^
+
+"Test_name.c", line 76: warning: unknown attribute "ext_vector_type"
+  typedef int __attribute__((ext_vector_type(0x100000000))) e2;      // expected-error {{vector size too large}}
+                             ^
+
+"Test_name.c", line 77: warning: unknown attribute "vector_size"
+  typedef int __attribute__((vector_size((__int128_t)1 << 100))) e3; // expected-error {{vector size too large}}
+                             ^
+
+"Test_name.c", line 78: warning: unknown attribute "ext_vector_type"
+  typedef int __attribute__((ext_vector_type(0))) e4;                // expected-error {{zero vector size}}
+                             ^
+
+"Test_name.c", line 81: warning: unknown attribute "vector_size"
+  enum { e_2 } x3 __attribute__((vector_size(64))); // expected-error {{invalid vector element type}}
+                                 ^
+
+"Test_name.c", line 83: warning: unknown attribute "ext_vector_type"
+  int x4 __attribute__((ext_vector_type(64)));
+                        ^
+
+"Test_name.c", line 85: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__ ((ext_vector_type(32),__aligned__(32))) unsigned char uchar32;
+                          ^
+
+"Test_name.c", line 89: error: expression must have struct or union type but it has type "uchar32" (aka "unsigned char")
+      r.s[ 1234 ] = 1; // expected-error {{illegal vector component name 's'}}
+      ^
+
+"Test_name.c", line 92: error: expected an identifier
+  int &*_Atomic null_type_0; // expected-error {{expected identifier or '('}}
+      ^
+
+"Test_name.c", line 93: error: expected an identifier
+  int &*__restrict__ null_type_1; // expected-error {{expected identifier or '('}}
+      ^
+
+"Test_name.c", line 94: error: expected an identifier
+  int ^_Atomic null_type_2; // expected-error {{block pointer to non-function type is invalid}}
+      ^
+
+11 errors detected in the compilation of "Test_name.c".

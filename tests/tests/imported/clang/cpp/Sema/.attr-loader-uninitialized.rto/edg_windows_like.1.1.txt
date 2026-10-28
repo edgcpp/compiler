@@ -1,0 +1,126 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "loader_uninitialized"
+  int good __attribute__((loader_uninitialized));
+                          ^
+
+"Test_name.c", line 6: warning: unknown attribute "loader_uninitialized"
+  static int local_ok __attribute__((loader_uninitialized));
+                                     ^
+
+"Test_name.c", line 7: warning: unknown attribute "visibility"
+  int hidden_ok __attribute__((visibility("hidden"))) __attribute__((loader_uninitialized));
+                               ^
+
+"Test_name.c", line 7: warning: unknown attribute "loader_uninitialized"
+  int hidden_ok __attribute__((visibility("hidden"))) __attribute__((loader_uninitialized));
+                                                                     ^
+
+"Test_name.c", line 9: warning: unknown attribute "loader_uninitialized"
+  const int still_cant_be_const __attribute__((loader_uninitialized));
+                                               ^
+
+"Test_name.c", line 9: error: const variable "still_cant_be_const" requires an initializer
+  const int still_cant_be_const __attribute__((loader_uninitialized));
+                                                                     ^
+
+"Test_name.c", line 10: warning: unknown attribute "loader_uninitialized"
+  extern int external_rejected __attribute__((loader_uninitialized));
+                                              ^
+
+"Test_name.c", line 14: warning: unknown attribute "loader_uninitialized"
+  extern S incomplete_external_rejected __attribute__((loader_uninitialized));
+                                                       ^
+
+"Test_name.c", line 17: warning: unknown attribute "loader_uninitialized"
+  int noargs __attribute__((loader_uninitialized(0)));
+                            ^
+
+"Test_name.c", line 20: warning: unknown attribute "loader_uninitialized"
+  int init_rejected __attribute__((loader_uninitialized)) = 42;
+                                   ^
+
+"Test_name.c", line 23: warning: unknown attribute "loader_uninitialized"
+  void func() __attribute__((loader_uninitialized))
+                             ^
+
+"Test_name.c", line 26: warning: unknown attribute "loader_uninitialized"
+    int local __attribute__((loader_uninitialized));
+                             ^
+
+"Test_name.c", line 29: warning: unknown attribute "loader_uninitialized"
+    static int sl __attribute__((loader_uninitialized));
+                                 ^
+
+"Test_name.c", line 26: warning: variable "local" was declared but never referenced
+    int local __attribute__((loader_uninitialized));
+        ^
+
+"Test_name.c", line 29: warning: variable "sl" was declared but never referenced
+    static int sl __attribute__((loader_uninitialized));
+               ^
+
+"Test_name.c", line 33: warning: unknown attribute "loader_uninitialized"
+    __attribute__((loader_uninitialized)) int field;
+                   ^
+
+"Test_name.c", line 36: warning: unknown attribute "loader_uninitialized"
+    static __attribute__((loader_uninitialized)) int sfield;
+                          ^
+
+"Test_name.c", line 38: warning: unknown attribute "loader_uninitialized"
+  } __attribute__((loader_uninitialized));
+                   ^
+
+"Test_name.c", line 41: warning: unknown attribute "loader_uninitialized"
+  int redef_attr_first __attribute__((loader_uninitialized));
+                                      ^
+
+"Test_name.c", line 42: error: variable "redef_attr_first" has already been defined (previous definition at line 41)
+  int redef_attr_first;
+      ^
+
+"Test_name.c", line 47: warning: unknown attribute "loader_uninitialized"
+  int redef_attr_second __attribute__((loader_uninitialized));
+                                       ^
+
+"Test_name.c", line 47: error: variable "redef_attr_second" has already been defined (previous definition at line 46)
+  int redef_attr_second __attribute__((loader_uninitialized));
+      ^
+
+"Test_name.c", line 55: warning: unknown attribute "loader_uninitialized"
+  trivial default_ok __attribute__((loader_uninitialized));
+                                    ^
+
+"Test_name.c", line 56: warning: unknown attribute "loader_uninitialized"
+  trivial value_rejected  __attribute__((loader_uninitialized)) {};
+                                         ^
+
+"Test_name.c", line 64: warning: unknown attribute "loader_uninitialized"
+  nontrivial needs_trivial_ctor __attribute__((loader_uninitialized));
+                                               ^
+
+"Test_name.c", line 68: warning: unknown attribute "loader_uninitialized"
+  Incomplete incomplete __attribute__((loader_uninitialized));
+                                       ^
+
+"Test_name.c", line 68: error: incomplete type "Incomplete" is not allowed
+  Incomplete incomplete __attribute__((loader_uninitialized));
+             ^
+
+"Test_name.c", line 72: warning: unknown attribute "loader_uninitialized"
+  struct Incomplete s_incomplete __attribute__((loader_uninitialized));
+                                                ^
+
+"Test_name.c", line 72: error: incomplete type "Incomplete" is not allowed
+  struct Incomplete s_incomplete __attribute__((loader_uninitialized));
+                    ^
+
+"Test_name.c", line 6: warning: variable "local_ok" was declared but never referenced
+  static int local_ok __attribute__((loader_uninitialized));
+             ^
+
+"Test_name.c", line 9: warning: variable "still_cant_be_const" was declared but never referenced
+  const int still_cant_be_const __attribute__((loader_uninitialized));
+            ^
+
+5 errors detected in the compilation of "Test_name.c".

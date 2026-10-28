@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=2 --c++23 -DNEG Test_name.c
+"Test_name.c", line 20: error: an explicit "this" function requires a selector operand
+          f(B{});    // EXPECT: error
+          ^
+
+"Test_name.c", line 21: error: an explicit "this" function requires a selector operand
+          (f)(B{});  // EXPECT: error
+          ^
+
+"Test_name.c", line 22: error: forming the address of an explicit "this" function requires the "&" operator
+          (+f)(B{}); // EXPECT: error
+            ^
+
+"Test_name.c", line 29: error: expression must have arithmetic or unscoped enum type
+          (+m)(0);  // EXPECT: error
+            ^
+
+"Test_name.c", line 36: error: a pointer to a bound function may only be used to call the function
+      auto f = b.f; // EXPECT: error
+                 ^
+
+5 errors detected in the compilation of "Test_name.c".

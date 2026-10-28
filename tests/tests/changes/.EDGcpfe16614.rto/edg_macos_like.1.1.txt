@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang Test_name.c
+"Test_name.c", line 14: warning: unknown attribute "ext_vector_type"
+  typedef float float4 __attribute__((ext_vector_type(4)));
+                                      ^
+
+"Test_name.c", line 15: warning: unknown attribute "ext_vector_type"
+  typedef unsigned int uint4 __attribute__((ext_vector_type(4)));
+                                            ^
+
+"Test_name.c", line 17: error: a value of type "void" cannot be assigned to an entity of type "float4" (aka "float")
+    *A = __builtin_shufflevector(x, mask);
+       ^
+
+1 error detected in the compilation of "Test_name.c".

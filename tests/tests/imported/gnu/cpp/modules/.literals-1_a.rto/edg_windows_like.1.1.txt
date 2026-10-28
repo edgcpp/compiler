@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"Test_name.c", line 21: error: _Complex can only be used with floating-point types
+  using cplx_i = __complex__ int;
+                 ^
+
+"Test_name.c", line 43: warning: unknown attribute "vector_size"
+  using vec = int __attribute__((vector_size (sizeof (int) * 4)));
+                                 ^
+
+"Test_name.c", line 47: error: too many initializer values
+    return (vec){1,7,3,9}; // Not an arithmetic series
+                   ^
+
+"Test_name.c", line 52: error: too many initializer values
+    return (vec){1,2,3,4}; // An arithmetic series
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

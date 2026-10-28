@@ -1,0 +1,69 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"SemaCXX/shift.cpp", line 22: warning: shift count is negative
+    c = 1 << -1;
+             ^
+
+"SemaCXX/shift.cpp", line 23: warning: shift count is negative
+    c = 1 >> -1;
+             ^
+
+"SemaCXX/shift.cpp", line 24: warning: shift count is too large
+    c = 1 << (unsigned)-1;
+             ^
+
+"SemaCXX/shift.cpp", line 26: warning: shift count is too large
+    c = 1 >> (unsigned)-1;
+             ^
+
+"SemaCXX/shift.cpp", line 32: warning: shift count is negative
+    c <<= -1;
+          ^
+
+"SemaCXX/shift.cpp", line 33: warning: shift count is negative
+    c >>= -1;
+          ^
+
+"SemaCXX/shift.cpp", line 34: warning: shift count is too large
+    c <<= 999999;
+          ^
+
+"SemaCXX/shift.cpp", line 35: warning: shift count is too large
+    c >>= 999999;
+          ^
+
+"SemaCXX/shift.cpp", line 36: warning: shift count is too large
+    c <<= 8;
+          ^
+
+"SemaCXX/shift.cpp", line 37: warning: shift count is too large
+    c >>= 8;
+          ^
+
+"SemaCXX/shift.cpp", line 38: warning: shift count is too large
+    c <<= 8 +1;
+          ^
+
+"SemaCXX/shift.cpp", line 39: warning: shift count is too large
+    c >>= 8 +1;
+          ^
+
+"SemaCXX/shift.cpp", line 42: warning: variable "i" was set but never used
+    int i;
+        ^
+
+"SemaCXX/shift.cpp", line 51: warning: variable "u" was set but never used
+    unsigned u;
+             ^
+
+"SemaCXX/shift.cpp", line 55: warning: variable "lli" was set but never used
+    long long int lli;
+                  ^
+
+"SemaCXX/shift.cpp", line 71: warning: shift count is too large
+      (void) (x >> 80);
+                   ^
+
+"SemaCXX/shift.cpp", line 72: warning: shift count is too large
+    (void) (x >> 80);
+                 ^
+

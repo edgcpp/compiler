@@ -1,0 +1,126 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 15: error: default argument is not allowed
+    using A = void(int n = 0); // expected-error {{default arguments can only be specified for parameters in a function declaration}}
+                         ^
+
+"Test_name.c", line 16: warning: "inline" is not allowed
+    using B = inline void(int n); // expected-error {{type name does not allow function specifier}}
+              ^
+
+"Test_name.c", line 17: error: invalid specifier outside a class declaration
+    using C = virtual void(int n); // expected-error {{type name does not allow function specifier}}
+              ^
+
+"Test_name.c", line 18: error: "explicit" is not allowed
+    using D = explicit void(int n); // expected-error {{type name does not allow function specifier}}
+              ^
+
+"Test_name.c", line 22: error: "constexpr" is not valid here
+    using H = constexpr int; // expected-error {{type name does not allow constexpr specifier}}
+              ^
+
+"Test_name.c", line 29: error: qualified name is not allowed
+    using ::T = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+          ^
+
+"Test_name.c", line 31: error: a class or namespace qualified name is required
+    using typename U = void; // expected-error {{name defined in alias declaration must be an identifier}}
+                   ^
+
+"Test_name.c", line 31: error: expected a ";"
+    using typename U = void; // expected-error {{name defined in alias declaration must be an identifier}}
+                     ^
+
+"Test_name.c", line 32: error: the global scope has no "V"
+    using typename ::V = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                     ^
+
+"Test_name.c", line 32: error: expected a ";"
+    using typename ::V = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                       ^
+
+"Test_name.c", line 33: error: the global scope has no "operator bool"
+    using typename ::operator bool = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                     ^
+
+"Test_name.c", line 33: error: expected a ";"
+    using typename ::operator bool = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                                   ^
+
+"Test_name.c", line 40: error: expression must have a constant value
+    using T = int[n]; // expected-error {{variable length array declaration not allowed at file scope}} \
+                  ^
+"Test_name.c", line 40: note: the value of variable "VariableLengthArrays::n" (declared at line 39) cannot be used as a constant
+    using T = int[n]; // expected-error {{variable length array declaration not allowed at file scope}} \
+                  ^
+
+"Test_name.c", line 40: error: invalid redeclaration of type name "VariableLengthArrays::T" (declared at line 37)
+    using T = int[n]; // expected-error {{variable length array declaration not allowed at file scope}} \
+          ^
+
+"Test_name.c", line 47: error: invalid redeclaration of type name "VariableLengthArrays::U" (declared at line 45)
+    using U = int; // expected-error {{type alias redefinition with different types ('int' vs 'int[42]')}}
+          ^
+
+"Test_name.c", line 51: error: transfer of control bypasses initialization of:
+            variable length array dimension (declared at line 52)
+      goto foo; // expected-error {{cannot jump}}
+      ^
+
+"Test_name.c", line 74: warning: variable "u" was declared but never referenced
+      U u;
+        ^
+
+"Test_name.c", line 73: error: parameter pack "T" was referenced but not expanded
+      using U = T*; // expected-error {{declaration type contains unexpanded parameter pack 'T'}}
+                ^
+
+"Test_name.c", line 82: error: the size of an array must be greater than zero
+      using T = int[-1]; // expected-error {{array size is negative}}
+                    ^
+
+"Test_name.c", line 86: error: template parameter "T" may not be redeclared in this scope
+      using T = int; // expected-error {{declaration of 'T' shadows template parameter}}
+            ^
+
+"Test_name.c", line 92: error: declaration of a member with the same name as its class
+      using C0 = int; // expected-error {{member 'C0' has the same name as its class}}
+            ^
+
+"Test_name.c", line 95: warning: declaration of a member with the same name as its class
+      using C1 = C1; // expected-error {{member 'C1' has the same name as its class}}
+            ^
+
+"Test_name.c", line 101: error: parameter pack "T" was referenced but not expanded
+      using f = T; // expected-error {{declaration type contains unexpanded parameter pack 'T'}}
+                ^
+
+"Test_name.c", line 104: error: template parameter "T" may not be redeclared in this scope
+      using T = int; // expected-error {{declaration of 'T' shadows template parameter}}
+            ^
+
+"Test_name.c", line 108: error: invalid redeclaration of type name "ClassNameRedecl::C5::c" (declared at line 107)
+      using c = int; // expected-error {{typedef redefinition with different types}}
+            ^
+
+"Test_name.c", line 119: error: expected an identifier
+    X(); // expected-error {{expected member name}}
+      ^
+
+"Test_name.c", line 120: error: invalid destructor declaration
+    ~X(); // expected-error {{destructor cannot be declared using a type alias}}
+    ^
+
+"Test_name.c", line 131: error: identifier "T" is undefined
+    using T = T; // expected-error {{unknown type name 'T'}}
+              ^
+
+"Test_name.c", line 142: error: identifier "cell" is undefined
+    using cell = pair<void*, cell*>; // expected-error {{use of undeclared identifier 'cell'}} \
+                             ^
+
+"Test_name.c", line 150: error: type "Access::C0::U" (declared at line 148) is inaccessible
+    C0::U v; // expected-error {{'U' is a private member}}
+        ^
+
+27 errors detected in the compilation of "Test_name.c".

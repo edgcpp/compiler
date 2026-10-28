@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 26: error: identifier "__TXXXXXXXXX" is undefined
+  template void f< __TXXXXXXXXX, const X &, const X &> ();
+                   ^
+
+"Test_name.c", line 26: error: invalid explicit instantiation declaration
+  template void f< __TXXXXXXXXX, const X &, const X &> ();
+           ^
+
+"Test_name.c", line 11: error: type "U" has already been defined (previous definition at line 10)
+      using U = ParamT;
+            ^
+          detected during instantiation of "void ClassNTTP::f<v,ParamT,ExprT>() [with v=ClassNTTP::Y{}, ParamT=ClassNTTP::Y &, ExprT=ClassNTTP::Y &]" at line 29
+
+"Test_name.c", line 14: error: invalid redeclaration of type name "V" (declared at line 13)
+      using V = ExprT;
+            ^
+          detected during instantiation of "void ClassNTTP::f<v,ParamT,ExprT>() [with v=ClassNTTP::Y{}, ParamT=ClassNTTP::Y &, ExprT=ClassNTTP::Y &]" at line 29
+
+4 errors detected in the compilation of "Test_name.c".

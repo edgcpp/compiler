@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 14: error: identifier "property" is undefined
+    __declspec(property(get=p_get, put=p_put)) volatile long p;
+               ^
+
+"Test_name.c", line 14: error: expected a ")"
+    __declspec(property(get=p_get, put=p_put)) volatile long p;
+                           ^
+
+"Test_name.c", line 14: error: identifier "put" is undefined
+    __declspec(property(get=p_get, put=p_put)) volatile long p;
+                                   ^
+
+"Test_name.c", line 14: error: explicit type is missing ("int" assumed)
+    __declspec(property(get=p_get, put=p_put)) volatile long p;
+    ^
+
+"Test_name.c", line 14: error: expected a ";"
+    __declspec(property(get=p_get, put=p_put)) volatile long p;
+                                             ^
+
+"Test_name.c", line 17: error: identifier "p" is undefined
+    void f() { p++; }  // Previously triggered an internal error.
+               ^
+
+6 errors detected in the compilation of "Test_name.c".

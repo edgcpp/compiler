@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./cpp0x/lambda/lambda-eh2.C", line 10: warning: function "std::set_unexpected" was declared deprecated
+    std::set_unexpected( []{ throw 0; } );
+         ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 93: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__))
+                    ^
+
+/usr/sbin/ld: /edg/workspace/build/gcc-windows-like/lib/libedgrt.a(throw.o):/edg/workspace/lib_src/throw.c:209: multiple definition of `type identifier for std::nullptr_t'; Test_name.o:(.bss+0x1): first defined here
+collect2: error: ld returned 1 exit status

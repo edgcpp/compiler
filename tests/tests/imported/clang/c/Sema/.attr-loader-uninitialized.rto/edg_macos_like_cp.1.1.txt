@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 36: warning: this declaration has no storage class or type specifier
+  __private_extern__ int private_extern_can_be_initialised = 10;
+  ^
+
+"Test_name.c", line 36: error: expected a ";"
+  __private_extern__ int private_extern_can_be_initialised = 10;
+                     ^
+
+"Test_name.c", line 37: warning: this declaration has no storage class or type specifier
+  __private_extern__ int therefore_uninit_private_extern_ok __attribute__((loader_uninitialized));
+  ^
+
+"Test_name.c", line 37: error: expected a ";"
+  __private_extern__ int therefore_uninit_private_extern_ok __attribute__((loader_uninitialized));
+                     ^
+
+"Test_name.c", line 39: warning: this declaration has no storage class or type specifier
+  __private_extern__ int initialized_private_extern_rejected __attribute__((loader_uninitialized)) = 5;
+  ^
+
+"Test_name.c", line 39: error: expected a ";"
+  __private_extern__ int initialized_private_extern_rejected __attribute__((loader_uninitialized)) = 5;
+                     ^
+
+"Test_name.c", line 7: warning: variable "local_ok" was declared but never referenced
+  static int local_ok __attribute__((loader_uninitialized));
+             ^
+
+"Test_name.c", line 46: error: variable "incomplete" was declared with a never-completed type
+  struct Incomplete incomplete __attribute__((loader_uninitialized));
+                    ^
+
+4 errors detected in the compilation of "Test_name.c".

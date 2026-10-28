@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --ms_extensions Test_name.c
+"Test_name.c", line 33: error: explicit type is missing ("int" assumed)
+  _Alignas(int) int c11_alignas;
+  ^
+
+"Test_name.c", line 33: error: expected a "{"
+  _Alignas(int) int c11_alignas;
+                ^
+
+"Test_name.c", line 72: warning: parsing restarts here after previous syntax error
+  template <typename T> struct S {
+                                 ^
+
+"Test_name.c", line 76: error: a block-scope function may only have extern storage class
+    __attribute__((pure)) static int f() {
+                          ^
+
+"Test_name.c", line 76: error: expected a ";"
+    __attribute__((pure)) static int f() {
+                                         ^
+
+"Test_name.c", line 82: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"Test_name.c", line 82: warning: missing return statement at end of non-void function "_Alignas"
+  };
+  ^
+
+"Test_name.c", line 73: warning: variable "m" was declared but never referenced
+    __attribute__((aligned(4))) int m;
+                                    ^
+
+"Test_name.c", line 74: warning: variable "n" was declared but never referenced
+    alignas(4) int n;
+                   ^
+
+"Test_name.c", line 75: warning: variable "p" was declared but never referenced
+    alignas(int) int p;
+                     ^
+
+"Test_name.c", line 88: error: S is not a template
+  template struct S<int>;
+                  ^
+
+"Test_name.c", line 88: error: invalid explicit instantiation declaration
+  template struct S<int>;
+           ^
+
+6 errors detected in the compilation of "Test_name.c".

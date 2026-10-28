@@ -1,0 +1,651 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -DNO_LAX_FLOAT -DNO_LAX_FLOAT -DNO_LAX_INT Test_name.c
+"Test_name.c", line 10: warning: unknown attribute "__vector_size__"
+  typedef char char16 __attribute__ ((__vector_size__ (16)));
+                                      ^
+
+"Test_name.c", line 11: warning: unknown attribute "__vector_size__"
+  typedef long long longlong16 __attribute__ ((__vector_size__ (16)));
+                                               ^
+
+"Test_name.c", line 12: warning: unknown attribute "__ext_vector_type__"
+  typedef char char16_e __attribute__ ((__ext_vector_type__ (16)));
+                                        ^
+
+"Test_name.c", line 13: warning: unknown attribute "__ext_vector_type__"
+  typedef long long longlong16_e __attribute__ ((__ext_vector_type__ (2)));
+                                                 ^
+
+"Test_name.c", line 59: warning: variable "c16p1" was declared but never referenced
+    __typeof__(Cond? c16 : c16) *c16p1 = &c16;
+                                 ^
+
+"Test_name.c", line 60: warning: variable "ll16p1" was declared but never referenced
+    __typeof__(Cond? ll16 : ll16) *ll16p1 = &ll16;
+                                   ^
+
+"Test_name.c", line 61: warning: variable "c16ep1" was declared but never referenced
+    __typeof__(Cond? c16e : c16e) *c16ep1 = &c16e;
+                                   ^
+
+"Test_name.c", line 62: warning: variable "ll16ep1" was declared but never referenced
+    __typeof__(Cond? ll16e : ll16e) *ll16ep1 = &ll16e;
+                                     ^
+
+"Test_name.c", line 65: warning: variable "c16ep2" was declared but never referenced
+    __typeof__(Cond? c16 : c16e) *c16ep2 = &c16e;
+                                  ^
+
+"Test_name.c", line 66: warning: variable "c16ep3" was declared but never referenced
+    __typeof__(Cond? c16e : c16) *c16ep3 = &c16e;
+                                  ^
+
+"Test_name.c", line 67: warning: variable "ll16ep2" was declared but never referenced
+    __typeof__(Cond? ll16 : ll16e) *ll16ep2 = &ll16e;
+                                    ^
+
+"Test_name.c", line 68: warning: variable "ll16ep3" was declared but never referenced
+    __typeof__(Cond? ll16e : ll16) *ll16ep3 = &ll16e;
+                                    ^
+
+"Test_name.c", line 121: error: invalid type conversion
+    (void)reinterpret_cast<char16>(ll16);
+          ^
+
+"Test_name.c", line 122: error: invalid type conversion
+    (void)reinterpret_cast<char16_e>(ll16);
+          ^
+
+"Test_name.c", line 125: error: invalid type conversion
+    (void)reinterpret_cast<char16>(ll16e);
+          ^
+
+"Test_name.c", line 126: error: invalid type conversion
+    (void)reinterpret_cast<char16_e>(ll16e);
+          ^
+
+"Test_name.c", line 180: error: no operator "=" matches these operands
+            operand types are: convertible_to<char16 &> = convertible_to<char16>
+    (void)(rto_c16 = to_c16); // expected-error{{no viable overloaded '='}}
+                   ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(convertible_to<char16 &> &&) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(const convertible_to<char16 &> &) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+
+"Test_name.c", line 199: error: no operator "=" matches these operands
+            operand types are: convertible_to<char16 &> = convertible_to<char16>
+    (void)(rto_c16e = to_c16); // expected-error{{no viable overloaded '='}}
+                    ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(convertible_to<char16 &> &&) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(const convertible_to<char16 &> &) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+
+"Test_name.c", line 218: error: no operator "=" matches these operands
+            operand types are: convertible_to<char16 &> = char16_e
+    (void)(rto_c16 = c16e); // expected-error{{no viable overloaded '='}}
+                   ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(convertible_to<char16 &> &&) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(const convertible_to<char16 &> &) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+
+"Test_name.c", line 236: warning: unknown attribute "__vector_size__"
+  typedef float fltx2 __attribute__((__vector_size__(8)));
+                                     ^
+
+"Test_name.c", line 237: warning: unknown attribute "__vector_size__"
+  typedef float fltx4 __attribute__((__vector_size__(16)));
+                                     ^
+
+"Test_name.c", line 238: warning: unknown attribute "__vector_size__"
+  typedef double dblx2 __attribute__((__vector_size__(16)));
+                                      ^
+
+"Test_name.c", line 239: warning: unknown attribute "__vector_size__"
+  typedef double dblx4 __attribute__((__vector_size__(32)));
+                                      ^
+
+"Test_name.c", line 273: warning: unknown attribute "__vector_size__"
+  typedef int intx4 __attribute__((__vector_size__(16)));
+                                   ^
+
+"Test_name.c", line 274: warning: unknown attribute "__ext_vector_type__"
+  typedef int inte4 __attribute__((__ext_vector_type__(4)));
+                                   ^
+
+"Test_name.c", line 275: warning: unknown attribute "__ext_vector_type__"
+  typedef float flte4 __attribute__((__ext_vector_type__(4)));
+                                     ^
+
+"Test_name.c", line 334: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__((ext_vector_type(4))) int vi4;
+                         ^
+
+"Test_name.c", line 335: error: expression must have class type but it has type "vi4" (aka "int")
+  const int &reference_to_vec_element = vi4(1).x;
+                                        ^
+
+"Test_name.c", line 338: warning: unknown attribute "__vector_size__"
+  typedef bool bad __attribute__((__vector_size__(16)));  // expected-error {{invalid vector element type 'bool'}}
+                                  ^
+
+"Test_name.c", line 343: warning: unknown attribute "__vector_size__"
+    typedef Elt __attribute__((__vector_size__(Size))) type; // #1
+                               ^
+
+"Test_name.c", line 348: warning: unknown attribute "vector_size"
+    typedef T __attribute__((vector_size(N * sizeof(T)))) type;
+                             ^
+
+"Test_name.c", line 349: warning: unknown attribute "vector_size"
+    typedef T __attribute__((vector_size(0x1000000000))) type2; // #2
+                             ^
+
+"Test_name.c", line 350: warning: unknown attribute "vector_size"
+    typedef T __attribute__((vector_size(3))) type3; // #3
+                             ^
+
+"Test_name.c", line 354: warning: variable "Works" was declared but never referenced
+    const TemplateVectorType<float, 32>::type Works = {};
+                                              ^
+
+"Test_name.c", line 355: warning: variable "Works2" was declared but never referenced
+    const TemplateVectorType<int, 32>::type Works2 = {};
+                                            ^
+
+"Test_name.c", line 358: warning: variable "NoBool" was declared but never referenced
+    const TemplateVectorType<bool, 32>::type NoBool = {};
+                                             ^
+
+"Test_name.c", line 361: warning: variable "NoComplex" was declared but never referenced
+    const TemplateVectorType<vi4, 32>::type NoComplex = {};
+                                            ^
+
+"Test_name.c", line 364: warning: variable "BadSize" was declared but never referenced
+    const TemplateVectorType<int, 33>::type BadSize = {};
+                                            ^
+
+"Test_name.c", line 365: warning: variable "Large" was declared but never referenced
+    const TemplateVectorType<int, 3200>::type Large = {};
+                                              ^
+
+"Test_name.c", line 368: warning: variable "TooLarge" was declared but never referenced
+    const TemplateVectorType<int, 0x1000000000>::type TooLarge = {};
+                                                      ^
+
+"Test_name.c", line 371: warning: variable "Zero" was declared but never referenced
+    const TemplateVectorType<int, 0>::type Zero = {};
+                                           ^
+
+"Test_name.c", line 376: warning: variable "PR15730_1" was declared but never referenced
+    const PR15730<8, int>::type PR15730_1 = {};
+                                ^
+
+"Test_name.c", line 379: warning: variable "PR15730_2" was declared but never referenced
+    const PR15730<8, char>::type2 PR15730_2 = {};
+                                  ^
+
+"Test_name.c", line 384: warning: unknown attribute "__ext_vector_type__"
+  typedef int inte2 __attribute__((__ext_vector_type__(2)));
+                                   ^
+
+"Test_name.c", line 387: warning: expression has no effect
+    inte2 a = (inte2)(1, 2); //expected-warning{{left operand of comma operator has no effect}}
+                      ^
+
+"Test_name.c", line 388: warning: expression has no effect
+    inte4 b = (inte4)(a, a); //expected-error{{C-style cast from vector 'inte2' (vector of 2 'int' values) to vector 'inte4' (vector of 4 'int' values) of different size}} //expected-warning{{left operand of comma operator has no effect}}
+                      ^
+
+"Test_name.c", line 388: warning: variable "b" was declared but never referenced
+    inte4 b = (inte4)(a, a); //expected-error{{C-style cast from vector 'inte2' (vector of 2 'int' values) to vector 'inte4' (vector of 4 'int' values) of different size}} //expected-warning{{left operand of comma operator has no effect}}
+          ^
+
+"Test_name.c", line 391: warning: unknown attribute "__ext_vector_type__"
+  typedef __attribute__((__ext_vector_type__(4))) float vector_float4;
+                         ^
+
+"Test_name.c", line 392: warning: unknown attribute "__ext_vector_type__"
+  typedef __attribute__((__ext_vector_type__(4))) int vector_int4;
+                         ^
+
+"Test_name.c", line 397: error: parameter "B" is not a type name
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+                      ^
+
+"Test_name.c", line 397: error: expected a ">"
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+                       ^
+
+"Test_name.c", line 397: error: expression must have class type but it has type "vector_float4" (aka "float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+             ^
+
+"Test_name.c", line 397: error: expected a ";"
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+                                   ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+             ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+                      ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+                             ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+                                   ^
+
+"Test_name.c", line 409: warning: unknown attribute "vector_size"
+  typedef float float4 __attribute__((vector_size(16)));
+                                      ^
+
+"Test_name.c", line 485: warning: variable "theFloat4" is used before its value is set
+    NormalMember<double>().f(theFloat4);
+                             ^
+
+"Test_name.c", line 512: warning: expression has no effect
+    c &Value;   // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+    ^
+
+"Test_name.c", line 513: warning: expression has no effect
+    c == Value; // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+    ^
+
+"Test_name.c", line 514: warning: variable "e" is used before its value is set
+    e | c;      // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+    ^
+
+"Test_name.c", line 514: warning: expression has no effect
+    e | c;      // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+    ^
+
+"Test_name.c", line 515: warning: expression has no effect
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+    ^
+
+"Test_name.c", line 523: warning: unknown attribute "vector_size"
+  int (__attribute__((vector_size(16))) a);
+                      ^
+
+"Test_name.c", line 527: warning: unknown attribute "vector_size"
+    T (__attribute__((vector_size(16))) a);
+                      ^
+
+"Test_name.c", line 528: warning: unknown attribute "vector_size"
+    int (__attribute__((vector_size(I))) b);
+                        ^
+
+"Test_name.c", line 529: warning: unknown attribute "vector_size"
+    T (__attribute__((vector_size(I))) c);
+                      ^
+
+"Test_name.c", line 533: warning: variable "s" was declared but never referenced
+    S<int, 16> s;
+               ^
+
+"Test_name.c", line 539: warning: unknown attribute "vector_size"
+  char8_t v1 __attribute__((vector_size(16)));
+                            ^
+
+"Test_name.c", line 540: warning: unknown attribute "vector_size"
+  char16_t v2 __attribute__((vector_size(16)));
+                             ^
+
+"Test_name.c", line 541: warning: unknown attribute "vector_size"
+  char32_t v3 __attribute__((vector_size(16)));
+                             ^
+
+"Test_name.c", line 542: warning: unknown attribute "vector_size"
+  wchar_t v4 __attribute__((vector_size(16)));
+                            ^
+
+"Test_name.c", line 544: warning: variable "b1" was declared but never referenced
+    auto b1 = (v1 >= 0x12);
+         ^
+
+"Test_name.c", line 545: warning: variable "b2" was declared but never referenced
+    auto b2 = (v2 >= 0x12);
+         ^
+
+"Test_name.c", line 546: warning: variable "b3" was declared but never referenced
+    auto b3 = (v3 >= 0x12);
+         ^
+
+"Test_name.c", line 547: warning: variable "b4" was declared but never referenced
+    auto b4 = (v4 >= 0x12);
+         ^
+
+"Test_name.c", line 552: warning: unknown attribute "ext_vector_type"
+  typedef unsigned int v2u __attribute__((ext_vector_type(2)));
+                                          ^
+
+"Test_name.c", line 553: warning: unknown attribute "ext_vector_type"
+  typedef float v2f __attribute__((ext_vector_type(2)));
+                                   ^
+
+"Test_name.c", line 629: error: expression must have integral or unscoped enum type
+    (void)(v2fa % fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 629: error: expression must have integral or unscoped enum type
+    (void)(v2fa % fa); // expected-error{{invalid operands to binary expression}}
+                  ^
+
+"Test_name.c", line 630: error: expression must have integral or unscoped enum type
+    (void)(fa % v2fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 630: error: expression must have integral or unscoped enum type
+    (void)(fa % v2fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 649: error: expression must have integral or unscoped enum type
+    (void)(v2fa & fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 649: error: expression must have integral or unscoped enum type
+    (void)(v2fa & fa); // expected-error{{invalid operands to binary expression}}
+                  ^
+
+"Test_name.c", line 650: error: expression must have integral or unscoped enum type
+    (void)(fa & v2fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 650: error: expression must have integral or unscoped enum type
+    (void)(fa & v2fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 651: error: expression must have integral or unscoped enum type
+    (void)(v2fa | fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 651: error: expression must have integral or unscoped enum type
+    (void)(v2fa | fa); // expected-error{{invalid operands to binary expression}}
+                  ^
+
+"Test_name.c", line 652: error: expression must have integral or unscoped enum type
+    (void)(fa | v2fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 652: error: expression must have integral or unscoped enum type
+    (void)(fa | v2fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 653: error: expression must have integral or unscoped enum type
+    (void)(v2fa ^ fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 653: error: expression must have integral or unscoped enum type
+    (void)(v2fa ^ fa); // expected-error{{invalid operands to binary expression}}
+                  ^
+
+"Test_name.c", line 654: error: expression must have integral or unscoped enum type
+    (void)(fa ^ v2fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 654: error: expression must have integral or unscoped enum type
+    (void)(fa ^ v2fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 655: error: expression must have integral or unscoped enum type
+    (void)(v2fa << fa); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+           ^
+
+"Test_name.c", line 655: error: expression must have integral or unscoped enum type
+    (void)(v2fa << fa); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+                   ^
+
+"Test_name.c", line 656: error: expression must have integral or unscoped enum type
+    (void)(v2fa << ua); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+           ^
+
+"Test_name.c", line 657: error: expression must have integral or unscoped enum type
+    (void)(fa << v2fa); // expected-error{{used type 'float' where integer is required}}
+           ^
+
+"Test_name.c", line 657: error: expression must have integral or unscoped enum type
+    (void)(fa << v2fa); // expected-error{{used type 'float' where integer is required}}
+                 ^
+
+"Test_name.c", line 658: error: expression must have integral or unscoped enum type
+    (void)(ua << v2fa); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+                 ^
+
+"Test_name.c", line 659: error: expression must have integral or unscoped enum type
+    (void)(v2fa >> fa); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+           ^
+
+"Test_name.c", line 659: error: expression must have integral or unscoped enum type
+    (void)(v2fa >> fa); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+                   ^
+
+"Test_name.c", line 660: error: expression must have integral or unscoped enum type
+    (void)(v2fa >> ua); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+           ^
+
+"Test_name.c", line 661: error: expression must have integral or unscoped enum type
+    (void)(fa >> v2fa); // expected-error{{used type 'float' where integer is required}}
+           ^
+
+"Test_name.c", line 661: error: expression must have integral or unscoped enum type
+    (void)(fa >> v2fa); // expected-error{{used type 'float' where integer is required}}
+                 ^
+
+"Test_name.c", line 662: error: expression must have integral or unscoped enum type
+    (void)(ua >> v2fa); // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+                 ^
+
+"Test_name.c", line 668: error: expression must have integral or unscoped enum type
+    v2fa %= fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 668: error: expression must have integral or unscoped enum type
+    v2fa %= fa; // expected-error{{invalid operands to binary expression}}
+            ^
+
+"Test_name.c", line 669: error: expression must have integral or unscoped enum type
+    v2fa &= fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 669: error: expression must have integral or unscoped enum type
+    v2fa &= fa; // expected-error{{invalid operands to binary expression}}
+            ^
+
+"Test_name.c", line 670: error: expression must have integral or unscoped enum type
+    v2fa |= fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 670: error: expression must have integral or unscoped enum type
+    v2fa |= fa; // expected-error{{invalid operands to binary expression}}
+            ^
+
+"Test_name.c", line 671: error: expression must have integral or unscoped enum type
+    v2fa ^= fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 671: error: expression must have integral or unscoped enum type
+    v2fa ^= fa; // expected-error{{invalid operands to binary expression}}
+            ^
+
+"Test_name.c", line 672: error: expression must have integral or unscoped enum type
+    v2fa >>= fa; // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+    ^
+
+"Test_name.c", line 672: error: expression must have integral or unscoped enum type
+    v2fa >>= fa; // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+             ^
+
+"Test_name.c", line 673: error: expression must have integral or unscoped enum type
+    v2fa <<= fa; // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+    ^
+
+"Test_name.c", line 673: error: expression must have integral or unscoped enum type
+    v2fa <<= fa; // expected-error{{used type 'v2f' (vector of 2 'float' values) where integer is required}}
+             ^
+
+"Test_name.c", line 679: error: expression must have integral or unscoped enum type
+    fa %= v2fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 679: error: expression must have integral or unscoped enum type
+    fa %= v2fa; // expected-error{{invalid operands to binary expression}}
+          ^
+
+"Test_name.c", line 680: error: expression must have integral or unscoped enum type
+    fa &= v2fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 680: error: expression must have integral or unscoped enum type
+    fa &= v2fa; // expected-error{{invalid operands to binary expression}}
+          ^
+
+"Test_name.c", line 681: error: expression must have integral or unscoped enum type
+    fa |= v2fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 681: error: expression must have integral or unscoped enum type
+    fa |= v2fa; // expected-error{{invalid operands to binary expression}}
+          ^
+
+"Test_name.c", line 682: error: expression must have integral or unscoped enum type
+    fa ^= v2fa; // expected-error{{invalid operands to binary expression}}
+    ^
+
+"Test_name.c", line 682: error: expression must have integral or unscoped enum type
+    fa ^= v2fa; // expected-error{{invalid operands to binary expression}}
+          ^
+
+"Test_name.c", line 683: error: expression must have integral or unscoped enum type
+    fa >>= v2fa; // expected-error{{used type 'float' where integer is required}}
+    ^
+
+"Test_name.c", line 683: error: expression must have integral or unscoped enum type
+    fa >>= v2fa; // expected-error{{used type 'float' where integer is required}}
+           ^
+
+"Test_name.c", line 684: error: expression must have integral or unscoped enum type
+    fa <<= v2fa; // expected-error{{used type 'float' where integer is required}}
+    ^
+
+"Test_name.c", line 684: error: expression must have integral or unscoped enum type
+    fa <<= v2fa; // expected-error{{used type 'float' where integer is required}}
+           ^
+
+"Test_name.c", line 753: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea += v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 754: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea -= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 755: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea *= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 756: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea /= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 757: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea %= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 758: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea &= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 759: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea |= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 760: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea ^= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 772: error: no operator "+" matches these operands
+            operand types are: all_operators::v2u + all_operators::EnumClass
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+"Test_name.c", line 772: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+"Test_name.c", line 772: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+"Test_name.c", line 772: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #2 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+
+"Test_name.c", line 773: error: no operator "+" matches these operands
+            operand types are: all_operators::EnumClass + all_operators::v2u
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+"Test_name.c", line 773: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+"Test_name.c", line 773: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+"Test_name.c", line 773: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+
+"Test_name.c", line 779: warning: unknown attribute "__vector_size__"
+  __attribute__((__vector_size__(sizeof(double)))) double a;
+                 ^
+
+"Test_name.c", line 780: error: operand of "*" must be a pointer but has type "int"
+  double b = a - (long)(*0); // expected-error {{indirection requires pointer operand ('int' invalid)}} \
+                         ^
+
+"Test_name.c", line 783: warning: unknown attribute "__vector_size__"
+  __attribute__((__vector_size__(sizeof(long)))) long c;
+                 ^
+
+"Test_name.c", line 784: error: operand of "*" must be a pointer but has type "int"
+  long d = c - (long)(*0); // expected-error {{indirection requires pointer operand ('int' invalid)}} \
+                       ^
+
+"Test_name.c", line 787: error: operand of "*" must be a pointer but has type "int"
+  const long long e = *0; // expected-error {{indirection requires pointer operand ('int' invalid)}}
+                       ^
+
+"Test_name.c", line 792: warning: unknown attribute "vector_size"
+  typedef int v_neg_size __attribute__((vector_size(-8))); // expected-error{{vector must have non-negative size}}
+                                        ^
+
+"Test_name.c", line 793: warning: unknown attribute "vector_size"
+  typedef int v_neg_size_2 __attribute__((vector_size(-1 * 8))); // expected-error{{vector must have non-negative size}}
+                                          ^
+
+"Test_name.c", line 794: warning: unknown attribute "ext_vector_type"
+  typedef int v_ext_neg_size __attribute__((ext_vector_type(-8))); // expected-error{{vector must have non-negative size}}
+                                            ^
+
+"Test_name.c", line 795: warning: unknown attribute "ext_vector_type"
+  typedef int v_ext_neg_size2 __attribute__((ext_vector_type(-1 * 8))); // expected-error{{vector must have non-negative size}}
+                                             ^
+
+"Test_name.c", line 800: warning: unknown attribute "vector_size"
+  template <int N> using templated_v_size = int  __attribute__((vector_size(N))); // expected-error{{vector must have non-negative size}}
+                                                                ^
+
+"Test_name.c", line 806: warning: unknown attribute "__vector_size__"
+  typedef short __attribute__((__vector_size__(8))) V;
+                               ^
+
+81 errors detected in the compilation of "Test_name.c".

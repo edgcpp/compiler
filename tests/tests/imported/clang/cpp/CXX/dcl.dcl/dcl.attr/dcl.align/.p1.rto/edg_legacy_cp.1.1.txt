@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 5: error: alignas does not apply here
+  typedef int A alignas(4); // expected-error {{'alignas' attribute only applies to variables, data members and tag types}}
+                ^
+
+"Test_name.c", line 7: error: alignas does not apply here
+    typedef int B alignas(N); // expected-error {{'alignas' attribute only applies to variables, data members and tag types}}
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

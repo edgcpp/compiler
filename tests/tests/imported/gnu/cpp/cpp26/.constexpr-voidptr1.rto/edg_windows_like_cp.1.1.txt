@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++26 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp26/constexpr-voidptr1.C", line 34: error: expression must have a constant value
+    constexpr auto result = do_speak(cow);
+                            ^
+"./cpp26/constexpr-voidptr1.C", line 20: note: conversion from "const void *" to "const Cow *" is invalid in constant-expression evaluation
+         return static_cast<const Animal *>(object)->speak();
+                ^
+"./cpp26/constexpr-voidptr1.C", line 23: note: called from:
+      return speak_function(animal);
+                           ^
+"./cpp26/constexpr-voidptr1.C", line 29: note: called from:
+  constexpr std::string_view do_speak(Animal_View av) { return av.speak(); }
+                                                                       ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,61 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 28: warning: constant "S<<unnamed>>::A [with <unnamed>=int]" was declared deprecated
+    auto a1 = S<int>::E1::A; // { dg-warning "is deprecated" }
+                          ^
+"Test_name.c", line 9: note: because of a "deprecated" attribute
+      A __attribute__((deprecated)),
+                       ^
+
+"Test_name.c", line 29: warning: constant "S<<unnamed>>::B [with <unnamed>=int]" was declared deprecated ("B")
+    auto a2 = S<int>::E1::B; // { dg-warning "is deprecated" }
+                          ^
+"Test_name.c", line 10: note: because of a "deprecated" attribute
+      B __attribute__((deprecated("B"))),
+                       ^
+
+"Test_name.c", line 33: warning: constant "S2::A" was declared deprecated
+    auto b1 = S2::A; // { dg-warning "is deprecated" }
+                  ^
+"Test_name.c", line 18: note: because of a "deprecated" attribute
+      A __attribute__((deprecated)),
+                       ^
+
+"Test_name.c", line 34: warning: constant "S2::B" was declared deprecated ("B")
+    auto b2 = S2::B; // { dg-warning "is deprecated" }
+                  ^
+"Test_name.c", line 19: note: because of a "deprecated" attribute
+      B __attribute__((deprecated("B"))),
+                       ^
+
+"Test_name.c", line 28: warning: variable "a1" was declared but never referenced
+    auto a1 = S<int>::E1::A; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 29: warning: variable "a2" was declared but never referenced
+    auto a2 = S<int>::E1::B; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 30: warning: variable "a3" was declared but never referenced
+    auto a3 = S<int>::E1::C; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 31: warning: variable "a4" was declared but never referenced
+    auto a4 = S<int>::E1::D; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 33: warning: variable "b1" was declared but never referenced
+    auto b1 = S2::A; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 34: warning: variable "b2" was declared but never referenced
+    auto b2 = S2::B; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 35: warning: variable "b3" was declared but never referenced
+    auto b3 = S2::C; // { dg-warning "is deprecated" }
+         ^
+
+"Test_name.c", line 36: warning: variable "b4" was declared but never referenced
+    auto b4 = S2::D; // { dg-warning "is deprecated" }
+         ^
+

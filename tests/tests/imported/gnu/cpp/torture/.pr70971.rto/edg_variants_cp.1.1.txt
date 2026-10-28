@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 49: warning: missing return statement at end of non-void function "chooseB(typelist<Cs...>, Idx, Rest...)"
+  }
+  ^
+
+"Test_name.c", line 50: warning: return type "int" omitted in declaration of function "main"
+  main() { chooseB(typelist<double, char>{}, 0, 1, 2); }
+  ^
+

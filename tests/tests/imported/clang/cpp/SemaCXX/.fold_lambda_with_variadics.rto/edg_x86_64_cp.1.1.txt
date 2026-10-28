@@ -198,9 +198,13 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   static_assert(bazz<1, 2>()(1));
                 ^
 
-"Test_name.c", line 276: error: static assertion failed
+"Test_name.c", line 276: error: more than one instance of overloaded function "GH101754::Overloaded<Ts...>::operator() [with Ts=<lambda [](auto)->auto, lambda [](auto)->auto>]" matches the argument list:
+            function template "lambda [](auto)->auto" (declared at line 274)
+            function template "lambda [](auto)->auto" (declared at line 274)
+            argument types are: (int)
+            object type is: GH101754::Overloaded<lambda [](auto)->auto, lambda [](auto)->auto>
   static_assert(trailing<int, long>()(0));
-  ^
+                ^
 
 "Test_name.c", line 294: error: parameter pack "Vals" was referenced but not expanded
     constexpr tuple fs{[] (C<Foo<Vals>> auto) {}...};

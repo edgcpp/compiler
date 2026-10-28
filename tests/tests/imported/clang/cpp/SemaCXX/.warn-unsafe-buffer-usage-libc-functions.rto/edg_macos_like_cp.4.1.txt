@@ -1,0 +1,81 @@
+fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 15: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef unsigned int size_t;
+                       ^
+
+"Test_name.c", line 109: warning: variable "cp" is used before its value is set
+    printf(cp, p, *p); // expected-warning{{function 'printf' is unsafe}} // expected-note{{string argument is not guaranteed to be null-terminated}}
+           ^
+
+"Test_name.c", line 126: warning: variable "fp" is used before its value is set
+    fprintf(fp, "%P%d%p%i hello world %32s", *p, *p, p, *p, p); // expected-warning{{function 'fprintf' is unsafe}} expected-note{{string argument is not guaranteed to be null-terminated}}
+            ^
+
+"Test_name.c", line 272: warning: "format" attribute requires an ellipsis parameter or parameter pack
+  void myprintf_2(const char *, int, const char *) __attribute__((__format__ (__printf__, 1, 3)));
+                                                                  ^
+
+"Test_name.c", line 273: warning: "format" attribute requires an ellipsis parameter or parameter pack
+  void myprintf_3(const char *, const char *, int, const char *) __attribute__((__format__ (__printf__, 2, 4)));
+                                                                                ^
+
+"Test_name.c", line 277: warning: "format" attribute requires an ellipsis parameter or parameter pack
+                        int X = 0, const char * Str = "world") __attribute__((__format__ (__printf__, 2, 4)));
+                                                                              ^
+
+"Test_name.c", line 281: warning: "format" attribute requires an ellipsis parameter or parameter pack
+    void myprintf_2(const char *, int, const char *) __attribute__((__format__ (__printf__, 2, 4)));
+                                                                    ^
+
+"Test_name.c", line 282: warning: "format" attribute requires an ellipsis parameter or parameter pack
+    void myprintf_3(const char *, const char *, int, const char *) __attribute__((__format__ (__printf__, 3, 5)));
+                                                                                  ^
+
+"Test_name.c", line 286: warning: "format" attribute requires an ellipsis parameter or parameter pack
+    void operator[](const char * Fmt) __attribute__((__format__ (__printf__, 2, 3)));
+                                                     ^
+
+"Test_name.c", line 292: warning: "format" attribute requires an ellipsis parameter or parameter pack
+  			int X = 0, const char * Str = StrField) __attribute__((__format__ (__printf__, 3, 5)));
+  			                                                       ^
+
+"Test_name.c", line 296: warning: "format" attribute requires an ellipsis parameter or parameter pack
+    void operator()(const char * Fmt, char *) __attribute__((__format__ (__printf__, 2, 3)));
+                                                             ^
+
+"Test_name.c", line 300: warning: the format string ends before this argument
+    myprintf("hello", Str);
+                      ^
+
+"Test_name.c", line 309: warning: the format string ends before this argument
+    myprintf_2("hello", 0, Str);
+                           ^
+
+"Test_name.c", line 314: warning: the format string ends before this argument
+    myprintf_3("irrelevant", "hello", 0, Str);
+                                         ^
+
+"Test_name.c", line 318: warning: the format string requires additional arguments
+    myscanf("hello %s");
+                      ^
+
+"Test_name.c", line 330: warning: the format string ends before this argument
+    Obj.myprintf("hello", Str);
+                          ^
+
+"Test_name.c", line 335: warning: the format string ends before this argument
+    Obj.myprintf_2("hello", 0, Str);
+                               ^
+
+"Test_name.c", line 340: warning: the format string ends before this argument
+    Obj.myprintf_3("irrelevant", "hello", 0, Str);
+                                             ^
+
+"Test_name.c", line 345: warning: the format string requires additional arguments
+    Obj.myscanf("hello %s");
+                          ^
+
+"Test_name.c", line 370: warning: "format" attribute requires an ellipsis parameter or parameter pack
+  void myprintf_arg_idx_oob(const char *) __attribute__((__format__ (__printf__, 1, 2)));
+                                                         ^
+

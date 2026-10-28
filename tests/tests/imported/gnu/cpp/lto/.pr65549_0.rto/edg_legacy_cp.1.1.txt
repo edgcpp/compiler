@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 53: warning: missing return statement at end of non-void function "std::_Base_manager<_Functor>::_M_get_pointer"
+    static _Functor *_M_get_pointer(int) {}
+                                          ^
+
+"Test_name.c", line 133: warning: variable "pr" is used before its value is set
+      schedule([ pr = std::move(pr), func, param = std::forward<Param> ]{});
+                                ^
+
+"Test_name.c", line 139: warning: missing return statement at end of non-void function "H::then(Func)"
+    }
+    ^
+
+"Test_name.c", line 32: warning: missing return statement at end of non-void function "std::move(_Tp) [with _Tp=D]"
+  template <typename _Tp> _Tp move(_Tp) {}
+                                         ^
+          detected during:
+            instantiation of "_Tp std::move(_Tp) [with _Tp=D]" at line 133
+            instantiation of "void H::then(Func, Param) [with Func=int, Param=lambda []()->void]" at line 138
+            instantiation of "futurize_t<std::result_of_t<Func ()>> H::then(Func) [with Func=lambda []()->void]" at line 145
+
+"Test_name.c", line 32: warning: missing return statement at end of non-void function "std::move(_Tp) [with _Tp=lambda []()->void]"
+  template <typename _Tp> _Tp move(_Tp) {}
+                                         ^
+          detected during:
+            instantiation of "_Tp std::move(_Tp) [with _Tp=lambda []()->void]" at line 127
+            instantiation of "void H::schedule(Func) [with Func=lambda []()->void]" at line 133
+            instantiation of "void H::then(Func, Param) [with Func=int, Param=lambda []()->void]" at line 138
+            instantiation of "futurize_t<std::result_of_t<Func ()>> H::then(Func) [with Func=lambda []()->void]" at line 145
+
+"Test_name.c", line 89: warning: missing return statement at end of non-void function "std::make_unique<_Tp,_Args...>(_Args...) [with _Tp=task_with_ready_state, _Args=<lambda []()->void, G>]"
+  }
+  ^
+          detected during:
+            instantiation of "_Tp std::make_unique<_Tp,_Args...>(_Args...) [with _Tp=task_with_ready_state, _Args=<lambda []()->void, G>]" at line 127
+            instantiation of "void H::schedule(Func) [with Func=lambda []()->void]" at line 133
+            instantiation of "void H::then(Func, Param) [with Func=int, Param=lambda []()->void]" at line 138
+            instantiation of "futurize_t<std::result_of_t<Func ()>> H::then(Func) [with Func=lambda []()->void]" at line 145
+
+"Test_name.c", line 127: warning: variable "__trans_tmp_1" is used before its value is set
+      std::make_unique<task_with_ready_state>(std::move(func), __trans_tmp_1);
+                                                               ^
+          detected during:
+            instantiation of "void H::schedule(Func) [with Func=lambda []()->void]" at line 133
+            instantiation of "void H::then(Func, Param) [with Func=int, Param=lambda []()->void]" at line 138
+            instantiation of "futurize_t<std::result_of_t<Func ()>> H::then(Func) [with Func=lambda []()->void]" at line 145
+
+"Test_name.c", line 89: warning: missing return statement at end of non-void function "std::make_unique<_Tp,_Args...>(_Args...) [with _Tp=task_with_state, _Args=<lambda []()->void>]"
+  }
+  ^
+          detected during:
+            instantiation of "_Tp std::make_unique<_Tp,_Args...>(_Args...) [with _Tp=task_with_state, _Args=<lambda []()->void>]" at line 115
+            instantiation of "void D::schedule(Func) [with Func=lambda []()->void]" at line 128
+            instantiation of "void H::schedule(Func) [with Func=lambda []()->void]" at line 133
+            instantiation of "void H::then(Func, Param) [with Func=int, Param=lambda []()->void]" at line 138
+            instantiation of "futurize_t<std::result_of_t<Func ()>> H::then(Func) [with Func=lambda []()->void]" at line 145
+

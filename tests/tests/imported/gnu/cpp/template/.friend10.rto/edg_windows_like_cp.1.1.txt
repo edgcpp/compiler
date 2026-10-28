@@ -1,0 +1,16 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+/usr/sbin/ld: Test_name.o: in function `cmp(const Handle<Buggy> &, const Handle<Buggy> &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::cout'
+/usr/sbin/ld: Test_name.o: in function `std::ctype<char>::widen(char) const':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::ctype<char>::_M_widen_init() const'
+/usr/sbin/ld: Test_name.o: in function `void std::basic_ios<T1, T2>::setstate(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `void std::basic_ios<T1, T2>::clear(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<T1, T2> &std::endl<T1, T2>(std::basic_ostream<T1, T2> &) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::basic_ostream<T1, T2>::put(T1) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<T1, T2> &std::flush<T1, T2>(std::basic_ostream<T1, T2> &) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::basic_ostream<T1, T2>::flush() [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<char, T1> &std::operator <<<T1>(std::basic_ostream<char, T1> &, const char *) [with T1=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::__ostream_insert<T1, T2>(std::basic_ostream<T1, T2> &, const T1 *, long) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `const T1 &std::__check_facet<T1>(const T1 *) [with T1=std::ctype<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_cast()'
+collect2: error: ld returned 1 exit status

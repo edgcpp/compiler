@@ -1,0 +1,98 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 53: error: expected a "("
+    for co_await (auto i : arr) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 57: warning: missing return statement at end of non-void function "g"
+  }
+  ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 76: error: expected a "("
+    for co_await (auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 76: error: return types for "begin" and "end" functions used in a range-based "for" statement must be the same ("begin" return type is "BeginTag<Iter<int>>", "end" return type is "Iter<int>")
+    for co_await (auto i : R) {}
+                           ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 79: warning: missing return statement at end of non-void function "bad_begin"
+  }
+  ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 83: error: expected a "("
+    for co_await (auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 86: warning: missing return statement at end of non-void function "bad_begin_template(Dummy)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 90: error: expected an operator
+  Awaiter<Iter> operator co_await(CoawaitTag<Iter, true>) = delete;
+                         ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 110: error: expected a "("
+    for co_await (auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 110: error: return types for "begin" and "end" functions used in a range-based "for" statement must be the same ("begin" return type is "BeginTag<Iter<float>>", "end" return type is "Iter<float>")
+    for co_await (auto i : R) {}
+                           ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 113: warning: missing return statement at end of non-void function "bad_inc_transform"
+  }
+  ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 118: error: expected a "("
+    for co_await (auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 121: warning: missing return statement at end of non-void function "bad_inc_transform_template(Dummy)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 129: error: expected a "("
+    for co_await (auto i : foo(T{})) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 153: error: expected a "("
+    for co_await (auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 155: warning: missing return statement at end of non-void function "test_coawait_lookup(T)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 162: error: expected an operator
+  Awaiter<Iter> operator co_await(CoawaitTag<Iter, false>);
+                         ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 164: error: expected an operator
+  using NS2::operator co_await;
+                      ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 164: error: expected a ";"
+  using NS2::operator co_await;
+                      ^
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 83: error: return types for "begin" and "end" functions used in a range-based "for" statement must be the same ("begin" return type is "BeginTag<Iter<int>>", "end" return type is "Iter<int>")
+    for co_await (auto i : R) {}
+                           ^
+          detected during instantiation of "ForLoopAwaiterBadBeginTransform bad_begin_template(Dummy) [with Dummy=int]" at line 87
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 118: error: return types for "begin" and "end" functions used in a range-based "for" statement must be the same ("begin" return type is "BeginTag<Iter<long>>", "end" return type is "Iter<long>")
+    for co_await (auto i : R) {}
+                           ^
+          detected during instantiation of "ForLoopAwaiterBadIncTransform bad_inc_transform_template(Dummy) [with Dummy=long]" at line 122
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 153: error: return types for "begin" and "end" functions used in a range-based "for" statement must be the same ("begin" return type is "BeginTag<Iter<int>>", "end" return type is "Iter<int>")
+    for co_await (auto i : R) {}
+                           ^
+          detected during instantiation of "NS::ForLoopAwaiterCoawaitLookup test_coawait_lookup(T) [with T=int]" at line 156
+
+"SemaCXX/co_await-range-for-exp-namespace.cpp", line 153: error: return types for "begin" and "end" functions used in a range-based "for" statement must be the same ("begin" return type is "BeginTag<Iter<long>>", "end" return type is "Iter<long>")
+    for co_await (auto i : R) {}
+                           ^
+          detected during instantiation of "NS::ForLoopAwaiterCoawaitLookup test_coawait_lookup(T) [with T=long]" at line 165
+
+17 errors detected in the compilation of "Test_name.c".

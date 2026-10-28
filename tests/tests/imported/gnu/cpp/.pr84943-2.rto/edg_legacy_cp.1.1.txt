@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 13: error: expression must be a pointer to a complete object type
+    ac[0](); // { dg-warning "arithmetic" }
+    ^
+
+"Test_name.c", line 33: error: a pointer to a bound function may only be used to call the function
+      void (*p0)(void*) = x().a;
+                              ^
+
+"Test_name.c", line 50: error: a pointer to a bound function may only be used to call the function
+      void (*p0)(void*) = z().a;
+                              ^
+
+3 errors detected in the compilation of "Test_name.c".

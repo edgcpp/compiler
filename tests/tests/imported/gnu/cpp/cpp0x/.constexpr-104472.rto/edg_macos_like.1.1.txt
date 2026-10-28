@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef short __attribute__((__vector_size__ (16))) V;
+                               ^
+
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+  typedef _Float16 __attribute__((__vector_size__ (16))) F;
+                                  ^
+
+"Test_name.c", line 11: error: type name is not allowed
+  V v = __builtin_convertvector (__builtin_convertvector ((V){5534}, F), V) < 8;
+                                                                     ^
+
+"Test_name.c", line 11: error: identifier "__builtin_convertvector" is undefined
+  V v = __builtin_convertvector (__builtin_convertvector ((V){5534}, F), V) < 8;
+                                 ^
+
+"Test_name.c", line 11: error: type name is not allowed
+  V v = __builtin_convertvector (__builtin_convertvector ((V){5534}, F), V) < 8;
+                                                                         ^
+
+"Test_name.c", line 11: error: identifier "__builtin_convertvector" is undefined
+  V v = __builtin_convertvector (__builtin_convertvector ((V){5534}, F), V) < 8;
+        ^
+
+4 errors detected in the compilation of "Test_name.c".

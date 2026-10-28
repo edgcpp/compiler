@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_extensions --c Test_name.c
+"Test_name.c", line 39: warning: the "availability" attribute used here is ignored
+  void f6(int) __attribute__((availability(macosx,strict,introduced=10.6)));
+                              ^
+
+"Test_name.c", line 42: warning: unknown attribute "visibility"
+  extern const char _libc_intl_domainname[]; extern typeof (_libc_intl_domainname) _libc_intl_domainname asm("__gi__libc_intl_domainname") __attribute__((visibility("hidden")));
+                                                                                                                                                          ^
+

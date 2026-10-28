@@ -1,0 +1,99 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"SemaCXX/conversion.cpp", line 43: warning: type qualifier on return type is meaningless
+    void * const foo();
+           ^
+
+"SemaCXX/conversion.cpp", line 60: warning: variable "a" was declared but never referenced
+    int a = __null;
+        ^
+
+"SemaCXX/conversion.cpp", line 61: warning: variable "b" was set but never used
+    int b;
+        ^
+
+"SemaCXX/conversion.cpp", line 63: warning: variable "l" was declared but never referenced
+    long l = __null;
+         ^
+
+"SemaCXX/conversion.cpp", line 64: warning: variable "c" was declared but never referenced
+    int c = ((((__null))));
+        ^
+
+"SemaCXX/conversion.cpp", line 65: warning: variable "d" was set but never used
+    int d;
+        ^
+
+"SemaCXX/conversion.cpp", line 67: warning: variable "bl" was declared but never referenced
+    bool bl = __null;
+         ^
+
+"SemaCXX/conversion.cpp", line 68: warning: variable "ch" was declared but never referenced
+    char ch = __null;
+         ^
+
+"SemaCXX/conversion.cpp", line 69: warning: variable "uch" was declared but never referenced
+    unsigned char uch = __null;
+                  ^
+
+"SemaCXX/conversion.cpp", line 70: warning: variable "sh" was declared but never referenced
+    short sh = __null;
+          ^
+
+"SemaCXX/conversion.cpp", line 71: warning: variable "dbl" was declared but never referenced
+    double dbl = __null;
+           ^
+
+"SemaCXX/conversion.cpp", line 78: warning: variable "a3" was declared but never referenced
+    int a3 = __null;
+        ^
+
+"SemaCXX/conversion.cpp", line 82: warning: variable "ip" was declared but never referenced
+    int *ip = __null;
+         ^
+
+"SemaCXX/conversion.cpp", line 83: warning: variable "fp" was declared but never referenced
+    int (*fp)() = __null;
+          ^
+
+"SemaCXX/conversion.cpp", line 88: warning: variable "datamem" was declared but never referenced
+    int foo::*datamem = __null;
+              ^
+
+"SemaCXX/conversion.cpp", line 89: warning: variable "funmem" was declared but never referenced
+    int (foo::*funmem)() = __null;
+               ^
+
+"SemaCXX/conversion.cpp", line 99: warning: integer conversion resulted in truncation
+              T b = 1024) {
+                    ^
+          detected during instantiation of "void test4::tmpl(char, T, T) [with T=char]" at line 107
+
+"SemaCXX/conversion.cpp", line 117: warning: variable "b" was declared but never referenced
+      bool b = I;
+           ^
+
+"SemaCXX/conversion.cpp", line 131: error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "bool"
+      bool x = nullptr;
+               ^
+
+"SemaCXX/conversion.cpp", line 133: error: return value type does not match the function type
+      return nullptr;
+             ^
+
+"SemaCXX/conversion.cpp", line 145: warning: variable "b" was declared but never referenced
+      bool b = ((true) ? &num : __null);
+           ^
+
+"SemaCXX/conversion.cpp", line 163: warning: variable "b" was declared but never referenced
+      bool b = ((true) ? &num : __null);
+           ^
+
+"SemaCXX/conversion.cpp", line 205: error: return value type does not match the function type
+      return EXIT();
+             ^
+
+"SemaCXX/conversion.cpp", line 275: error: argument of type "std::nullptr_t" is incompatible with parameter of type "bool"
+    if (!(some_bool_function(nullptr))) return;;
+                             ^
+
+4 errors detected in the compilation of "Test_name.c".

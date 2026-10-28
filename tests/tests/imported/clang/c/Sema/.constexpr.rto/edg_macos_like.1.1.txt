@@ -1,0 +1,883 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 7: warning: this declaration has no storage class or type specifier
+  constexpr void f0() {} // expected-error {{'constexpr' can only be used in variable declarations}}
+  ^
+
+"Test_name.c", line 7: error: expected a ";"
+  constexpr void f0() {} // expected-error {{'constexpr' can only be used in variable declarations}}
+            ^
+
+"Test_name.c", line 10: warning: parsing restarts here after previous syntax error
+  constexpr struct S1 { int f; }; //expected-error {{struct cannot be marked constexpr}}
+                                ^
+
+"Test_name.c", line 11: warning: this declaration has no storage class or type specifier
+  constexpr struct S2 ; // expected-error {{struct cannot be marked constexpr}}
+  ^
+
+"Test_name.c", line 11: error: expected a ";"
+  constexpr struct S2 ; // expected-error {{struct cannot be marked constexpr}}
+            ^
+
+"Test_name.c", line 12: warning: this declaration has no storage class or type specifier
+  constexpr union U1; // expected-error {{union cannot be marked constexpr}}
+  ^
+
+"Test_name.c", line 12: error: expected a ";"
+  constexpr union U1; // expected-error {{union cannot be marked constexpr}}
+            ^
+
+"Test_name.c", line 13: warning: this declaration has no storage class or type specifier
+  constexpr union U2 {int a; float b;}; // expected-error {{union cannot be marked constexpr}}
+  ^
+
+"Test_name.c", line 13: error: expected a ";"
+  constexpr union U2 {int a; float b;}; // expected-error {{union cannot be marked constexpr}}
+            ^
+
+"Test_name.c", line 14: warning: this declaration has no storage class or type specifier
+  constexpr enum E1 {A = 1, B = 2} ; // expected-error {{enum cannot be marked constexpr}}
+  ^
+
+"Test_name.c", line 14: error: expected a ";"
+  constexpr enum E1 {A = 1, B = 2} ; // expected-error {{enum cannot be marked constexpr}}
+            ^
+
+"Test_name.c", line 16: error: a storage class may not be specified here
+    static constexpr int f = 0; // expected-error {{type name does not allow storage class}}
+    ^
+
+"Test_name.c", line 16: warning: explicit type is missing ("int" assumed)
+    static constexpr int f = 0; // expected-error {{type name does not allow storage class}}
+           ^
+
+"Test_name.c", line 16: error: expected a ";"
+    static constexpr int f = 0; // expected-error {{type name does not allow storage class}}
+                     ^
+
+"Test_name.c", line 19: warning: this declaration has no storage class or type specifier
+    constexpr int f1 = 0;
+    ^
+
+"Test_name.c", line 19: error: "constexpr" has already been declared in the current scope
+    constexpr int f1 = 0;
+    ^
+
+"Test_name.c", line 19: error: expected a ";"
+    constexpr int f1 = 0;
+              ^
+
+"Test_name.c", line 24: warning: this declaration has no storage class or type specifier
+  constexpr; // expected-error {{'constexpr' can only be used in variable declarations}}
+  ^
+
+"Test_name.c", line 25: warning: this declaration has no storage class or type specifier
+  constexpr int V1 = 3;
+  ^
+
+"Test_name.c", line 25: error: expected a ";"
+  constexpr int V1 = 3;
+            ^
+
+"Test_name.c", line 26: warning: this declaration has no storage class or type specifier
+  constexpr float V2 = 7.0;
+  ^
+
+"Test_name.c", line 26: error: expected a ";"
+  constexpr float V2 = 7.0;
+            ^
+
+"Test_name.c", line 27: error: expression must have a constant value
+  int V3 = (constexpr)3; // expected-error {{expected expression}}
+           ^
+"Test_name.c", line 27: note: the value of variable "constexpr" (declared at line 7) cannot be used as a constant
+  int V3 = (constexpr)3; // expected-error {{expected expression}}
+            ^
+
+"Test_name.c", line 27: error: expected a ";"
+  int V3 = (constexpr)3; // expected-error {{expected expression}}
+                      ^
+
+"Test_name.c", line 30: warning: expression has no effect
+    constexpr int a = 0;
+    ^
+
+"Test_name.c", line 30: error: expected a ";"
+    constexpr int a = 0;
+              ^
+
+"Test_name.c", line 31: warning: expression has no effect
+    constexpr float b = 1.7f;
+    ^
+
+"Test_name.c", line 31: error: expected a ";"
+    constexpr float b = 1.7f;
+              ^
+
+"Test_name.c", line 35: warning: this declaration has no storage class or type specifier
+  constexpr auto V4 = 1;
+  ^
+
+"Test_name.c", line 35: error: expected a ";"
+  constexpr auto V4 = 1;
+            ^
+
+"Test_name.c", line 36: warning: this declaration has no storage class or type specifier
+  constexpr static auto V5 = 1;
+  ^
+
+"Test_name.c", line 36: error: expected a ";"
+  constexpr static auto V5 = 1;
+            ^
+
+"Test_name.c", line 37: warning: this declaration has no storage class or type specifier
+  constexpr static const auto V6 = 1;
+  ^
+
+"Test_name.c", line 37: error: expected a ";"
+  constexpr static const auto V6 = 1;
+            ^
+
+"Test_name.c", line 38: warning: this declaration has no storage class or type specifier
+  constexpr static const int V7 = 1;
+  ^
+
+"Test_name.c", line 38: error: expected a ";"
+  constexpr static const int V7 = 1;
+            ^
+
+"Test_name.c", line 39: warning: this declaration has no storage class or type specifier
+  constexpr static int V8 = 1;
+  ^
+
+"Test_name.c", line 39: error: expected a ";"
+  constexpr static int V8 = 1;
+            ^
+
+"Test_name.c", line 40: warning: this declaration has no storage class or type specifier
+  constexpr auto Ulong = 1L;
+  ^
+
+"Test_name.c", line 40: error: expected a ";"
+  constexpr auto Ulong = 1L;
+            ^
+
+"Test_name.c", line 41: warning: this declaration has no storage class or type specifier
+  constexpr auto CompoundLiteral = (int){13};
+  ^
+
+"Test_name.c", line 41: error: expected a ";"
+  constexpr auto CompoundLiteral = (int){13};
+            ^
+
+"Test_name.c", line 42: warning: this declaration has no storage class or type specifier
+  constexpr auto DoubleCast = (double)(1 / 3);
+  ^
+
+"Test_name.c", line 42: error: expected a ";"
+  constexpr auto DoubleCast = (double)(1 / 3);
+            ^
+
+"Test_name.c", line 43: warning: this declaration has no storage class or type specifier
+  constexpr auto String = "this is a string"; // expected-error {{constexpr pointer initializer is not null}}
+  ^
+
+"Test_name.c", line 43: error: expected a ";"
+  constexpr auto String = "this is a string"; // expected-error {{constexpr pointer initializer is not null}}
+            ^
+
+"Test_name.c", line 44: warning: this declaration has no storage class or type specifier
+  constexpr signed auto Long = 1L; // expected-error {{'auto' cannot be signed or unsigned}}
+  ^
+
+"Test_name.c", line 44: error: expected a ";"
+  constexpr signed auto Long = 1L; // expected-error {{'auto' cannot be signed or unsigned}}
+            ^
+
+"Test_name.c", line 45: error: identifier "Ulong" is undefined
+  _Static_assert(_Generic(Ulong, long : 1));
+                          ^
+
+"Test_name.c", line 46: error: identifier "CompoundLiteral" is undefined
+  _Static_assert(_Generic(CompoundLiteral, int : 1));
+                          ^
+
+"Test_name.c", line 47: error: identifier "DoubleCast" is undefined
+  _Static_assert(_Generic(DoubleCast, double : 1));
+                          ^
+
+"Test_name.c", line 48: error: identifier "String" is undefined
+  _Static_assert(_Generic(String, char* : 1));
+                          ^
+
+"Test_name.c", line 50: warning: explicit type is missing ("int" assumed)
+  typedef constexpr int Foo; // expected-error {{typedef cannot be constexpr}}
+          ^
+
+"Test_name.c", line 50: error: "constexpr" has already been declared in the current scope
+  typedef constexpr int Foo; // expected-error {{typedef cannot be constexpr}}
+          ^
+
+"Test_name.c", line 50: error: expected a ";"
+  typedef constexpr int Foo; // expected-error {{typedef cannot be constexpr}}
+                    ^
+
+"Test_name.c", line 51: error: invalid combination of type specifiers
+  constexpr typedef int Bar; // expected-error {{typedef cannot be constexpr}}
+                    ^
+
+"Test_name.c", line 53: error: invalid combination of type specifiers
+  void f3(constexpr register int P1) { // expected-error {{function parameter cannot be constexpr}}
+                             ^
+
+"Test_name.c", line 54: error: invalid combination of type specifiers
+    constexpr register int V9 = 0;
+                       ^
+
+"Test_name.c", line 55: error: more than one storage class may not be specified
+    constexpr register auto V10 = 0.0;
+                       ^
+
+"Test_name.c", line 55: warning: variable "V10" was declared but never referenced
+    constexpr register auto V10 = 0.0;
+                            ^
+
+"Test_name.c", line 58: error: invalid combination of type specifiers
+  constexpr thread_local int V11 = 38; // expected-error {{cannot combine with previous '_Thread_local' declaration specifier}}
+                         ^
+
+"Test_name.c", line 59: error: invalid combination of type specifiers
+  constexpr static thread_local double V12 = 38; // expected-error {{cannot combine with previous '_Thread_local' declaration specifier}}
+                                ^
+
+"Test_name.c", line 60: error: invalid combination of type specifiers
+  constexpr extern thread_local char V13; // expected-error {{cannot combine with previous '_Thread_local' declaration specifier}}
+                                ^
+
+"Test_name.c", line 63: error: invalid combination of type specifiers
+  constexpr thread_local short V14 = 38; // expected-error {{cannot combine with previous '_Thread_local' declaration specifier}}
+  ^
+
+"Test_name.c", line 66: error: invalid combination of type specifiers
+  constexpr _Atomic int V15 = 0; // expected-error {{constexpr variable cannot have type 'const _Atomic(int)'}}
+                    ^
+
+"Test_name.c", line 67: error: invalid combination of type specifiers
+  constexpr _Atomic(int) V16 = 0; // expected-error {{constexpr variable cannot have type 'const _Atomic(int)'}}
+                    ^
+
+"Test_name.c", line 69: error: invalid combination of type specifiers
+  constexpr volatile int V17 = 0; // expected-error {{constexpr variable cannot have type 'const volatile int'}}
+                     ^
+
+"Test_name.c", line 71: error: invalid combination of type specifiers
+  constexpr int * restrict V18 = 0; // expected-error {{constexpr variable cannot have type 'int *const restrict'}}
+            ^
+
+"Test_name.c", line 73: error: invalid combination of type specifiers
+  constexpr extern char Oops = 1; // expected-error {{cannot combine with previous 'extern' declaration specifier}} \
+                   ^
+
+"Test_name.c", line 76: error: invalid combination of type specifiers
+  constexpr int * restrict * Oops1 = 0;
+            ^
+
+"Test_name.c", line 82: error: "TheA" has already been declared in the current scope
+  constexpr TheA V19[3] = {};
+            ^
+
+"Test_name.c", line 82: error: expected a ";"
+  constexpr TheA V19[3] = {};
+                 ^
+
+"Test_name.c", line 84: error: "TheV" has already been declared in the current scope
+  constexpr TheV V20[3] = {};
+            ^
+
+"Test_name.c", line 84: error: expected a ";"
+  constexpr TheV V20[3] = {};
+                 ^
+
+"Test_name.c", line 86: error: "TheR" has already been declared in the current scope
+  constexpr TheR V21[3] = {};
+            ^
+
+"Test_name.c", line 86: error: expected a ";"
+  constexpr TheR V21[3] = {};
+                 ^
+
+"Test_name.c", line 90: error: variable "TheA" is not a type name
+    TheA f;
+    ^
+
+"Test_name.c", line 96: error: variable "TheV" is not a type name
+    TheV f;
+    ^
+
+"Test_name.c", line 102: error: variable "TheR" is not a type name
+    TheR f;
+    ^
+
+"Test_name.c", line 105: error: invalid combination of type specifiers
+  constexpr struct HasA V22[2] = {};
+            ^
+
+"Test_name.c", line 107: error: invalid combination of type specifiers
+  constexpr struct HasV V23[2] = {};
+            ^
+
+"Test_name.c", line 109: error: invalid combination of type specifiers
+  constexpr struct HasR V24[2] = {};
+            ^
+
+"Test_name.c", line 120: error: invalid combination of type specifiers
+  constexpr union U3 V25 = {};
+            ^
+
+"Test_name.c", line 122: error: invalid combination of type specifiers
+  constexpr union U3 V26[8] = {};
+            ^
+
+"Test_name.c", line 129: error: invalid combination of type specifiers
+  constexpr struct S4 V27 = {};
+            ^
+
+"Test_name.c", line 131: error: invalid combination of type specifiers
+  constexpr const int V28 = 28;
+                  ^
+
+"Test_name.c", line 140: error: invalid combination of type specifiers
+  constexpr struct S s = {}; // expected-error {{constexpr variable cannot have type 'volatile int'}}
+            ^
+
+"Test_name.c", line 144: error: invalid combination of type specifiers
+  constexpr int V29;
+            ^
+
+"Test_name.c", line 151: error: invalid combination of type specifiers
+  constexpr struct S5 V30;
+            ^
+
+"Test_name.c", line 153: error: invalid combination of type specifiers
+  constexpr struct S5 V31 = {};
+            ^
+
+"Test_name.c", line 157: error: invalid combination of type specifiers
+  constexpr float V32 = randomFoo();
+            ^
+
+"Test_name.c", line 157: error: function call is not allowed in a constant expression
+  constexpr float V32 = randomFoo();
+                        ^
+
+"Test_name.c", line 164: error: invalid combination of type specifiers
+  constexpr int V36 = V33 / V34;
+            ^
+
+"Test_name.c", line 164: warning: use of a const variable in a constant expression is nonstandard in C
+  constexpr int V36 = V33 / V34;
+                      ^
+
+"Test_name.c", line 164: warning: use of a const variable in a constant expression is nonstandard in C
+  constexpr int V36 = V33 / V34;
+                            ^
+
+"Test_name.c", line 164: error: division by zero
+  constexpr int V36 = V33 / V34;
+                          ^
+
+"Test_name.c", line 166: error: invalid combination of type specifiers
+  constexpr int V37 = V33 / V35;
+            ^
+
+"Test_name.c", line 166: warning: use of a const variable in a constant expression is nonstandard in C
+  constexpr int V37 = V33 / V35;
+                      ^
+
+"Test_name.c", line 166: warning: use of a const variable in a constant expression is nonstandard in C
+  constexpr int V37 = V33 / V35;
+                            ^
+
+"Test_name.c", line 168: error: invalid combination of type specifiers
+  constexpr int V38 = 3;
+            ^
+
+"Test_name.c", line 169: error: invalid combination of type specifiers
+  constexpr int V39 = V38 / V38;
+            ^
+
+"Test_name.c", line 170: error: invalid combination of type specifiers
+  constexpr int V40 = V38 / 2;
+            ^
+
+"Test_name.c", line 171: error: invalid combination of type specifiers
+  constexpr int V41 = V38 / 0;
+            ^
+
+"Test_name.c", line 171: warning: division by zero
+  constexpr int V41 = V38 / 0;
+                            ^
+
+"Test_name.c", line 174: error: invalid combination of type specifiers
+  constexpr int V42 = V38 & 0;
+            ^
+
+"Test_name.c", line 176: error: invalid combination of type specifiers
+  constexpr struct S5 V43 = { randomFoo() };
+            ^
+
+"Test_name.c", line 176: error: function call is not allowed in a constant expression
+  constexpr struct S5 V43 = { randomFoo() };
+                              ^
+
+"Test_name.c", line 178: error: invalid combination of type specifiers
+  constexpr struct S5 V44 = { 0 };
+            ^
+
+"Test_name.c", line 179: error: invalid combination of type specifiers
+  constexpr struct S5 V45 = { V38 / 0 };
+            ^
+
+"Test_name.c", line 179: warning: division by zero
+  constexpr struct S5 V45 = { V38 / 0 };
+                                    ^
+
+"Test_name.c", line 183: error: invalid combination of type specifiers
+  constexpr float V46[3] = {randomFoo() };
+            ^
+
+"Test_name.c", line 183: error: function call is not allowed in a constant expression
+  constexpr float V46[3] = {randomFoo() };
+                            ^
+
+"Test_name.c", line 185: error: invalid combination of type specifiers
+  constexpr struct S5 V47[3] = {randomFoo() };
+            ^
+
+"Test_name.c", line 185: error: function call is not allowed in a constant expression
+  constexpr struct S5 V47[3] = {randomFoo() };
+                                ^
+
+"Test_name.c", line 188: error: expression must have a constant value
+  const static int V48 = V38;
+                         ^
+
+"Test_name.c", line 189: error: invalid combination of type specifiers
+  constexpr static int V49 = V48;
+                   ^
+
+"Test_name.c", line 189: warning: use of a const variable in a constant expression is nonstandard in C
+  constexpr static int V49 = V48;
+                             ^
+
+"Test_name.c", line 193: error: invalid combination of type specifiers
+    constexpr int V = P1;
+              ^
+
+"Test_name.c", line 196: error: invalid combination of type specifiers
+    constexpr int V1 = 12;
+              ^
+
+"Test_name.c", line 197: error: invalid combination of type specifiers
+    constexpr const int *V2 = &V1;
+                    ^
+
+"Test_name.c", line 220: error: invalid combination of type specifiers
+  constexpr struct S8 DesigInit = {.b = {299, 7, 8}, .a = {-1, 7, 8}};
+            ^
+
+"Test_name.c", line 224: error: invalid combination of type specifiers
+    constexpr char V50 = 300;
+              ^
+
+"Test_name.c", line 226: error: invalid combination of type specifiers
+    constexpr float V51 = 1.0 / 3.0;
+              ^
+
+"Test_name.c", line 228: error: invalid combination of type specifiers
+    constexpr float V52 = 0.7;
+              ^
+
+"Test_name.c", line 230: error: invalid combination of type specifiers
+    constexpr float V53 = 1.0f / 3.0f;
+              ^
+
+"Test_name.c", line 231: error: invalid combination of type specifiers
+    constexpr float V54 = 432000000000;
+              ^
+
+"Test_name.c", line 233: error: invalid combination of type specifiers
+    constexpr unsigned char V55[] = {
+                       ^
+
+"Test_name.c", line 238: error: invalid combination of type specifiers
+    constexpr unsigned char V56[] = {
+                       ^
+
+"Test_name.c", line 241: error: invalid combination of type specifiers
+    constexpr struct S6 V57 = {299};
+              ^
+
+"Test_name.c", line 243: error: invalid combination of type specifiers
+    constexpr struct S6 V58 = {-299};
+              ^
+
+"Test_name.c", line 245: error: invalid combination of type specifiers
+    constexpr double V59 = 0.5;
+              ^
+
+"Test_name.c", line 246: error: invalid combination of type specifiers
+    constexpr double V60 = 1.0;
+              ^
+
+"Test_name.c", line 247: error: invalid combination of type specifiers
+    constexpr float V61 = V59 / V60;
+              ^
+
+"Test_name.c", line 248: error: invalid combination of type specifiers
+    constexpr double V62 = 1.7;
+              ^
+
+"Test_name.c", line 249: error: invalid combination of type specifiers
+    constexpr float V63 = V59 / V62;
+              ^
+
+"Test_name.c", line 252: error: invalid combination of type specifiers
+    constexpr unsigned char V64 = '\xAF';
+                       ^
+
+"Test_name.c", line 254: error: invalid combination of type specifiers
+    constexpr unsigned char V65 = u8'\xAF';
+                       ^
+
+"Test_name.c", line 256: error: invalid combination of type specifiers
+    constexpr char V66[3] = {300};
+              ^
+
+"Test_name.c", line 258: error: invalid combination of type specifiers
+    constexpr struct S6 V67[3] = {300};
+              ^
+
+"Test_name.c", line 261: error: invalid combination of type specifiers
+    constexpr struct S7 V68 = {0.3, -1 };
+              ^
+
+"Test_name.c", line 264: error: invalid combination of type specifiers
+    constexpr struct S7 V69 = {0.5, -1 };
+              ^
+
+"Test_name.c", line 266: error: invalid combination of type specifiers
+    constexpr struct S7 V70[3] = {{123456789}};
+              ^
+
+"Test_name.c", line 269: error: invalid combination of type specifiers
+    constexpr int V71 = 0.3;
+              ^
+
+"Test_name.c", line 271: error: invalid combination of type specifiers
+    constexpr int V72 = V59;
+              ^
+
+"Test_name.c", line 273: error: invalid combination of type specifiers
+    constexpr struct S6 V73 = {V59};
+              ^
+
+"Test_name.c", line 276: error: invalid combination of type specifiers
+    constexpr float V74 = 1;
+              ^
+
+"Test_name.c", line 277: error: invalid combination of type specifiers
+    constexpr float V75 = V59;
+              ^
+
+"Test_name.c", line 278: error: invalid combination of type specifiers
+    constexpr unsigned int V76[3] = {0.5};
+                       ^
+
+"Test_name.c", line 281: error: invalid combination of type specifiers
+    constexpr _Complex float V77 = 0;
+                       ^
+
+"Test_name.c", line 281: error: _Complex can only be used with floating-point types
+    constexpr _Complex float V77 = 0;
+    ^
+
+"Test_name.c", line 282: error: invalid combination of type specifiers
+    constexpr float V78 = V77;
+              ^
+
+"Test_name.c", line 284: error: invalid combination of type specifiers
+    constexpr int V79 = V77;
+              ^
+
+"Test_name.c", line 289: error: invalid combination of type specifiers
+  constexpr char string[] = "test""ing this out\xFF";
+            ^
+
+"Test_name.c", line 289: error: a value of type "char [18]" cannot be used to initialize an entity of type "<error-type> []"
+  constexpr char string[] = "test""ing this out\xFF";
+                            ^
+
+"Test_name.c", line 290: error: invalid combination of type specifiers
+  constexpr unsigned char ustring[] = "test""ing this out\xFF";
+                     ^
+
+"Test_name.c", line 290: error: a value of type "char [18]" cannot be used to initialize an entity of type "<error-type> []"
+  constexpr unsigned char ustring[] = "test""ing this out\xFF";
+                                      ^
+
+"Test_name.c", line 292: error: invalid combination of type specifiers
+  constexpr char u8string[] = u8"test"u8"ing this out\xFF";
+            ^
+
+"Test_name.c", line 292: error: a value of type "char [18]" cannot be used to initialize an entity of type "<error-type> []"
+  constexpr char u8string[] = u8"test"u8"ing this out\xFF";
+                              ^
+
+"Test_name.c", line 294: error: invalid combination of type specifiers
+  constexpr unsigned char u8ustring[] = u8"test"u8"ing this out\xFF";
+                     ^
+
+"Test_name.c", line 294: error: a value of type "char [18]" cannot be used to initialize an entity of type "<error-type> []"
+  constexpr unsigned char u8ustring[] = u8"test"u8"ing this out\xFF";
+                                        ^
+
+"Test_name.c", line 295: error: invalid combination of type specifiers
+  constexpr unsigned short uustring[] = u"test"u"ing this out\xFF";
+  ^
+
+"Test_name.c", line 295: error: a value of type "unsigned short [18]" cannot be used to initialize an entity of type "<error-type> []"
+  constexpr unsigned short uustring[] = u"test"u"ing this out\xFF";
+                                        ^
+
+"Test_name.c", line 296: error: invalid combination of type specifiers
+  constexpr unsigned int Ustring[] = U"test"U"ing this out\xFF";
+                     ^
+
+"Test_name.c", line 296: error: a value of type "unsigned int [18]" cannot be used to initialize an entity of type "<error-type> []"
+  constexpr unsigned int Ustring[] = U"test"U"ing this out\xFF";
+                                     ^
+
+"Test_name.c", line 297: error: invalid combination of type specifiers
+  constexpr unsigned char Arr2[6][6] = {
+                     ^
+
+"Test_name.c", line 302: error: invalid combination of type specifiers
+  constexpr int i = (12);
+            ^
+
+"Test_name.c", line 303: error: invalid combination of type specifiers
+  constexpr int j = (i);
+            ^
+
+"Test_name.c", line 303: error: expression must have a constant value
+  constexpr int j = (i);
+                    ^
+
+"Test_name.c", line 304: error: invalid combination of type specifiers
+  constexpr unsigned jneg = (-i);
+  ^
+
+"Test_name.c", line 308: error: invalid combination of type specifiers
+  constexpr int V80 = 3;
+            ^
+
+"Test_name.c", line 309: error: invalid combination of type specifiers
+  constexpr const int *V81 = &V80;
+                  ^
+
+"Test_name.c", line 311: error: invalid combination of type specifiers
+  constexpr int *V82 = 0;
+            ^
+
+"Test_name.c", line 312: error: invalid combination of type specifiers
+  constexpr int *V83 = V82;
+            ^
+
+"Test_name.c", line 312: error: expression must have a constant value
+  constexpr int *V83 = V82;
+                       ^
+"Test_name.c", line 312: note: the value of variable "V82" (declared at line 311) cannot be used as a constant
+  constexpr int *V83 = V82;
+                       ^
+
+"Test_name.c", line 313: error: invalid combination of type specifiers
+  constexpr int *V84 = 42;
+            ^
+
+"Test_name.c", line 313: warning: a value of type "int" cannot be used to initialize an entity of type "<error-type> *"
+  constexpr int *V84 = 42;
+                       ^
+
+"Test_name.c", line 313: warning: conversion of nonzero integer to pointer
+  constexpr int *V84 = 42;
+                       ^
+
+"Test_name.c", line 317: error: invalid combination of type specifiers
+  constexpr int *V85 = nullptr;
+            ^
+
+"Test_name.c", line 321: error: invalid combination of type specifiers
+    constexpr int V86[P1] = {};
+              ^
+
+"Test_name.c", line 324: error: invalid combination of type specifiers
+    constexpr int V88[V87] = {};
+              ^
+
+"Test_name.c", line 324: warning: use of a const variable in a constant expression is nonstandard in C
+    constexpr int V88[V87] = {};
+                      ^
+
+"Test_name.c", line 327: error: invalid combination of type specifiers
+    constexpr int V90[V89] = {};
+              ^
+
+"Test_name.c", line 332: error: invalid combination of type specifiers
+    constexpr typeof(array) foo = 0; // Accepted because array is a pointer type, not a VLA type
+              ^
+
+"Test_name.c", line 334: error: invalid combination of type specifiers
+    constexpr typeof(fp) bar = 0; // expected-error {{constexpr variable cannot have type 'const typeof (fp)' (aka 'int (*(*const)(int))[n]')}}
+              ^
+
+"Test_name.c", line 347: error: invalid combination of type specifiers
+    constexpr float fl0 = INF;
+              ^
+
+"Test_name.c", line 348: error: invalid combination of type specifiers
+    constexpr float fl1 = (long double)INF;
+              ^
+
+"Test_name.c", line 349: error: invalid combination of type specifiers
+    constexpr float fl2 = (long double)FLT_NAN;
+              ^
+
+"Test_name.c", line 350: error: invalid combination of type specifiers
+    constexpr float fl3 = FLT_NAN;
+              ^
+
+"Test_name.c", line 351: error: invalid combination of type specifiers
+    constexpr float fl5 = DBL_NAN;
+              ^
+
+"Test_name.c", line 352: error: invalid combination of type specifiers
+    constexpr float fl6 = LD_NAN;
+              ^
+
+"Test_name.c", line 353: error: invalid combination of type specifiers
+    constexpr float fl7 = DBL_SNAN; // expected-error {{constexpr initializer evaluates to nan which is not exactly representable in type 'const float'}}
+              ^
+
+"Test_name.c", line 354: error: invalid combination of type specifiers
+    constexpr float fl8 = LD_SNAN; // expected-error {{constexpr initializer evaluates to nan which is not exactly representable in type 'const float'}}
+              ^
+
+"Test_name.c", line 356: error: invalid combination of type specifiers
+    constexpr double db0 = FLT_NAN;
+              ^
+
+"Test_name.c", line 357: error: invalid combination of type specifiers
+    constexpr double db2 = DBL_NAN;
+              ^
+
+"Test_name.c", line 358: error: invalid combination of type specifiers
+    constexpr double db3 = DBL_SNAN;
+              ^
+
+"Test_name.c", line 359: error: invalid combination of type specifiers
+    constexpr double db4 = FLT_SNAN; // expected-error {{constexpr initializer evaluates to nan which is not exactly representable in type 'const double'}}
+              ^
+
+"Test_name.c", line 360: error: invalid combination of type specifiers
+    constexpr double db5 = LD_SNAN; // expected-error {{constexpr initializer evaluates to nan which is not exactly representable in type 'const double'}}
+              ^
+
+"Test_name.c", line 361: error: invalid combination of type specifiers
+    constexpr double db6 = INF;
+              ^
+
+"Test_name.c", line 364: error: invalid combination of type specifiers
+  constexpr struct S9 s9 = {  }; // expected-error {{variable has incomplete type 'const struct S9'}} \
+            ^
+
+"Test_name.c", line 370: error: invalid combination of type specifiers
+  constexpr struct S10 c = { 255 };
+            ^
+
+"Test_name.c", line 375: error: expected a "("
+    if constexpr (300) {} //expected-error {{expected '(' after 'if'}}
+       ^
+
+"Test_name.c", line 378: error: expected a "("
+    if consteval (300) {} //expected-error {{expected '(' after 'if'}}
+       ^
+
+"Test_name.c", line 386: error: invalid combination of type specifiers
+    constexpr int num = s11->len; // expected-error {{constexpr variable 'num' must be initialized by a constant expression}}
+              ^
+
+"Test_name.c", line 391: error: invalid combination of type specifiers
+    constexpr char c[] = { 'a' };
+              ^
+
+"Test_name.c", line 392: error: invalid combination of type specifiers
+    constexpr int i = c[1]; // expected-error {{constexpr variable 'i' must be initialized by a constant expression}}\
+              ^
+
+"Test_name.c", line 394: error: this operator is not allowed in an integral constant expression
+    _Static_assert(i == c[0]); // expected-error {{static assertion expression is not an integral constant expression}}\
+                         ^
+
+"Test_name.c", line 398: warning: unknown attribute "ext_vector_type"
+  typedef bool __vbool2  __attribute__((ext_vector_type(2)));
+                                        ^
+
+"Test_name.c", line 399: warning: unknown attribute "ext_vector_type"
+  typedef short v2int16_t __attribute__((ext_vector_type(2)));
+                                         ^
+
+"Test_name.c", line 402: error: type name is not allowed
+      return __builtin_bit_cast(unsigned char, __builtin_convertvector(a == b, __vbool2)) == 0b11;
+                                                                               ^
+
+"Test_name.c", line 402: error: type must be trivially copyable
+      return __builtin_bit_cast(unsigned char, __builtin_convertvector(a == b, __vbool2)) == 0b11;
+                                               ^
+
+"Test_name.c", line 405: error: invalid combination of type specifiers
+  constexpr bool b2 = (bool)nullptr;
+            ^
+
+"Test_name.c", line 405: error: expression must have arithmetic type
+  constexpr bool b2 = (bool)nullptr;
+                            ^
+
+"Test_name.c", line 419: error: invalid combination of type specifiers
+    constexpr double d_const = gh173847_double(2.0);             // expected-error {{constexpr variable 'd_const' must be initialized by a constant expression}}
+              ^
+
+"Test_name.c", line 420: error: invalid combination of type specifiers
+    constexpr long double ld_const = gh173847_long_double(2.0L); // expected-error {{constexpr variable 'ld_const' must be initialized by a constant expression}}
+                   ^
+
+"Test_name.c", line 424: error: invalid combination of type specifiers
+    static constexpr int c = c; // expected-error {{constexpr variable 'c' must be initialized by a constant expression}}\
+                     ^
+
+"Test_name.c", line 424: error: expression must have a constant value
+    static constexpr int c = c; // expected-error {{constexpr variable 'c' must be initialized by a constant expression}}\
+                             ^
+
+"Test_name.c", line 426: error: expression must have a constant value
+    static int justincase = justincase; // expected-error {{initializer element is not a compile-time constant}}
+                            ^
+"Test_name.c", line 426: note: the value of variable "justincase" (declared at line 426) cannot be used as a constant
+    static int justincase = justincase; // expected-error {{initializer element is not a compile-time constant}}
+                            ^
+
+"Test_name.c", line 426: warning: variable "justincase" is used before its value is set
+    static int justincase = justincase; // expected-error {{initializer element is not a compile-time constant}}
+                            ^
+
+180 errors detected in the compilation of "Test_name.c".

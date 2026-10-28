@@ -1,0 +1,462 @@
+fe_only -DTEST_NUMBER=10 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 -DWI --target linux_aarch64 Test_name.c
+"Test_name.c", line 15: warning: explicit type is missing ("int" assumed)
+  __declspec(dllimport) typedef int typedef1;
+  ^
+
+"Test_name.c", line 15: warning: a declaration here must declare a parameter
+  __declspec(dllimport) typedef int typedef1;
+                        ^
+
+"Test_name.c", line 15: warning: declaration is not visible outside of function
+  __declspec(dllimport) typedef int typedef1;
+                                    ^
+
+"Test_name.c", line 17: error: identifier-list parameters may only be used in a function definition
+  typedef __declspec(dllimport) int typedef2;
+                     ^
+
+"Test_name.c", line 17: warning: a declaration here must declare a parameter
+  typedef __declspec(dllimport) int typedef2;
+  ^
+
+"Test_name.c", line 17: warning: explicit type is missing ("int" assumed)
+  typedef __declspec(dllimport) int typedef2;
+          ^
+
+"Test_name.c", line 17: warning: declaration is not visible outside of function
+  typedef __declspec(dllimport) int typedef2;
+          ^
+
+"Test_name.c", line 17: error: expected a ";"
+  typedef __declspec(dllimport) int typedef2;
+                                ^
+
+"Test_name.c", line 19: error: identifier-list parameters may only be used in a function definition
+  typedef int __declspec(dllimport) typedef3;
+                         ^
+
+"Test_name.c", line 19: warning: a declaration here must declare a parameter
+  typedef int __declspec(dllimport) typedef3;
+  ^
+
+"Test_name.c", line 19: error: expected a ";"
+  typedef int __declspec(dllimport) typedef3;
+                                    ^
+
+"Test_name.c", line 21: warning: a declaration here must declare a parameter
+  typedef __declspec(dllimport) void (*FunTy)(void);
+  ^
+
+"Test_name.c", line 21: warning: declaration is not visible outside of function
+  typedef __declspec(dllimport) void (*FunTy)(void);
+                     ^
+
+"Test_name.c", line 21: error: expected a ";"
+  typedef __declspec(dllimport) void (*FunTy)(void);
+                                ^
+
+"Test_name.c", line 23: warning: declaration is not visible outside of function
+  enum __declspec(dllimport) Enum { EnumVal };
+       ^
+
+"Test_name.c", line 15: error: "dllimport" has already been declared in the current scope
+  __declspec(dllimport) typedef int typedef1;
+             ^
+
+"Test_name.c", line 23: error: expected a ";"
+  enum __declspec(dllimport) Enum { EnumVal };
+                             ^
+
+"Test_name.c", line 25: error: tag kind of class or struct is incompatible with declaration of enum "__declspec" (declared at line 23)
+  struct __declspec(dllimport) Record {};
+         ^
+
+"Test_name.c", line 25: error: "dllimport" has already been declared in the current scope
+  struct __declspec(dllimport) Record {};
+                    ^
+
+"Test_name.c", line 25: error: expected a ";"
+  struct __declspec(dllimport) Record {};
+                               ^
+
+"Test_name.c", line 35: error: "dllimport" has already been declared in the current scope
+  __declspec(dllimport) extern int ExternGlobalDecl;
+             ^
+
+"Test_name.c", line 35: error: expected a ";"
+  __declspec(dllimport) extern int ExternGlobalDecl;
+                        ^
+
+"Test_name.c", line 38: error: "dllimport" has already been declared in the current scope
+  __declspec(dllimport) int GlobalDecl;
+             ^
+
+"Test_name.c", line 38: error: expected a ";"
+  __declspec(dllimport) int GlobalDecl;
+                        ^
+
+"Test_name.c", line 39: error: a declaration here must declare a parameter
+  int **__attribute__((dllimport))* GlobalDeclChunkAttr;
+                                    ^
+
+"Test_name.c", line 40: error: a declaration here must declare a parameter
+  int GlobalDeclAttr __attribute__((dllimport));
+      ^
+
+"Test_name.c", line 43: error: a declaration here must declare a parameter
+  int *VarForInit = &GlobalDecl; // expected-error{{initializer element is not a compile-time constant}}
+       ^
+
+"Test_name.c", line 43: error: a parameter declaration may not have an initializer
+  int *VarForInit = &GlobalDecl; // expected-error{{initializer element is not a compile-time constant}}
+       ^
+
+"Test_name.c", line 43: error: identifier "GlobalDecl" is undefined
+  int *VarForInit = &GlobalDecl; // expected-error{{initializer element is not a compile-time constant}}
+                     ^
+
+"Test_name.c", line 46: error: "dllimport" has already been declared in the current scope
+  __declspec(dllimport) extern int ExternGlobalInit = 1; // expected-error{{definition of dllimport data}}
+             ^
+
+"Test_name.c", line 46: error: expected a ";"
+  __declspec(dllimport) extern int ExternGlobalInit = 1; // expected-error{{definition of dllimport data}}
+                        ^
+
+"Test_name.c", line 47: error: "dllimport" has already been declared in the current scope
+  __declspec(dllimport) int GlobalInit1 = 1; // expected-error{{definition of dllimport data}}
+             ^
+
+"Test_name.c", line 47: error: expected a ";"
+  __declspec(dllimport) int GlobalInit1 = 1; // expected-error{{definition of dllimport data}}
+                        ^
+
+"Test_name.c", line 48: error: a declaration here must declare a parameter
+  int __declspec(dllimport) GlobalInit2 = 1; // expected-error{{definition of dllimport data}}
+      ^
+
+"Test_name.c", line 48: error: "__declspec" has already been declared in the current scope
+  int __declspec(dllimport) GlobalInit2 = 1; // expected-error{{definition of dllimport data}}
+      ^
+
+"Test_name.c", line 48: error: expected a ";"
+  int __declspec(dllimport) GlobalInit2 = 1; // expected-error{{definition of dllimport data}}
+                            ^
+
+"Test_name.c", line 54: error: expected a declaration
+  __declspec(dllimport) extern int ExternGlobalDeclInit; // expected-note{{previous declaration is here}}
+  ^
+
+"Test_name.c", line 60: error: a declaration here must declare a parameter
+  int ExternGlobalDeclInit = 1;
+      ^
+
+"Test_name.c", line 60: error: a parameter declaration may not have an initializer
+  int ExternGlobalDeclInit = 1;
+      ^
+
+"Test_name.c", line 65: error: expected a declaration
+  __declspec(dllimport) int GlobalDeclInit; // expected-note{{previous declaration is here}}
+  ^
+
+"Test_name.c", line 71: error: a declaration here must declare a parameter
+  int GlobalDeclInit = 1;
+      ^
+
+"Test_name.c", line 71: error: a parameter declaration may not have an initializer
+  int GlobalDeclInit = 1;
+      ^
+
+"Test_name.c", line 76: error: a declaration here must declare a parameter
+  int *__attribute__((dllimport)) GlobalDeclChunkAttrInit; // expected-note{{previous declaration is here}}
+                                  ^
+
+"Test_name.c", line 82: error: a declaration here must declare a parameter
+  int *GlobalDeclChunkAttrInit = 0;
+       ^
+
+"Test_name.c", line 82: error: "GlobalDeclChunkAttrInit" has already been declared in the current scope
+  int *GlobalDeclChunkAttrInit = 0;
+       ^
+
+"Test_name.c", line 82: error: a parameter declaration may not have an initializer
+  int *GlobalDeclChunkAttrInit = 0;
+       ^
+
+"Test_name.c", line 87: error: a declaration here must declare a parameter
+  int GlobalDeclAttrInit __attribute__((dllimport)); // expected-note{{previous declaration is here}}
+      ^
+
+"Test_name.c", line 93: error: a declaration here must declare a parameter
+  int GlobalDeclAttrInit = 1;
+      ^
+
+"Test_name.c", line 93: error: "GlobalDeclAttrInit" has already been declared in the current scope
+  int GlobalDeclAttrInit = 1;
+      ^
+
+"Test_name.c", line 93: error: a parameter declaration may not have an initializer
+  int GlobalDeclAttrInit = 1;
+      ^
+
+"Test_name.c", line 96: error: expected a declaration
+  __declspec(dllimport) extern int GlobalRedecl1;
+  ^
+
+"Test_name.c", line 97: error: expected a declaration
+  __declspec(dllimport) extern int GlobalRedecl1;
+  ^
+
+"Test_name.c", line 99: error: expected a declaration
+  __declspec(dllimport) int GlobalRedecl2a;
+  ^
+
+"Test_name.c", line 100: error: expected a declaration
+  __declspec(dllimport) int GlobalRedecl2a;
+  ^
+
+"Test_name.c", line 102: error: a declaration here must declare a parameter
+  int *__attribute__((dllimport)) GlobalRedecl2b;
+                                  ^
+
+"Test_name.c", line 103: error: a declaration here must declare a parameter
+  int *__attribute__((dllimport)) GlobalRedecl2b;
+                                  ^
+
+"Test_name.c", line 103: error: "GlobalRedecl2b" has already been declared in the current scope
+  int *__attribute__((dllimport)) GlobalRedecl2b;
+                                  ^
+
+"Test_name.c", line 105: error: a declaration here must declare a parameter
+  int GlobalRedecl2c __attribute__((dllimport));
+      ^
+
+"Test_name.c", line 106: error: a declaration here must declare a parameter
+  int GlobalRedecl2c __attribute__((dllimport));
+      ^
+
+"Test_name.c", line 106: error: "GlobalRedecl2c" has already been declared in the current scope
+  int GlobalRedecl2c __attribute__((dllimport));
+      ^
+
+"Test_name.c", line 109: error: expected a declaration
+  __declspec(dllimport) extern int GlobalRedecl3; // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+  ^
+
+"Test_name.c", line 110: error: invalid storage class for a parameter
+                        extern int GlobalRedecl3; // expected-warning{{'GlobalRedecl3' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                        ^
+
+"Test_name.c", line 110: error: a declaration here must declare a parameter
+                        extern int GlobalRedecl3; // expected-warning{{'GlobalRedecl3' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                                   ^
+
+"Test_name.c", line 113: error: invalid storage class for a parameter
+                        extern int GlobalRedecl4; // expected-note{{previous declaration is here}}
+                        ^
+
+"Test_name.c", line 113: error: a declaration here must declare a parameter
+                        extern int GlobalRedecl4; // expected-note{{previous declaration is here}}
+                                   ^
+
+"Test_name.c", line 114: error: a declaration here must declare a parameter
+  int useGlobalRedecl4(void) { return GlobalRedecl4; }
+      ^
+
+"Test_name.c", line 114: error: expected a ";"
+  int useGlobalRedecl4(void) { return GlobalRedecl4; }
+                             ^
+
+"Test_name.c", line 118: error: invalid storage class for a parameter
+                        extern int GlobalRedecl5; // expected-note{{previous declaration is here}}
+                        ^
+
+"Test_name.c", line 118: error: a declaration here must declare a parameter
+                        extern int GlobalRedecl5; // expected-note{{previous declaration is here}}
+                                   ^
+
+"Test_name.c", line 119: error: expected a declaration
+  __declspec(dllimport) extern int GlobalRedecl5; // expected-warning{{redeclaration of 'GlobalRedecl5' should not add 'dllimport' attribute}}
+  ^
+
+"Test_name.c", line 123: error: expected a declaration
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+  ^
+
+"Test_name.c", line 126: error: expected a declaration
+  __declspec(dllimport) __thread int ThreadLocalGlobal; // expected-error{{'ThreadLocalGlobal' cannot be thread local when declared 'dllimport'}}
+  ^
+
+"Test_name.c", line 129: error: expected a declaration
+  __declspec(dllimport) float LocalRedecl1; // expected-note{{previous declaration is here}}
+  ^
+
+"Test_name.c", line 130: error: expected a declaration
+  __declspec(dllimport) float LocalRedecl2; // expected-note{{previous declaration is here}}
+  ^
+
+"Test_name.c", line 131: error: expected a declaration
+  __declspec(dllimport) float LocalRedecl3; // expected-note{{previous declaration is here}}
+  ^
+
+"Test_name.c", line 132: error: expected a declaration
+  __declspec(dllimport) float LocalRedecl4;
+  ^
+
+"Test_name.c", line 133: error: a declaration here must declare a parameter
+  void functionScope(void) {
+       ^
+
+"Test_name.c", line 133: error: expected a ";"
+  void functionScope(void) {
+                           ^
+
+"Test_name.c", line 155: warning: parsing restarts here after previous syntax error
+  __attribute__((dllimport)) void decl1A(void); // Basic check with __attribute__
+                                              ^
+
+"Test_name.c", line 156: error: expected a declaration
+  __declspec(dllimport)      void decl1B(void);
+  ^
+
+"Test_name.c", line 158: error: a declaration here must declare a parameter
+  void __attribute__((dllimport)) decl2A(void);
+                                  ^
+
+"Test_name.c", line 159: error: a declaration here must declare a parameter
+  void __declspec(dllimport)      decl2B(void);
+       ^
+
+"Test_name.c", line 159: error: "__declspec" has already been declared in the current scope
+  void __declspec(dllimport)      decl2B(void);
+       ^
+
+"Test_name.c", line 159: error: expected a ";"
+  void __declspec(dllimport)      decl2B(void);
+                                  ^
+
+"Test_name.c", line 164: error: a declaration here must declare a parameter
+  void (*FunForInit)(void) = &decl2A;
+         ^
+
+"Test_name.c", line 164: error: a parameter declaration may not have an initializer
+  void (*FunForInit)(void) = &decl2A;
+         ^
+
+"Test_name.c", line 167: error: expected a declaration
+  __declspec(dllimport) void def(void) {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+  ^
+
+"Test_name.c", line 178: warning: parsing restarts here after previous syntax error
+  __declspec(dllimport) void redecl1(void);
+                                          ^
+
+"Test_name.c", line 179: error: expected a declaration
+  __declspec(dllimport) void redecl1(void);
+  ^
+
+"Test_name.c", line 181: error: expected a declaration
+  __declspec(dllimport) void redecl2(void); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+  ^
+
+"Test_name.c", line 182: error: a declaration here must declare a parameter
+                        void redecl2(void); // expected-warning{{'redecl2' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                             ^
+
+"Test_name.c", line 187: error: expected a declaration
+                        __declspec(dllimport) void redecl3(void); // expected-note{{previous declaration is here}}
+                        ^
+
+"Test_name.c", line 194: error: a declaration here must declare a parameter
+                        void redecl3(void) {}
+                             ^
+
+"Test_name.c", line 194: error: expected a ";"
+                        void redecl3(void) {}
+                                           ^
+
+"Test_name.c", line 197: error: a declaration here must declare a parameter
+  void useRedecl4(void) { redecl4(); }
+       ^
+
+"Test_name.c", line 197: error: expected a ";"
+  void useRedecl4(void) { redecl4(); }
+                        ^
+
+"Test_name.c", line 201: error: a declaration here must declare a parameter
+                        void redecl5(void); // expected-note{{previous declaration is here}}
+                             ^
+
+"Test_name.c", line 202: error: expected a declaration
+  __declspec(dllimport) void redecl5(void); // expected-warning{{redeclaration of 'redecl5' should not add 'dllimport' attribute}}
+  ^
+
+"Test_name.c", line 209: error: expected a declaration
+  __declspec(dllimport) void redecl6(void);
+  ^
+
+"Test_name.c", line 210: error: invalid specifier on a parameter
+                        inline void redecl6(void) {}
+                        ^
+
+"Test_name.c", line 210: error: a declaration here must declare a parameter
+                        inline void redecl6(void) {}
+                                    ^
+
+"Test_name.c", line 210: error: expected a ";"
+                        inline void redecl6(void) {}
+                                                  ^
+
+"Test_name.c", line 218: warning: parsing restarts here after previous syntax error
+                        void redecl7(void);
+                                          ^
+
+"Test_name.c", line 219: error: expected a declaration
+  __declspec(dllimport) inline void redecl7(void) {}
+  ^
+
+"Test_name.c", line 223: warning: parsing restarts here after previous syntax error
+  void __declspec(dllimport) redecl8(unknowntype X); // expected-error{{unknown type name 'unknowntype'}}
+                                                   ^
+
+"Test_name.c", line 224: error: identifier "unknowntype" is undefined
+  void redecl8(unknowntype X) { } // expected-error{{unknown type name 'unknowntype'}}
+               ^
+
+"Test_name.c", line 224: error: a declaration here must declare a parameter
+  void redecl8(unknowntype X) { } // expected-error{{unknown type name 'unknowntype'}}
+       ^
+
+"Test_name.c", line 224: error: expected a ";"
+  void redecl8(unknowntype X) { } // expected-error{{unknown type name 'unknowntype'}}
+                              ^
+
+"Test_name.c", line 227: warning: parsing restarts here after previous syntax error
+  void __declspec(dllimport) redecl9(void); // expected-note{{previous declaration is here}}
+                                          ^
+
+"Test_name.c", line 228: error: a declaration here must declare a parameter
+  int redecl9(void) {} // expected-error{{conflicting types for 'redecl9'}}
+      ^
+
+"Test_name.c", line 228: error: expected a ";"
+  int redecl9(void) {} // expected-error{{conflicting types for 'redecl9'}}
+                    ^
+
+"Test_name.c", line 231: warning: parsing restarts here after previous syntax error
+  __declspec(dllimport) static int staticFunc(void); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+                                                   ^
+
+"Test_name.c", line 234: error: a declaration here must declare a parameter
+  void staticLocalFunc(void) {
+       ^
+
+"Test_name.c", line 234: error: expected a ";"
+  void staticLocalFunc(void) {
+                             ^
+
+At end of source: error: expected a "{"
+
+At end of source: error: expected a "}"
+
+100 errors detected in the compilation of "Test_name.c".

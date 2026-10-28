@@ -1,0 +1,48 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"SemaCXX/co_await-range-for.cpp", line 53: error: function "MyForLoopArrayAwaiter::promise_type::await_transform(T *) [with T=int]" (declared at line 48) cannot be referenced -- it is a deleted function
+    for co_await(auto i : arr) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 75: error: function "ForLoopAwaiterBadBeginTransform::promise_type::await_transform(BeginTag<T>) [with T=Iter<int>]" (declared at line 67) cannot be referenced -- it is a deleted function
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 75: error: "CoawaitTag<Iter<int>, false>" has no member "await_ready"
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 75: error: "CoawaitTag<Iter<int>, false>" has no member "await_resume"
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 75: error: "CoawaitTag<Iter<int>, false>" has no member "await_suspend"
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 85: warning: missing return statement at end of non-void function "bad_begin_template(Dummy)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 109: error: function "operator co_await(CoawaitTag<Iter, true>) [with Iter=Iter<float>]" (declared at line 89) cannot be referenced -- it is a deleted function
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 120: warning: missing return statement at end of non-void function "bad_inc_transform_template(Dummy)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 154: warning: missing return statement at end of non-void function "test_coawait_lookup(T)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 82: error: function "ForLoopAwaiterBadBeginTransform::promise_type::await_transform(BeginTag<T>) [with T=Iter<int>]" (declared at line 67) cannot be referenced -- it is a deleted function
+    for co_await(auto i : R) {}
+                          ^
+          detected during instantiation of "ForLoopAwaiterBadBeginTransform bad_begin_template(Dummy) [with Dummy=int]" at line 86
+
+"SemaCXX/co_await-range-for.cpp", line 117: error: function "operator co_await(CoawaitTag<Iter, true>) [with Iter=Iter<long>]" (declared at line 89) cannot be referenced -- it is a deleted function
+    for co_await(auto i : R) {}
+                          ^
+          detected during instantiation of "ForLoopAwaiterBadIncTransform bad_inc_transform_template(Dummy) [with Dummy=long]" at line 121
+
+8 errors detected in the compilation of "Test_name.c".

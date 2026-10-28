@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef float VF __attribute__((vector_size (16)));
+                                  ^
+
+"Test_name.c", line 15: error: too many initializer values
+    a = (VF) { 1.0, 2.0, 3.0, 4.0 };
+                    ^
+
+"Test_name.c", line 16: error: too many initializer values
+    b = (VF) { 5.0, 6.0, 7.0, 8.0 };
+                    ^
+
+"Test_name.c", line 17: error: too many initializer values
+    c = (VF) { 0.0, 0.0, 0.0, 0.0 };
+                    ^
+
+"Test_name.c", line 18: error: too many initializer values
+    x = c == ((VF) { 0.0, 0.0, 0.0, 0.0 }) ? a : b;
+                          ^
+
+4 errors detected in the compilation of "Test_name.c".

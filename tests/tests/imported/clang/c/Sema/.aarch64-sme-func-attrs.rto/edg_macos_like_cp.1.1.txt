@@ -1,0 +1,386 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 8: error: expected a "{"
+  void sme_arm_streaming(void) __arm_streaming;
+                               ^
+
+"Test_name.c", line 11: warning: parsing restarts here after previous syntax error
+  __arm_new("za") void sme_arm_new_za(void) {}
+                                            ^
+
+"Test_name.c", line 12: error: expected a "{"
+  void sme_arm_shared_za(void) __arm_inout("za");
+                               ^
+
+"Test_name.c", line 16: warning: parsing restarts here after previous syntax error
+  __arm_new("za") void sme_arm_streaming_new_za(void) __arm_streaming {}
+                                                                      ^
+
+"Test_name.c", line 17: error: expected a "{"
+  void sme_arm_streaming_shared_za(void) __arm_streaming __arm_inout("za");
+                                         ^
+
+"Test_name.c", line 20: warning: parsing restarts here after previous syntax error
+  __arm_new("za") void sme_arm_sc_new_za(void) __arm_streaming_compatible {}
+                                                                          ^
+
+"Test_name.c", line 21: error: expected a "{"
+  void sme_arm_sc_shared_za(void) __arm_streaming_compatible __arm_inout("za");
+                                  ^
+
+"Test_name.c", line 24: warning: parsing restarts here after previous syntax error
+  __arm_locally_streaming void sme_arm_locally_streaming(void) { }
+                                                               ^
+
+"Test_name.c", line 25: warning: this declaration has no storage class or type specifier
+  __arm_locally_streaming void sme_arm_streaming_and_locally_streaming(void) __arm_streaming { }
+  ^
+
+"Test_name.c", line 25: error: expected a ";"
+  __arm_locally_streaming void sme_arm_streaming_and_locally_streaming(void) __arm_streaming { }
+                          ^
+
+"Test_name.c", line 34: warning: parsing restarts here after previous syntax error
+  void streaming_ptr(void) __arm_streaming;
+                                          ^
+
+"Test_name.c", line 35: error: expected a ";"
+  typedef  void (*fptrty1) (void) __arm_streaming;
+                                  ^
+
+"Test_name.c", line 36: error: identifier "streaming_ptr" is undefined
+  fptrty1 call_streaming_func() { return streaming_ptr; }
+                                         ^
+
+"Test_name.c", line 38: error: expected a "{"
+  void streaming_compatible_ptr(void) __arm_streaming_compatible;
+                                      ^
+
+"Test_name.c", line 40: warning: return value type does not match the function type
+  fptrty2 call_sc_func() { return streaming_compatible_ptr; }
+                                  ^
+
+"Test_name.c", line 42: error: expected a "{"
+  void shared_za_ptr(void) __arm_inout("za");
+                           ^
+
+"Test_name.c", line 44: warning: return value type does not match the function type
+  fptrty3 call_shared_za_func() { return shared_za_ptr; }
+                                         ^
+
+"Test_name.c", line 46: error: expected a "{"
+  void preserves_za_ptr(void) __arm_preserves("za");
+                              ^
+
+"Test_name.c", line 48: warning: return value type does not match the function type
+  fptrty4 call_preserve_za_func() { return preserves_za_ptr; }
+                                           ^
+
+"Test_name.c", line 51: error: identifier "sme_arm_new_za" is undefined
+  fptrty6 cast_nza_func_to_normal() { return sme_arm_new_za; }
+                                             ^
+
+"Test_name.c", line 52: error: identifier "sme_arm_locally_streaming" is undefined
+  fptrty6 cast_ls_func_to_normal() { return sme_arm_locally_streaming; }
+                                            ^
+
+"Test_name.c", line 60: error: expected a "{"
+  void streaming_mode(void) __arm_streaming __arm_streaming_compatible;
+                            ^
+
+"Test_name.c", line 70: warning: parsing restarts here after previous syntax error
+  __arm_new("za") void new_shared_za(void) __arm_inout("za") {}
+                                                             ^
+
+"Test_name.c", line 74: error: expected a type specifier
+  __arm_new("za") void new_preserves_za(void) __arm_preserves("za") {}
+            ^
+
+"Test_name.c", line 74: warning: explicit type is missing ("int" assumed)
+  __arm_new("za") void new_preserves_za(void) __arm_preserves("za") {}
+  ^
+
+"Test_name.c", line 74: warning: unnamed prototyped parameters not allowed when body is present
+  __arm_new("za") void new_preserves_za(void) __arm_preserves("za") {}
+  ^
+
+"Test_name.c", line 74: error: expected a "{"
+  __arm_new("za") void new_preserves_za(void) __arm_preserves("za") {}
+                  ^
+
+"Test_name.c", line 82: error: expected a "{"
+  void streaming_ptr_invalid(void) __arm_streaming __arm_streaming_compatible;
+                                   ^
+
+"Test_name.c", line 88: warning: parsing restarts here after previous syntax error
+  fptrty7 invalid_streaming_func() { return streaming_ptr_invalid; }
+                                   ^
+
+"Test_name.c", line 88: warning: return value type does not match the function type
+  fptrty7 invalid_streaming_func() { return streaming_ptr_invalid; }
+                                            ^
+
+"Test_name.c", line 92: error: expected a declaration
+  void function_no_prototype() __arm_streaming;
+                               ^
+
+"Test_name.c", line 96: error: a declaration here must declare a parameter
+  void sme_arm_agnostic_shared_za_zt0(void) __arm_agnostic("sme_za_state") __arm_inout("zt0") {}
+       ^
+
+"Test_name.c", line 96: error: expected a ";"
+  void sme_arm_agnostic_shared_za_zt0(void) __arm_agnostic("sme_za_state") __arm_inout("zt0") {}
+                                            ^
+
+"Test_name.c", line 118: warning: parsing restarts here after previous syntax error
+  typedef void (*n_ptrty) (void);
+                                ^
+
+"Test_name.c", line 119: warning: a declaration here must declare a parameter
+  typedef void (*s_ptrty) (void) __arm_streaming;
+  ^
+
+"Test_name.c", line 119: warning: declaration is not visible outside of function
+  typedef void (*s_ptrty) (void) __arm_streaming;
+                 ^
+
+"Test_name.c", line 119: error: expected a ";"
+  typedef void (*s_ptrty) (void) __arm_streaming;
+                                 ^
+
+"Test_name.c", line 120: error: a declaration here must declare a parameter
+  s_ptrty return_valid_streaming_fptr(s_ptrty f) { return f; }
+          ^
+
+"Test_name.c", line 120: error: expected a ";"
+  s_ptrty return_valid_streaming_fptr(s_ptrty f) { return f; }
+                                                 ^
+
+"Test_name.c", line 130: warning: parsing restarts here after previous syntax error
+  typedef void (*nonproto_n_ptrty) ();
+                                     ^
+
+"Test_name.c", line 133: error: identifier "nonproto_n_ptrty" is undefined
+  nonproto_n_ptrty return_invalid_fptr_streaming_nonprotonormal(s_ptrty f) { return f; }
+  ^
+
+"Test_name.c", line 133: error: a declaration here must declare a parameter
+  nonproto_n_ptrty return_invalid_fptr_streaming_nonprotonormal(s_ptrty f) { return f; }
+                   ^
+
+"Test_name.c", line 133: error: expected a ";"
+  nonproto_n_ptrty return_invalid_fptr_streaming_nonprotonormal(s_ptrty f) { return f; }
+                                                                           ^
+
+"Test_name.c", line 136: error: identifier "sc_ptrty" is undefined
+  sc_ptrty return_valid_streaming_compatible_fptr(sc_ptrty f) { return f; }
+  ^
+
+"Test_name.c", line 136: error: identifier "sc_ptrty" is undefined
+  sc_ptrty return_valid_streaming_compatible_fptr(sc_ptrty f) { return f; }
+                                                  ^
+
+"Test_name.c", line 136: error: a declaration here must declare a parameter
+  sc_ptrty return_valid_streaming_compatible_fptr(sc_ptrty f) { return f; }
+           ^
+
+"Test_name.c", line 136: error: expected a ";"
+  sc_ptrty return_valid_streaming_compatible_fptr(sc_ptrty f) { return f; }
+                                                              ^
+
+"Test_name.c", line 145: warning: parsing restarts here after previous syntax error
+  typedef void (*sz_ptrty) (void) __arm_inout("za");
+                                                   ^
+
+"Test_name.c", line 146: error: identifier "sz_ptrty" is undefined
+  sz_ptrty return_valid_shared_za_fptr(sz_ptrty f) { return f; }
+  ^
+
+"Test_name.c", line 146: error: identifier "sz_ptrty" is undefined
+  sz_ptrty return_valid_shared_za_fptr(sz_ptrty f) { return f; }
+                                       ^
+
+"Test_name.c", line 146: error: a declaration here must declare a parameter
+  sz_ptrty return_valid_shared_za_fptr(sz_ptrty f) { return f; }
+           ^
+
+"Test_name.c", line 146: error: expected a ";"
+  sz_ptrty return_valid_shared_za_fptr(sz_ptrty f) { return f; }
+                                                   ^
+
+"Test_name.c", line 156: warning: parsing restarts here after previous syntax error
+  typedef void (*pz_ptrty) (void) __arm_preserves("za");
+                                                       ^
+
+"Test_name.c", line 157: error: identifier "pz_ptrty" is undefined
+  pz_ptrty return_valid_preserves_za_fptr(pz_ptrty f) { return f; }
+  ^
+
+"Test_name.c", line 157: error: identifier "pz_ptrty" is undefined
+  pz_ptrty return_valid_preserves_za_fptr(pz_ptrty f) { return f; }
+                                          ^
+
+"Test_name.c", line 157: error: a declaration here must declare a parameter
+  pz_ptrty return_valid_preserves_za_fptr(pz_ptrty f) { return f; }
+           ^
+
+"Test_name.c", line 157: error: expected a ";"
+  pz_ptrty return_valid_preserves_za_fptr(pz_ptrty f) { return f; }
+                                                      ^
+
+"Test_name.c", line 182: warning: parsing restarts here after previous syntax error
+  void redecl(void) __arm_streaming;
+                                   ^
+
+"Test_name.c", line 183: error: a declaration here must declare a parameter
+  void redecl(void) __arm_streaming_compatible { }
+       ^
+
+"Test_name.c", line 183: error: expected a ";"
+  void redecl(void) __arm_streaming_compatible { }
+                    ^
+
+"Test_name.c", line 189: warning: parsing restarts here after previous syntax error
+  void redecl_preserve_za(void) __arm_preserves("za");;
+                                                     ^
+
+"Test_name.c", line 189: error: expected a "{"
+  void redecl_preserve_za(void) __arm_preserves("za");;
+                                                      ^
+
+"Test_name.c", line 197: error: expected a "{"
+  void redecl_nopreserve_za(void) __arm_preserves("za") {}
+                                  ^
+
+"Test_name.c", line 199: error: expected a ")"
+  void non_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za"), void (*preserves_za_fn_ptr)(void) __arm_preserves("za")) {
+                                                        ^
+
+"Test_name.c", line 200: warning: function "sme_arm_new_za" declared implicitly
+    sme_arm_new_za(); // OK
+    ^
+
+"Test_name.c", line 209: warning: function "preserves_za_fn_ptr" declared implicitly
+    preserves_za_fn_ptr();
+    ^
+
+"Test_name.c", line 212: error: expected a ")"
+  void shared_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) __arm_inout("za") {
+                                                           ^
+
+"Test_name.c", line 212: error: expected a "{"
+  void shared_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) __arm_inout("za") {
+                                                                              ^
+
+"Test_name.c", line 217: error: expected a type specifier
+  __arm_new("za") void new_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) {
+            ^
+
+"Test_name.c", line 217: warning: explicit type is missing ("int" assumed)
+  __arm_new("za") void new_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) {
+  ^
+
+"Test_name.c", line 217: error: function "__arm_new" has already been defined (previous definition at line 74)
+  __arm_new("za") void new_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) {
+  ^
+
+"Test_name.c", line 217: warning: unnamed prototyped parameters not allowed when body is present
+  __arm_new("za") void new_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) {
+  ^
+
+"Test_name.c", line 217: error: expected a "{"
+  __arm_new("za") void new_za_definition(void (*shared_za_fn_ptr)(void) __arm_inout("za")) {
+                  ^
+
+"Test_name.c", line 219: warning: function "shared_za_fn_ptr" declared implicitly
+    shared_za_fn_ptr(); // OK
+    ^
+
+"Test_name.c", line 359: error: expected a type specifier
+  __arm_new("") void invalid_arm_new_empty_string(void);
+            ^
+
+"Test_name.c", line 359: warning: explicit type is missing ("int" assumed)
+  __arm_new("") void invalid_arm_new_empty_string(void);
+  ^
+
+"Test_name.c", line 359: error: function "__arm_new" has already been defined (previous definition at line 74)
+  __arm_new("") void invalid_arm_new_empty_string(void);
+  ^
+
+"Test_name.c", line 359: warning: unnamed prototyped parameters not allowed when body is present
+  __arm_new("") void invalid_arm_new_empty_string(void);
+  ^
+
+"Test_name.c", line 359: error: expected a "{"
+  __arm_new("") void invalid_arm_new_empty_string(void);
+                ^
+
+"Test_name.c", line 473: warning: parsing restarts here after previous syntax error
+  void unimplemented_spill_fill_za(void (*share_zt0_only)(void) __arm_inout("zt0")) __arm_inout("za", "zt0") {
+                                                                                                             ^
+
+"Test_name.c", line 478: warning: function "share_zt0_only" declared implicitly
+    share_zt0_only();
+    ^
+
+"Test_name.c", line 481: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_with_vl_arg(__SVInt8_t a) __arm_streaming { }
+                                 ^
+
+"Test_name.c", line 481: error: expected a "{"
+  void sme_streaming_with_vl_arg(__SVInt8_t a) __arm_streaming { }
+                                               ^
+
+"Test_name.c", line 483: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t sme_streaming_returns_vl(void) __arm_streaming { __SVInt8_t r; return r; }
+  ^
+
+"Test_name.c", line 483: error: expected a "{"
+  __SVInt8_t sme_streaming_returns_vl(void) __arm_streaming { __SVInt8_t r; return r; }
+                                            ^
+
+"Test_name.c", line 483: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t sme_streaming_returns_vl(void) __arm_streaming { __SVInt8_t r; return r; }
+                                                              ^
+
+"Test_name.c", line 485: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_compatible_with_vl_arg(__SVInt8_t a) __arm_streaming_compatible { }
+                                            ^
+
+"Test_name.c", line 485: error: expected a "{"
+  void sme_streaming_compatible_with_vl_arg(__SVInt8_t a) __arm_streaming_compatible { }
+                                                          ^
+
+"Test_name.c", line 487: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t sme_streaming_compatible_returns_vl(void) __arm_streaming_compatible { __SVInt8_t r; return r; }
+  ^
+
+"Test_name.c", line 487: error: expected a "{"
+  __SVInt8_t sme_streaming_compatible_returns_vl(void) __arm_streaming_compatible { __SVInt8_t r; return r; }
+                                                       ^
+
+"Test_name.c", line 487: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t sme_streaming_compatible_returns_vl(void) __arm_streaming_compatible { __SVInt8_t r; return r; }
+                                                                                    ^
+
+"Test_name.c", line 489: error: identifier "__SVInt8_t" is undefined
+  void sme_no_streaming_with_vl_arg(__SVInt8_t a) { }
+                                    ^
+
+"Test_name.c", line 491: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t sme_no_streaming_returns_vl(void) { __SVInt8_t r; return r; }
+  ^
+
+"Test_name.c", line 491: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t sme_no_streaming_returns_vl(void) { __SVInt8_t r; return r; }
+                                                 ^
+
+"Test_name.c", line 495: warning: this declaration has no storage class or type specifier
+  __arm_locally_streaming void sme_locally_streaming_with_vl_arg(__SVInt8_t a) { }
+  ^
+
+"Test_name.c", line 495: error: expected a ";"
+  __arm_locally_streaming void sme_locally_streaming_with_vl_arg(__SVInt8_t a) { }
+                          ^
+
+64 errors detected in the compilation of "Test_name.c".

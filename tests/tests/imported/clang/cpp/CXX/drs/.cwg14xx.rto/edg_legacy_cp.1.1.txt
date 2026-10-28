@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 --exceptions --exceptions Test_name.c
+"Test_name.c", line 30: error: identifier "var1" is undefined
+        Check<true ? 0 : A::unknown_spec>::type *var1;
+                                                 ^
+
+"Test_name.c", line 43: error: identifier "var5" is undefined
+        Check<true ? 0 : (d(), 0)>::type *var5;
+                                          ^
+
+"Test_name.c", line 34: warning: variable "var2" was declared but never referenced
+        Check<true ? 0 : a>::type *var2; // #cwg1413-var2
+                                   ^
+
+"Test_name.c", line 35: warning: variable "var3" was declared but never referenced
+        Check<true ? 0 : b>::type *var3;
+                                   ^
+
+"Test_name.c", line 38: warning: variable "var4" was declared but never referenced
+        Check<true ? 0 : ((void)c, 0)>::type *var4;
+                                              ^
+
+2 errors detected in the compilation of "Test_name.c".

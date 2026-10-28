@@ -1,0 +1,146 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 10: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, C<__remove_const(T)>) { }
+                                     ^
+
+"Test_name.c", line 11: error: "__remove_cv" not allowed in current mode
+    template<typename T> void f(T, C<__remove_cv(T)>) { }
+                                     ^
+
+"Test_name.c", line 11: error: function template "builtin_trait_as_template_arg::f" has already been defined (previous definition at line 10)
+    template<typename T> void f(T, C<__remove_cv(T)>) { }
+                              ^
+
+"Test_name.c", line 13: error: "__remove_volatile" not allowed in current mode
+    template<typename T> void f(T, C<const __remove_volatile(T)>) { }
+                                           ^
+
+"Test_name.c", line 14: error: "__remove_cv" not allowed in current mode
+    template<typename T> void f(T, C<const __remove_cv(T)>) { }
+                                           ^
+
+"Test_name.c", line 14: error: function template "builtin_trait_as_template_arg::f(T, C<const <error-type>>)" has already been defined (previous definition at line 13)
+    template<typename T> void f(T, C<const __remove_cv(T)>) { }
+                              ^
+
+"Test_name.c", line 16: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, C<const __remove_const(T)>) { }
+                                           ^
+
+"Test_name.c", line 16: error: function template "builtin_trait_as_template_arg::f(T, C<const <error-type>>)" has already been defined (previous definition at line 14)
+    template<typename T> void f(T, C<const __remove_const(T)>) { }
+                              ^
+
+"Test_name.c", line 17: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, C<volatile __remove_const(T)>) { }
+                                              ^
+
+"Test_name.c", line 19: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, C<__remove_const(decltype(T()))>) { }
+                                     ^
+
+"Test_name.c", line 19: error: function template "builtin_trait_as_template_arg::f(T, C<<error-type>>)" has already been defined (previous definition at line 11)
+    template<typename T> void f(T, C<__remove_const(decltype(T()))>) { }
+                              ^
+
+"Test_name.c", line 20: error: "__remove_cv" not allowed in current mode
+    template<typename T> void f(T, C<__remove_cv(decltype(T()))>) { }
+                                     ^
+
+"Test_name.c", line 20: error: function template "builtin_trait_as_template_arg::f(T, C<<error-type>>)" has already been defined (previous definition at line 19)
+    template<typename T> void f(T, C<__remove_cv(decltype(T()))>) { }
+                              ^
+
+"Test_name.c", line 22: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, C<__remove_const(decltype(T(1)))>) { }
+                                     ^
+
+"Test_name.c", line 22: error: function template "builtin_trait_as_template_arg::f(T, C<<error-type>>)" has already been defined (previous definition at line 20)
+    template<typename T> void f(T, C<__remove_const(decltype(T(1)))>) { }
+                              ^
+
+"Test_name.c", line 23: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, C<__remove_const(decltype(T(2)))>) { }
+                                     ^
+
+"Test_name.c", line 23: error: function template "builtin_trait_as_template_arg::f(T, C<<error-type>>)" has already been defined (previous definition at line 22)
+    template<typename T> void f(T, C<__remove_const(decltype(T(2)))>) { }
+                              ^
+
+"Test_name.c", line 28: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, __remove_const(decltype(T()))) { }
+                                   ^
+
+"Test_name.c", line 29: error: "__remove_cv" not allowed in current mode
+    template<typename T> void f(T, __remove_cv(decltype(T()))) { }
+                                   ^
+
+"Test_name.c", line 29: error: function template "builtin_trait_with_decltype_operand::f" has already been defined (previous definition at line 28)
+    template<typename T> void f(T, __remove_cv(decltype(T()))) { }
+                              ^
+
+"Test_name.c", line 31: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, __remove_const(decltype(T(1)))) { }
+                                   ^
+
+"Test_name.c", line 31: error: function template "builtin_trait_with_decltype_operand::f" has already been defined (previous definition at line 29)
+    template<typename T> void f(T, __remove_const(decltype(T(1)))) { }
+                              ^
+
+"Test_name.c", line 32: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, __remove_const(decltype(T(2)))) { }
+                                   ^
+
+"Test_name.c", line 32: error: function template "builtin_trait_with_decltype_operand::f" has already been defined (previous definition at line 31)
+    template<typename T> void f(T, __remove_const(decltype(T(2)))) { }
+                              ^
+
+"Test_name.c", line 36: error: "__remove_const" not allowed in current mode
+      template<typename T> void f(T, __remove_const(decltype(T())));
+                                     ^
+
+"Test_name.c", line 39: error: "__remove_const" not allowed in current mode
+    template<typename T> void D::f(T, __remove_const(decltype(T())))
+                                      ^
+
+"Test_name.c", line 45: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, __remove_const(const T)) { }
+                                   ^
+
+"Test_name.c", line 46: error: "__remove_cv" not allowed in current mode
+    template<typename T> void f(T, __remove_cv(const T)) { }
+                                   ^
+
+"Test_name.c", line 46: error: function template "const_qualified_after_dependent_type_operator::f" has already been defined (previous definition at line 45)
+    template<typename T> void f(T, __remove_cv(const T)) { }
+                              ^
+
+"Test_name.c", line 51: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, const __remove_const(T) &) { }
+                                         ^
+
+"Test_name.c", line 52: error: "__remove_cv" not allowed in current mode
+    template<typename T> void f(T, const __remove_cv(T) &) { }
+                                         ^
+
+"Test_name.c", line 52: error: function template "const_qualified_dependent_type_operator_reference::f" has already been defined (previous definition at line 51)
+    template<typename T> void f(T, const __remove_cv(T) &) { }
+                              ^
+
+"Test_name.c", line 57: error: "__remove_const" not allowed in current mode
+    template<typename T> void f(T, __remove_const(T)) { }
+                                   ^
+
+"Test_name.c", line 63: error: identifier "__underlying_type" is undefined
+    template<typename T> void f(T, __underlying_type(T)) { }
+                                   ^
+
+"Test_name.c", line 71: error: "__remove_const" not allowed in current mode
+      void f(int, __remove_const(int));
+                  ^
+
+"Test_name.c", line 74: error: "__remove_volatile" not allowed in current mode
+    void D::f(int, __remove_volatile(int))
+                   ^
+
+36 errors detected in the compilation of "Test_name.c".

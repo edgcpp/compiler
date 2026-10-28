@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: warning: unrecognized GCC pragma
+  #pragma GCC unroll 0
+              ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function 'main':
+Test_name.c:13:1: error: for, while or do statement expected before '{' token
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

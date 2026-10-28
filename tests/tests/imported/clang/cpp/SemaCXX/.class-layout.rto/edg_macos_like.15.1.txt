@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=15 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -DCLANG_ABI_COMPAT=15 --c++03 Test_name.c
+"Test_name.c", line 495: warning: signed bit field of length 1
+        char a:1;
+             ^
+
+"Test_name.c", line 499: warning: signed bit field of length 1
+        char e:1;
+             ^
+
+"Test_name.c", line 623: error: static assertion failed with ""
+    _Static_assert(_Alignof(B) == _Alignof(int), "");
+    ^
+
+"Test_name.c", line 624: warning: offsetof applied to a type other than a standard-layout class
+    _Static_assert(__builtin_offsetof(B, n) == 4, "");
+                                      ^
+
+"Test_name.c", line 624: error: static assertion failed with ""
+    _Static_assert(__builtin_offsetof(B, n) == 4, "");
+    ^
+
+"Test_name.c", line 631: warning: offsetof applied to a type other than a standard-layout class
+    _Static_assert(__builtin_offsetof(C, n) == 2, "");
+                                      ^
+
+"Test_name.c", line 638: error: static assertion failed with ""
+    _Static_assert(_Alignof(D) == 2, "");
+    ^
+
+"Test_name.c", line 639: warning: offsetof applied to a type other than a standard-layout class
+    _Static_assert(__builtin_offsetof(D, n) == 2, "");
+                                      ^
+
+"Test_name.c", line 639: error: static assertion failed with ""
+    _Static_assert(__builtin_offsetof(D, n) == 2, "");
+    ^
+
+"Test_name.c", line 656: warning: packing attribute on the parent type is ignored for this field of class type "non_pod::t1" that is not standard-layout
+    t1 v1;
+       ^
+
+"Test_name.c", line 660: error: static assertion failed with ""
+  _Static_assert(_Alignof(t2) == 1, "");
+  ^
+
+"Test_name.c", line 690: warning: offsetof applied to a type other than a standard-layout class
+  _Static_assert(__builtin_offsetof(C, b) == 3, "");
+                                    ^
+
+"Test_name.c", line 695: warning: defaulted functions are a C++11 feature
+    t1() = default;
+           ^
+
+"Test_name.c", line 696: warning: deleted functions are a C++11 feature
+    t1(const t1&) = delete;
+                    ^
+
+"Test_name.c", line 698: warning: rvalue references are a C++11 feature
+    t1(t1&&) = default;
+         ^
+
+"Test_name.c", line 714: error: static assertion failed with ""
+  _Static_assert(sizeof(t3) == 8, "");
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --cfront_3.0 Test_name.c
+"Test_name.c", line 37: remark: destructor for base class "A" (declared at line 28) is not virtual
+  struct D : virtual public A, virtual public B
+                            ^
+
+"Test_name.c", line 37: remark: destructor for base class "B" (declared at line 32) is not virtual
+  struct D : virtual public A, virtual public B
+                                              ^
+
+"Test_name.c", line 43: remark: destructor for base class "D" (declared at line 37) is not virtual
+  struct G : virtual public D, public E
+                            ^
+
+"Test_name.c", line 43: remark: destructor for base class "E" (declared at line 41) is not virtual
+  struct G : virtual public D, public E
+                                      ^
+

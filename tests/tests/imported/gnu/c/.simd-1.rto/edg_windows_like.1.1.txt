@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef int __attribute__((vector_size (16))) v4si;
+                             ^
+
+"Test_name.c", line 10: warning: unknown attribute "vector_size"
+  typedef short __attribute__((vector_size (16))) v8hi;
+                               ^
+
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+  typedef int __attribute__((vector_size (8))) v2si;
+                             ^
+
+"Test_name.c", line 12: warning: unknown attribute "vector_size"
+  typedef unsigned int __attribute__((vector_size (16))) uv4si;
+                                      ^
+
+"Test_name.c", line 21: warning: unknown attribute "vector_size"
+  short foo2 __attribute__((vector_size (8)));
+                            ^
+

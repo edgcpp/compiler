@@ -1,0 +1,374 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 40: error: no instance of overloaded function "X::f" matches the specified type
+  void X::f(int n) __attribute__((enable_if(n == 2, "chosen when 'n' is two")))  // expected-error{{out-of-line definition of 'f' does not match any declaration in 'X'}}
+          ^
+
+"Test_name.c", line 45: error: no instance of constructor "X::X" matches the argument list
+            argument types are: (bool)
+  X x2(false); // expected-error{{no matching constructor for initialization of 'X'}}
+       ^
+"Test_name.c", line 12: note: function "X::X(const X &)" does not match because argument #1 does not match parameter
+    X(const X&) = default;  // expected-note{{candidate constructor not viable: no known conversion from 'bool' to 'const X' for 1st argument}}
+    ^
+"Test_name.c", line 11: note: number of parameters of function "X::X()" does not match the call
+    X() = default;  // expected-note{{candidate constructor not viable: requires 0 arguments, but 1 was provided}}
+    ^
+
+"Test_name.c", line 48: warning: function "old" was declared deprecated
+  void deprec1(int i) __attribute__((enable_if(old() == 0, "chosen when old() is zero")));  // expected-warning{{'old' is deprecated}}
+                                               ^
+"Test_name.c", line 47: note: because of a "deprecated" attribute
+  __attribute__((deprecated)) constexpr int old() { return 0; }  // expected-note2{{'old' has been explicitly marked deprecated here}}
+                 ^
+
+"Test_name.c", line 49: warning: function "old" was declared deprecated
+  void deprec2(int i) __attribute__((enable_if(old() == 0, "chosen when old() is zero")));  // expected-warning{{'old' is deprecated}}
+                                               ^
+"Test_name.c", line 47: note: because of a "deprecated" attribute
+  __attribute__((deprecated)) constexpr int old() { return 0; }  // expected-note2{{'old' has been explicitly marked deprecated here}}
+                 ^
+
+"Test_name.c", line 78: error: no instance of overloaded function "X::f" matches the argument list
+            argument types are: (int)
+            object type is: X
+    x.f(2);  // expected-error{{no matching member function for call to 'f'}}
+      ^
+
+"Test_name.c", line 79: error: no instance of overloaded function "X::f" matches the argument list
+            argument types are: (int)
+            object type is: X
+    x.f(3);  // expected-error{{no matching member function for call to 'f'}}
+      ^
+
+"Test_name.c", line 82: error: function "X::g" cannot be called with the given argument list
+            argument types are: (int)
+            object type is: X
+    x.g(1);  // expected-error{{no matching member function for call to 'g'}}
+      ^
+
+"Test_name.c", line 84: error: function "X::h" cannot be called with the given argument list
+            argument types are: (int)
+            object type is: X
+    x.h(0);
+      ^
+
+"Test_name.c", line 85: error: function "X::h" cannot be called with the given argument list
+            argument types are: (int, int)
+            object type is: X
+    x.h(1, 2);  // expected-error{{no matching member function for call to 'h'}}
+      ^
+
+"Test_name.c", line 88: error: function "X::s" cannot be called with the given argument list
+            argument types are: (int)
+    x.s(1);  // expected-error{{no matching member function for call to 's'}}
+    ^
+
+"Test_name.c", line 91: error: function "X::s" cannot be called with the given argument list
+            argument types are: (int)
+    X::s(1);  // expected-error{{no matching member function for call to 's'}}
+    ^
+
+"Test_name.c", line 93: error: more than one instance of overloaded function "X::conflict" matches the argument list:
+            function "X::conflict(int)" (declared at line 24)
+            function "X::conflict(int)" (declared at line 25)
+            argument types are: (int)
+            object type is: X
+    x.conflict(5);  // expected-error{{call to member function 'conflict' is ambiguous}}
+      ^
+
+"Test_name.c", line 95: error: function "X::hidden_by_argument_conversion" cannot be called with the given argument list
+            argument types are: (int)
+            object type is: X
+    x.hidden_by_argument_conversion(10);  // expected-error{{argument type 'Incomplete' is incomplete}}
+      ^
+"Test_name.c", line 27: note: function "X::hidden_by_argument_conversion" does not match because argument #1 does not match parameter
+    void hidden_by_argument_conversion(Incomplete n, int m = 0) __attribute__((enable_if(m == 10, "chosen when 'm' is ten")));
+         ^
+
+"Test_name.c", line 96: error: function "X::hidden_by_incomplete_return_value" returns incomplete type "Incomplete"
+    x.hidden_by_incomplete_return_value(10);  // expected-error{{calling 'hidden_by_incomplete_return_value' with incomplete return type 'Incomplete'}}
+                                       ^
+
+"Test_name.c", line 100: error: more than one instance of overloaded function "overloaded" matches the argument list:
+            function "overloaded(int)" (declared at line 51)
+            function "overloaded(long)" (declared at line 52)
+            argument types are: (X)
+    overloaded(x);
+    ^
+
+"Test_name.c", line 102: error: function "default_argument" cannot be called with the given argument list
+            argument types are: (int)
+    default_argument(0);
+    ^
+
+"Test_name.c", line 103: error: function "default_argument" cannot be called with the given argument list
+            argument types are: (int, int)
+    default_argument(1, 2);  // expected-error{{no matching function for call to 'default_argument'}}
+    ^
+
+"Test_name.c", line 105: error: function "default_argument_promotion" cannot be called with the given argument list
+            argument types are: (int)
+    default_argument_promotion(0);
+    ^
+
+"Test_name.c", line 106: error: function "default_argument_promotion" cannot be called with the given argument list
+            argument types are: (int, int)
+    default_argument_promotion(1, 2);  // expected-error{{no matching function for call to 'default_argument_promotion'}}
+    ^
+
+"Test_name.c", line 111: error: no instance of function template "typedep" matches the argument list
+            argument types are: (int)
+    typedep(0);  // expected-error{{no matching function for call to 'typedep'}}
+    ^
+
+"Test_name.c", line 113: error: no instance of function template "typedep" matches the argument list
+            argument types are: (Nothing)
+    typedep(n);  // expected-note{{in instantiation of function template specialization 'typedep<Nothing>' requested here}}
+    ^
+
+"Test_name.c", line 134: error: function "Y<T>::h [with T=int]" cannot be called with the given argument list
+            argument types are: (int)
+            object type is: Y<int>
+    int t0 = y.h(0);
+               ^
+
+"Test_name.c", line 135: error: function "Y<T>::h [with T=int]" cannot be called with the given argument list
+            argument types are: (int, int)
+            object type is: Y<int>
+    int t1 = y.h(1, 2);  // expected-error{{no matching member function for call to 'h'}}
+               ^
+
+"Test_name.c", line 142: error: expression must have bool type (or be convertible to bool)
+    void local_function() __attribute__((enable_if(::h(T()), "")));
+                                                                  ^
+
+"Test_name.c", line 160: error: function "PR20988::fn2" cannot be called with the given argument list
+            argument types are: (int)
+      fn2(expr);  // expected-error{{no matching function for call to 'fn2'}}
+      ^
+
+"Test_name.c", line 176: error: more than one instance of overloaded function "FnPtrs::ovlFoo" matches the required type
+      int (*p)(int) = ovlFoo;
+                      ^
+
+"Test_name.c", line 177: error: more than one instance of overloaded function "FnPtrs::ovlFoo" matches the required type
+      int (*p2)(int) = &ovlFoo;
+                       ^
+
+"Test_name.c", line 179: error: more than one instance of overloaded function "FnPtrs::ovlFoo" matches the required type
+      a = ovlFoo;
+        ^
+
+"Test_name.c", line 180: error: more than one instance of overloaded function "FnPtrs::ovlFoo" matches the required type
+      a = &ovlFoo;
+        ^
+
+"Test_name.c", line 178: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 186: error: more than one instance of overloaded function "FnPtrs::ovlBar" matches the required type
+      int (*p)(int) = ovlBar;
+                      ^
+
+"Test_name.c", line 187: error: more than one instance of overloaded function "FnPtrs::ovlBar" matches the required type
+      int (*p2)(int) = &ovlBar;
+                       ^
+
+"Test_name.c", line 189: error: more than one instance of overloaded function "FnPtrs::ovlBar" matches the required type
+      a = ovlBar;
+        ^
+
+"Test_name.c", line 190: error: more than one instance of overloaded function "FnPtrs::ovlBar" matches the required type
+      a = &ovlBar;
+        ^
+
+"Test_name.c", line 188: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 196: error: more than one instance of overloaded function "FnPtrs::ovlConflict" matches the required type
+      int (*p)(int) = ovlConflict; // expected-error{{address of overloaded function 'ovlConflict' is ambiguous}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+                      ^
+
+"Test_name.c", line 197: error: more than one instance of overloaded function "FnPtrs::ovlConflict" matches the required type
+      int (*p2)(int) = &ovlConflict; // expected-error{{address of overloaded function 'ovlConflict' is ambiguous}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+                       ^
+
+"Test_name.c", line 199: error: more than one instance of overloaded function "FnPtrs::ovlConflict" matches the required type
+      a = ovlConflict; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+        ^
+
+"Test_name.c", line 200: error: more than one instance of overloaded function "FnPtrs::ovlConflict" matches the required type
+      a = &ovlConflict; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+        ^
+
+"Test_name.c", line 198: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 208: error: more than one instance of overloaded function "FnPtrs::templated" matches the required type
+      int (*p)(int) = templated<int>;
+                      ^
+
+"Test_name.c", line 209: error: more than one instance of overloaded function "FnPtrs::templated" matches the required type
+      int (*p2)(int) = &templated<int>;
+                       ^
+
+"Test_name.c", line 211: error: more than one instance of overloaded function "FnPtrs::templated" matches the required type
+      a = templated<int>;
+        ^
+
+"Test_name.c", line 212: error: more than one instance of overloaded function "FnPtrs::templated" matches the required type
+      a = &templated<int>;
+        ^
+
+"Test_name.c", line 210: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 218: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      int (*p)(int) = templatedBar<int>; // expected-error{{address of overloaded function 'templatedBar' does not match required type 'int (int)'}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}}
+                      ^
+
+"Test_name.c", line 219: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      int (*p2)(int) = &templatedBar<int>; // expected-error{{address of overloaded function 'templatedBar' does not match required type 'int (int)'}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}}
+                       ^
+
+"Test_name.c", line 221: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      a = templatedBar<int>; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}}
+          ^
+
+"Test_name.c", line 222: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      a = &templatedBar<int>; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}}
+          ^
+
+"Test_name.c", line 218: warning: variable "p" was declared but never referenced
+      int (*p)(int) = templatedBar<int>; // expected-error{{address of overloaded function 'templatedBar' does not match required type 'int (int)'}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}}
+            ^
+
+"Test_name.c", line 219: warning: variable "p2" was declared but never referenced
+      int (*p2)(int) = &templatedBar<int>; // expected-error{{address of overloaded function 'templatedBar' does not match required type 'int (int)'}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}}
+            ^
+
+"Test_name.c", line 220: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 232: error: more than one instance of overloaded function "FnPtrs::templatedConflict" matches the required type
+      int (*p)(int) = templatedConflict<int>; // expected-error{{address of overloaded function 'templatedConflict' is ambiguous}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+                      ^
+
+"Test_name.c", line 233: error: more than one instance of overloaded function "FnPtrs::templatedConflict" matches the required type
+      int (*p0)(int) = &templatedConflict<int>; // expected-error{{address of overloaded function 'templatedConflict' is ambiguous}} expected-note@XXXXXXXX{{candidate function made ineligible by enable_if}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+                       ^
+
+"Test_name.c", line 235: error: more than one instance of overloaded function "FnPtrs::templatedConflict" matches the required type
+      a = templatedConflict<int>; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+        ^
+
+"Test_name.c", line 236: error: more than one instance of overloaded function "FnPtrs::templatedConflict" matches the required type
+      a = &templatedConflict<int>; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{candidate function}} expected-note@XXXXXXXX{{candidate function}}
+        ^
+
+"Test_name.c", line 234: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 242: error: more than one instance of overloaded function "FnPtrs::ovlNoCandidate" matches the required type
+      int (*p)(int) = ovlNoCandidate; // expected-error{{address of overloaded function 'ovlNoCandidate' does not match required type}} expected-note@XXXXXXXX{{made ineligible by enable_if}} expected-note@XXXXXXXX{{made ineligible by enable_if}}
+                      ^
+
+"Test_name.c", line 243: error: more than one instance of overloaded function "FnPtrs::ovlNoCandidate" matches the required type
+      int (*p2)(int) = &ovlNoCandidate; // expected-error{{address of overloaded function 'ovlNoCandidate' does not match required type}} expected-note@XXXXXXXX{{made ineligible by enable_if}} expected-note@XXXXXXXX{{made ineligible by enable_if}}
+                       ^
+
+"Test_name.c", line 245: error: more than one instance of overloaded function "FnPtrs::ovlNoCandidate" matches the required type
+      a = ovlNoCandidate; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{made ineligible by enable_if}} expected-note@XXXXXXXX{{made ineligible by enable_if}}
+        ^
+
+"Test_name.c", line 246: error: more than one instance of overloaded function "FnPtrs::ovlNoCandidate" matches the required type
+      a = &ovlNoCandidate; // expected-error{{assigning to 'int (*)(int)' from incompatible type '<overloaded function type>'}} expected-note@XXXXXXXX{{made ineligible by enable_if}} expected-note@XXXXXXXX{{made ineligible by enable_if}}
+        ^
+
+"Test_name.c", line 244: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 251: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      int (*p)(int) = noOvlNoCandidate; // expected-error{{cannot take address of function 'noOvlNoCandidate' because it has one or more non-tautological enable_if conditions}}
+                      ^
+
+"Test_name.c", line 252: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      int (*p2)(int) = &noOvlNoCandidate; // expected-error{{cannot take address of function 'noOvlNoCandidate' because it has one or more non-tautological enable_if conditions}}
+                        ^
+
+"Test_name.c", line 254: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      a = noOvlNoCandidate; // expected-error{{cannot take address of function 'noOvlNoCandidate' because it has one or more non-tautological enable_if conditions}}
+          ^
+
+"Test_name.c", line 255: error: cannot take the address of a function with an "enable_if" attribute whose condition is not unconditionally true
+      a = &noOvlNoCandidate; // expected-error{{cannot take address of function 'noOvlNoCandidate' because it has one or more non-tautological enable_if conditions}}
+           ^
+
+"Test_name.c", line 251: warning: variable "p" was declared but never referenced
+      int (*p)(int) = noOvlNoCandidate; // expected-error{{cannot take address of function 'noOvlNoCandidate' because it has one or more non-tautological enable_if conditions}}
+            ^
+
+"Test_name.c", line 252: warning: variable "p2" was declared but never referenced
+      int (*p2)(int) = &noOvlNoCandidate; // expected-error{{cannot take address of function 'noOvlNoCandidate' because it has one or more non-tautological enable_if conditions}}
+            ^
+
+"Test_name.c", line 253: warning: variable "a" was set but never used
+      int (*a)(int);
+            ^
+
+"Test_name.c", line 267: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto A = reinterpret_cast<VoidFnTy>(foo);
+                                        ^
+
+"Test_name.c", line 268: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto AAmp = reinterpret_cast<VoidFnTy>(&foo);
+                                           ^
+
+"Test_name.c", line 271: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto B = reinterpret_cast<VoidFooTy>(foo);
+                                         ^
+
+"Test_name.c", line 272: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto BAmp = reinterpret_cast<VoidFooTy>(&foo);
+                                            ^
+
+"Test_name.c", line 275: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto C = reinterpret_cast<IntFooTy>(foo);
+                                        ^
+
+"Test_name.c", line 276: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto CAmp = reinterpret_cast<IntFooTy>(&foo);
+                                           ^
+
+"Test_name.c", line 279: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto D = reinterpret_cast<CharFooTy>(foo);
+                                         ^
+
+"Test_name.c", line 280: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto DAmp = reinterpret_cast<CharFooTy>(&foo);
+                                            ^
+
+"Test_name.c", line 284: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto A = (VoidFnTy)foo;
+                       ^
+
+"Test_name.c", line 285: error: cannot determine which instance of overloaded function "casting::foo" is intended
+    auto AAmp = (VoidFnTy)&foo;
+                          ^
+
+"Test_name.c", line 288: internal error: assertion failed at: "il_alloc.c", line <suppressed> in release_local_constant
+
+    auto B = (VoidFooTy)foo;
+                        ^
+
+65 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 15: warning: variable "t" was set but never used
+  	struct buf { char x; } t = { 0 };
+  	                       ^
+
+"Test_name.c", line 16: warning: variable "u" was declared but never referenced
+  	typeof(*(1 ? &s : &t)) u = { 0 };	/* { dg-warning "positional" } */
+  	                       ^
+
+"Test_name.c", line 17: warning: variable "v" was declared but never referenced
+  	typeof(*(1 ? &t : &s)) v = { 0 };	/* { dg-warning "positional" } */
+  	                       ^
+
+"Test_name.c", line 27: warning: variable "t" was declared but never referenced
+  	struct buf { char x; } t = { 0 };
+  	                       ^
+
+"Test_name.c", line 30: warning: variable "c" was declared but never referenced
+  	typeof(*(1 ? &a : &b)) c = { { 0 } };	/* { dg-warning "positional" } */
+  	                       ^
+

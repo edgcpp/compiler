@@ -1,0 +1,11 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "A::A()" cannot be inlined
+  class A : public virtual V {public: int i, j; };
+        ^
+          detected during implicit generation of "A::A()" at line 6
+
+"Test_name.c", line 5: remark: function "A::A(const A &)" cannot be inlined
+  class A : public virtual V {public: int i, j; };
+        ^
+          detected during implicit generation of "A::A(const A &)" at line 7
+

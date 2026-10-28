@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=5 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 110: error: a compound literal is not allowed in an integral constant expression
+    _Static_assert((S){ /* c89only-warning {{compound literals are a C99-specific feature}}
+                    ^
+
+"Test_name.c", line 124: error: this operator is not allowed in an integral constant expression
+      }.t.k == 42, "");
+       ^
+
+"Test_name.c", line 124: error: this operator is not allowed in an integral constant expression
+      }.t.k == 42, "");
+         ^
+
+"Test_name.c", line 134: warning: type qualifier on return type is meaningless
+  const int dr423_const(void);
+  ^
+
+"Test_name.c", line 141: warning: type qualifier is meaningless on cast type
+    __typeof__((const int)12) v2 = 12;
+                ^
+
+"Test_name.c", line 143: error: expression must be a modifiable lvalue
+    v1 = 100; /* expected-error {{cannot assign to variable 'v1' with const-qualified type 'typeof (i)' (aka 'const int')}} */
+    ^
+
+"Test_name.c", line 141: warning: variable "v2" was set but never used
+    __typeof__((const int)12) v2 = 12;
+                              ^
+
+"Test_name.c", line 154: error: function call is not allowed in a constant expression
+  _Static_assert(__builtin_fpclassify(0, 1, 2, 3, 4, 0.0f) == 4, "");
+                                     ^
+
+"Test_name.c", line 169: warning: attribute does not apply to any entity
+    _Alignas(int) struct T { /* expected-warning {{'_Alignas' attribute ignored}} */
+    ^
+
+"Test_name.c", line 174: error: attribute "_Alignas" does not apply to bit fields
+      _Alignas(int) int bit : 1; /* expected-error {{'_Alignas' attribute cannot be applied to a bit-field}} */
+      ^
+
+"Test_name.c", line 177: error: alignas does not apply here
+    _Alignas(int) typedef int foo;  /* expected-error {{'_Alignas' attribute only applies to variables and fields}} */
+    ^
+
+"Test_name.c", line 178: error: attribute "_Alignas" does not apply to register variables
+    _Alignas(int) register int bar; /* expected-error {{'_Alignas' attribute cannot be applied to a variable with 'register' storage class}} */
+    ^
+
+"Test_name.c", line 179: error: alignas does not apply here
+    _Alignas(int) void func(void);  /* expected-error {{'_Alignas' attribute only applies to variables and fields}} */
+    ^
+
+"Test_name.c", line 161: warning: variable "i" was declared but never referenced
+    _Alignas(int) int i;
+                      ^
+
+"Test_name.c", line 164: warning: variable "s" was declared but never referenced
+    } s;
+      ^
+
+"Test_name.c", line 167: warning: variable "j" was declared but never referenced
+    int j = (_Alignas(int) int){12}; /* expected-error {{expected expression}} */
+        ^
+
+"Test_name.c", line 178: warning: variable "bar" was declared but never referenced
+    _Alignas(int) register int bar; /* expected-error {{'_Alignas' attribute cannot be applied to a variable with 'register' storage class}} */
+                               ^
+
+"Test_name.c", line 185: warning: variable "k" was declared but never referenced
+    _Alignas(int) _Alignas(double) int k;
+                                       ^
+
+"Test_name.c", line 210: warning: shift count is too large
+    (void)(1 << (__CHAR_BIT__ * sizeof(int))); /* expected-warning {{shift count >= width of type}} */
+                ^
+
+"Test_name.c", line 226: warning: variable "fp" was declared but never referenced
+    int (*fp)(void) = main; /* ok */
+          ^
+
+"Test_name.c", line 241: error: no association matches the selector type "char *"
+    (void)_Generic("bla", /* expected-error {{controlling expression type 'char *' not compatible with any generic association type}} */
+          ^
+
+"Test_name.c", line 244: error: no association matches the selector type "int"
+    (void)_Generic((int const){ 0 }, /* expected-error {{controlling expression type 'int' not compatible with any generic association type}}
+          ^
+
+"Test_name.c", line 249: error: no association matches the selector type "int"
+    (void)_Generic(+(int const){ 0 }, /* expected-error {{controlling expression type 'int' not compatible with any generic association type}}
+          ^
+
+"Test_name.c", line 275: warning: variable "i" is used before its value is set
+    _Alignas(0 ? i++ : 8) char c; /* expected-error {{'aligned' attribute requires integer constant}} */
+                 ^
+
+"Test_name.c", line 275: warning: variable "c" was declared but never referenced
+    _Alignas(0 ? i++ : 8) char c; /* expected-error {{'aligned' attribute requires integer constant}} */
+                               ^
+
+"Test_name.c", line 283: warning: variable "vla" was declared but never referenced
+    static int vla[sizeof(1.0f + 1.0f)];
+               ^
+
+"Test_name.c", line 285: warning: variable "val" was declared but never referenced
+    int val[5] = { [1 ? 0 : i--] = 12  }; /* expected-warning {{expression is not an integer constant expression; folding it to a constant is a GNU extension}}
+        ^
+
+"Test_name.c", line 320: warning: expected an identifier
+    };
+     ^
+
+"Test_name.c", line 343: error: expected a ")"
+    (void)__builtin_offsetof(struct C, a->n); /* expected-error {{expected ')'}} \
+                                        ^
+
+"Test_name.c", line 369: warning: variable "u" was declared but never referenced
+    } u;
+      ^
+
+13 errors detected in the compilation of "Test_name.c".

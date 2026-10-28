@@ -1,0 +1,584 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions Test_name.c
+"SemaCXX/constant-expression-cxx2a.cpp", line 45: warning: expression has no effect
+    constexpr int k = (1 <=> 1, 0);
+                       ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 121: error: expression must have a constant value
+  constexpr bool tc9 = (&dummy <=> &dummy2) != 0;
+                       ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 121: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool tc9 = (&dummy <=> &dummy2) != 0;
+                               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 176: error: static assertion failed
+    static_assert(d.ba == 'B');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 176: note: the final comparison was 65 == 66
+    static_assert(d.ba == 'B');
+                       ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 181: error: static assertion failed
+    static_assert(a.f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 181: note: the final comparison was 65 == 68
+    static_assert(a.f() == 'D');
+                        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 182: error: static assertion failed
+    static_assert(b.f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 182: note: the final comparison was 66 == 68
+    static_assert(b.f() == 'D');
+                        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 186: error: expression must have a constant value
+    static_assert(d_not_constexpr.f() == 'D');
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 186: note: attempt to access run-time storage
+    static_assert(d_not_constexpr.f() == 'D');
+                                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 199: error: return type is not identical to nor covariant with return type "const Virtual::A *" of overridden virtual function "Virtual::Covariant1::f"
+      constexpr virtual const D *f() const { return &this->d; }
+                                 ^
+          detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::B]" at line 202
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 199: error: return type is not identical to nor covariant with return type "const Virtual::A *" of overridden virtual function "Virtual::Covariant1::f"
+      constexpr virtual const D *f() const { return &this->d; }
+                                 ^
+          detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::C]" at line 203
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 207: warning: integer conversion resulted in a change of sign
+    static_assert(cb1->f()->a == 'A');
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 207: error: static assertion failed
+    static_assert(cb1->f()->a == 'A');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 207: note: the final comparison was 0 == 65
+    static_assert(cb1->f()->a == 'A');
+                              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 208: error: static assertion failed
+    static_assert(cb1->f() == (B*)&cb.d);
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 209: error: static assertion failed
+    static_assert(cb1->f()->f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 209: note: the final comparison was 65 == 68
+    static_assert(cb1->f()->f() == 'D');
+                                ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 210: warning: integer conversion resulted in a change of sign
+    static_assert(cb2->f()->b == 'B');
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 210: error: static assertion failed
+    static_assert(cb2->f()->b == 'B');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 210: note: the final comparison was VALUE == 66
+    static_assert(cb2->f()->b == 'B');
+                              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 211: error: static assertion failed
+    static_assert(cb2->f() == &cb.d);
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 212: error: static assertion failed
+    static_assert(cb2->f()->f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 212: note: the final comparison was 66 == 68
+    static_assert(cb2->f()->f() == 'D');
+                                ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 216: warning: integer conversion resulted in a change of sign
+    static_assert(cc1->f()->a == 'A');
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 216: error: static assertion failed
+    static_assert(cc1->f()->a == 'A');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 216: note: the final comparison was 0 == 65
+    static_assert(cc1->f()->a == 'A');
+                              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 217: error: static assertion failed
+    static_assert(cc1->f() == (C*)&cc.d);
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 218: error: static assertion failed
+    static_assert(cc1->f()->f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 218: note: the final comparison was 65 == 68
+    static_assert(cc1->f()->f() == 'D');
+                                ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 219: warning: integer conversion resulted in a change of sign
+    static_assert(cc2->f()->c == 'C');
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 219: error: static assertion failed
+    static_assert(cc2->f()->c == 'C');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 219: note: the final comparison was 2131689472 == 67
+    static_assert(cc2->f()->c == 'C');
+                              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 220: error: static assertion failed
+    static_assert(cc2->f() == &cc.d);
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 221: error: static assertion failed
+    static_assert(cc2->f()->f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 221: note: the final comparison was 67 == 68
+    static_assert(cc2->f()->f() == 'D');
+                                ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 232: error: initialization is not constant
+    constexpr PureVirtualCall pure_virtual_call;
+                              ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 229: note: cannot call non-constexpr function "Virtual::PureVirtualCall::f" (declared at line 231)
+      constexpr void do_it() { f(); }
+                               ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 228: note: called from:
+      constexpr Abstract() { do_it(); }
+                                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 231: note: called from:
+    struct PureVirtualCall : Abstract { void f(); };
+           ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 259: error: expression must have a constant value
+    constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0);
+                        ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 259: note: base class "DynamicCast::A" is ambiguous
+    constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0);
+                         ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 264: error: expression must have a constant value
+    static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 264: note: base class "DynamicCast::A" is ambiguous
+    static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
+                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 267: error: expression must have a constant value
+    static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 267: note: base class "DynamicCast::A" is ambiguous
+    static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g);
+                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 278: error: expression must have a constant value
+    constexpr int b_e = (dynamic_cast<E&>((B&)g), 0);
+                        ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 278: note: conversion to inaccessible base class "DynamicCast::E" is not allowed
+    constexpr int b_e = (dynamic_cast<E&>((B&)g), 0);
+                         ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 282: error: expression must have a constant value
+    constexpr int b_unrelated = (dynamic_cast<Unrelated&>((B&)g), 0);
+                                ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 282: note: dynamic_cast to subobject of type "DynamicCast::Unrelated" is invalid (most-derived type is "DynamicCast::G")
+    constexpr int b_unrelated = (dynamic_cast<Unrelated&>((B&)g), 0);
+                                 ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 284: error: expression must have a constant value
+    constexpr int e_unrelated = (dynamic_cast<Unrelated&>((E&)g), 0);
+                                ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 284: note: dynamic_cast to subobject of type "DynamicCast::Unrelated" is invalid (most-derived type is "DynamicCast::G")
+    constexpr int e_unrelated = (dynamic_cast<Unrelated&>((E&)g), 0);
+                                 ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 315: error: static assertion failed
+    static_assert(&typeid(b1) == &typeid(B2));
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 324: warning: variable "a2" was set but never used
+      A2 a2;
+         ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 334: warning: variable "b2" was set but never used
+      B2 b2;
+         ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 380: error: expression must have a constant value
+    static_assert(read_uninitialized() == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 378: note: access to uninitialized object
+      return *p;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 411: error: expression must have a constant value
+    constexpr B uninit = return_uninit();
+                         ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 409: note: access to uninitialized object
+      return b;
+             ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 409: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 412: error: expression must have a constant value
+    static_assert(return_uninit().a.x == 2);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 409: note: access to uninitialized object
+      return b;
+             ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 409: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 424: error: expression must have a constant value
+    static_assert(return_uninit_struct().x == 2);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 416: note: access to uninitialized object
+      return b.a;
+              ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 416: note: access to uninitialized object
+      return b.a;
+              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 434: error: expression must have a constant value
+    static_assert(return_init_all().a.x == 2);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 435: error: expression must have a constant value
+    static_assert(return_init_all().a.y == 3);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 436: error: expression must have a constant value
+    static_assert(return_init_all().a.arr[0] == 4);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 437: error: expression must have a constant value
+    static_assert(return_init_all().a.arr[1] == 5);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 438: error: expression must have a constant value
+    static_assert(return_init_all().a.arr[2] == 6);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 439: error: expression must have a constant value
+    static_assert(return_init_all().a.p == 7);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 440: error: expression must have a constant value
+    static_assert(return_init_all().a.q == 8);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 441: error: expression must have a constant value
+    constexpr B init_all = return_init_all();
+                           ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 432: note: access to uninitialized object
+      return b;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 445: warning: variable "u1" was set but never used
+      U u1;
+        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 457: warning: variable "s" was set but never used
+      S3 s;
+         ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 472: warning: variable "r" was set but never used
+      ref_member_3 r = {.a = {.r = {.a = 1}}};
+                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 478: warning: variable "r" was set but never used
+      ref_member_3 r = {.a = {.r = {.a = 1}}};
+                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 518: warning: missing return statement at end of non-void function "Union::PR43762::test"
+      }
+      ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 551: error: expression must have a constant value
+    static_assert(f(false) == 1);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 548: note: access to uninitialized object
+      return a;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 560: error: expression must have a constant value
+    constinit X x2(false);
+                   ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 560: note: access to uninitialized subobject (member "Uninit::X::n")
+    constinit X x2(false);
+                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 586: error: expression must have a constant value
+    static_assert(Y(0,0).z1.n == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 586: note: access to uninitialized object
+    static_assert(Y(0,0).z1.n == 0);
+                        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 587: error: expression must have a constant value
+    static_assert(Y(0,0).z3.n == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 587: note: access to uninitialized object
+    static_assert(Y(0,0).z3.n == 0);
+                        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 589: error: expression must have a constant value
+    static_assert(copy(Y(0,0)).z2.n == 0);
+                  ^
+Note: access to uninitialized object
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 593: warning: variable "c" is used before its value is set
+      return c;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 595: error: expression must have a constant value
+    constexpr unsigned char x = not_even_unsigned_char();
+                                ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 593: note: access to uninitialized object
+      return c;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 608: warning: missing return statement at end of non-void function "Uninit::switch_var"
+    }
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 609: error: expression must have a constant value
+    constexpr int s1 = switch_var(1);
+                       ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 601: note: attempt to access run-time storage
+        a = n;
+          ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 610: error: expression must have a constant value
+    constexpr int s2 = switch_var(2);
+                       ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 605: note: attempt to access run-time storage
+        a = n;
+          ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 615: warning: statement is unreachable
+        if (int n; false) {
+        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 623: warning: missing return statement at end of non-void function "Uninit::switch_into_init_stmt"
+    }
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 624: error: expression must have a constant value
+    static_assert(switch_into_init_stmt());
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 618: note: attempt to access run-time storage
+            n = m = 1;
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 685: error: expression must have a constant value
+    static_assert(dtor_calls_dtor());
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 656: note: invalid access to inactive member "U::u" of union (no field is active)
+        constexpr ~U() { u.buf += 'U'; }
+                          ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 677: note: called from:
+        B b(buf);
+           ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 677: note: called from:
+        B b(buf);
+           ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 689: warning: local class member function "Indestructible::~Indestructible" requires a definition
+        constexpr ~Indestructible();
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 732: error: static assertion failed
+    static_assert(check_abnormal_termination());
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 752: error: expression must have a constant value
+      new int;
+      ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 752: note: invalid use of address of interpreter storage
+      new int;
+      ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 834: error: expression must have a constant value
+    static_assert(vdtor_3(0) == 3);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 818: note: deallocation does not match allocation kind (one is for an array and the other not)
+        delete p;
+        ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 815: note: allocation occurred here
+      S *p = new T[3]{&a, &a, &a};
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 835: error: expression must have a constant value
+    static_assert(vdtor_3(1) == 3);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 823: note: deallocation of storage that was not dynamically allocated
+        delete[] p;
+        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 836: error: expression must have a constant value
+    static_assert(vdtor_3(2) == 3);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 812: note: access to uninitialized object
+        constexpr ~T() { ++*p; }
+                            ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 826: note: called from:
+        delete (T*)p;
+        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 859: error: expression must have a constant value
+    static_assert(dynarray<int>(4, 4) == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 851: note: attempt to access storage one position past the end of an array of 4 elements
+      T n = p[i];
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 861: error: expression must have a constant value
+    static_assert(dynarray<int>(3, 3) == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 851: note: attempt to access storage one position past the end of an array of 3 elements
+      T n = p[i];
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 862: error: expression must have a constant value
+    static_assert(dynarray<int>(2, 1) == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 850: note: number of dynamically-allocated elements (2) too small for initializer
+        p = new T[elems]{1, 2, 3};
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 868: error: expression must have a constant value
+    static_assert(dynarray<char>(5, 5) == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 851: note: attempt to access storage one position past the end of an array of 5 elements
+      T n = p[i];
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 873: error: expression must have a constant value
+    static_assert(dynarray<char>(4, 4) == 0);
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 851: note: attempt to access storage one position past the end of an array of 4 elements
+      T n = p[i];
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 874: error: expression must have a constant value
+    static_assert(dynarray<char>(3, 2) == 'x');
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 848: note: number of dynamically-allocated elements (3) too small for initializer
+        p = new T[elems]{"fox"};
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 892: error: expression must have a constant value
+    static_assert(erroneous_array_bound(-1));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 887: note: number of elements (-1) too large for dynamic allocation
+      delete[] new int[n];
+                       ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 893: error: expression must have a constant value
+    static_assert(erroneous_array_bound(1LL << 62));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 887: note: number of elements (0) too large for dynamic allocation
+      delete[] new int[n];
+                       ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 901: error: expression must have a constant value
+    static_assert(erroneous_array_bound_nothrow(3));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 896: note: a placement new-expression cannot be constant-evaluated
+      int *p = new (std::nothrow) int[n];
+               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 902: error: expression must have a constant value
+    static_assert(erroneous_array_bound_nothrow(0));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 896: note: a placement new-expression cannot be constant-evaluated
+      int *p = new (std::nothrow) int[n];
+               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 903: error: expression must have a constant value
+    static_assert(!erroneous_array_bound_nothrow(-1));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 896: note: number of elements (-1) too large for dynamic allocation
+      int *p = new (std::nothrow) int[n];
+                                      ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 904: error: expression must have a constant value
+    static_assert(!erroneous_array_bound_nothrow(1LL << 62));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 896: note: number of elements (0) too large for dynamic allocation
+      int *p = new (std::nothrow) int[n];
+                                      ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 911: error: expression must have a constant value
+    static_assert(evaluate_nothrow_arg());
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 908: note: a placement new-expression cannot be constant-evaluated
+      delete new ((ok = true, std::nothrow)) int;
+             ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 925: error: expression must have a constant value
+    static_assert(super_secret_double_delete());
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 925: note: expression not folded to a constant due to excessive constexpr function call complexity
+    static_assert(super_secret_double_delete());
+                                            ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 1020: error: expression must have a constant value
+    static_assert(bad(0));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 996: note: a placement new-expression cannot be constant-evaluated
+        delete new (placement_new_arg{}) int;
+               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 1021: error: expression must have a constant value
+    static_assert(bad(1));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 1000: note: a new-expression calling a class-specific allocation function cannot be constant-evaluated
+        delete new ClassSpecificNew;
+               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 1024: error: expression must have a constant value
+    static_assert(bad(4));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 1014: note: a placement new-expression cannot be constant-evaluated
+        delete new (std::align_val_t{64}) Overaligned;
+               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 1031: error: expression must have a constant value
+    static_assert((delete &n, true));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 1031: note: deallocation of storage that was not dynamically allocated
+    static_assert((delete &n, true));
+                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 1033: error: expression must have a constant value
+    static_assert((delete &(new A)->n, true));
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 1033: note: deleting through a subobject pointer requires a virtual destructor
+    static_assert((delete &(new A)->n, true));
+                   ^
+
+eccp: front end returned an exit status of 139

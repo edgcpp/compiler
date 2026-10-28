@@ -1,0 +1,64 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 31: error: expression must have a constant value
+  constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0); // { dg-error "reference .dynamic_cast. failed" }
+                      ^
+"Test_name.c", line 31: note: base class "A" is ambiguous
+  constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+
+"Test_name.c", line 37: error: expression must have a constant value
+  static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
+                ^
+"Test_name.c", line 37: note: base class "A" is ambiguous
+  static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
+                 ^
+
+"Test_name.c", line 39: error: expression must have a constant value
+  static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g); // { dg-error "non-constant condition for static assertion|reference .dynamic_cast. failed" }
+                ^
+"Test_name.c", line 39: note: base class "A" is ambiguous
+  static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g); // { dg-error "non-constant condition for static assertion|reference .dynamic_cast. failed" }
+                 ^
+
+"Test_name.c", line 50: error: expression must have a constant value
+  constexpr int b_e = (dynamic_cast<E&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                      ^
+"Test_name.c", line 50: note: conversion to inaccessible base class "E" is not allowed
+  constexpr int b_e = (dynamic_cast<E&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+
+"Test_name.c", line 55: error: expression must have a constant value
+  constexpr int b_unrelated = (dynamic_cast<Unrelated&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                              ^
+"Test_name.c", line 55: note: dynamic_cast to subobject of type "Unrelated" is invalid (most-derived type is "G")
+  constexpr int b_unrelated = (dynamic_cast<Unrelated&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                               ^
+
+"Test_name.c", line 57: error: expression must have a constant value
+  constexpr int e_unrelated = (dynamic_cast<Unrelated&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                              ^
+"Test_name.c", line 57: note: dynamic_cast to subobject of type "Unrelated" is invalid (most-derived type is "G")
+  constexpr int e_unrelated = (dynamic_cast<Unrelated&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                               ^
+
+"Test_name.c", line 31: warning: variable "d_a" was declared but never referenced
+  constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0); // { dg-error "reference .dynamic_cast. failed" }
+                ^
+
+"Test_name.c", line 46: warning: variable "e_f" was declared but never referenced
+  constexpr int e_f = (dynamic_cast<F&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                ^
+
+"Test_name.c", line 50: warning: variable "b_e" was declared but never referenced
+  constexpr int b_e = (dynamic_cast<E&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                ^
+
+"Test_name.c", line 55: warning: variable "b_unrelated" was declared but never referenced
+  constexpr int b_unrelated = (dynamic_cast<Unrelated&>((B&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                ^
+
+"Test_name.c", line 57: warning: variable "e_unrelated" was declared but never referenced
+  constexpr int e_unrelated = (dynamic_cast<Unrelated&>((E&)g), 0); // { dg-error "reference .dynamic_cast. failed" }
+                ^
+
+6 errors detected in the compilation of "Test_name.c".

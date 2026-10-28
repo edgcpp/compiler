@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: warning: attribute "warn_unused_result" does not apply to non-function type "int"
+  auto l2 = []() -> int __attribute ((warn_unused_result)) { return 0; };
+                                      ^
+
+"Test_name.c", line 8: warning: attribute "warn_unused_result" does not apply to non-function type "int"
+  auto f() -> int __attribute ((warn_unused_result));
+                                ^
+

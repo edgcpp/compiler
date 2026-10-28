@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "gnu::vector_size"
+  int e(int c, struct d { [[gnu::vector_size(4)]] char an[c]; } *)
+                            ^
+
+"Test_name.c", line 7: error: a parameter is not allowed
+  int e(int c, struct d { [[gnu::vector_size(4)]] char an[c]; } *)
+                                                          ^
+
+1 error detected in the compilation of "Test_name.c".

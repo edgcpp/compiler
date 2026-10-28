@@ -1,0 +1,58 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef signed char v8qi __attribute__ ((vector_size (8)));
+                                           ^
+
+"Test_name.c", line 24: warning: extra braces are nonstandard
+    A a = { 1, { v, v, v, v, v, v, v, v },
+               ^
+
+"Test_name.c", line 24: error: too many initializer values
+    A a = { 1, { v, v, v, v, v, v, v, v },
+                    ^
+
+"Test_name.c", line 24: warning: invalid narrowing conversion from "unsigned char" to "signed char"
+    A a = { 1, { v, v, v, v, v, v, v, v },
+                 ^
+
+"Test_name.c", line 25: warning: extra braces are nonstandard
+  	  { v + 1, v + 1, v + 1, v + 1, v + 1, v + 1, v + 1, v + 1 }, 3 };
+  	  ^
+
+"Test_name.c", line 25: error: too many initializer values
+  	  { v + 1, v + 1, v + 1, v + 1, v + 1, v + 1, v + 1, v + 1 }, 3 };
+  	           ^
+
+"Test_name.c", line 25: warning: invalid narrowing conversion from "int" to "signed char"
+  	  { v + 1, v + 1, v + 1, v + 1, v + 1, v + 1, v + 1, v + 1 }, 3 };
+  	    ^
+
+"Test_name.c", line 34: error: too many initializer values
+    v8qi val8 = { v, v, v, v, v, v, v, v };
+                     ^
+
+"Test_name.c", line 51: warning: extra braces are nonstandard
+    static A a = { 0, { num (), num (), num (), num (), 6, 6, 6, 6 },
+                      ^
+
+"Test_name.c", line 51: error: too many initializer values
+    static A a = { 0, { num (), num (), num (), num (), 6, 6, 6, 6 },
+                                ^
+
+"Test_name.c", line 51: warning: invalid narrowing conversion from "int" to "signed char"
+    static A a = { 0, { num (), num (), num (), num (), 6, 6, 6, 6 },
+                        ^
+
+"Test_name.c", line 52: warning: extra braces are nonstandard
+  		 { 7, 7, 7, 7, 8, 8, 8, 8 }, 0 };
+  		 ^
+
+"Test_name.c", line 52: error: too many initializer values
+  		 { 7, 7, 7, 7, 8, 8, 8, 8 }, 0 };
+  		      ^
+
+"Test_name.c", line 74: warning: statement is unreachable
+    baz ();
+    ^
+
+5 errors detected in the compilation of "Test_name.c".

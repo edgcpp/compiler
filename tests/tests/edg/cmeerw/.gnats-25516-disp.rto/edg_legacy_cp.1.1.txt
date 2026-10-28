@@ -1,0 +1,194 @@
+fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++23 Test_name.c
+file-scope base-class#1
+type:                    file-scope type#1: B<T#(1,1)>
+derived_class:           file-scope type#2: D1<T#(1,1)>
+direct:                  TRUE
+
+file-scope using-decl#1
+entity:                  file-scope base-class#1: B<T#(1,1)> (in D1<T#(1,1)>)
+position.seq:            19
+is_inheriting_ctor:      TRUE
+qualifier.class_type:    file-scope type#1: B<T#(1,1)>
+
+file-scope base-class#2
+type:                    file-scope type#3: B<int>
+derived_class:           file-scope type#4: D1<int>
+direct:                  TRUE
+
+file-scope using-decl#2
+entity:                  file-scope base-class#2: B<int> (in D1<int>)
+position.seq:            19
+is_inheriting_ctor:      TRUE
+qualifier.class_type:    file-scope type#3: B<int>
+
+file-scope base-class#3
+type:                    file-scope type#5: B<const char *>
+derived_class:           file-scope type#6: D1<const char *>
+direct:                  TRUE
+
+file-scope using-decl#3
+entity:                  file-scope base-class#3: B<const char *> (in D1<const char *>)
+position.seq:            19
+is_inheriting_ctor:      TRUE
+qualifier.class_type:    file-scope type#5: B<const char *>
+
+file-scope base-class#4
+type:                    file-scope type#7: B<T#(1,1)>
+orig_type:               file-scope type#8: A<T#(1,1)>
+derived_class:           file-scope type#9: D2<T#(1,1)>
+direct:                  TRUE
+
+file-scope using-decl#4
+entity:                  file-scope base-class#4: B<T#(1,1)> (in D2<T#(1,1)>)
+position.seq:            32
+is_inheriting_ctor:      TRUE
+qualifier.class_type:    file-scope type#10: D2<T#(1,1)>::B
+
+file-scope base-class#5
+type:                    file-scope type#3: B<int>
+orig_type:               file-scope type#11: A<int>
+derived_class:           file-scope type#12: D2<int>
+direct:                  TRUE
+
+file-scope using-decl#5
+entity:                  file-scope base-class#5: B<int> (in D2<int>)
+position.seq:            32
+is_inheriting_ctor:      TRUE
+qualifier.class_type:    file-scope type#3: B<int>
+
+file-scope base-class#6
+type:                    file-scope type#5: B<const char *>
+orig_type:               file-scope type#13: A<const char *>
+derived_class:           file-scope type#14: D2<const char *>
+direct:                  TRUE
+
+file-scope using-decl#6
+entity:                  file-scope base-class#6: B<const char *> (in D2<const char *>)
+position.seq:            32
+is_inheriting_ctor:      TRUE
+qualifier.class_type:    file-scope type#5: B<const char *>
+
+file-scope routine#1
+  name:                  file-scope id-name#1: "B"
+  decl_position.seq:     14
+type:                    file-scope type#15: (T#(1,1) *)->B<T#(1,1) *>
+special_kind:            sfk_deduction_guide
+is_explicit_constructor: TRUE
+is_prototype_instantiation:
+is_template_function:    TRUE
+
+file-scope routine#2
+type:                    file-scope type#16: D1<T#(3,1)> (D1<T#(3,1)>)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_prototype_instantiation:
+
+file-scope routine#3
+type:                    file-scope type#17: D1<T#(3,1)> ()
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_prototype_instantiation:
+
+file-scope routine#4
+type:                    file-scope type#18: B<T#(3,1)> (B<T#(3,1)>)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_prototype_instantiation:
+
+file-scope routine#5
+  decl_position.seq:     10
+type:                    file-scope type#19: B<T#(3,1)> (T#(3,1))
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_prototype_instantiation:
+
+file-scope routine#6
+type:                    file-scope type#20: D1<T#(3,1)> (T#(3,1))
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_prototype_instantiation:
+
+file-scope routine#7
+type:                    file-scope type#21: D1<T#(3,1)> (B<T#(3,1)>)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_prototype_instantiation:
+
+file-scope routine#8
+type:                    file-scope type#22: auto (T#(3,1) *)->D1<T#(3,1) *>
+special_kind:            sfk_deduction_guide
+is_explicit_constructor: TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_prototype_instantiation:
+
+file-scope routine#9
+  name:                  file-scope id-name#2: "D1"
+  decl_position.seq:     17
+type:                    file-scope type#23: D1<int> (int)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_template_function:    TRUE
+
+file-scope routine#10
+  name:                  file-scope id-name#2: "D1"
+  decl_position.seq:     17
+type:                    file-scope type#24: auto (const char *)->D1<const char *>
+special_kind:            sfk_deduction_guide
+is_explicit_constructor: TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_template_function:    TRUE
+
+file-scope routine#11
+type:                    file-scope type#25: D2<T#(3,1)> (D2<T#(3,1)>)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_prototype_instantiation:
+
+file-scope routine#12
+type:                    file-scope type#26: D2<T#(3,1)> ()
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_prototype_instantiation:
+
+file-scope routine#13
+type:                    file-scope type#27: D2<T#(3,1)> (T#(3,1))
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_prototype_instantiation:
+
+file-scope routine#14
+type:                    file-scope type#28: D2<T#(3,1)> (B<T#(3,1)>)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_prototype_instantiation:
+
+file-scope routine#15
+type:                    file-scope type#29: auto (T#(3,1) *)->D2<T#(3,1) *>
+special_kind:            sfk_deduction_guide
+is_explicit_constructor: TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_prototype_instantiation:
+
+file-scope routine#16
+  name:                  file-scope id-name#3: "D2"
+  decl_position.seq:     30
+type:                    file-scope type#30: D2<int> (int)
+special_kind:            sfk_deduction_guide
+compiler_generated:      TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_template_function:    TRUE
+
+file-scope routine#17
+  name:                  file-scope id-name#3: "D2"
+  decl_position.seq:     30
+type:                    file-scope type#31: auto (const char *)->D2<const char *>
+special_kind:            sfk_deduction_guide
+is_explicit_constructor: TRUE
+is_deduction_guide_from_inheriting_ctor:
+is_template_function:    TRUE
+

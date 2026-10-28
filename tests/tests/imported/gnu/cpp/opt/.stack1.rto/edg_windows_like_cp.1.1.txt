@@ -1,0 +1,21 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 42: warning: variable "dead1" was declared but never referenced
+        int dead1 = j;
+            ^
+
+"Test_name.c", line 43: warning: variable "dead2" was declared but never referenced
+        int dead2 = 1 + i - j;
+            ^
+
+"Test_name.c", line 80: warning: variable "dead1" was declared but never referenced
+        int dead1, dead2;
+            ^
+
+"Test_name.c", line 80: warning: variable "dead2" was declared but never referenced
+        int dead1, dead2;
+                   ^
+
+"Test_name.c", line 126: warning: variable "dead" was declared but never referenced
+    int dead;
+        ^
+

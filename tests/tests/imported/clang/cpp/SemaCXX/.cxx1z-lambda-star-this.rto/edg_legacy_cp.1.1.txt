@@ -1,0 +1,83 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 23: error: a name cannot appear more than once in a capture-list
+      (void)[ *this, this ]{}; //expected-error{{'this' can appear only once}}
+                     ^
+
+"Test_name.c", line 25: error: expression must be a modifiable lvalue
+      (void)[*this] { ++x; }; //expected-error{{read-only variable}}
+                        ^
+
+"Test_name.c", line 41: error: function "test_star_this::ns2::B::B(const test_star_this::ns2::B &)" (declared at line 37) cannot be referenced -- it is a deleted function
+      (void)[*this] { return x; }; //expected-error{{call to deleted}}
+             ^
+
+"Test_name.c", line 56: error: function "test_star_this::ns3::B::B(const test_star_this::ns3::B &)" (declared at line 48) cannot be referenced -- it is a deleted function
+      (void)[*this] { return x; }; //expected-error2{{call to deleted}}
+             ^
+
+"Test_name.c", line 73: error: function "test_star_this::ns4::B<U>::B(const test_star_this::ns4::B<U> &) [with U=int *]" (declared at line 67) cannot be referenced -- it is a deleted function
+      const auto &L = [*this](auto a) mutable { //expected-error{{call to deleted}}
+                       ^
+          detected during instantiation of "auto test_star_this::ns4::B<U>::foo() [with U=int *, T=int]" at line 83
+
+"Test_name.c", line 101: warning: variable "N" was declared but never referenced
+          auto N = [] {
+               ^
+
+"Test_name.c", line 99: warning: variable "M" was declared but never referenced
+        auto M = [this] {
+             ^
+
+"Test_name.c", line 111: warning: variable "N" was declared but never referenced
+          auto N = [] {
+               ^
+
+"Test_name.c", line 117: warning: variable "N" was declared but never referenced
+          auto N = [] {
+               ^
+
+"Test_name.c", line 109: warning: variable "M" was declared but never referenced
+        auto M = [this]() mutable {
+             ^
+
+"Test_name.c", line 148: error: expression must be a modifiable lvalue
+        ++d; //expected-error{{cannot assign}}
+          ^
+
+"Test_name.c", line 146: warning: variable "L2" was declared but never referenced
+      auto L2 = [this]() mutable {
+           ^
+
+"Test_name.c", line 170: warning: variable "M" was declared but never referenced
+            auto M = [] {
+                 ^
+
+"Test_name.c", line 168: warning: variable "N" was declared but never referenced
+          auto N = [this] {
+               ^
+
+"Test_name.c", line 180: warning: variable "N" was declared but never referenced
+          auto N = [this] {
+               ^
+
+"Test_name.c", line 164: warning: variable "L" was declared but never referenced
+      auto L = [this]() {
+           ^
+
+"Test_name.c", line 214: warning: missing return statement at end of non-void function "test_star_this::ns6::main"
+  }
+  ^
+
+"Test_name.c", line 231: warning: missing return statement at end of non-void function "test_star_this::ns7::main"
+  }
+  ^
+
+"Test_name.c", line 309: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+      auto z = [*this](auto z2, decltype(z2(this)) z3){};
+                                         ^
+
+"Test_name.c", line 323: error: function "GH50866::f(GH50866::S *)" (declared at line 318) cannot be referenced -- it is a deleted function
+      [*this]() mutable { f(this); }(); // expected-error {{call to deleted function}}
+                          ^
+
+8 errors detected in the compilation of "Test_name.c".

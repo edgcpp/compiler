@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./eh/unwind-direct.C", line 14: warning: statement is unreachable
+    return 1;
+    ^
+
+/usr/sbin/ld: Test_name.o: in function `main':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::~runtime_error()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `typeinfo for std::runtime_error'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::runtime_error(const char *)'
+collect2: error: ld returned 1 exit status

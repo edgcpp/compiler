@@ -1,0 +1,106 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 31: error: a class-qualified name is required
+      NonClass::type; // expected-error {{not a class}}
+      ^
+
+"Test_name.c", line 38: error: a class-qualified name is required
+      NonClass::hiding; // expected-error {{not a class}}
+      ^
+
+"Test_name.c", line 45: error: a class-qualified name is required
+      NonClass::union_member; // expected-error {{not a class}}
+      ^
+
+"Test_name.c", line 52: error: a class-qualified name is required
+      NonClass::enumerator; // expected-error {{not a class}}
+      ^
+
+"Test_name.c", line 108: warning: variable "t" was declared but never referenced
+        type t = 0;
+             ^
+
+"Test_name.c", line 113: warning: variable "_" was declared but never referenced
+        struct hiding _ = local();
+                      ^
+
+"Test_name.c", line 117: error: tag kind of union is incompatible with declaration of class "test1::A::hiding" (declared at line 66)
+        union hiding _; // expected-error {{tag type that does not match previous}}
+              ^
+
+"Test_name.c", line 121: warning: variable "array" was declared but never referenced
+        char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+             ^
+
+"Test_name.c", line 125: warning: variable "_" was declared but never referenced
+        enum tagname _ = enumerator;
+                     ^
+
+"Test_name.c", line 129: warning: variable "_" was declared but never referenced
+        Opaque0 _ = hiding;
+                ^
+
+"Test_name.c", line 180: warning: variable "t" was declared but never referenced
+        type t = 0;
+             ^
+
+"Test_name.c", line 185: warning: variable "_" was declared but never referenced
+        struct hiding _ = local();
+                      ^
+
+"Test_name.c", line 189: error: tag kind of union is incompatible with declaration of class "test2::A::hiding" (declared at line 137)
+        union hiding _; // expected-error {{tag type that does not match previous}}
+              ^
+
+"Test_name.c", line 193: warning: variable "array" was declared but never referenced
+        char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+             ^
+
+"Test_name.c", line 197: warning: variable "_" was declared but never referenced
+        enum tagname _ = enumerator;
+                     ^
+
+"Test_name.c", line 201: error: no suitable constructor exists to convert from "int" to "Opaque0"
+        Opaque0 _ = hiding;
+                    ^
+
+"Test_name.c", line 267: warning: variable "array" was declared but never referenced
+        char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+             ^
+
+"Test_name.c", line 302: error: a class-qualified name is required
+      InnerNS::foo; // expected-error {{not a class}}
+      ^
+
+"Test_name.c", line 309: error: class "test4::Base" has no member "bar"
+      Base::bar; // expected-error {{no member named 'bar'}}
+            ^
+
+"Test_name.c", line 316: error: invalid base class
+      Unrelated::foo; // expected-error {{not a base class}}
+      ^
+
+"Test_name.c", line 323: warning: qualified name is not allowed in member declaration
+      C::foo;
+      ^
+
+"Test_name.c", line 323: error: this declaration has no storage class or type specifier
+      C::foo;
+      ^
+
+"Test_name.c", line 331: error: invalid base class
+      Subclass::foo;
+      ^
+
+"Test_name.c", line 340: warning: qualified name is not allowed in member declaration
+      C::bar;
+      ^
+
+"Test_name.c", line 340: error: this declaration has no storage class or type specifier
+      C::bar;
+      ^
+
+"Test_name.c", line 340: error: "bar" has already been declared in the current scope
+      C::bar;
+         ^
+
+14 errors detected in the compilation of "Test_name.c".

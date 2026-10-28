@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 14: error: the object has type qualifiers that are not compatible with the member function "X::foo"
+            object type is: const X
+  	foo ();	// { dg-error "cannot convert 'const X\\*' to 'X\\*'" }
+  	^
+
+1 error detected in the compilation of "Test_name.c".

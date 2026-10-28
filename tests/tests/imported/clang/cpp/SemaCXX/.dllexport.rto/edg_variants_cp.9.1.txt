@@ -1,0 +1,964 @@
+fe_only -DTEST_NUMBER=9 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 27: error: this declaration has no storage class or type specifier
+  __declspec(dllexport) typedef int typedef1;
+  ^
+
+"Test_name.c", line 27: error: identifier "dllexport" is undefined
+  __declspec(dllexport) typedef int typedef1;
+             ^
+
+"Test_name.c", line 27: error: expected a ";"
+  __declspec(dllexport) typedef int typedef1;
+                        ^
+
+"Test_name.c", line 29: error: "dllexport" is not a type name
+  typedef __declspec(dllexport) int typedef2;
+                     ^
+
+"Test_name.c", line 29: error: explicit type is missing ("int" assumed)
+  typedef __declspec(dllexport) int typedef2;
+          ^
+
+"Test_name.c", line 29: error: "__declspec" has already been declared in the current scope
+  typedef __declspec(dllexport) int typedef2;
+          ^
+
+"Test_name.c", line 29: error: expected a ";"
+  typedef __declspec(dllexport) int typedef2;
+                                ^
+
+"Test_name.c", line 31: error: "dllexport" is not a type name
+  typedef int __declspec(dllexport) typedef3;
+                         ^
+
+"Test_name.c", line 31: error: expected a ";"
+  typedef int __declspec(dllexport) typedef3;
+                                    ^
+
+"Test_name.c", line 33: error: expected a ";"
+  typedef __declspec(dllexport) void (*FunTy)();
+                                ^
+
+"Test_name.c", line 35: error: typedef "__declspec" may not be used in an elaborated type specifier
+  enum __declspec(dllexport) Enum {};
+       ^
+
+"Test_name.c", line 35: error: "dllexport" has already been declared in the current scope
+  enum __declspec(dllexport) Enum {};
+                  ^
+
+"Test_name.c", line 35: error: expected a ";"
+  enum __declspec(dllexport) Enum {};
+                             ^
+
+"Test_name.c", line 38: error: typedef "__declspec" may not be used in an elaborated type specifier
+  enum class __declspec(dllexport) EnumClass {};
+             ^
+
+"Test_name.c", line 38: error: variable "dllexport" has already been defined (previous definition at line 35)
+  enum class __declspec(dllexport) EnumClass {};
+                        ^
+
+"Test_name.c", line 38: error: expected a ";"
+  enum class __declspec(dllexport) EnumClass {};
+                                   ^
+
+"Test_name.c", line 49: error: function type may not come from a typedef
+  __declspec(dllexport) extern int ExternGlobalDecl;
+             ^
+
+"Test_name.c", line 49: error: declaration is incompatible with "<error-type> dllexport" (declared at line 35)
+  __declspec(dllexport) extern int ExternGlobalDecl;
+             ^
+
+"Test_name.c", line 49: error: expected a "{"
+  __declspec(dllexport) extern int ExternGlobalDecl;
+                        ^
+
+"Test_name.c", line 72: warning: parsing restarts here after previous syntax error
+  extern "C" {
+             ^
+
+"Test_name.c", line 74: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  __declspec(dllexport) extern int GlobalRedecl4; // expected-warning{{redeclaration of 'GlobalRedecl4' should not add 'dllexport' attribute}}
+  ^
+
+"Test_name.c", line 74: error: expected a ";"
+  __declspec(dllexport) extern int GlobalRedecl4; // expected-warning{{redeclaration of 'GlobalRedecl4' should not add 'dllexport' attribute}}
+                        ^
+
+"Test_name.c", line 75: warning: missing return statement at end of non-void function "dllexport"
+  }
+  ^
+
+"Test_name.c", line 78: error: function type may not come from a typedef
+  __declspec(dllexport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllexport'}}
+             ^
+
+"Test_name.c", line 78: error: function "dllexport" has already been defined (previous definition at line 49)
+  __declspec(dllexport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllexport'}}
+             ^
+
+"Test_name.c", line 78: error: expected a "{"
+  __declspec(dllexport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllexport'}}
+                        ^
+
+"Test_name.c", line 80: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  namespace    { __declspec(dllexport) int InternalGlobal; } // non-ms-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllexport'}}
+                 ^
+
+"Test_name.c", line 80: error: expected a ";"
+  namespace    { __declspec(dllexport) int InternalGlobal; } // non-ms-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllexport'}}
+                                       ^
+
+"Test_name.c", line 80: warning: missing return statement at end of non-void function "dllexport"
+  namespace    { __declspec(dllexport) int InternalGlobal; } // non-ms-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllexport'}}
+                                                           ^
+
+"Test_name.c", line 81: error: function type may not come from a typedef
+  namespace ns { __declspec(dllexport) int ExternalGlobal; }
+                            ^
+
+"Test_name.c", line 81: error: expected a "{"
+  namespace ns { __declspec(dllexport) int ExternalGlobal; }
+                                       ^
+
+"Test_name.c", line 81: warning: missing return statement at end of non-void function "ns::dllexport"
+  namespace ns { __declspec(dllexport) int ExternalGlobal; }
+                                                           ^
+
+"Test_name.c", line 83: error: function type may not come from a typedef
+  __declspec(dllexport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllexport'}}
+             ^
+
+"Test_name.c", line 83: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllexport'}}
+             ^
+
+"Test_name.c", line 83: error: expected a "{"
+  __declspec(dllexport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllexport'}}
+                        ^
+
+"Test_name.c", line 89: warning: parsing restarts here after previous syntax error
+  inline void __declspec(dllexport) ExportedInlineWithThreadLocal() {
+                                                                    ^
+
+"Test_name.c", line 91: warning: missing return statement at end of non-void function "ns::dllexport"
+  }
+  ^
+
+"Test_name.c", line 90: warning: variable "OK" was declared but never referenced
+    static __thread int OK; // no-error
+                        ^
+
+"Test_name.c", line 95: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllexport)        int LocalVarDecl; // expected-error{{'LocalVarDecl' must have external linkage when declared 'dllexport'}}
+    ^
+
+"Test_name.c", line 95: error: expected a ";"
+    __declspec(dllexport)        int LocalVarDecl; // expected-error{{'LocalVarDecl' must have external linkage when declared 'dllexport'}}
+                                 ^
+
+"Test_name.c", line 96: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllexport)        int LocalVarDef = 1; // expected-error{{'LocalVarDef' must have external linkage when declared 'dllexport'}}
+    ^
+
+"Test_name.c", line 96: error: expected a ";"
+    __declspec(dllexport)        int LocalVarDef = 1; // expected-error{{'LocalVarDef' must have external linkage when declared 'dllexport'}}
+                                 ^
+
+"Test_name.c", line 97: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllexport) extern int ExternLocalVarDecl;
+    ^
+
+"Test_name.c", line 97: error: expected a ";"
+    __declspec(dllexport) extern int ExternLocalVarDecl;
+                          ^
+
+"Test_name.c", line 98: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllexport) static int StaticLocalVar; // expected-error{{'StaticLocalVar' must have external linkage when declared 'dllexport'}}
+    ^
+
+"Test_name.c", line 98: error: expected a ";"
+    __declspec(dllexport) static int StaticLocalVar; // expected-error{{'StaticLocalVar' must have external linkage when declared 'dllexport'}}
+                          ^
+
+"Test_name.c", line 186: error: function type may not come from a typedef
+  __declspec(dllexport)      void decl1B();
+             ^
+
+"Test_name.c", line 186: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport)      void decl1B();
+             ^
+
+"Test_name.c", line 186: error: expected a "{"
+  __declspec(dllexport)      void decl1B();
+                             ^
+
+"Test_name.c", line 192: warning: parsing restarts here after previous syntax error
+  __declspec(dllexport) void def() {}
+                                   ^
+
+"Test_name.c", line 192: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) void def() {}
+                                    ^
+
+"Test_name.c", line 195: error: function type may not come from a typedef
+  extern "C" __declspec(dllexport) void externC() {}
+                        ^
+
+"Test_name.c", line 195: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  extern "C" __declspec(dllexport) void externC() {}
+                        ^
+
+"Test_name.c", line 195: error: expected a "{"
+  extern "C" __declspec(dllexport) void externC() {}
+                                   ^
+
+"Test_name.c", line 195: warning: missing return statement at end of non-void function "ns::dllexport"
+  extern "C" __declspec(dllexport) void externC() {}
+                                                   ^
+
+"Test_name.c", line 198: error: function type may not come from a typedef
+  __declspec(dllexport) inline void inlineFunc1() {}
+             ^
+
+"Test_name.c", line 198: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) inline void inlineFunc1() {}
+             ^
+
+"Test_name.c", line 198: error: expected a "{"
+  __declspec(dllexport) inline void inlineFunc1() {}
+                        ^
+
+"Test_name.c", line 198: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) inline void inlineFunc1() {}
+                                                   ^
+
+"Test_name.c", line 201: error: function type may not come from a typedef
+  __declspec(dllexport) inline void inlineDecl();
+             ^
+
+"Test_name.c", line 201: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) inline void inlineDecl();
+             ^
+
+"Test_name.c", line 201: error: expected a "{"
+  __declspec(dllexport) inline void inlineDecl();
+                        ^
+
+"Test_name.c", line 202: warning: missing return statement at end of non-void function "ns::dllexport"
+                               void inlineDecl() {}
+                                                  ^
+
+"Test_name.c", line 204: error: function type may not come from a typedef
+  __declspec(dllexport) void inlineDef();
+             ^
+
+"Test_name.c", line 204: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void inlineDef();
+             ^
+
+"Test_name.c", line 204: error: expected a "{"
+  __declspec(dllexport) void inlineDef();
+                        ^
+
+"Test_name.c", line 205: warning: missing return statement at end of non-void function "ns::dllexport"
+                 inline void inlineDef() {}
+                                          ^
+
+"Test_name.c", line 208: error: function type may not come from a typedef
+  __declspec(dllexport) void redecl1();
+             ^
+
+"Test_name.c", line 208: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void redecl1();
+             ^
+
+"Test_name.c", line 208: error: expected a "{"
+  __declspec(dllexport) void redecl1();
+                        ^
+
+"Test_name.c", line 209: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) void redecl1() {}
+                                        ^
+
+"Test_name.c", line 211: error: function type may not come from a typedef
+  __declspec(dllexport) void redecl2();
+             ^
+
+"Test_name.c", line 211: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void redecl2();
+             ^
+
+"Test_name.c", line 211: error: expected a "{"
+  __declspec(dllexport) void redecl2();
+                        ^
+
+"Test_name.c", line 212: warning: missing return statement at end of non-void function "ns::dllexport"
+                        void redecl2() {}
+                                        ^
+
+"Test_name.c", line 215: error: function type may not come from a typedef
+  __declspec(dllexport) void redecl3(); // expected-warning{{redeclaration of 'redecl3' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 215: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void redecl3(); // expected-warning{{redeclaration of 'redecl3' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 215: error: expected a "{"
+  __declspec(dllexport) void redecl3(); // expected-warning{{redeclaration of 'redecl3' should not add 'dllexport' attribute}}
+                        ^
+
+"Test_name.c", line 219: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  __declspec(dllexport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllexport' attribute}}
+  ^
+
+"Test_name.c", line 219: error: expected a ";"
+  __declspec(dllexport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllexport' attribute}}
+                        ^
+
+"Test_name.c", line 220: warning: missing return statement at end of non-void function "ns::dllexport"
+  }
+  ^
+
+"Test_name.c", line 223: error: function type may not come from a typedef
+  __declspec(dllexport) inline void redecl5() {} // expected-warning{{redeclaration of 'redecl5' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 223: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) inline void redecl5() {} // expected-warning{{redeclaration of 'redecl5' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 223: error: expected a "{"
+  __declspec(dllexport) inline void redecl5() {} // expected-warning{{redeclaration of 'redecl5' should not add 'dllexport' attribute}}
+                        ^
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) inline void redecl5() {} // expected-warning{{redeclaration of 'redecl5' should not add 'dllexport' attribute}}
+                                               ^
+
+"Test_name.c", line 227: error: expected a ";"
+    friend __declspec(dllexport) void friend1();
+                                 ^
+
+"Test_name.c", line 228: error: expected a ";"
+    friend __declspec(dllexport) void friend2();
+                                 ^
+
+"Test_name.c", line 232: error: function type may not come from a typedef
+  __declspec(dllexport) void friend1() {}
+             ^
+
+"Test_name.c", line 232: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void friend1() {}
+             ^
+
+"Test_name.c", line 232: error: expected a "{"
+  __declspec(dllexport) void friend1() {}
+                        ^
+
+"Test_name.c", line 232: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) void friend1() {}
+                                        ^
+
+"Test_name.c", line 234: error: function type may not come from a typedef
+  __declspec(dllexport) void friend3() {} // expected-warning{{redeclaration of 'friend3' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 234: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void friend3() {} // expected-warning{{redeclaration of 'friend3' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 234: error: expected a "{"
+  __declspec(dllexport) void friend3() {} // expected-warning{{redeclaration of 'friend3' should not add 'dllexport' attribute}}
+                        ^
+
+"Test_name.c", line 234: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) void friend3() {} // expected-warning{{redeclaration of 'friend3' should not add 'dllexport' attribute}}
+                                        ^
+
+"Test_name.c", line 235: error: function type may not come from a typedef
+  __declspec(dllexport) inline void friend4() {} // expected-warning{{redeclaration of 'friend4' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 235: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) inline void friend4() {} // expected-warning{{redeclaration of 'friend4' should not add 'dllexport' attribute}}
+             ^
+
+"Test_name.c", line 235: error: expected a "{"
+  __declspec(dllexport) inline void friend4() {} // expected-warning{{redeclaration of 'friend4' should not add 'dllexport' attribute}}
+                        ^
+
+"Test_name.c", line 235: warning: missing return statement at end of non-void function "ns::dllexport"
+  __declspec(dllexport) inline void friend4() {} // expected-warning{{redeclaration of 'friend4' should not add 'dllexport' attribute}}
+                                               ^
+
+"Test_name.c", line 238: error: function type may not come from a typedef
+  __declspec(dllexport) void* operator new(__SIZE_TYPE__ n);
+             ^
+
+"Test_name.c", line 238: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void* operator new(__SIZE_TYPE__ n);
+             ^
+
+"Test_name.c", line 238: error: expected a "{"
+  __declspec(dllexport) void* operator new(__SIZE_TYPE__ n);
+                        ^
+
+"Test_name.c", line 243: warning: parsing restarts here after previous syntax error
+  namespace    { __declspec(dllexport) void internalFunc() {} } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllexport'}}
+               ^
+
+"Test_name.c", line 243: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  namespace    { __declspec(dllexport) void internalFunc() {} } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllexport'}}
+                 ^
+
+"Test_name.c", line 243: error: expected a ";"
+  namespace    { __declspec(dllexport) void internalFunc() {} } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllexport'}}
+                                       ^
+
+"Test_name.c", line 243: warning: missing return statement at end of non-void function "ns::dllexport"
+  namespace    { __declspec(dllexport) void internalFunc() {} } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllexport'}}
+                                                              ^
+
+"Test_name.c", line 244: error: function type may not come from a typedef
+  namespace ns { __declspec(dllexport) void externalFunc() {} }
+                            ^
+
+"Test_name.c", line 244: error: expected a "{"
+  namespace ns { __declspec(dllexport) void externalFunc() {} }
+                                       ^
+
+"Test_name.c", line 244: warning: missing return statement at end of non-void function "ns::ns::dllexport"
+  namespace ns { __declspec(dllexport) void externalFunc() {} }
+                                                            ^
+
+"Test_name.c", line 247: error: function type may not come from a typedef
+  __declspec(dllexport) void deletedFunc() = delete; // expected-error{{attribute 'dllexport' cannot be applied to a deleted function}}
+             ^
+
+"Test_name.c", line 247: error: function "ns::dllexport" has already been defined (previous definition at line 81)
+  __declspec(dllexport) void deletedFunc() = delete; // expected-error{{attribute 'dllexport' cannot be applied to a deleted function}}
+             ^
+
+"Test_name.c", line 247: error: expected a "{"
+  __declspec(dllexport) void deletedFunc() = delete; // expected-error{{attribute 'dllexport' cannot be applied to a deleted function}}
+                        ^
+
+"Test_name.c", line 261: warning: parsing restarts here after previous syntax error
+  template<typename T> __declspec(dllexport) void funcTmplDef() {}
+                                                                ^
+
+"Test_name.c", line 261: warning: missing return statement at end of non-void function "ns::dllexport"
+  template<typename T> __declspec(dllexport) void funcTmplDef() {}
+                                                                 ^
+
+"Test_name.c", line 264: error: expected a ";"
+  template<typename T> __declspec(dllexport) inline void inlineFuncTmpl1() {}
+                                             ^
+
+"Test_name.c", line 267: warning: parsing restarts here after previous syntax error
+  template<typename T> __declspec(dllexport) inline void inlineFuncTmplDecl();
+                                                                             ^
+
+"Test_name.c", line 270: error: expected a ";"
+  template<typename T> __declspec(dllexport) void inlineFuncTmplDef();
+                                             ^
+
+"Test_name.c", line 274: error: expected a ";"
+  template<typename T> __declspec(dllexport) void funcTmplRedecl1();
+                                             ^
+
+"Test_name.c", line 275: error: expected a ";"
+  template<typename T> __declspec(dllexport) void funcTmplRedecl1() {}
+                                             ^
+
+"Test_name.c", line 281: error: expected a ";"
+  template<typename T> __declspec(dllexport) void funcTmplRedecl3(); // expected-error{{redeclaration of 'funcTmplRedecl3' cannot add 'dllexport' attribute}}
+                                             ^
+
+"Test_name.c", line 284: error: expected a ";"
+  template<typename T> __declspec(dllexport) inline void funcTmplRedecl4() {} // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllexport' attribute}}
+                                             ^
+
+"Test_name.c", line 292: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 293: error: expected a ";"
+  template<typename T> __declspec(dllexport) void funcTmplFriend1() {}
+                                             ^
+
+"Test_name.c", line 299: warning: parsing restarts here after previous syntax error
+  template<typename T> __declspec(dllexport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllexport'}}
+                                                                        ^
+
+"Test_name.c", line 300: error: expected a ";"
+  template<typename T> __declspec(dllexport) Internal internalRetFuncTmpl(); // expected-error{{'internalRetFuncTmpl' must have external linkage when declared 'dllexport'}}
+                                             ^
+
+"Test_name.c", line 301: error: expected a ";"
+  namespace    { template<typename T> __declspec(dllexport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllexport'}}
+                                                            ^
+
+"Test_name.c", line 302: error: expected a ";"
+  namespace ns { template<typename T> __declspec(dllexport) void externalFuncTmpl(); }
+                                                            ^
+
+"Test_name.c", line 306: error: expected a ";"
+  template<typename T> __declspec(dllexport) void exportedFuncTmplDecl();
+                                             ^
+
+"Test_name.c", line 307: error: expected a ";"
+  template<typename T> __declspec(dllexport) void exportedFuncTmpl() {}
+                                             ^
+
+"Test_name.c", line 314: warning: parsing restarts here after previous syntax error
+  extern template void exportedFuncTmpl<ExplicitDecl_Exported>();
+                                                                ^
+
+"Test_name.c", line 315: error: exportedFuncTmpl is not a template
+         template void exportedFuncTmpl<ExplicitDecl_Exported>();
+                       ^
+
+"Test_name.c", line 315: error: invalid explicit instantiation declaration
+         template void exportedFuncTmpl<ExplicitDecl_Exported>();
+                  ^
+
+"Test_name.c", line 318: error: exportedFuncTmpl is not a template
+  template void exportedFuncTmpl<ExplicitInst_Exported>();
+                ^
+
+"Test_name.c", line 318: error: invalid explicit instantiation declaration
+  template void exportedFuncTmpl<ExplicitInst_Exported>();
+           ^
+
+"Test_name.c", line 321: error: no instance of overloaded function "ns::dllexport" matches the specified type
+  template<> __declspec(dllexport) void exportedFuncTmpl<ExplicitSpec_Exported>();
+                        ^
+
+"Test_name.c", line 321: error: expected a ";"
+  template<> __declspec(dllexport) void exportedFuncTmpl<ExplicitSpec_Exported>();
+                                   ^
+
+"Test_name.c", line 322: error: no instance of overloaded function "ns::dllexport" matches the specified type
+  template<> __declspec(dllexport) void exportedFuncTmpl<ExplicitSpec_Def_Exported>() {}
+                        ^
+
+"Test_name.c", line 322: error: expected a ";"
+  template<> __declspec(dllexport) void exportedFuncTmpl<ExplicitSpec_Def_Exported>() {}
+                                   ^
+
+"Test_name.c", line 331: warning: parsing restarts here after previous syntax error
+  extern template __declspec(dllexport) void funcTmpl<ExplicitDecl_Exported>();
+                                                                              ^
+
+"Test_name.c", line 332: error: no instance of overloaded function "ns::dllexport" matches the specified type
+         template __declspec(dllexport) void funcTmpl<ExplicitDecl_Exported>();
+                             ^
+
+"Test_name.c", line 332: error: expected a ";"
+         template __declspec(dllexport) void funcTmpl<ExplicitDecl_Exported>();
+                                        ^
+
+"Test_name.c", line 335: error: no instance of overloaded function "ns::dllexport" matches the specified type
+  template __declspec(dllexport) void funcTmpl<ExplicitInst_Exported>();
+                      ^
+
+"Test_name.c", line 335: error: expected a ";"
+  template __declspec(dllexport) void funcTmpl<ExplicitInst_Exported>();
+                                 ^
+
+"Test_name.c", line 338: error: no instance of overloaded function "ns::dllexport" matches the specified type
+  template<> __declspec(dllexport) void funcTmpl<ExplicitSpec_Exported>();
+                        ^
+
+"Test_name.c", line 338: error: expected a ";"
+  template<> __declspec(dllexport) void funcTmpl<ExplicitSpec_Exported>();
+                                   ^
+
+"Test_name.c", line 339: error: no instance of overloaded function "ns::dllexport" matches the specified type
+  template<> __declspec(dllexport) void funcTmpl<ExplicitSpec_Def_Exported>() {}
+                        ^
+
+"Test_name.c", line 339: error: expected a ";"
+  template<> __declspec(dllexport) void funcTmpl<ExplicitSpec_Def_Exported>() {}
+                                   ^
+
+"Test_name.c", line 352: warning: parsing restarts here after previous syntax error
+  class __declspec(dllexport) ClassDecl;
+                                       ^
+
+"Test_name.c", line 354: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllexport) ClassDef {};
+        ^
+
+"Test_name.c", line 354: error: declaration is incompatible with overloaded function "ns::dllexport" (declared at line 81)
+  class __declspec(dllexport) ClassDef {};
+                   ^
+
+"Test_name.c", line 354: error: expected a ";"
+  class __declspec(dllexport) ClassDef {};
+                              ^
+
+"Test_name.c", line 357: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> struct __declspec(dllexport) PartiallySpecializedClassTemplate<T*> { void f() {} }; // non-gnu-warning {{'dllexport' attribute ignored}}
+                               ^
+
+"Test_name.c", line 357: warning: variable templates are a C++14 feature
+  template <typename T> struct __declspec(dllexport) PartiallySpecializedClassTemplate<T*> { void f() {} }; // non-gnu-warning {{'dllexport' attribute ignored}}
+                                                     ^
+
+"Test_name.c", line 357: error: "dllexport" has already been declared in the current scope
+  template <typename T> struct __declspec(dllexport) PartiallySpecializedClassTemplate<T*> { void f() {} }; // non-gnu-warning {{'dllexport' attribute ignored}}
+                                          ^
+
+"Test_name.c", line 357: error: expected a ";"
+  template <typename T> struct __declspec(dllexport) PartiallySpecializedClassTemplate<T*> { void f() {} }; // non-gnu-warning {{'dllexport' attribute ignored}}
+                                                     ^
+
+"Test_name.c", line 360: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <> struct __declspec(dllexport) ExpliciallySpecializedClassTemplate<int> { void f() {} };
+                     ^
+
+"Test_name.c", line 360: error: variable template "ns::dllexport" is not an entity that can be explicitly specialized
+  template <> struct __declspec(dllexport) ExpliciallySpecializedClassTemplate<int> { void f() {} };
+                                ^
+
+"Test_name.c", line 360: error: expected a ";"
+  template <> struct __declspec(dllexport) ExpliciallySpecializedClassTemplate<int> { void f() {} };
+                                           ^
+
+"Test_name.c", line 364: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> struct __declspec(dllexport) ImplicitlyInstantiatedExportedTemplate {
+                               ^
+
+"Test_name.c", line 364: warning: variable templates are a C++14 feature
+  template <typename T> struct __declspec(dllexport) ImplicitlyInstantiatedExportedTemplate {
+                                                     ^
+
+"Test_name.c", line 364: error: variable template "ns::dllexport" has already been defined (previous definition at line 357)
+  template <typename T> struct __declspec(dllexport) ImplicitlyInstantiatedExportedTemplate {
+                                          ^
+
+"Test_name.c", line 364: error: expected a ";"
+  template <typename T> struct __declspec(dllexport) ImplicitlyInstantiatedExportedTemplate {
+                                                     ^
+
+"Test_name.c", line 367: error: ImplicitlyInstantiatedExportedTemplate is not a template
+  ImplicitlyInstantiatedExportedTemplate<IncompleteType> implicitlyInstantiatedExportedTemplate;
+  ^
+
+"Test_name.c", line 372: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> struct __declspec(dllexport) ExportedTemplateWithExplicitInstantiationDecl { // non-gnu-note {{attribute is here}}
+                               ^
+
+"Test_name.c", line 372: warning: variable templates are a C++14 feature
+  template <typename T> struct __declspec(dllexport) ExportedTemplateWithExplicitInstantiationDecl { // non-gnu-note {{attribute is here}}
+                                                     ^
+
+"Test_name.c", line 372: error: variable template "ns::dllexport" has already been defined (previous definition at line 357)
+  template <typename T> struct __declspec(dllexport) ExportedTemplateWithExplicitInstantiationDecl { // non-gnu-note {{attribute is here}}
+                                          ^
+
+"Test_name.c", line 372: error: expected a ";"
+  template <typename T> struct __declspec(dllexport) ExportedTemplateWithExplicitInstantiationDecl { // non-gnu-note {{attribute is here}}
+                                                     ^
+
+"Test_name.c", line 375: error: ExportedTemplateWithExplicitInstantiationDecl is not a template
+  extern template struct ExportedTemplateWithExplicitInstantiationDecl<IncompleteType2>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}}
+                         ^
+
+"Test_name.c", line 375: error: invalid explicit instantiation declaration
+  extern template struct ExportedTemplateWithExplicitInstantiationDecl<IncompleteType2>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}}
+                  ^
+
+"Test_name.c", line 379: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> struct __declspec(dllexport) ExplicitlyInstantiatedExportedTemplate {
+                               ^
+
+"Test_name.c", line 379: warning: variable templates are a C++14 feature
+  template <typename T> struct __declspec(dllexport) ExplicitlyInstantiatedExportedTemplate {
+                                                     ^
+
+"Test_name.c", line 379: error: variable template "ns::dllexport" has already been defined (previous definition at line 357)
+  template <typename T> struct __declspec(dllexport) ExplicitlyInstantiatedExportedTemplate {
+                                          ^
+
+"Test_name.c", line 379: error: expected a ";"
+  template <typename T> struct __declspec(dllexport) ExplicitlyInstantiatedExportedTemplate {
+                                                     ^
+
+"Test_name.c", line 382: error: ExplicitlyInstantiatedExportedTemplate is not a template
+  template struct ExplicitlyInstantiatedExportedTemplate<IncompleteType3>; // expected-note{{in instantiation of member function 'ExplicitlyInstantiatedExportedTemplate<IncompleteType3>::f' requested here}}
+                  ^
+
+"Test_name.c", line 382: error: invalid explicit instantiation declaration
+  template struct ExplicitlyInstantiatedExportedTemplate<IncompleteType3>; // expected-note{{in instantiation of member function 'ExplicitlyInstantiatedExportedTemplate<IncompleteType3>::f' requested here}}
+           ^
+
+"Test_name.c", line 389: error: typedef "__declspec" may not be used in an elaborated type specifier
+  struct __declspec(dllexport) ExportedBaseClass : public BaseClassTemplateOfExportedClass<IncompleteType4> {};
+         ^
+
+"Test_name.c", line 389: error: "dllexport" has already been declared in the current scope
+  struct __declspec(dllexport) ExportedBaseClass : public BaseClassTemplateOfExportedClass<IncompleteType4> {};
+                    ^
+
+"Test_name.c", line 389: error: expected a ";"
+  struct __declspec(dllexport) ExportedBaseClass : public BaseClassTemplateOfExportedClass<IncompleteType4> {};
+                               ^
+
+"Test_name.c", line 393: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> struct __declspec(dllexport) ExportedBaseClassTemplateOfExportedClass {
+                               ^
+
+"Test_name.c", line 393: warning: variable templates are a C++14 feature
+  template <typename T> struct __declspec(dllexport) ExportedBaseClassTemplateOfExportedClass {
+                                                     ^
+
+"Test_name.c", line 393: error: "dllexport" has already been declared in the current scope
+  template <typename T> struct __declspec(dllexport) ExportedBaseClassTemplateOfExportedClass {
+                                          ^
+
+"Test_name.c", line 393: error: expected a ";"
+  template <typename T> struct __declspec(dllexport) ExportedBaseClassTemplateOfExportedClass {
+                                                     ^
+
+"Test_name.c", line 396: error: typedef "__declspec" may not be used in an elaborated type specifier
+  struct __declspec(dllexport) ExportedBaseClass2 : public ExportedBaseClassTemplateOfExportedClass<IncompleteType5> {};
+         ^
+
+"Test_name.c", line 396: error: "dllexport" has already been declared in the current scope
+  struct __declspec(dllexport) ExportedBaseClass2 : public ExportedBaseClassTemplateOfExportedClass<IncompleteType5> {};
+                    ^
+
+"Test_name.c", line 396: error: expected a ";"
+  struct __declspec(dllexport) ExportedBaseClass2 : public ExportedBaseClassTemplateOfExportedClass<IncompleteType5> {};
+                               ^
+
+"Test_name.c", line 400: error: typedef "__declspec" may not be used in an elaborated type specifier
+  extern template struct __declspec(dllexport) ExplicitInstantiationDeclTemplate<int>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}} \
+                         ^
+
+"Test_name.c", line 400: error: "<error-type> ns::dllexport" is not an entity that can be instantiated
+  extern template struct __declspec(dllexport) ExplicitInstantiationDeclTemplate<int>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}} \
+                                    ^
+
+"Test_name.c", line 400: error: expected a ";"
+  extern template struct __declspec(dllexport) ExplicitInstantiationDeclTemplate<int>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}} \
+                                               ^
+
+"Test_name.c", line 403: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> struct __declspec(dllexport) ExplicitInstantiationDeclExportedTemplate {}; // non-gnu-note {{attribute is here}}
+                               ^
+
+"Test_name.c", line 403: warning: variable templates are a C++14 feature
+  template <typename T> struct __declspec(dllexport) ExplicitInstantiationDeclExportedTemplate {}; // non-gnu-note {{attribute is here}}
+                                                     ^
+
+"Test_name.c", line 403: error: "dllexport" has already been declared in the current scope
+  template <typename T> struct __declspec(dllexport) ExplicitInstantiationDeclExportedTemplate {}; // non-gnu-note {{attribute is here}}
+                                          ^
+
+"Test_name.c", line 403: error: expected a ";"
+  template <typename T> struct __declspec(dllexport) ExplicitInstantiationDeclExportedTemplate {}; // non-gnu-note {{attribute is here}}
+                                                     ^
+
+"Test_name.c", line 404: error: ExplicitInstantiationDeclExportedTemplate is not a template
+  extern template struct ExplicitInstantiationDeclExportedTemplate<int>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}}
+                         ^
+
+"Test_name.c", line 404: error: invalid explicit instantiation declaration
+  extern template struct ExplicitInstantiationDeclExportedTemplate<int>; // non-gnu-warning {{explicit instantiation declaration should not be 'dllexport'}}
+                  ^
+
+"Test_name.c", line 407: error: typedef "__declspec" may not be used in an elaborated type specifier
+  struct __declspec(dllexport) PR23308 {
+         ^
+
+"Test_name.c", line 407: error: "dllexport" has already been declared in the current scope
+  struct __declspec(dllexport) PR23308 {
+                    ^
+
+"Test_name.c", line 407: error: expected a ";"
+  struct __declspec(dllexport) PR23308 {
+                               ^
+
+"Test_name.c", line 410: error: incomplete type "void" is not allowed
+  void PR23308::f(InternalLinkageType*) {} // No error; we don't try to export f because it has internal linkage.
+       ^
+
+"Test_name.c", line 410: error: expected a ";"
+  void PR23308::f(InternalLinkageType*) {} // No error; we don't try to export f because it has internal linkage.
+              ^
+
+"Test_name.c", line 416: warning: parsing restarts here after previous syntax error
+  class __declspec(dllexport) ExportedClass {};
+                                              ^
+
+"Test_name.c", line 417: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllimport) ImportedClass {};
+        ^
+
+"Test_name.c", line 417: error: expected a ";"
+  class __declspec(dllimport) ImportedClass {};
+                              ^
+
+"Test_name.c", line 420: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> class __declspec(dllexport) ExportedClassTemplate {}; // win-gnu-error {{'ExportedClassTemplate<LocalCRTP>' must have external linkage when declared 'dllexport'}}
+                              ^
+
+"Test_name.c", line 420: warning: variable templates are a C++14 feature
+  template <typename T> class __declspec(dllexport) ExportedClassTemplate {}; // win-gnu-error {{'ExportedClassTemplate<LocalCRTP>' must have external linkage when declared 'dllexport'}}
+                                                    ^
+
+"Test_name.c", line 420: error: "dllexport" has already been declared in the current scope
+  template <typename T> class __declspec(dllexport) ExportedClassTemplate {}; // win-gnu-error {{'ExportedClassTemplate<LocalCRTP>' must have external linkage when declared 'dllexport'}}
+                                         ^
+
+"Test_name.c", line 420: error: expected a ";"
+  template <typename T> class __declspec(dllexport) ExportedClassTemplate {}; // win-gnu-error {{'ExportedClassTemplate<LocalCRTP>' must have external linkage when declared 'dllexport'}}
+                                                    ^
+
+"Test_name.c", line 421: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <typename T> class __declspec(dllimport) ImportedClassTemplate {};
+                              ^
+
+"Test_name.c", line 421: warning: variable templates are a C++14 feature
+  template <typename T> class __declspec(dllimport) ImportedClassTemplate {};
+                                                    ^
+
+"Test_name.c", line 421: error: "dllimport" has already been declared in the current scope
+  template <typename T> class __declspec(dllimport) ImportedClassTemplate {};
+                                         ^
+
+"Test_name.c", line 421: error: expected a ";"
+  template <typename T> class __declspec(dllimport) ImportedClassTemplate {};
+                                                    ^
+
+"Test_name.c", line 426: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <> struct __declspec(dllexport) ExplicitlyExportSpecializedTemplate<int> { void func() {} };
+                     ^
+
+"Test_name.c", line 426: error: variable template "ns::dllexport" is not an entity that can be explicitly specialized
+  template <> struct __declspec(dllexport) ExplicitlyExportSpecializedTemplate<int> { void func() {} };
+                                ^
+
+"Test_name.c", line 426: error: expected a ";"
+  template <> struct __declspec(dllexport) ExplicitlyExportSpecializedTemplate<int> { void func() {} };
+                                           ^
+
+"Test_name.c", line 428: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template <> struct __declspec(dllimport) ExplicitlyImportSpecializedTemplate<int> { void func() {} };
+                     ^
+
+"Test_name.c", line 428: error: variable template "ns::dllimport" is not an entity that can be explicitly specialized
+  template <> struct __declspec(dllimport) ExplicitlyImportSpecializedTemplate<int> { void func() {} };
+                                ^
+
+"Test_name.c", line 428: error: expected a ";"
+  template <> struct __declspec(dllimport) ExplicitlyImportSpecializedTemplate<int> { void func() {} };
+                                           ^
+
+"Test_name.c", line 433: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template struct __declspec(dllexport) ExplicitlyExportInstantiatedTemplate<int>;
+                  ^
+
+"Test_name.c", line 433: error: invalid explicit instantiation declaration
+  template struct __declspec(dllexport) ExplicitlyExportInstantiatedTemplate<int>;
+           ^
+
+"Test_name.c", line 433: error: expected a ";"
+  template struct __declspec(dllexport) ExplicitlyExportInstantiatedTemplate<int>;
+                                        ^
+
+"Test_name.c", line 436: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template struct __declspec(dllexport) ExplicitlyExportDeclaredInstantiatedTemplate<int>; // gnu-warning {{'dllexport' attribute ignored on explicit instantiation definition}}
+                  ^
+
+"Test_name.c", line 436: error: invalid explicit instantiation declaration
+  template struct __declspec(dllexport) ExplicitlyExportDeclaredInstantiatedTemplate<int>; // gnu-warning {{'dllexport' attribute ignored on explicit instantiation definition}}
+           ^
+
+"Test_name.c", line 436: error: expected a ";"
+  template struct __declspec(dllexport) ExplicitlyExportDeclaredInstantiatedTemplate<int>; // gnu-warning {{'dllexport' attribute ignored on explicit instantiation definition}}
+                                        ^
+
+"Test_name.c", line 438: error: typedef "__declspec" may not be used in an elaborated type specifier
+  template struct __declspec(dllimport) ExplicitlyImportInstantiatedTemplate<int>;
+                  ^
+
+"Test_name.c", line 438: error: invalid explicit instantiation declaration
+  template struct __declspec(dllimport) ExplicitlyImportInstantiatedTemplate<int>;
+           ^
+
+"Test_name.c", line 438: error: expected a ";"
+  template struct __declspec(dllimport) ExplicitlyImportInstantiatedTemplate<int>;
+                                        ^
+
+"Test_name.c", line 441: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllexport) DerivedFromTemplate : public ClassTemplate<int> {};
+        ^
+
+"Test_name.c", line 441: error: "dllexport" has already been declared in the current scope
+  class __declspec(dllexport) DerivedFromTemplate : public ClassTemplate<int> {};
+                   ^
+
+"Test_name.c", line 441: error: expected a ";"
+  class __declspec(dllexport) DerivedFromTemplate : public ClassTemplate<int> {};
+                              ^
+
+"Test_name.c", line 444: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllexport) DerivedFromTemplate2 : public ClassTemplate<int> {};
+        ^
+
+"Test_name.c", line 444: error: variable "ns::dllexport" has already been defined (previous definition at line 441)
+  class __declspec(dllexport) DerivedFromTemplate2 : public ClassTemplate<int> {};
+                   ^
+
+"Test_name.c", line 444: error: expected a ";"
+  class __declspec(dllexport) DerivedFromTemplate2 : public ClassTemplate<int> {};
+                              ^
+
+"Test_name.c", line 447: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllexport) DerivedFromExportedTemplate : public ExportedClassTemplate<int> {};
+        ^
+
+"Test_name.c", line 447: error: variable "ns::dllexport" has already been defined (previous definition at line 441)
+  class __declspec(dllexport) DerivedFromExportedTemplate : public ExportedClassTemplate<int> {};
+                   ^
+
+"Test_name.c", line 447: error: expected a ";"
+  class __declspec(dllexport) DerivedFromExportedTemplate : public ExportedClassTemplate<int> {};
+                              ^
+
+"Test_name.c", line 450: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllexport) DerivedFromImportedTemplate : public ImportedClassTemplate<int> {};
+        ^
+
+"Test_name.c", line 450: error: variable "ns::dllexport" has already been defined (previous definition at line 441)
+  class __declspec(dllexport) DerivedFromImportedTemplate : public ImportedClassTemplate<int> {};
+                   ^
+
+"Test_name.c", line 450: error: expected a ";"
+  class __declspec(dllexport) DerivedFromImportedTemplate : public ImportedClassTemplate<int> {};
+                              ^
+
+"Test_name.c", line 454: error: typedef "__declspec" may not be used in an elaborated type specifier
+  class __declspec(dllexport) DerivedFromTemplateD2 : public ClassTemplate<double> {};
+        ^
+
+"Test_name.c", line 454: error: variable "ns::dllexport" has already been defined (previous definition at line 441)
+  class __declspec(dllexport) DerivedFromTemplateD2 : public ClassTemplate<double> {};
+                   ^
+
+"Test_name.c", line 454: error: expected a ";"
+  class __declspec(dllexport) DerivedFromTemplateD2 : public ClassTemplate<double> {};
+                              ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

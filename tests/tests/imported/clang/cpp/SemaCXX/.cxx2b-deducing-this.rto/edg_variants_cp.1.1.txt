@@ -1,0 +1,211 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 7: error: incomplete type "void" is not allowed
+  void f(this); // expected-error{{variable has incomplete type 'void'}} \
+       ^
+
+"Test_name.c", line 7: error: "this" may only be used inside a nonstatic member function
+  void f(this); // expected-error{{variable has incomplete type 'void'}} \
+         ^
+
+"Test_name.c", line 10: error: incomplete type "void" is not allowed
+  void g(this auto); // expected-error{{an explicit object parameter cannot appear in a non-member function}}
+       ^
+
+"Test_name.c", line 10: error: "this" may only be used inside a nonstatic member function
+  void g(this auto); // expected-error{{an explicit object parameter cannot appear in a non-member function}}
+         ^
+
+"Test_name.c", line 10: error: expected a ")"
+  void g(this auto); // expected-error{{an explicit object parameter cannot appear in a non-member function}}
+              ^
+
+"Test_name.c", line 12: error: a member function declared with "static" cannot have an explicit "this" parameter
+  auto l1 = [] (this auto) static {}; // expected-error{{an explicit object parameter cannot appear in a static lambda}}
+               ^
+
+"Test_name.c", line 13: error: the mutable qualifier is not allowed on a lambda with an explicit "this" parameter
+  auto l2 = [] (this auto) mutable {}; // expected-error{{a lambda with an explicit object parameter cannot be mutable}}
+                           ^
+
+"Test_name.c", line 15: error: an explicit "this" parameter must be the first declared parameter
+  auto l4 = [](int, this auto){}; // expected-error {{an explicit object parameter can only appear as the first parameter of the lambda}}
+                    ^
+
+"Test_name.c", line 18: error: a member function declared with "static" cannot have an explicit "this" parameter
+      static void f(this auto); // expected-error{{an explicit object parameter cannot appear in a static function}}
+      ^
+
+"Test_name.c", line 19: error: a virtual member function cannot have an explicit "this" parameter
+      virtual void f(this S); // expected-error{{an explicit object parameter cannot appear in a virtual function}}
+      ^
+
+"Test_name.c", line 25: error: a type qualifier is not allowed on a static member function
+      void g(this auto) const; // expected-error{{explicit object member function cannot have 'const' qualifier}}
+                        ^
+
+"Test_name.c", line 26: error: a ref-qualifier is not allowed here
+      void h(this auto) &; // expected-error{{explicit object member function cannot have '&' qualifier}}
+                        ^
+
+"Test_name.c", line 27: error: a ref-qualifier is not allowed here
+      void i(this auto) &&; // expected-error{{explicit object member function cannot have '&&' qualifier}}
+                        ^
+
+"Test_name.c", line 28: error: a type qualifier is not allowed on a static member function
+      void j(this auto) volatile; // expected-error{{explicit object member function cannot have 'volatile' qualifier}}
+                        ^
+
+"Test_name.c", line 29: error: a type qualifier is not allowed on a static member function
+      void k(this auto) __restrict; // expected-error{{explicit object member function cannot have '__restrict' qualifier}}
+                        ^
+
+"Test_name.c", line 30: error: a type qualifier is not allowed on a static member function
+      void l(this auto) _Nonnull; // expected-error{{explicit object member function cannot have '' qualifie}}
+                        ^
+
+"Test_name.c", line 34: error: an explicit "this" parameter must be the first declared parameter
+      void not_first(int, this auto); // expected-error {{an explicit object parameter can only appear as the first parameter of the function}}
+                          ^
+
+"Test_name.c", line 36: error: expected an identifier
+      S(this auto); // expected-error {{an explicit object parameter cannot appear in a constructor}}
+        ^
+
+"Test_name.c", line 37: error: a destructor may not have parameters
+      ~S(this S) {} // expected-error {{an explicit object parameter cannot appear in a destructor}} \
+         ^
+
+"Test_name.c", line 50: warning: function "Override::A::f()" is hidden by "Override::B::f" -- virtual function override intended?
+      int f(this B&, int); // expected-warning {{hides overloaded virtual function}}
+          ^
+
+"Test_name.c", line 51: warning: function "Override::A::f()" is hidden by "Override::B::f" -- virtual function override intended?
+      int f(this B&);  // expected-error {{an explicit object parameter cannot appear in a virtual function}}
+          ^
+
+"Test_name.c", line 52: warning: function "Override::A::g(int)" is hidden by "Override::B::g" -- virtual function override intended?
+      int g(this B&); // expected-warning {{hides overloaded virtual function}}
+          ^
+
+"Test_name.c", line 53: warning: function "Override::A::h() const" is hidden by "Override::B::h" -- virtual function override intended?
+      int h(this B&); // expected-error {{an explicit object parameter cannot appear in a virtual function}}
+          ^
+
+"Test_name.c", line 54: warning: function "Override::A::h() const" is hidden by "Override::B::h" -- virtual function override intended?
+      int h(this B&&); // expected-error {{an explicit object parameter cannot appear in a virtual function}}
+          ^
+
+"Test_name.c", line 55: warning: function "Override::A::h() const" is hidden by "Override::B::h" -- virtual function override intended?
+      int h(this const B&&); // expected-error {{an explicit object parameter cannot appear in a virtual function}}
+          ^
+
+"Test_name.c", line 56: warning: function "Override::A::h() const" is hidden by "Override::B::h" -- virtual function override intended?
+      int h(this A&); // expected-error {{an explicit object parameter cannot appear in a virtual function}}
+          ^
+
+"Test_name.c", line 57: warning: function "Override::A::h() const" is hidden by "Override::B::h" -- virtual function override intended?
+      int h(this int); // expected-error {{an explicit object parameter cannot appear in a virtual function}}
+          ^
+
+"Test_name.c", line 72: error: "this" may only be used inside a nonstatic member function
+          this->fun(); // expected-error{{invalid use of 'this' in a function with an explicit object parameter}}
+          ^
+
+"Test_name.c", line 73: error: a nonstatic member reference must be relative to a specific object
+          fun(); // expected-error {{call to non-static member function without an object argument}}
+          ^
+
+"Test_name.c", line 74: error: a nonstatic member reference must be relative to a specific object
+          m = 0; // expected-error {{invalid use of member 'm' in explicit object member function}}
+          ^
+
+"Test_name.c", line 86: error: a nonstatic member reference must be relative to a specific object
+      foo(); // expected-error {{call to non-static member function without an object argument}}
+      ^
+
+"Test_name.c", line 87: error: a nonstatic member reference must be relative to a specific object
+      n = 12; // expected-error {{invalid use of member 'n' in explicit object member function}}
+      ^
+
+"Test_name.c", line 117: error: there is more than one way an object of type "lambda [](const ThisInLambdaWithCaptures::Test &) static->void" can be called for the argument list:
+            surrogate function from conversion function "lambda [](const ThisInLambdaWithCaptures::Test &) static->void::operator void (*)(const ThisInLambdaWithCaptures::Test &)() const noexcept"
+            function "lambda [](const ThisInLambdaWithCaptures::Test &) static->void" (declared at line 116)
+      alsoOk();
+      ^
+
+"Test_name.c", line 116: warning: variable "alsoOk" was set but never used
+      auto alsoOk = [](this const Test &) {};
+           ^
+
+"Test_name.c", line 124: error: function "lambda [](const ThisInLambdaWithCaptures::Frobble &) static->void" cannot be called with the given argument list
+            argument types are: (ThisInLambdaWithCaptures::Frobble)
+            object type is: lambda [](const ThisInLambdaWithCaptures::Frobble &) static->void
+      nothingIsOkay(f); // expected-error {{no matching function for call to object of type}}
+      ^
+"Test_name.c", line 121: note: number of parameters of function "lambda [](const ThisInLambdaWithCaptures::Frobble &) static->void" does not match the call
+  auto nothingIsOkay = [i = 0](this const Frobble &) {};  // expected-note {{candidate function not viable: requires 0 non-object arguments, but 1 was provided}}
+                              ^
+
+"Test_name.c", line 131: error: invalid redeclaration of member function "Corresponding::a(Corresponding &)" (declared at line 130)
+      void a(); // expected-error{{cannot be redeclared}}
+           ^
+
+"Test_name.c", line 138: error: overloading two member functions with the same parameter types requires that they both have ref-qualifiers or both lack ref-qualifiers
+      void b() const &; // expected-error{{cannot be redeclared}}
+           ^
+
+"Test_name.c", line 148: error: invalid redeclaration of member function "Corresponding::d(int)" (declared at line 147)
+      void d(this int);        // expected-error {{class member cannot be redeclared}}
+           ^
+
+"Test_name.c", line 158: error: invalid redeclaration of member function "CorrespondingTpl<T>::a(CorrespondingTpl<T> &)" (declared at line 157)
+      void a(); // expected-error{{cannot be redeclared}}
+           ^
+
+"Test_name.c", line 167: error: overloading two member functions with the same parameter types requires that they both have ref-qualifiers or both lack ref-qualifiers
+      void b() const &; // expected-error{{cannot be redeclared}}
+           ^
+
+"Test_name.c", line 177: error: invalid redeclaration of member function "CorrespondingTpl<T>::d(int)" (declared at line 176)
+      void d(this int);       // expected-error {{class member cannot be redeclared}}
+           ^
+
+"Test_name.c", line 192: error: there is more than one way an object of type "lambda [](C) static->int" can be called for the argument list:
+            surrogate function from conversion function "lambda [](C) static->int::operator int (*)(C)() const noexcept"
+            function "lambda [](C) static->int" (declared at line 192)
+      (void)[](this C) { return 42; }();
+            ^
+
+"Test_name.c", line 202: error: expression must be a modifiable lvalue
+      [i = 0](this const auto&){ i++; }(); // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                 ^
+
+"Test_name.c", line 205: error: expression must be a modifiable lvalue
+      const auto l1 = [x](this auto&) { x = 42; }; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                        ^
+
+"Test_name.c", line 206: error: expression must be a modifiable lvalue
+      const auto l2 = [=](this auto&) { x = 42; }; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                        ^
+
+"Test_name.c", line 209: error: expression must be a modifiable lvalue
+          const auto l3a = [x](this auto&) { x = 42; }; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                             ^
+
+"Test_name.c", line 214: error: expression must be a modifiable lvalue
+          const auto l4a = [=](this auto&) { x = 42; }; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                             ^
+
+"Test_name.c", line 219: error: expression must be a modifiable lvalue
+          const auto l5a = [x](this auto&) { x = 42; }; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                             ^
+
+"Test_name.c", line 219: internal error: assertion failed at: "folding.c", line <suppressed> in fold_constexpr_member_selection
+
+          const auto l5a = [x](this auto&) { x = 42; }; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                                      ^
+
+39 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

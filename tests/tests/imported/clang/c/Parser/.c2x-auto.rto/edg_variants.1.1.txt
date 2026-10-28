@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 11: error: "auto" not allowed here
+    auto b;       // c23-error {{'auto' not allowed in struct member}} \
+    ^
+
+"Test_name.c", line 16: error: "auto" not allowed here
+      auto smth;  // c23-error {{'auto' not allowed in union member}} \
+      ^
+
+"Test_name.c", line 22: error: "auto" is not allowed here
+  enum E : auto { // c23-error {{'auto' not allowed here}} \
+           ^
+
+eccp: front end returned an exit status of 139

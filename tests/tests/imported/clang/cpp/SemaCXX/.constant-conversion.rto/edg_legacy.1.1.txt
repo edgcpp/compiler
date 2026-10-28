@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 11: warning: integer conversion resulted in truncation
+    char warn1 = false ? 0 : 99999;
+                 ^
+
+"Test_name.c", line 13: warning: integer conversion resulted in truncation
+    char warn2 = false ? 0 : nines();
+                 ^
+
+"Test_name.c", line 11: warning: variable "warn1" was declared but never referenced
+    char warn1 = false ? 0 : 99999;
+         ^
+
+"Test_name.c", line 13: warning: variable "warn2" was declared but never referenced
+    char warn2 = false ? 0 : nines();
+         ^
+
+"Test_name.c", line 16: warning: variable "warn3" was declared but never referenced
+    char warn3 = param > 0 ? 0 : 99999;
+         ^
+
+"Test_name.c", line 21: warning: variable "ok1" was declared but never referenced
+    char ok1 = true ? 0 : 99999;
+         ^
+
+"Test_name.c", line 22: warning: variable "ok2" was declared but never referenced
+    char ok2 = true ? 0 : nines();
+         ^
+
+"Test_name.c", line 24: warning: variable "ok3" was declared but never referenced
+    char ok3 = true ? 0 : 99999 + 1;
+         ^
+
+"Test_name.c", line 25: warning: variable "ok4" was declared but never referenced
+    char ok4 = true ? 0 : nines() + 1;
+         ^
+
+"Test_name.c", line 31: warning: variable "s" was set but never used
+    } s;
+      ^
+

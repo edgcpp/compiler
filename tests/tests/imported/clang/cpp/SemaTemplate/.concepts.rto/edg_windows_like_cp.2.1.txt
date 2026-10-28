@@ -1,0 +1,1009 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 8: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T> concept AllTrue1 = True<T>; // expected-error {{expression contains unexpanded parameter pack 'T'}}
+                                                    ^
+
+"Test_name.c", line 19: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T> concept AllAddable4 = requires(T t) { (t + 1); }; // expected-error {{expression contains unexpanded parameter pack 'T'}}
+                                                           ^
+
+"Test_name.c", line 20: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T> concept AllAddable5 = requires(T t) { (void(t + 1), ...); }; // expected-error {{does not contain any unexpanded}}
+                                                           ^
+
+"Test_name.c", line 20: error: fold expression does not refer to a parameter pack
+    template<typename ...T> concept AllAddable5 = requires(T t) { (void(t + 1), ...); }; // expected-error {{does not contain any unexpanded}}
+                                                                                ^
+
+"Test_name.c", line 22: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T> concept AllAddable7 = requires { (T() + 1); }; // expected-error {{expression contains unexpanded parameter pack 'T'}}
+                                                              ^
+
+"Test_name.c", line 34: error: parameter pack "Ts" was referenced but not expanded
+    template<class ...Ts> void f1a() requires C<Ts>; // expected-error {{requires clause contains unexpanded parameter pack 'Ts'}}
+                                                ^
+
+"Test_name.c", line 35: error: parameter pack "Ts" was referenced but not expanded
+    template<class ...Ts> requires C<Ts> void f1b(); // expected-error {{requires clause contains unexpanded parameter pack 'Ts'}}
+                                     ^
+
+"Test_name.c", line 41: error: a requires-clause is not allowed here (not a templated function)
+      ([] () requires C<Ts> {} ()); // expected-error {{expression contains unexpanded parameter pack 'Ts'}}
+             ^
+
+"Test_name.c", line 42: error: parameter pack "Ts" was referenced but not expanded
+      ([]<int = 0> requires C<Ts> () {} ()); // expected-error {{expression contains unexpanded parameter pack 'Ts'}}
+                              ^
+
+"Test_name.c", line 41: error: parameter pack "Ts" was referenced but not expanded
+      ([] () requires C<Ts> {} ()); // expected-error {{expression contains unexpanded parameter pack 'Ts'}}
+                        ^
+
+"Test_name.c", line 45: error: a requires-clause is not allowed here (not a templated function)
+      ([] () requires C<Ts> {} (), ...);
+             ^
+
+"Test_name.c", line 46: error: parameter pack "Ts" was referenced but not expanded
+      ([]<int = 0> requires C<Ts> () {} (), ...);
+                              ^
+
+"Test_name.c", line 46: error: fold expression does not refer to a parameter pack
+      ([]<int = 0> requires C<Ts> () {} (), ...);
+                                            ^
+
+"Test_name.c", line 49: error: no instance of function template "PR45699::f1a" matches the argument list
+      f1a();
+      ^
+"Test_name.c", line 34: note: substitution of arguments "<>" for concept-id failed
+    template<class ...Ts> void f1a() requires C<Ts>; // expected-error {{requires clause contains unexpanded parameter pack 'Ts'}}
+                                              ^
+
+"Test_name.c", line 50: error: no instance of function template "PR45699::f1b" matches the argument list
+      f1b(); // FIXME: Bad error recovery. expected-error {{undeclared identifier}}
+      ^
+"Test_name.c", line 35: note: substitution of arguments "<>" for concept-id failed
+    template<class ...Ts> requires C<Ts> void f1b(); // expected-error {{requires clause contains unexpanded parameter pack 'Ts'}}
+                                   ^
+
+"Test_name.c", line 53: error: no instance of function template "PR45699::f3a" matches the argument list
+      f3a();
+      ^
+"Test_name.c", line 38: note: substitution of arguments "<>" for concept-id failed
+    template<class ...Ts> void f3a() requires C<Ts...>; // expected-error {{pack expansion used as argument for non-pack parameter of concept}}
+                                              ^
+
+"Test_name.c", line 54: error: no instance of function template "PR45699::f3b" matches the argument list
+      f3b(); // FIXME: Bad error recovery. expected-error {{undeclared identifier}}
+      ^
+"Test_name.c", line 39: note: substitution of arguments "<>" for concept-id failed
+    template<class ...Ts> requires C<Ts...> void f3b(); // expected-error {{pack expansion used as argument for non-pack parameter of concept}}
+                                   ^
+
+"Test_name.c", line 64: warning: constant "B" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+      auto x = []<bool B> requires B {}; // expected-note {{constraints not satisfied}} expected-note {{false}}
+                       ^
+
+"Test_name.c", line 66: error: no instance of function template "lambda []()->auto" matches the argument list
+            object type is: lambda []()->auto
+      x.operator()<false>(); // expected-error {{no matching member function}}
+        ^
+"Test_name.c", line 64: note: substituting "<false>" for function template "lambda []()->auto" failed constraints
+      auto x = []<bool B> requires B {}; // expected-note {{constraints not satisfied}} expected-note {{false}}
+                 ^
+"Test_name.c", line 64: note: atomic constraint evaluates to false
+      auto x = []<bool B> requires B {}; // expected-note {{constraints not satisfied}} expected-note {{false}}
+                                   ^
+
+"Test_name.c", line 68: warning: template parameter "T" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+      auto y = []<typename T> requires V<T> () {};
+                           ^
+
+"Test_name.c", line 90: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T, C<T> U> void h1(); // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                              ^
+
+"Test_name.c", line 90: warning: template parameter "U" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "PackInTypeConstraint::h1"
+    template<typename ...T, C<T> U> void h1(); // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                                 ^
+
+"Test_name.c", line 91: warning: template parameter "U" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "PackInTypeConstraint::h2"
+    template<typename ...T, C<T> ...U> void h2();
+                                    ^
+
+"Test_name.c", line 92: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T> void h3(C<T> auto); // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                                      ^
+
+"Test_name.c", line 93: error: parameter pack "T" was referenced but not expanded
+    template<typename ...T> void h4(C<T> auto...);
+                                      ^
+
+"Test_name.c", line 96: error: parameter pack "T" was referenced but not expanded
+      []<C<T> U>(U u){}(T()); // expected-error {{unexpanded parameter pack 'T'}}
+           ^
+
+"Test_name.c", line 96: error: parameter pack "T" was referenced but not expanded
+      []<C<T> U>(U u){}(T()); // expected-error {{unexpanded parameter pack 'T'}}
+                        ^
+
+"Test_name.c", line 99: error: parameter pack "T" was referenced but not expanded
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+            ^
+
+"Test_name.c", line 104: error: parameter pack "T" was referenced but not expanded
+      ([]<typename ...T, C<T> U>(U u){}(0), // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                           ^
+
+"Test_name.c", line 104: error: no instance of function template "lambda [](U)->auto" matches the argument list
+            argument types are: (int)
+            object type is: lambda [](U)->auto
+      ([]<typename ...T, C<T> U>(U u){}(0), // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+       ^
+"Test_name.c", line 104: note: concept "PackInTypeConstraint::C" not satisfied for "<int, T>"
+      ([]<typename ...T, C<T> U>(U u){}(0), // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                         ^
+
+"Test_name.c", line 105: error: fold expression does not refer to a parameter pack
+       ...); // expected-error {{does not contain any unexpanded}}
+       ^
+
+"Test_name.c", line 109: error: parameter pack "T" was referenced but not expanded
+      [](C<T> auto){}(T()); // expected-error {{expression contains unexpanded parameter pack 'T'}}
+           ^
+
+"Test_name.c", line 109: error: parameter pack "T" was referenced but not expanded
+      [](C<T> auto){}(T()); // expected-error {{expression contains unexpanded parameter pack 'T'}}
+                      ^
+
+"Test_name.c", line 112: error: parameter pack "T" was referenced but not expanded
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+            ^
+
+"Test_name.c", line 117: error: parameter pack "T" was referenced but not expanded
+      ([]<typename ...T>(C<T> auto){}(1), // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                           ^
+
+"Test_name.c", line 117: error: no instance of function template "lambda [](PackInTypeConstraint::C<...> auto)->auto" matches the argument list
+            argument types are: (int)
+            object type is: lambda [](PackInTypeConstraint::C<...> auto)->auto
+      ([]<typename ...T>(C<T> auto){}(1), // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+       ^
+"Test_name.c", line 117: note: concept "PackInTypeConstraint::C" not satisfied for "<int, T>"
+      ([]<typename ...T>(C<T> auto){}(1), // expected-error {{type constraint contains unexpanded parameter pack 'T'}}
+                         ^
+
+"Test_name.c", line 118: error: fold expression does not refer to a parameter pack
+       ...); // expected-error {{does not contain any unexpanded}}
+       ^
+
+"Test_name.c", line 122: error: parameter pack "T" was referenced but not expanded
+      []() -> C<T> auto{ return T(); }(); // expected-error {{expression contains unexpanded parameter pack 'T'}}
+                ^
+
+"Test_name.c", line 122: error: parameter pack "T" was referenced but not expanded
+      []() -> C<T> auto{ return T(); }(); // expected-error {{expression contains unexpanded parameter pack 'T'}}
+                                ^
+
+"Test_name.c", line 132: error: parameter pack "T" was referenced but not expanded
+      ([]<typename ...T>() -> C<T> auto{ // expected-error {{declaration type contains unexpanded parameter pack 'T'}}
+                                ^
+
+"Test_name.c", line 133: error: parameter pack "T" was referenced but not expanded
+       return T(); // expected-error {{expression contains unexpanded parameter pack 'T'}}
+              ^
+
+"Test_name.c", line 132: error: cannot deduce the return type of function "lambda []()->PackInTypeConstraint::C<...> auto [with T=<>]" (declared at line 132); it has not been defined
+      ([]<typename ...T>() -> C<T> auto{ // expected-error {{declaration type contains unexpanded parameter pack 'T'}}
+       ^
+
+"Test_name.c", line 135: error: fold expression does not refer to a parameter pack
+       ...); // expected-error {{does not contain any unexpanded}}
+       ^
+
+"Test_name.c", line 149: error: static assertion failed
+    static_assert(E<int>); // expected-error {{failed}} expected-note {{because 'int' does not satisfy 'E'}}
+    ^
+
+"Test_name.c", line 153: error: static assertion failed
+    static_assert(F<int>); // expected-error {{failed}} expected-note {{because 'int' does not satisfy 'F'}}
+    ^
+
+"Test_name.c", line 157: error: static assertion failed
+    static_assert(G<int>); // expected-error {{failed}} expected-note {{because 'int' does not satisfy 'G'}}
+    ^
+
+"Test_name.c", line 164: error: invalid concept-id
+    static_assert(C<void>); // expected-note {{while checking}}
+                  ^
+"Test_name.c", line 163: note: atomic constraint not constant
+    template <class T> concept C = &n + 3 - 3 == &n; // expected-error {{non-constant expression}} expected-note {{cannot refer to element 3 of non-array object}}
+                                              ^
+"Test_name.c", line 163: note: invalid arithmetic on non-array pointer
+    template <class T> concept C = &n + 3 - 3 == &n; // expected-error {{non-constant expression}} expected-note {{cannot refer to element 3 of non-array object}}
+                                      ^
+
+"Test_name.c", line 185: error: the deduced placeholder type "void" failed the type constraint
+    C auto f1() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    template<class T> concept C = false;     // expected-note 7 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 188: error: the deduced placeholder type "void" failed the type constraint
+    C auto f2() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    template<class T> concept C = false;     // expected-note 7 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 191: error: the deduced placeholder type "void" failed the type constraint
+    C auto f3() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    template<class T> concept C = false;     // expected-note 7 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 193: error: the deduced placeholder type "void" failed the type constraint
+    C decltype(auto) f4() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    template<class T> concept C = false;     // expected-note 7 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 196: error: the deduced placeholder type "void" failed the type constraint
+    C decltype(auto) f5() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    template<class T> concept C = false;     // expected-note 7 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 199: error: the deduced placeholder type "void" failed the type constraint
+    C decltype(auto) f6() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    template<class T> concept C = false;     // expected-note 7 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 202: error: cannot deduce "auto" type
+      return void();
+             ^
+
+"Test_name.c", line 205: error: cannot deduce "auto" type
+      return; // expected-error {{cannot deduce return type 'C auto &' from omitted return expression}}
+            ^
+
+"Test_name.c", line 208: error: cannot deduce "auto" type
+    }
+    ^
+
+"Test_name.c", line 213: error: the deduced placeholder type "void" failed the type constraint
+    C auto *f1() { // expected-error {{deduced type 'void' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 211: note: atomic constraint evaluates to false
+    template<class T> concept C = false; // expected-note 3 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 216: error: the deduced placeholder type "int" failed the type constraint
+    C auto *f2() { // expected-error {{deduced type 'int' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 211: note: atomic constraint evaluates to false
+    template<class T> concept C = false; // expected-note 3 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 219: error: the deduced placeholder type "int" failed the type constraint
+    C auto *****f3() { // expected-error {{deduced type 'int' does not satisfy 'C'}}
+    ^
+"Test_name.c", line 211: note: atomic constraint evaluates to false
+    template<class T> concept C = false; // expected-note 3 {{because 'false' evaluated to false}}
+                                  ^
+
+"Test_name.c", line 230: error: more than one instance of overloaded function "PR54379::A<N>::f [with N=2]" matches the required type
+  void (*f1)() = A<2>::f; // expected-error {{address of overloaded function 'f' does not match required type}}
+                 ^
+
+"Test_name.c", line 235: error: no instance of function template "PR54379::B::f" matches the required type
+  void (*f2)() = B::f; // expected-error {{address of overloaded function 'f' does not match required type}}
+                 ^
+
+"Test_name.c", line 251: error: the deduced placeholder type "int" failed the type constraint
+  same_as<int const> auto i1 = f(); // expected-error {{deduced type 'int' does not satisfy 'same_as<const int>'}}
+  ^
+"Test_name.c", line 247: note: atomic constraint evaluates to false
+  concept same_as = is_same<T, U>::value; // expected-note-re 4 {{because {{.*}} evaluated to false}}
+                    ^
+
+"Test_name.c", line 253: error: the deduced placeholder type "const int &" failed the type constraint
+  same_as<int const> auto &&i3 = f(); // expected-error {{deduced type 'const int &' does not satisfy 'same_as<const int>'}}
+  ^
+"Test_name.c", line 247: note: atomic constraint evaluates to false
+  concept same_as = is_same<T, U>::value; // expected-note-re 4 {{because {{.*}} evaluated to false}}
+                    ^
+
+"Test_name.c", line 255: error: the deduced placeholder type "int" failed the type constraint
+  same_as<int const &> auto i4 = f(); // expected-error {{deduced type 'int' does not satisfy 'same_as<const int &>'}}
+  ^
+"Test_name.c", line 247: note: atomic constraint evaluates to false
+  concept same_as = is_same<T, U>::value; // expected-note-re 4 {{because {{.*}} evaluated to false}}
+                    ^
+
+"Test_name.c", line 256: error: the deduced placeholder type "const int" failed the type constraint
+  same_as<int const &> auto &i5 = f(); // expected-error {{deduced type 'const int' does not satisfy 'same_as<const int &>'}}
+  ^
+"Test_name.c", line 247: note: atomic constraint evaluates to false
+  concept same_as = is_same<T, U>::value; // expected-note-re 4 {{because {{.*}} evaluated to false}}
+                    ^
+
+"Test_name.c", line 264: error: the deduced placeholder type "int" failed the type constraint
+  C auto **j1 = g();   // expected-error {{deduced type 'int' does not satisfy 'C'}}
+  ^
+"Test_name.c", line 260: note: atomic constraint evaluates to false
+  concept C = false; // expected-note 3 {{because 'false' evaluated to false}}
+              ^
+
+"Test_name.c", line 265: error: the deduced placeholder type "int" failed the type constraint
+  C auto **&j2 = g();  // expected-error {{deduced type 'int' does not satisfy 'C'}}
+  ^
+"Test_name.c", line 260: note: atomic constraint evaluates to false
+  concept C = false; // expected-note 3 {{because 'false' evaluated to false}}
+              ^
+
+"Test_name.c", line 266: error: the deduced placeholder type "int" failed the type constraint
+  C auto **&&j3 = g(); // expected-error {{deduced type 'int' does not satisfy 'C'}}
+  ^
+"Test_name.c", line 260: note: atomic constraint evaluates to false
+  concept C = false; // expected-note 3 {{because 'false' evaluated to false}}
+              ^
+
+"Test_name.c", line 318: error: no instance of function template "SubConstraintChecks::useFalse" matches the argument list
+            argument types are: (int)
+    useFalse<int>(5);
+    ^
+"Test_name.c", line 311: note: substituting "<int>" for function template "SubConstraintChecks::useFalse" failed constraints
+  void useFalse(int F)             // #USE_FALSE
+       ^
+"Test_name.c", line 312: note: concept "SubConstraintChecks::FalseConstraint2" not satisfied for "<int>"
+    requires FalseConstraint2<int> // #USE_FALSE_CONSTR
+             ^
+"Test_name.c", line 301: note: atomic constraint evaluates to false
+      requires(float &&t) {
+      ^
+
+"Test_name.c", line 335: error: class "DeducedTemplateArgs::ItrTraits<Itr>::Ptr<DeducedTemplateArgs::not_complete_itr> [with Itr=DeducedTemplateArgs::not_complete_itr]" has no member "type"
+    using pointer = typename Ptr<Itr>::type; // #TRAITS_PTR
+                                       ^
+          detected during instantiation of class "DeducedTemplateArgs::ItrTraits<Itr> [with Itr=DeducedTemplateArgs::not_complete_itr]" at line 354
+
+"Test_name.c", line 417: error: a requires-clause is not allowed here (not a templated function)
+      requires IsInt<decltype(u)> // #SDRTL_REQ
+      ^
+
+"Test_name.c", line 441: error: a requires-clause is not allowed here (not a templated function)
+             requires IsInt<decltype(u)> // #DDRTL_REQ
+             ^
+
+"Test_name.c", line 467: error: a requires-clause is not allowed here (not a templated function)
+        requires IsInt<decltype(u)> // #DDRAL_REQ
+        ^
+
+"Test_name.c", line 492: error: a requires-clause is not allowed here (not a templated function)
+      requires(IsInt<decltype(Local)>) // #CLV_REQ
+      ^
+
+"Test_name.c", line 573: error: no instance of "FriendFunc" matches the argument list
+            argument types are: (DeferredInstantiationInstScope::CausesFriendConstraint<int>, double)
+    FriendFunc(CFC, 1.0);
+    ^
+"Test_name.c", line 477: note: substituting "<double>" for function template "DeferredInstantiationInstScope::FriendFunc" failed constraints
+    friend void FriendFunc(CausesFriendConstraint, V) // #FF_DECL
+                ^
+"Test_name.c", line 479: note: atomic constraint evaluates to false
+               IsInt<V> // #FF_REQ
+               ^
+
+"Test_name.c", line 601: error: no instance of function "DeferredInstantiationInstScope::ChecksMemberVar<T>::foo [with T=float]" matches the argument list
+            object type is: DeferredInstantiationInstScope::ChecksMemberVar<float>
+    CMV2.foo();
+         ^
+"Test_name.c", line 510: note: constraint on candidate function "DeferredInstantiationInstScope::ChecksMemberVar<T>::foo [with T=float]" not satisfied
+    void foo()
+         ^
+
+"Test_name.c", line 604: error: no instance of function template "DeferredInstantiationInstScope::ChecksMemberVar<T>::foo2 [with T=float]" matches the argument list
+            object type is: DeferredInstantiationInstScope::ChecksMemberVar<float>
+    CMV2.foo2<float>();
+         ^
+"Test_name.c", line 514: note: substituting "<float>" for function template "DeferredInstantiationInstScope::ChecksMemberVar<T>::foo2 [with T=float]" failed constraints
+    void foo2()                    // #CMV_FOO2
+         ^
+"Test_name.c", line 515: note: atomic constraint evaluates to false
+      requires(IsInt<decltype(t)>) // #CMV_FOO2_REQ
+               ^
+
+"Test_name.c", line 664: error: no operator "+" matches these operands
+            operand types are: const InlineFriendOperator::counted_iterator<int> + int
+      return __x + __n; // expected-error{{invalid operands to binary expression}}
+                 ^
+"Test_name.c", line 660: note: function "InlineFriendOperator::operator+" does not match because argument #1 does not match parameter
+    friend constexpr auto operator+( // expected-note {{candidate function not viable}}
+                          ^
+"Test_name.c", line 664: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+      return __x + __n; // expected-error{{invalid operands to binary expression}}
+                 ^
+"Test_name.c", line 664: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      return __x + __n; // expected-error{{invalid operands to binary expression}}
+                 ^
+"Test_name.c", line 664: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      return __x + __n; // expected-error{{invalid operands to binary expression}}
+                 ^
+          detected during instantiation of class "InlineFriendOperator::counted_iterator<_Iter> [with _Iter=int]" at line 670
+
+"Test_name.c", line 687: error: template constraint not satisfied
+    ChildF<Type, Type> CauseInstF; //#CauseInstF
+                     ^
+"Test_name.c", line 686: note: type constraint failed for "ClassTemplateInstantiation::Type"
+    template < typename U, ConstraintF<T, U> > struct ChildF{};// #ChildF
+                           ^
+"Test_name.c", line 679: note: atomic constraint evaluates to false
+    concept ConstraintF = false; // #ConstraintF
+                          ^
+
+"Test_name.c", line 712: error: declaration is incompatible with template parameter "T" (declared at line 710)
+      template <Constraint2>//#ITER_BAD_FRIEND
+                           ^
+
+"Test_name.c", line 733: error: call of an object of a class type without appropriate operator() or conversion functions to pointer-to-function type
+  int j = A<false>{}(0); // expected-error{{no matching function for call to object of type 'A<false>'}}
+          ^
+
+"Test_name.c", line 745: error: template constraint not satisfied
+  Container<5>::var_templ<int> inst_fail;
+                             ^
+"Test_name.c", line 741: note: substitution of arguments "<int>" for requires-clause failed
+    requires(sizeof(U) == arity) // #CMVT_REQ
+                       ^
+"Test_name.c", line 741: note: atomic constraint evaluates to false
+    requires(sizeof(U) == arity) // #CMVT_REQ
+                       ^
+
+"Test_name.c", line 804: warning: variable "f" was declared but never referenced
+    __iterator_traits_member_pointer_or_arrow_or_void<counted_iterator<int>> f;
+                                                                             ^
+
+"Test_name.c", line 812: error: too few arguments for concept "GH48182::invalid"
+  template<typename> requires invalid<int> // expected-error{{use of undeclared identifier 'invalid'}}
+                                         ^
+
+"Test_name.c", line 812: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  template<typename> requires invalid<int> // expected-error{{use of undeclared identifier 'invalid'}}
+                                         ^
+
+"Test_name.c", line 813: error: identifier "no" is undefined
+  no errors are printed
+  ^
+
+"Test_name.c", line 813: error: identifier "errors" is undefined
+  no errors are printed
+     ^
+
+"Test_name.c", line 813: error: expected a ";"
+  no errors are printed
+                ^
+
+"Test_name.c", line 816: error: too few arguments for concept "GH48182::invalid"
+  static_assert(invalid<int> also here ; // expected-error{{use of undeclared identifier 'invalid'}}
+                           ^
+
+"Test_name.c", line 816: error: identifier "also" is undefined
+  static_assert(invalid<int> also here ; // expected-error{{use of undeclared identifier 'invalid'}}
+                             ^
+
+"Test_name.c", line 816: error: expected a ","
+  static_assert(invalid<int> also here ; // expected-error{{use of undeclared identifier 'invalid'}}
+                                  ^
+
+"Test_name.c", line 816: error: expected a string literal
+  static_assert(invalid<int> also here ; // expected-error{{use of undeclared identifier 'invalid'}}
+                                       ^
+
+"Test_name.c", line 816: error: expected a ")"
+  static_assert(invalid<int> also here ; // expected-error{{use of undeclared identifier 'invalid'}}
+                                       ^
+
+"Test_name.c", line 820: error: too few arguments for concept "GH48182::invalid"
+      b = invalid<int> not just in declarations; // expected-error{{use of undeclared identifier 'invalid'}}
+                     ^
+
+"Test_name.c", line 820: error: identifier "just" is undefined
+      b = invalid<int> not just in declarations; // expected-error{{use of undeclared identifier 'invalid'}}
+                           ^
+
+"Test_name.c", line 820: error: expected a ";"
+      b = invalid<int> not just in declarations; // expected-error{{use of undeclared identifier 'invalid'}}
+                                ^
+
+"Test_name.c", line 839: error: template constraint not satisfied
+  static_assert(Parent<void>::TakesUnary<int, 0uLL>::i == 0);
+                                              ^
+"Test_name.c", line 831: note: type constraint failed for "unsigned long long"
+    template<class, C auto> struct TakesUnary { static const int i = 0 ; }; // #UNARY
+                    ^
+"Test_name.c", line 826: note: atomic constraint evaluates to false
+  template<class T> concept C = sizeof(T) == 4; // #61777_C
+                                          ^
+
+"Test_name.c", line 845: error: template constraint not satisfied
+  static_assert(Parent<int>::TakesBinary<int, 0ULL>::i == 0);
+                                              ^
+"Test_name.c", line 832: note: type constraint failed for "unsigned long long"
+    template<class, C2<T> auto> struct TakesBinary { static const int i = 0 ; }; //#BINARY
+                    ^
+"Test_name.c", line 827: note: atomic constraint evaluates to false
+  template<class T, class U> concept C2 = sizeof(T) == sizeof(U); //#61777_C2
+                                                    ^
+
+"Test_name.c", line 851: warning: template parameter "U" is not used in declaring the parameter types of function template "TemplateInsideNonTemplateClass::lambda []()->auto::operator auto (*)()"
+  template<typename T> auto L = []<C<T> U>() {};
+                                        ^
+          detected during instantiation of "auto TemplateInsideNonTemplateClass::L [with T=int]" at line 854
+
+"Test_name.c", line 854: error: a decltype-qualified name is nonstandard in this declaration context
+    template<C<int> U> friend constexpr auto decltype(L<int>)::operator()() const;
+                                                               ^
+
+"Test_name.c", line 854: error: declaration is incompatible with function template "lambda []()->auto" (declared at line 851)
+    template<C<int> U> friend constexpr auto decltype(L<int>)::operator()() const;
+                                                               ^
+
+"Test_name.c", line 951: error: a requires-clause is not allowed here (not a templated function)
+  auto l = []() requires N { }; // expected-note 2{{candidate function not viable: constraints not satisfied}} \
+                ^
+
+"Test_name.c", line 956: warning: variable "ptr" was declared but never referenced
+  void(*ptr)() = l;
+        ^
+
+"Test_name.c", line 966: error: a requires-clause is not allowed here (not a templated function)
+    ([]() requires C<Ts> { return Ts(); }(), ...);
+          ^
+
+"Test_name.c", line 983: error: a requires-clause is not allowed here (not a templated function)
+      requires Test<decltype(t), IsTrue> // expected-note 2{{because 'Test<decltype(t), false>' evaluated to false}}
+      ^
+
+"Test_name.c", line 986: warning: variable "f" was declared but never referenced
+      F* f = l; // expected-error {{no viable conversion from}}
+         ^
+
+"Test_name.c", line 1008: error: identifier "ErrorRequires" is undefined
+  concept ErrorRequires = requires(ErrorRequires auto x) { x; }; //#GH54678-ill-formed-concept
+                                   ^
+
+"Test_name.c", line 1008: error: invalid combination of type specifiers
+  concept ErrorRequires = requires(ErrorRequires auto x) { x; }; //#GH54678-ill-formed-concept
+                                                 ^
+
+"Test_name.c", line 1013: error: identifier "C1" is undefined
+  template<typename T> concept C1 = C1<T> && []<C1>(C1 auto) -> C1 auto {};
+                                    ^
+
+"Test_name.c", line 1013: error: "C1" is not a type name
+  template<typename T> concept C1 = C1<T> && []<C1>(C1 auto) -> C1 auto {};
+                                                ^
+
+"Test_name.c", line 1013: error: "C1" is not a type name
+  template<typename T> concept C1 = C1<T> && []<C1>(C1 auto) -> C1 auto {};
+                                                    ^
+
+"Test_name.c", line 1013: error: "C1" is not a type name
+  template<typename T> concept C1 = C1<T> && []<C1>(C1 auto) -> C1 auto {};
+                                                                ^
+
+"Test_name.c", line 1013: error: invalid combination of type specifiers
+  template<typename T> concept C1 = C1<T> && []<C1>(C1 auto) -> C1 auto {};
+                                                                   ^
+
+"Test_name.c", line 1031: error: no instance of function template "GH54678::aaa" matches the argument list
+            argument types are: (int)
+      aaa(42); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 1017: note: substituting "<int>" for function template "GH54678::aaa" failed constraints
+  template<class T> void aaa(T t) // expected-note {{candidate template ignored: constraints not satisfied}}
+                         ^
+"Test_name.c", line 1018: note: concept "GH54678::False" not satisfied for "<int>"
+  requires (False<T> || False<T>) || False<T> {} // expected-note 3 {{'int' does not satisfy 'False'}}
+            ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+"Test_name.c", line 1018: note: concept "GH54678::False" not satisfied for "<int>"
+  requires (False<T> || False<T>) || False<T> {} // expected-note 3 {{'int' does not satisfy 'False'}}
+                        ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+"Test_name.c", line 1018: note: concept "GH54678::False" not satisfied for "<int>"
+  requires (False<T> || False<T>) || False<T> {} // expected-note 3 {{'int' does not satisfy 'False'}}
+                                     ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+
+"Test_name.c", line 1032: error: no instance of function template "GH54678::bbb" matches the argument list
+            argument types are: (long)
+      bbb(42L); // expected-error{{no matching function}}
+      ^
+"Test_name.c", line 1019: note: substituting "<long>" for function template "GH54678::bbb" failed constraints
+  template<class T> void bbb(T t) // expected-note {{candidate template ignored: constraints not satisfied}}
+                         ^
+"Test_name.c", line 1020: note: concept "GH54678::False" not satisfied for "<long>"
+  requires (False<T> || False<T>) && True<T> {} // expected-note 2 {{'long' does not satisfy 'False'}}
+            ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+"Test_name.c", line 1020: note: concept "GH54678::False" not satisfied for "<long>"
+  requires (False<T> || False<T>) && True<T> {} // expected-note 2 {{'long' does not satisfy 'False'}}
+                        ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+
+"Test_name.c", line 1033: error: no instance of function template "GH54678::ccc" matches the argument list
+            argument types are: (unsigned long)
+      ccc(42UL); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 1021: note: substituting "<unsigned long>" for function template "GH54678::ccc" failed constraints
+  template<class T> void ccc(T t) // expected-note {{candidate template ignored: constraints not satisfied}}
+                         ^
+"Test_name.c", line 1022: note: concept "GH54678::False" not satisfied for "<unsigned long>"
+  requires (True<T> || Irrelevant<T>) && False<T> {} // expected-note {{'unsigned long' does not satisfy 'False'}}
+                                         ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+
+"Test_name.c", line 1034: error: no instance of function template "GH54678::ddd" matches the argument list
+            argument types are: (int)
+      ddd(42); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 1023: note: substituting "<int>" for function template "GH54678::ddd" failed constraints
+  template<class T> void ddd(T t) // expected-note {{candidate template ignored: constraints not satisfied}}
+                         ^
+"Test_name.c", line 1024: note: concept "GH54678::Irrelevant" not satisfied for "<int>"
+  requires (Irrelevant<T> || True<T>) && False<T> {} // expected-note {{'int' does not satisfy 'False'}}
+            ^
+"Test_name.c", line 1005: note: atomic constraint evaluates to false
+  concept Irrelevant = false;
+                       ^
+"Test_name.c", line 1024: note: concept "GH54678::False" not satisfied for "<int>"
+  requires (Irrelevant<T> || True<T>) && False<T> {} // expected-note {{'int' does not satisfy 'False'}}
+                                         ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+
+"Test_name.c", line 1035: error: no instance of function template "GH54678::eee" matches the argument list
+            argument types are: (long)
+      eee(42L); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 1025: note: substituting "<long>" for function template "GH54678::eee" failed constraints
+  template<class T> void eee(T t) // expected-note {{candidate template ignored: constraints not satisfied}}
+                         ^
+"Test_name.c", line 1026: note: concept "GH54678::Irrelevant" not satisfied for "<long>"
+  requires (Irrelevant<T> || Irrelevant<T> || True<T>) && False<T> {} // expected-note {{'long' does not satisfy 'False'}}
+            ^
+"Test_name.c", line 1005: note: atomic constraint evaluates to false
+  concept Irrelevant = false;
+                       ^
+"Test_name.c", line 1026: note: concept "GH54678::Irrelevant" not satisfied for "<long>"
+  requires (Irrelevant<T> || Irrelevant<T> || True<T>) && False<T> {} // expected-note {{'long' does not satisfy 'False'}}
+                             ^
+"Test_name.c", line 1005: note: atomic constraint evaluates to false
+  concept Irrelevant = false;
+                       ^
+"Test_name.c", line 1026: note: concept "GH54678::False" not satisfied for "<long>"
+  requires (Irrelevant<T> || Irrelevant<T> || True<T>) && False<T> {} // expected-note {{'long' does not satisfy 'False'}}
+                                                          ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+
+"Test_name.c", line 1036: error: no instance of function template "GH54678::fff" matches the argument list
+            argument types are: (unsigned long)
+      fff(42UL); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 1028: note: substituting "<unsigned long>" for function template "GH54678::fff" failed constraints
+  template<class T> void fff(T t) // expected-note {{candidate template ignored: constraints not satisfied}}
+                         ^
+"Test_name.c", line 1029: note: concept "GH54678::ErrorRequires" not satisfied for "<unsigned long>"
+  requires((ErrorRequires<T> || False<T> || True<T>) && False<T>) {} // expected-note {{because 'unsigned long' does not satisfy 'False'}}
+            ^
+"Test_name.c", line 1008: note: atomic constraint evaluates to false
+  concept ErrorRequires = requires(ErrorRequires auto x) { x; }; //#GH54678-ill-formed-concept
+                          ^
+"Test_name.c", line 1029: note: concept "GH54678::False" not satisfied for "<unsigned long>"
+  requires((ErrorRequires<T> || False<T> || True<T>) && False<T>) {} // expected-note {{because 'unsigned long' does not satisfy 'False'}}
+                                ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+"Test_name.c", line 1029: note: concept "GH54678::False" not satisfied for "<unsigned long>"
+  requires((ErrorRequires<T> || False<T> || True<T>) && False<T>) {} // expected-note {{because 'unsigned long' does not satisfy 'False'}}
+                                                        ^
+"Test_name.c", line 1002: note: atomic constraint evaluates to false
+  concept False = false; // expected-note 9 {{'false' evaluated to false}}
+                  ^
+
+"Test_name.c", line 1049: error: cannot determine which instance of function template "GH66612::end" is intended
+          { end } -> Iterator; // #66612GH_END
+            ^
+
+"Test_name.c", line 1052: error: static assertion failed
+    static_assert(Container<int>);
+    ^
+
+"Test_name.c", line 1102: error: a requires-clause is not allowed here (not a templated function)
+      requires((__captures, ...), false) // #note-a-2
+      ^
+
+"Test_name.c", line 1108: error: a requires-clause is not allowed here (not a templated function)
+      requires([](int, double) { return true; }(decltype(__captures)()...))
+      ^
+
+"Test_name.c", line 1127: error: a template argument list is not allowed in a declaration of a primary template
+  template <f d> struct e<d>; // expected-error {{class template partial specialization is not more specialized than the primary template}}
+                        ^
+
+"Test_name.c", line 1148: warning: missing return statement at end of non-void function "constrained_variadic::test"
+  }
+  ^
+
+"Test_name.c", line 1155: error: expected an "="
+  concept Concept; // expected-error {{expected '='}}
+                 ^
+
+"Test_name.c", line 1155: error: expected an expression
+  concept Concept; // expected-error {{expected '='}}
+                 ^
+
+"Test_name.c", line 1160: error: identifier "invalid" is undefined
+  concept C = invalid; // expected-error {{use of undeclared identifier 'invalid'}}
+              ^
+
+"Test_name.c", line 1169: error: expected an "="
+  concept has_member_difference_type; // expected-error {{expected '='}}
+                                    ^
+
+"Test_name.c", line 1169: error: expected an expression
+  concept has_member_difference_type; // expected-error {{expected '='}}
+                                    ^
+
+"Test_name.c", line 1174: error: a template argument list is not allowed in a declaration of a primary template
+  struct incrementable_traits<Tp>; // expected-error {{not more specialized than the primary}}
+         ^
+
+"Test_name.c", line 1264: error: the deduced placeholder type "int" failed the type constraint
+  C auto x = 0;
+  ^
+
+"Test_name.c", line 1268: error: no instance of function template "GH61824::f" matches the argument list
+            argument types are: (int)
+  static_assert(f(0));
+                ^
+"Test_name.c", line 1260: note: concept "GH61824::C" not satisfied for "<int>"
+  constexpr bool f(C auto) { // #GH61824_f
+                   ^
+
+"Test_name.c", line 1274: warning: template parameter "T" may not be used in an elaborated type specifier
+  ([](auto) { return true; }) < PerfectSquare <class T>;
+                                                     ^
+
+"Test_name.c", line 1274: error: identifier "PerfectSquare" is undefined
+  ([](auto) { return true; }) < PerfectSquare <class T>;
+                                ^
+
+"Test_name.c", line 1285: error: static assertion failed
+  static_assert (R42c<void>);
+  ^
+
+"Test_name.c", line 1330: error: static assertion failed
+  static_assert(__cpp17_iterator<not_move_constructible>); \
+  ^
+
+"Test_name.c", line 1506: error: cannot determine which instance of overloaded function "GH51246::f" is intended
+  static_assert(requires { f; }); // expected-error {{reference to overloaded function could not be resolved}}
+                           ^
+
+"Test_name.c", line 1511: error: nonstandard form for taking the address of a member function
+          static_assert(requires { mf; });    // expected-error {{reference to non-static member function must be called}}
+                                   ^
+
+"Test_name.c", line 1512: error: nonstandard form for taking the address of a member function
+          static_assert(requires { S::mf; }); // expected-error {{reference to non-static member function must be called}}
+                                   ^
+
+"Test_name.c", line 1516: error: cannot determine which instance of overloaded function "GH51246::S::mf2" is intended
+          static_assert(requires { mf2; });    // expected-error {{reference to non-static member function must be called}}
+                                   ^
+
+"Test_name.c", line 1517: error: cannot determine which instance of overloaded function "GH51246::S::mf2" is intended
+          static_assert(requires { S::mf2; }); // expected-error {{reference to non-static member function must be called}}
+                                   ^
+
+"Test_name.c", line 1532: error: cannot determine which instance of overloaded function "GH97753::f" is intended
+  static_assert( requires {{ &f } -> C;} ); // expected-error {{reference to overloaded function could not be resolved;}}
+                             ^
+
+"Test_name.c", line 1532: error: static assertion failed
+  static_assert( requires {{ &f } -> C;} ); // expected-error {{reference to overloaded function could not be resolved;}}
+  ^
+
+"Test_name.c", line 1692: error: the deduced placeholder type "GH170856::absolute_zero" failed the type constraint
+  consteval PointOriginFor<R{}> auto default_point_origin(R) {
+            ^
+"Test_name.c", line 1681: note: concept is false for arguments "<struct GH170856::<unnamed>, GH170856::<unnamed>{{{}}}>"
+  concept PointOriginFor = QuantitySpecOf<decltype(QS), T::_quantity_spec_>;
+                           ^
+"Test_name.c", line 1679: note: concept is false for arguments "<const struct GH170856::<unnamed>>"
+  concept QuantitySpecOf = QuantitySpec<decltype(QS)>;
+                           ^
+"Test_name.c", line 1677: note: atomic constraint evaluates to false
+  concept QuantitySpec = __is_convertible(T*, quantity_spec_interface_base*);
+                         ^
+          detected during:
+            instantiation of "GH170856::PointOriginFor<...> auto GH170856::default_point_origin(R) [with R=struct GH170856::<unnamed>]" at line 1697
+            instantiation of class "GH170856::point_<R> [with R=struct GH170856::<unnamed>]" at line 1705
+            instantiation of "GH170856::point_<decltype(<expression>)> GH170856::point [with R=GH170856::<unnamed>{{}}]" at line 1705
+
+"Test_name.c", line 46: error: no instance of function template "lambda []()->auto" matches the argument list
+            object type is: lambda []()->auto
+      ([]<int = 0> requires C<Ts> () {} (), ...);
+       ^
+"Test_name.c", line 46: note: substituting "<0>" for function template "lambda []()->auto" failed constraints
+      ([]<int = 0> requires C<Ts> () {} (), ...);
+         ^
+"Test_name.c", line 46: note: concept "PR45699::C" not satisfied for "<<error-type>>"
+      ([]<int = 0> requires C<Ts> () {} (), ...);
+                            ^
+"Test_name.c", line 33: note: atomic constraint failed substitution
+    template<class> concept C = true; // expected-note 2{{here}}
+                                ^
+          detected during instantiation of "void PR45699::f5<Ts...>() [with Ts=<>]" at line 56
+
+"Test_name.c", line 81: error: no instance of function template "lambda [](PR50306::NotInt auto)->auto" matches the argument list
+            argument types are: (int)
+            object type is: lambda [](PR50306::NotInt auto)->auto
+      [](NotInt auto) {}(T()); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+      ^
+"Test_name.c", line 81: note: substituting "<int>" for function template "lambda [](PR50306::NotInt auto)->auto" failed constraints
+      [](NotInt auto) {}(T()); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+        ^
+"Test_name.c", line 81: note: concept "PR50306::NotInt" not satisfied for "<int>"
+      [](NotInt auto) {}(T()); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+         ^
+"Test_name.c", line 79: note: atomic constraint evaluates to false
+    template<typename T> concept NotInt = sizeof(T) != sizeof(int); // expected-note {{because}}
+                                                    ^
+          detected during instantiation of "void PR50306::f<T>() [with T=int]" at line 84
+
+"Test_name.c", line 99: error: no instance of function template "lambda [](U)->auto" matches the argument list
+            argument types are: (char)
+            object type is: lambda [](U)->auto
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+       ^
+"Test_name.c", line 99: note: substituting "<char>" for function template "lambda [](U)->auto" failed constraints
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+         ^
+"Test_name.c", line 99: note: concept "PackInTypeConstraint::C" not satisfied for "<char, char>"
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+          ^
+"Test_name.c", line 88: note: atomic constraint evaluates to false
+    template<typename T, typename U> concept C = sizeof(T) == sizeof(int); // expected-note 3{{}}
+                                                           ^
+          detected during instantiation of "void PackInTypeConstraint::f2<T...>() [with T=<int, char, double>]" at line 102
+
+"Test_name.c", line 99: error: no instance of function template "lambda [](U)->auto" matches the argument list
+            argument types are: (double)
+            object type is: lambda [](U)->auto
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+       ^
+"Test_name.c", line 99: note: substituting "<double>" for function template "lambda [](U)->auto" failed constraints
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+         ^
+"Test_name.c", line 99: note: concept "PackInTypeConstraint::C" not satisfied for "<double, double>"
+      ([]<C<T> U>(U u){}(T()), ...); // expected-error {{no match}} expected-note 2{{}}
+          ^
+"Test_name.c", line 88: note: atomic constraint evaluates to false
+    template<typename T, typename U> concept C = sizeof(T) == sizeof(int); // expected-note 3{{}}
+                                                           ^
+          detected during instantiation of "void PackInTypeConstraint::f2<T...>() [with T=<int, char, double>]" at line 102
+
+"Test_name.c", line 112: error: no instance of function template "lambda [](PackInTypeConstraint::C<...> auto)->auto" matches the argument list
+            argument types are: (char)
+            object type is: lambda [](PackInTypeConstraint::C<...> auto)->auto
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+       ^
+"Test_name.c", line 112: note: substituting "<char>" for function template "lambda [](PackInTypeConstraint::C<...> auto)->auto" failed constraints
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+         ^
+"Test_name.c", line 112: note: concept "PackInTypeConstraint::C" not satisfied for "<char, char>"
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+          ^
+"Test_name.c", line 88: note: atomic constraint evaluates to false
+    template<typename T, typename U> concept C = sizeof(T) == sizeof(int); // expected-note 3{{}}
+                                                           ^
+          detected during instantiation of "void PackInTypeConstraint::g2<T...>() [with T=<int, char, double>]" at line 115
+
+"Test_name.c", line 112: error: no instance of function template "lambda [](PackInTypeConstraint::C<...> auto)->auto" matches the argument list
+            argument types are: (double)
+            object type is: lambda [](PackInTypeConstraint::C<...> auto)->auto
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+       ^
+"Test_name.c", line 112: note: substituting "<double>" for function template "lambda [](PackInTypeConstraint::C<...> auto)->auto" failed constraints
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+         ^
+"Test_name.c", line 112: note: concept "PackInTypeConstraint::C" not satisfied for "<double, double>"
+      ([](C<T> auto){}(T()), ...); // expected-error {{no matching function}} expected-note {{constraints not satisfied}} expected-note {{because}}
+          ^
+"Test_name.c", line 88: note: atomic constraint evaluates to false
+    template<typename T, typename U> concept C = sizeof(T) == sizeof(int); // expected-note 3{{}}
+                                                           ^
+          detected during instantiation of "void PackInTypeConstraint::g2<T...>() [with T=<int, char, double>]" at line 115
+
+"Test_name.c", line 125: error: the deduced placeholder type "char" failed the type constraint
+      ([]() -> C<T> auto{ // expected-error-re {{deduced type {{.*}} does not satisfy}} expected-note {{while substituting into a lambda}}
+               ^
+"Test_name.c", line 88: note: atomic constraint evaluates to false
+    template<typename T, typename U> concept C = sizeof(T) == sizeof(int); // expected-note 3{{}}
+                                                           ^
+          detected during instantiation of "void PackInTypeConstraint::g5<T...>() [with T=<int, char, double>]" at line 130
+
+"Test_name.c", line 125: error: the deduced placeholder type "double" failed the type constraint
+      ([]() -> C<T> auto{ // expected-error-re {{deduced type {{.*}} does not satisfy}} expected-note {{while substituting into a lambda}}
+               ^
+"Test_name.c", line 88: note: atomic constraint evaluates to false
+    template<typename T, typename U> concept C = sizeof(T) == sizeof(int); // expected-note 3{{}}
+                                                           ^
+          detected during instantiation of "void PackInTypeConstraint::g5<T...>() [with T=<int, char, double>]" at line 130
+
+"Test_name.c", line 382: error: a requires-clause is not allowed here (not a templated function)
+        requires IsInt<decltype(u)> // #SDRT_REQ
+        ^
+          detected during instantiation of "void DeferredInstantiationInstScope::SingleDepthReferencesTop(U &&) [with U=int &]" at line 522
+
+"Test_name.c", line 393: error: a requires-clause is not allowed here (not a templated function)
+        requires IsInt<typename decltype(u)::FOO>
+        ^
+          detected during instantiation of "void DeferredInstantiationInstScope::SingleDepthReferencesTopNotCalled(U &&) [with U=int &]" at line 529
+
+"Test_name.c", line 393: error: result of decltype qualifier "int &" is not a class or enumeration
+        requires IsInt<typename decltype(u)::FOO>
+                                ^
+          detected during instantiation of "void DeferredInstantiationInstScope::SingleDepthReferencesTopNotCalled(U &&) [with U=int &]" at line 529
+
+"Test_name.c", line 403: error: a requires-clause is not allowed here (not a templated function)
+        requires IsInt<typename decltype(u)::FOO> // #CONSTR
+        ^
+          detected during instantiation of "void DeferredInstantiationInstScope::SingleDepthReferencesTopCalled(U &&) [with U=int &]" at line 532
+
+"Test_name.c", line 403: error: result of decltype qualifier "int &" is not a class or enumeration
+        requires IsInt<typename decltype(u)::FOO> // #CONSTR
+                                ^
+          detected during instantiation of "void DeferredInstantiationInstScope::SingleDepthReferencesTopCalled(U &&) [with U=int &]" at line 532
+
+"Test_name.c", line 427: error: a requires-clause is not allowed here (not a templated function)
+            requires IsInt<decltype(u)> // #DDRT_REQ
+            ^
+          detected during instantiation of "void DeferredInstantiationInstScope::DoubleDepthReferencesTop(U &&) [with U=int &]" at line 540
+
+"Test_name.c", line 451: error: a requires-clause is not allowed here (not a templated function)
+            requires IsInt<decltype(u)> && // #DDRA_REQ
+            ^
+          detected during instantiation of "void DeferredInstantiationInstScope::DoubleDepthReferencesAll(U &&) [with U=int &]" at line 555
+
+"Test_name.c", line 501: error: a requires-clause is not allowed here (not a templated function)
+        requires(IsInt<decltype(local)>) // #LSMV_REQ
+        ^
+          detected during instantiation of "void DeferredInstantiationInstScope::LocalStructMemberVar(T) [with T=int]" at line 590
+
+151 errors detected in the compilation of "Test_name.c".

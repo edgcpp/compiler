@@ -1,0 +1,21 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused --set_flag=no_checking_pragmas --diag_warn=260 Test_name.c
+"Test_name.c", line 4: warning: explicit type is missing ("int" assumed)
+  extern "C" exit(int);
+             ^
+
+"Test_name.c", line 34: remark: function "Bw::Bw()" cannot be inlined
+          Bw() : i(Bw_e), Bw_i(Bw_e) { }
+          ^
+
+"Test_name.c", line 47: remark: function "C1::Bx::Bx()" cannot be inlined
+                  Bx() : i(Bx_e), Bx_i(Bx_e) { }
+                  ^
+
+"Test_name.c", line 59: remark: function "By::By()" cannot be inlined
+          By() : i(By_e), By_i(By_e) { }
+          ^
+
+"Test_name.c", line 72: remark: function "C2::Bz::Bz()" cannot be inlined
+                  Bz() : i(Bz_e), Bz_i(Bz_e) { }
+                  ^
+

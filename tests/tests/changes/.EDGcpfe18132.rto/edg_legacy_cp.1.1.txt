@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 12: error: expected a "," or ">"
+  template<int... Ns> struct C;
+              ^
+
+"Test_name.c", line 13: error: a template argument list is not allowed in a declaration of a primary template
+  template<int N> struct C<N> { static constexpr int V = N; };
+                         ^
+
+"Test_name.c", line 14: error: expected a "," or ">"
+  template<int N, int... R> struct C<N, R...> { static constexpr int V = N; };
+                     ^
+
+"Test_name.c", line 14: error: too many arguments for class template "C"
+  template<int N, int... R> struct C<N, R...> { static constexpr int V = N; };
+                                        ^
+
+"Test_name.c", line 16: error: identifier "constexpr" is undefined
+    constexpr operator int() { return sizeof(T); }
+    ^
+
+"Test_name.c", line 16: error: return type may not be specified on a conversion function
+    constexpr operator int() { return sizeof(T); }
+    ^
+
+"Test_name.c", line 19: error: explicit type is missing ("int" assumed)
+    template<typename... Ts> void f() {
+             ^
+
+"Test_name.c", line 19: error: expected a "," or ">"
+    template<typename... Ts> void f() {
+                     ^
+
+8 errors detected in the compilation of "Test_name.c".

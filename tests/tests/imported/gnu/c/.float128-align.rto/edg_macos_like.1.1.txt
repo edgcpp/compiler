@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./floatn-align.h", line 17: error: identifier "_Float128" is undefined
+  _Static_assert (_Alignof (max_align_t) >= _Alignof (_Float128),
+                                                      ^
+
+"./floatn-align.h", line 17: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  _Static_assert (_Alignof (max_align_t) >= _Alignof (_Float128),
+                                                     ^
+
+1 error detected in the compilation of "Test_name.c".

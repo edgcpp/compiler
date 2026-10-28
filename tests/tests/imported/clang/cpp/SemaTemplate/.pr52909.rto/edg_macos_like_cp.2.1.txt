@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 20: error: static assertion failed
+  static_assert(Beginable<A>); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 33: warning: missing return statement at end of non-void function "PR52909a::foo(T)"
+  {}
+   ^
+
+"Test_name.c", line 36: error: no instance of function template "PR52909a::foo" matches the argument list
+            argument types are: (PR52909a::A)
+  auto x = foo(A()); // expected-error {{no matching function for call to 'foo'}}
+           ^
+"Test_name.c", line 30: note: substituting "<PR52909a::A>" for function template "PR52909a::foo" failed constraints
+  int foo(T t) requires requires { // expected-note {{candidate template ignored: constraints not satisfied}}
+      ^
+"Test_name.c", line 30: note: atomic constraint evaluates to false
+  int foo(T t) requires requires { // expected-note {{candidate template ignored: constraints not satisfied}}
+                        ^
+
+"Test_name.c", line 53: error: static assertion failed
+  static_assert(C<A>); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 70: error: static assertion failed
+  static_assert(C<S>); // expected-error {{static assertion failed}}
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

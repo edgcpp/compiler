@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions --exceptions Test_name.c
+"Test_name.c", line 13: error: identifier "a" is undefined
+    co_await a; // expected-error {{use of undeclared identifier 'a'}}
+             ^
+
+"Test_name.c", line 12: error: class template "std::coroutine_traits" not found
+  void no_coroutine_traits_bad_arg_await() {
+       ^
+
+"Test_name.c", line 12: error: class template "std::coroutine_handle" not found
+  void no_coroutine_traits_bad_arg_await() {
+       ^
+
+"Test_name.c", line 17: error: identifier "a" is undefined
+    co_yield a; // expected-error {{use of undeclared identifier 'a'}}
+             ^
+
+"Test_name.c", line 16: error: class template "std::coroutine_traits" not found
+  void no_coroutine_traits_bad_arg_yield() {
+       ^
+
+"Test_name.c", line 16: error: class template "std::coroutine_handle" not found
+  void no_coroutine_traits_bad_arg_yield() {
+       ^
+
+"Test_name.c", line 21: error: class template "std::coroutine_traits" not found
+  void no_coroutine_traits_bad_arg_return() {
+       ^
+
+"Test_name.c", line 21: error: class template "std::coroutine_handle" not found
+  void no_coroutine_traits_bad_arg_return() {
+       ^
+
+"Test_name.c", line 22: error: identifier "a" is undefined
+    co_return a; // expected-error {{use of undeclared identifier 'a'}}
+              ^
+
+"Test_name.c", line 25: error: class template "std::coroutine_traits" not found
+  void no_coroutine_traits() {
+       ^
+
+"Test_name.c", line 25: error: class template "std::coroutine_handle" not found
+  void no_coroutine_traits() {
+       ^
+
+"Test_name.c", line 84: error: class "std::coroutine_traits<DummyVoidTag>" has no member "promise_type"
+  DummyVoidTag no_specialization() { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<DummyVoidTag>' has no member named 'promise_type'}}
+               ^
+
+"Test_name.c", line 84: error: class template "std::coroutine_handle" not found
+  DummyVoidTag no_specialization() { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<DummyVoidTag>' has no member named 'promise_type'}}
+               ^
+
+"Test_name.c", line 91: error: class "std::coroutine_traits<int>" has no member "promise_type"
+  int no_promise_type() { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<int>' has no member named 'promise_type'}}
+      ^
+
+"Test_name.c", line 91: error: class template "std::coroutine_handle" not found
+  int no_promise_type() { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<int>' has no member named 'promise_type'}}
+      ^
+
+"Test_name.c", line 95: error: class "std::coroutine_traits<int, int>" has no member "promise_type"
+  int no_promise_type_multiple_awaits(int) { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<int, int>' has no member named 'promise_type'}}
+      ^
+
+"Test_name.c", line 95: error: class template "std::coroutine_handle" not found
+  int no_promise_type_multiple_awaits(int) { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<int, int>' has no member named 'promise_type'}}
+      ^
+
+"Test_name.c", line 102: error: class template "std::coroutine_handle" not found
+  double bad_promise_type(double) { // expected-error {{this function cannot be a coroutine: 'std::coroutine_traits<double, double>::promise_type' (aka 'int') is not a class}}
+         ^
+
+"Test_name.c", line 103: internal error: assertion failed at: "types.h", line <suppressed> in class_type_supp
+
+    co_await a;
+             ^
+
+18 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

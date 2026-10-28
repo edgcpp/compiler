@@ -1,0 +1,145 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 13: warning: variable "a" was declared but never referenced
+    unsigned long long a = x * (0x17ULL << 31);	/* { dg-final { gdb-test .+18 "a" "(0x17ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 14: warning: variable "b" was declared but never referenced
+    unsigned long long b = x * (0x7ULL << 33);	/* { dg-final { gdb-test .+17 "b" "(0x7ULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 15: warning: variable "c" was declared but never referenced
+    unsigned long long c = x * (0x1ULL << 35);	/* { dg-final { gdb-test .+16 "c" "(0x1ULL << 35)" } } */
+                       ^
+
+"Test_name.c", line 16: warning: variable "d" was declared but never referenced
+    unsigned long long d = x * (0x17ULL << 15);	/* { dg-final { gdb-test .+15 "d" "(0x17ULL << 15)" } } */
+                       ^
+
+"Test_name.c", line 17: warning: variable "e" was declared but never referenced
+    unsigned long long e = x * (0x17ULL << 50);	/* { dg-final { gdb-test .+14 "e" "(0x17ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 18: warning: variable "f" was declared but never referenced
+    unsigned long long f = x * (0x37ULL << 31);	/* { dg-final { gdb-test .+13 "f" "(0x37ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 19: warning: variable "g" was declared but never referenced
+    unsigned long long g = x * (0x37ULL << 50);	/* { dg-final { gdb-test .+12 "g" "(0x37ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 20: warning: variable "h" was declared but never referenced
+    unsigned long long h = x * (0x1efULL << 33);	/* { dg-final { gdb-test .+11 "h" "(0x1efULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 21: warning: variable "i" was declared but never referenced
+    unsigned long long i = x * (0x1efULL << 50);	/* { dg-final { gdb-test .+10 "i" "(0x1efULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 22: warning: variable "j" was declared but never referenced
+    unsigned long long j = x * -(0x17ULL << 31);	/* { dg-final { gdb-test .+9 "j" "-(0x17ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 23: warning: variable "k" was declared but never referenced
+    unsigned long long k = x * -(0x7ULL << 33);	/* { dg-final { gdb-test .+8 "k" "-(0x7ULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 24: warning: variable "l" was declared but never referenced
+    unsigned long long l = x * -(0x1ULL << 35);	/* { dg-final { gdb-test .+7 "l" "-(0x1ULL << 35)" } } */
+                       ^
+
+"Test_name.c", line 25: warning: variable "m" was declared but never referenced
+    unsigned long long m = x * -(0x17ULL << 15);	/* { dg-final { gdb-test .+6 "m" "-(0x17ULL << 15)" } } */
+                       ^
+
+"Test_name.c", line 26: warning: variable "n" was declared but never referenced
+    unsigned long long n = x * -(0x17ULL << 50);	/* { dg-final { gdb-test .+5 "n" "-(0x17ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 27: warning: variable "o" was declared but never referenced
+    unsigned long long o = x * -(0x37ULL << 31);	/* { dg-final { gdb-test .+4 "o" "-(0x37ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 28: warning: variable "p" was declared but never referenced
+    unsigned long long p = x * -(0x37ULL << 50);	/* { dg-final { gdb-test .+3 "p" "-(0x37ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 29: warning: variable "q" was declared but never referenced
+    unsigned long long q = x * -(0x1efULL << 33);	/* { dg-final { gdb-test .+2 "q" "-(0x1efULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 30: warning: variable "r" was declared but never referenced
+    unsigned long long r = x * -(0x1efULL << 50);	/* { dg-final { gdb-test .+1 "r" "-(0x1efULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 39: warning: variable "a" was declared but never referenced
+    unsigned long long a = (x & 255) + (0x17ULL << 31);	/* { dg-final { gdb-test .+18 "a" "(0x17ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 40: warning: variable "b" was declared but never referenced
+    unsigned long long b = (x & 255) + (0x7ULL << 33);	/* { dg-final { gdb-test .+17 "b" "(0x7ULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 41: warning: variable "c" was declared but never referenced
+    unsigned long long c = (x & 255) + (0x1ULL << 35);	/* { dg-final { gdb-test .+16 "c" "(0x1ULL << 35)" } } */
+                       ^
+
+"Test_name.c", line 42: warning: variable "d" was declared but never referenced
+    unsigned long long d = (x & 255) + (0x17ULL << 15);	/* { dg-final { gdb-test .+15 "d" "(0x17ULL << 15)" } } */
+                       ^
+
+"Test_name.c", line 43: warning: variable "e" was declared but never referenced
+    unsigned long long e = (x & 255) + (0x17ULL << 50);	/* { dg-final { gdb-test .+14 "e" "(0x17ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 44: warning: variable "f" was declared but never referenced
+    unsigned long long f = (x & 255) + (0x37ULL << 31);	/* { dg-final { gdb-test .+13 "f" "(0x37ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 45: warning: variable "g" was declared but never referenced
+    unsigned long long g = (x & 255) + (0x37ULL << 50);	/* { dg-final { gdb-test .+12 "g" "(0x37ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 46: warning: variable "h" was declared but never referenced
+    unsigned long long h = (x & 255) + (0x1efULL << 33);	/* { dg-final { gdb-test .+11 "h" "(0x1efULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 47: warning: variable "i" was declared but never referenced
+    unsigned long long i = (x & 255) + (0x1efULL << 50);	/* { dg-final { gdb-test .+10 "i" "(0x1efULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 48: warning: variable "j" was declared but never referenced
+    unsigned long long j = (x & 255) + -(0x17ULL << 31);	/* { dg-final { gdb-test .+9 "j" "-(0x17ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 49: warning: variable "k" was declared but never referenced
+    unsigned long long k = (x & 255) + -(0x7ULL << 33);	/* { dg-final { gdb-test .+8 "k" "-(0x7ULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 50: warning: variable "l" was declared but never referenced
+    unsigned long long l = (x & 255) + -(0x1ULL << 35);	/* { dg-final { gdb-test .+7 "l" "-(0x1ULL << 35)" } } */
+                       ^
+
+"Test_name.c", line 51: warning: variable "m" was declared but never referenced
+    unsigned long long m = (x & 255) + -(0x17ULL << 15);	/* { dg-final { gdb-test .+6 "m" "-(0x17ULL << 15)" } } */
+                       ^
+
+"Test_name.c", line 52: warning: variable "n" was declared but never referenced
+    unsigned long long n = (x & 255) + -(0x17ULL << 50);	/* { dg-final { gdb-test .+5 "n" "-(0x17ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 53: warning: variable "o" was declared but never referenced
+    unsigned long long o = (x & 255) + -(0x37ULL << 31);	/* { dg-final { gdb-test .+4 "o" "-(0x37ULL << 31)" } } */
+                       ^
+
+"Test_name.c", line 54: warning: variable "p" was declared but never referenced
+    unsigned long long p = (x & 255) + -(0x37ULL << 50);	/* { dg-final { gdb-test .+3 "p" "-(0x37ULL << 50)" } } */
+                       ^
+
+"Test_name.c", line 55: warning: variable "q" was declared but never referenced
+    unsigned long long q = (x & 255) + -(0x1efULL << 33);	/* { dg-final { gdb-test .+2 "q" "-(0x1efULL << 33)" } } */
+                       ^
+
+"Test_name.c", line 56: warning: variable "r" was declared but never referenced
+    unsigned long long r = (x & 255) + -(0x1efULL << 50);	/* { dg-final { gdb-test .+1 "r" "-(0x1efULL << 50)" } } */
+                       ^
+

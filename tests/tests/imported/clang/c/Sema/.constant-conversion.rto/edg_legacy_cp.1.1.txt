@@ -1,0 +1,181 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/constant-conversion.c", line 10: warning: integer conversion resulted in truncation
+    int x = 0x3ff0000000000000U;
+            ^
+
+"Sema/constant-conversion.c", line 10: warning: variable "x" was declared but never referenced
+    int x = 0x3ff0000000000000U;
+        ^
+
+"Sema/constant-conversion.c", line 14: warning: variable "a" was set but never used
+    struct { int i5 : 5; } a;
+                           ^
+
+"Sema/constant-conversion.c", line 22: warning: variable "s" was set but never used
+    } s;
+      ^
+
+"Sema/constant-conversion.c", line 36: warning: enumerated type mixed with another type
+    *t = 20;
+       ^
+
+"Sema/constant-conversion.c", line 37: warning: enumerated type mixed with another type
+    return 10;
+           ^
+
+"Sema/constant-conversion.c", line 46: warning: variable "a" was declared but never referenced
+    struct A a = { 0, 10 };
+             ^
+
+"Sema/constant-conversion.c", line 47: warning: variable "b" was declared but never referenced
+    struct A b[] = { 0, 10, 0, 0 };
+             ^
+
+"Sema/constant-conversion.c", line 48: warning: variable "c" was declared but never referenced
+    struct A c[] = {{10, 0}};
+             ^
+
+"Sema/constant-conversion.c", line 49: warning: variable "d" was declared but never referenced
+    struct A d = (struct A) { 10, 0 };
+             ^
+
+"Sema/constant-conversion.c", line 50: warning: variable "e" was declared but never referenced
+    struct A e = { .foo = 10 };
+             ^
+
+"Sema/constant-conversion.c", line 58: warning: integer conversion resulted in truncation
+    a.c = 0x101;
+          ^
+
+"Sema/constant-conversion.c", line 56: warning: variable "a" was set but never used
+    } a;
+      ^
+
+"Sema/constant-conversion.c", line 64: warning: variable "a" was set but never used
+    } a;
+      ^
+
+"Sema/constant-conversion.c", line 74: warning: integer conversion resulted in truncation
+    unsigned char y = 1 ? 65535 : 1;
+                      ^
+
+"Sema/constant-conversion.c", line 73: warning: variable "x" was declared but never referenced
+    unsigned char x = 0 ? 65535 : 1;
+                  ^
+
+"Sema/constant-conversion.c", line 74: warning: variable "y" was declared but never referenced
+    unsigned char y = 1 ? 65535 : 1;
+                  ^
+
+"Sema/constant-conversion.c", line 93: warning: bit field cannot contain all values of the enumerated type
+    struct { enum E x : 1; } f;
+                        ^
+
+"Sema/constant-conversion.c", line 93: warning: variable "f" was set but never used
+    struct { enum E x : 1; } f;
+                             ^
+
+"Sema/constant-conversion.c", line 106: warning: integer conversion resulted in a change of sign
+    char new_char = max_char_plus_one;
+                    ^
+
+"Sema/constant-conversion.c", line 107: warning: integer conversion resulted in a change of sign
+    short new_short = max_short_plus_one;
+                      ^
+
+"Sema/constant-conversion.c", line 108: warning: integer conversion resulted in a change of sign
+    int new_int = max_int_plus_one;
+                  ^
+
+"Sema/constant-conversion.c", line 125: warning: integer conversion resulted in a change of sign
+    char macro_char_dec = 255;
+                          ^
+
+"Sema/constant-conversion.c", line 127: warning: integer conversion resulted in a change of sign
+    char array_init[] = { 255, 127, 128, 129, 0 };
+                          ^
+
+"Sema/constant-conversion.c", line 127: warning: integer conversion resulted in a change of sign
+    char array_init[] = { 255, 127, 128, 129, 0 };
+                                    ^
+
+"Sema/constant-conversion.c", line 127: warning: integer conversion resulted in a change of sign
+    char array_init[] = { 255, 127, 128, 129, 0 };
+                                         ^
+
+"Sema/constant-conversion.c", line 106: warning: variable "new_char" was declared but never referenced
+    char new_char = max_char_plus_one;
+         ^
+
+"Sema/constant-conversion.c", line 107: warning: variable "new_short" was declared but never referenced
+    short new_short = max_short_plus_one;
+          ^
+
+"Sema/constant-conversion.c", line 108: warning: variable "new_int" was declared but never referenced
+    int new_int = max_int_plus_one;
+        ^
+
+"Sema/constant-conversion.c", line 110: warning: variable "hex_char" was declared but never referenced
+    char hex_char = 0x80;
+         ^
+
+"Sema/constant-conversion.c", line 111: warning: variable "hex_short" was declared but never referenced
+    short hex_short = 0x8000;
+          ^
+
+"Sema/constant-conversion.c", line 112: warning: variable "hex_int" was declared but never referenced
+    int hex_int = 0x80000000;
+        ^
+
+"Sema/constant-conversion.c", line 114: warning: variable "oct_char" was declared but never referenced
+    char oct_char = 0200;
+         ^
+
+"Sema/constant-conversion.c", line 115: warning: variable "oct_short" was declared but never referenced
+    short oct_short = 0100000;
+          ^
+
+"Sema/constant-conversion.c", line 116: warning: variable "oct_int" was declared but never referenced
+    int oct_int = 020000000000;
+        ^
+
+"Sema/constant-conversion.c", line 118: warning: variable "bin_char" was declared but never referenced
+    char bin_char = 0b10000000;
+         ^
+
+"Sema/constant-conversion.c", line 119: warning: variable "bin_short" was declared but never referenced
+    short bin_short = 0b1000000000000000;
+          ^
+
+"Sema/constant-conversion.c", line 120: warning: variable "bin_int" was declared but never referenced
+    int bin_int = 0b10000000000000000000000000000000;
+        ^
+
+"Sema/constant-conversion.c", line 123: warning: variable "macro_char_hex" was declared but never referenced
+    char macro_char_hex = 0xff;
+         ^
+
+"Sema/constant-conversion.c", line 125: warning: variable "macro_char_dec" was declared but never referenced
+    char macro_char_dec = 255;
+         ^
+
+"Sema/constant-conversion.c", line 127: warning: variable "array_init" was declared but never referenced
+    char array_init[] = { 255, 127, 128, 129, 0 };
+         ^
+
+"Sema/constant-conversion.c", line 136: warning: integer conversion resulted in a change of sign
+    s.a = -1;
+          ^
+
+"Sema/constant-conversion.c", line 138: warning: integer conversion resulted in a change of sign
+    s.a = -8;
+          ^
+
+"Sema/constant-conversion.c", line 143: warning: integer conversion resulted in a change of sign
+    s.a = -9;
+          ^
+
+"Sema/constant-conversion.c", line 135: warning: variable "s" was set but never used
+    } s;
+      ^
+

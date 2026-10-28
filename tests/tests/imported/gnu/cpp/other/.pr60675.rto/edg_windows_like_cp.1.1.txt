@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 -w Test_name.c
+"Test_name.c", line 76: error: identifier "__thread" is undefined
+           extern __thread std::ostream *G4cout_p;
+                  ^
+
+"Test_name.c", line 76: error: declaration is incompatible with type "std::ostream" (declared at line 33)
+           extern __thread std::ostream *G4cout_p;
+                                ^
+
+"Test_name.c", line 76: error: expected a ";"
+           extern __thread std::ostream *G4cout_p;
+                                        ^
+
+"Test_name.c", line 228: error: identifier "G4cout_p" is undefined
+   (*G4cout_p) << "G4EP: vpPreNorm " << vpPreNorm << " vpPostNorm " << vpPostNorm << std::endl;
+     ^
+
+4 errors detected in the compilation of "Test_name.c".

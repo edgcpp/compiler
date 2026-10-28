@@ -1,0 +1,181 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 6: error: "a" is not a nonstatic data member or base class of class "x"
+    x() : a(4) ; // expected-error {{expected '{'}}
+          ^
+
+"Test_name.c", line 6: error: expected a "{"
+    x() : a(4) ; // expected-error {{expected '{'}}
+               ^
+
+"Test_name.c", line 6: error: expected a "}"
+    x() : a(4) ; // expected-error {{expected '{'}}
+               ^
+
+"Test_name.c", line 11: error: expected a "{"
+    y() : a(4) ; // expected-error {{expected '{'}}
+               ^
+
+"Test_name.c", line 11: error: expected a "}"
+    y() : a(4) ; // expected-error {{expected '{'}}
+               ^
+
+"Test_name.c", line 16: error: expected a "{"
+    z() : a {}
+             ^
+
+"Test_name.c", line 16: error: expected a "}"
+    z() : a {}
+             ^
+
+"Test_name.c", line 26: error: expected a declaration
+      A() : X<a<b>{0}.n>() {}
+                     ^
+
+"Test_name.c", line 30: warning: parsing restarts here after previous syntax error
+      };
+       ^
+
+"Test_name.c", line 26: error: identifier "a" is undefined
+      A() : X<a<b>{0}.n>() {}
+              ^
+
+"Test_name.c", line 26: error: "X" is not a nonstatic data member or base class of class "PR16480::A"
+      A() : X<a<b>{0}.n>() {}
+            ^
+
+"Test_name.c", line 26: error: expected a "{"
+      A() : X<a<b>{0}.n>() {}
+                    ^
+
+"Test_name.c", line 26: error: expected a "}"
+      A() : X<a<b>{0}.n>() {}
+                    ^
+
+"Test_name.c", line 60: error: expected a declaration
+      E(X<1>) : X<int{}>{} {}
+                       ^
+
+"Test_name.c", line 63: warning: parsing restarts here after previous syntax error
+    };
+    ^
+
+"Test_name.c", line 60: error: expected a ">"
+      E(X<1>) : X<int{}>{} {}
+                      ^
+
+"Test_name.c", line 60: error: expected a "(" or a "{"
+      E(X<1>) : X<int{}>{} {}
+                      ^
+
+"Test_name.c", line 60: error: expected a "{"
+      E(X<1>) : X<int{}>{} {}
+                      ^
+
+"Test_name.c", line 60: error: expected a "}"
+      E(X<1>) : X<int{}>{} {}
+                      ^
+
+"Test_name.c", line 67: error: expected a declaration
+      F() : X<A<T>().n + (T){}.n>{} {} // expected-error +{{}} expected-note {{to match}}
+                              ^
+
+"Test_name.c", line 67: error: identifier "T" is undefined
+      F() : X<A<T>().n + (T){}.n>{} {} // expected-error +{{}} expected-note {{to match}}
+                ^
+
+"Test_name.c", line 67: error: identifier "T" is undefined
+      F() : X<A<T>().n + (T){}.n>{} {} // expected-error +{{}} expected-note {{to match}}
+                          ^
+
+"Test_name.c", line 67: error: expected a ">"
+      F() : X<A<T>().n + (T){}.n>{} {} // expected-error +{{}} expected-note {{to match}}
+                            ^
+
+"Test_name.c", line 67: error: expected a "{"
+      F() : X<A<T>().n + (T){}.n>{} {} // expected-error +{{}} expected-note {{to match}}
+                             ^
+
+"Test_name.c", line 67: error: expected a "}"
+      F() : X<A<T>().n + (T){}.n>{} {} // expected-error +{{}} expected-note {{to match}}
+                             ^
+
+"Test_name.c", line 75: error: expected an identifier
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                   ^
+
+"Test_name.c", line 75: error: this declaration has no storage class or type specifier
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                  ^
+
+"Test_name.c", line 75: error: expected a ";"
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                    ^
+
+"Test_name.c", line 75: error: a lambda is not permitted in this context
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                   ^
+
+"Test_name.c", line 75: error: expected a ">"
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                 ^
+
+"Test_name.c", line 75: error: expected a "(" or a "{"
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                 ^
+
+"Test_name.c", line 75: error: expected a "{"
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                 ^
+
+"Test_name.c", line 75: error: expected a "}"
+      G() : X<0 && [](){return 0;}()>{} // expected-error +{{}} expected-note {{to match}}
+                                 ^
+
+"Test_name.c", line 79: error: expected a "("
+      Errs(X<0>) : decltype X<0>() {} // expected-error {{expected '(' after 'decltype'}}
+                            ^
+
+"Test_name.c", line 79: error: expected an expression
+      Errs(X<0>) : decltype X<0>() {} // expected-error {{expected '(' after 'decltype'}}
+                                 ^
+
+"Test_name.c", line 80: error: "what" is not a nonstatic data member or base class of class "PR16480::Errs"
+      Errs(X<1>) : what is this () {} // expected-error {{expected '(' or '{'}}
+                   ^
+
+"Test_name.c", line 80: error: expected a "(" or a "{"
+      Errs(X<1>) : what is this () {} // expected-error {{expected '(' or '{'}}
+                        ^
+
+"Test_name.c", line 80: error: expected a "{"
+      Errs(X<1>) : what is this () {} // expected-error {{expected '(' or '{'}}
+                                ^
+
+"Test_name.c", line 81: error: type name is not allowed
+      Errs(X<2>) : decltype(X<0> // expected-note {{to match this '('}}
+                            ^
+
+"Test_name.c", line 82: error: expected a ")"
+    }; // expected-error {{expected ')'}}
+     ^
+
+"Test_name.c", line 85: error: expected a "{"
+  template <class U, class V> struct C {
+  ^
+
+"Test_name.c", line 86: error: expected a ";"
+    int f() { return 4; }
+            ^
+
+"Test_name.c", line 88: error: invalid start of member declaration
+  };
+   ^
+
+At end of source: error: expected a ";"
+
+At end of source: error: expected a "}"
+"Test_name.c", line 19: note: to match this "{"
+  namespace PR16480 {
+                    ^
+
+43 errors detected in the compilation of "Test_name.c".

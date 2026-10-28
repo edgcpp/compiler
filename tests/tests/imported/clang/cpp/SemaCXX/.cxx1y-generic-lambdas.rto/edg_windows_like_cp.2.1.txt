@@ -1,0 +1,166 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 -DDELAYED_TEMPLATE_PARSING Test_name.c
+"Test_name.c", line 64: error: no suitable conversion function from "lambda [](auto)->int" to "char (*)(char)" exists
+    char (*fc)(char) = L; //expected-error{{no viable conversion}}
+                       ^
+
+"Test_name.c", line 65: error: no suitable conversion function from "lambda [](auto)->int" to "double (*)(double)" exists
+    double (*fd)(double) = L; //expected-error{{no viable conversion}}
+                           ^
+
+"Test_name.c", line 70: warning: variable "i" was declared but never referenced
+      int i = x;
+          ^
+
+"Test_name.c", line 108: error: no suitable conversion function from "lambda [](auto)->double *" to "int *(*)(int)" exists
+    int* (*fi2)(int) = L(3.14); //expected-error{{no viable conversion}}
+                       ^
+
+"Test_name.c", line 148: error: no suitable conversion function from "lambda [](auto)->auto" to "char (*)(int)" exists
+    f2(glambda); // expected-error{{no matching function}}
+       ^
+
+"Test_name.c", line 149: error: more than one instance of overloaded function "test_conversion_to_fptr::g" matches the argument list:
+            function "test_conversion_to_fptr::g(int (*)(int))" (declared at line 138)
+            function "test_conversion_to_fptr::g(char (*)(char))" (declared at line 139)
+            argument types are: (lambda [](auto)->auto)
+    g(glambda); // expected-error{{call to 'g' is ambiguous}}
+    ^
+
+"Test_name.c", line 172: error: no suitable conversion function from "lambda [](auto)->int" to "char (*)(char)" exists
+    char (*fc)(char) = L; //expected-error{{no viable conversion}}
+                       ^
+
+"Test_name.c", line 173: error: no suitable conversion function from "lambda [](auto)->int" to "double (*)(double)" exists
+    double (*fd)(double) = L; //expected-error{{no viable conversion}}
+                           ^
+
+"Test_name.c", line 179: warning: missing return statement at end of non-void function "test_conversion_to_fptr::test"
+  }
+  ^
+
+"Test_name.c", line 189: error: no suitable conversion function from "lambda [](auto)->auto" to "char (*)(int)" exists
+      char (*fp4)(int) = [](auto d) { return d; }; //expected-error{{no viable conversion}}\
+                         ^
+
+"Test_name.c", line 191: error: no suitable conversion function from "lambda [](auto)->int" to "char (*)(char)" exists
+      char (*fp5)(char) = [](auto e) -> int { return e; }; //expected-error{{no viable conversion}}\
+                          ^
+
+"Test_name.c", line 219: error: initial value of reference to non-const must be an lvalue
+      int (&fp2)(int) = [](auto a) { return a; };  // expected-error{{non-const lvalue}}
+                        ^
+
+"Test_name.c", line 220: error: expression must be an lvalue
+      int (&&fp3)(int) = [](auto a) { return a; };
+                         ^
+
+"Test_name.c", line 265: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+        i = b;  //expected-error 3{{cannot be implicitly captured}}
+        ^
+
+"Test_name.c", line 273: warning: variable "i" was set but never used
+    int i = 10;
+        ^
+
+"Test_name.c", line 274: warning: variable "L" was declared but never referenced
+    auto L = [](auto a) {
+         ^
+
+"Test_name.c", line 448: error: pack expansion does not make use of any argument packs
+              print("d = ", d ..., "\n");
+                              ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 461
+
+"Test_name.c", line 468: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
+    int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
+                                                                          ^
+
+"Test_name.c", line 471: warning: missing return statement at end of non-void function "nested_non_capturing_lambda_tests::test"
+  } // end test()
+  ^
+
+"Test_name.c", line 527: error: the operand of sizeof... must be a parameter pack name
+          x = sizeof...(b);
+                        ^
+          detected during instantiation of "auto nested_non_capturing_lambda_tests::wrapped_within_templates::implicit_return_deduction::fooV(Ts...) [with Ts=<double, const char *, char, int>]" at line 542
+
+"Test_name.c", line 563: error: pack expansion does not make use of any argument packs
+              print("d = ", d ..., "\n");
+                              ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 574
+
+"Test_name.c", line 581: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
+  int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
+                                                                        ^
+
+"Test_name.c", line 634: warning: variable "fp" was declared but never referenced
+    decltype(L(L, ts...)) (*fp)(decltype(L), decltype(ts) ...) = L;
+                            ^
+
+"Test_name.c", line 687: error: pack expansion does not make use of any argument packs
+              print("d = ", d ..., "\n");
+                              ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 700
+
+"Test_name.c", line 707: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
+  int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
+                                                                        ^
+
+"Test_name.c", line 728: error: pack expansion does not make use of any argument packs
+              print("d = ", d ..., "\n");
+                              ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 742
+
+"Test_name.c", line 749: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
+  int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
+                                                                        ^
+
+"Test_name.c", line 761: warning: missing return statement at end of non-void function "lambda [](auto)->int"
+    };
+    ^
+
+"Test_name.c", line 879: error: a lambda is not allowed in a constant expression
+      enum { E = [](auto i) { return i; }(3) }; //expected-error{{inside of a constant expression}}\
+                 ^
+
+"Test_name.c", line 884: error: a lambda is not allowed in a constant expression
+      int B : ([](int i) { return i; })(3); //expected-error{{inside of a constant expression}}\
+               ^
+
+"Test_name.c", line 887: error: a lambda is not allowed in a constant expression
+      int arr[([](int i) { return i; })(3)]; //expected-error{{inside of a constant expression}}\
+               ^
+
+"Test_name.c", line 895: error: a lambda is not allowed in a constant expression
+      int BG : ([](auto i) { return i; })(3); //expected-error{{inside of a constant expression}}  \
+                ^
+
+"Test_name.c", line 898: error: a lambda is not allowed in a constant expression
+      int arrG[([](auto i) { return i; })(3)]; //expected-error{{inside of a constant expression}}\
+                ^
+
+"Test_name.c", line 915: error: a lambda is not allowed in a constant expression
+      int B : ([](T i) { return i; })(3); //expected-error{{inside of a constant expression}}\
+               ^
+
+"Test_name.c", line 918: error: a lambda is not allowed in a constant expression
+      int arr[([](T i) { return i; })(3)]; //expected-error{{inside of a constant expression}}\
+               ^
+
+"Test_name.c", line 927: error: a lambda is not allowed in a constant expression
+      int BG : ([](auto i) { return i; })(3); //expected-error{{not an integral constant}}\
+                ^
+
+"Test_name.c", line 930: error: a lambda is not allowed in a constant expression
+      int arrG[([](auto i) { return i; })(3)]; //expected-error{{must have a constant size}} \
+                ^
+
+"Test_name.c", line 1037: internal error: assertion failed at: "exprutil.c", line <suppressed> in generic_cast_operand
+
+    auto y = [](auto (*p)() -> auto) { return p(); };
+                                              ^
+
+30 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

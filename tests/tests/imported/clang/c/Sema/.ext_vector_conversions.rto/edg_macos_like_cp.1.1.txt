@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 15: warning: variable "vc4" is used before its value is set
+    vc4 += f; // expected-error {{cannot convert between vector values of different size}}
+    ^
+
+"Test_name.c", line 15: warning: variable "f" is used before its value is set
+    vc4 += f; // expected-error {{cannot convert between vector values of different size}}
+           ^
+
+"Test_name.c", line 20: warning: variable "vs4" is used before its value is set
+    vs4 += ll; // expected-warning {{implicit conversion loses integer precision}}
+    ^
+
+"Test_name.c", line 20: warning: variable "ll" is used before its value is set
+    vs4 += ll; // expected-warning {{implicit conversion loses integer precision}}
+           ^
+
+"Test_name.c", line 9: warning: function "test" was declared but never referenced
+  static void test(void) {
+              ^
+

@@ -1,0 +1,166 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 9: error: nontype "T::X" is not a type name
+  T::X fn1 (int); // { dg-error "need .typename." }
+  ^
+
+"Test_name.c", line 12: error: nontype "T::X" is not a type name
+  T::X fn1 (int) // { dg-error "need .typename." }
+  ^
+
+"Test_name.c", line 18: error: nontype "T::X" is not a type name
+  T::X v1; // { dg-error "need .typename." }
+  ^
+
+"Test_name.c", line 22: error: nontype "T::X" is not a type name
+    T::X v2; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 29: error: nontype "T::X" is not a type name
+    [[noreturn]] T::X fn2 (); // { dg-error "need .typename." }
+                 ^
+
+"Test_name.c", line 30: error: nontype "T::X" is not a type name
+    T::X fn3 (); // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 31: error: nontype "T::X" is not a type name
+    T::X fn4 () { return 5; } // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 32: error: nontype "T::X" is not a type name
+    T::X fn5 () final; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 32: error: nonvirtual function cannot be declared with "final" modifier
+    T::X fn5 () final; // { dg-error "need .typename." }
+         ^
+
+"Test_name.c", line 33: error: nontype "T::X" is not a type name
+    T::X fn6 () = 0; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 34: error: nontype "T::X" is not a type name
+    T::X fn8 () override; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 35: error: nontype "T::X" is not a type name
+    T::X v3; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 36: error: nontype "T::X" is not a type name
+    T::X *v4; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 37: error: nontype "T::X" is not a type name
+    T::X v5[5]; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 38: error: nontype "T::X" is not a type name
+    T::X v6 = 0; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 39: error: nontype "T::X" is not a type name
+    T::X v7{0}; // { dg-error "need .typename.|;" }
+    ^
+
+"Test_name.c", line 40: error: nontype "T::X" is not a type name
+    T::X v8 : 16; // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 41: error: nontype "T::X" is not a type name
+    static constexpr T::X v9 = 0; // { dg-error "need .typename." }
+                     ^
+
+"Test_name.c", line 42: error: nontype "T::X" is not a type name
+    typedef T::X T2; // { dg-error "need .typename." }
+            ^
+
+"Test_name.c", line 43: error: fn7 is not a template
+    friend T::X fn7<int> (); // { dg-error "need .typename." }
+                ^
+
+"Test_name.c", line 43: error: invalid friend declaration
+    friend T::X fn7<int> (); // { dg-error "need .typename." }
+    ^
+
+"Test_name.c", line 43: error: expected a ";"
+    friend T::X fn7<int> (); // { dg-error "need .typename." }
+                ^
+
+"Test_name.c", line 44: error: nontype "T::X" is not a type name
+    static inline T::X v10; // { dg-error "need .typename." }
+                  ^
+
+"Test_name.c", line 53: error: nontype "T::X" is not a type name
+    int fn2 (T::X p); // { dg-error "not a type" }
+             ^
+
+"Test_name.c", line 64: error: nontype "T::X" is not a type name
+  int fn4 (T::X p) { return p; } // { dg-error "" }
+           ^
+
+"Test_name.c", line 68: error: nontype "T::X" is not a type name
+  template<typename T, T::X N> // { dg-error "not a type" }
+                       ^
+
+"Test_name.c", line 72: error: nontype "T::X" is not a type name
+  template<typename T, typename U = T::X> // { dg-error "need .typename." }
+                                    ^
+
+"Test_name.c", line 78: error: nontype "T::X" is not a type name
+    void fn6 (T::X p) // { dg-error "not a type" }
+              ^
+
+"Test_name.c", line 80: error: nontype "T::Y" is not a type name
+      int i = static_cast<T::Y>(p); // { dg-error "need .typename." }
+                          ^
+
+"Test_name.c", line 81: error: nontype "T::Y" is not a type name
+      i = dynamic_cast<T::Y>(p); // { dg-error "need .typename." }
+                       ^
+
+"Test_name.c", line 82: error: nontype "T::Y" is not a type name
+      i = reinterpret_cast<T::Y>(p); // { dg-error "need .typename." }
+                           ^
+
+"Test_name.c", line 83: error: nontype "T::Y" is not a type name
+      i = const_cast<T::Y>(p); // { dg-error "need .typename." }
+                     ^
+
+"Test_name.c", line 88: error: nontype "T::X" is not a type name
+  void fn7 (T::X p) // { dg-error "" }
+            ^
+
+"Test_name.c", line 90: error: nontype "T::Y" is not a type name
+    int i = static_cast<T::Y>(p);
+                        ^
+
+"Test_name.c", line 91: error: nontype "T::Y" is not a type name
+    i = dynamic_cast<T::Y>(p);
+                     ^
+
+"Test_name.c", line 92: error: nontype "T::Y" is not a type name
+    i = reinterpret_cast<T::Y>(p);
+                         ^
+
+"Test_name.c", line 93: error: nontype "T::Y" is not a type name
+    i = const_cast<T::Y>(p);
+                   ^
+
+"Test_name.c", line 101: error: expected a type specifier
+    new T::X[10]; // { dg-error "need .typename." }
+        ^
+
+"Test_name.c", line 111: error: nontype "T::X" is not a type name
+    using TT = T::X; // { dg-error "need .typename." }
+               ^
+
+"Test_name.c", line 112: error: use the "typename" keyword to treat nontype "W<T>::M [with T=T]" as a type in a dependent context
+    using TT2 = W<T>::M; // { dg-error "need .typename." }
+                ^
+
+"Test_name.c", line 118: error: use the "typename" keyword to treat nontype "W<T>::M [with T=T]" as a type in a dependent context
+    auto fn9() -> W<T>::M; // { dg-error "need .typename." }
+                  ^
+
+41 errors detected in the compilation of "Test_name.c".

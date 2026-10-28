@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 15: warning: enum bit fields are always unsigned, but enum "C" includes negative enumerator
+    C a : 2;	// { dg-warning "'S::a' is too small to hold all values of 'enum C'" }
+          ^
+
+"Test_name.c", line 16: warning: enum bit fields are always unsigned, but enum "C" includes negative enumerator
+    C b : 3;	// { dg-bogus "'S::b' is too small to hold all values of 'enum C'" }
+          ^
+
+"Test_name.c", line 17: warning: bit field cannot contain all values of the enumerated type
+    D c : 3;	// { dg-warning "'S::c' is too small to hold all values of 'enum D'" }
+          ^
+
+"Test_name.c", line 19: warning: enum bit fields are always unsigned, but enum "E" includes negative enumerator
+    E e : 2;	// { dg-warning "'S::e' is too small to hold all values of 'enum class E'" }
+          ^
+
+"Test_name.c", line 20: warning: enum bit fields are always unsigned, but enum "E" includes negative enumerator
+    E f : 3;	// { dg-bogus "'S::f' is too small to hold all values of 'enum class E'" }
+          ^
+
+"Test_name.c", line 21: warning: bit field cannot contain all values of the enumerated type
+    F g : 3;	// { dg-warning "'S::g' is too small to hold all values of 'enum F'" }
+          ^
+
+"Test_name.c", line 23: warning: enum bit fields are always unsigned, but enum "G" includes negative enumerator
+    G i : 2;	// { dg-warning "'S::i' is too small to hold all values of 'enum G'" }
+          ^
+
+"Test_name.c", line 24: warning: enum bit fields are always unsigned, but enum "G" includes negative enumerator
+    G j : 3;	// { dg-bogus "'S::j' is too small to hold all values of 'enum G'" }
+          ^
+
+"Test_name.c", line 25: warning: bit field cannot contain all values of the enumerated type
+    H k : 3;	// { dg-warning "'S::k' is too small to hold all values of 'enum H'" }
+          ^
+

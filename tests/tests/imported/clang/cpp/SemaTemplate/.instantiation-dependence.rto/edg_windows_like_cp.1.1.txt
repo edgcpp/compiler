@@ -1,0 +1,65 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 18: error: no instance of function template "PR24076::foo" matches the argument list
+            argument types are: (PR24076::s)
+      foo(s{}); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 15: note: candidate function template "PR24076::foo" failed deduction
+      void foo(T) {} // expected-note {{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 22: error: no operator "+" matches these operands
+            operand types are: PR24076::s + int
+             class = void_t<decltype(declval<T>() + 1)>> // expected-error {{invalid operands to binary expression}}
+                                                  ^
+"Test_name.c", line 22: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+             class = void_t<decltype(declval<T>() + 1)>> // expected-error {{invalid operands to binary expression}}
+                                                  ^
+"Test_name.c", line 22: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+             class = void_t<decltype(declval<T>() + 1)>> // expected-error {{invalid operands to binary expression}}
+                                                  ^
+"Test_name.c", line 22: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+             class = void_t<decltype(declval<T>() + 1)>> // expected-error {{invalid operands to binary expression}}
+                                                  ^
+          detected during processing of template argument list for "PR24076::bar" based on template argument <PR24076::s> at line 25
+
+"Test_name.c", line 25: error: "bar" has already been declared in the current scope
+    bar<s> bar; // expected-note {{in instantiation of}}
+           ^
+
+"Test_name.c", line 32: warning: missing return statement at end of non-void function "PR33655::func<T,<unnamed>>()"
+    template<typename T, void_t<typename T::x> * = nullptr> int &func() {}
+                                                                         ^
+
+"Test_name.c", line 33: warning: missing return statement at end of non-void function "PR33655::func<T,<unnamed>>()"
+    template<typename T, void_t<typename T::y> * = nullptr> float &func() {}
+                                                                           ^
+
+"Test_name.c", line 42: warning: variable "check1" was declared but never referenced
+      int check1[__is_void(indirect_void_t<T>) == 0 ? 1 : -1]; // "ok", dependent
+          ^
+
+"Test_name.c", line 43: warning: variable "check2" was declared but never referenced
+      int check2[__is_void(void_t<T>) == 0 ? 1 : -1]; // expected-error {{array with a negative size}}
+          ^
+
+"Test_name.c", line 77: error: more than one partial specialization matches the template argument list of class "PR46791::trait<PR46791::D, void>"
+            "PR46791::trait<T, void_t<T::value_type>>" (declared at line 58)
+            "PR46791::trait<T, void_t<T::element_type>>" (declared at line 63)
+    static_assert(trait<D>::specialization == 0); // FIXME-error {{ambiguous partial specialization}}
+                            ^
+
+"Test_name.c", line 77: error: static assertion failed
+    static_assert(trait<D>::specialization == 0); // FIXME-error {{ambiguous partial specialization}}
+    ^
+"Test_name.c", line 77: note: the final comparison was 1 == 0
+    static_assert(trait<D>::specialization == 0); // FIXME-error {{ambiguous partial specialization}}
+                                           ^
+
+"Test_name.c", line 85: error: no instance of function template "TypeQualifier::f" matches the argument list
+    int k = f<int>(); // expected-error {{no matching}}
+            ^
+"Test_name.c", line 84: note: substituting explicit template arguments "<int>" for function template "TypeQualifier::f" failed
+    template<typename T> A<sizeof(sizeof(T::error))>::type f() {} // expected-note {{'int' cannot be used prior to '::'}}
+                                                           ^
+
+6 errors detected in the compilation of "Test_name.c".

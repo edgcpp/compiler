@@ -1,0 +1,379 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: error: expression must have a constant value
+  static_assert(f(), "f"); // expected-error {{static assertion expression is not an integral constant expression}} expected-note {{non-constexpr function 'f' cannot be used in a constant expression}}
+                ^
+"Test_name.c", line 7: note: cannot call non-constexpr function "f" (declared at line 5)
+  static_assert(f(), "f"); // expected-error {{static assertion expression is not an integral constant expression}} expected-note {{non-constexpr function 'f' cannot be used in a constant expression}}
+                ^
+
+"Test_name.c", line 9: error: static assertion failed with "false is false"
+  static_assert(false, "false is false"); // expected-error {{static assertion failed: false is false}}
+  ^
+
+"Test_name.c", line 12: error: static assertion failed with "false is false"
+      static_assert(false, "false is false"); // expected-error {{static assertion failed: false is false}}
+      ^
+
+"Test_name.c", line 16: error: static assertion failed with "false is false"
+      static_assert(false, "false is false"); // expected-error {{static assertion failed: false is false}}
+      ^
+
+"Test_name.c", line 20: error: static assertion failed with "N is not 2!"
+      static_assert(N == 2, "N is not 2!"); // expected-error {{static assertion failed due to requirement '1 == 2': N is not 2!}}
+      ^
+"Test_name.c", line 20: note: the final comparison was 1 == 2
+      static_assert(N == 2, "N is not 2!"); // expected-error {{static assertion failed due to requirement '1 == 2': N is not 2!}}
+                      ^
+          detected during instantiation of class "T<N> [with N=1]" at line 23
+
+"Test_name.c", line 27: error: static assertion failed with "Type not big enough!"
+      static_assert(sizeof(T) > sizeof(char), "Type not big enough!"); // expected-error {{static assertion failed due to requirement 'sizeof(char) > sizeof(char)': Type not big enough!}} \
+      ^
+"Test_name.c", line 27: note: the final comparison was 1 > 1
+      static_assert(sizeof(T) > sizeof(char), "Type not big enough!"); // expected-error {{static assertion failed due to requirement 'sizeof(char) > sizeof(char)': Type not big enough!}} \
+                              ^
+          detected during instantiation of class "S<T> [with T=char]" at line 31
+
+"Test_name.c", line 34: error: static assertion failed with "?"
+  static_assert(false, L"\xFFFFFFFF"); // expected-warning {{encoding prefix 'L' on an unevaluated string literal has no effect and is incompatible with c++2c}} \
+  ^
+
+"Test_name.c", line 37: error: static assertion failed with "??"
+  static_assert(false, u"\U000317FF"); // expected-warning {{encoding prefix 'u' on an unevaluated string literal has no effect and is incompatible with c++2c}} \
+  ^
+
+"Test_name.c", line 40: error: static assertion failed with "??"
+  static_assert(false, u8"Ω");     // expected-warning {{encoding prefix 'u8' on an unevaluated string literal has no effect and is incompatible with c++2c}} \
+  ^
+
+"Test_name.c", line 42: error: static assertion failed with "?"
+  static_assert(false, L"\u1234"); // expected-warning {{encoding prefix 'L' on an unevaluated string literal has no effect and is incompatible with c++2c}} \
+  ^
+
+"Test_name.c", line 45: error: static assertion failed with "?0#fx?goop"
+  static_assert(false, L"\x1ff"    // expected-warning {{encoding prefix 'L' on an unevaluated string literal has no effect and is incompatible with c++2c}} \
+  ^
+
+"Test_name.c", line 52: error: static assertion failed with "'"?\??
+?	"
+  static_assert(false, "\'\"\?\\\a\b\f\n\r\t\v"); // expected-error {{'"?\<U+0007><U+0008>}}
+  ^
+
+"Test_name.c", line 55: warning: unrecognized character escape sequence
+  static_assert(true, "\pOh no, a Pascal string!"); // expected-warning {{unknown escape sequence '\p'}} \
+                       ^
+
+"Test_name.c", line 57: error: static assertion failed with "a
+\tb
+c
+"
+  static_assert(false, R"(a
+  ^
+
+"Test_name.c", line 62: error: static assertion failed with "??????????????????????"
+  static_assert(false, "\u0080\u0081\u0082\u0083\u0099\u009A\u009B\u009C\u009D\u009E\u009F");
+  ^
+
+"Test_name.c", line 66: error: static assertion failed with "???abc???def???gh"
+  static_assert(false, "\u200Eabc\u200Fdef\u200Fgh"); // expected-error {{static assertion failed: ‎abc‏def‏gh}}
+  ^
+
+"Test_name.c", line 69: error: static assertion failed with "?????????????? ???????????????????????????? ????????"
+  static_assert(false, "🏳️‍🌈 🏴󠁧󠁢󠁥󠁮󠁧󠁿 🇪🇺"); // expected-error {{static assertion failed: 🏳️‍🌈 🏴󠁧󠁢󠁥󠁮󠁧󠁿 🇪🇺}}
+  ^
+
+"Test_name.c", line 73: error: static assertion failed with ""
+    static_assert(false, ""); // expected-error 2{{static assertion failed}}
+    ^
+          detected during instantiation of class "AlwaysFails<T> [with T=int]" at line 75
+
+"Test_name.c", line 73: error: static assertion failed with ""
+    static_assert(false, ""); // expected-error 2{{static assertion failed}}
+    ^
+          detected during instantiation of class "AlwaysFails<T> [with T=double]" at line 76
+
+"Test_name.c", line 80: error: static assertion failed with ""
+    static_assert(__is_literal(T), ""); // expected-error {{static assertion failed}}
+    ^
+          detected during instantiation of class "StaticAssertProtected<T> [with T=X]" at line 85
+
+"Test_name.c", line 81: error: a member of type "const X" cannot have an in-class initializer
+    static constexpr T t = {}; // no error here
+                         ^
+          detected during instantiation of class "StaticAssertProtected<T> [with T=X]" at line 85
+
+"Test_name.c", line 81: error: a constexpr variable must have a literal type or a reference type
+    static constexpr T t = {}; // no error here
+           ^
+          detected during instantiation of class "StaticAssertProtected<T> [with T=X]" at line 85
+
+"Test_name.c", line 88: error: static assertion failed
+  static_assert(false); // expected-error-re {{failed{{$}}}} expected-warning {{extension}}
+  ^
+
+"Test_name.c", line 105: error: static assertion failed with "message"
+  static_assert(first_trait<X>::value && second_trait<X>::value, "message"); // expected-error{{static assertion failed due to requirement 'second_trait<X>::value': message}}
+  ^
+
+"Test_name.c", line 148: error: static assertion failed with "message"
+  static_assert(std::is_same<ExampleTypes::T, ExampleTypes::U>::value, "message");
+  ^
+
+"Test_name.c", line 150: error: static assertion failed with "message"
+  static_assert(std::is_const<ExampleTypes::T>::value, "message");
+  ^
+
+"Test_name.c", line 152: error: static assertion failed with "message"
+  static_assert(!std::is_const<const ExampleTypes::T>::value, "message");
+  ^
+
+"Test_name.c", line 154: error: static assertion failed with "message"
+  static_assert(!(std::is_const<const ExampleTypes::T>::value), "message");
+  ^
+
+"Test_name.c", line 156: error: static assertion failed with "message"
+  static_assert(std::is_const<const ExampleTypes::T>::value == false, "message");
+  ^
+"Test_name.c", line 156: note: the final comparison was 1 == 0
+  static_assert(std::is_const<const ExampleTypes::T>::value == false, "message");
+                                                            ^
+
+"Test_name.c", line 158: error: static assertion failed with "message"
+  static_assert(!(std::is_const<const ExampleTypes::T>::value == true), "message");
+  ^
+
+"Test_name.c", line 160: error: static assertion failed with "message"
+  static_assert(std::is_const<ExampleTypes::T>(), "message");
+  ^
+
+"Test_name.c", line 162: error: static assertion failed with "message"
+  static_assert(!(std::is_const<const ExampleTypes::T>()()), "message");
+  ^
+
+"Test_name.c", line 164: error: static assertion failed with "message"
+  static_assert(std::is_same<decltype(std::is_const<const ExampleTypes::T>()), int>::value, "message");
+  ^
+
+"Test_name.c", line 166: error: static assertion failed with "message"
+  static_assert(std::is_const<decltype(ExampleTypes::T(3))>::value, "message");
+  ^
+
+"Test_name.c", line 168: error: static assertion failed with "message"
+  static_assert(std::is_const<decltype(ExampleTypes::T())>::value, "message");
+  ^
+
+"Test_name.c", line 170: error: static assertion failed with "message"
+  static_assert(std::is_const<decltype(ExampleTypes(3))>::value, "message");
+  ^
+
+"Test_name.c", line 232: error: static assertion failed with "message"
+  static_assert(p, "message"); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 237: error: expression must have bool type (or be convertible to bool)
+  static_assert(notBool, "message");          // expected-error {{value of type 'struct NotBool' is not contextually convertible to 'bool'}}
+                ^
+
+"Test_name.c", line 238: error: expression must have bool type (or be convertible to bool)
+  static_assert(constexprNotBool, "message"); // expected-error {{value of type 'const NotBool' is not contextually convertible to 'bool'}}
+                ^
+
+"Test_name.c", line 242: error: expected a ";"
+  namespace DependentAlwaysFalse {
+  ^
+
+"Test_name.c", line 282: warning: parsing restarts here after previous syntax error
+    static_assert((signed char)10 == (char)-123, ""); // expected-error {{failed}} \
+                                                    ^
+
+"Test_name.c", line 284: error: static assertion failed with ""
+    static_assert((char)-4 == (unsigned char)-8, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 284: note: the final comparison was -4 == 248
+    static_assert((char)-4 == (unsigned char)-8, ""); // expected-error {{failed}} \
+                           ^
+
+"Test_name.c", line 286: error: static assertion failed with ""
+    static_assert((char)-128 == (char)-123, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 286: note: the final comparison was -128 == -123
+    static_assert((char)-128 == (char)-123, ""); // expected-error {{failed}} \
+                             ^
+
+"Test_name.c", line 288: error: static assertion failed with ""
+    static_assert('\xA0' == (char)'\x20', ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 288: note: the final comparison was -96 == 32
+    static_assert('\xA0' == (char)'\x20', ""); // expected-error {{failed}} \
+                         ^
+
+"Test_name.c", line 290: error: static assertion failed with ""
+    static_assert((char16_t)L'ゆ' == L"C̵̭̯̠̎͌ͅť̺"[1], ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 290: note: the final comparison was 12422 == 821
+    static_assert((char16_t)L'ゆ' == L"C̵̭̯̠̎͌ͅť̺"[1], ""); // expected-error {{failed}} \
+                                 ^
+
+"Test_name.c", line 292: error: static assertion failed with ""
+    static_assert(L"＼／"[1] == u'\xFFFD', ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 292: note: the final comparison was 65295 == 65533
+    static_assert(L"＼／"[1] == u'\xFFFD', ""); // expected-error {{failed}} \
+                           ^
+
+"Test_name.c", line 294: error: static assertion failed with ""
+    static_assert(L"⚾"[0] == U'🌍', ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 294: note: the final comparison was 9918 == 127757
+    static_assert(L"⚾"[0] == U'🌍', ""); // expected-error {{failed}} \
+                          ^
+
+"Test_name.c", line 296: error: static assertion failed with ""
+    static_assert(U"\a"[0] == (wchar_t)9, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 296: note: the final comparison was 7 == 9
+    static_assert(U"\a"[0] == (wchar_t)9, ""); // expected-error {{failed}} \
+                           ^
+
+"Test_name.c", line 298: error: static assertion failed with ""
+    static_assert(L"§"[0] == U'Ö', ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 298: note: the final comparison was 167 == 214
+    static_assert(L"§"[0] == U'Ö', ""); // expected-error {{failed}} \
+                          ^
+
+"Test_name.c", line 306: error: static assertion failed with ""
+    static_assert(invert(true) || invert(true), ""); // expected-error {{static assertion failed due to requirement 'invert(true) || invert(true)'}}
+    ^
+
+"Test_name.c", line 307: error: static assertion failed with ""
+    static_assert(invert(true) == invert(false), ""); // expected-error {{static assertion failed due to requirement 'invert(true) == invert(false)'}} \
+    ^
+"Test_name.c", line 307: note: the final comparison was 0 == 1
+    static_assert(invert(true) == invert(false), ""); // expected-error {{static assertion failed due to requirement 'invert(true) == invert(false)'}} \
+                               ^
+
+"Test_name.c", line 309: error: static assertion failed with ""
+    static_assert(true && false, ""); // expected-error {{static assertion failed due to requirement 'true && false'}}
+    ^
+
+"Test_name.c", line 310: error: static assertion failed with ""
+    static_assert(invert(true) || invert(true) || false, ""); // expected-error {{static assertion failed due to requirement 'invert(true) || invert(true) || false'}}
+    ^
+
+"Test_name.c", line 311: error: static assertion failed with ""
+    static_assert((true && invert(true)) || false, ""); // expected-error {{static assertion failed due to requirement '(true && invert(true)) || false'}}
+    ^
+
+"Test_name.c", line 312: error: static assertion failed with ""
+    static_assert(true && invert(false) && invert(true), ""); // expected-error {{static assertion failed due to requirement 'invert(true)'}}
+    ^
+
+"Test_name.c", line 315: error: static assertion failed with ""
+    static_assert(invert(true) == true, ""); // expected-error {{failed}}
+    ^
+"Test_name.c", line 315: note: the final comparison was 0 == 1
+    static_assert(invert(true) == true, ""); // expected-error {{failed}}
+                               ^
+
+"Test_name.c", line 321: error: static assertion failed with ""
+    static_assert(com == com2, ""); // expected-error {{failed}} \
+    ^
+
+"Test_name.c", line 327: error: static assertion failed with ""
+    static_assert(CHECK_4(5), ""); // expected-error {{failed}}
+    ^
+"Test_name.c", line 327: note: the final comparison was 5 == 4
+    static_assert(CHECK_4(5), ""); // expected-error {{failed}}
+                  ^
+
+"Test_name.c", line 331: error: static assertion failed with ""
+    static_assert(CHECK_4(a) && A_IS_B, ""); // expected-error {{failed}} \
+    ^
+
+"Test_name.c", line 334: error: static assertion failed with ""
+    static_assert(
+    ^
+
+"Test_name.c", line 339: error: static assertion failed with ""
+    static_assert(
+    ^
+
+"Test_name.c", line 344: error: static assertion failed with ""
+    static_assert(
+    ^
+
+"Test_name.c", line 350: error: static assertion failed with ""
+    static_assert(
+    ^
+
+"Test_name.c", line 358: error: static assertion failed with ""
+    static_assert(1 + 1 != 2, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 358: note: the final comparison was 2 != 2
+    static_assert(1 + 1 != 2, ""); // expected-error {{failed}} \
+                        ^
+
+"Test_name.c", line 360: error: static assertion failed with ""
+    static_assert(1 - 1 == 2, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 360: note: the final comparison was 0 == 2
+    static_assert(1 - 1 == 2, ""); // expected-error {{failed}} \
+                        ^
+
+"Test_name.c", line 362: error: static assertion failed with ""
+    static_assert(1 * 1 == 2, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 362: note: the final comparison was 1 == 2
+    static_assert(1 * 1 == 2, ""); // expected-error {{failed}} \
+                        ^
+
+"Test_name.c", line 364: error: static assertion failed with ""
+    static_assert(1 / 1 == 2, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 364: note: the final comparison was 1 == 2
+    static_assert(1 / 1 == 2, ""); // expected-error {{failed}} \
+                        ^
+
+"Test_name.c", line 366: error: static assertion failed with ""
+    static_assert(1 << 3 != 8, ""); // expected-error {{failed}} \
+    ^
+"Test_name.c", line 366: note: the final comparison was 8 != 8
+    static_assert(1 << 3 != 8, ""); // expected-error {{failed}} \
+                         ^
+
+"Test_name.c", line 368: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 183: error: static assertion failed with "message"
+    static_assert(std::is_same<RAI_tag, typename Container::iterator::tag>::value, "message");
+    ^
+          detected during instantiation of "void foo<Container>() [with Container=MyContainer]" at line 186
+
+"Test_name.c", line 203: error: static assertion failed with "message"
+    static_assert(::ns::NestedTemplates1<T, a>::NestedTemplates2::template NestedTemplates3<U>::value, "message");
+    ^
+          detected during instantiation of "void foo2<T,U,a>() [with T=int, U=float, a=3]" at line 206
+
+"Test_name.c", line 211: error: static assertion failed with "message"
+    static_assert(std::is_const<T>::value, "message");
+    ^
+          detected during instantiation of "void foo3(T) [with T=lambda []()->void]" at line 217
+
+"Test_name.c", line 213: error: static assertion failed with "message"
+    static_assert(std::is_const<decltype(t)>::value, "message");
+    ^
+          detected during instantiation of "void foo3(T) [with T=lambda []()->void]" at line 217
+
+"Test_name.c", line 223: error: argument list for class template "T" is missing
+    static_assert(std::is_const<typename T::iterator>::value, "message");
+                                         ^
+          detected during instantiation of "void foo4(T) [with T=int]" at line 226
+
+"Test_name.c", line 223: error: static assertion failed with "message"
+    static_assert(std::is_const<typename T::iterator>::value, "message");
+    ^
+          detected during instantiation of "void foo4(T) [with T=int]" at line 226
+
+73 errors detected in the compilation of "Test_name.c".

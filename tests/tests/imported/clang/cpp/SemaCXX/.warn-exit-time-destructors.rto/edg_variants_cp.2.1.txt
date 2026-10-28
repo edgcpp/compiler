@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 25: warning: variable "d" was declared but never referenced
+    static A &d = a;
+              ^
+
+"Test_name.c", line 26: warning: variable "e" was declared but never referenced
+    static A &e = b[5];
+              ^
+
+"Test_name.c", line 27: warning: variable "f" was declared but never referenced
+    static A &f = c[5][7];
+              ^
+

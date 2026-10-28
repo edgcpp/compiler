@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: warning: variable-length array field type will be treated as zero-length array field type
+      int x[c];
+            ^
+
+"Test_name.c", line 17: warning: excess initializers are ignored
+    } v = { 1, 2 }; /* { dg-error "variable-sized object may not be initialized" } */
+               ^
+
+"Test_name.c", line 17: warning: variable "v" was declared but never referenced
+    } v = { 1, 2 }; /* { dg-error "variable-sized object may not be initialized" } */
+      ^
+
+"Test_name.c", line 17: error: expected an expression
+  } v = {, 1}; 
+         ^
+
+1 error detected in the compilation of "Test_name.c".

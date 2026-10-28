@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef char __attribute__ ((vector_size (4))) v4qi;
+                               ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef unsigned char __attribute__ ((vector_size (4))) uv4qi;
+                                        ^
+
+"Test_name.c", line 12: error: too many initializer values
+    v4qi c={a,a,a,a};
+              ^
+
+"Test_name.c", line 13: error: too many initializer values
+    uv4qi d={a,a,a,a};
+               ^
+
+2 errors detected in the compilation of "Test_name.c".

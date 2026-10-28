@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: this partial specialization would have made the instantiation of class "A<char, void>" ambiguous
+  template<typename T> struct A<char, T> {};		// { dg-error "" }
+                              ^
+
+"Test_name.c", line 9: error: more than one partial specialization matches the template argument list of class "A<char, void>"
+            "A<T, void>" (declared at line 6)
+            "A<char, T>" (declared at line 8)
+  A< char, void>  f; 
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

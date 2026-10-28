@@ -1,0 +1,6 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: Test_name.o: in function `main':
+Test_name.int.c:(.text+0xXX): undefined reference to `t2'
+/usr/sbin/ld: Test_name.o: in function `int foo<N1>() [with N1=(int)0]':
+Test_name.int.c:(.text+0xXX): undefined reference to `t1'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,49 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 23: warning: attribute "nodiscard" does not apply here
+  [[nodiscard]] int i; // expected-warning {{'nodiscard' attribute only applies to Objective-C methods, enums, structs, unions, classes, functions, function pointers, and typedefs}}
+    ^
+
+"Test_name.c", line 36: warning: ignoring return value type with "nodiscard" attribute
+    get_s(); // expected-warning {{ignoring return value of type 'S4' declared with 'nodiscard' attribute}}
+         ^
+
+"Test_name.c", line 37: warning: ignoring return value type with "nodiscard" attribute ("Wrong")
+    get_s3(); // expected-warning {{ignoring return value of type 'S3' declared with 'nodiscard' attribute: Wrong}}
+          ^
+
+"Test_name.c", line 38: warning: ignoring return value from routine declared with "nodiscard" attribute
+    get_i(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+         ^
+
+"Test_name.c", line 39: warning: ignoring return value type with "nodiscard" attribute
+    get_e(); // expected-warning {{ignoring return value of type 'E2' declared with 'nodiscard' attribute}}
+         ^
+
+"Test_name.c", line 47: warning: expression has no effect
+    One; // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 48: warning: expression has no effect
+    (enum E2)(0); // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 49: warning: type of discarded object has "nodiscard" attribute
+    (struct S4){1}; // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 59: warning: ignoring return value type with "nodiscard" attribute
+    enable_missile_safety_mode(); // expected-warning {{ignoring return value of type 'error_info' declared with 'nodiscard'}}
+                              ^
+
+"Test_name.c", line 67: warning: ignoring return value from routine declared with "nodiscard" attribute
+    M; // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+    ^
+
+"Test_name.c", line 70: warning: attribute "nodiscard" does not apply here
+  [[nodiscard]] typedef int NoDInt; // expected-warning {{'[[nodiscard]]' attribute ignored when applied to a typedef}}
+    ^
+
+"Test_name.c", line 72: warning: attribute "warn_unused_result" does not apply to non-function type "int"
+  typedef __attribute__((warn_unused_result)) int WURInt;
+                         ^
+

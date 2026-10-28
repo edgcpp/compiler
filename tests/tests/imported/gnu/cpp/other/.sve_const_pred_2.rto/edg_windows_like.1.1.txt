@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --gnu_version=80200 -tused -e 200 --no_wrap Test_name.c
+"./other/sve_const_pred_2.C", line 6: warning: unknown attribute "vector_size"
+  typedef int16_t vnx8hi __attribute__((vector_size(32)));
+                                        ^
+
+"./other/sve_const_pred_2.C", line 11: error: too many initializer values
+    return (vnx8hi) { -1, 0, 0, -1, -1, -1, 0, 0,
+                          ^
+
+1 error detected in the compilation of "Test_name.c".

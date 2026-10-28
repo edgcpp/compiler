@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_extensions --c++11 Test_name.c
+"Test_name.c", line 23: error: expected a ")"
+    __if_exists(T::X) { // expected-warning{{dependent __if_exists declarations are ignored}}
+                 ^
+          detected during instantiation of class "X<T> [with T=int]" at line 28
+
+"Test_name.c", line 24: error: argument list for class template "X" is missing
+      typedef T::X type4;
+               ^
+          detected during instantiation of class "X<T> [with T=int]" at line 28
+
+"Test_name.c", line 24: error: expected a ";"
+      typedef T::X type4;
+                   ^
+          detected during instantiation of class "X<T> [with T=int]" at line 28
+
+"Test_name.c", line 29: error: class "X<int>" has no member "type2"
+  X<int>::type2 i2; // expected-error{{no type named 'type2' in 'X<int>'}}
+          ^
+
+"Test_name.c", line 31: error: class "X<int>" has no member "type4"
+  X<int>::type4 i4; // expected-error{{no type named 'type4' in 'X<int>'}}
+          ^
+
+"Test_name.c", line 49: warning: variable "i" was declared but never referenced
+      int *i = t; // expected-error{{no viable conversion from 'HasFoo' to 'int *'}}
+           ^
+
+"Test_name.c", line 53: warning: variable "array2" was declared but never referenced
+    int array2[] = {
+        ^
+
+"Test_name.c", line 65: error: parameter pack "Ts" was referenced but not expanded
+    __if_exists(T::operator Ts) { // expected-error{{__if_exists name contains unexpanded parameter pack 'Ts'}}
+                            ^
+
+"Test_name.c", line 68: error: parameter pack "Ts" was referenced but not expanded
+    __if_not_exists(Ts::operator T) { // expected-error{{__if_not_exists name contains unexpanded parameter pack 'Ts'}}
+                    ^
+
+"Test_name.c", line 49: error: no suitable conversion function from "HasFoo" to "int *" exists
+      int *i = t; // expected-error{{no viable conversion from 'HasFoo' to 'int *'}}
+               ^
+          detected during instantiation of "void f(T) [with T=HasFoo]" at line 60
+
+8 errors detected in the compilation of "Test_name.c".

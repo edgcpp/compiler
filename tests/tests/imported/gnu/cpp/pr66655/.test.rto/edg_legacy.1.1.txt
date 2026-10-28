@@ -1,0 +1,6 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c pr66655_1.C
+Test_name.c:
+pr66655_1.C:
+/usr/sbin/ld: pr66655_1.o: in function `S::set(int)':
+pr66655_1.int.c:(.text+0xXX): multiple definition of `S::set(int)'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+collect2: error: ld returned 1 exit status

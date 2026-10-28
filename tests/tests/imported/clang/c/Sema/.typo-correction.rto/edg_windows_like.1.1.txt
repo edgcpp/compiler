@@ -1,0 +1,165 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 8: error: identifier "invalid" is undefined
+  __typeof__(struct F*) var[invalid];  // expected-error-re {{use of undeclared identifier 'invalid'{{$}}}}
+                            ^
+
+"Test_name.c", line 12: error: identifier "arst" is undefined
+    x = (float)arst;  // expected-error-re {{use of undeclared identifier 'arst'{{$}}}}
+               ^
+
+"Test_name.c", line 11: warning: variable "x" was set but never used
+    float x;
+          ^
+
+"Test_name.c", line 15: warning: this declaration has no storage class or type specifier
+  a = b ? : 0;  // expected-error {{type specifier missing, defaults to 'int'}} \
+  ^
+
+"Test_name.c", line 15: error: identifier "b" is undefined
+  a = b ? : 0;  // expected-error {{type specifier missing, defaults to 'int'}} \
+      ^
+
+"Test_name.c", line 19: warning: this declaration has no storage class or type specifier
+  new_a = goobar ?: 4; // expected-error {{type specifier missing, defaults to 'int'}} \
+  ^
+
+"Test_name.c", line 19: error: identifier "goobar" is undefined
+  new_a = goobar ?: 4; // expected-error {{type specifier missing, defaults to 'int'}} \
+          ^
+
+"Test_name.c", line 24: warning: expected an identifier
+    enum { SOME_ENUM }; // expected-note {{'SOME_ENUM' declared here}}
+                      ^
+
+"Test_name.c", line 25: warning: struct or union declares no named members
+  };
+  ^
+
+"Test_name.c", line 29: error: identifier "SOME_ENUM_" is undefined
+    case SOME_ENUM_: // expected-error {{use of undeclared identifier 'SOME_ENUM_'; did you mean 'SOME_ENUM'}}
+         ^
+
+"Test_name.c", line 36: error: identifier "hello" is undefined
+    _Generic(hello, int : banana)();  // expected-error-re {{use of undeclared identifier 'hello'{{$}}}}
+             ^
+
+"Test_name.c", line 37: error: identifier "bandana" is undefined
+    _Generic(arg, int : bandana)();  // expected-error {{use of undeclared identifier 'bandana'; did you mean 'banana'?}}
+                        ^
+
+"Test_name.c", line 38: warning: missing return statement at end of non-void function "c11Generic"
+  }
+  ^
+
+"Test_name.c", line 40: warning: unknown attribute "__vector_size__"
+  typedef long long __m128i __attribute__((__vector_size__(16)));
+                                           ^
+
+"Test_name.c", line 42: warning: function "foo" declared implicitly
+    return foo((__v2di)__x);  // expected-error {{call to undeclared function 'foo'; ISO C99 and later do not support implicit function declarations}} \
+           ^
+
+"Test_name.c", line 42: error: identifier "__v2di" is undefined
+    return foo((__v2di)__x);  // expected-error {{call to undeclared function 'foo'; ISO C99 and later do not support implicit function declarations}} \
+                ^
+
+"Test_name.c", line 42: error: expected a ")"
+    return foo((__v2di)__x);  // expected-error {{call to undeclared function 'foo'; ISO C99 and later do not support implicit function declarations}} \
+                       ^
+
+"Test_name.c", line 47: error: identifier "c" is undefined
+        __atomic_or_fetch(a, b, c);  // expected-error {{use of undeclared identifier 'c'}}
+                                ^
+
+"Test_name.c", line 52: error: identifier "errij" is undefined
+    cabs(errij);  // expected-error {{use of undeclared identifier 'errij'}}
+         ^
+
+"Test_name.c", line 58: error: identifier "THIS_IS_AN_ERROR" is undefined
+    f(THIS_IS_AN_ERROR,       // expected-error {{use of undeclared identifier 'THIS_IS_AN_ERROR'}}
+      ^
+
+"Test_name.c", line 59: error: identifier "afunction_" is undefined
+      afunction(afunction_)); // expected-error {{use of undeclared identifier 'afunction_'}} \
+                ^
+
+"Test_name.c", line 63: error: identifier "X" is undefined
+  int d = X ? d : L; // expected-error 2 {{use of undeclared identifier}}
+          ^
+
+"Test_name.c", line 63: error: identifier "L" is undefined
+  int d = X ? d : L; // expected-error 2 {{use of undeclared identifier}}
+                  ^
+
+"Test_name.c", line 63: error: expression must have a constant value
+  int d = X ? d : L; // expected-error 2 {{use of undeclared identifier}}
+              ^
+"Test_name.c", line 63: note: the value of variable "d" (declared at line 63) cannot be used as a constant
+  int d = X ? d : L; // expected-error 2 {{use of undeclared identifier}}
+              ^
+
+"Test_name.c", line 65: error: identifier "ID" is undefined
+  int fn_with_ids(void) { ID = ID == ID >= ID ; } // expected-error 4 {{use of undeclared identifier}}
+                          ^
+
+"Test_name.c", line 65: warning: missing return statement at end of non-void function "fn_with_ids"
+  int fn_with_ids(void) { ID = ID == ID >= ID ; } // expected-error 4 {{use of undeclared identifier}}
+                                                ^
+
+"Test_name.c", line 67: error: identifier "TYPO" is undefined
+  int fn_with_rs(int r) { r = TYPO + r * TYPO; } // expected-error 2 {{use of undeclared identifier}}
+                              ^
+
+"Test_name.c", line 67: warning: missing return statement at end of non-void function "fn_with_rs"
+  int fn_with_rs(int r) { r = TYPO + r * TYPO; } // expected-error 2 {{use of undeclared identifier}}
+                                               ^
+
+"Test_name.c", line 70: error: identifier "unknown" is undefined
+    fn_with_unknown(unknown, unknown | unknown); // expected-error 3 {{use of undeclared identifier}}
+                    ^
+
+"Test_name.c", line 84: error: identifier "x" is undefined
+    g(x, 5 ? z : 0); // expected-error 2 {{use of undeclared identifier}}
+      ^
+
+"Test_name.c", line 84: error: identifier "z" is undefined
+    g(x, 5 ? z : 0); // expected-error 2 {{use of undeclared identifier}}
+             ^
+
+"Test_name.c", line 86: warning: missing return statement at end of non-void function "h"
+  }
+  ^
+
+"Test_name.c", line 92: error: identifier "ar" is undefined
+  	func_overloadable(ar); //expected-error{{use of undeclared identifier}}
+  	                  ^
+
+"Test_name.c", line 103: error: identifier "structVar1" is undefined
+        structVar1.fieldName1.member1, //expected-error{{use of undeclared identifier 'structVar1'}} \
+        ^
+
+"Test_name.c", line 105: error: identifier "structVar2" is undefined
+        structVar2.fieldName2.member2); //expected-error{{use of undeclared identifier 'structVar2'}} \
+        ^
+
+"Test_name.c", line 101: warning: variable "structVar" was declared but never referenced
+    struct rdar38642201 structVar;     // expected-note 2{{'structVar' declared here}}
+                        ^
+
+"Test_name.c", line 112: error: identifier "the_walue" is undefined
+    PR40286_g(the_walue, 0); // expected-error {{use of undeclared identifier 'the_walue'}}
+              ^
+
+"Test_name.c", line 115: error: identifier "the_walue" is undefined
+    PR40286_h(the_value, the_walue, 0); // expected-error {{use of undeclared identifier 'the_walue'}}
+                         ^
+
+"Test_name.c", line 118: error: identifier "the_walue" is undefined
+    PR40286_h(the_walue, 0, 0); // expected-error {{use of undeclared identifier 'the_walue'}}
+              ^
+
+"Test_name.c", line 121: error: identifier "the_walue" is undefined
+    PR40286_h(the_value, the_value, the_walue); // expected-error {{use of undeclared identifier 'the_walue'; did you mean 'the_value'?}}
+                                    ^
+
+28 errors detected in the compilation of "Test_name.c".

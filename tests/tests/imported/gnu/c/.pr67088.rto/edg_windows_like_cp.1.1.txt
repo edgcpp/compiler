@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 Test_name.c
+"Test_name.c", line 11: error: invalid type for a bit field
+    double b1:1; /* { dg-error "10:has invalid type" } */
+    ^
+
+"Test_name.c", line 12: error: expression must have a constant value
+    int b2:j; /* { dg-error "7:width not an integer constant" } */
+           ^
+"Test_name.c", line 12: note: the value of variable "j" (declared at line 8) cannot be used as a constant
+    int b2:j; /* { dg-error "7:width not an integer constant" } */
+           ^
+
+"Test_name.c", line 13: error: expression must have a constant value
+    int b3:f; /* { dg-error "7:width not an integer constant" } */
+           ^
+"Test_name.c", line 13: note: the value of variable "f" (declared at line 9) cannot be used as a constant
+    int b3:f; /* { dg-error "7:width not an integer constant" } */
+           ^
+
+"Test_name.c", line 14: error: function call is not allowed in a constant expression
+    int b4:(int) __builtin_log (100); /* { dg-warning "7:width not an integer constant" } */
+                 ^
+
+"Test_name.c", line 15: error: invalid size for bit field
+    int b5:-2; /* { dg-error "7:negative width" } */
+           ^
+
+"Test_name.c", line 16: error: zero-length bit field must be unnamed
+    int b6:0; /* { dg-error "7:zero width" } */
+        ^
+
+"Test_name.c", line 18: error: invalid size for bit field
+    int b8:sizeof (int) * __CHAR_BIT__ * 2; /* { dg-error "7:width of" } */
+           ^
+
+"Test_name.c", line 19: warning: bit field cannot contain all values of the enumerated type
+    __extension__ enum E b9:1; /* { dg-warning "24:is narrower" } */
+                            ^
+
+7 errors detected in the compilation of "Test_name.c".

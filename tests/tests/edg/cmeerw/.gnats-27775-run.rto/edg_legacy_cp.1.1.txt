@@ -1,0 +1,12 @@
+eccp -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 61: error: fold expression does not refer to a parameter pack
+      return ( b + ... );
+                   ^
+          detected during instantiation of "long struct_like::f(auto) [with <auto-1>=struct_like::C]" at line 68
+
+"Test_name.c", line 60: warning: structured binding "b" was set but never used
+      auto [ ... b ] = c;
+                       ^
+          detected during instantiation of "long struct_like::f(auto) [with <auto-1>=struct_like::C]" at line 68
+
+1 error detected in the compilation of "Test_name.c".

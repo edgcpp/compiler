@@ -1,0 +1,92 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 99: error: a compound literal is not allowed in an integral constant expression
+    static_assert((const X<typename T::T>[]){} == nullptr);
+                   ^
+
+"Test_name.c", line 26: error: static assertion failed
+    static_assert(S1<U, V>::value);
+    ^
+          detected during instantiation of "void foo<U,V>() [with U=int, V=float]" at line 29
+
+"Test_name.c", line 34: error: static assertion failed
+    static_assert(global_inline_var<U, V>);
+    ^
+          detected during instantiation of "void foo2<U,V>() [with U=int, V=float]" at line 37
+
+"Test_name.c", line 42: error: static assertion failed
+    static_assert(T::template var<U, V>);
+    ^
+          detected during instantiation of "void foo3<T,U,V>() [with T=S2<long>, U=int, V=float]" at line 45
+
+"Test_name.c", line 50: error: static assertion failed with ""
+    static_assert(S1<T[sizeof(T)], int[4]>::value, "");
+    ^
+          detected during instantiation of "void foo4<T>() [with T=float]" at line 53
+
+"Test_name.c", line 59: error: static assertion failed
+    static_assert(!!(global_inline_var<U, V>));
+    ^
+          detected during instantiation of "void foo5<U,V>() [with U=int, V=float]" at line 62
+
+"Test_name.c", line 80: error: static assertion failed
+    static_assert(X<typename T::T>());
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 82: error: static assertion failed
+    static_assert(X<typename T::T>{});
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 84: error: static assertion failed
+    static_assert(X<typename T::T>{1, 2});
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 86: error: static assertion failed
+    static_assert(X<typename T::T>({1, 2}));
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 88: error: static assertion failed
+    static_assert(typename T::T{0});
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 90: error: static assertion failed
+    static_assert(typename T::T(0));
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 92: error: static assertion failed
+    static_assert(sizeof(X<typename T::T>) == 0);
+    ^
+"Test_name.c", line 92: note: the final comparison was 8 == 0
+    static_assert(sizeof(X<typename T::T>) == 0);
+                                           ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 95: error: static assertion failed
+    static_assert((const X<typename T::T> *)nullptr);
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 97: error: static assertion failed
+    static_assert(static_cast<const X<typename T::T> *>(nullptr));
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 101: error: static assertion failed
+    static_assert(sizeof(X<decltype(X<typename T::T>().X<typename T::T>::~X())>) == 0);
+    ^
+"Test_name.c", line 101: note: the final comparison was 8 == 0
+    static_assert(sizeof(X<decltype(X<typename T::T>().X<typename T::T>::~X())>) == 0);
+                                                                                 ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+"Test_name.c", line 104: error: static assertion failed
+    static_assert(constexpr_return_false<typename T::T, typename T::U>());
+    ^
+          detected during instantiation of "void foo6<T>() [with T=ExampleTypes]" at line 107
+
+17 errors detected in the compilation of "Test_name.c".

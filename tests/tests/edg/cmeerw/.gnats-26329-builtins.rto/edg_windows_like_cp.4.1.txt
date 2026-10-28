@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=4 --c++11 -w --gn 90100 Test_name.c
+"Test_name.c", line 50: error: builtin function is not available because vector types are not supported
+    void __builtin_ia32_vfmsubpd();
+         ^
+
+"Test_name.c", line 51: error: builtin function is not available because vector types are not supported
+    void __builtin_ia32_blendpd();
+         ^
+
+"Test_name.c", line 75: error: identifier "__builtin_ia32_vfmsubpd" is undefined
+  static_assert(fn_has_params(__builtin_ia32_vfmsubpd) == has_ia32_vfmsubpd,
+                              ^
+
+"Test_name.c", line 75: error: no instance of overloaded function "fn_has_params" matches the argument list
+            argument types are: (<error-type>)
+  static_assert(fn_has_params(__builtin_ia32_vfmsubpd) == has_ia32_vfmsubpd,
+                ^
+"Test_name.c", line 60: note: candidate function template "fn_has_params(T *)" failed deduction
+  constexpr bool fn_has_params(T *)
+                 ^
+"Test_name.c", line 56: note: candidate function template "fn_has_params(T (*)(First, Rest...))" failed deduction
+  constexpr bool fn_has_params(T (*)(First, Rest ...))
+                 ^
+
+"Test_name.c", line 88: error: identifier "__builtin_ia32_blendpd" is undefined
+  static_assert(fn_has_params(__builtin_ia32_blendpd) == has_ia32_blendpd,
+                              ^
+
+"Test_name.c", line 88: error: no instance of overloaded function "fn_has_params" matches the argument list
+            argument types are: (<error-type>)
+  static_assert(fn_has_params(__builtin_ia32_blendpd) == has_ia32_blendpd,
+                ^
+"Test_name.c", line 60: note: candidate function template "fn_has_params(T *)" failed deduction
+  constexpr bool fn_has_params(T *)
+                 ^
+"Test_name.c", line 56: note: candidate function template "fn_has_params(T (*)(First, Rest...))" failed deduction
+  constexpr bool fn_has_params(T (*)(First, Rest ...))
+                 ^
+
+6 errors detected in the compilation of "Test_name.c".

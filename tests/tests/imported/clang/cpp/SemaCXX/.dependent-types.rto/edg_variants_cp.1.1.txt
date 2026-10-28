@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 10: error: reference variable "x3" requires an initializer
+    T& x3; // expected-error{{declaration of reference variable 'x3' requires an initializer}}
+         ^
+
+"Test_name.c", line 11: error: incomplete type "T []" is not allowed
+    T x4[]; // expected-error{{needs an explicit size or an initializer}}
+      ^
+
+"Test_name.c", line 14: error: reference variable "x7" requires an initializer
+    U<T> x7; // expected-error{{declaration of reference variable 'x7' requires an initializer}}
+           ^
+
+"Test_name.c", line 9: warning: variable "x2" was declared but never referenced
+    T* x2;
+       ^
+
+"Test_name.c", line 10: warning: variable "x3" was declared but never referenced
+    T& x3; // expected-error{{declaration of reference variable 'x3' requires an initializer}}
+       ^
+
+"Test_name.c", line 13: warning: variable "x6" was declared but never referenced
+    int x6[Size];
+        ^
+
+"Test_name.c", line 14: warning: variable "x7" was declared but never referenced
+    U<T> x7; // expected-error{{declaration of reference variable 'x7' requires an initializer}}
+         ^
+
+3 errors detected in the compilation of "Test_name.c".

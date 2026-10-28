@@ -1,0 +1,35 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --target linux_aarch64 Test_name.c
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 10: error: identifier "__ARM_FEATURE_SVE_BITS" is undefined
+  typedef int8_t gnu_int8_t __attribute__((vector_size(__ARM_FEATURE_SVE_BITS / 8)));
+                                                       ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 16: error: sizeless type "fixed_int8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+  template<typename T> struct S { T var; };
+                                    ^
+          detected during instantiation of class "S<T> [with T=fixed_int8_t]" at line 18
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 25: error: return value type does not match the function type
+  svint8_t to_svint8_t__from_gnu_int8_t(gnu_int8_t x) { return x; }
+                                                               ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 26: error: return value type does not match the function type
+  gnu_int8_t from_svint8_t__to_gnu_int8_t(svint8_t x) { return x; }
+                                                               ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 29: error: return value type does not match the function type
+  fixed_int8_t to_fixed_int8_t__from_gnu_int8_t(gnu_int8_t x) { return x; }
+                                                                       ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 30: error: return value type does not match the function type
+  gnu_int8_t from_fixed_int8_t__to_gnu_int8_t(fixed_int8_t x) { return x; }
+                                                                       ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 37: error: return value type does not match the function type
+  svbool_t to_svbool_t__from_gnu_bool_t(gnu_bool_t x) { return x; }
+                                                               ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 38: error: return value type does not match the function type
+  gnu_bool_t from_svbool_t__to_gnu_bool_t(svbool_t x) { return x; }
+                                                               ^
+
+8 errors detected in the compilation of "Test_name.c".

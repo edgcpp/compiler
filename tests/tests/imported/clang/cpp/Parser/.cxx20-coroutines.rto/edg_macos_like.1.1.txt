@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 26: error: expected an operator
+  struct X { Y operator co_await(); };
+                        ^
+
+"Test_name.c", line 28: error: expected an operator
+  Y operator co_await(Z);
+             ^
+
+"Test_name.c", line 31: error: expected an operator
+    x.operator co_await();
+               ^
+
+"Test_name.c", line 32: error: expected an operator
+    operator co_await(z);
+             ^
+
+"Test_name.c", line 35: error: expected an operator
+  void operator co_await(); // expected-error {{must have at least one parameter}}
+                ^
+
+"Test_name.c", line 36: error: expected an operator
+  void operator co_await(X, Y, Z); // expected-error {{must be a unary operator}}
+                ^
+
+"Test_name.c", line 37: error: expected an operator
+  void operator co_await(int); // expected-error {{parameter of class or enumeration type}}
+                ^
+
+7 errors detected in the compilation of "Test_name.c".

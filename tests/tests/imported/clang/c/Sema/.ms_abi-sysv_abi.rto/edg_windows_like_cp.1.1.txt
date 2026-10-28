@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 15: warning: attribute is supported only in 32-bit x86 configurations
+  void bar(int i, int j) __attribute__((ms_abi, cdecl)); // expected-error{{cdecl and ms_abi attributes are not compatible}}
+                                                ^
+
+"Test_name.c", line 16: warning: attribute is supported only in 32-bit x86 configurations
+  void bar2(int i, int j) __attribute__((sysv_abi, cdecl)); // no-error
+                                                   ^
+

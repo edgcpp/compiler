@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((fastcall)) foo(float *a) { // expected-warning {{'fastcall' calling convention is not supported for this target}}
+                      ^
+
+"Test_name.c", line 8: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((stdcall)) bar(float *a) { // expected-warning {{'stdcall' calling convention is not supported for this target}}
+                      ^
+
+"Test_name.c", line 11: error: attribute "fastcall" does not take arguments
+  void __attribute__((fastcall(1))) baz(float *a) { // expected-error {{'fastcall' attribute takes no arguments}}
+                              ^
+
+"Test_name.c", line 14: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((fastcall)) test2(int a, ...) { // expected-warning {{'fastcall' calling convention is not supported for this target}}
+                      ^
+
+"Test_name.c", line 16: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((stdcall)) test3(int a, ...) { // expected-warning {{'stdcall' calling convention is not supported for this target}}
+                      ^
+
+"Test_name.c", line 21: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((cdecl)) ctest0() {}
+                      ^
+
+"Test_name.c", line 23: error: attribute "cdecl" does not take arguments
+  void __attribute__((cdecl(1))) ctest1(float x) {} // expected-error {{'cdecl' attribute takes no arguments}}
+                           ^
+
+"Test_name.c", line 25: warning: attribute is supported only in 32-bit x86 configurations
+  void (__attribute__((fastcall)) *pfoo)(float*) = foo; // expected-warning {{'fastcall' calling convention is not supported for this target}}
+                       ^
+
+"Test_name.c", line 27: warning: attribute is supported only in 32-bit x86 configurations
+  void (__attribute__((stdcall)) *pbar)(float*) = bar; // expected-warning {{'stdcall' calling convention is not supported for this target}}
+                       ^
+
+"Test_name.c", line 32: warning: attribute is supported only in 32-bit x86 configurations
+  void (__attribute__((cdecl)) *pctest2)() = ctest2;
+                       ^
+
+"Test_name.c", line 34: warning: attribute is supported only in 32-bit x86 configurations
+  typedef void (__attribute__((fastcall)) *Handler) (float *); // expected-warning {{'fastcall' calling convention is not supported for this target}}
+                               ^
+
+"Test_name.c", line 48: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((cdecl)) ctest3() {}
+                      ^
+
+"Test_name.c", line 50: warning: attribute is supported only in 32-bit x86 configurations
+  typedef __attribute__((stdcall)) void (*PROC)(); // expected-warning {{'stdcall' calling convention is not supported for this target}}
+                         ^
+
+"Test_name.c", line 51: warning: attribute is supported only in 32-bit x86 configurations
+  PROC __attribute__((cdecl)) ctest4(const char *x) {}
+                      ^
+
+"Test_name.c", line 51: warning: missing return statement at end of non-void function "ctest4"
+  PROC __attribute__((cdecl)) ctest4(const char *x) {}
+                                                     ^
+
+"Test_name.c", line 55: warning: attribute "stdcall" does not apply here
+  struct type_test {} __attribute__((stdcall)); // expected-warning {{'stdcall' calling convention is not supported for this target}} expected-warning {{'stdcall' attribute only applies to functions and methods}}
+                                     ^
+
+2 errors detected in the compilation of "Test_name.c".

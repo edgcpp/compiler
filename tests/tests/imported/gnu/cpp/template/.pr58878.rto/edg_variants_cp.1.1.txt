@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: error: template parameter "t" may not be redeclared in this scope
+              int t = 1;       // { dg-error "shadows" }
+                  ^
+
+"Test_name.c", line 11: warning: variable "t" was declared but never referenced
+              int t = 1;       // { dg-error "shadows" }
+                  ^
+
+"Test_name.c", line 21: error: template parameter "t" may not be redeclared in this scope
+      int t = 2;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 21: warning: variable "t" was declared but never referenced
+      int t = 2;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 30: error: template parameter "t" may not be redeclared in this scope
+          int t = 3;           // { dg-error "shadows" }
+              ^
+
+"Test_name.c", line 30: warning: variable "t" was declared but never referenced
+          int t = 3;           // { dg-error "shadows" }
+              ^
+
+"Test_name.c", line 39: error: template parameter "t" may not be redeclared in this scope
+      int t = 4;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 39: warning: variable "t" was declared but never referenced
+      int t = 4;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 49: warning: declaration of "t" hides template parameter
+          int t = 5;           // { dg-error "shadows" }
+              ^
+
+"Test_name.c", line 50: error: template parameter "s" may not be redeclared in this scope
+          int s = 6;           // { dg-error "shadows" }
+              ^
+
+"Test_name.c", line 49: warning: variable "t" was declared but never referenced
+          int t = 5;           // { dg-error "shadows" }
+              ^
+
+"Test_name.c", line 50: warning: variable "s" was declared but never referenced
+          int s = 6;           // { dg-error "shadows" }
+              ^
+
+"Test_name.c", line 61: warning: declaration of "t" hides template parameter
+      int t = 7;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 62: error: template parameter "s" may not be redeclared in this scope
+      int s = 8;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 61: warning: variable "t" was declared but never referenced
+      int t = 7;               // { dg-error "shadows" }
+          ^
+
+"Test_name.c", line 62: warning: variable "s" was declared but never referenced
+      int s = 8;               // { dg-error "shadows" }
+          ^
+
+6 errors detected in the compilation of "Test_name.c".

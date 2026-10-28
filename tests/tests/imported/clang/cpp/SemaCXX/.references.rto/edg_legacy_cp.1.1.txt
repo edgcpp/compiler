@@ -1,0 +1,179 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 12: warning: variable "p" was declared but never referenced
+    int *p = &r;
+         ^
+
+"Test_name.c", line 13: warning: variable "rr" was declared but never referenced
+    int &rr = r;
+         ^
+
+"Test_name.c", line 27: warning: variable "b" was declared but never referenced
+      t& b = a;
+         ^
+
+"Test_name.c", line 31: warning: variable "rc" was declared but never referenced
+      int (&rc)[3] = c;
+            ^
+
+"Test_name.c", line 40: warning: variable "rd" was declared but never referenced
+    double& rd = d; // rd refers to d
+            ^
+
+"Test_name.c", line 41: warning: variable "rcd" was declared but never referenced
+    const double& rcd = d; // rcd refers to d
+                  ^
+
+"Test_name.c", line 43: warning: variable "ra" was declared but never referenced
+    A& ra = b; // ra refers to A subobject in b
+       ^
+
+"Test_name.c", line 44: warning: variable "rca" was declared but never referenced
+    const A& rca = b; // rca refers to A subobject in b
+             ^
+
+"Test_name.c", line 51: error: initial value of reference to non-const must be an lvalue
+    double& rd2 = 2.0; // expected-error{{non-const lvalue reference to type 'double' cannot bind to a temporary of type 'double'}}
+                  ^
+
+"Test_name.c", line 53: error: a reference of type "double &" (not const-qualified) cannot be initialized with a value of type "int"
+    double& rd3 = i; // expected-error{{non-const lvalue reference to type 'double' cannot bind to a value of unrelated type 'int'}}
+                  ^
+
+"Test_name.c", line 61: error: qualifiers dropped in binding reference of type "const int &" to initializer of type "const volatile int"
+    const int& r = cvi; // expected-error{{binding reference of type 'const int' to value of type 'const volatile int' drops 'volatile' qualifier}}
+                   ^
+
+"Test_name.c", line 64: error: qualifiers dropped in binding reference of type "const int &" to initializer of type "const volatile int"
+    const int& r2{cvi}; // expected-error{{binding reference of type 'const int' to value of type 'const volatile int' drops 'volatile' qualifier}}
+                  ^
+
+"Test_name.c", line 67: error: qualifiers dropped in binding reference of type "int &" to initializer of type "const int"
+    int& r3{a}; // expected-error{{binding reference of type 'int' to value of type 'const int' drops 'const' qualifier}}
+            ^
+
+"Test_name.c", line 69: error: an rvalue reference cannot be bound to an lvalue
+    const int&& r4{a}; // expected-error{{rvalue reference to type 'const int' cannot bind to lvalue of type 'const int'}}
+                   ^
+
+"Test_name.c", line 73: error: a reference of type "int &" (not const-qualified) cannot be initialized with a value of type "<unknown-type>"
+    int &ptr1 = {func}; // expected-error{{address of overloaded function 'func' does not match required type 'int'}}
+                 ^
+
+"Test_name.c", line 74: error: no instance of overloaded function "func" matches the required type
+    int &&ptr2{func}; // expected-error{{address of overloaded function 'func' does not match required type 'int'}}
+               ^
+
+"Test_name.c", line 84: error: reference variable "yo" requires an initializer
+    int& yo; // expected-error{{declaration of reference variable 'yo' requires an initializer}}
+           ^
+
+"Test_name.c", line 84: warning: variable "yo" was declared but never referenced
+    int& yo; // expected-error{{declaration of reference variable 'yo' requires an initializer}}
+         ^
+
+"Test_name.c", line 88: error: reference variable "not_initialized_error" requires an initializer
+  int& not_initialized_error; // expected-error{{declaration of reference variable 'not_initialized_error' requires an initializer}}
+                            ^
+
+"Test_name.c", line 91: warning: class "Test6" defines no constructor to initialize the following:
+            reference member "Test6::okay"
+  class Test6 { // expected-warning{{class 'Test6' does not declare any constructor to initialize its non-modifiable members}}
+        ^
+
+"Test_name.c", line 98: error: base class "A" is ambiguous
+    A& a1 = c; // expected-error {{ambiguous conversion from derived class 'C' to base class 'A':}}
+            ^
+
+"Test_name.c", line 102: warning: type qualifier on a reference type is not allowed
+  void test8(int& const,// expected-error{{'const' qualifier may not be applied to a reference}}
+                  ^
+
+"Test_name.c", line 104: error: reference to void is not allowed
+             void&,     // expected-error{{cannot form a reference to 'void'}}
+                 ^
+
+"Test_name.c", line 105: error: reference to reference is not allowed
+             int& &)    // expected-error{{type name declared as a reference to a reference}}
+                  ^
+
+"Test_name.c", line 110: warning: type qualifiers are meaningless here
+    typedef intref const intref_c; // expected-warning {{'const' qualifier on reference type 'intref' (aka 'int &') has no effect}}
+                   ^
+
+"Test_name.c", line 113: warning: type qualifiers are meaningless here
+    typedef intref volatile intref; // expected-warning {{'volatile' qualifier on reference type 'intref' (aka 'int &') has no effect}}
+                   ^
+
+"Test_name.c", line 114: warning: type qualifiers are meaningless here
+    typedef intref _Atomic intref; // expected-warning {{'_Atomic' qualifier on reference type 'intref' (aka 'int &') has no effect}}
+                   ^
+
+"Test_name.c", line 128: warning: missing return statement at end of non-void function "const_param(T)"
+  template<typename T> int const_param(const T) {}
+                                                 ^
+
+"Test_name.c", line 143: error: initial value of reference to non-const must be an lvalue
+    string &s = getInput(); // expected-error{{lvalue reference}}
+                ^
+
+"Test_name.c", line 155: error: expression must have class type but it has type "ext_vec4" (aka "__attribute((ext_vector_type(4))) int")
+    int &c = ev.x; // expected-error{{non-const reference cannot bind to vector element}}
+             ^
+
+"Test_name.c", line 156: error: expression must have class type but it has type "ext_vec4" (aka "__attribute((ext_vector_type(4))) int")
+    const int &d = ev.x;
+                   ^
+
+"Test_name.c", line 151: warning: variable "a" was declared but never referenced
+    int &a = v[0]; // expected-error{{non-const reference cannot bind to vector element}}
+         ^
+
+"Test_name.c", line 152: warning: variable "b" was declared but never referenced
+    const int &b = v[0];
+               ^
+
+"Test_name.c", line 185: error: no suitable constructor exists to convert from "int" to "ExplicitRefInit::A"
+    const A &a(0); // expected-error {{reference to type 'const A' could not bind to an rvalue of type 'int'}}
+               ^
+
+"Test_name.c", line 191: error: invalid redeclaration of type name "X" (declared at line 190)
+      using X = const volatile T&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_lref<T>() [with T=int &]" at line 197
+
+"Test_name.c", line 191: error: invalid redeclaration of type name "X" (declared at line 190)
+      using X = const volatile T&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_lref<T>() [with T=int &&]" at line 198
+
+"Test_name.c", line 191: error: invalid redeclaration of type name "X" (declared at line 190)
+      using X = const volatile T&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_lref<T>() [with T=const int &]" at line 199
+
+"Test_name.c", line 191: error: invalid redeclaration of type name "X" (declared at line 190)
+      using X = const volatile T&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_lref<T>() [with T=const int &&]" at line 200
+
+"Test_name.c", line 204: error: invalid redeclaration of type name "X" (declared at line 203)
+      using X = const volatile T&&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_rref<T>() [with T=int &]" at line 210
+
+"Test_name.c", line 204: error: invalid redeclaration of type name "X" (declared at line 203)
+      using X = const volatile T&&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_rref<T>() [with T=int &&]" at line 211
+
+"Test_name.c", line 204: error: invalid redeclaration of type name "X" (declared at line 203)
+      using X = const volatile T&&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_rref<T>() [with T=const int &]" at line 212
+
+"Test_name.c", line 204: error: invalid redeclaration of type name "X" (declared at line 203)
+      using X = const volatile T&&;
+            ^
+          detected during instantiation of "void RefCollapseTypePrinting::add_rref<T>() [with T=const int &&]" at line 213
+
+25 errors detected in the compilation of "Test_name.c".

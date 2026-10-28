@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 42: error: the size of an array must be greater than zero
+  CHECK (sizeof (struct test_s4) == 16);
+  ^
+
+"Test_name.c", line 45: error: the size of an array must be greater than zero
+  CHECK (offsetof (struct test_s4, d) == 12);
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

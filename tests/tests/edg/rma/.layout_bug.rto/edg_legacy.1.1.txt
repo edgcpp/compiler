@@ -1,0 +1,38 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 6: remark: function "C::C()" cannot be inlined
+  class C : public virtual B { int c; };
+        ^
+          detected during:
+            implicit generation of "C::C()" at line 11
+            implicit generation of "D::D()" at line 11
+            implicit generation of "F::F()" at line 11
+            implicit generation of "G::G()" at line 11
+
+"Test_name.c", line 7: remark: function "D::D()" cannot be inlined
+  class D : public C { int d; };
+        ^
+          detected during:
+            implicit generation of "D::D()" at line 11
+            implicit generation of "F::F()" at line 11
+            implicit generation of "G::G()" at line 11
+
+"Test_name.c", line 8: remark: function "E::E()" cannot be inlined
+  class E : public C { int e; };
+        ^
+          detected during:
+            implicit generation of "E::E()" at line 11
+            implicit generation of "F::F()" at line 11
+            implicit generation of "G::G()" at line 11
+
+"Test_name.c", line 9: remark: function "F::F()" cannot be inlined
+  class F : public D, public E { int f; };
+        ^
+          detected during:
+            implicit generation of "F::F()" at line 11
+            implicit generation of "G::G()" at line 11
+
+"Test_name.c", line 10: remark: function "G::G()" cannot be inlined
+  class G : public virtual F { int g; };
+        ^
+          detected during implicit generation of "G::G()" at line 11
+

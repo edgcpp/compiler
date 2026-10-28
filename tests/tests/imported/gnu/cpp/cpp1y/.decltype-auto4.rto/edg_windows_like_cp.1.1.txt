@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 28: warning: variable "r1" was set but never used
+    decltype(auto) r1 = s->i;
+                   ^
+
+"Test_name.c", line 30: warning: variable "r2" was set but never used
+    decltype(auto) r2 = s->r;
+                   ^
+
+"Test_name.c", line 32: warning: variable "r3" was set but never used
+    decltype(auto) r3 = i;
+                   ^
+
+"Test_name.c", line 34: warning: variable "r4" was set but never used
+    decltype(auto) r4 = ir;
+                   ^
+
+"Test_name.c", line 57: warning: variable "r8" was set but never used
+    decltype(auto) r8 = (s->i);
+                   ^
+
+"Test_name.c", line 59: warning: variable "r9" was set but never used
+    decltype(auto) r9 = (s->r);
+                   ^
+
+"Test_name.c", line 61: warning: variable "r10" was set but never used
+    decltype(auto) r10 = (i);
+                   ^
+
+"Test_name.c", line 63: warning: variable "r11" was set but never used
+    decltype(auto) r11 = (ir);
+                   ^
+
+"Test_name.c", line 65: warning: variable "r12" was set but never used
+    decltype(auto) r12 = (irr);
+                   ^
+
+"Test_name.c", line 65: error: an rvalue reference cannot be bound to an lvalue
+  decltype(auto) r12 = irr; 
+                       ^
+
+"Test_name.c", line 66: error: static assertion failed with ""
+  static_assert(is_same< __decltype(r12), int &> ::value, "");
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

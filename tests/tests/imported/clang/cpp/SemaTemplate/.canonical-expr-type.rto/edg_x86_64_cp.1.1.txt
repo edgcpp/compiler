@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 12: error: too many arguments in function call
+  void f0(T x, __typeof__((f)(x)) y) { }
+                              ^
+
+"Test_name.c", line 12: error: a parameter may not have void type
+  void f0(T x, __typeof__((f)(x)) y) { }
+               ^
+
+"Test_name.c", line 15: error: function template "f0(T, __typeof__((<expression>)))" has already been defined (previous definition at line 8)
+  void f0(U u, __typeof__(f(u))) { } // expected-error{{redefinition}}
+       ^
+
+"Test_name.c", line 27: error: function template "f0a" has already been defined (previous definition at line 21)
+  void f0a(T x, __typeof__(f(N)) y) { } // expected-error{{redefinition}}
+       ^
+
+"Test_name.c", line 39: error: function template "f1<T,N,M>(T (&)[<expression>])" has already been defined (previous definition at line 32)
+  void f1(T (&array)[M + N]) { } // expected-error{{redefinition}}
+       ^
+
+"Test_name.c", line 49: error: invalid redeclaration of member function "X2<T, N, M>::f0(X2<T, N, M>::type1)" (declared at line 48)
+    void f0(type2);
+         ^
+
+"Test_name.c", line 50: error: invalid redeclaration of member function "X2<T, N, M>::f0(X2<T, N, M>::type1)" (declared at line 48)
+    void f0(type3); // expected-error{{redeclared}}
+         ^
+
+7 errors detected in the compilation of "Test_name.c".

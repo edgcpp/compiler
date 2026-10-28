@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 8: warning: explicit type is missing ("int" assumed)
+  static __thread double u[9], v[9];
+         ^
+
+"Test_name.c", line 8: error: expected a ";"
+  static __thread double u[9], v[9];
+                  ^
+
+"Test_name.c", line 13: error: identifier "u" is undefined
+    *p = u;
+         ^
+
+"Test_name.c", line 14: error: identifier "v" is undefined
+    *q = v;
+         ^
+
+"Test_name.c", line 24: error: identifier "v" is undefined
+        double a = x + v[i];
+                       ^
+
+"Test_name.c", line 25: error: identifier "u" is undefined
+        s += u[i] * a * a;
+             ^
+
+"Test_name.c", line 8: warning: variable "__thread" was declared but never referenced
+  static __thread double u[9], v[9];
+         ^
+
+5 errors detected in the compilation of "Test_name.c".

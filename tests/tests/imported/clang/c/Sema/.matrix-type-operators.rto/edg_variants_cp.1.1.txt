@@ -1,0 +1,278 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 21: error: expression must have arithmetic type
+    a = b + &c;
+            ^
+
+"Test_name.c", line 25: error: expression must have arithmetic type
+    b += &c;
+         ^
+
+"Test_name.c", line 9: warning: parameter "a" was set but never used
+  void add(sx10x10_t a, sx5x10_t b, sx10x5_t c) {
+                     ^
+
+"Test_name.c", line 42: error: expression must have arithmetic type
+    a = b - &c;
+            ^
+
+"Test_name.c", line 46: error: expression must have arithmetic type
+    b -= &c;
+         ^
+
+"Test_name.c", line 30: warning: parameter "a" was set but never used
+  void sub(sx10x10_t a, sx5x10_t b, sx10x5_t c) {
+                     ^
+
+"Test_name.c", line 71: error: a value of type "float" cannot be assigned to an entity of type "char *"
+    p = a * a;
+      ^
+
+"Test_name.c", line 54: warning: parameter "d" was set but never used
+  void matrix_matrix_multiply(sx10x10_t a, sx5x10_t b, ix10x5_t c, ix10x10_t d, float sf, char *p) {
+                                                                             ^
+
+"Test_name.c", line 54: warning: parameter "p" was set but never used
+  void matrix_matrix_multiply(sx10x10_t a, sx5x10_t b, ix10x5_t c, ix10x10_t d, float sf, char *p) {
+                                                                                                ^
+
+"Test_name.c", line 82: error: expression must have arithmetic type
+    a = a * p;
+            ^
+
+"Test_name.c", line 85: error: expression must have arithmetic type
+    a *= p;
+         ^
+
+"Test_name.c", line 88: error: expression must have arithmetic type
+    a = p * a;
+        ^
+
+"Test_name.c", line 91: error: expression must have arithmetic type
+    p *= a;
+    ^
+
+"Test_name.c", line 75: warning: parameter "b" was set but never used
+  void mat_scalar_multiply(sx10x10_t a, sx5x10_t b, float sf, char *p) {
+                                                 ^
+
+"Test_name.c", line 106: error: expression must have arithmetic type
+    a = a / p;
+            ^
+
+"Test_name.c", line 108: error: expression must have arithmetic type
+    a = p / a;
+        ^
+
+"Test_name.c", line 99: warning: parameter "b" was set but never used
+  void mat_scalar_divide(sx10x10_t a, sx5x10_t b, float sf, char *p) {
+                                               ^
+
+"Test_name.c", line 129: error: a value of type "float" cannot be assigned to an entity of type "char *"
+    p = a / a;
+      ^
+
+"Test_name.c", line 115: warning: parameter "d" was set but never used
+  void matrix_matrix_divide(sx10x10_t a, sx5x10_t b, ix10x5_t c, ix10x10_t d, float sf, char *p) {
+                                                                           ^
+
+"Test_name.c", line 115: warning: parameter "p" was set but never used
+  void matrix_matrix_divide(sx10x10_t a, sx5x10_t b, ix10x5_t c, ix10x10_t d, float sf, char *p) {
+                                                                                              ^
+
+"Test_name.c", line 137: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][f] = 0;
+    ^
+
+"Test_name.c", line 137: error: expression must have integral type
+    a[3][f] = 0;
+         ^
+
+"Test_name.c", line 139: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[f][9] = 0;
+    ^
+
+"Test_name.c", line 139: error: expression must have integral type
+    a[f][9] = 0;
+      ^
+
+"Test_name.c", line 141: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[f][f] = 0;
+    ^
+
+"Test_name.c", line 141: error: expression must have integral type
+    a[f][f] = 0;
+      ^
+
+"Test_name.c", line 141: error: expression must have integral type
+    a[f][f] = 0;
+         ^
+
+"Test_name.c", line 144: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[0][f] = 0;
+    ^
+
+"Test_name.c", line 144: error: expression must have integral type
+    a[0][f] = 0;
+         ^
+
+"Test_name.c", line 147: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[f][f] = 0;
+    ^
+
+"Test_name.c", line 147: error: expression must have integral type
+    a[f][f] = 0;
+      ^
+
+"Test_name.c", line 147: error: expression must have integral type
+    a[f][f] = 0;
+         ^
+
+"Test_name.c", line 152: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][4] = &f;
+    ^
+
+"Test_name.c", line 156: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[-1][3] = 10.0;
+    ^
+
+"Test_name.c", line 158: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][-1] = 10.0;
+    ^
+
+"Test_name.c", line 160: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][-1u] = 10.0;
+    ^
+
+"Test_name.c", line 162: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[-1u][3] = 10.0;
+    ^
+
+"Test_name.c", line 164: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[5][2] = 10.0;
+    ^
+
+"Test_name.c", line 166: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[4][10] = 10.0;
+    ^
+
+"Test_name.c", line 168: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[5][0] = f;
+    ^
+
+"Test_name.c", line 170: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    (a[1])[1] = f;
+     ^
+
+"Test_name.c", line 173: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3] = 5.0;
+    ^
+
+"Test_name.c", line 176: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    (a[3]) = 5.0;
+     ^
+
+"Test_name.c", line 179: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    get_matrix()[0][0] = f;
+    ^
+
+"Test_name.c", line 181: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    get_matrix()[5][1] = f;
+    ^
+
+"Test_name.c", line 183: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    get_matrix()[3] = 5.0;
+    ^
+
+"Test_name.c", line 186: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    (get_matrix()[5])[10.0] = f;
+     ^
+
+"Test_name.c", line 186: error: expression must have integral type
+    (get_matrix()[5])[10.0] = f;
+                      ^
+
+"Test_name.c", line 188: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    (get_matrix()[3]) = 5.0;
+     ^
+
+"Test_name.c", line 191: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    a([0])[0] = f;
+    ^
+
+"Test_name.c", line 191: error: expected an expression
+    a([0])[0] = f;
+      ^
+
+"Test_name.c", line 193: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[0]([0]) = f;
+    ^
+
+"Test_name.c", line 193: error: expected an expression
+    a[0]([0]) = f;
+         ^
+
+"Test_name.c", line 199: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v1 = a[3][f];
+               ^
+
+"Test_name.c", line 199: error: expression must have integral type
+    float v1 = a[3][f];
+                    ^
+
+"Test_name.c", line 201: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v2 = a[f][9];
+               ^
+
+"Test_name.c", line 201: error: expression must have integral type
+    float v2 = a[f][9];
+                 ^
+
+"Test_name.c", line 203: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v3 = a[f][f];
+               ^
+
+"Test_name.c", line 203: error: expression must have integral type
+    float v3 = a[f][f];
+                 ^
+
+"Test_name.c", line 203: error: expression must have integral type
+    float v3 = a[f][f];
+                    ^
+
+"Test_name.c", line 208: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    char *v4 = a[3][4];
+               ^
+
+"Test_name.c", line 212: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v5 = a[-1][3];
+               ^
+
+"Test_name.c", line 214: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v6 = a[3][-1];
+               ^
+
+"Test_name.c", line 216: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v8 = a[-1u][3];
+               ^
+
+"Test_name.c", line 218: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v9 = a[5][2];
+               ^
+
+"Test_name.c", line 220: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v10 = a[4][10];
+                ^
+
+"Test_name.c", line 222: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v11 = a[5][9];
+                ^
+
+"Test_name.c", line 225: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v12 = a[3];
+                ^
+
+"Test_name.c", line 230: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    return &(*a)[0][1];
+            ^
+
+61 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: warning: C++17-style "using" attribute prefix is nonstandard in this mode
+    static int a [[using gnu: unused, used]];	// { dg-warning "attribute using prefix only available" "" { target c++14_down } }
+                         ^
+
+"Test_name.c", line 10: warning: attribute namespace "foo" is unrecognized
+    int b [[ using foo : bar (2), baz ]];		// { dg-warning "'foo::bar' scoped attribute directive ignored" }
+                   ^
+
+"Test_name.c", line 13: warning: attribute namespace "foo" is unrecognized
+    int c [[ using foo : using ("foo")]];		// { dg-warning "'foo::using' scoped attribute directive ignored" }
+                   ^
+
+"Test_name.c", line 23: warning: attribute namespace "BAR" is unrecognized
+    int a [[ using BAR: foo::bar]];		// { dg-error "attribute using prefix used together with scoped attribute token" }
+                   ^
+
+"Test_name.c", line 23: error: an attribute namespace may not be used here (because a "using" prefix was specified)
+    int a [[ using BAR: foo::bar]];		// { dg-error "attribute using prefix used together with scoped attribute token" }
+                        ^
+
+"Test_name.c", line 26: warning: attribute namespace "BAZ" is unrecognized
+    int b [[ using BAZ: bar(2), bar::bar(3, 4) ]];// { dg-error "attribute using prefix used together with scoped attribute token" }
+                   ^
+
+"Test_name.c", line 26: error: an attribute namespace may not be used here (because a "using" prefix was specified)
+    int b [[ using BAZ: bar(2), bar::bar(3, 4) ]];// { dg-error "attribute using prefix used together with scoped attribute token" }
+                                ^
+
+"Test_name.c", line 26: error: expected a ","
+    int b [[ using BAZ: bar(2), bar::bar(3, 4) ]];// { dg-error "attribute using prefix used together with scoped attribute token" }
+                                        ^
+
+"Test_name.c", line 37: warning: attribute namespace "using" is unrecognized
+    int a [[ using using: using]];		// { dg-warning "attribute using prefix only available" "" { target c++14_down } }
+                   ^
+
+"Test_name.c", line 39: error: expected a ","
+    int b [[ using bitand: bitor, xor]];		// { dg-warning "attribute using prefix only available" "" { target c++14_down } }
+                   ^
+
+"Test_name.c", line 39: error: expected an identifier
+    int b [[ using bitand: bitor, xor]];		// { dg-warning "attribute using prefix only available" "" { target c++14_down } }
+                                  ^
+
+5 errors detected in the compilation of "Test_name.c".

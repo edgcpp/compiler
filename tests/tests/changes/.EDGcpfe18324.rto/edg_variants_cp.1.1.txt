@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --gnu_version 40500 -tused --c++11 Test_name.c
+"Test_name.c", line 15: warning: variable "xs" was declared but never referenced
+    S xs[T::N][2];  // Previously triggered an internal error.  Now fixed.
+      ^
+

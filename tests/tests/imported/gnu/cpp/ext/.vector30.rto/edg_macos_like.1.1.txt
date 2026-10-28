@@ -1,0 +1,42 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 9: error: too many initializer values
+    v4si b = {1,0,-1,2}, c;
+                ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != -1 || c[1] != 0 || c[2] != -1 || c[3] != -1)
+          ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != -1 || c[1] != 0 || c[2] != -1 || c[3] != -1)
+                        ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != -1 || c[1] != 0 || c[2] != -1 || c[3] != -1)
+                                     ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != -1 || c[1] != 0 || c[2] != -1 || c[3] != -1)
+                                                   ^
+
+"Test_name.c", line 14: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != 0 || c[1] != 0 || c[2] != 0 || c[3] != 0)
+          ^
+
+"Test_name.c", line 14: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != 0 || c[1] != 0 || c[2] != 0 || c[3] != 0)
+                       ^
+
+"Test_name.c", line 14: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != 0 || c[1] != 0 || c[2] != 0 || c[3] != 0)
+                                    ^
+
+"Test_name.c", line 14: error: expression must have pointer-to-object type but it has type "int"
+    if (c[0] != 0 || c[1] != 0 || c[2] != 0 || c[3] != 0)
+                                                 ^
+
+9 errors detected in the compilation of "Test_name.c".

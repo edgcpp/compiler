@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: error: expression must be a modifiable lvalue
+    ++n; // { dg-message "first error appeared here" "" { target *-*-* } }
+      ^
+
+"Test_name.c", line 17: error: class "A<int>" has no member "type"
+    void f(typename A::type);
+                       ^
+          detected during instantiation of class "A<T> [with T=int]" at line 29
+
+"Test_name.c", line 29: warning: variable "a" was declared but never referenced
+    A<int> a;
+           ^
+
+"Test_name.c", line 23: error: class "B<int>" has no member "g"
+      this->g();
+            ^
+          detected during instantiation of "void B<T>::f() [with T=int]" at line 31
+
+3 errors detected in the compilation of "Test_name.c".

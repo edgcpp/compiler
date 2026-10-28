@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: error: identifier "__INTPTR_TYPE__" is undefined
+  typedef __INTPTR_TYPE__ intptr_t;
+          ^
+
+"Test_name.c", line 8: error: identifier "__UINTPTR_TYPE__" is undefined
+  typedef __UINTPTR_TYPE__ uintptr_t;
+          ^
+
+"Test_name.c", line 45: error: static assertion failed with "bad size"
+    static_assert(sizeof(local_ptr_t) == 4, "bad size");
+    ^
+"Test_name.c", line 45: note: the final comparison was 8 == 4
+    static_assert(sizeof(local_ptr_t) == 4, "bad size");
+                                      ^
+
+"Test_name.c", line 46: error: static assertion failed with "bad alignment"
+    static_assert(alignof(local_ptr_t) == 4, "bad alignment");
+    ^
+"Test_name.c", line 46: note: the final comparison was 8 == 4
+    static_assert(alignof(local_ptr_t) == 4, "bad alignment");
+                                       ^
+
+"Test_name.c", line 47: error: static assertion failed with "bad size"
+    static_assert(sizeof(private_ptr_t) == 4, "bad size");
+    ^
+"Test_name.c", line 47: note: the final comparison was 8 == 4
+    static_assert(sizeof(private_ptr_t) == 4, "bad size");
+                                        ^
+
+"Test_name.c", line 48: error: static assertion failed with "bad alignment"
+    static_assert(alignof(private_ptr_t) == 4, "bad alignment");
+    ^
+"Test_name.c", line 48: note: the final comparison was 8 == 4
+    static_assert(alignof(private_ptr_t) == 4, "bad alignment");
+                                         ^
+
+6 errors detected in the compilation of "Test_name.c".

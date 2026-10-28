@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=box]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `unsigned long std::vector<T1, T2>::_S_check_init_len(unsigned long, const T2 &) [with T1=box, T2=std::allocator<box>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 13: warning: attribute namespace "whatever" is unrecognized
+      [[likely, whatever::unlikely ("abcd")]] return 0;		// { dg-bogus "ignoring attribute 'unlikely' after earlier 'likely'" }
+                ^
+
+"Test_name.c", line 15: warning: attribute namespace "whatever2" is unrecognized
+      [[unlikely, whatever2::hot]] flabel: return 1;		// { dg-warning "'whatever2::hot' scoped attribute directive ignored" }
+                  ^
+
+"Test_name.c", line 16: warning: statement is unreachable
+    switch (b)
+    ^
+
+"Test_name.c", line 18: warning: attribute namespace "whatever3" is unrecognized
+        [[likely, whatever3::cold (1, 2, 3)]] case true: break;	// { dg-warning "'whatever3::cold' scoped attribute directive ignored" }
+                  ^
+
+"Test_name.c", line 15: warning: label "flabel" was declared but never referenced
+      [[unlikely, whatever2::hot]] flabel: return 1;		// { dg-warning "'whatever2::hot' scoped attribute directive ignored" }
+                                   ^
+
+"Test_name.c", line 26: warning: attribute namespace "whatever4" is unrecognized
+      [[whatever4::unlikely (1), likely]] return 0;		// { dg-bogus "ignoring attribute 'likely' after earlier 'unlikely'" }
+        ^
+
+"Test_name.c", line 28: warning: attribute namespace "whatever5" is unrecognized
+      [[whatever5::hot, unlikely]] elabel:			// { dg-warning "'whatever5::hot' scoped attribute directive ignored" }
+        ^
+
+"Test_name.c", line 31: warning: attribute namespace "whatever6" is unrecognized
+      [[whatever6::cold, likely]] b = false;			// { dg-bogus "ignoring attribute 'likely' after earlier 'cold'" }
+        ^
+
+"Test_name.c", line 37: warning: attribute namespace "whatever7" is unrecognized
+        [[whatever7::unlikely (1), likely]] case true: break;	// { dg-warning "'whatever7::unlikely' scoped attribute directive ignored" }
+          ^
+
+"Test_name.c", line 38: warning: attribute namespace "whatever8" is unrecognized
+        [[whatever8::unlikely, unlikely]] case false: break;	// { dg-bogus "attribute 'unlikely' specified multiple times" }
+          ^
+
+"Test_name.c", line 28: warning: label "elabel" was declared but never referenced
+      [[whatever5::hot, unlikely]] elabel:			// { dg-warning "'whatever5::hot' scoped attribute directive ignored" }
+                                   ^
+

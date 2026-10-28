@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 8: error: expected an identifier
+    [&, i, &] {};   // expected-error {{expected variable name or 'this' in lambda capture list}}
+            ^
+
+"Test_name.c", line 9: error: expected an identifier
+    [&, i, = ] {};  // expected-error {{expected variable name or 'this' in lambda capture list}}
+           ^
+
+"Test_name.c", line 10: error: expected an identifier
+    [=, &i, &] {};  // expected-error {{expected variable name or 'this' in lambda capture list}}
+             ^
+
+"Test_name.c", line 11: error: expected an identifier
+    [=, &i, = ] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+            ^
+
+"Test_name.c", line 13: error: expected an identifier
+    [i, &] {};   // expected-error {{capture default must be first}}
+         ^
+
+"Test_name.c", line 14: error: expected an identifier
+    [i, = ] {};  // expected-error {{capture default must be first}}
+        ^
+
+"Test_name.c", line 15: error: expected an identifier
+    [i, = x] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+        ^
+
+"Test_name.c", line 17: error: explicit capture matches default
+    [&, &i] {};  // expected-error {{'&' cannot precede a capture when the capture default is '&'}}
+        ^
+
+"Test_name.c", line 21: error: initial value of reference to non-const must be an lvalue
+    [=, &x = &i] {}; // expected-error {{non-const lvalue reference to type 'int *' cannot bind to a temporary of type 'int *'}}
+             ^
+
+"Test_name.c", line 22: error: "this" may only be used inside a nonstatic member function
+    [&, this] {}; // expected-error {{'this' cannot be captured in this context}}
+        ^
+
+"Test_name.c", line 24: error: expected an identifier
+    [i, &, x = 2] {}; // expected-error {{capture default must be first}}
+         ^
+
+"Test_name.c", line 25: error: expected an identifier
+    [i, =, x = 2] {}; // expected-error {{capture default must be first}}
+        ^
+
+"Test_name.c", line 32: error: expected an identifier
+    [args..., &] {};         // expected-error {{capture default must be first}}
+               ^
+
+"Test_name.c", line 35: error: expected an expression
+    [&, ... xs = &] {};      // expected-error {{expected expression}}
+                  ^
+
+"Test_name.c", line 35: error: pack expansion does not make use of any argument packs
+    [&, ... xs = &] {};      // expected-error {{expected expression}}
+        ^
+
+"Test_name.c", line 36: error: expected an expression
+    [... xs = &] {};         // expected-error {{expected expression}}
+               ^
+
+"Test_name.c", line 36: error: pack expansion does not make use of any argument packs
+    [... xs = &] {};         // expected-error {{expected expression}}
+     ^
+
+"Test_name.c", line 37: error: expected an identifier
+    [... xs = &args, = ] {}; // expected-error {{capture default must be first}}
+                     ^
+
+"Test_name.c", line 38: error: expected an identifier
+    [... xs = &args, &] {};  // expected-error {{capture default must be first}}
+                      ^
+
+"Test_name.c", line 47: error: expected an identifier
+    S s{[a(42), &] {}}; // expected-error {{capture default must be first}}
+                 ^
+
+20 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gcc --gnu_version=29500 --diag_warning=expr_not_a_modifiable_lvalue Test_name.c
+"Test_name.c", line 15: warning: declaration is incompatible with "int a" (declared at line 14)
+  int const a = 13;
+            ^
+
+"Test_name.c", line 18: warning: declaration is incompatible with "int b" (declared at line 17)
+  int const b;
+            ^
+
+"Test_name.c", line 21: warning: declaration is incompatible with "const int c" (declared at line 20)
+  int c;
+      ^
+
+"Test_name.c", line 24: warning: expression must be a modifiable lvalue
+  	a = 2;
+  	^
+
+"Test_name.c", line 25: warning: expression must be a modifiable lvalue
+  	b = 2;
+  	^
+
+"Test_name.c", line 26: warning: expression must be a modifiable lvalue
+  	c = 2;
+  	^
+

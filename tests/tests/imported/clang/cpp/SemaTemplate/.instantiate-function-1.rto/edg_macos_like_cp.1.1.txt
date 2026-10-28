@@ -1,0 +1,117 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions Test_name.c
+"Test_name.c", line 23: warning: variable "yr" was declared but never referenced
+      T *xp = &x, &yr = y; // expected-error{{pointer to a reference}}
+                   ^
+
+"Test_name.c", line 90: warning: variable "v" was declared but never referenced
+      void *v = this;
+            ^
+
+"Test_name.c", line 133: warning: expression has no effect
+      t;
+      ^
+
+"Test_name.c", line 138: error: expression must have class type but it has type "T *"
+      tp.f; // expected-error{{member reference base type 'T *' is not a structure or union}}
+      ^
+
+"Test_name.c", line 141: error: a pointer to a bound function may only be used to call the function
+      this->f; // expected-error{{reference to non-static member function must be called}}
+            ^
+
+"Test_name.c", line 142: error: expression must have class type but it has type "Member0<T> *"
+      this.f; // expected-error{{member reference base type 'Member0<T> *' is not a structure or union}}
+      ^
+
+"Test_name.c", line 7: error: expression must have arithmetic, unscoped enum, or pointer type but has type "int X1::*"
+      (void)(x + y); // expected-error{{invalid operands}}
+             ^
+          detected during instantiation of "void X0<T, U>::f(T, U) [with T=int X1::*, U=int]" at line 15
+
+"Test_name.c", line 25: warning: missing return statement at end of non-void function "X2<T>::g [with T=int]"
+    }
+    ^
+          detected during instantiation of "T X2<T>::g(T, T) [with T=int]" at line 28
+
+"Test_name.c", line 23: error: pointer to reference is not allowed
+      T *xp = &x, &yr = y; // expected-error{{pointer to a reference}}
+        ^
+          detected during instantiation of "T X2<T>::g(T, T) [with T=int &]" at line 29
+
+"Test_name.c", line 25: warning: missing return statement at end of non-void function "X2<T>::g [with T=int &]"
+    }
+    ^
+          detected during instantiation of "T X2<T>::g(T, T) [with T=int &]" at line 29
+
+"Test_name.c", line 48: error: return value type does not match the function type
+      return 1; // expected-error{{void function 'g' should not return a value}}
+             ^
+          detected during instantiation of "T X4<T>::g() const [with T=void]" at line 52
+
+"Test_name.c", line 44: warning: non-void function "X4<T>::f [with T=int]" should return a value
+      return; // expected-error{{non-void function 'f' should return a value}}
+            ^
+          detected during instantiation of "T X4<T>::f() const [with T=int]" at line 53
+
+"Test_name.c", line 58: error: function "X5<T>::f [with T=Incomplete]" returns incomplete type "Incomplete"
+    T f() { } // expected-error{{incomplete result type}}
+      ^
+          detected during instantiation of "T X5<T>::f() [with T=Incomplete]" at line 62
+
+"Test_name.c", line 58: warning: missing return statement at end of non-void function "X5<T>::f [with T=Incomplete]"
+    T f() { } // expected-error{{incomplete result type}}
+            ^
+          detected during instantiation of "T X5<T>::f() [with T=Incomplete]" at line 62
+
+"Test_name.c", line 71: error: return value type does not match the function type
+          return v; // expected-error{{cannot initialize return object of type}}
+                 ^
+          detected during instantiation of "U X6<T, U, V>::f(T, U, V) [with T=bool, U=int, V=int *]" at line 86
+
+"Test_name.c", line 77: error: return value type does not match the function type
+      return v; // expected-error{{cannot initialize return object of type}}
+             ^
+          detected during instantiation of "U X6<T, U, V>::f(T, U, V) [with T=bool, U=int, V=int *]" at line 86
+
+"Test_name.c", line 110: error: expression must have bool type (or be convertible to bool)
+      } while (t); // expected-error{{not contextually}}
+               ^
+          detected during instantiation of "void Do0<T>::f(T) [with T=NotConvertibleToBool]" at line 116
+
+"Test_name.c", line 167: error: case label value has already appeared in this switch at line 166
+      case I2: return z; // expected-error{{duplicate}}
+           ^
+          detected during instantiation of "T Switch1<T, I1, I2>::f(T, T, T) [with T=int, I1=2, I2=2]" at line 174
+
+"Test_name.c", line 179: error: in "goto *expr", expr must have type "void *"
+      goto *x; // expected-error{{incompatible}}
+            ^
+          detected during instantiation of "void IndirectGoto0<T>::f(T) [with T=int]" at line 194
+
+"Test_name.c", line 183: error: a value of type "void *" cannot be assigned to an entity of type "int"
+      prior_label = &&prior; // expected-error{{assigning to 'int'}}
+                  ^
+          detected during instantiation of "void IndirectGoto0<T>::f(T) [with T=int]" at line 194
+
+"Test_name.c", line 186: error: a value of type "void *" cannot be assigned to an entity of type "int"
+      later_label = &&later; // expected-error{{assigning to 'int'}}
+                  ^
+          detected during instantiation of "void IndirectGoto0<T>::f(T) [with T=int]" at line 194
+
+"Test_name.c", line 199: error: pointer or reference to incomplete type "Incomplete" is not allowed
+      } catch (T t) { // expected-error{{incomplete type}} \
+               ^
+          detected during instantiation of "void TryCatch0<T>::f() [with T=Incomplete *]" at line 211
+
+"Test_name.c", line 199: error: abstract class type "Abstract" is not allowed as catch type:
+            function "Abstract::foo" is a pure virtual function
+      } catch (T t) { // expected-error{{incomplete type}} \
+               ^
+          detected during instantiation of "void TryCatch0<T>::f() [with T=Abstract]" at line 212
+
+"Test_name.c", line 227: warning: variable "x" is used before its value is set
+    template<typename T> void f() { T x = x; }
+                                          ^
+          detected during instantiation of "void PR7016::f<T>() [with T=int]" at line 228
+
+16 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 6: warning: variable "v" was declared but never referenced
+    int v[n]; // expected-warning {{variable length array}} expected-note {{parameter 'n'}}
+        ^
+
+"Test_name.c", line 9: error: a parameter is not allowed
+  void test2(int n, int v[n]) { // expected-warning {{variable length array}} expected-note {{parameter 'n'}} expected-note {{here}}
+                          ^
+
+"Test_name.c", line 12: error: a parameter is not allowed
+  void test3(int n, int v[n]); // expected-warning {{variable length array}} expected-note {{parameter 'n'}} expected-note {{here}}
+                          ^
+
+"Test_name.c", line 16: warning: variable "v" was declared but never referenced
+    int v[n]; // expected-warning {{variable length array}} expected-note {{parameter 'n'}}
+        ^
+
+"Test_name.c", line 20: error: a parameter is not allowed
+  void test5(int n, int v[n]) { // expected-warning {{variable length array}} expected-note {{parameter 'n'}} expected-note {{here}}
+                          ^
+
+"Test_name.c", line 24: error: a parameter is not allowed
+  void test6(int n, int v[n]); // expected-warning {{variable length array}} expected-note {{parameter 'n'}} expected-note {{here}}
+                          ^
+
+"Test_name.c", line 27: error: a parameter is not allowed
+  void test7(int n, T v[n]) { // expected-warning {{variable length array}} expected-note {{parameter 'n'}} expected-note {{here}}
+                        ^
+
+5 errors detected in the compilation of "Test_name.c".

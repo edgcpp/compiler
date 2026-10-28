@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 9: warning: non-void function "A<T>::f1" should return a value
+      auto *f1 () { return; } // { dg-error "return-statement" }
+                          ^
+
+"Test_name.c", line 10: warning: non-void function "A<T>::f2" should return a value
+      auto &f2 () { return; } // { dg-error "return-statement" }
+                          ^
+

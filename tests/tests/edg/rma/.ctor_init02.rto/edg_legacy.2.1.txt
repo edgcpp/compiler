@@ -1,0 +1,28 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 9: remark: function "A::A()" cannot be inlined
+  class A { public: int i, j, k; A() : i(1), j(0) {} };
+                                 ^
+
+"Test_name.c", line 15: remark: return type "int" omitted in declaration of function "main"
+  main () {
+  ^
+
+"Test_name.c", line 12: remark: function "X::X()" cannot be inlined
+  class X : virtual public A, public B { public: int i; };
+        ^
+          detected during:
+            implicit generation of "X::X()" at line 16
+            implicit generation of "D::D()" at line 16
+
+"Test_name.c", line 13: remark: function "Y::Y()" cannot be inlined
+  class Y : public C, virtual public A { public: int k; };
+        ^
+          detected during:
+            implicit generation of "Y::Y()" at line 16
+            implicit generation of "D::D()" at line 16
+
+"Test_name.c", line 14: remark: function "D::D()" cannot be inlined
+  class D : public X, public Y { void f(); };
+        ^
+          detected during implicit generation of "D::D()" at line 16
+

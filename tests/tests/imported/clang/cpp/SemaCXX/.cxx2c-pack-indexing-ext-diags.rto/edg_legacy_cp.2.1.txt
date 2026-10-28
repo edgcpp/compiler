@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 10: warning: pack indexing is a C++26 feature
+      using a = T...[0];
+                ^
+
+"Test_name.c", line 14: warning: pack indexing is a C++26 feature
+      using b = typename T...[0]::a;
+                         ^
+
+"Test_name.c", line 18: warning: pack indexing is a C++26 feature
+      t...[0].~T...[0]();
+      ^
+
+"Test_name.c", line 18: warning: pack indexing is a C++26 feature
+      t...[0].~T...[0]();
+               ^
+
+"Test_name.c", line 22: warning: pack indexing is a C++26 feature
+      T...[0] c;
+      ^
+
+"Test_name.c", line 26: warning: pack indexing is a C++26 feature
+  void g(T... [1]); // cxx11-warning {{'T...[1]' is no longer a pack expansion but a pack indexing type; add a name to specify a pack expansion}} \
+         ^
+
+"Test_name.c", line 41: warning: variable templates are a C++14 feature
+  void h(typename T... [1]::type); // cxx11-warning {{pack indexing is a C++2c extension}} \
+         ^
+
+"Test_name.c", line 41: error: "h" has already been declared in the current scope
+  void h(typename T... [1]::type); // cxx11-warning {{pack indexing is a C++2c extension}} \
+       ^
+
+"Test_name.c", line 41: error: incomplete type "void" is not allowed
+  void h(typename T... [1]::type); // cxx11-warning {{pack indexing is a C++2c extension}} \
+       ^
+
+"Test_name.c", line 41: warning: pack indexing is a C++26 feature
+  void h(typename T... [1]::type); // cxx11-warning {{pack indexing is a C++2c extension}} \
+                  ^
+
+"Test_name.c", line 41: error: type name is not allowed
+  void h(typename T... [1]::type); // cxx11-warning {{pack indexing is a C++2c extension}} \
+         ^
+
+"Test_name.c", line 45: warning: pack indexing is a C++26 feature
+  void x(T... [0]); // cxx11-warning {{'T...[0]' is no longer a pack expansion but a pack indexing type; add a name to specify a pack expansion}} \
+         ^
+
+"Test_name.c", line 50: error: no instance of function template "g" matches the argument list
+            argument types are: (std::nullptr_t, std::nullptr_t)
+    g<int, double>(nullptr, nullptr); // cxx26-error {{no matching function for call to 'g'}} \
+    ^
+"Test_name.c", line 26: note: number of parameters of function template "g" does not match the call
+  void g(T... [1]); // cxx11-warning {{'T...[1]' is no longer a pack expansion but a pack indexing type; add a name to specify a pack expansion}} \
+       ^
+
+"Test_name.c", line 52: error: variable "h<int, double>" (declared at line 41) cannot have type "void"
+    h<int, double>(nullptr, nullptr);
+    ^
+
+"Test_name.c", line 52: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    h<int, double>(nullptr, nullptr);
+    ^
+
+"Test_name.c", line 53: error: variable "h<S<int>, S<const char *>>" (declared at line 41) cannot have type "void"
+    h<S<int>, S<const char *>>("hello");
+    ^
+
+"Test_name.c", line 53: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    h<S<int>, S<const char *>>("hello");
+    ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu=90300 Test_name.c
+"Test_name.c", line 10: warning: unknown attribute "vector_size"
+  typedef int   VI __attribute__((vector_size(4)));
+                                  ^
+
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+  typedef float VF __attribute__((vector_size(4)));
+                                  ^
+
+"Test_name.c", line 13: error: identifier "__builtin_shuffle" is undefined
+    (void)__builtin_shuffle (*a1, *a2, m);  // Now compiles
+          ^
+
+1 error detected in the compilation of "Test_name.c".

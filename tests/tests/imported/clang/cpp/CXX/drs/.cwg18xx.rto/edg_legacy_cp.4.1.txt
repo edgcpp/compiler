@@ -1,0 +1,263 @@
+fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions --exceptions Test_name.c
+"Test_name.c", line 27: error: a nontype template argument of reference type must bind to a function or to a complete object
+  S<i> V; // #cwg1801-S-i
+    ^
+
+"Test_name.c", line 175: error: template parameter "T::C" may not have a template argument list
+    using B = typename T::C<int>;
+                          ^
+
+"Test_name.c", line 206: warning: variable "lam" was declared but never referenced
+      auto lam = [](int x = 42) { return x; };
+           ^
+
+"Test_name.c", line 224: error: expression must have a constant value
+    constexpr C c = {}; // OK, since cwg1815
+                    ^
+"Test_name.c", line 224: note: reference or pointer to temporary with limited lifetime
+    constexpr C c = {}; // OK, since cwg1815
+                    ^
+
+"Test_name.c", line 228: warning: variable "a" was set but never used
+      A a = {}; // OK, since cwg1815
+        ^
+
+"Test_name.c", line 231: error: expression must have a constant value
+    static_assert(f() == 0);
+                  ^
+"Test_name.c", line 229: note: attempt to access expired storage
+      return a.r;
+             ^
+
+"Test_name.c", line 240: error: qualified name is not allowed
+  typedef int cwg1820::A;
+              ^
+
+"Test_name.c", line 245: error: qualified name is not allowed
+  typedef int cwg1820::A;
+              ^
+
+"Test_name.c", line 251: error: qualified name is not allowed
+    typedef int cwg1820::A;
+                ^
+
+"Test_name.c", line 258: error: qualified name is not allowed
+    typedef int cwg1820::A;
+                ^
+
+"Test_name.c", line 264: error: qualified name is not allowed
+    typedef int cwg1820::A;
+                ^
+
+"Test_name.c", line 271: error: qualified name is not allowed
+    typedef int cwg1820::A;
+                ^
+
+"Test_name.c", line 278: error: qualified name is not allowed
+    typedef int cwg1820::A;
+                ^
+
+"Test_name.c", line 290: error: qualified name is not allowed
+    template <typename T> void B<T>::f(){};
+                               ^
+
+"Test_name.c", line 296: error: qualified name is not allowed
+    void C::f() {}
+         ^
+
+"Test_name.c", line 323: error: incomplete type "cwg1832::E" is not allowed
+    a = static_cast<int>(static_cast<E>(0))
+                                     ^
+
+"Test_name.c", line 329: error: identifier "E2" is undefined
+  enum E2: decltype(static_cast<E2>(0), 0) {};
+                                ^
+
+"Test_name.c", line 331: error: identifier "E3" is undefined
+  enum class E3: decltype(static_cast<E3>(0), 0) {};
+                                      ^
+
+"Test_name.c", line 353: error: "this" may only be used inside a nonstatic member function
+          static_assert(Fish<decltype(this->g())>::value, "");
+                                      ^
+
+"Test_name.c", line 355: error: "this" may only be used inside a nonstatic member function
+          enum { X = Fish<decltype(this->f())>::value };
+                                   ^
+
+"Test_name.c", line 357: error: "this" may only be used inside a nonstatic member function
+          struct Inner2 : Fish<decltype(this->g())> { };
+                                        ^
+
+"Test_name.c", line 359: error: "this" may only be used inside a nonstatic member function
+          friend void f(decltype(this->g()) *);
+                                 ^
+
+"Test_name.c", line 359: error: nonstandard local-class friend declaration -- no prior declaration in the enclosing scope
+          friend void f(decltype(this->g()) *);
+                      ^
+
+"Test_name.c", line 373: error: class "Local" has no member "f"
+          static_assert(sizeof(this->f()) == sizeof(int), "");
+                                     ^
+
+"Test_name.c", line 437: error: declaration is incompatible with nontype "<unnamed> cwg1862::A<T>::h [with T=T *]" (declared at line 437)
+    friend int *A<T*>::h();
+                       ^
+
+"Test_name.c", line 450: error: member "cwg1862::C::private_int" (declared at line 421) is inaccessible
+  void A<int>::B::e() { (void)c.private_int; }
+                                ^
+
+"Test_name.c", line 454: error: member "cwg1862::C::private_int" (declared at line 421) is inaccessible
+  int A<int>::f() { (void)c.private_int; return 0; }
+                            ^
+
+"Test_name.c", line 459: error: member "cwg1862::C::private_int" (declared at line 421) is inaccessible
+  void A<int>::D::g() { (void)c.private_int; }
+                                ^
+
+"Test_name.c", line 463: error: member "cwg1862::C::private_int" (declared at line 421) is inaccessible
+  int* A<float*>::h() { (void)c.private_int; return 0; }
+                                ^
+
+"Test_name.c", line 469: warning: missing return statement at end of non-void function "cwg1862::A<int>::i<U>()"
+  int A<int>::i() { (void)c.private_int; }
+                                         ^
+
+"Test_name.c", line 475: error: a function cannot be both constexpr and virtual in this mode
+      constexpr int f() const { return 0; }
+                    ^
+          detected during instantiation of class "cwg1872::A<T> [with T=cwg1872::Y]" at line 482
+
+"Test_name.c", line 482: error: expression must have a constant value
+    constexpr int y = A<Y>().f();
+                      ^
+"Test_name.c", line 482: note: cannot call non-constexpr function "cwg1872::A<T>::f [with T=cwg1872::Y]" (declared at line 475)
+    constexpr int y = A<Y>().f();
+                             ^
+
+"Test_name.c", line 489: error: expression must have a constant value
+    constexpr int y2 = A<Y>().A<Y>::f();
+                       ^
+"Test_name.c", line 489: note: cannot call non-constexpr function "cwg1872::A<T>::f [with T=cwg1872::Y]" (declared at line 475)
+    constexpr int y2 = A<Y>().A<Y>::f();
+                                    ^
+
+"Test_name.c", line 495: error: expression must have a constant value
+    constexpr int z = A<Z>().f();
+                      ^
+
+"Test_name.c", line 510: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg1878::S::operator auto"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 513: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg1878::S::operator const auto"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 516: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg1878::S::operator const auto &"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 519: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg1878::S::operator const auto *"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 522: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg1878::S::operator decltype(auto)"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 559: error: cannot deduce the return type of function "cwg1890::ex1::A::B::foo" (declared at line 557); it has not been defined
+    decltype(B().foo()) x;
+             ^
+
+"Test_name.c", line 584: warning: variable "n" is used before its value is set
+    auto b = [=]{ return n; }; // #cwg1891-b
+                         ^
+
+"Test_name.c", line 593: error: the default constructor of "lambda []()->void" cannot be referenced -- it is a deleted function
+    A x;
+      ^
+
+"Test_name.c", line 597: error: the default constructor of "lambda []()->int" cannot be referenced -- it is a deleted function
+    B y;
+      ^
+
+"Test_name.c", line 603: error: function "lambda []()->void::operator=(const lambda []()->void &)" (declared implicitly) cannot be referenced -- it is a deleted function
+    a = a;
+      ^
+
+"Test_name.c", line 606: error: function "lambda []()->void::operator=(const lambda []()->void &)" (declared implicitly) cannot be referenced -- it is a deleted function
+    a = static_cast<A&&>(a);
+      ^
+
+"Test_name.c", line 609: error: function "lambda []()->int::operator=(const lambda []()->int &)" (declared implicitly) cannot be referenced -- it is a deleted function
+    b = b;
+      ^
+
+"Test_name.c", line 612: error: function "lambda []()->int::operator=(const lambda []()->int &)" (declared implicitly) cannot be referenced -- it is a deleted function
+    b = static_cast<B&&>(b);
+      ^
+
+"Test_name.c", line 637: error: typedef "S" may not be used in an elaborated type specifier
+    struct S s;
+           ^
+
+"Test_name.c", line 648: error: function "cwg1898::e" has already been defined (previous definition at line 647)
+  void e(int) {}
+       ^
+
+"Test_name.c", line 656: error: function "cwg1898::f" has already been defined (previous definition at line 655)
+  void f(const int) {}
+       ^
+
+"Test_name.c", line 661: error: function "cwg1898::g" has already been defined (previous definition at line 660)
+  void g(volatile int) {}
+       ^
+
+"Test_name.c", line 667: error: function "cwg1898::h" has already been defined (previous definition at line 666)
+  void h(int[]) {}
+       ^
+
+"Test_name.c", line 672: error: function "cwg1898::h2" has already been defined (previous definition at line 671)
+  void h2(int[2]) {}
+       ^
+
+"Test_name.c", line 677: error: function "cwg1898::h3" has already been defined (previous definition at line 676)
+  void h3(int [3][2]) {}
+       ^
+
+"Test_name.c", line 688: error: function "cwg1898::i2" has already been defined (previous definition at line 687)
+  void i2(int * const) {}
+       ^
+
+"Test_name.c", line 693: error: function "cwg1898::j" has already been defined (previous definition at line 692)
+  void j(void()) {}
+       ^
+
+"Test_name.c", line 698: error: function "cwg1898::j2" has already been defined (previous definition at line 697)
+  void j2(void(const int)) {}
+       ^
+
+"Test_name.c", line 704: error: invalid redeclaration of member function "cwg1898::A::k(int)" (declared at line 703)
+    void k(int) {}
+         ^
+
+"Test_name.c", line 481: warning: variable "cwg1872::x" was declared but never referenced
+    constexpr int x = A<X>().f();
+                  ^
+
+"Test_name.c", line 482: warning: variable "cwg1872::y" was declared but never referenced
+    constexpr int y = A<Y>().f();
+                  ^
+
+"Test_name.c", line 489: warning: variable "cwg1872::y2" was declared but never referenced
+    constexpr int y2 = A<Y>().A<Y>::f();
+                  ^
+
+"Test_name.c", line 495: warning: variable "cwg1872::z" was declared but never referenced
+    constexpr int z = A<Z>().f();
+                  ^
+
+49 errors detected in the compilation of "Test_name.c".

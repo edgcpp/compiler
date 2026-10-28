@@ -1,0 +1,1684 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -DNO_LAX_FLOAT -DNO_LAX_FLOAT -DNO_LAX_INT Test_name.c
+"Test_name.c", line 37: error: more than one instance of overloaded function "f1" matches the argument list:
+            function "f1(char16)" (declared at line 31)
+            function "f1(longlong16)" (declared at line 32)
+            argument types are: (char16_e)
+    int &ir2 = f1(c16e);
+               ^
+
+"Test_name.c", line 38: error: more than one instance of overloaded function "f1" matches the argument list:
+            function "f1(char16)" (declared at line 31)
+            function "f1(longlong16)" (declared at line 32)
+            argument types are: (longlong16_e)
+    float &fr2 = f1(ll16e);
+                 ^
+
+"Test_name.c", line 65: error: operand types are incompatible ("char16" (aka "__attribute((vector_size(16))) char") and "char16_e" (aka "__attribute((ext_vector_type(16))) char"))
+    __typeof__(Cond? c16 : c16e) *c16ep2 = &c16e;
+                         ^
+
+"Test_name.c", line 66: error: operand types are incompatible ("char16_e" (aka "__attribute((ext_vector_type(16))) char") and "char16" (aka "__attribute((vector_size(16))) char"))
+    __typeof__(Cond? c16e : c16) *c16ep3 = &c16e;
+                          ^
+
+"Test_name.c", line 67: error: operand types are incompatible ("longlong16" (aka "__attribute((vector_size(16))) long long") and "longlong16_e" (aka "__attribute((ext_vector_type(2))) long long"))
+    __typeof__(Cond? ll16 : ll16e) *ll16ep2 = &ll16e;
+                          ^
+
+"Test_name.c", line 68: error: operand types are incompatible ("longlong16_e" (aka "__attribute((ext_vector_type(2))) long long") and "longlong16" (aka "__attribute((vector_size(16))) long long"))
+    __typeof__(Cond? ll16e : ll16) *ll16ep3 = &ll16e;
+                           ^
+
+"Test_name.c", line 71: error: operand types are incompatible ("char16" (aka "__attribute((vector_size(16))) char") and "longlong16" (aka "__attribute((vector_size(16))) long long"))
+    (void)(Cond? c16 : ll16);
+                     ^
+
+"Test_name.c", line 72: error: operand types are incompatible ("longlong16_e" (aka "__attribute((ext_vector_type(2))) long long") and "char16_e" (aka "__attribute((ext_vector_type(16))) char"))
+    (void)(Cond? ll16e : c16e);
+                       ^
+
+"Test_name.c", line 73: error: operand types are incompatible ("longlong16_e" (aka "__attribute((ext_vector_type(2))) long long") and "char16" (aka "__attribute((vector_size(16))) char"))
+    (void)(Cond? ll16e : c16);
+                       ^
+
+"Test_name.c", line 59: warning: variable "c16p1" was declared but never referenced
+    __typeof__(Cond? c16 : c16) *c16p1 = &c16;
+                                 ^
+
+"Test_name.c", line 60: warning: variable "ll16p1" was declared but never referenced
+    __typeof__(Cond? ll16 : ll16) *ll16p1 = &ll16;
+                                   ^
+
+"Test_name.c", line 61: warning: variable "c16ep1" was declared but never referenced
+    __typeof__(Cond? c16e : c16e) *c16ep1 = &c16e;
+                                   ^
+
+"Test_name.c", line 62: warning: variable "ll16ep1" was declared but never referenced
+    __typeof__(Cond? ll16e : ll16e) *ll16ep1 = &ll16e;
+                                     ^
+
+"Test_name.c", line 166: error: no operator "==" matches these operands
+            operand types are: char16 == convertible_to<char16>
+    (void)(c16 == to_c16);
+               ^
+"Test_name.c", line 166: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(c16 == to_c16);
+               ^
+"Test_name.c", line 166: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(c16 == to_c16);
+               ^
+
+"Test_name.c", line 167: error: no operator "+" matches these operands
+            operand types are: + convertible_to<char16>
+    (void)+to_c16;
+          ^
+"Test_name.c", line 167: note: built-in operator+(<promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)+to_c16;
+          ^
+"Test_name.c", line 167: note: built-in operator+(<pointer>) does not match because argument #1 does not match parameter
+    (void)+to_c16;
+          ^
+
+"Test_name.c", line 168: error: no operator "-" matches these operands
+            operand types are: - convertible_to<char16>
+    (void)-to_c16;
+          ^
+"Test_name.c", line 168: note: built-in operator-(<promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)-to_c16;
+          ^
+
+"Test_name.c", line 169: error: no operator "~" matches these operands
+            operand types are: ~ convertible_to<char16>
+    (void)~to_c16;
+          ^
+"Test_name.c", line 169: note: built-in operator~(<promoted integral>) does not match because argument #1 does not match parameter
+    (void)~to_c16;
+          ^
+
+"Test_name.c", line 170: error: no operator "==" matches these operands
+            operand types are: convertible_to<char16> == convertible_to<char16_e>
+    (void)(to_c16 == to_c16e);
+                  ^
+"Test_name.c", line 170: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 == to_c16e);
+                  ^
+"Test_name.c", line 170: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 == to_c16e);
+                  ^
+
+"Test_name.c", line 171: error: no operator "!=" matches these operands
+            operand types are: convertible_to<char16> != convertible_to<char16_e>
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 171: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 171: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 171: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 171: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+
+"Test_name.c", line 172: error: no operator "<" matches these operands
+            operand types are: convertible_to<char16> < convertible_to<char16_e>
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 172: note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 172: note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 172: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 172: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+
+"Test_name.c", line 173: error: no operator "<=" matches these operands
+            operand types are: convertible_to<char16> <= convertible_to<char16_e>
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 173: note: built-in operator<=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 173: note: built-in operator<=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 173: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 173: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+
+"Test_name.c", line 174: error: no operator ">" matches these operands
+            operand types are: convertible_to<char16> > convertible_to<char16_e>
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 174: note: built-in operator>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 174: note: built-in operator>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 174: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 174: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+
+"Test_name.c", line 175: error: no operator ">=" matches these operands
+            operand types are: convertible_to<char16> >= convertible_to<char16_e>
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 175: note: built-in operator>=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 175: note: built-in operator>=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 175: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 175: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+
+"Test_name.c", line 176: error: no operator "+" matches these operands
+            operand types are: convertible_to<char16> + convertible_to<char16>
+    (void)(to_c16 + to_c16);
+                  ^
+"Test_name.c", line 176: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 + to_c16);
+                  ^
+"Test_name.c", line 176: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(to_c16 + to_c16);
+                  ^
+"Test_name.c", line 176: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(to_c16 + to_c16);
+                  ^
+
+"Test_name.c", line 177: error: no operator "-" matches these operands
+            operand types are: convertible_to<char16> - convertible_to<char16>
+    (void)(to_c16 - to_c16);
+                  ^
+"Test_name.c", line 177: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 - to_c16);
+                  ^
+"Test_name.c", line 177: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(to_c16 - to_c16);
+                  ^
+
+"Test_name.c", line 178: error: no operator "*" matches these operands
+            operand types are: convertible_to<char16> * convertible_to<char16>
+    (void)(to_c16 * to_c16);
+                  ^
+"Test_name.c", line 178: note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 * to_c16);
+                  ^
+
+"Test_name.c", line 179: error: no operator "/" matches these operands
+            operand types are: convertible_to<char16> / convertible_to<char16>
+    (void)(to_c16 / to_c16);
+                  ^
+"Test_name.c", line 179: note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 / to_c16);
+                  ^
+
+"Test_name.c", line 180: error: no operator "=" matches these operands
+            operand types are: convertible_to<char16 &> = convertible_to<char16>
+    (void)(rto_c16 = to_c16); // expected-error{{no viable overloaded '='}}
+                   ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(convertible_to<char16 &> &&) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(const convertible_to<char16 &> &) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+
+"Test_name.c", line 181: error: no operator "+=" matches these operands
+            operand types are: convertible_to<char16 &> += convertible_to<char16>
+    (void)(rto_c16 += to_c16);
+                   ^
+"Test_name.c", line 181: note: built-in operator+=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 += to_c16);
+                   ^
+"Test_name.c", line 181: note: built-in operator+=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 += to_c16);
+                   ^
+
+"Test_name.c", line 182: error: no operator "-=" matches these operands
+            operand types are: convertible_to<char16 &> -= convertible_to<char16>
+    (void)(rto_c16 -= to_c16);
+                   ^
+"Test_name.c", line 182: note: built-in operator-=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 -= to_c16);
+                   ^
+"Test_name.c", line 182: note: built-in operator-=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 -= to_c16);
+                   ^
+
+"Test_name.c", line 183: error: no operator "*=" matches these operands
+            operand types are: convertible_to<char16 &> *= convertible_to<char16>
+    (void)(rto_c16 *= to_c16);
+                   ^
+"Test_name.c", line 183: note: built-in operator*=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 *= to_c16);
+                   ^
+
+"Test_name.c", line 184: error: no operator "/=" matches these operands
+            operand types are: convertible_to<char16 &> /= convertible_to<char16>
+    (void)(rto_c16 /= to_c16);
+                   ^
+"Test_name.c", line 184: note: built-in operator/=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 /= to_c16);
+                   ^
+
+"Test_name.c", line 186: error: no operator "+" matches these operands
+            operand types are: + convertible_to<char16_e>
+    (void)+to_c16e;
+          ^
+"Test_name.c", line 186: note: built-in operator+(<promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)+to_c16e;
+          ^
+"Test_name.c", line 186: note: built-in operator+(<pointer>) does not match because argument #1 does not match parameter
+    (void)+to_c16e;
+          ^
+
+"Test_name.c", line 187: error: no operator "-" matches these operands
+            operand types are: - convertible_to<char16_e>
+    (void)-to_c16e;
+          ^
+"Test_name.c", line 187: note: built-in operator-(<promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)-to_c16e;
+          ^
+
+"Test_name.c", line 188: error: no operator "~" matches these operands
+            operand types are: ~ convertible_to<char16_e>
+    (void)~to_c16e;
+          ^
+"Test_name.c", line 188: note: built-in operator~(<promoted integral>) does not match because argument #1 does not match parameter
+    (void)~to_c16e;
+          ^
+
+"Test_name.c", line 189: error: no operator "==" matches these operands
+            operand types are: convertible_to<char16_e> == convertible_to<char16_e>
+    (void)(to_c16e == to_c16e);
+                   ^
+"Test_name.c", line 189: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e == to_c16e);
+                   ^
+"Test_name.c", line 189: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e == to_c16e);
+                   ^
+
+"Test_name.c", line 190: error: no operator "!=" matches these operands
+            operand types are: convertible_to<char16_e> != convertible_to<char16_e>
+    (void)(to_c16e != to_c16e);
+                   ^
+"Test_name.c", line 190: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e != to_c16e);
+                   ^
+"Test_name.c", line 190: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e != to_c16e);
+                   ^
+"Test_name.c", line 190: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e != to_c16e);
+                   ^
+"Test_name.c", line 190: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e != to_c16e);
+                   ^
+
+"Test_name.c", line 191: error: no operator "<" matches these operands
+            operand types are: convertible_to<char16_e> < convertible_to<char16_e>
+    (void)(to_c16e <  to_c16e);
+                   ^
+"Test_name.c", line 191: note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <  to_c16e);
+                   ^
+"Test_name.c", line 191: note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <  to_c16e);
+                   ^
+"Test_name.c", line 191: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <  to_c16e);
+                   ^
+"Test_name.c", line 191: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <  to_c16e);
+                   ^
+
+"Test_name.c", line 192: error: no operator "<=" matches these operands
+            operand types are: convertible_to<char16_e> <= convertible_to<char16_e>
+    (void)(to_c16e <= to_c16e);
+                   ^
+"Test_name.c", line 192: note: built-in operator<=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <= to_c16e);
+                   ^
+"Test_name.c", line 192: note: built-in operator<=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <= to_c16e);
+                   ^
+"Test_name.c", line 192: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <= to_c16e);
+                   ^
+"Test_name.c", line 192: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e <= to_c16e);
+                   ^
+
+"Test_name.c", line 193: error: no operator ">" matches these operands
+            operand types are: convertible_to<char16_e> > convertible_to<char16_e>
+    (void)(to_c16e >  to_c16e);
+                   ^
+"Test_name.c", line 193: note: built-in operator>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >  to_c16e);
+                   ^
+"Test_name.c", line 193: note: built-in operator>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >  to_c16e);
+                   ^
+"Test_name.c", line 193: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >  to_c16e);
+                   ^
+"Test_name.c", line 193: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >  to_c16e);
+                   ^
+
+"Test_name.c", line 194: error: no operator ">=" matches these operands
+            operand types are: convertible_to<char16_e> >= convertible_to<char16_e>
+    (void)(to_c16e >= to_c16e);
+                   ^
+"Test_name.c", line 194: note: built-in operator>=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >= to_c16e);
+                   ^
+"Test_name.c", line 194: note: built-in operator>=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >= to_c16e);
+                   ^
+"Test_name.c", line 194: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >= to_c16e);
+                   ^
+"Test_name.c", line 194: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16e >= to_c16e);
+                   ^
+
+"Test_name.c", line 195: error: no operator "+" matches these operands
+            operand types are: convertible_to<char16_e> + convertible_to<char16>
+    (void)(to_c16e + to_c16);
+                   ^
+"Test_name.c", line 195: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e + to_c16);
+                   ^
+"Test_name.c", line 195: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(to_c16e + to_c16);
+                   ^
+"Test_name.c", line 195: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(to_c16e + to_c16);
+                   ^
+
+"Test_name.c", line 196: error: no operator "-" matches these operands
+            operand types are: convertible_to<char16_e> - convertible_to<char16>
+    (void)(to_c16e - to_c16);
+                   ^
+"Test_name.c", line 196: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e - to_c16);
+                   ^
+"Test_name.c", line 196: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(to_c16e - to_c16);
+                   ^
+
+"Test_name.c", line 197: error: no operator "*" matches these operands
+            operand types are: convertible_to<char16_e> * convertible_to<char16>
+    (void)(to_c16e * to_c16);
+                   ^
+"Test_name.c", line 197: note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e * to_c16);
+                   ^
+
+"Test_name.c", line 198: error: no operator "/" matches these operands
+            operand types are: convertible_to<char16_e> / convertible_to<char16>
+    (void)(to_c16e / to_c16);
+                   ^
+"Test_name.c", line 198: note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16e / to_c16);
+                   ^
+
+"Test_name.c", line 199: error: no operator "=" matches these operands
+            operand types are: convertible_to<char16_e &> = convertible_to<char16>
+    (void)(rto_c16e = to_c16); // expected-error{{no viable overloaded '='}}
+                    ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(convertible_to<char16_e &> &&) [with T=char16_e &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(const convertible_to<char16_e &> &) [with T=char16_e &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+
+"Test_name.c", line 200: error: no operator "+=" matches these operands
+            operand types are: convertible_to<char16_e &> += convertible_to<char16>
+    (void)(rto_c16e += to_c16);
+                    ^
+"Test_name.c", line 200: note: built-in operator+=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16e += to_c16);
+                    ^
+"Test_name.c", line 200: note: built-in operator+=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(rto_c16e += to_c16);
+                    ^
+
+"Test_name.c", line 201: error: no operator "-=" matches these operands
+            operand types are: convertible_to<char16_e &> -= convertible_to<char16>
+    (void)(rto_c16e -= to_c16);
+                    ^
+"Test_name.c", line 201: note: built-in operator-=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16e -= to_c16);
+                    ^
+"Test_name.c", line 201: note: built-in operator-=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(rto_c16e -= to_c16);
+                    ^
+
+"Test_name.c", line 202: error: no operator "*=" matches these operands
+            operand types are: convertible_to<char16_e &> *= convertible_to<char16>
+    (void)(rto_c16e *= to_c16);
+                    ^
+"Test_name.c", line 202: note: built-in operator*=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16e *= to_c16);
+                    ^
+
+"Test_name.c", line 203: error: no operator "/=" matches these operands
+            operand types are: convertible_to<char16_e &> /= convertible_to<char16>
+    (void)(rto_c16e /= to_c16);
+                    ^
+"Test_name.c", line 203: note: built-in operator/=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16e /= to_c16);
+                    ^
+
+"Test_name.c", line 205: error: no operator "+" matches these operands
+            operand types are: + convertible_to<char16>
+    (void)+to_c16;
+          ^
+"Test_name.c", line 205: note: built-in operator+(<promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)+to_c16;
+          ^
+"Test_name.c", line 205: note: built-in operator+(<pointer>) does not match because argument #1 does not match parameter
+    (void)+to_c16;
+          ^
+
+"Test_name.c", line 206: error: no operator "-" matches these operands
+            operand types are: - convertible_to<char16>
+    (void)-to_c16;
+          ^
+"Test_name.c", line 206: note: built-in operator-(<promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)-to_c16;
+          ^
+
+"Test_name.c", line 207: error: no operator "~" matches these operands
+            operand types are: ~ convertible_to<char16>
+    (void)~to_c16;
+          ^
+"Test_name.c", line 207: note: built-in operator~(<promoted integral>) does not match because argument #1 does not match parameter
+    (void)~to_c16;
+          ^
+
+"Test_name.c", line 208: error: no operator "==" matches these operands
+            operand types are: convertible_to<char16> == convertible_to<char16_e>
+    (void)(to_c16 == to_c16e);
+                  ^
+"Test_name.c", line 208: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 == to_c16e);
+                  ^
+"Test_name.c", line 208: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 == to_c16e);
+                  ^
+
+"Test_name.c", line 209: error: no operator "!=" matches these operands
+            operand types are: convertible_to<char16> != convertible_to<char16_e>
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 209: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 209: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 209: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+"Test_name.c", line 209: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 != to_c16e);
+                  ^
+
+"Test_name.c", line 210: error: no operator "<" matches these operands
+            operand types are: convertible_to<char16> < convertible_to<char16_e>
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 210: note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 210: note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 210: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+"Test_name.c", line 210: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <  to_c16e);
+                  ^
+
+"Test_name.c", line 211: error: no operator "<=" matches these operands
+            operand types are: convertible_to<char16> <= convertible_to<char16_e>
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 211: note: built-in operator<=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 211: note: built-in operator<=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 211: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+"Test_name.c", line 211: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 <= to_c16e);
+                  ^
+
+"Test_name.c", line 212: error: no operator ">" matches these operands
+            operand types are: convertible_to<char16> > convertible_to<char16_e>
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 212: note: built-in operator>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 212: note: built-in operator>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 212: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+"Test_name.c", line 212: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >  to_c16e);
+                  ^
+
+"Test_name.c", line 213: error: no operator ">=" matches these operands
+            operand types are: convertible_to<char16> >= convertible_to<char16_e>
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 213: note: built-in operator>=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 213: note: built-in operator>=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 213: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+"Test_name.c", line 213: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(to_c16 >= to_c16e);
+                  ^
+
+"Test_name.c", line 214: error: no operator "+" matches these operands
+            operand types are: convertible_to<char16> + convertible_to<char16_e>
+    (void)(to_c16 + to_c16e);
+                  ^
+"Test_name.c", line 214: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 + to_c16e);
+                  ^
+"Test_name.c", line 214: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(to_c16 + to_c16e);
+                  ^
+"Test_name.c", line 214: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(to_c16 + to_c16e);
+                  ^
+
+"Test_name.c", line 215: error: no operator "-" matches these operands
+            operand types are: convertible_to<char16> - convertible_to<char16_e>
+    (void)(to_c16 - to_c16e);
+                  ^
+"Test_name.c", line 215: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 - to_c16e);
+                  ^
+"Test_name.c", line 215: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(to_c16 - to_c16e);
+                  ^
+
+"Test_name.c", line 216: error: no operator "*" matches these operands
+            operand types are: convertible_to<char16> * convertible_to<char16_e>
+    (void)(to_c16 * to_c16e);
+                  ^
+"Test_name.c", line 216: note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 * to_c16e);
+                  ^
+
+"Test_name.c", line 217: error: no operator "/" matches these operands
+            operand types are: convertible_to<char16> / convertible_to<char16_e>
+    (void)(to_c16 / to_c16e);
+                  ^
+"Test_name.c", line 217: note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(to_c16 / to_c16e);
+                  ^
+
+"Test_name.c", line 218: error: no operator "=" matches these operands
+            operand types are: convertible_to<char16 &> = char16_e
+    (void)(rto_c16 = c16e); // expected-error{{no viable overloaded '='}}
+                   ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(convertible_to<char16 &> &&) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+"Test_name.c", line 132: note: function "convertible_to<T>::operator=(const convertible_to<char16 &> &) [with T=char16 &]" does not match because argument #1 does not match parameter
+  struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+         ^
+
+"Test_name.c", line 219: error: no operator "+=" matches these operands
+            operand types are: convertible_to<char16 &> += convertible_to<char16_e>
+    (void)(rto_c16 += to_c16e);
+                   ^
+"Test_name.c", line 219: note: built-in operator+=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 += to_c16e);
+                   ^
+"Test_name.c", line 219: note: built-in operator+=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 += to_c16e);
+                   ^
+
+"Test_name.c", line 220: error: no operator "-=" matches these operands
+            operand types are: convertible_to<char16 &> -= convertible_to<char16_e>
+    (void)(rto_c16 -= to_c16e);
+                   ^
+"Test_name.c", line 220: note: built-in operator-=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 -= to_c16e);
+                   ^
+"Test_name.c", line 220: note: built-in operator-=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 -= to_c16e);
+                   ^
+
+"Test_name.c", line 221: error: no operator "*=" matches these operands
+            operand types are: convertible_to<char16 &> *= convertible_to<char16_e>
+    (void)(rto_c16 *= to_c16e);
+                   ^
+"Test_name.c", line 221: note: built-in operator*=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 *= to_c16e);
+                   ^
+
+"Test_name.c", line 222: error: no operator "/=" matches these operands
+            operand types are: convertible_to<char16 &> /= convertible_to<char16_e>
+    (void)(rto_c16 /= to_c16e);
+                   ^
+"Test_name.c", line 222: note: built-in operator/=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(rto_c16 /= to_c16e);
+                   ^
+
+"Test_name.c", line 224: error: operand types are incompatible ("convertible_to<char16>" (aka "convertible_to<__attribute((vector_size(16))) char>") and "convertible_to<char16_e>" (aka "convertible_to<__attribute((ext_vector_type(16))) char>"))
+    (void)(Cond? to_c16 : to_c16e);
+                        ^
+
+"Test_name.c", line 225: error: operand types are incompatible ("convertible_to<longlong16_e>" (aka "convertible_to<__attribute((ext_vector_type(2))) long long>") and "convertible_to<longlong16>" (aka "convertible_to<__attribute((vector_size(16))) long long>"))
+    (void)(Cond? to_ll16e : to_ll16);
+                          ^
+
+"Test_name.c", line 228: error: operand types are incompatible ("convertible_to<char16>" (aka "convertible_to<__attribute((vector_size(16))) char>") and "convertible_to<longlong16>" (aka "convertible_to<__attribute((vector_size(16))) long long>"))
+    (void)(Cond? to_c16 : to_ll16);
+                        ^
+
+"Test_name.c", line 229: error: operand types are incompatible ("convertible_to<char16_e>" (aka "convertible_to<__attribute((ext_vector_type(16))) char>") and "convertible_to<longlong16_e>" (aka "convertible_to<__attribute((ext_vector_type(2))) long long>"))
+    (void)(Cond? to_c16e : to_ll16e);
+                         ^
+
+"Test_name.c", line 267: error: argument of type "fltx2" (aka "__attribute((vector_size(8))) float") is incompatible with parameter of type "bool"
+    accept_bool(fltx2_val); // expected-error{{no matching function for call to 'accept_bool'}}
+                ^
+
+"Test_name.c", line 270: error: argument of type "double" is incompatible with parameter of type "fltx2" (aka "__attribute((vector_size(8))) float")
+    accept_fltx2(1.0); // expected-error{{no matching function for call to 'accept_fltx2'}}
+                 ^
+
+"Test_name.c", line 335: error: expression must have class type but it has type "__attribute((ext_vector_type(4))) int"
+  const int &reference_to_vec_element = vi4(1).x;
+                                        ^
+
+"Test_name.c", line 349: error: vector size is too large
+    typedef T __attribute__((vector_size(0x1000000000))) type2; // #2
+                             ^
+
+"Test_name.c", line 350: error: the number of elements in a vector must be a power of two
+    typedef T __attribute__((vector_size(3))) type3; // #3
+                             ^
+
+"Test_name.c", line 343: error: vector_size attribute requires an arithmetic or enum type
+    typedef Elt __attribute__((__vector_size__(Size))) type; // #1
+                               ^
+          detected during instantiation of class "Templates::TemplateVectorType<Elt, Size> [with Elt=vi4, Size=32ULL]" at line 361
+
+"Test_name.c", line 343: error: vector size must be a multiple of the element size
+    typedef Elt __attribute__((__vector_size__(Size))) type; // #1
+                               ^
+          detected during instantiation of class "Templates::TemplateVectorType<Elt, Size> [with Elt=int, Size=33ULL]" at line 364
+
+"Test_name.c", line 343: error: the number of elements in a vector must be a power of two
+    typedef Elt __attribute__((__vector_size__(Size))) type; // #1
+                               ^
+          detected during instantiation of class "Templates::TemplateVectorType<Elt, Size> [with Elt=int, Size=3200ULL]" at line 365
+
+"Test_name.c", line 343: error: vector size is too large
+    typedef Elt __attribute__((__vector_size__(Size))) type; // #1
+                               ^
+          detected during instantiation of class "Templates::TemplateVectorType<Elt, Size> [with Elt=int, Size=68719476736ULL]" at line 368
+
+"Test_name.c", line 343: error: the number of elements in a vector must be a power of two
+    typedef Elt __attribute__((__vector_size__(Size))) type; // #1
+                               ^
+          detected during instantiation of class "Templates::TemplateVectorType<Elt, Size> [with Elt=int, Size=0ULL]" at line 371
+
+"Test_name.c", line 350: error: vector size must be a multiple of the element size
+    typedef T __attribute__((vector_size(3))) type3; // #3
+                             ^
+          detected during instantiation of class "Templates::PR15730<N, T> [with N=8, T=int]" at line 376
+
+"Test_name.c", line 354: warning: variable "Works" was declared but never referenced
+    const TemplateVectorType<float, 32>::type Works = {};
+                                              ^
+
+"Test_name.c", line 355: warning: variable "Works2" was declared but never referenced
+    const TemplateVectorType<int, 32>::type Works2 = {};
+                                            ^
+
+"Test_name.c", line 358: warning: variable "NoBool" was declared but never referenced
+    const TemplateVectorType<bool, 32>::type NoBool = {};
+                                             ^
+
+"Test_name.c", line 376: warning: variable "PR15730_1" was declared but never referenced
+    const PR15730<8, int>::type PR15730_1 = {};
+                                ^
+
+"Test_name.c", line 387: warning: expression has no effect
+    inte2 a = (inte2)(1, 2); //expected-warning{{left operand of comma operator has no effect}}
+                      ^
+
+"Test_name.c", line 388: warning: expression has no effect
+    inte4 b = (inte4)(a, a); //expected-error{{C-style cast from vector 'inte2' (vector of 2 'int' values) to vector 'inte4' (vector of 4 'int' values) of different size}} //expected-warning{{left operand of comma operator has no effect}}
+                      ^
+
+"Test_name.c", line 388: error: invalid type conversion
+    inte4 b = (inte4)(a, a); //expected-error{{C-style cast from vector 'inte2' (vector of 2 'int' values) to vector 'inte4' (vector of 4 'int' values) of different size}} //expected-warning{{left operand of comma operator has no effect}}
+              ^
+
+"Test_name.c", line 397: error: parameter "B" is not a type name
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+                      ^
+
+"Test_name.c", line 397: error: expected a ">"
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+                       ^
+
+"Test_name.c", line 397: error: expression must have class type but it has type "vector_float4" (aka "__attribute((ext_vector_type(4))) float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+             ^
+
+"Test_name.c", line 397: error: expected a ";"
+      return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+                                   ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "__attribute((ext_vector_type(4))) float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+             ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "__attribute((ext_vector_type(4))) float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+                      ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "__attribute((ext_vector_type(4))) float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+                             ^
+
+"Test_name.c", line 404: error: expression must have class type but it has type "vector_float4" (aka "__attribute((ext_vector_type(4))) float")
+      return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+                                   ^
+
+"Test_name.c", line 485: warning: variable "theFloat4" is used before its value is set
+    NormalMember<double>().f(theFloat4);
+                             ^
+
+"Test_name.c", line 504: warning: variable "st" was declared but never referenced
+    second_type st;
+                ^
+
+"Test_name.c", line 512: error: no operator "&" matches these operands
+            operand types are: char16 & PR45780::E
+    c &Value;   // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 512: note: built-in operator&(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    c &Value;   // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+      ^
+
+"Test_name.c", line 513: error: no operator "==" matches these operands
+            operand types are: char16 == PR45780::E
+    c == Value; // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 513: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    c == Value; // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 513: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    c == Value; // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 513: note: built-in operator==(<enum>, <enum>) does not match because argument #1 does not match parameter
+    c == Value; // expected-error{{cannot convert between scalar type 'PR45780::E' and vector type 'char16'}}
+      ^
+
+"Test_name.c", line 514: error: no operator "|" matches these operands
+            operand types are: PR45780::E | char16
+    e | c;      // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 514: note: built-in operator|(<promoted integral>, <promoted integral>) does not match because argument #2 does not match parameter
+    e | c;      // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+
+"Test_name.c", line 515: error: no operator "!=" matches these operands
+            operand types are: PR45780::E != char16
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 515: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 515: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 515: note: built-in operator!=(<enum>, <enum>) does not match because argument #2 does not match parameter
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 515: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 515: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+"Test_name.c", line 515: note: built-in operator==(<enum>, <enum>) does not match because argument #2 does not match parameter
+    e != c;     // expected-error{{cannot convert between scalar type 'E' and vector type 'char16'}}
+      ^
+
+"Test_name.c", line 533: warning: variable "s" was declared but never referenced
+    S<int, 16> s;
+               ^
+
+"Test_name.c", line 544: warning: variable "b1" was declared but never referenced
+    auto b1 = (v1 >= 0x12);
+         ^
+
+"Test_name.c", line 545: warning: variable "b2" was declared but never referenced
+    auto b2 = (v2 >= 0x12);
+         ^
+
+"Test_name.c", line 546: warning: variable "b3" was declared but never referenced
+    auto b3 = (v3 >= 0x12);
+         ^
+
+"Test_name.c", line 547: warning: variable "b4" was declared but never referenced
+    auto b4 = (v4 >= 0x12);
+         ^
+
+"Test_name.c", line 607: error: mixed vector-scalar operation not allowed
+    ua += v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 608: error: mixed vector-scalar operation not allowed
+    ua -= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 609: error: mixed vector-scalar operation not allowed
+    ua *= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 610: error: mixed vector-scalar operation not allowed
+    ua /= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 611: error: mixed vector-scalar operation not allowed
+    ua %= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 612: error: mixed vector-scalar operation not allowed
+    ua &= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 613: error: mixed vector-scalar operation not allowed
+    ua |= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 614: error: mixed vector-scalar operation not allowed
+    ua ^= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 615: error: mixed vector-scalar operation not allowed
+    ua >>= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 616: error: mixed vector-scalar operation not allowed
+    ua <<= v2ua; // expected-error{{assigning to 'unsigned int' from incompatible type 'v2u'}}
+       ^
+
+"Test_name.c", line 629: error: expression must have integral or unscoped enum type
+    (void)(v2fa % fa); // expected-error{{invalid operands to binary expression}}
+                  ^
+
+"Test_name.c", line 629: error: mixed vector-scalar operation not allowed
+    (void)(v2fa % fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 630: error: expression must have integral or unscoped enum type
+    (void)(fa % v2fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 630: error: mixed vector-scalar operation not allowed
+    (void)(fa % v2fa); // expected-error{{invalid operands to binary expression}}
+              ^
+
+"Test_name.c", line 649: error: vector operation does not apply to vector with non-integral type
+    (void)(v2fa & fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 650: error: vector operation does not apply to vector with non-integral type
+    (void)(fa & v2fa); // expected-error{{invalid operands to binary expression}}
+              ^
+
+"Test_name.c", line 651: error: vector operation does not apply to vector with non-integral type
+    (void)(v2fa | fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 652: error: vector operation does not apply to vector with non-integral type
+    (void)(fa | v2fa); // expected-error{{invalid operands to binary expression}}
+              ^
+
+"Test_name.c", line 653: error: vector operation does not apply to vector with non-integral type
+    (void)(v2fa ^ fa); // expected-error{{invalid operands to binary expression}}
+                ^
+
+"Test_name.c", line 654: error: vector operation does not apply to vector with non-integral type
+    (void)(fa ^ v2fa); // expected-error{{invalid operands to binary expression}}
+              ^
+
+"Test_name.c", line 668: error: vector operation does not apply to vector with non-integral type
+    v2fa %= fa; // expected-error{{invalid operands to binary expression}}
+         ^
+
+"Test_name.c", line 669: error: vector operation does not apply to vector with non-integral type
+    v2fa &= fa; // expected-error{{invalid operands to binary expression}}
+         ^
+
+"Test_name.c", line 670: error: vector operation does not apply to vector with non-integral type
+    v2fa |= fa; // expected-error{{invalid operands to binary expression}}
+         ^
+
+"Test_name.c", line 671: error: vector operation does not apply to vector with non-integral type
+    v2fa ^= fa; // expected-error{{invalid operands to binary expression}}
+         ^
+
+"Test_name.c", line 675: error: mixed vector-scalar operation not allowed
+    fa += v2fa; // expected-error{{assigning to 'float' from incompatible type 'v2f'}}
+       ^
+
+"Test_name.c", line 676: error: mixed vector-scalar operation not allowed
+    fa -= v2fa; // expected-error{{assigning to 'float' from incompatible type 'v2f'}}
+       ^
+
+"Test_name.c", line 677: error: mixed vector-scalar operation not allowed
+    fa *= v2fa; // expected-error{{assigning to 'float' from incompatible type 'v2f'}}
+       ^
+
+"Test_name.c", line 678: error: mixed vector-scalar operation not allowed
+    fa /= v2fa; // expected-error{{assigning to 'float' from incompatible type 'v2f'}}
+       ^
+
+"Test_name.c", line 679: error: mixed vector-scalar operation not allowed
+    fa %= v2fa; // expected-error{{invalid operands to binary expression}}
+       ^
+
+"Test_name.c", line 680: error: mixed vector-scalar operation not allowed
+    fa &= v2fa; // expected-error{{invalid operands to binary expression}}
+       ^
+
+"Test_name.c", line 681: error: mixed vector-scalar operation not allowed
+    fa |= v2fa; // expected-error{{invalid operands to binary expression}}
+       ^
+
+"Test_name.c", line 682: error: mixed vector-scalar operation not allowed
+    fa ^= v2fa; // expected-error{{invalid operands to binary expression}}
+       ^
+
+"Test_name.c", line 683: error: mixed vector-scalar operation not allowed
+    fa >>= v2fa; // expected-error{{used type 'float' where integer is required}}
+       ^
+
+"Test_name.c", line 684: error: mixed vector-scalar operation not allowed
+    fa <<= v2fa; // expected-error{{used type 'float' where integer is required}}
+       ^
+
+"Test_name.c", line 695: error: no operator "+" matches these operands
+            operand types are: all_operators::v2u + all_operators::Enum
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 695: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 695: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 695: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 696: error: no operator "+" matches these operands
+            operand types are: all_operators::Enum + all_operators::v2u
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 696: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 696: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 696: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #2 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 697: error: no operator "-" matches these operands
+            operand types are: all_operators::v2u - all_operators::Enum
+    (void)(v2ua - ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 697: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua - ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 697: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(v2ua - ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 698: error: no operator "-" matches these operands
+            operand types are: all_operators::Enum - all_operators::v2u
+    (void)(ea - v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 698: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea - v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 698: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(ea - v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 699: error: no operator "*" matches these operands
+            operand types are: all_operators::v2u * all_operators::Enum
+    (void)(v2ua * ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 699: note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua * ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 700: error: no operator "*" matches these operands
+            operand types are: all_operators::Enum * all_operators::v2u
+    (void)(ea * v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 700: note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea * v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 701: error: no operator "/" matches these operands
+            operand types are: all_operators::v2u / all_operators::Enum
+    (void)(v2ua / ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 701: note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua / ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 702: error: no operator "/" matches these operands
+            operand types are: all_operators::Enum / all_operators::v2u
+    (void)(ea / v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 702: note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea / v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 703: error: no operator "%" matches these operands
+            operand types are: all_operators::v2u % all_operators::Enum
+    (void)(v2ua % ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 703: note: built-in operator%(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    (void)(v2ua % ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 704: error: no operator "%" matches these operands
+            operand types are: all_operators::Enum % all_operators::v2u
+    (void)(ea % v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 704: note: built-in operator%(<promoted integral>, <promoted integral>) does not match because argument #2 does not match parameter
+    (void)(ea % v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 706: error: no operator "==" matches these operands
+            operand types are: all_operators::v2u == all_operators::Enum
+    (void)(v2ua == ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 706: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua == ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 706: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua == ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 706: note: built-in operator==(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua == ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 707: error: no operator "==" matches these operands
+            operand types are: all_operators::Enum == all_operators::v2u
+    (void)(ea == v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 707: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea == v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 707: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea == v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 707: note: built-in operator==(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea == v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 708: error: no operator "!=" matches these operands
+            operand types are: all_operators::v2u != all_operators::Enum
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 708: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 708: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 708: note: built-in operator!=(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 708: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 708: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 708: note: built-in operator==(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua != ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 709: error: no operator "!=" matches these operands
+            operand types are: all_operators::Enum != all_operators::v2u
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 709: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 709: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 709: note: built-in operator!=(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 709: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 709: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 709: note: built-in operator==(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea != v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 710: error: no operator "<=" matches these operands
+            operand types are: all_operators::v2u <= all_operators::Enum
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 710: note: built-in operator<=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 710: note: built-in operator<=(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 710: note: built-in operator<=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 710: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 710: note: built-in operator<=>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 710: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua <= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 711: error: no operator "<=" matches these operands
+            operand types are: all_operators::Enum <= all_operators::v2u
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 711: note: built-in operator<=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 711: note: built-in operator<=(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 711: note: built-in operator<=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 711: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 711: note: built-in operator<=>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 711: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea <= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 712: error: no operator ">=" matches these operands
+            operand types are: all_operators::v2u >= all_operators::Enum
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 712: note: built-in operator>=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 712: note: built-in operator>=(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 712: note: built-in operator>=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 712: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 712: note: built-in operator<=>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 712: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua >= ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 713: error: no operator ">=" matches these operands
+            operand types are: all_operators::Enum >= all_operators::v2u
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 713: note: built-in operator>=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 713: note: built-in operator>=(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 713: note: built-in operator>=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 713: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 713: note: built-in operator<=>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 713: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea >= v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 714: error: no operator "<" matches these operands
+            operand types are: all_operators::v2u < all_operators::Enum
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 714: note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 714: note: built-in operator<(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 714: note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 714: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 714: note: built-in operator<=>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 714: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua < ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 715: error: no operator "<" matches these operands
+            operand types are: all_operators::Enum < all_operators::v2u
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 715: note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 715: note: built-in operator<(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 715: note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 715: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 715: note: built-in operator<=>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 715: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea < v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 716: error: no operator ">" matches these operands
+            operand types are: all_operators::v2u > all_operators::Enum
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 716: note: built-in operator>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 716: note: built-in operator>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 716: note: built-in operator>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 716: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 716: note: built-in operator<=>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 716: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(v2ua > ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 717: error: no operator ">" matches these operands
+            operand types are: all_operators::Enum > all_operators::v2u
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 717: note: built-in operator>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 717: note: built-in operator>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 717: note: built-in operator>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 717: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 717: note: built-in operator<=>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 717: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(ea > v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 718: error: no operator "&&" matches these operands
+            operand types are: all_operators::v2u && all_operators::Enum
+    (void)(v2ua && ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 718: note: built-in operator&&(<bool>, <bool>) does not match because argument #1 does not match parameter
+    (void)(v2ua && ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 720: error: no operator "&&" matches these operands
+            operand types are: all_operators::Enum && all_operators::v2u
+    (void)(ea && v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 720: note: built-in operator&&(<bool>, <bool>) does not match because argument #2 does not match parameter
+    (void)(ea && v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 722: error: no operator "||" matches these operands
+            operand types are: all_operators::v2u || all_operators::Enum
+    (void)(v2ua || ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 722: note: built-in operator||(<bool>, <bool>) does not match because argument #1 does not match parameter
+    (void)(v2ua || ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 724: error: no operator "||" matches these operands
+            operand types are: all_operators::Enum || all_operators::v2u
+    (void)(ea || v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 724: note: built-in operator||(<bool>, <bool>) does not match because argument #2 does not match parameter
+    (void)(ea || v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 727: error: no operator "&" matches these operands
+            operand types are: all_operators::v2u & all_operators::Enum
+    (void)(v2ua & ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 727: note: built-in operator&(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    (void)(v2ua & ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 728: error: no operator "&" matches these operands
+            operand types are: all_operators::Enum & all_operators::v2u
+    (void)(ea & v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 728: note: built-in operator&(<promoted integral>, <promoted integral>) does not match because argument #2 does not match parameter
+    (void)(ea & v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 729: error: no operator "|" matches these operands
+            operand types are: all_operators::v2u | all_operators::Enum
+    (void)(v2ua | ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 729: note: built-in operator|(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    (void)(v2ua | ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 730: error: no operator "|" matches these operands
+            operand types are: all_operators::Enum | all_operators::v2u
+    (void)(ea | v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 730: note: built-in operator|(<promoted integral>, <promoted integral>) does not match because argument #2 does not match parameter
+    (void)(ea | v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 731: error: no operator "^" matches these operands
+            operand types are: all_operators::v2u ^ all_operators::Enum
+    (void)(v2ua ^ ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+"Test_name.c", line 731: note: built-in operator^(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    (void)(v2ua ^ ea); // expected-error{{cannot convert between vector values of different size}}
+                ^
+
+"Test_name.c", line 732: error: no operator "^" matches these operands
+            operand types are: all_operators::Enum ^ all_operators::v2u
+    (void)(ea ^ v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+"Test_name.c", line 732: note: built-in operator^(<promoted integral>, <promoted integral>) does not match because argument #2 does not match parameter
+    (void)(ea ^ v2ua); // expected-error{{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 740: error: no operator "+=" matches these operands
+            operand types are: all_operators::v2u += all_operators::Enum
+    v2ua += ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 740: note: built-in operator+=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    v2ua += ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 740: note: built-in operator+=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    v2ua += ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 741: error: no operator "-=" matches these operands
+            operand types are: all_operators::v2u -= all_operators::Enum
+    v2ua -= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 741: note: built-in operator-=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    v2ua -= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 741: note: built-in operator-=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    v2ua -= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 742: error: no operator "*=" matches these operands
+            operand types are: all_operators::v2u *= all_operators::Enum
+    v2ua *= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 742: note: built-in operator*=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    v2ua *= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 743: error: no operator "/=" matches these operands
+            operand types are: all_operators::v2u /= all_operators::Enum
+    v2ua /= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 743: note: built-in operator/=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    v2ua /= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 744: error: no operator "%=" matches these operands
+            operand types are: all_operators::v2u %= all_operators::Enum
+    v2ua %= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 744: note: built-in operator%=(<integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    v2ua %= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 745: error: no operator "&=" matches these operands
+            operand types are: all_operators::v2u &= all_operators::Enum
+    v2ua &= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 745: note: built-in operator&=(<integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    v2ua &= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 746: error: no operator "|=" matches these operands
+            operand types are: all_operators::v2u |= all_operators::Enum
+    v2ua |= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 746: note: built-in operator|=(<integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    v2ua |= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 747: error: no operator "^=" matches these operands
+            operand types are: all_operators::v2u ^= all_operators::Enum
+    v2ua ^= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+"Test_name.c", line 747: note: built-in operator^=(<integral>, <promoted integral>) does not match because argument #1 does not match parameter
+    v2ua ^= ea; // expected-error{{cannot convert between vector values of different size}}
+         ^
+
+"Test_name.c", line 753: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea += v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 753: error: mixed vector-scalar operation not allowed
+    ea += v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 754: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea -= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 754: error: mixed vector-scalar operation not allowed
+    ea -= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 755: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea *= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 755: error: mixed vector-scalar operation not allowed
+    ea *= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 756: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea /= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 756: error: mixed vector-scalar operation not allowed
+    ea /= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 757: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea %= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 757: error: mixed vector-scalar operation not allowed
+    ea %= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 758: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea &= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 758: error: mixed vector-scalar operation not allowed
+    ea &= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 759: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea |= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 759: error: mixed vector-scalar operation not allowed
+    ea |= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 760: error: this operation on an enumerated type requires an applicable user-defined operator function
+    ea ^= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 760: error: mixed vector-scalar operation not allowed
+    ea ^= v2ua; // expected-error{{cannot convert between vector values of different size}}
+       ^
+
+"Test_name.c", line 772: error: no operator "+" matches these operands
+            operand types are: all_operators::v2u + all_operators::EnumClass
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+"Test_name.c", line 772: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+"Test_name.c", line 772: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+"Test_name.c", line 772: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(v2ua + ea); // expected-error{{cannot convert between vector and non-scalar values}}
+                ^
+
+"Test_name.c", line 773: error: no operator "+" matches these operands
+            operand types are: all_operators::EnumClass + all_operators::v2u
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+"Test_name.c", line 773: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+"Test_name.c", line 773: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+"Test_name.c", line 773: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    (void)(ea + v2ua); // expected-error{{cannot convert between vector and non-scalar values}}
+              ^
+
+"Test_name.c", line 780: error: operand of "*" must be a pointer but has type "int"
+  double b = a - (long)(*0); // expected-error {{indirection requires pointer operand ('int' invalid)}} \
+                         ^
+
+"Test_name.c", line 784: error: operand of "*" must be a pointer but has type "int"
+  long d = c - (long)(*0); // expected-error {{indirection requires pointer operand ('int' invalid)}} \
+                       ^
+
+"Test_name.c", line 787: error: operand of "*" must be a pointer but has type "int"
+  const long long e = *0; // expected-error {{indirection requires pointer operand ('int' invalid)}}
+                       ^
+
+"Test_name.c", line 792: error: the number of elements in a vector must be a power of two
+  typedef int v_neg_size __attribute__((vector_size(-8))); // expected-error{{vector must have non-negative size}}
+                                        ^
+
+"Test_name.c", line 793: error: the number of elements in a vector must be a power of two
+  typedef int v_neg_size_2 __attribute__((vector_size(-1 * 8))); // expected-error{{vector must have non-negative size}}
+                                          ^
+
+"Test_name.c", line 794: error: the "ext_vector_type" argument must be between 1 and 2047
+  typedef int v_ext_neg_size __attribute__((ext_vector_type(-8))); // expected-error{{vector must have non-negative size}}
+                                            ^
+
+"Test_name.c", line 795: error: the "ext_vector_type" argument must be between 1 and 2047
+  typedef int v_ext_neg_size2 __attribute__((ext_vector_type(-1 * 8))); // expected-error{{vector must have non-negative size}}
+                                             ^
+
+"Test_name.c", line 800: error: the number of elements in a vector must be a power of two
+  template <int N> using templated_v_size = int  __attribute__((vector_size(N))); // expected-error{{vector must have non-negative size}}
+                                                                ^
+          detected during instantiation of type "templated_v_size<-8>" at line 801
+
+192 errors detected in the compilation of "Test_name.c".

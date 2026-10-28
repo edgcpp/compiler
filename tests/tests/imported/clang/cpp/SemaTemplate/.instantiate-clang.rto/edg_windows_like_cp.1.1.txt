@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 16: error: expression must have class type but it has type "double4" (aka "double")
+      v1.xy = v2.yx;
+              ^
+
+"Test_name.c", line 21: error: class "ExtVectorAccess0<double2>" explicitly instantiated more than once
+  template struct ExtVectorAccess0<double4>;
+           ^
+
+"Test_name.c", line 26: error: expression must have pointer-to-class type but it has type "double4 *" (aka "double *")
+      v1->xy = v2->yx;
+               ^
+
+"Test_name.c", line 31: error: class "ExtVectorAccess1<double2>" explicitly instantiated more than once
+  template struct ExtVectorAccess1<double4>;
+           ^
+
+"Test_name.c", line 16: error: expression must have class type but it has type "double2" (aka "double")
+      v1.xy = v2.yx;
+      ^
+          detected during instantiation of "void ExtVectorAccess0<T>::f(T, double4) [with T=double2]" at line 20
+
+"Test_name.c", line 26: error: expression must have pointer-to-class type but it has type "double2 *" (aka "double *")
+      v1->xy = v2->yx;
+      ^
+          detected during instantiation of "void ExtVectorAccess1<T>::f(T *, double4 *) [with T=double2]" at line 30
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,199 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions Test_name.c
+"SemaCXX/destructor.cpp", line 50: error: a destructor may not have parameters
+    static void ~D(int, ...) const { }
+                   ^
+
+"SemaCXX/destructor.cpp", line 50: error: a type qualifier is not allowed on a constructor or destructor
+    static void ~D(int, ...) const { }
+                             ^
+
+"SemaCXX/destructor.cpp", line 50: error: return type may not be specified on a destructor
+    static void ~D(int, ...) const { }
+    ^
+
+"SemaCXX/destructor.cpp", line 50: error: "static" is not allowed
+    static void ~D(int, ...) const { }
+    ^
+
+"SemaCXX/destructor.cpp", line 60: error: return type may not be specified on a destructor
+    void ~D2() { }
+    ^
+
+"SemaCXX/destructor.cpp", line 69: error: invalid destructor declaration
+    ~E_typedef();
+    ^
+
+"SemaCXX/destructor.cpp", line 74: error: invalid redeclaration of member function "F::~F()" (declared at line 73)
+    ~F();
+    ^
+
+"SemaCXX/destructor.cpp", line 77: error: expected a declaration
+  ~;
+  ^
+
+"SemaCXX/destructor.cpp", line 78: error: expected a declaration
+  ~undef();
+  ^
+
+"SemaCXX/destructor.cpp", line 79: error: expected a declaration
+  ~operator+(int, int);
+  ^
+
+"SemaCXX/destructor.cpp", line 80: error: expected a declaration
+  ~F(){}
+  ^
+
+"SemaCXX/destructor.cpp", line 84: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"SemaCXX/destructor.cpp", line 86: error: this declaration has no storage class or type specifier
+  G::~G() { }
+  ^
+
+"SemaCXX/destructor.cpp", line 86: error: expected a ";"
+  G::~G() { }
+   ^
+
+"SemaCXX/destructor.cpp", line 90: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"SemaCXX/destructor.cpp", line 95: error: invalid destructor declaration
+    ~X();
+    ^
+
+"SemaCXX/destructor.cpp", line 104: error: incomplete type "PR6421::T" is not allowed
+      void foo(T t)
+               ^
+
+"SemaCXX/destructor.cpp", line 110: error: identifier "bob" is undefined
+        bob<QGenericArgument>(t);
+        ^
+
+"SemaCXX/destructor.cpp", line 110: error: type name is not allowed
+        bob<QGenericArgument>(t);
+            ^
+
+"SemaCXX/destructor.cpp", line 156: error: a type qualifier is not allowed on a constructor or destructor
+      ~A() const;
+           ^
+
+"SemaCXX/destructor.cpp", line 162: warning: variable "b" is used before its value is set
+      b->~B();
+      ^
+
+"SemaCXX/destructor.cpp", line 207: error: identifier "UnknownType" is undefined
+  UnknownType S8::~S8() {
+  ^
+
+"SemaCXX/destructor.cpp", line 207: error: return type may not be specified on a destructor
+  UnknownType S8::~S8() {
+  ^
+
+"SemaCXX/destructor.cpp", line 207: error: defining an implicitly declared member function is not allowed
+  UnknownType S8::~S8() {
+                  ^
+
+"SemaCXX/destructor.cpp", line 441: error: invalid destructor name for type "PR7900::B"
+      b.~A();
+         ^
+
+"SemaCXX/destructor.cpp", line 442: error: invalid destructor name for type "PR7900::B"
+      (&b)->~A();
+             ^
+
+"SemaCXX/destructor.cpp", line 447: error: a constructor or destructor may not have its address taken
+    auto p = &A::~A;
+             ^
+
+"SemaCXX/destructor.cpp", line 452: error: return type may not be specified on a destructor
+    volatile ~S() { }
+    ^
+
+"SemaCXX/destructor.cpp", line 463: error: a pseudo-destructor reference can only be used for a pseudo-destructor call
+    (s.~S);
+       ^
+
+"SemaCXX/destructor.cpp", line 469: error: identifier "UnknownType" is undefined
+      UnknownType xx;
+      ^
+
+"SemaCXX/destructor.cpp", line 558: error: badly-formed pure specifier (only "= 0" is allowed)
+    ~Baz() = defaul;
+             ^
+
+"SemaCXX/destructor.cpp", line 567: error: pure specifier ("= 0") allowed only on virtual functions
+    ~Foo() = {}
+           ^
+
+"SemaCXX/destructor.cpp", line 567: error: badly-formed pure specifier (only "= 0" is allowed)
+    ~Foo() = {}
+             ^
+
+"SemaCXX/destructor.cpp", line 570: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"SemaCXX/destructor.cpp", line 570: error: expected a ";"
+  };
+  ^
+
+"SemaCXX/destructor.cpp", line 579: error: pure specifier ("= 0") allowed only on virtual functions
+    ~X() = defaul;
+         ^
+
+"SemaCXX/destructor.cpp", line 579: error: badly-formed pure specifier (only "= 0" is allowed)
+    ~X() = defaul;
+           ^
+
+"SemaCXX/destructor.cpp", line 586: error: invalid destructor declaration
+    *&~A();
+    ^
+
+"SemaCXX/destructor.cpp", line 590: error: invalid destructor declaration
+    *&&~B();
+    ^
+
+"SemaCXX/destructor.cpp", line 594: error: invalid destructor declaration
+    *const ~C();
+    ^
+
+"SemaCXX/destructor.cpp", line 598: error: invalid destructor declaration
+    *const * ~D();
+    ^
+
+"SemaCXX/destructor.cpp", line 602: error: invalid destructor declaration
+    *E::*~E();
+    ^
+
+"SemaCXX/destructor.cpp", line 606: error: invalid destructor declaration
+    *F::*const ~F();
+    ^
+
+"SemaCXX/destructor.cpp", line 610: error: invalid destructor declaration
+    ****~G();
+    ^
+
+"SemaCXX/destructor.cpp", line 614: error: invalid destructor declaration
+    **~H();
+    ^
+
+"SemaCXX/destructor.cpp", line 618: error: invalid destructor declaration
+    *~I();
+    ^
+
+"SemaCXX/destructor.cpp", line 622: error: invalid destructor declaration
+    *&~J();
+    ^
+
+"SemaCXX/destructor.cpp", line 626: error: invalid destructor declaration
+    **&&~K();
+    ^
+
+"SemaCXX/destructor.cpp", line 136: error: name followed by "::" must be a class or namespace name
+        T::deleteIt(p);
+        ^
+          detected during instantiation of "void test6::A<T>::operator delete(void *) [with T=int]" 
+
+45 errors detected in the compilation of "Test_name.c".

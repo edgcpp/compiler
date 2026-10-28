@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 34: error: duplicate association type ("int *") in _Generic selection
+                    int * : 0, // expected-error {{type 'int *' in generic association compatible with previously specified type 'int  __attribute__((btf_type_tag("tag1")))*' (aka 'int *')}}
+                    ^
+
+"Test_name.c", line 39: error: function "bar2" has already been defined (previous definition at line 38)
+  void bar2(int *a) __attribute__((overloadable)) { asm volatile (""); } // expected-error {{redefinition of 'bar2'}}
+       ^
+
+2 errors detected in the compilation of "Test_name.c".

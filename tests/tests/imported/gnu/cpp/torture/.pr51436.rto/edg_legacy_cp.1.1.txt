@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 26: warning: missing return statement at end of non-void function "Object::cast"
+      }
+      ^
+
+"Test_name.c", line 49: warning: missing return statement at end of non-void function "Handle<T>::cast(Handle<S>)"
+      }
+      ^
+
+"Test_name.c", line 56: warning: missing return statement at end of non-void function "Handle<T>::operator*"
+  }
+  ^
+
+"Test_name.c", line 12: warning: missing return statement at end of non-void function "BitCastHelper<Dest, Source>::cast [with Dest=String **, Source=String **]"
+      }
+      ^
+          detected during:
+            instantiation of "Dest BitCastHelper<Dest, Source>::cast(const Source &) [with Dest=String **, Source=String **]" at line 16
+            instantiation of "Dest BitCast<Dest,Source>(Source) [with Dest=String **, Source=String **]" at line 55
+            instantiation of "T *Handle<T>::operator*() const [with T=String]" at line 48
+            instantiation of "Handle<T> Handle<T>::cast(Handle<S>) [with T=ExternalTwoByteString, S=String]" at line 62
+
+"Test_name.c", line 17: warning: missing return statement at end of non-void function "BitCast<Dest,Source>(Source) [with Dest=String **, Source=String **]"
+  }
+  ^
+          detected during:
+            instantiation of "Dest BitCast<Dest,Source>(Source) [with Dest=String **, Source=String **]" at line 55
+            instantiation of "T *Handle<T>::operator*() const [with T=String]" at line 48
+            instantiation of "Handle<T> Handle<T>::cast(Handle<S>) [with T=ExternalTwoByteString, S=String]" at line 62
+

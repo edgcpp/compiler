@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 15: error: declaration is incompatible with "const int n" (declared at line 14)
+  extern typeof(i) n;         // expected-error {{redeclaration of 'n' with a different type: 'typeof (i)' (aka 'int') vs 'const int'}}
+                   ^
+
+"Test_name.c", line 16: error: declaration is incompatible with "const int n" (declared at line 14)
+  extern typeof_unqual(n) n;  // expected-error {{redeclaration of 'n' with a different type: 'typeof_unqual (n)' (aka 'int') vs 'const int'}}
+                          ^
+
+"Test_name.c", line 20: error: declaration is incompatible with "const int k" (declared at line 19)
+  extern typeof_unqual(j) k; // expected-error {{redeclaration of 'k' with a different type: 'typeof_unqual (j)' (aka 'int') vs 'typeof (j)' (aka 'const int')}}
+                          ^
+
+"Test_name.c", line 27: error: declaration is incompatible with "const int m" (declared at line 26)
+  extern typeof_unqual(const int) m; // expected-error {{redeclaration of 'm' with a different type: 'typeof_unqual(const int)' (aka 'int') vs 'typeof(const int)' (aka 'const int')}}
+                                  ^
+
+"Test_name.c", line 43: error: declaration is incompatible with "_Atomic(int) i2" (declared at line 40)
+  extern typeof_unqual(i2) i2; // expected-error {{redeclaration of 'i2' with a different type: 'typeof_unqual (i2)' (aka 'int') vs 'typeof (i2)' (aka '_Atomic(int)')}}
+                           ^
+
+"Test_name.c", line 126: error: declaration is incompatible with "_Atomic(int) aAi[2]" (declared at line 123)
+  extern typeof_unqual(aAi) aAi;
+                            ^
+
+"Test_name.c", line 128: error: declaration is incompatible with "_Atomic(int) aAii[2][2]" (declared at line 124)
+  extern typeof_unqual(aAii) aAii;
+                             ^
+
+"Test_name.c", line 133: error: declaration is incompatible with "_Atomic(int) aAi[2]" (declared at line 123)
+  extern typeof_unqual(aAi) aAi;
+                            ^
+
+"Test_name.c", line 135: error: declaration is incompatible with "_Atomic(int) aAii[2][2]" (declared at line 124)
+  extern typeof_unqual(aAii) aAii;
+                             ^
+
+"Test_name.c", line 139: warning: variable "animals2_array1" was set but never used
+   const char* animals2_array1[3];
+               ^
+
+"Test_name.c", line 140: warning: variable "animals2_array" was set but never used
+   typeof_unqual(animals) animals2_array;
+                          ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "vector_size"
+  typedef char v16qi __attribute__((vector_size (16)));
+                                    ^
+
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef float v4sf __attribute__((vector_size (16)));
+                                    ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef double v2df __attribute__((vector_size (16)));
+                                     ^
+
+"Test_name.c", line 20: error: builtin function is not available because vector types are not supported
+    cva[0] = __builtin_ia32_loaddqu (ca);
+             ^
+
+"Test_name.c", line 21: error: builtin function is not available because vector types are not supported
+    cva[0] = __builtin_ia32_lddqu (ca);
+             ^
+
+"Test_name.c", line 23: error: builtin function is not available because vector types are not supported
+    fva[0] = __builtin_ia32_loadups (fa);
+             ^
+
+"Test_name.c", line 25: error: builtin function is not available because vector types are not supported
+    dva[0] = __builtin_ia32_loadupd (da);
+             ^
+
+4 errors detected in the compilation of "Test_name.c".

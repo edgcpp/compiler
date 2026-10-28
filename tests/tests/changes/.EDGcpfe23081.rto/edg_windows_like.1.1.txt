@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++14 --gnu_version=70300 Test_name.c
+"Test_name.c", line 12: warning: unknown attribute "vector_size"
+  using V4 = int __attribute((vector_size(16)));
+                              ^
+
+"Test_name.c", line 13: warning: variable "x" was declared but never referenced
+  constexpr V4 x = V4();  // Previously an error.  Now okay.
+               ^
+

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 9: error: function "not_used_fmv" has already been defined (previous definition at line 7)
+  static int not_used_fmv(void) { return 2; }
+             ^
+
+"Test_name.c", line 11: error: function "not_used_fmv" has already been defined (previous definition at line 7)
+  static int not_used_fmv(void) { return 0; } // expected-warning {{unused function 'not_used_fmv'}}
+             ^
+
+"Test_name.c", line 17: error: function "definitely_used_fmv" has already been defined (previous definition at line 15)
+  static int definitely_used_fmv(void) { return 2; }
+             ^
+
+"Test_name.c", line 19: error: function "definitely_used_fmv" has already been defined (previous definition at line 15)
+  static int definitely_used_fmv(void) { return 0; }
+             ^
+
+4 errors detected in the compilation of "Test_name.c".

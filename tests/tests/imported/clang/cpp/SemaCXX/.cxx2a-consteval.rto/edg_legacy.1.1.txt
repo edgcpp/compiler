@@ -1,0 +1,1060 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 13: error: only one of "constexpr", "consteval", and "constinit" can appear on a declaration
+  consteval constexpr int f2(int i) {
+            ^
+
+"Test_name.c", line 24: error: only one of "constexpr", "consteval", and "constinit" can appear on a declaration
+  constexpr consteval int f3(int i) {
+            ^
+
+"Test_name.c", line 36: error: a destructor cannot be consteval
+    consteval ~A() = default; // expected-error {{destructor cannot be declared consteval}}
+    ^
+
+"Test_name.c", line 39: error: "consteval" is not valid here
+  consteval struct B {}; // expected-error {{struct cannot be marked consteval}}
+  ^
+
+"Test_name.c", line 41: error: "consteval" is not valid here
+  consteval typedef B b; // expected-error {{typedef cannot be consteval}}
+  ^
+
+"Test_name.c", line 44: error: function "basic_sema::redecl" has already been defined (previous definition at line 43)
+  constexpr int redecl() {return 0;} // expected-error {{constexpr declaration of 'redecl' follows consteval declaration}}
+                ^
+
+"Test_name.c", line 44: error: function "basic_sema::redecl" (declared at line 43) was previously declared consteval
+  constexpr int redecl() {return 0;} // expected-error {{constexpr declaration of 'redecl' follows consteval declaration}}
+                ^
+
+"Test_name.c", line 46: error: "consteval" is not permitted on the declaration of a variable or static data member
+  consteval int i = 0; // expected-error {{consteval can only be used in function declarations}}
+  ^
+
+"Test_name.c", line 48: warning: declaration does not declare anything
+  consteval int; // expected-error {{consteval can only be used in function declarations}}
+  ^
+
+"Test_name.c", line 48: error: "consteval" is not valid here
+  consteval int; // expected-error {{consteval can only be used in function declarations}}
+  ^
+
+"Test_name.c", line 50: warning: missing return statement at end of non-void function "basic_sema::f1()"
+  consteval int f1() {} // expected-error {{no return statement in consteval function}}
+                      ^
+
+"Test_name.c", line 60: error: a destructor cannot be consteval
+    consteval ~D() = default; // expected-error {{destructor cannot be declared consteval}}
+    ^
+
+"Test_name.c", line 59: error: defaulted default constructor cannot be constexpr because the corresponding implicitly declared default constructor would not be constexpr
+    consteval D() = default; // expected-error {{cannot be marked consteval}}
+              ^
+
+"Test_name.c", line 64: error: a destructor cannot be consteval
+    consteval ~E() {} // expected-error {{cannot be declared consteval}}
+    ^
+
+"Test_name.c", line 68: error: function "main" may not be declared consteval
+  consteval int main() { // expected-error {{'main' is not allowed to be declared consteval}}
+                ^
+
+"Test_name.c", line 81: error: the address of a consteval function cannot be used here
+  func_type* p1 = (&f_eval);
+                    ^
+
+"Test_name.c", line 83: error: the address of a consteval function cannot be used here
+  func_type* p7 = __builtin_addressof(f_eval);
+                                      ^
+
+"Test_name.c", line 86: error: the address of a consteval function cannot be used here
+  auto p = f_eval;
+           ^
+
+"Test_name.c", line 89: error: the address of a consteval function cannot be used here
+  auto m1 = &basic_sema::A::f1;
+            ^
+
+"Test_name.c", line 91: error: the address of a consteval function cannot be used here
+  auto l1 = &decltype(basic_sema::l_eval)::operator();
+            ^
+
+"Test_name.c", line 99: error: the address of a consteval function cannot be used here
+  auto ptr = &f;
+              ^
+
+"Test_name.c", line 103: error: the address of a consteval function cannot be used here
+    return &f;
+            ^
+
+"Test_name.c", line 112: error: a new or delete operator cannot be declared "consteval"
+    consteval void *operator new(size_t count);
+    ^
+
+"Test_name.c", line 114: error: a new or delete operator cannot be declared "consteval"
+    consteval void *operator new[](size_t count);
+    ^
+
+"Test_name.c", line 116: error: a new or delete operator cannot be declared "consteval"
+    consteval void operator delete(void* ptr);
+    ^
+
+"Test_name.c", line 118: error: a new or delete operator cannot be declared "consteval"
+    consteval void operator delete[](void* ptr);
+    ^
+
+"Test_name.c", line 120: error: a destructor cannot be consteval
+    consteval ~A() {}
+    ^
+
+"Test_name.c", line 144: warning: variable "i" was declared but never referenced
+    auto i = f1(E() + &f);
+         ^
+
+"Test_name.c", line 170: error: the address of a consteval function cannot be used here
+  auto ptr = &operator""_test;
+              ^
+
+"Test_name.c", line 177: error: call to consteval function "user_defined_literal::operator ""_test1" did not produce a valid constant expression
+  auto i1 = 0_test1; // expected-error {{is not a constant expression}}
+            ^
+"Test_name.c", line 177: note: address of consteval function "f_eval" in constant expression result
+  auto i1 = 0_test1; // expected-error {{is not a constant expression}}
+            ^
+
+"Test_name.c", line 193: error: call to consteval function "return_address::ret1" did not produce a valid constant expression
+  auto ptr = ret1(0);
+                 ^
+"Test_name.c", line 193: note: address of consteval function "return_address::f" in constant expression result
+  auto ptr = ret1(0);
+                 ^
+
+"Test_name.c", line 209: error: expression must have a constant value
+  C<&A::f> c;
+    ^
+"Test_name.c", line 209: note: address of consteval function "return_address::A::f" in constant expression result
+  C<&A::f> c;
+    ^
+
+"Test_name.c", line 217: error: expression must have a constant value
+  C<ret2()> c1;
+    ^
+"Test_name.c", line 217: note: address of consteval function "return_address::A::f" in constant expression result
+  C<ret2()> c1;
+        ^
+
+"Test_name.c", line 234: error: call to consteval function "context::f" did not produce a valid constant expression
+  int t1 = f(g_i);
+            ^
+"Test_name.c", line 234: note: the value of variable "context::g_i" (declared at line 225) cannot be used as a constant
+  int t1 = f(g_i);
+             ^
+
+"Test_name.c", line 241: error: call to consteval function "context::f" did not produce a valid constant expression
+    int t = f(i);
+             ^
+"Test_name.c", line 241: note: the value of parameter "i" (declared at line 239) cannot be used as a constant
+    int t = f(i);
+              ^
+
+"Test_name.c", line 322: warning: variable "k" was declared but never referenced
+    { int k = A().ret_i(); }
+          ^
+
+"Test_name.c", line 324: error: call to consteval function "temporaries::to_lvalue_ref" did not produce a valid constant expression
+    { A k = to_lvalue_ref(A()); }// expected-error {{is not a constant expression}}
+                         ^
+"Test_name.c", line 324: note: reference or pointer to temporary with limited lifetime
+    { A k = to_lvalue_ref(A()); }// expected-error {{is not a constant expression}}
+                         ^
+
+"Test_name.c", line 326: error: call to consteval function "temporaries::to_lvalue_ref" did not produce a valid constant expression
+    { A k = to_lvalue_ref(A().ret_a()); } // expected-error {{is not a constant expression}}
+                         ^
+"Test_name.c", line 326: note: reference or pointer to temporary with limited lifetime
+    { A k = to_lvalue_ref(A().ret_a()); } // expected-error {{is not a constant expression}}
+                         ^
+
+"Test_name.c", line 328: warning: variable "k" was declared but never referenced
+    { int k = A().ret_a().ret_i(); }
+          ^
+
+"Test_name.c", line 329: warning: variable "k" was declared but never referenced
+    { int k = by_value_a(A()); }
+          ^
+
+"Test_name.c", line 330: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(A()); }
+          ^
+
+"Test_name.c", line 331: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(a); }
+          ^
+
+"Test_name.c", line 332: warning: variable "k" was declared but never referenced
+    { int k = rvalue_ref(A()); }
+          ^
+
+"Test_name.c", line 333: warning: variable "k" was declared but never referenced
+    { int k = rvalue_ref(std::move(a)); }
+          ^
+
+"Test_name.c", line 334: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(A().ret_a()); }
+          ^
+
+"Test_name.c", line 335: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(to_lvalue_ref(A().ret_a())); }
+          ^
+
+"Test_name.c", line 336: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(to_lvalue_ref(std::move(a))); }
+          ^
+
+"Test_name.c", line 337: warning: variable "k" was declared but never referenced
+    { int k = by_value_a(A().ret_a()); }
+          ^
+
+"Test_name.c", line 338: warning: variable "k" was declared but never referenced
+    { int k = by_value_a(to_lvalue_ref(std::move(a))); }
+          ^
+
+"Test_name.c", line 340: warning: variable "k" was declared but never referenced
+    { int k = (const_a_ref(A().ret_a()), A().ret_i()); }//
+          ^
+
+"Test_name.c", line 353: error: call to consteval function "alloc::f" did not produce a valid constant expression
+  int i1 = f(); // expected-error {{is not a constant expression}}
+            ^
+"Test_name.c", line 353: note: some dynamic allocations (total number = 1) were not deallocated
+  int i1 = f(); // expected-error {{is not a constant expression}}
+            ^
+"Test_name.c", line 348: note: allocation occurred here
+    int *A = new int(0);
+             ^
+
+"Test_name.c", line 379: warning: variable "k" was declared but never referenced
+    { int k = A().ret_i(); }
+          ^
+
+"Test_name.c", line 380: error: call to consteval function "alloc::A::ret_a" did not produce a valid constant expression
+    { A k = A().ret_a(); } // expected-error {{is not a constant expression}}
+                     ^
+"Test_name.c", line 380: note: invalid use of address of interpreter storage
+    { A k = A().ret_a(); } // expected-error {{is not a constant expression}}
+                     ^
+
+"Test_name.c", line 382: error: call to consteval function "alloc::to_lvalue_ref" did not produce a valid constant expression
+    { A k = to_lvalue_ref(A()); } // expected-error {{is not a constant expression}}
+                         ^
+"Test_name.c", line 382: note: invalid use of address of interpreter storage
+    { A k = to_lvalue_ref(A()); } // expected-error {{is not a constant expression}}
+                         ^
+
+"Test_name.c", line 384: error: call to consteval function "alloc::to_lvalue_ref" did not produce a valid constant expression
+    { A k = to_lvalue_ref(A().ret_a()); }
+                         ^
+"Test_name.c", line 384: note: invalid use of address of interpreter storage
+    { A k = to_lvalue_ref(A().ret_a()); }
+                         ^
+
+"Test_name.c", line 388: error: call to consteval function "alloc::A::ret_a" did not produce a valid constant expression
+    { int k = A().ret_a().ret_i(); }
+                       ^
+"Test_name.c", line 388: note: invalid use of address of interpreter storage
+    { int k = A().ret_a().ret_i(); }
+                       ^
+
+"Test_name.c", line 391: warning: variable "k" was declared but never referenced
+    { int k = by_value_a(A()); }
+          ^
+
+"Test_name.c", line 392: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(A()); }
+          ^
+
+"Test_name.c", line 393: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(a); }
+          ^
+
+"Test_name.c", line 394: warning: variable "k" was declared but never referenced
+    { int k = rvalue_ref(A()); }
+          ^
+
+"Test_name.c", line 395: warning: variable "k" was declared but never referenced
+    { int k = rvalue_ref(std::move(a)); }
+          ^
+
+"Test_name.c", line 396: error: call to consteval function "alloc::const_a_ref" did not produce a valid constant expression
+    { int k = const_a_ref(A().ret_a()); }
+                         ^
+"Test_name.c", line 396: note: some dynamic allocations (total number = 1) were not deallocated
+    { int k = const_a_ref(A().ret_a()); }
+                         ^
+"Test_name.c", line 356: note: allocation occurred here
+    int* p = new int(42);
+             ^
+
+"Test_name.c", line 397: error: call to consteval function "alloc::const_a_ref" did not produce a valid constant expression
+    { int k = const_a_ref(to_lvalue_ref(A().ret_a())); }
+                         ^
+"Test_name.c", line 397: note: some dynamic allocations (total number = 1) were not deallocated
+    { int k = const_a_ref(to_lvalue_ref(A().ret_a())); }
+                         ^
+"Test_name.c", line 356: note: allocation occurred here
+    int* p = new int(42);
+             ^
+
+"Test_name.c", line 398: warning: variable "k" was declared but never referenced
+    { int k = const_a_ref(to_lvalue_ref(std::move(a))); }
+          ^
+
+"Test_name.c", line 399: warning: variable "k" was declared but never referenced
+    { int k = by_value_a(A().ret_a()); }
+          ^
+
+"Test_name.c", line 400: warning: variable "k" was declared but never referenced
+    { int k = by_value_a(to_lvalue_ref(static_cast<const A&&>(a))); }
+          ^
+
+"Test_name.c", line 401: error: call to consteval function "alloc::A::ret_a" did not produce a valid constant expression
+    { int k = (A().ret_a(), A().ret_i()); }// expected-error {{is not a constant expression}}
+                        ^
+"Test_name.c", line 401: note: invalid use of address of interpreter storage
+    { int k = (A().ret_a(), A().ret_i()); }// expected-error {{is not a constant expression}}
+                        ^
+
+"Test_name.c", line 403: error: call to consteval function "alloc::const_a_ref" did not produce a valid constant expression
+    { int k = (const_a_ref(A().ret_a()), A().ret_i()); }
+                          ^
+"Test_name.c", line 403: note: some dynamic allocations (total number = 1) were not deallocated
+    { int k = (const_a_ref(A().ret_a()), A().ret_i()); }
+                          ^
+"Test_name.c", line 356: note: allocation occurred here
+    int* p = new int(42);
+             ^
+
+"Test_name.c", line 426: error: call to consteval function "self_referencing::f" did not produce a valid constant expression
+    s = f(0); // expected-error {{is not a constant expression}}
+         ^
+"Test_name.c", line 426: note: reference or pointer to temporary with limited lifetime
+    s = f(0); // expected-error {{is not a constant expression}}
+         ^
+
+"Test_name.c", line 442: error: call to consteval function "self_referencing::S1::S1(int)" did not produce a valid constant expression
+    s = S1(0); // expected-error {{is not a constant expression}}
+        ^
+
+"Test_name.c", line 474: error: non-consteval member cannot override consteval function "ctor::override::A::f"
+      void f(); // expected-error {{non-consteval function 'f' cannot override a consteval function}}
+           ^
+
+"Test_name.c", line 475: error: consteval member cannot override non-consteval function "ctor::override::A::g"
+      consteval void g(); // expected-error {{consteval function 'g' cannot override a non-consteval function}}
+                     ^
+
+"Test_name.c", line 485: error: no valid std::strong_ordering type found (<compare> must be included)
+      struct Y : X {
+             ^
+
+"Test_name.c", line 485: error: no valid std::partial_ordering type found (<compare> must be included)
+      struct Y : X {
+             ^
+
+"Test_name.c", line 485: error: no valid std::weak_ordering type found (<compare> must be included)
+      struct Y : X {
+             ^
+
+"Test_name.c", line 485: error: non-consteval member cannot override consteval function "ctor::override::implicit_equals_1::X::operator==(const ctor::override::implicit_equals_1::Y &) const"
+      struct Y : X {
+             ^
+
+"Test_name.c", line 498: error: consteval member cannot override non-consteval function "ctor::override::implicit_equals_2::X::operator==(const ctor::override::implicit_equals_2::Y &) const"
+      struct Y : X {
+             ^
+
+"Test_name.c", line 521: error: call to consteval function "ctor::operator_rewrite::operator<=>(const ctor::operator_rewrite::B &, const ctor::operator_rewrite::B &)" did not produce a valid constant expression
+    bool k3 = B() < b; // expected-error-re {{call to consteval function '{{.*}}::operator<=>' is not a constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 516: note: attempt to access run-time storage
+      friend consteval int operator<=>(const B &l, const B &r) { return r.n - l.n; } // expected-note {{read of }}
+                                                                         ^
+
+"Test_name.c", line 536: warning: variable "a" was declared but never referenced
+    { A a; }
+        ^
+
+"Test_name.c", line 537: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A a(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+          ^
+"Test_name.c", line 537: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A a(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+          ^
+
+"Test_name.c", line 538: warning: variable "b" was declared but never referenced
+    { B b(nullptr, 0); }
+        ^
+
+"Test_name.c", line 539: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B b(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+          ^
+"Test_name.c", line 539: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B b(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+          ^
+
+"Test_name.c", line 540: warning: variable "a" was declared but never referenced
+    { A a{}; }
+        ^
+
+"Test_name.c", line 541: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A a{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+"Test_name.c", line 541: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A a{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+
+"Test_name.c", line 542: warning: variable "b" was declared but never referenced
+    { B b{nullptr, 0}; }
+        ^
+
+"Test_name.c", line 543: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B b{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+"Test_name.c", line 543: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B b{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+
+"Test_name.c", line 544: warning: variable "a" was declared but never referenced
+    { A a = A(); }
+        ^
+
+"Test_name.c", line 545: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A a = A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+"Test_name.c", line 545: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A a = A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+
+"Test_name.c", line 546: warning: variable "b" was declared but never referenced
+    { B b = B(nullptr, 0); }
+        ^
+
+"Test_name.c", line 547: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B b = B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+"Test_name.c", line 547: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B b = B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+
+"Test_name.c", line 548: warning: variable "a" was declared but never referenced
+    { A a = A{}; }
+        ^
+
+"Test_name.c", line 549: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A a = A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+             ^
+"Test_name.c", line 549: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A a = A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+             ^
+
+"Test_name.c", line 550: warning: variable "b" was declared but never referenced
+    { B b = B{nullptr, 0}; }
+        ^
+
+"Test_name.c", line 551: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B b = B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+             ^
+"Test_name.c", line 551: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B b = B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+             ^
+
+"Test_name.c", line 552: warning: variable "a" was set but never used
+    { A a; a = A(); }
+        ^
+
+"Test_name.c", line 553: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A a; a = A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+               ^
+"Test_name.c", line 553: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A a; a = A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+               ^
+
+"Test_name.c", line 555: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B b; b = B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+               ^
+"Test_name.c", line 555: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B b; b = B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+               ^
+
+"Test_name.c", line 556: warning: variable "a" was set but never used
+    { A a; a = A{}; }
+        ^
+
+"Test_name.c", line 557: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A a; a = A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                ^
+"Test_name.c", line 557: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A a; a = A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                ^
+
+"Test_name.c", line 559: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B b; b = B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                ^
+"Test_name.c", line 559: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B b; b = B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                ^
+
+"Test_name.c", line 560: warning: variable "a" was set but never used
+    { A* a; a = new A(); }
+         ^
+
+"Test_name.c", line 561: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A* a; a = new A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+"Test_name.c", line 561: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A* a; a = new A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+
+"Test_name.c", line 561: warning: variable "a" was set but never used
+    { A* a; a = new A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+
+"Test_name.c", line 562: warning: variable "b" was set but never used
+    { B* b; b = new B(nullptr, 0); }
+         ^
+
+"Test_name.c", line 563: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B* b; b = new B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+"Test_name.c", line 563: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B* b; b = new B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+
+"Test_name.c", line 563: warning: variable "b" was set but never used
+    { B* b; b = new B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+
+"Test_name.c", line 564: warning: variable "a" was set but never used
+    { A* a; a = new A{}; }
+         ^
+
+"Test_name.c", line 565: error: call to consteval function "ctor::A::A(int (*)())" did not produce a valid constant expression
+    { A* a; a = new A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+"Test_name.c", line 565: note: address of consteval function "ctor::f_eval" in constant expression result
+    { A* a; a = new A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+
+"Test_name.c", line 565: warning: variable "a" was set but never used
+    { A* a; a = new A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+
+"Test_name.c", line 566: warning: variable "b" was set but never used
+    { B* b; b = new B{nullptr, 0}; }
+         ^
+
+"Test_name.c", line 567: error: call to consteval function "ctor::B::B(int (*)(), int)" did not produce a valid constant expression
+    { B* b; b = new B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+"Test_name.c", line 567: note: address of consteval function "ctor::f_eval" in constant expression result
+    { B* b; b = new B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                     ^
+
+"Test_name.c", line 567: warning: variable "b" was set but never used
+    { B* b; b = new B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+         ^
+
+"Test_name.c", line 335: error: call to consteval function "temporaries::to_lvalue_ref" did not produce a valid constant expression
+    { int k = const_a_ref(to_lvalue_ref(A().ret_a())); }
+                                       ^
+"Test_name.c", line 335: note: reference or pointer to temporary with limited lifetime
+    { int k = const_a_ref(to_lvalue_ref(A().ret_a())); }
+                                       ^
+
+"Test_name.c", line 592: warning: variable "c" was declared but never referenced
+    { Copy c(C); }
+           ^
+
+"Test_name.c", line 593: error: the address of a consteval function cannot be used here
+    { Copy c((Copy(&f_eval))); }// expected-error {{cannot take address of consteval}}
+                    ^
+
+"Test_name.c", line 594: warning: variable "c" was declared but never referenced
+    { Copy c(std::move(C)); }
+           ^
+
+"Test_name.c", line 595: error: the address of a consteval function cannot be used here
+    { Copy c(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                             ^
+
+"Test_name.c", line 596: error: the address of a consteval function cannot be used here
+    { Copy c(to_lvalue_ref((Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                  ^
+
+"Test_name.c", line 597: warning: variable "c" was declared but never referenced
+    { Copy c(to_lvalue_ref(std::move(C))); }
+           ^
+
+"Test_name.c", line 598: error: the address of a consteval function cannot be used here
+    { Copy c(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                           ^
+
+"Test_name.c", line 599: warning: variable "c" was declared but never referenced
+    { Copy c = Copy(C); }
+           ^
+
+"Test_name.c", line 600: error: the address of a consteval function cannot be used here
+    { Copy c = Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+                          ^
+
+"Test_name.c", line 601: warning: variable "c" was declared but never referenced
+    { Copy c = Copy(std::move(C)); }
+           ^
+
+"Test_name.c", line 602: error: the address of a consteval function cannot be used here
+    { Copy c = Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                    ^
+
+"Test_name.c", line 603: error: the address of a consteval function cannot be used here
+    { Copy c = Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                        ^
+
+"Test_name.c", line 604: warning: variable "c" was declared but never referenced
+    { Copy c = Copy(to_lvalue_ref(std::move(C))); }
+           ^
+
+"Test_name.c", line 605: error: the address of a consteval function cannot be used here
+    { Copy c = Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                                  ^
+
+"Test_name.c", line 606: warning: variable "c" was set but never used
+    { Copy c; c = Copy(C); }
+           ^
+
+"Test_name.c", line 607: error: the address of a consteval function cannot be used here
+    { Copy c; c = Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+                             ^
+
+"Test_name.c", line 607: warning: variable "c" was set but never used
+    { Copy c; c = Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+           ^
+
+"Test_name.c", line 608: warning: variable "c" was set but never used
+    { Copy c; c = Copy(std::move(C)); }
+           ^
+
+"Test_name.c", line 609: error: the address of a consteval function cannot be used here
+    { Copy c; c = Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                       ^
+
+"Test_name.c", line 609: warning: variable "c" was set but never used
+    { Copy c; c = Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+           ^
+
+"Test_name.c", line 610: error: the address of a consteval function cannot be used here
+    { Copy c; c = Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                           ^
+
+"Test_name.c", line 610: warning: variable "c" was set but never used
+    { Copy c; c = Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+           ^
+
+"Test_name.c", line 611: warning: variable "c" was set but never used
+    { Copy c; c = Copy(to_lvalue_ref(std::move(C))); }
+           ^
+
+"Test_name.c", line 612: error: the address of a consteval function cannot be used here
+    { Copy c; c = Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                                                     ^
+
+"Test_name.c", line 612: warning: variable "c" was set but never used
+    { Copy c; c = Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+           ^
+
+"Test_name.c", line 613: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(C); }
+            ^
+
+"Test_name.c", line 614: error: call to consteval function "copy_ctor::Copy::Copy(const copy_ctor::Copy &)" did not produce a valid constant expression
+    { Copy* c; c = new Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+                           ^
+"Test_name.c", line 614: note: address of consteval function "copy_ctor::f_eval" in constant expression result
+    { Copy* c; c = new Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+                           ^
+
+"Test_name.c", line 614: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+            ^
+
+"Test_name.c", line 615: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(std::move(C)); }
+            ^
+
+"Test_name.c", line 616: error: call to consteval function "copy_ctor::Copy::Copy(const copy_ctor::Copy &)" did not produce a valid constant expression
+    { Copy* c; c = new Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                           ^
+"Test_name.c", line 616: note: address of consteval function "copy_ctor::f_eval" in constant expression result
+    { Copy* c; c = new Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                           ^
+
+"Test_name.c", line 616: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+
+"Test_name.c", line 617: error: call to consteval function "copy_ctor::Copy::Copy(const copy_ctor::Copy &)" did not produce a valid constant expression
+    { Copy* c; c = new Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                           ^
+"Test_name.c", line 617: note: address of consteval function "copy_ctor::f_eval" in constant expression result
+    { Copy* c; c = new Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                           ^
+
+"Test_name.c", line 617: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+
+"Test_name.c", line 618: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(to_lvalue_ref(std::move(C))); }
+            ^
+
+"Test_name.c", line 619: error: call to consteval function "copy_ctor::Copy::Copy(const copy_ctor::Copy &)" did not produce a valid constant expression
+    { Copy* c; c = new Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                           ^
+"Test_name.c", line 619: note: address of consteval function "copy_ctor::f_eval" in constant expression result
+    { Copy* c; c = new Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+                           ^
+
+"Test_name.c", line 619: warning: variable "c" was set but never used
+    { Copy* c; c = new Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+            ^
+
+"Test_name.c", line 634: error: call to consteval function "unevaluated::g(auto) [with <auto-1>=long]" did not produce a valid constant expression
+  auto e = g(f()); // expected-error {{is not a constant expression}}
+            ^
+"Test_name.c", line 634: note: cannot call non-constexpr function "unevaluated::f" (declared at line 629)
+  auto e = g(f()); // expected-error {{is not a constant expression}}
+             ^
+
+"Test_name.c", line 760: warning: expression has no effect
+      this->a() + d(); // expected-error {{call to consteval function 'PR48235::A::a' is not a constant expression}} \
+      ^
+
+"Test_name.c", line 765: warning: expression has no effect
+      a() + d(); // expected-error {{call to consteval function 'PR48235::A::a' is not a constant expression}} \
+      ^
+
+"Test_name.c", line 777: error: call to consteval function "NamespaceScopeConsteval::S::S()" did not produce a valid constant expression
+  S s1; // expected-error {{call to consteval function 'NamespaceScopeConsteval::S::S' is not a constant expression}} \
+      ^
+"Test_name.c", line 777: note: access to uninitialized subobject (member "NamespaceScopeConsteval::S::Val")
+  S s1; // expected-error {{call to consteval function 'NamespaceScopeConsteval::S::S' is not a constant expression}} \
+      ^
+
+"Test_name.c", line 786: error: call to consteval function "NamespaceScopeConsteval::T<Ty>::T() [with Ty=int]" did not produce a valid constant expression
+  T<int> t; // expected-error {{call to consteval function 'NamespaceScopeConsteval::T<int>::T' is not a constant expression}} \
+          ^
+"Test_name.c", line 786: note: access to uninitialized subobject (member "NamespaceScopeConsteval::T<Ty>::Val [with Ty=int]")
+  T<int> t; // expected-error {{call to consteval function 'NamespaceScopeConsteval::T<int>::T' is not a constant expression}} \
+          ^
+
+"Test_name.c", line 850: error: call to consteval function "defaulted_special_member_template::default_ctor<T>::default_ctor() [with T=defaulted_special_member_template::foo]" did not produce a valid constant expression
+    default_ctor<foo> fail0; // expected-error {{call to consteval function 'defaulted_special_member_template::default_ctor<defaulted_special_member_template::foo>::default_ctor' is not a constant expression}} \
+                           ^
+"Test_name.c", line 850: note: cannot call non-constexpr function "defaulted_special_member_template::default_ctor<T>::default_ctor() [with T=defaulted_special_member_template::foo]" (declared at line 819)
+    default_ctor<foo> fail0; // expected-error {{call to consteval function 'defaulted_special_member_template::default_ctor<defaulted_special_member_template::foo>::default_ctor' is not a constant expression}} \
+                           ^
+
+"Test_name.c", line 854: error: call to consteval function "defaulted_special_member_template::copy<T>::copy(const defaulted_special_member_template::copy<T> &) [with T=defaulted_special_member_template::foo]" did not produce a valid constant expression
+    copy<foo> fail1{good0}; // expected-error {{call to consteval function 'defaulted_special_member_template::copy<defaulted_special_member_template::foo>::copy' is not a constant expression}} \
+                    ^
+"Test_name.c", line 854: note: attempt to access run-time storage
+    copy<foo> fail1{good0}; // expected-error {{call to consteval function 'defaulted_special_member_template::copy<defaulted_special_member_template::foo>::copy' is not a constant expression}} \
+                    ^
+
+"Test_name.c", line 856: error: call to consteval function "defaulted_special_member_template::copy<T>::operator= [with T=defaulted_special_member_template::foo]" did not produce a valid constant expression
+    fail1 = good0;          // expected-error {{call to consteval function 'defaulted_special_member_template::copy<defaulted_special_member_template::foo>::operator=' is not a constant expression}} \
+          ^
+"Test_name.c", line 856: note: cannot call non-constexpr function "defaulted_special_member_template::foo::operator=(const defaulted_special_member_template::foo &)" (declared at line 845)
+    fail1 = good0;          // expected-error {{call to consteval function 'defaulted_special_member_template::copy<defaulted_special_member_template::foo>::operator=' is not a constant expression}} \
+          ^
+
+"Test_name.c", line 860: error: call to consteval function "defaulted_special_member_template::move<T>::move(defaulted_special_member_template::move<T> &&) [with T=defaulted_special_member_template::foo]" did not produce a valid constant expression
+    move<foo> fail2{static_cast<move<foo>&&>(good1)}; // expected-error {{call to consteval function 'defaulted_special_member_template::move<defaulted_special_member_template::foo>::move' is not a constant expression}} \
+                    ^
+"Test_name.c", line 860: note: attempt to access run-time storage
+    move<foo> fail2{static_cast<move<foo>&&>(good1)}; // expected-error {{call to consteval function 'defaulted_special_member_template::move<defaulted_special_member_template::foo>::move' is not a constant expression}} \
+                    ^
+
+"Test_name.c", line 862: error: call to consteval function "defaulted_special_member_template::move<T>::operator=(defaulted_special_member_template::move<T> &&) [with T=defaulted_special_member_template::foo]" did not produce a valid constant expression
+    fail2 = static_cast<move<foo>&&>(good1);          // expected-error {{call to consteval function 'defaulted_special_member_template::move<defaulted_special_member_template::foo>::operator=' is not a constant expression}} \
+          ^
+"Test_name.c", line 862: note: cannot call non-constexpr function "defaulted_special_member_template::foo::operator=(defaulted_special_member_template::foo &&)" (declared at line 846)
+    fail2 = static_cast<move<foo>&&>(good1);          // expected-error {{call to consteval function 'defaulted_special_member_template::move<defaulted_special_member_template::foo>::operator=' is not a constant expression}} \
+          ^
+
+"Test_name.c", line 895: error: call to consteval function "multiple_default_constructors::S<T, N>::S() [with T=multiple_default_constructors::Foo, N=3U]" did not produce a valid constant expression
+    S<Foo, 3> s5; // expected-error {{call to consteval function 'multiple_default_constructors::S<multiple_default_constructors::Foo, 3>::S' is not a constant expression}} \
+                ^
+"Test_name.c", line 895: note: cannot call non-constexpr function "multiple_default_constructors::S<T, N>::S() [with T=multiple_default_constructors::Foo, N=3U]" (declared at line 884)
+    S<Foo, 3> s5; // expected-error {{call to consteval function 'multiple_default_constructors::S<multiple_default_constructors::Foo, 3>::S' is not a constant expression}} \
+                ^
+
+"Test_name.c", line 889: warning: variable "s1" was declared but never referenced
+    S<Foo, 1> s1;
+              ^
+
+"Test_name.c", line 890: warning: variable "s2" was declared but never referenced
+    S<Bar, 1> s2;
+              ^
+
+"Test_name.c", line 897: warning: variable "s6" was declared but never referenced
+    S<Bar, 3> s6;
+              ^
+
+"Test_name.c", line 898: warning: variable "s7" was declared but never referenced
+    S<Baz, 3> s7;
+              ^
+
+"Test_name.c", line 903: warning: variable "s1" was declared but never referenced
+    S<Bar, 1> s1;
+              ^
+
+"Test_name.c", line 907: warning: variable "s2" was declared but never referenced
+    S<Bar, 3> s2;
+              ^
+
+"Test_name.c", line 908: warning: variable "s3" was declared but never referenced
+    S<Baz, 3> s3;
+              ^
+
+"Test_name.c", line 1014: error: call to consteval function "GH51695::bar(F) [with F=lambda []()->int]" did not produce a valid constant expression
+    auto t2 = bar(bar(bar(bar([=]() { return a; }))))(); // expected-error-re {{call to consteval function 'GH51695::bar<(lambda at {{.*}})>' is not a constant expression}}
+                 ^
+"Test_name.c", line 1014: note: the value of variable "a" (declared at line 1013) cannot be used as a constant
+    auto t2 = bar(bar(bar(bar([=]() { return a; }))))(); // expected-error-re {{call to consteval function 'GH51695::bar<(lambda at {{.*}})>' is not a constant expression}}
+                              ^
+
+"Test_name.c", line 1028: warning: variable "i" was declared but never referenced
+    []() consteval { int i{}; }();
+                         ^
+
+"Test_name.c", line 1045: warning: missing return statement at end of non-void function "GH58302::f"
+  }
+  ^
+
+"Test_name.c", line 1044: warning: variable "x" was declared but never referenced
+     int x = A{};
+         ^
+
+"Test_name.c", line 1054: error: expression must have a constant value
+    constexpr int (*f1)(void) = l1; // expected-error {{constexpr variable 'f1' must be initialized by a constant expression}} \
+                                ^
+"Test_name.c", line 1054: note: address of consteval function "lambda []()->int::_FUN" in constant expression result
+    constexpr int (*f1)(void) = l1; // expected-error {{constexpr variable 'f1' must be initialized by a constant expression}} \
+                                ^
+
+"Test_name.c", line 1058: warning: a "static" lambda expression is nonstandard
+    constexpr auto lstatic = []() static consteval { // expected-error {{cannot take address of consteval call operator of '(lambda at}} \
+                                  ^
+
+"Test_name.c", line 1063: error: expression must have a constant value
+    constexpr int (*f2)(void) = lstatic; // expected-error {{constexpr variable 'f2' must be initialized by a constant expression}} \
+                                ^
+"Test_name.c", line 1063: note: address of consteval function "lambda []() static->int" in constant expression result
+    constexpr int (*f2)(void) = lstatic; // expected-error {{constexpr variable 'f2' must be initialized by a constant expression}} \
+                                ^
+
+"Test_name.c", line 1066: error: call to consteval function "lambda []()->int::operator int (*)()" did not produce a valid constant expression
+    int (*f3)(void) = []() consteval { return 3; };  // expected-error {{cannot take address of consteval call operator of '(lambda at}} \
+                      ^
+"Test_name.c", line 1066: note: address of consteval function "lambda []()->int::_FUN" in constant expression result
+    int (*f3)(void) = []() consteval { return 3; };  // expected-error {{cannot take address of consteval call operator of '(lambda at}} \
+                      ^
+
+"Test_name.c", line 1054: warning: variable "f1" was declared but never referenced
+    constexpr int (*f1)(void) = l1; // expected-error {{constexpr variable 'f1' must be initialized by a constant expression}} \
+                    ^
+
+"Test_name.c", line 1063: warning: variable "f2" was declared but never referenced
+    constexpr int (*f2)(void) = lstatic; // expected-error {{constexpr variable 'f2' must be initialized by a constant expression}} \
+                    ^
+
+"Test_name.c", line 1104: error: call to consteval function "GH58207::tester::tester(const char *) noexcept" did not produce a valid constant expression
+  tester paddedglob(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                    ^
+"Test_name.c", line 1104: note: the value of variable "GH58207::bad" (declared at line 1099) cannot be used as a constant
+  tester paddedglob(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                                  ^
+
+"Test_name.c", line 1108: error: expression must have a constant value
+  constexpr tester glob4 = { make_name(pad(bad)) }; // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                           ^
+"Test_name.c", line 1108: note: the value of variable "GH58207::bad" (declared at line 1099) cannot be used as a constant
+  constexpr tester glob4 = { make_name(pad(bad)) }; // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                                           ^
+
+"Test_name.c", line 1113: error: call to consteval function "GH58207::make_name" did not produce a valid constant expression
+  auto V1 = make_name(pad(bad)); // expected-error {{call to consteval function 'GH58207::make_name' is not a constant expression}} \
+                     ^
+"Test_name.c", line 1113: note: the value of variable "GH58207::bad" (declared at line 1099) cannot be used as a constant
+  auto V1 = make_name(pad(bad)); // expected-error {{call to consteval function 'GH58207::make_name' is not a constant expression}} \
+                          ^
+
+"Test_name.c", line 1120: error: call to consteval function "GH58207::tester::tester(const char *) noexcept" did not produce a valid constant expression
+    static tester paddedloc(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                            ^
+"Test_name.c", line 1120: note: the value of variable "GH58207::bad" (declared at line 1099) cannot be used as a constant
+    static tester paddedloc(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                                          ^
+
+"Test_name.c", line 1118: warning: variable "loc1" was declared but never referenced
+    static tester loc1(make_name("loc1"));
+                  ^
+
+"Test_name.c", line 1119: warning: variable "loc2" was declared but never referenced
+    static constexpr tester loc2(make_name("loc2"));
+                            ^
+
+"Test_name.c", line 1120: warning: variable "paddedloc" was declared but never referenced
+    static tester paddedloc(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                  ^
+
+"Test_name.c", line 1125: error: call to consteval function "GH58207::tester::tester(const char *) noexcept" did not produce a valid constant expression
+    static tester paddedloc(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                            ^
+"Test_name.c", line 1125: note: the value of variable "GH58207::bad" (declared at line 1099) cannot be used as a constant
+    static tester paddedloc(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                                          ^
+
+"Test_name.c", line 1125: warning: variable "paddedloc" was declared but never referenced
+    static tester paddedloc(make_name(pad(bad))); // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                  ^
+
+"Test_name.c", line 1138: error: constexpr constructor must initialize direct base class "GH64949::f"
+    consteval h(char *) {}
+                        ^
+
+"Test_name.c", line 1171: error: call to consteval function "GH65985::operator ""_bar" did not produce a valid constant expression
+      static const int c = 1_bar; // expected-error {{call to consteval function 'GH65985::operator""_bar' is not a constant expression}} \
+                           ^
+"Test_name.c", line 1171: note: constexpr function "GH65985::operator ""_bar" (declared at line 1159) is not defined
+      static const int c = 1_bar; // expected-error {{call to consteval function 'GH65985::operator""_bar' is not a constant expression}} \
+                           ^
+
+"Test_name.c", line 1176: error: expression must have a constant value
+      static constexpr int d = 1_bar; // expected-error {{call to consteval function 'GH65985::operator""_bar' is not a constant expression}} \
+                               ^
+"Test_name.c", line 1176: note: constexpr function "GH65985::operator ""_bar" (declared at line 1159) is not defined
+      static constexpr int d = 1_bar; // expected-error {{call to consteval function 'GH65985::operator""_bar' is not a constant expression}} \
+                               ^
+
+"Test_name.c", line 1182: error: call to consteval function "GH65985::g" did not produce a valid constant expression
+      static const int f = g(); // expected-error {{call to consteval function 'GH65985::g' is not a constant expression}} \
+                            ^
+"Test_name.c", line 1182: note: constexpr function "GH65985::g" (declared at line 1165) is not defined
+      static const int f = g(); // expected-error {{call to consteval function 'GH65985::g' is not a constant expression}} \
+                           ^
+
+"Test_name.c", line 1199: error: argument of type "char *" is incompatible with parameter of type "int"
+      static constexpr auto xx = ns::foo(A{}); // expected-error {{cannot take address of consteval function 'foo' outside of an immediate invocation}} \
+                                         ^
+          detected during instantiation of class "GH66562::T<A> [with A=char *]" at line 1203
+
+"Test_name.c", line 1216: error: call to consteval function "GH65520::bar" did not produce a valid constant expression
+    int a_err[bar(3)]; // expected-error {{call to consteval function 'GH65520::bar' is not a constant expression}} \
+                 ^
+"Test_name.c", line 1209: note: division by zero
+  consteval int bar (int i) { if (i != 1) return 1/0; return 0; }
+                                                  ^
+
+"Test_name.c", line 1215: warning: variable "a_ok" was declared but never referenced
+    int a_ok[bar(1)];
+        ^
+
+"Test_name.c", line 1223: warning: variable "a" was declared but never referenced
+      int a [undefined()]; // expected-note  {{undefined function 'undefined' cannot be used in a constant expression}} \
+          ^
+
+"Test_name.c", line 1274: warning: missing return statement at end of non-void function "GH107175::main"
+  }
+  ^
+
+"Test_name.c", line 1314: error: call to consteval function "GH139160::f(int *)" did not produce a valid constant expression
+    int ** x = (t){f(f().x)}; // expected-error    {{call to consteval function 'GH139160::f' is not a constant expression}}
+                    ^
+"Test_name.c", line 1314: note: cannot call non-constexpr function "GH139160::f()" (declared at line 1310)
+    int ** x = (t){f(f().x)}; // expected-error    {{call to consteval function 'GH139160::f' is not a constant expression}}
+                     ^
+
+"Test_name.c", line 1321: error: call to consteval function "GH139160::get_value" did not produce a valid constant expression
+    B result = (B){10, get_value(make_struct())}; // expected-error {{initializer element is not a compile-time constant}} 
+                                ^
+"Test_name.c", line 1321: note: cannot call non-constexpr function "GH139160::make_struct" (declared at line 1319)
+    B result = (B){10, get_value(make_struct())}; // expected-error {{initializer element is not a compile-time constant}} 
+                                 ^
+
+"Test_name.c", line 673: error: call to consteval function "issue_55601::Bar<T>::x [with T=issue_55601::derp]" did not produce a valid constant expression
+    Bar() : a(x()) {} // expected-error {{call to consteval function 'issue_55601::Bar<issue_55601::derp>::x' is not a constant expression}}
+               ^
+"Test_name.c", line 673: note: cannot call non-constexpr function "issue_55601::Bar<T>::x [with T=issue_55601::derp]" (declared at line 671)
+    Bar() : a(x()) {} // expected-error {{call to consteval function 'issue_55601::Bar<issue_55601::derp>::x' is not a constant expression}}
+              ^
+          detected during instantiation of "issue_55601::Bar<T>::Bar() [with T=issue_55601::derp]" at line 688
+
+"Test_name.c", line 1329: warning: template parameter "U" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+    return []<typename U>() consteval {
+                       ^
+          detected during instantiation of "int GH118187::t<T>() [with T=int]" at line 1334
+
+"Test_name.c", line 116: warning: function "invalid_function::A::operator delete" was referenced but not defined
+    consteval void operator delete(void* ptr);
+                   ^
+
+"Test_name.c", line 739: warning: variable "PR50779::s" was declared but never referenced
+  constexpr int s = a.operator[](1);
+                ^
+
+"Test_name.c", line 740: warning: variable "PR50779::t" was declared but never referenced
+  constexpr int t = a[1];
+                ^
+
+"Test_name.c", line 741: warning: variable "PR50779::u" was declared but never referenced
+  constexpr int u = a.operator->()->b;
+                ^
+
+"Test_name.c", line 742: warning: variable "PR50779::v" was declared but never referenced
+  constexpr int v = a->b;
+                ^
+
+"Test_name.c", line 744: warning: variable "PR50779::w" was declared but never referenced
+  constexpr int w = (a.*&test::f)(); // expected-error {{cannot take address of consteval function 'f' outside of an immediate invocation}}
+                ^
+
+"Test_name.c", line 745: warning: variable "PR50779::x" was declared but never referenced
+  constexpr int x = a.f();
+                ^
+
+"Test_name.c", line 1103: warning: variable "GH58207::cglob" was declared but never referenced
+  constexpr tester cglob(make_name("cglob"));
+                   ^
+
+"Test_name.c", line 1107: warning: variable "GH58207::glob3" was declared but never referenced
+  constexpr tester glob3 = { make_name("glob3") };
+                   ^
+
+"Test_name.c", line 1108: warning: variable "GH58207::glob4" was declared but never referenced
+  constexpr tester glob4 = { make_name(pad(bad)) }; // expected-error {{call to consteval function 'GH58207::tester::tester' is not a constant expression}} \
+                   ^
+
+"Test_name.c", line 1159: warning: extern inline function "GH65985::operator ""_bar" was referenced but not defined
+  int consteval operator""_bar(unsigned long long V); // expected-note 4 {{here}}
+                ^
+
+"Test_name.c", line 1165: warning: extern inline function "GH65985::g" was referenced but not defined
+  int consteval g();  // expected-note 2 {{here}}
+                ^
+
+"Test_name.c", line 1220: warning: extern inline function "GH65520::undefined" was referenced but not defined
+  consteval int undefined(); // expected-note {{declared here}}
+                ^
+
+113 errors detected in the compilation of "Test_name.c".

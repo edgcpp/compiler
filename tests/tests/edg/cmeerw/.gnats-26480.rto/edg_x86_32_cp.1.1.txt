@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 71: error: expected an expression
+  int g1() requires (requires {this->nondep(0).f< 0> (); }); 
+                                                      ^
+
+"Test_name.c", line 75: error: no instance of function "member_fn::B<T>::g1 [with T=int]" matches the argument list
+            object type is: member_fn::B<int>
+  int i = B< int> ().g1() + B< int> ().g2(); 
+                     ^
+"Test_name.c", line 71: note: constraint on candidate function "member_fn::B<T>::g1 [with T=int]" not satisfied
+  int g1() requires (requires {this->nondep(0).f< 0> (); }); 
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

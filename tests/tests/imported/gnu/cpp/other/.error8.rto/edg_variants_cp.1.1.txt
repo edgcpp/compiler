@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: error: "alpha" has already been declared in the current scope
+    double alpha;  // { dg-error "conflicting declaration" }
+           ^
+
+"Test_name.c", line 11: warning: variable "alpha" was declared but never referenced
+    double alpha;  // { dg-error "conflicting declaration" }
+           ^
+
+"Test_name.c", line 23: error: "alpha" has already been declared in the current scope
+    double alpha; // { dg-error "" }
+           ^
+
+"Test_name.c", line 23: warning: variable "alpha" was declared but never referenced
+    double alpha; // { dg-error "" }
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

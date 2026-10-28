@@ -1,0 +1,46 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused --diag_warning=260 Test_name.c
+"Test_name.c", line 6: warning: missing return statement at end of non-void function "f"
+  char* f() { /* ... */ }
+                        ^
+
+"Test_name.c", line 9: warning: external/internal linkage conflict with previous declaration at line 8
+  static char* g() { /* ... */ }            // error
+               ^
+
+"Test_name.c", line 9: warning: missing return statement at end of non-void function "g"
+  static char* g() { /* ... */ }            // error
+                               ^
+
+"Test_name.c", line 12: error: variable "a" has already been defined (previous definition at line 11)
+  int a;                                    // error
+      ^
+
+"Test_name.c", line 18: error: variable "c" has already been defined (previous definition at line 17)
+  static int c;                             // error
+             ^
+
+"Test_name.c", line 20: warning: explicit type is missing ("int" assumed)
+  extern d;
+         ^
+
+"Test_name.c", line 21: warning: external/internal linkage conflict with previous declaration at line 20
+  static int d;                             // error
+             ^
+
+"Test_name.c", line 6: warning: function "f" was declared but never referenced
+  char* f() { /* ... */ }
+        ^
+
+"Test_name.c", line 9: warning: function "g" was declared but never referenced
+  static char* g() { /* ... */ }            // error
+               ^
+
+"Test_name.c", line 14: warning: variable "b" was declared but never referenced
+  static int b;
+             ^
+
+"Test_name.c", line 21: warning: variable "d" was declared but never referenced
+  static int d;                             // error
+             ^
+
+2 errors detected in the compilation of "Test_name.c".

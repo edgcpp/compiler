@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++11 Test_name.c
+"Test_name.c", line 11: warning: loop is not reachable
+    [[unknown_attribute]] do { // expected-warning {{unknown attribute 'unknown_attribute' ignored}}
+                          ^
+
+"Test_name.c", line 32: error: alignas does not apply here
+    alignas(8) ; // expected-error {{'alignas' attribute cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 33: warning: attribute "noreturn" does not apply here
+    [[noreturn]] { } // expected-error {{'noreturn' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 34: warning: statement is unreachable
+    [[noreturn]] if (0) { } // expected-error {{'noreturn' attribute cannot be applied to a statement}}
+                 ^
+
+"Test_name.c", line 34: warning: attribute "noreturn" does not apply here
+    [[noreturn]] if (0) { } // expected-error {{'noreturn' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 35: warning: attribute "noreturn" does not apply here
+    [[noreturn]] for (;;); // expected-error {{'noreturn' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 36: warning: attribute "noreturn" does not apply here
+    [[noreturn]] do { // expected-error {{'noreturn' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 36: warning: loop is not reachable
+    [[noreturn]] do { // expected-error {{'noreturn' attribute cannot be applied to a statement}}
+                 ^
+
+"Test_name.c", line 47: warning: attribute "carries_dependency" does not apply here
+        [[carries_dependency]] break; // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+          ^
+
+"Test_name.c", line 59: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] ; // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 60: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] { } // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 61: warning: statement is unreachable
+    [[carries_dependency]] if (0) { } // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+                           ^
+
+"Test_name.c", line 61: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] if (0) { } // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 62: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] for (;;); // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 63: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] do { // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 64: warning: attribute "carries_dependency" does not apply here
+      [[carries_dependency]] continue; // expected-error {{'carries_dependency' attribute cannot be applied to a statement}} ignored}}
+        ^
+
+"Test_name.c", line 63: warning: loop is not reachable
+    [[carries_dependency]] do { // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+                           ^
+
+"Test_name.c", line 66: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] while (0); // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 68: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] switch (i) { // expected-error {{'carries_dependency' attribute cannot be applied to a statement}} ignored}}
+      ^
+
+"Test_name.c", line 69: warning: attribute "carries_dependency" does not apply here
+      [[carries_dependency]] case 0: // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+        ^
+
+"Test_name.c", line 70: warning: attribute "carries_dependency" does not apply here
+      [[carries_dependency]] default: // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+        ^
+
+"Test_name.c", line 71: warning: attribute "carries_dependency" does not apply here
+        [[carries_dependency]] break; // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+          ^
+
+"Test_name.c", line 74: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] goto here; // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 76: warning: statement is unreachable
+    [[carries_dependency]] try { // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+                           ^
+
+"Test_name.c", line 76: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] try { // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 80: warning: attribute "carries_dependency" does not apply here
+    [[carries_dependency]] return; // expected-error {{'carries_dependency' attribute cannot be applied to a statement}}
+      ^
+
+"Test_name.c", line 84: warning: a STDC pragma may only appear between declarations in the global scope or before any statements or declarations in a block scope
+  #pragma STDC FP_CONTRACT ON // expected-error {{can only appear at file scope or at the start of a compound statement}}
+  ^
+
+"Test_name.c", line 86: error: expected a statement
+    }
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

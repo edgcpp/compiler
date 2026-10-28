@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: error: a pointer to a bound function may only be used to call the function
+    &(a.*f);	// { dg-error "3:invalid use of\[^\n\]*\\.\\*\[^\n\]*to form|qualified-id is required" }
+     ^
+
+"Test_name.c", line 17: warning: variable "p" is used before its value is set
+    &(p->*f);	// { dg-error "3:invalid use of\[^\n\]*->\\*\[^\n\]*to form|qualified-id is required" }
+      ^
+
+"Test_name.c", line 17: error: a pointer to a bound function may only be used to call the function
+    &(p->*f);	// { dg-error "3:invalid use of\[^\n\]*->\\*\[^\n\]*to form|qualified-id is required" }
+     ^
+
+2 errors detected in the compilation of "Test_name.c".

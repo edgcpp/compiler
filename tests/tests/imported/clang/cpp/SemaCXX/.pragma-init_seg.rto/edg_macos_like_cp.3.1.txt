@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 27: error: identifier "thread" is undefined
+  int __declspec(thread) x = f(); // expected-error {{initializer for thread-local variable must be a constant expression}}
+                 ^
+
+"Test_name.c", line 27: error: expected a ";"
+  int __declspec(thread) x = f(); // expected-error {{initializer for thread-local variable must be a constant expression}}
+                         ^
+
+2 errors detected in the compilation of "Test_name.c".

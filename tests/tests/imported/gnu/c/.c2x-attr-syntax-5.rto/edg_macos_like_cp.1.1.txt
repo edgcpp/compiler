@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 8: warning: expected a declaration
+  [[unknown_attribute]]; /* { dg-error "attribute ignored" } */
+                       ^
+
+"Test_name.c", line 47: warning: variable "var" was set but never used
+    [[unknown_attribute]] int var; /* { dg-error "attribute ignored" } */
+                              ^
+
+"Test_name.c", line 51: warning: label "x" was declared but never referenced
+    [[unknown_attribute]] x: var = 2; /* { dg-error "attribute ignored" } */
+                          ^
+

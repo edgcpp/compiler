@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 16: warning: variable "pp" was declared but never referenced
+    char *pp;
+          ^
+
+"Test_name.c", line 17: warning: variable "s" was declared but never referenced
+    struct S { int i; int j; } s;
+                               ^
+
+"Test_name.c", line 18: warning: variable "a" was declared but never referenced
+    char a[32];
+         ^
+
+"Test_name.c", line 19: warning: variable "d" was set but never used
+    double d;
+           ^
+
+"Test_name.c", line 21: warning: variable "c" was declared but never referenced
+    const int c = 8;
+              ^
+

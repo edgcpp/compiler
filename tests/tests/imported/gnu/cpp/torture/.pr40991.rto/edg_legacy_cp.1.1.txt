@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 16: warning: missing return statement at end of non-void function "std::type_info::operator=="
+  	bool operator==(const type_info& __arg) const { }
+  	                                                ^
+
+"Test_name.c", line 47: warning: missing return statement at end of non-void function "std::tr1::_Function_base::_Base_manager<_Functor>::_M_manager"
+  		static bool _M_manager(_Any_data& __dest, const _Any_data& __source, _Manager_operation __op) { }
+  		                                                                                                ^
+
+"Test_name.c", line 103: warning: missing return statement at end of non-void function "std::tr1::function<_Res (_ArgTypes...)>::target_type"
+  	}
+  	^
+
+"Test_name.c", line 71: warning: missing return statement at end of non-void function "std::tr1::_Function_handler<_Res (_ArgTypes...), _Member _Class::*>::_M_invoke [with _Class=X, _Member=int, _Res=int, _ArgTypes=<X &>]"
+  	    static _Res _M_invoke(const _Any_data& __functor, _ArgTypes... __args) { }
+  	                                                                             ^
+          detected during:
+            instantiation of "_Res std::tr1::_Function_handler<_Res (_ArgTypes...), _Member _Class::*>::_M_invoke(const std::tr1::_Any_data &, _ArgTypes...) [with _Class=X, _Member=int, _Res=int, _ArgTypes=<X &>]" at line 87
+            instantiation of "std::tr1::function<_Res (_ArgTypes...)>::function(_Functor, std::tr1::function<_Res (_ArgTypes...)>::_Useless) [with _Res=int, _ArgTypes=<X &>, _Functor=int X::*]" at line 112
+
+"Test_name.c", line 55: warning: function "operator new(size_t, void *) throw()" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+  		    new (__functor._M_access()) _Functor(__f);
+  		    ^
+          detected during:
+            instantiation of "void std::tr1::_Function_base::_Base_manager<_Functor>::_M_init_functor(std::tr1::_Any_data &, const _Functor &, std::tr1::true_type) [with _Functor=std::tr1::_Simple_type_wrapper<int X::*>]" at line 49
+            instantiation of "void std::tr1::_Function_base::_Base_manager<_Functor>::_M_init_functor(std::tr1::_Any_data &, const _Functor &) [with _Functor=std::tr1::_Simple_type_wrapper<int X::*>]" at line 89
+            instantiation of "std::tr1::function<_Res (_ArgTypes...)>::function(_Functor, std::tr1::function<_Res (_ArgTypes...)>::_Useless) [with _Res=int, _ArgTypes=<X &>, _Functor=int X::*]" at line 112
+

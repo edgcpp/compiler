@@ -1,0 +1,154 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 27: warning: variable "m1" is used before its value is set
+    m2 = (matrix_4_4<int>)m1;
+                          ^
+
+"Test_name.c", line 30: warning: expression has no effect
+    (matrix_5_5<int>)m3; // expected-error {{conversion between matrix types 'matrix_5_5<int>' (aka 'int __attribute__\
+    ^
+
+"Test_name.c", line 33: warning: expression has no effect
+    (int)m3;            // expected-error {{C-style cast from 'matrix_4_4<short>' (aka 'short __attribute__((matrix_type(4, 4)))') to 'int' is not allowed}}
+    ^
+
+"Test_name.c", line 34: warning: variable "i" is used before its value is set
+    (matrix_4_4<int>)i; // expected-error {{C-style cast from 'int' to 'matrix_4_4<int>' (aka 'int __attribute__((matrix_type(4, 4)))') is not allowed}}
+                     ^
+
+"Test_name.c", line 34: warning: expression has no effect
+    (matrix_4_4<int>)i; // expected-error {{C-style cast from 'int' to 'matrix_4_4<int>' (aka 'int __attribute__((matrix_type(4, 4)))') is not allowed}}
+    ^
+
+"Test_name.c", line 36: warning: expression has no effect
+    (vec) m2;            // expected-error {{C-style cast from 'matrix_4_4<int>' (aka 'int __attribute__((matrix_type(4, 4)))') to 'vec' (vector of 1 'int' value) is not allowed}}
+    ^
+
+"Test_name.c", line 37: error: invalid type conversion
+    (matrix_4_4<char>)v; // expected-error {{C-style cast from 'vec' (vector of 1 'int' value) to 'matrix_4_4<char>' (aka 'char __attribute__((matrix_type(4, 4)))') is not allowed}}
+    ^
+
+"Test_name.c", line 37: warning: variable "v" is used before its value is set
+    (matrix_4_4<char>)v; // expected-error {{C-style cast from 'vec' (vector of 1 'int' value) to 'matrix_4_4<char>' (aka 'char __attribute__((matrix_type(4, 4)))') is not allowed}}
+                      ^
+
+"Test_name.c", line 39: warning: expression has no effect
+    (test_struct *)m1;    // expected-error {{cannot cast from type 'matrix_4_4<char>' (aka 'char __attribute__((matrix_type(4, 4)))') to pointer type 'test_struct *'}}
+    ^
+
+"Test_name.c", line 40: error: invalid type conversion
+    (matrix_5_5<float>)s; // expected-error {{C-style cast from 'test_struct *' (aka 'struct test_struct *') to 'matrix_5_5<float>' (aka 'float __attribute__((matrix_type(5, 5)))') is not allowed}}
+    ^
+
+"Test_name.c", line 40: warning: variable "s" is used before its value is set
+    (matrix_5_5<float>)s; // expected-error {{C-style cast from 'test_struct *' (aka 'struct test_struct *') to 'matrix_5_5<float>' (aka 'float __attribute__((matrix_type(5, 5)))') is not allowed}}
+                       ^
+
+"Test_name.c", line 22: warning: variable "m4" was declared but never referenced
+    matrix_5_5<int> m4;
+                    ^
+
+"Test_name.c", line 52: warning: variable "m1" is used before its value is set
+    m2 = static_cast<matrix_4_4<int>>(m1);
+                                      ^
+
+"Test_name.c", line 54: warning: expression has no effect
+    static_cast<matrix_5_5<int>>(m3); // expected-error {{conversion between matrix types 'matrix_5_5<int>' (aka 'int __attribute__\
+    ^
+
+"Test_name.c", line 57: warning: expression has no effect
+    static_cast<int>(m3);            // expected-error {{static_cast from 'matrix_4_4<short>' (aka 'short __attribute__((matrix_type(4, 4)))') to 'int' is not allowed}}
+    ^
+
+"Test_name.c", line 58: warning: variable "i" is used before its value is set
+    static_cast<matrix_4_4<int>>(i); // expected-error {{static_cast from 'int' to 'matrix_4_4<int>' (aka 'int __attribute__((matrix_type(4, 4)))') is not allowed}}
+                                 ^
+
+"Test_name.c", line 58: warning: expression has no effect
+    static_cast<matrix_4_4<int>>(i); // expected-error {{static_cast from 'int' to 'matrix_4_4<int>' (aka 'int __attribute__((matrix_type(4, 4)))') is not allowed}}
+    ^
+
+"Test_name.c", line 60: error: invalid type conversion
+    static_cast<vec>(m2);             // expected-error {{static_cast from 'matrix_4_4<int>' (aka 'int __attribute__((matrix_type(4, 4)))') to 'vec' (vector of 1 'int' value) is not allowed}}
+    ^
+
+"Test_name.c", line 61: error: invalid type conversion
+    static_cast<matrix_4_4<char>>(v); // expected-error {{static_cast from 'vec' (vector of 1 'int' value) to 'matrix_4_4<char>' (aka 'char __attribute__((matrix_type(4, 4)))') is not allowed}}
+    ^
+
+"Test_name.c", line 61: warning: variable "v" is used before its value is set
+    static_cast<matrix_4_4<char>>(v); // expected-error {{static_cast from 'vec' (vector of 1 'int' value) to 'matrix_4_4<char>' (aka 'char __attribute__((matrix_type(4, 4)))') is not allowed}}
+                                  ^
+
+"Test_name.c", line 63: error: invalid type conversion
+    static_cast<test_struct *>(m1);    // expected-error {{cannot cast from type 'matrix_4_4<char>' (aka 'char __attribute__((matrix_type(4, 4)))') to pointer type 'test_struct *'}}
+    ^
+
+"Test_name.c", line 64: error: invalid type conversion
+    static_cast<matrix_5_5<float>>(s); // expected-error {{static_cast from 'test_struct *' (aka 'struct test_struct *') to 'matrix_5_5<float>' (aka 'float __attribute__((matrix_type(5, 5)))') is not allowed}}
+    ^
+
+"Test_name.c", line 64: warning: variable "s" is used before its value is set
+    static_cast<matrix_5_5<float>>(s); // expected-error {{static_cast from 'test_struct *' (aka 'struct test_struct *') to 'matrix_5_5<float>' (aka 'float __attribute__((matrix_type(5, 5)))') is not allowed}}
+                                   ^
+
+"Test_name.c", line 47: warning: variable "m4" was declared but never referenced
+    matrix_5_5<int> m4;
+                    ^
+
+"Test_name.c", line 76: warning: variable "m1" is used before its value is set
+    m2 = (matrix_4_4<double>)m1;
+                             ^
+
+"Test_name.c", line 77: warning: expression has no effect
+    (matrix_5_5<double>)m1; // expected-error {{conversion between matrix types 'matrix_5_5<double>' (aka 'double __\
+    ^
+
+"Test_name.c", line 80: warning: variable "m3" is used before its value is set
+    m4 = (matrix_5_5<signed int>)m3;
+                                 ^
+
+"Test_name.c", line 69: warning: variable "m2" was set but never used
+    matrix_4_4<double> m2;
+                       ^
+
+"Test_name.c", line 72: warning: variable "m5" was set but never used
+    matrix_4_4<unsigned int> m5;
+                             ^
+
+"Test_name.c", line 74: warning: variable "f" was declared but never referenced
+    float f;
+          ^
+
+"Test_name.c", line 97: warning: variable "m1" is used before its value is set
+    m2 = static_cast<matrix_4_4<double>>(m1);
+                                         ^
+
+"Test_name.c", line 98: warning: expression has no effect
+    static_cast<matrix_5_5<double>>(m1); // expected-error {{conversion between matrix types 'matrix_5_5<double>' (aka 'double __\
+    ^
+
+"Test_name.c", line 101: warning: variable "m3" is used before its value is set
+    m4 = static_cast<matrix_5_5<signed int>>(m3);
+                                             ^
+
+"Test_name.c", line 90: warning: variable "m2" was set but never used
+    matrix_4_4<double> m2;
+                       ^
+
+"Test_name.c", line 93: warning: variable "m5" was set but never used
+    matrix_4_4<unsigned int> m5;
+                             ^
+
+"Test_name.c", line 95: warning: variable "f" was declared but never referenced
+    float f;
+          ^
+
+"Test_name.c", line 133: warning: variable "m1" is used before its value is set
+    Foo F = Foo(m1);
+                ^
+
+"Test_name.c", line 135: error: no suitable constructor exists to convert from "matrix_4_4<unsigned int>" (aka "unsigned int") to "Bar"
+    Bar B = Bar(m5);
+                ^
+
+7 errors detected in the compilation of "Test_name.c".

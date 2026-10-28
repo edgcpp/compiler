@@ -1,0 +1,224 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 22: error: expression must have a constant value
+  constexpr int i2 = fn1 (5, -2); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 14: note: cannot perform a negative shift
+      a <<= b;
+        ^
+
+"Test_name.c", line 23: error: expression must have a constant value
+  constexpr int i3 = fn1 (5, sizeof (int) * __CHAR_BIT__); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 14: note: shift amount (32) too large
+      a <<= b;
+        ^
+
+"Test_name.c", line 24: error: expression must have a constant value
+  constexpr int i4 = fn1 (5, 256); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 14: note: shift amount (256) too large
+      a <<= b;
+        ^
+
+"Test_name.c", line 26: error: expression must have a constant value
+  constexpr int i6 = fn1 (-2, 4); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 14: note: value exceeds range of "int"
+      a <<= b;
+        ^
+
+"Test_name.c", line 45: error: expression must have a constant value
+  constexpr int j2 = fn2 (4, -1); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 37: note: cannot perform a negative shift
+      a >>= b;
+        ^
+
+"Test_name.c", line 46: error: expression must have a constant value
+  constexpr int j3 = fn2 (10, sizeof (int) * __CHAR_BIT__); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 37: note: shift amount (32) too large
+      a >>= b;
+        ^
+
+"Test_name.c", line 47: error: expression must have a constant value
+  constexpr int j4 = fn2 (1, 256); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 37: note: shift amount (256) too large
+      a >>= b;
+        ^
+
+"Test_name.c", line 66: error: expression must have a constant value
+  constexpr int k2 = fn3 (7, 0); // { dg-message "in .constexpr. expansion" }
+                     ^
+"Test_name.c", line 60: note: division by zero
+      a = a / b; // { dg-error "..7 / 0.. is not a constant expression" }
+            ^
+
+"Test_name.c", line 92: error: expression must have a constant value
+  constexpr int m3 = fn5 (m1, 4); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 86: note: attempt to access storage one position past the end of an array of 4 elements
+      b = a[b]; // { dg-error "array subscript" }
+           ^
+
+"Test_name.c", line 112: error: expression must have a constant value
+  constexpr int n3 = fn7 ((const int *) 0, 8);  // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 98: note: attempt to access run-time storage
+      b = a;
+          ^
+"Test_name.c", line 106: note: called from:
+      return fn6 (*a, b); // { dg-error "null pointer" }
+                 ^
+
+"Test_name.c", line 122: error: expression must have a constant value
+  constexpr int o2 = fn8 (10); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 118: note: attempt to access storage one position past the end of an array of 10 elements
+    return g[i]; // { dg-error "array subscript" }
+            ^
+
+"Test_name.c", line 133: error: expression must have a constant value
+  constexpr int p2 = fn9 (__INT_MAX__, 1); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 128: note: value exceeds range of "int"
+      return a + b; // { dg-error "overflow in constant expression" }
+               ^
+
+"Test_name.c", line 136: error: expression must have a constant value
+  constexpr int p5 = fn9 (INT_MIN, -1); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 128: note: value exceeds range of "int"
+      return a + b; // { dg-error "overflow in constant expression" }
+               ^
+
+"Test_name.c", line 151: error: expression must have a constant value
+  constexpr int q2 = fn10 (__INT_MAX__, 2); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 146: note: value exceeds range of "int"
+      return a * b; // { dg-error "overflow in constant expression" }
+               ^
+
+"Test_name.c", line 152: error: expression must have a constant value
+  constexpr int q3 = fn10 (INT_MIN, 2); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 146: note: value exceeds range of "int"
+      return a * b; // { dg-error "overflow in constant expression" }
+               ^
+
+"Test_name.c", line 172: error: expression must have a constant value
+  constexpr int r2 = fn11 (__builtin_inf ()); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 161: note: conversion from "double" to "int" is invalid in constant-expression evaluation
+    int i = d; // { dg-error "overflow in constant expression" }
+            ^
+
+"Test_name.c", line 171: warning: variable "r1" was declared but never referenced
+  constexpr int r1 = fn11 (3.4);
+                ^
+
+"Test_name.c", line 172: warning: variable "r2" was declared but never referenced
+  constexpr int r2 = fn11 (__builtin_inf ()); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 184: error: expression must have a constant value
+  constexpr int s2 = fn12 (42); // { dg-message "in .constexpr. expansion of " }
+                     ^
+"Test_name.c", line 179: note: cannot call non-constexpr function "__builtin_unreachable" (declared implicitly)
+      __builtin_unreachable (); // { dg-error "is not a constant expression" }
+      ^
+
+"Test_name.c", line 22: warning: variable "i2" was declared but never referenced
+  constexpr int i2 = fn1 (5, -2); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 23: warning: variable "i3" was declared but never referenced
+  constexpr int i3 = fn1 (5, sizeof (int) * __CHAR_BIT__); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 24: warning: variable "i4" was declared but never referenced
+  constexpr int i4 = fn1 (5, 256); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 26: warning: variable "i6" was declared but never referenced
+  constexpr int i6 = fn1 (-2, 4); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 45: warning: variable "j2" was declared but never referenced
+  constexpr int j2 = fn2 (4, -1); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 46: warning: variable "j3" was declared but never referenced
+  constexpr int j3 = fn2 (10, sizeof (int) * __CHAR_BIT__); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 47: warning: variable "j4" was declared but never referenced
+  constexpr int j4 = fn2 (1, 256); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 49: warning: variable "j6" was declared but never referenced
+  constexpr int j6 = fn2 (-2, 4);
+                ^
+
+"Test_name.c", line 66: warning: variable "k2" was declared but never referenced
+  constexpr int k2 = fn3 (7, 0); // { dg-message "in .constexpr. expansion" }
+                ^
+
+"Test_name.c", line 67: warning: variable "k3" was declared but never referenced
+  constexpr int k3 = fn3 (INT_MIN, -1); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 79: warning: variable "l1" was declared but never referenced
+  constexpr float l1 = fn4 (5.0, 3.0);
+                  ^
+
+"Test_name.c", line 80: warning: variable "l2" was declared but never referenced
+  constexpr float l2 = fn4 (7.0, 0.0); // { dg-message "in .constexpr. expansion" }
+                  ^
+
+"Test_name.c", line 91: warning: variable "m2" was declared but never referenced
+  constexpr int m2 = fn5 (m1, 3);
+                ^
+
+"Test_name.c", line 92: warning: variable "m3" was declared but never referenced
+  constexpr int m3 = fn5 (m1, 4); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 111: warning: variable "n2" was declared but never referenced
+  constexpr int n2 = fn7 (&n1, 5);
+                ^
+
+"Test_name.c", line 112: warning: variable "n3" was declared but never referenced
+  constexpr int n3 = fn7 ((const int *) 0, 8);  // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 121: warning: variable "o1" was declared but never referenced
+  constexpr int o1 = fn8 (9);
+                ^
+
+"Test_name.c", line 122: warning: variable "o2" was declared but never referenced
+  constexpr int o2 = fn8 (10); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 133: warning: variable "p2" was declared but never referenced
+  constexpr int p2 = fn9 (__INT_MAX__, 1); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 136: warning: variable "p5" was declared but never referenced
+  constexpr int p5 = fn9 (INT_MIN, -1); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 151: warning: variable "q2" was declared but never referenced
+  constexpr int q2 = fn10 (__INT_MAX__, 2); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 152: warning: variable "q3" was declared but never referenced
+  constexpr int q3 = fn10 (INT_MIN, 2); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+"Test_name.c", line 184: warning: variable "s2" was declared but never referenced
+  constexpr int s2 = fn12 (42); // { dg-message "in .constexpr. expansion of " }
+                ^
+
+17 errors detected in the compilation of "Test_name.c".

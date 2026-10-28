@@ -1,0 +1,91 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 30: error: parameter pack "Ts" was referenced but not expanded
+    return ([]<Ts a = 42>(){ return a;}, ...)();
+               ^
+
+"Test_name.c", line 30: error: fold expression does not refer to a parameter pack
+    return ([]<Ts a = 42>(){ return a;}, ...)();
+                                         ^
+
+"Test_name.c", line 37: error: fold expression does not refer to a parameter pack
+    return ([]<Ts a = 42>(){ return a;}, ...)();  // expected-error {{pack expansion does not contain any unexpanded parameter packs}}
+                                         ^
+
+"Test_name.c", line 42: error: parameter pack "Ts" was referenced but not expanded
+    return ([]<Ts a = 42>(){ return a;})();  // expected-error {{expression contains unexpanded parameter pack 'Ts'}}
+               ^
+
+"Test_name.c", line 83: warning: expression has no effect
+            p1s;
+            ^
+
+"Test_name.c", line 86: warning: expression has no effect
+            p2s;
+            ^
+
+"Test_name.c", line 93: warning: expression has no effect
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{unexpanded parameter pack 'p2s'}}
+                                   ^
+
+"Test_name.c", line 93: warning: expression has no effect
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{unexpanded parameter pack 'p2s'}}
+                                        ^
+
+"Test_name.c", line 93: error: parameter pack "p1s" was referenced but not expanded
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{unexpanded parameter pack 'p2s'}}
+                                   ^
+
+"Test_name.c", line 93: error: parameter pack "p2s" was referenced but not expanded
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{unexpanded parameter pack 'p2s'}}
+                                        ^
+
+"Test_name.c", line 112: warning: constant "Values" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "GH112352::S::foldExpr1"
+    template <typename... Types, int... Values> void foldExpr1() {
+                                        ^
+
+"Test_name.c", line 118: warning: expression has no effect
+          foo<Types>;
+          ^
+
+"Test_name.c", line 119: warning: expression has no effect
+          bar<Values>;
+          ^
+
+"Test_name.c", line 120: warning: variable "a" was declared but never referenced
+          int a = Values;
+              ^
+
+"Test_name.c", line 130: warning: expression has no effect
+          baz<TTPs>;
+          ^
+
+"Test_name.c", line 12: error: function "GH49266::X::X(const GH49266::X &)" (declared at line 8) cannot be referenced -- it is a deleted function
+    [...args = args] {}(); // expected-error {{call to deleted constructor}}
+               ^
+          detected during instantiation of "void GH49266::take_by_copy(auto &...) [with <auto-1>=<GH49266::X>]" at line 21
+
+"Test_name.c", line 53: warning: expression has no effect
+        (Ts(us), ...);
+         ^
+          detected during:
+            instantiation of function "lambda []()->void [with Ts=<int, int>]" at line 55
+            instantiation of "void GH63677::f<<unnamed>>() [with <unnamed>=int]" at line 58
+
+"Test_name.c", line 53: warning: expression has no effect
+        (Ts(us), ...);
+        ^
+          detected during:
+            instantiation of function "lambda []()->void [with Ts=<int, int>]" at line 55
+            instantiation of "void GH63677::f<<unnamed>>() [with <unnamed>=int]" at line 58
+
+"Test_name.c", line 130: error: template template parameter "<error>" is not compatible with template template parameter "<unnamed>"
+          baz<TTPs>;
+              ^
+          detected during instantiation of "void GH112352::S::foldExpr2<TTPs...>() [with TTPs=<>]" at line 139
+
+"Test_name.c", line 131: error: too many arguments for template template parameter "TTPs"
+          TTPs<int> D;
+               ^
+          detected during instantiation of "void GH112352::S::foldExpr2<TTPs...>() [with TTPs=<>]" at line 139
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,166 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 161: error: member "test2::A::xs" (declared at line 158) is inaccessible
+      for (int x : a.xs) { } // expected-error {{'xs' is a private member of 'test2::A'}}
+                     ^
+
+"Test_name.c", line 181: error: expected a declaration
+      for (: {1, 2, 3}) {} // expected-error {{expected expression}} expected-error {{expected ';'}}
+           ^
+
+"Test_name.c", line 181: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+      for (: {1, 2, 3}) {} // expected-error {{expected expression}} expected-error {{expected ';'}}
+             ^
+
+"Test_name.c", line 182: error: expected a declaration
+      for (1 : {1, 2, 3}) {} // expected-error {{must declare a variable}}
+           ^
+
+"Test_name.c", line 182: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+      for (1 : {1, 2, 3}) {} // expected-error {{must declare a variable}}
+               ^
+
+"Test_name.c", line 183: error: expected a declaration
+      for (+x : {1, 2, 3}) {} // expected-error {{undeclared identifier}} expected-error {{expected ';'}}
+           ^
+
+"Test_name.c", line 183: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+      for (+x : {1, 2, 3}) {} // expected-error {{undeclared identifier}} expected-error {{expected ';'}}
+                ^
+
+"Test_name.c", line 184: error: expected a declaration
+      for (+y : {1, 2, 3}) {} // expected-error {{must declare a variable}}
+           ^
+
+"Test_name.c", line 184: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+      for (+y : {1, 2, 3}) {} // expected-error {{must declare a variable}}
+                ^
+
+"Test_name.c", line 178: warning: variable "y" was declared but never referenced
+      int y;
+          ^
+
+"Test_name.c", line 191: error: identifier "undeclared_identifier" is undefined
+      for (auto x : undeclared_identifier) // expected-error {{undeclared identifier}}
+                    ^
+
+"Test_name.c", line 194: error: this range-based "for" statement requires a suitable "begin" function and none was found
+      for (auto x : 123) // expected-error {{no viable 'begin'}}
+                    ^
+
+"Test_name.c", line 194: error: this range-based "for" statement requires a suitable "end" function and none was found
+      for (auto x : 123) // expected-error {{no viable 'begin'}}
+                    ^
+
+"Test_name.c", line 201: error: this range-based "for" statement requires a suitable "begin" function and none was found
+      for (auto i : arr) { }
+                    ^
+
+"Test_name.c", line 201: error: this range-based "for" statement requires a suitable "end" function and none was found
+      for (auto i : arr) { }
+                    ^
+
+"Test_name.c", line 212: error: this range-based "for" statement requires a suitable "begin" function and none was found
+      for (auto i : arr) { }
+                    ^
+
+"Test_name.c", line 212: error: this range-based "for" statement requires a suitable "end" function and none was found
+      for (auto i : arr) { }
+                    ^
+
+"Test_name.c", line 220: error: identifier "a" is undefined
+      for (a : arr) {} // expected-error {{requires type for loop variable}}
+           ^
+
+"Test_name.c", line 220: error: expected an identifier
+      for (a : arr) {} // expected-error {{requires type for loop variable}}
+             ^
+
+"Test_name.c", line 222: error: variable "b" is not a type name
+      for (b : arr) {} // expected-error {{requires type for loop variable}}
+           ^
+
+"Test_name.c", line 222: error: expected an identifier
+      for (b : arr) {} // expected-error {{requires type for loop variable}}
+             ^
+
+"Test_name.c", line 223: error: variable "arr" is not a type name
+      for (arr : arr) {} // expected-error {{requires type for loop variable}}
+           ^
+
+"Test_name.c", line 223: error: expected an identifier
+      for (arr : arr) {} // expected-error {{requires type for loop variable}}
+               ^
+
+"Test_name.c", line 224: error: identifier "c" is undefined
+      for (c alignas(8) : arr) { // expected-error {{requires type for loop variable}}
+           ^
+
+"Test_name.c", line 224: warning: alignas does not apply here
+      for (c alignas(8) : arr) { // expected-error {{requires type for loop variable}}
+             ^
+
+"Test_name.c", line 224: error: expected an identifier
+      for (c alignas(8) : arr) { // expected-error {{requires type for loop variable}}
+                        ^
+
+"Test_name.c", line 225: error: identifier "c" is undefined
+        static_assert(alignof(c) == 8, ""); // expected-warning {{extension}}
+                              ^
+
+"Test_name.c", line 225: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+        static_assert(alignof(c) == 8, ""); // expected-warning {{extension}}
+                             ^
+
+"Test_name.c", line 227: error: identifier "d" is undefined
+      for (d alignas(1) : arr) {} // expected-error {{requested alignment is less than minimum}} expected-error {{requires type for loop variable}}
+           ^
+
+"Test_name.c", line 227: warning: alignas does not apply here
+      for (d alignas(1) : arr) {} // expected-error {{requested alignment is less than minimum}} expected-error {{requires type for loop variable}}
+             ^
+
+"Test_name.c", line 227: error: expected an identifier
+      for (d alignas(1) : arr) {} // expected-error {{requested alignment is less than minimum}} expected-error {{requires type for loop variable}}
+                        ^
+
+"Test_name.c", line 228: error: identifier "e" is undefined
+      for (e [[deprecated]] : arr) { e = 0; } // expected-warning {{deprecated}} expected-note {{here}} expected-error {{requires type for loop variable}}
+           ^
+
+"Test_name.c", line 228: error: expected an identifier
+      for (e [[deprecated]] : arr) { e = 0; } // expected-warning {{deprecated}} expected-note {{here}} expected-error {{requires type for loop variable}}
+                            ^
+
+"Test_name.c", line 228: error: identifier "e" is undefined
+      for (e [[deprecated]] : arr) { e = 0; } // expected-warning {{deprecated}} expected-note {{here}} expected-error {{requires type for loop variable}}
+                                     ^
+
+"Test_name.c", line 219: warning: variable "b" was declared but never referenced
+      int arr[5], b;
+                  ^
+
+"Test_name.c", line 252: error: this range-based "for" statement requires a suitable "begin" function and none was found
+    [&] { for (int c : a) 0; } (); // expected-warning {{expression result unused}}
+                       ^
+
+"Test_name.c", line 252: error: this range-based "for" statement requires a suitable "end" function and none was found
+    [&] { for (int c : a) 0; } (); // expected-warning {{expression result unused}}
+                       ^
+
+"Test_name.c", line 252: warning: expression has no effect
+    [&] { for (int c : a) 0; } (); // expected-warning {{expression result unused}}
+                          ^
+
+"Test_name.c", line 262: error: a variable captured by a lambda cannot have a type involving a variable-length array
+      for (auto &c : varr)
+                     ^
+
+"Test_name.c", line 268: error: a variable captured by a lambda cannot have a type involving a variable-length array
+        for (auto &c : varr) {
+                       ^
+
+"Test_name.c", line 261: warning: variable "i" was declared but never referenced
+      int i = 0;
+          ^
+
+34 errors detected in the compilation of "Test_name.c".

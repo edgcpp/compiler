@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "reverse_iterator<_Iterator>::operator++"
+      }
+      ^
+
+"Test_name.c", line 70: warning: missing return statement at end of non-void function "operator-(reverse_iterator<_Iterator>, reverse_iterator<_Iterator>) [with _Iterator=int *]"
+  {}
+   ^
+          detected during:
+            instantiation of "reverse_iterator<_Iterator>::difference_type operator-(reverse_iterator<_Iterator>, reverse_iterator<_Iterator>) [with _Iterator=int *]" at line 85
+            instantiation of "_RandomAccessIterator __find(_RandomAccessIterator, _RandomAccessIterator) [with _RandomAccessIterator=_ForwardIterator1]" at line 100
+

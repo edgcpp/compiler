@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-synth9.C", line 25: error: call to consteval function "operator==(X<int>, X<int>)" did not produce a valid constant expression
+    X<int> x; x == x;
+                ^
+"./cpp2a/spaceship-synth9.C", line 25: note: the value of variable "x" (declared at line 25) cannot be used as a constant
+    X<int> x; x == x;
+              ^
+
+"./cpp2a/spaceship-synth9.C", line 25: warning: variable "x" is used before its value is set
+    X<int> x; x == x;
+              ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 25: error: too many arguments in function call
+      ret = (*fun) (d);
+                    ^
+
+"Test_name.c", line 27: error: too many arguments in function call
+      ret = (*fun) (d, 0.0);
+                    ^
+
+"Test_name.c", line 20: warning: variable "d" was set but never used
+    double d, ret;
+           ^
+
+"Test_name.c", line 32: warning: argument of type "double (*)(double, double)" is incompatible with parameter of type "double (*)(void)"
+  Object P_Pow (Object x, Object y) { return General_Function (x, y, pow); }
+                                                                     ^
+
+2 errors detected in the compilation of "Test_name.c".

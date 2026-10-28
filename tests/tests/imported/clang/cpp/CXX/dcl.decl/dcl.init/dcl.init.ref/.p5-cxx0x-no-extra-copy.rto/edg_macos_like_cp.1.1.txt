@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 32: warning: variable "tp" was declared but never referenced
+    T *tp = dp;
+       ^
+
+"Test_name.c", line 72: error: more than one instance of overloaded function "g" matches the argument list:
+            function template "int &g<T>(int_c<sizeof(<expression>)> *)" (declared at line 67)
+            function template "float &g<T>()" (declared at line 69)
+    float &fp = g<X3>();  // expected-error{{call to 'g' is ambiguous}}
+                ^
+
+1 error detected in the compilation of "Test_name.c".

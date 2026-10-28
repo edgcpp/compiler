@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 30: error: attributes are not allowed here
+    int (*(*func_ptr_ptr)(int) [[clang::lifetimebound]])(int); // expected-error {{'clang::lifetimebound' attribute only applies to parameters and implicit object parameters}}
+                                 ^
+
+"Test_name.c", line 137: warning: a user-provided literal suffix must begin with "_"
+    string operator""s(const char *, size_t); // expected-warning {{user-defined literal suffixes not starting with '_' are reserved}}
+                   ^
+
+"Test_name.c", line 146: warning: a user-provided literal suffix must begin with "_"
+    string_view operator""sv(const char *, size_t); // expected-warning {{user-defined literal suffixes not starting with '_' are reserved}}
+                        ^
+
+"Test_name.c", line 296: warning: type qualifiers are meaningless here
+                                         const T, T>::type;
+                                         ^
+          detected during:
+            instantiation of type "std::foo::CopyConst<U, auto &&>" at line 305
+            instantiation of type "std::foo::ForwardLikeRetType<U, auto &&>" at line 308
+
+"Test_name.c", line 248: warning: returning reference to local temporary
+      return static_cast<typename remove_reference<T>::type>(t);
+             ^
+          detected during instantiation of "std::foo::remove_reference<T>::type &&std::foo::move(T &&) [with T=move_forward_et_al_examples::S]" at line 337
+
+"Test_name.c", line 370: warning: attribute namespace "gsl" is unrecognized
+  class [[gsl::Owner]] Foo {};
+          ^
+
+"Test_name.c", line 371: warning: attribute namespace "gsl" is unrecognized
+  class [[gsl::Pointer]] FooView {};
+          ^
+
+1 error detected in the compilation of "Test_name.c".

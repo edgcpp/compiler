@@ -1,0 +1,168 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 29: error: class "N::B" has no member "type"
+  typename N::B::type *ip2 = &i; // expected-error{{no type named 'type' in 'N::B'}}
+                 ^
+
+"Test_name.c", line 33: error: member "N::C::type" is not a type name
+  typename N::C::type *ip3 = &i; // expected-error{{typename specifier refers to non-type member 'type'}}
+           ^
+
+"Test_name.c", line 53: warning: variable "f2" was declared but never referenced
+    const typename N::A::type f2(d);
+                              ^
+
+"Test_name.c", line 62: error: class "N::B" has no member "type"
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                          ^
+          detected during instantiation of class "N::X<T> [with T=N::B]" at line 71
+
+"Test_name.c", line 62: error: member "N::C::type" is not a type name
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                       ^
+          detected during instantiation of class "N::X<T> [with T=N::C]" at line 72
+
+"Test_name.c", line 62: error: a class or namespace qualified name is required
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                       ^
+          detected during instantiation of class "N::X<T> [with T=int]" at line 74
+
+"Test_name.c", line 62: error: global-scope qualifier (leading "::") is not allowed
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                        ^
+          detected during instantiation of class "N::X<T> [with T=int]" at line 74
+
+"Test_name.c", line 62: error: expected a ";"
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                               ^
+          detected during instantiation of class "N::X<T> [with T=int]" at line 74
+
+"Test_name.c", line 74: error: class "N::X<int>" has no member "type"
+  N::X<int>::type fail1; // expected-note{{in instantiation of template class 'N::X<int>' requested here}}
+             ^
+
+"Test_name.c", line 62: error: class "B" has no member "type"
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                          ^
+          detected during:
+            instantiation of class "N::X<T> [with T=B]" at line 78
+            instantiation of class "Y<T> [with T=B]" at line 95
+
+"Test_name.c", line 62: error: member "C::type" is not a type name
+      typedef typename T::type type; // expected-error {{no type named 'type' in 'N::B'}} \
+                       ^
+          detected during:
+            instantiation of class "N::X<T> [with T=C]" at line 78
+            instantiation of class "Y<T> [with T=C]" at line 96
+
+"Test_name.c", line 99: error: a class or namespace qualified name is required
+    typedef typename T::foo foo;  // expected-error {{type 'long' cannot be used prior to '::' because it has no members}}
+                     ^
+          detected during instantiation of class "D<T> [with T=long]" at line 103
+
+"Test_name.c", line 99: error: global-scope qualifier (leading "::") is not allowed
+    typedef typename T::foo foo;  // expected-error {{type 'long' cannot be used prior to '::' because it has no members}}
+                      ^
+          detected during instantiation of class "D<T> [with T=long]" at line 103
+
+"Test_name.c", line 99: error: expected a ";"
+    typedef typename T::foo foo;  // expected-error {{type 'long' cannot be used prior to '::' because it has no members}}
+                            ^
+          detected during instantiation of class "D<T> [with T=long]" at line 103
+
+"Test_name.c", line 100: error: a class or namespace qualified name is required
+    typedef typename foo::bar bar;
+                     ^
+          detected during instantiation of class "D<T> [with T=long]" at line 103
+
+"Test_name.c", line 100: error: global-scope qualifier (leading "::") is not allowed
+    typedef typename foo::bar bar;
+                        ^
+          detected during instantiation of class "D<T> [with T=long]" at line 103
+
+"Test_name.c", line 100: error: expected a ";"
+    typedef typename foo::bar bar;
+                              ^
+          detected during instantiation of class "D<T> [with T=long]" at line 103
+
+"Test_name.c", line 107: error: a class or namespace qualified name is required
+    typedef typename foo::bar bar;  // expected-error {{type 'foo' (aka 'double') cannot be used prior to '::' because it has no members}}
+                     ^
+          detected during instantiation of class "E<T> [with T=F]" at line 114
+
+"Test_name.c", line 107: error: global-scope qualifier (leading "::") is not allowed
+    typedef typename foo::bar bar;  // expected-error {{type 'foo' (aka 'double') cannot be used prior to '::' because it has no members}}
+                        ^
+          detected during instantiation of class "E<T> [with T=F]" at line 114
+
+"Test_name.c", line 107: error: expected a ";"
+    typedef typename foo::bar bar;  // expected-error {{type 'foo' (aka 'double') cannot be used prior to '::' because it has no members}}
+                              ^
+          detected during instantiation of class "E<T> [with T=F]" at line 114
+
+"Test_name.c", line 138: error: nontype "PR10925::BasicGeometry<mydim, Traits>::operator[] [with mydim=mydim, Traits=int]" is not a type name
+      using typename BasicGeometry<mydim, int>::operator[]; // expected-error {{typename is allowed for identifiers only}}
+                     ^
+
+"Test_name.c", line 176: error: nontype "missing_typename::ExampleClass1<T>::ExampleItemSet::iterator" is not a type name
+    pair<ExampleItemSet::iterator, int> elt;
+         ^
+
+"Test_name.c", line 194: error: use the "typename" keyword to treat nontype "missing_typename::map<T1, T2>::iterator [with T1=int, T2=missing_typename::ExampleClass1<T>::ExampleItem *]" as a type in a dependent context
+    pair<ExampleItemMap::iterator, int> entry;
+         ^
+
+"Test_name.c", line 195: error: function "missing_typename::ExampleClass1<T>::bar" is not a type name
+    pair<bar, int> foobar; // expected-error {{template argument for template type parameter must be a type}}
+         ^
+
+"Test_name.c", line 167: error: nontype "missing_typename::ExampleClass1<T>::ExampleItemSet::iterator" is not a type name
+      pair<ExampleItemSet::iterator, int> i;
+           ^
+
+"Test_name.c", line 168: error: expected a type specifier
+      pair<this->ExampleItemSet::iterator, int> i; // expected-error-re {{template argument for template type parameter must be a type{{$}}}}
+           ^
+
+"Test_name.c", line 168: error: "i" has already been declared in the current scope
+      pair<this->ExampleItemSet::iterator, int> i; // expected-error-re {{template argument for template type parameter must be a type{{$}}}}
+                                                ^
+
+"Test_name.c", line 169: error: operator name is not allowed
+      pair<ExampleItemSet::operator[], int> i; // expected-error-re {{template argument for template type parameter must be a type{{$}}}}
+           ^
+
+"Test_name.c", line 169: error: "i" has already been declared in the current scope
+      pair<ExampleItemSet::operator[], int> i; // expected-error-re {{template argument for template type parameter must be a type{{$}}}}
+                                            ^
+
+"Test_name.c", line 187: error: use the "typename" keyword to treat nontype "missing_typename::map<T1, T2>::iterator [with T1=int, T2=missing_typename::ExampleClass1<T>::ExampleItem *]" as a type in a dependent context
+      pair<ExampleItemMap::iterator, int> i;
+           ^
+
+"Test_name.c", line 205: error: identifier "TypeInBase" is undefined
+    Bar<TypeInBase> x; // expected-error {{use of undeclared identifier 'TypeInBase'}}
+        ^
+
+"Test_name.c", line 212: error: nontype "T::TypeInBase" is not a type name
+    Bar<T::TypeInBase> y;
+        ^
+
+"Test_name.c", line 219: error: nontype "T::NestedRD::TypeInNestedRD" is not a type name
+    Bar<T::NestedRD::TypeInNestedRD> z;
+        ^
+
+"Test_name.c", line 253: warning: variable "x" was declared but never referenced
+  template <typename T> void h() { typename T::type_or_int * x; }
+                                                             ^
+
+"Test_name.c", line 251: warning: expression has no effect
+  template <typename T> void g() { T::type_or_int * x; }
+                                   ^
+          detected during instantiation of "void pointer_vs_multiply::g<T>() [with T=pointer_vs_multiply::A]" at line 259
+
+"Test_name.c", line 253: error: member "pointer_vs_multiply::A::type_or_int" is not a type name
+  template <typename T> void h() { typename T::type_or_int * x; }
+                                            ^
+          detected during instantiation of "void pointer_vs_multiply::h<T>() [with T=pointer_vs_multiply::A]" at line 261
+
+33 errors detected in the compilation of "Test_name.c".

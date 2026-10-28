@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./strlenopt-95.c", line 9: warning: unknown attribute "vector_size"
+  typedef __attribute__ ((vector_size (1))) char VC1;
+                          ^
+
+"./strlenopt-95.c", line 10: warning: unknown attribute "vector_size"
+  typedef __attribute__ ((vector_size (2))) char VC2;
+                          ^
+
+"./strlenopt-95.c", line 11: warning: unknown attribute "vector_size"
+  typedef __attribute__ ((vector_size (4))) char VC4;
+                          ^
+
+"./strlenopt-95.c", line 12: warning: unknown attribute "vector_size"
+  typedef __attribute__ ((vector_size (8))) char VC8;
+                          ^
+
+"./strlenopt-95.c", line 13: warning: unknown attribute "vector_size"
+  typedef __attribute__ ((vector_size (16))) char VC16;
+                          ^
+
+"./strlenopt-95.c", line 25: warning: excess initializers are ignored
+    *(VC4*)a = (VC4){ 0, 1 };
+                         ^
+
+"./strlenopt-95.c", line 33: warning: excess initializers are ignored
+    *(VC4*)a = (VC4){ 1, 0, 3 };
+                         ^
+
+"./strlenopt-95.c", line 37: warning: excess initializers are ignored
+    *(VC4*)a = (VC4){ 1, 2 };
+                         ^
+
+"./strlenopt-95.c", line 41: warning: excess initializers are ignored
+    *(VC4*)a = (VC4){ 1, 2, 0, 4 };
+                         ^
+
+"./strlenopt-95.c", line 45: warning: excess initializers are ignored
+    *(VC4*)a = (VC4){ 1, 2, 3 };
+                         ^
+
+"./strlenopt-95.c", line 49: warning: excess initializers are ignored
+    *(VC8*)a = (VC8){ 1, 2, 3, 0, 5 };
+                         ^
+
+"./strlenopt-95.c", line 52: warning: excess initializers are ignored
+    *(VC8*)a = (VC8){ 1, 2, 3, 0, 5, 6 };
+                         ^
+
+"./strlenopt-95.c", line 55: warning: excess initializers are ignored
+    *(VC8*)a = (VC8){ 1, 2, 3, 0, 5, 6, 7, 8 };
+                         ^
+

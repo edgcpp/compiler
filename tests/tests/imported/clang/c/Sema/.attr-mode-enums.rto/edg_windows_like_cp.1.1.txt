@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 14: error: invalid argument to attribute "mode"
+    typedef enum { E1 } __attribute__((mode(V4QI))) RejectedType1; // expected-error{{mode 'V4QI' is not supported for enumeration types}}
+                                            ^
+
+"Test_name.c", line 16: error: invalid argument to attribute "mode"
+    typedef enum __attribute__((mode(V8HI))) { E2 } RejectedType2; // expected-error{{mode 'V8HI' is not supported for enumeration types}}
+                                     ^
+
+"Test_name.c", line 18: error: invalid argument to attribute "mode"
+    typedef enum E3 __attribute__((mode(V2SI))) RejectedType3; // expected-error{{mode 'V2SI' is not supported for enumeration types}}
+                                        ^
+
+"Test_name.c", line 20: error: invalid argument to attribute "mode"
+    typedef EnumType __attribute__((mode(V4DI))) RejectedType4; // expected-error{{mode 'V4DI' is not supported for enumeration types}}
+                                         ^
+
+"Test_name.c", line 22: error: invalid argument to attribute "mode"
+    EnumType v1 __attribute__((mode(V4QI))); // expected-error{{mode 'V4QI' is not supported for enumeration types}}
+                                    ^
+
+"Test_name.c", line 24: error: invalid argument to attribute "mode"
+    enum __attribute__((mode(V8HI))) { E5 } v2; // expected-error{{mode 'V8HI' is not supported for enumeration types}}
+                             ^
+
+"Test_name.c", line 30: error: incomplete type "enum X" is not allowed
+    enum X a1; // expected-error{{variable has incomplete type 'enum X'}}
+           ^
+
+"Test_name.c", line 32: error: incomplete type "IncompleteYType" (aka "enum Y") is not allowed
+    IncompleteYType a2; // expected-error{{variable has incomplete type 'IncompleteYType' (aka 'enum Y')}}
+                    ^
+
+"Test_name.c", line 24: warning: variable "v2" was declared but never referenced
+    enum __attribute__((mode(V8HI))) { E5 } v2; // expected-error{{mode 'V8HI' is not supported for enumeration types}}
+                                            ^
+
+"Test_name.c", line 41: warning: variable "a3" was declared but never referenced
+    enum X __attribute__((mode(QI))) a3;
+                                     ^
+
+"Test_name.c", line 42: warning: variable "a4" was declared but never referenced
+    enum X a4 __attribute__((mode(HI)));
+           ^
+
+"Test_name.c", line 43: warning: variable "a5" was declared but never referenced
+    IncompleteYType __attribute__((mode(QI))) a5;
+                                              ^
+
+"Test_name.c", line 44: warning: variable "a6" was declared but never referenced
+    IncompleteYType a6 __attribute__((mode(HI)));
+                    ^
+
+"Test_name.c", line 45: warning: variable "a7" was declared but never referenced
+    CompleteYType1 a7;
+                   ^
+
+"Test_name.c", line 46: warning: variable "a8" was declared but never referenced
+    CompleteYType2 a8;
+                   ^
+
+"Test_name.c", line 47: warning: variable "a9" was declared but never referenced
+    CompleteType3 a9;
+                  ^
+
+"Test_name.c", line 48: warning: variable "a10" was declared but never referenced
+    CompleteType4 a10;
+                  ^
+
+"Test_name.c", line 49: warning: variable "a11" was declared but never referenced
+    CompleteType5 a11;
+                  ^
+
+"Test_name.c", line 50: warning: variable "a12" was declared but never referenced
+    enum __attribute__((mode(QI))) { A4, B4 } a12;
+                                              ^
+
+8 errors detected in the compilation of "Test_name.c".

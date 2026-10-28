@@ -1,0 +1,108 @@
+fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 55: warning: use of "=" where "==" may have been intended
+    [[assume((x = 3))]]; // expected-warning {{assumption is ignored because it contains (potential) side-effects}} // ext-warning {{C++23 extension}}
+             ^
+
+"Test_name.c", line 60: warning: expression has no effect
+    [[assume((1, 2))]]; // expected-warning {{has no effect}} // ext-warning {{C++23 extension}}
+              ^
+
+"Test_name.c", line 43: error: expression must have bool type (or be convertible to bool)
+    [[assume(T{})]]; // expected-error {{not contextually convertible to 'bool'}} expected-warning {{assumption is ignored because it contains (potential) side-effects}} ext-warning {{C++23 extension}}
+             ^
+          detected during instantiation of "void f3<T>() [with T=A]" at line 62
+
+"Test_name.c", line 64: error: expected a "("
+    [[assume]]; // expected-error {{takes one argument}}
+            ^
+
+"Test_name.c", line 65: error: identifier "z" is undefined
+    [[assume(z)]]; // expected-error {{undeclared identifier}}
+             ^
+
+"Test_name.c", line 66: error: expression must have bool type (or be convertible to bool)
+    [[assume(A{})]]; // expected-error {{not contextually convertible to 'bool'}}
+             ^
+
+"Test_name.c", line 67: error: the "assume" attribute can only apply to a null statement
+    [[assume(true)]] if (true) {} // expected-error {{only applies to empty statements}}
+    ^
+
+"Test_name.c", line 68: error: the "assume" attribute can only apply to a null statement
+    [[assume(true)]] {} // expected-error {{only applies to empty statements}}
+                     ^
+
+"Test_name.c", line 69: error: the "assume" attribute can only apply to a null statement
+    [[assume(true)]] for (;false;) {} // expected-error {{only applies to empty statements}}
+    ^
+
+"Test_name.c", line 70: error: the "assume" attribute can only apply to a null statement
+    [[assume(true)]] while (false) {} // expected-error {{only applies to empty statements}}
+    ^
+
+"Test_name.c", line 71: warning: attribute "assume" does not apply here
+    [[assume(true)]] label:; // expected-error {{cannot be applied to a declaration}}
+      ^
+
+"Test_name.c", line 72: error: the "assume" attribute can only apply to a null statement
+    [[assume(true)]] goto label; // expected-error {{only applies to empty statements}}
+    ^
+
+"Test_name.c", line 76: error: the "assume" attribute can only apply to a null statement
+    __attribute__((assume(true))) {}; // expected-error {{only applies to empty statements}}
+                                  ^
+
+"Test_name.c", line 77: error: the "assume" attribute can only apply to a null statement
+    [[clang::assume(true)]] {}; // expected-error {{only applies to empty statements}}
+                            ^
+
+"Test_name.c", line 97: error: expression must have a constant value
+  static_assert(i()); // expected-error {{not an integral constant expression}} expected-note {{in call to}}
+                ^
+"Test_name.c", line 88: note: assumption failed
+    [[assume(false)]]; // ext-note {{assumption evaluated to false}} expected-note {{assumption evaluated to false}} ext-warning {{C++23 extension}}
+             ^
+
+"Test_name.c", line 99: error: expression must have a constant value
+  static_assert(j(false)); // expected-error {{not an integral constant expression}} expected-note {{in call to}}
+                ^
+"Test_name.c", line 93: note: assumption failed
+    [[assume(b)]]; // expected-note {{assumption evaluated to false}} ext-warning {{C++23 extension}}
+             ^
+
+"Test_name.c", line 101: error: expression must have a constant value
+  static_assert(S<false>{}.g<A>()); // expected-error {{not an integral constant expression}} expected-note {{in call to}}
+                ^
+"Test_name.c", line 34: note: assumption failed
+      [[assume(cond == sizeof(T))]]; // expected-note {{assumption evaluated to false}} ext-warning {{C++23 extension}}
+               ^
+"Test_name.c", line 34: note: the final comparison was 0 == 1
+      [[assume(cond == sizeof(T))]]; // expected-note {{assumption evaluated to false}} ext-warning {{C++23 extension}}
+                    ^
+
+"Test_name.c", line 106: error: no operator "!" matches these operands
+            operand types are: ! D
+    [[assume(!T{})]]; // expected-error {{invalid argument type 'D'}} // expected-warning 2 {{assumption is ignored because it contains (potential) side-effects}} ext-warning {{C++23 extension}}
+             ^
+"Test_name.c", line 106: note: built-in operator!(<bool>) does not match because argument #1 does not match parameter
+    [[assume(!T{})]]; // expected-error {{invalid argument type 'D'}} // expected-warning 2 {{assumption is ignored because it contains (potential) side-effects}} ext-warning {{C++23 extension}}
+             ^
+          detected during instantiation of "bool f4<T>() [with T=D]" at line 141
+
+"Test_name.c", line 161: error: parameter pack "val" was referenced but not expanded
+      [[assume(val)]]; // expected-error {{expression contains unexpanded parameter pack}}
+               ^
+
+"Test_name.c", line 178: warning: dynamic initialization in unreachable code
+      int a = 0, b = 1;
+          ^
+
+"Test_name.c", line 178: warning: variable "a" was set but never used
+      int a = 0, b = 1;
+          ^
+
+"Test_name.c", line 178: warning: variable "b" was set but never used
+      int a = 0, b = 1;
+                 ^
+
+16 errors detected in the compilation of "Test_name.c".

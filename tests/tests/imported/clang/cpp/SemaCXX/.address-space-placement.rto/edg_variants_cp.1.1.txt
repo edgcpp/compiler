@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions Test_name.c
+"Test_name.c", line 28: warning: attributes may not appear here
+    } catch(int [[clang::address_space(1)]] & i) {
+                  ^
+
+"Test_name.c", line 10: warning: variable "local1" was declared but never referenced
+    [[clang::address_space(1)]] int* local1; // expected-warning {{applying attribute 'clang::address_space' to a declaration is deprecated; apply it to the type instead}}
+                                     ^
+
+"Test_name.c", line 11: warning: variable "local2" was declared but never referenced
+    int* local2 [[clang::address_space(1)]]; // expected-error {{automatic variable qualified with an address space}} expected-warning {{applying attribute 'clang::address_space' to a declaration is deprecated; apply it to the type instead}}
+         ^
+
+"Test_name.c", line 12: warning: variable "local3" was declared but never referenced
+    int [[clang::address_space(1)]] * local3;
+                                      ^
+
+"Test_name.c", line 13: warning: variable "local4" was declared but never referenced
+    int* [[clang::address_space(1)]] local4; // expected-error {{automatic variable qualified with an address space}}
+                                     ^
+
+"Test_name.c", line 48: warning: attributes may not appear here
+  T [[clang::address_space(1)]] var_template_2;
+      ^
+

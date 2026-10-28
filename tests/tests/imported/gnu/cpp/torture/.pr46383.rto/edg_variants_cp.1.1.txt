@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 101: warning: missing return statement at end of non-void function "CGAL::Mesher_level<Tr, Derived, Element, Previous, Triangulation_traits>::try_to_refine_element(Element, Mesh_visitor)"
+    }
+    ^
+
+"Test_name.c", line 75: warning: function "CGAL::Mesher_level<Tr, Derived, Element, Previous, Triangulation_traits>::insert [with Tr=Tr, Derived=CGAL::Surface_mesher::Surface_mesher<CGAL::Surface_mesher::Surface_mesher_base<C2T3, CGAL::Implicit_surface_3<K>, Traits, int>, CGAL::Triangulation_data_structure_3::Facet, CGAL::Null_mesher_level, CGAL::Surface_mesher::NOT_VERBOSE>, Element=CGAL::Triangulation_data_structure_3::Facet, Previous=CGAL::Null_mesher_level, Triangulation_traits=CGAL::Triangulation_mesher_level_traits_3<Tr>]" was referenced but not defined
+    Vertex_handle insert(Point p, Zone& z) ; // { dg-warning "used but never defined" }
+                  ^
+
+"Test_name.c", line 76: warning: function "CGAL::Mesher_level<Tr, Derived, Element, Previous, Triangulation_traits>::conflicts_zone [with Tr=Tr, Derived=CGAL::Surface_mesher::Surface_mesher<CGAL::Surface_mesher::Surface_mesher_base<C2T3, CGAL::Implicit_surface_3<K>, Traits, int>, CGAL::Triangulation_data_structure_3::Facet, CGAL::Null_mesher_level, CGAL::Surface_mesher::NOT_VERBOSE>, Element=CGAL::Triangulation_data_structure_3::Facet, Previous=CGAL::Null_mesher_level, Triangulation_traits=CGAL::Triangulation_mesher_level_traits_3<Tr>]" was referenced but not defined
+    Zone conflicts_zone(const Point& p, Element e) ; // { dg-warning "used but never defined" }
+         ^
+
+"Test_name.c", line 77: warning: function "CGAL::Mesher_level<Tr, Derived, Element, Previous, Triangulation_traits>::get_next_element [with Tr=Tr, Derived=CGAL::Surface_mesher::Surface_mesher<CGAL::Surface_mesher::Surface_mesher_base<C2T3, CGAL::Implicit_surface_3<K>, Traits, int>, CGAL::Triangulation_data_structure_3::Facet, CGAL::Null_mesher_level, CGAL::Surface_mesher::NOT_VERBOSE>, Element=CGAL::Triangulation_data_structure_3::Facet, Previous=CGAL::Null_mesher_level, Triangulation_traits=CGAL::Triangulation_mesher_level_traits_3<Tr>]" was referenced but not defined
+    Element get_next_element() ; // { dg-warning "used but never defined" }
+            ^
+

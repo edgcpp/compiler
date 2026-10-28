@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 20: warning: function "_CFCalendarDecomposeAbsoluteTimeV" declared implicitly
+     if (_CFCalendarDecomposeAbsoluteTimeV(compDesc, vector, compCount)) { // expected-error {{call to undeclared function '_CFCalendarDecomposeAbsoluteTimeV'; ISO C99 and later do not support implicit function declarations}} \
+         ^
+
+"Test_name.c", line 25: warning: function "printg" declared implicitly
+     printg("Hello, World!\n"); // expected-error{{call to undeclared function 'printg'; ISO C99 and later do not support implicit function declarations}} \
+     ^
+
+"Test_name.c", line 29: warning: function "__builtin_is_les" declared implicitly
+    __builtin_is_les(1, 3); // expected-error{{use of unknown builtin '__builtin_is_les'}} \
+    ^
+
+"Test_name.c", line 35: warning: declaration is incompatible with previous "_CFCalendarDecomposeAbsoluteTimeV" (declared implicitly)
+  Boolean _CFCalendarDecomposeAbsoluteTimeV(const char *componentDesc, int32_t **vector, int32_t count) { // expected-error {{conflicting types}}
+          ^
+
+"Test_name.c", line 44: warning: function "formatd" declared implicitly
+    formatd("Hello, World!\n"); // expected-error{{call to undeclared function 'formatd'; ISO C99 and later do not support implicit function declarations}} \
+    ^
+
+"Test_name.c", line 43: warning: variable "formats" was declared but never referenced
+    int formats = 0; // c2x-note {{'formats' declared here}}
+        ^
+
+"Test_name.c", line 51: warning: function "bark" declared implicitly
+    bark(); // expected-error {{call to undeclared function 'bark'; ISO C99 and later do not support implicit function declarations}} \
+    ^
+
+"Test_name.c", line 53: warning: function "bork" declared implicitly
+    bork(); // expected-error {{call to undeclared function 'bork'; ISO C99 and later do not support implicit function declarations}} \
+    ^
+
+"Test_name.c", line 62: error: statement expressions are only allowed in block scope
+      int x __attribute__((aligned(({ a(); })))); // expected-error {{call to undeclared function 'a'; ISO C99 and later do not support implicit function declarations}} \
+                                    ^
+
+"Test_name.c", line 66: warning: missing return statement at end of non-void function "GH48579_1"
+  }
+  ^
+
+"Test_name.c", line 65: warning: variable "x" was declared but never referenced
+    } x;
+      ^
+
+"Test_name.c", line 70: error: statement expressions are only allowed in block scope
+      int array[({ a(); })]; // expected-error {{call to undeclared function 'a'; ISO C99 and later do not support implicit function declarations}} \
+                 ^
+
+"Test_name.c", line 70: warning: variable-length array field type will be treated as zero-length array field type
+      int array[({ a(); })]; // expected-error {{call to undeclared function 'a'; ISO C99 and later do not support implicit function declarations}} \
+                ^
+
+"Test_name.c", line 77: error: statement expressions are only allowed in block scope
+  int GH48579_3 = ({a();});              // both-error {{statement expression not allowed at file scope}}
+                   ^
+
+"Test_name.c", line 78: error: statement expressions are only allowed in block scope
+  void GH48579_4(int array[({ a(); })]); // both-error {{statement expression not allowed at file scope}}
+                            ^
+
+"Test_name.c", line 82: warning: function "bark" declared implicitly
+    bark(); // expected-warning {{call to undeclared function 'bark'; ISO C99 and later do not support implicit function declarations}} \
+    ^
+
+"Test_name.c", line 88: warning: function "bark" declared implicitly
+    bark(); // expected-error {{call to undeclared function 'bark'; ISO C99 and later do not support implicit function declarations}} \
+    ^
+
+"Test_name.c", line 94: warning: function "bark" declared implicitly
+    bark(); // c2x-error {{use of undeclared identifier 'bark'}}
+    ^
+
+4 errors detected in the compilation of "Test_name.c".

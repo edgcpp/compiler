@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 16: warning: statement is unreachable
+    switch (b)
+    ^
+
+"Test_name.c", line 15: warning: label "flabel" was declared but never referenced
+      [[unlikely]] flabel: return 1;
+                   ^
+
+"Test_name.c", line 28: warning: label "elabel" was declared but never referenced
+      [[unlikely]] elabel:
+                   ^
+

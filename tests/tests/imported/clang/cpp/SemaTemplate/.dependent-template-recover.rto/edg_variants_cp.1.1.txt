@@ -1,0 +1,196 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: error: type name is not allowed
+      t->f0<U>(); // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
+            ^
+
+"Test_name.c", line 7: error: expected an expression
+      t->f0<U>(); // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
+               ^
+
+"Test_name.c", line 8: error: type name is not allowed
+      t->f0<int>(); // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
+            ^
+
+"Test_name.c", line 8: error: expected an expression
+      t->f0<int>(); // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
+                 ^
+
+"Test_name.c", line 10: error: type name is not allowed
+      t->operator+<U const, 1>(1); // expected-error{{use 'template' keyword to treat 'operator +' as a dependent template name}}
+                   ^
+
+"Test_name.c", line 10: error: expected a ";"
+      t->operator+<U const, 1>(1); // expected-error{{use 'template' keyword to treat 'operator +' as a dependent template name}}
+                     ^
+
+"Test_name.c", line 11: error: type name is not allowed
+      t->f1<int const, 2>(1); // expected-error{{use 'template' keyword to treat 'f1' as a dependent template name}}
+            ^
+
+"Test_name.c", line 11: error: expected a ";"
+      t->f1<int const, 2>(1); // expected-error{{use 'template' keyword to treat 'f1' as a dependent template name}}
+                ^
+
+"Test_name.c", line 12: error: type name is not allowed
+      t->f1<3, int const>(1); // expected-error{{missing 'template' keyword prior to dependent template name 'f1'}}
+               ^
+
+"Test_name.c", line 12: error: expected a ";"
+      t->f1<3, int const>(1); // expected-error{{missing 'template' keyword prior to dependent template name 'f1'}}
+                   ^
+
+"Test_name.c", line 14: error: type name is not allowed
+      T::getAs<U>(); // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
+               ^
+
+"Test_name.c", line 14: error: expected an expression
+      T::getAs<U>(); // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
+                  ^
+
+"Test_name.c", line 15: error: type name is not allowed
+      t->T::getAs<U>(); // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
+                  ^
+
+"Test_name.c", line 15: error: expected an expression
+      t->T::getAs<U>(); // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
+                     ^
+
+"Test_name.c", line 17: error: expected an expression
+      (*t).f2<N>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+                 ^
+
+"Test_name.c", line 18: error: expected an expression
+      (*t).f2<0>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+                 ^
+
+"Test_name.c", line 19: error: expected an expression
+      T::f2<0>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+               ^
+
+"Test_name.c", line 20: error: type name is not allowed
+      T::f2<0, int>(0); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+               ^
+
+"Test_name.c", line 22: error: expected an expression
+      T::foo<N < 2 || N >= 4>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                              ^
+
+"Test_name.c", line 26: error: expected an expression
+      T::foo<T::bar < 1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                         ^
+
+"Test_name.c", line 27: error: expected an expression
+      T::foo < T::bar<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'bar'}}
+                         ^
+
+"Test_name.c", line 30: error: expected an expression
+      xyz < T::foo < 1 > (); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                          ^
+
+"Test_name.c", line 31: error: expected an expression
+      T::foo < xyz < 1 > (); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                          ^
+
+"Test_name.c", line 35: error: expected an expression
+      xyz<T::foo < 1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                      ^
+
+"Test_name.c", line 36: error: expected an expression
+      T::foo < xyz<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                      ^
+
+"Test_name.c", line 38: error: expected an expression
+      sizeof T::foo < 123 > (); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                             ^
+
+"Test_name.c", line 39: error: expected an expression
+      f(t->foo<1, 2>(), // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                     ^
+
+"Test_name.c", line 40: error: expected an expression
+        t->bar<3, 4>()); // expected-error{{missing 'template' keyword prior to dependent template name 'bar'}}
+                     ^
+
+"Test_name.c", line 44: error: expected an expression
+        t->foo<1, 2>(), // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+                     ^
+
+"Test_name.c", line 45: error: expected an expression
+        t->bar<3, 4>()  // FIXME: we don't recover from the previous error so don't diagnose this
+                     ^
+
+"Test_name.c", line 54: error: expected an expression
+       ) // expected-error {{expected expression}}
+       ^
+
+"Test_name.c", line 58: error: expected an expression
+    int b = T::y > (); // expected-error {{expected expression}}
+                    ^
+
+"Test_name.c", line 61: error: expected an expression
+    void d(int = T::y > ()); // expected-error {{expected expression}}
+                         ^
+
+"Test_name.c", line 63: error: expected an expression
+    for (int x = t < 3 ? 1 : 2; t > (); ++t) { // expected-error {{expected expression}}
+                                     ^
+
+"Test_name.c", line 70: error: expected an expression
+    bool k = T::t < 3 ? 1 > () : false; // expected-error {{missing 'template' keyword}} expected-error +{{}} expected-note +{{}}
+                             ^
+
+"Test_name.c", line 88: error: type name is not allowed
+    T::g<mb, int>(0); // expected-error {{missing 'template' keyword prior to dependent template name 'g'}}
+             ^
+
+"Test_name.c", line 95: warning: variable "p" was declared but never referenced
+  void q() { void (*p)(int) = Y::g; }
+                    ^
+
+"Test_name.c", line 143: error: incomplete type "templ_spec::A<T::X<int>>" (aka "void") is not allowed
+      A<typename T::template X<int>> t1;
+                                     ^
+
+"Test_name.c", line 146: error: template parameter "T::X" may not have a template argument list
+      A<typename T::X<int>> t2; // expected-error {{use 'template' keyword}}
+                    ^
+
+"Test_name.c", line 146: error: incomplete type "templ_spec::A<<error-type>>" (aka "void") is not allowed
+      A<typename T::X<int>> t2; // expected-error {{use 'template' keyword}}
+                            ^
+
+"Test_name.c", line 150: error: template "T::X" is not a type name
+      A<T::template X<int>> t3; // expected-error {{did you forget 'typename'}}
+        ^
+
+"Test_name.c", line 150: error: incomplete type "templ_spec::A<<error-type>>" (aka "void") is not allowed
+      A<T::template X<int>> t3; // expected-error {{did you forget 'typename'}}
+                            ^
+
+"Test_name.c", line 153: error: nontype "T::X" is not a template
+      A<T::X<int>> t4; // expected-error {{use 'template' keyword}} expected-error {{did you forget 'typename'}}
+           ^
+
+"Test_name.c", line 153: error: incomplete type "templ_spec::A<<error-type>>" (aka "void") is not allowed
+      A<T::X<int>> t4; // expected-error {{use 'template' keyword}} expected-error {{did you forget 'typename'}}
+                   ^
+
+"Test_name.c", line 85: error: no instance of function template "Y::g" matches the argument list
+            argument types are: (int)
+    T::g<mb>(0);
+    ^
+"Test_name.c", line 93: note: substituting explicit template arguments "<<expression>>" for function template "Y::g" failed
+    template <int = 0> static void g(int); // expected-warning 0-1{{extension}}
+                                   ^
+          detected during instantiation of "void f<N,T>(T) [with N=0, T=Y]" at line 96
+
+"Test_name.c", line 88: error: no instance of function template "Y::g" matches the argument list
+            argument types are: (int)
+    T::g<mb, int>(0); // expected-error {{missing 'template' keyword prior to dependent template name 'g'}}
+    ^
+"Test_name.c", line 93: note: substituting explicit template arguments "<<expression>, int>" for function template "Y::g" failed
+    template <int = 0> static void g(int); // expected-warning 0-1{{extension}}
+                                   ^
+          detected during instantiation of "void f<N,T>(T) [with N=0, T=Y]" at line 96
+
+45 errors detected in the compilation of "Test_name.c".

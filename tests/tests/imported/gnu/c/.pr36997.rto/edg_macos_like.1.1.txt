@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "__vector_size__"
+  typedef int __m64 __attribute__ ((__vector_size__ (8), __may_alias__));
+                                    ^
+
+"Test_name.c", line 9: error: builtin function is not available because vector types are not supported
+      return (__m64) __builtin_ia32_paddq ((long long)__m1, (long long)__m2); /* { dg-error "incompatible type" } */
+                     ^
+
+1 error detected in the compilation of "Test_name.c".

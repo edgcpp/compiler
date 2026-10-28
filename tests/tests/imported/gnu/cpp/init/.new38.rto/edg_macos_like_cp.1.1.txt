@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: array is too large
+      [1ULL << (sizeof(void *) * 4)]; // { dg-error "size of array" }
+      ^
+
+"Test_name.c", line 19: error: array is too large
+      [1ULL << (sizeof(void *) * 4)]; // { dg-error "size of array" }
+      ^
+
+"Test_name.c", line 29: error: array is too large
+      [1ULL << (sizeof(void *) * 4)];
+      ^
+          detected during instantiation of "void large_array_template1<T>(int) [with T=char]" at line 53
+
+"Test_name.c", line 38: error: array is too large
+      [1ULL << (sizeof(void *) * 4)];
+      ^
+          detected during instantiation of "void large_array_template2<T>(int) [with T=int]" at line 54
+
+"Test_name.c", line 47: error: array is too large
+      [1ULL << (sizeof(void *) * 4)];
+      ^
+          detected during instantiation of "void large_array_template3<T>(int) [with T=double]" at line 55
+
+5 errors detected in the compilation of "Test_name.c".

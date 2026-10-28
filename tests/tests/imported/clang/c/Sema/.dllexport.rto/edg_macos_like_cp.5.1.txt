@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=5 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 -w --ms_extensions Test_name.c
+"Test_name.c", line 55: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl3" (declared at line 53)
+  __declspec(dllexport) extern int GlobalRedecl3; // expected-error{{redeclaration of 'GlobalRedecl3' cannot add 'dllexport' attribute}}
+                                   ^
+
+"Test_name.c", line 58: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl4" (declared at line 57)
+  __declspec(dllexport) extern int GlobalRedecl4; // expected-warning{{redeclaration of 'GlobalRedecl4' should not add 'dllexport' attribute}}
+                                   ^
+
+"Test_name.c", line 62: error: dllexport/dllimport requires external linkage
+  __declspec(dllexport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllexport'}}
+                                   ^
+
+"Test_name.c", line 65: error: expected a ";"
+  __declspec(dllexport) __thread int ThreadLocalGlobal; // expected-error{{'ThreadLocalGlobal' cannot be thread local when declared 'dllexport'}}
+                                 ^
+
+"Test_name.c", line 69: error: attribute "dllexport" does not apply to automatic variables
+    __declspec(dllexport)        int LocalVarDecl; // expected-error{{'LocalVarDecl' must have external linkage when declared 'dllexport'}}
+               ^
+
+"Test_name.c", line 70: error: attribute "dllexport" does not apply to automatic variables
+    __declspec(dllexport)        int LocalVarDef = 1; // expected-error{{'LocalVarDef' must have external linkage when declared 'dllexport'}}
+               ^
+
+"Test_name.c", line 110: error: redeclaration cannot add dllexport/dllimport to "redecl4" (declared at line 108)
+  __declspec(dllexport) void redecl4(void); // expected-error{{redeclaration of 'redecl4' cannot add 'dllexport' attribute}}
+                             ^
+
+"Test_name.c", line 114: error: redeclaration cannot add dllexport/dllimport to "redecl5" (declared at line 112)
+  __declspec(dllexport) inline void redecl5(void) {} // expected-error{{redeclaration of 'redecl5' cannot add 'dllexport' attribute}}
+                                    ^
+
+"Test_name.c", line 118: error: redeclaration cannot add dllexport/dllimport to "redecl6" (declared at line 117)
+  __declspec(dllexport) void redecl6(void); // expected-warning{{redeclaration of 'redecl6' should not add 'dllexport' attribute}}
+                             ^
+
+"Test_name.c", line 122: error: dllexport/dllimport requires external linkage
+  __declspec(dllexport) static int staticFunc(void); // expected-error{{'staticFunc' must have external linkage when declared 'dllexport'}}
+                                   ^
+
+"Test_name.c", line 161: error: a function declared "dllimport" may not be defined
+  void __declspec(dllimport) __declspec(dllexport) precedence1B(void) {} // expected-warning{{'dllimport' attribute ignored}}
+                                                   ^
+
+11 errors detected in the compilation of "Test_name.c".

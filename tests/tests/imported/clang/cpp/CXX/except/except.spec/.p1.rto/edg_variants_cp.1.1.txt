@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions --exceptions Test_name.c
+"Test_name.c", line 48: error: expected a "{"
+    void f() throw(int) noexcept { } // expected-error {{cannot have both}}
+                        ^
+
+"Test_name.c", line 49: error: expected a "{"
+    void g() noexcept throw(int) { } // expected-error {{cannot have both}}
+                      ^
+
+"Test_name.c", line 59: error: expression must have bool type (or be convertible to bool)
+    void g1() noexcept(A());     // expected-error {{value of type 'A' is not implicitly convertible to 'bool'}}
+                       ^
+
+"Test_name.c", line 60: error: a parameter is not allowed
+    void g2(bool b) noexcept(b); // expected-error {{noexcept specifier argument is not a constant expression}} expected-note {{function parameter 'b' with unknown value}} expected-note {{here}}
+                             ^
+
+"Test_name.c", line 65: error: a value of type "int" cannot be used to initialize an entity of type "T *"
+      T* x = 1;
+             ^
+
+"Test_name.c", line 66: warning: missing return statement at end of non-void function "noexcept_unevaluated::f(T)"
+    }
+    ^
+
+"Test_name.c", line 82: warning: variable "p" was declared but never referenced
+      int (*p)() noexcept(1 / X); // expected-error{{noexcept specifier argument is not a constant expression}} expected-note{{division by zero}}
+            ^
+
+"Test_name.c", line 78: error: expression must have a constant value
+    static int f() noexcept(1 / X) { return 10; } // expected-error{{noexcept specifier argument is not a constant expression}} expected-note{{division by zero}}
+                            ^
+"Test_name.c", line 78: note: division by zero
+    static int f() noexcept(1 / X) { return 10; } // expected-error{{noexcept specifier argument is not a constant expression}} expected-note{{division by zero}}
+                              ^
+          detected during instantiation of "int PR11084::A<X>::f() [with X=0]" at line 86
+
+"Test_name.c", line 94: error: this operator is not allowed in a constant expression
+    template <class T> T f() noexcept(a++){ return {};}
+                                       ^
+
+"Test_name.c", line 82: error: expression must have a constant value
+      int (*p)() noexcept(1 / X); // expected-error{{noexcept specifier argument is not a constant expression}} expected-note{{division by zero}}
+                          ^
+"Test_name.c", line 82: note: division by zero
+      int (*p)() noexcept(1 / X); // expected-error{{noexcept specifier argument is not a constant expression}} expected-note{{division by zero}}
+                            ^
+          detected during instantiation of "void PR11084::f<X>() [with X=0]" at line 87
+
+8 errors detected in the compilation of "Test_name.c".

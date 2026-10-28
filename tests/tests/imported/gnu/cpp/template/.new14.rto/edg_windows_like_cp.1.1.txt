@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 12: error: no instance of constructor "B::B" matches the argument list
+            argument types are: (int, int)
+    new B(1, 2); // { dg-error "no match" }
+         ^
+"Test_name.c", line 6: note: number of parameters of function "B::B(const B &)" does not match the call
+  struct B { B(int); };
+         ^
+"Test_name.c", line 6: note: number of parameters of function "B::B(B &&)" does not match the call
+  struct B { B(int); };
+         ^
+"Test_name.c", line 6: note: number of parameters of function "B::B(int)" does not match the call
+  struct B { B(int); };
+             ^
+
+"Test_name.c", line 13: error: no default constructor exists for class "B"
+    new B; // { dg-error "no match" }
+        ^
+
+"Test_name.c", line 20: error: array is too large
+    new int[__SIZE_MAX__]; // { dg-error "exceeds maximum" }
+           ^
+
+3 errors detected in the compilation of "Test_name.c".

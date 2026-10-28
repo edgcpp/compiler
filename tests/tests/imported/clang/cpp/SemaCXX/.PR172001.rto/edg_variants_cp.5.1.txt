@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -DTEST5 Test_name.c
+"Test_name.c", line 46: warning: variable "res" was declared but never referenced
+    auto res = a <=> b; 
+         ^
+
+"Test_name.c", line 46: catastrophic error: standard comparison type ("int") must be a class type with a single nonstatic data member of integral type
+  auto res = a <=> b; 
+           ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

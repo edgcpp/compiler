@@ -1,0 +1,208 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"SemaCXX/co_await-range-for.cpp", line 53: error: expected a "("
+    for co_await(auto i : arr) {}
+        ^
+
+"SemaCXX/co_await-range-for.cpp", line 56: warning: missing return statement at end of non-void function "g"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 75: error: expected a "("
+    for co_await(auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for.cpp", line 75: error: no operator "!=" matches these operands
+            operand types are: BeginTag<Iter<int>> != Iter<int>
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 32: note: candidate function template "operator!=" failed deduction
+  template <class T> bool operator!=(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 75: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 75: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 31: note: candidate function template "operator==" failed deduction
+  template <class T> bool operator==(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 75: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 75: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 78: warning: missing return statement at end of non-void function "bad_begin"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 89: error: expected an operator
+  Awaiter<Iter> operator co_await(CoawaitTag<Iter, true>) = delete;
+                         ^
+
+"SemaCXX/co_await-range-for.cpp", line 109: error: expected a "("
+    for co_await(auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for.cpp", line 109: error: no operator "!=" matches these operands
+            operand types are: BeginTag<Iter<float>> != Iter<float>
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 32: note: candidate function template "operator!=" failed deduction
+  template <class T> bool operator!=(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 109: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 109: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 31: note: candidate function template "operator==" failed deduction
+  template <class T> bool operator==(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 109: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 109: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+
+"SemaCXX/co_await-range-for.cpp", line 112: warning: missing return statement at end of non-void function "bad_inc_transform"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 161: error: expected an operator
+  Awaiter<Iter> operator co_await(CoawaitTag<Iter, false>);
+                         ^
+
+"SemaCXX/co_await-range-for.cpp", line 163: error: expected an operator
+  using NS2::operator co_await;
+                      ^
+
+"SemaCXX/co_await-range-for.cpp", line 163: error: expected a ";"
+  using NS2::operator co_await;
+                      ^
+
+"SemaCXX/co_await-range-for.cpp", line 82: error: expected a "("
+    for co_await(auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for.cpp", line 85: warning: missing return statement at end of non-void function "bad_begin_template(Dummy)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 82: error: no operator "!=" matches these operands
+            operand types are: BeginTag<Iter<int>> != Iter<int>
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 32: note: candidate function template "operator!=" failed deduction
+  template <class T> bool operator!=(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 82: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 82: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 31: note: candidate function template "operator==" failed deduction
+  template <class T> bool operator==(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 82: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 82: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+          detected during instantiation of "ForLoopAwaiterBadBeginTransform bad_begin_template(Dummy) [with Dummy=int]" at line 86
+
+"SemaCXX/co_await-range-for.cpp", line 117: error: expected a "("
+    for co_await(auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for.cpp", line 120: warning: missing return statement at end of non-void function "bad_inc_transform_template(Dummy)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 117: error: no operator "!=" matches these operands
+            operand types are: BeginTag<Iter<long>> != Iter<long>
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 32: note: candidate function template "operator!=" failed deduction
+  template <class T> bool operator!=(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 117: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 117: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 31: note: candidate function template "operator==" failed deduction
+  template <class T> bool operator==(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 117: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 117: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+          detected during instantiation of "ForLoopAwaiterBadIncTransform bad_inc_transform_template(Dummy) [with Dummy=long]" at line 121
+
+"SemaCXX/co_await-range-for.cpp", line 152: error: expected a "("
+    for co_await(auto i : R) {}
+        ^
+
+"SemaCXX/co_await-range-for.cpp", line 154: warning: missing return statement at end of non-void function "test_coawait_lookup(T)"
+  }
+  ^
+
+"SemaCXX/co_await-range-for.cpp", line 152: error: no operator "!=" matches these operands
+            operand types are: BeginTag<Iter<int>> != Iter<int>
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 32: note: candidate function template "operator!=" failed deduction
+  template <class T> bool operator!=(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 31: note: candidate function template "operator==" failed deduction
+  template <class T> bool operator==(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+          detected during instantiation of "NS::ForLoopAwaiterCoawaitLookup test_coawait_lookup(T) [with T=int]" at line 155
+
+"SemaCXX/co_await-range-for.cpp", line 152: error: no operator "!=" matches these operands
+            operand types are: BeginTag<Iter<long>> != Iter<long>
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 32: note: candidate function template "operator!=" failed deduction
+  template <class T> bool operator!=(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator!=(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator!=(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 31: note: candidate function template "operator==" failed deduction
+  template <class T> bool operator==(Iter<T>, Iter<T>);
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+"SemaCXX/co_await-range-for.cpp", line 152: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    for co_await(auto i : R) {}
+                          ^
+          detected during instantiation of "NS::ForLoopAwaiterCoawaitLookup test_coawait_lookup(T) [with T=long]" at line 164
+
+16 errors detected in the compilation of "Test_name.c".

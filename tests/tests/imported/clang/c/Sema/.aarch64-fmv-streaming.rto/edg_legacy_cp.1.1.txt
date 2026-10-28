@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 6: error: expected a "{"
+  __attribute__((target_clones("sve", "simd"))) void ok_arm_streaming(void) __arm_streaming {}
+                                                                            ^
+
+"Test_name.c", line 7: warning: this declaration has no storage class or type specifier
+  __arm_locally_streaming __attribute__((target_version("sme2"))) void ok_arm_streaming(void) __arm_streaming {}
+  ^
+
+"Test_name.c", line 7: error: expected a ";"
+  __arm_locally_streaming __attribute__((target_version("sme2"))) void ok_arm_streaming(void) __arm_streaming {}
+                                                                  ^
+
+2 errors detected in the compilation of "Test_name.c".

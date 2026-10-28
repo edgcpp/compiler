@@ -1,0 +1,11 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/float128-extendxf-underflow.c", line 33: warning: function "feenableexcept" declared implicitly
+    feenableexcept (
+    ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+./torture/float128-extendxf-underflow.c: In function 'main':
+./torture/float128-extendxf-underflow.c:33:1: error: too many arguments to function 'feenableexcept'; expected 0, have 1
+./torture/float128-extendxf-underflow.c:33:12: note: declared here
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

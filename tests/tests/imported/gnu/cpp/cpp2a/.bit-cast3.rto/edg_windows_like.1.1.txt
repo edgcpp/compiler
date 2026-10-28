@@ -1,0 +1,44 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 187: error: expression must have a constant value
+  static_assert (bit_cast <I> (A { 0x7efa3412, 0x5a876543, 0x1eeffeed })
+                 ^
+"Test_name.c", line 88: note: class types with bitfields "I" are not currently supported for constexpr evaluation of __builtin_bit_cast
+  struct I
+         ^
+
+"Test_name.c", line 189: error: expression must have a constant value
+  static_assert (bit_cast <A> (I { 0x7efa3412, 3, 0x50eca8, 0xb, 0x1eeffeed })
+                 ^
+"Test_name.c", line 88: note: class types with bitfields "I" are not currently supported for constexpr evaluation of __builtin_bit_cast
+  struct I
+         ^
+
+"Test_name.c", line 213: error: expression must have a constant value
+  static_assert (bit_cast <J> (K { 0x0feedbacdeadbeefLL, 7862463375103529997LL, 0x0feedbacdeadbeefLL })
+                 ^
+"Test_name.c", line 103: note: class types with bitfields "J" are not currently supported for constexpr evaluation of __builtin_bit_cast
+  struct J
+         ^
+
+"Test_name.c", line 215: error: expression must have a constant value
+  static_assert (bit_cast <K> (J { 0x0feedbacdeadbeefLL, -1011, 2, -0xbacdeadbeLL, -1, -303, 1, 0x0feedbacdeadbeefLL })
+                 ^
+"Test_name.c", line 103: note: class types with bitfields "J" are not currently supported for constexpr evaluation of __builtin_bit_cast
+  struct J
+         ^
+
+"Test_name.c", line 217: error: expression must have a constant value
+  static_assert (bit_cast <M> (N { 0xfeedbacdeadbeef8ULL, 0x123456789abcde42ULL })
+                 ^
+"Test_name.c", line 122: note: class types with bitfields "M" are not currently supported for constexpr evaluation of __builtin_bit_cast
+  struct M
+         ^
+
+"Test_name.c", line 219: error: expression must have a constant value
+  static_assert (bit_cast <N> (M { -8, 59, 31, -5, 234, 0xfeedbacdU, 0x123456789abcde42ULL })
+                 ^
+"Test_name.c", line 122: note: class types with bitfields "M" are not currently supported for constexpr evaluation of __builtin_bit_cast
+  struct M
+         ^
+
+6 errors detected in the compilation of "Test_name.c".

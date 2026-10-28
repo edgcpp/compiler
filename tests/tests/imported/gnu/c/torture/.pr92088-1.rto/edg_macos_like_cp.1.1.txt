@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 13: warning: variable-length array field type will be treated as zero-length array field type
+      char toto[argc + 16];
+                ^
+
+"Test_name.c", line 15: error: expected a ";"
+    int f (struct S arg) {
+                         ^
+
+"Test_name.c", line 19: warning: parsing restarts here after previous syntax error
+    struct S bob;
+                ^
+
+"Test_name.c", line 20: error: identifier "bob" is undefined
+    __builtin_strcpy(bob.toto, "coucoucoucou");
+                     ^
+
+2 errors detected in the compilation of "Test_name.c".

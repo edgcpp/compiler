@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 16: error: argument of type "char *" is incompatible with parameter of type "TU" (aka "union <unnamed>")
+    f(cp); // expected-error{{incompatible type}}
+      ^
+
+"Test_name.c", line 19: error: a value of type "int *" cannot be used to initialize an entity of type "TU" (aka "union <unnamed>")
+    TU tu_ip = ip; // expected-error{{incompatible type}}
+               ^
+
+"Test_name.c", line 20: warning: variable "tu" was set but never used
+    TU tu;
+       ^
+
+"Test_name.c", line 37: error: declaration is incompatible with "void fvp(TU)" (declared at line 36)
+  void fvp(void *p) {} // expected-error{{conflicting types}}
+       ^
+
+"Test_name.c", line 40: error: declaration is incompatible with "void fsp(TU)" (declared at line 39)
+  void fsp(short *s) {} // expected-error{{conflicting types}}
+       ^
+
+"Test_name.c", line 43: error: declaration is incompatible with "void fi(TU)" (declared at line 42)
+  void fi(int i) {} // expected-error{{conflicting types}}
+       ^
+
+"Test_name.c", line 46: error: declaration is incompatible with "void fvpp(TU)" (declared at line 45)
+  void fvpp(void **v) {} // expected-error{{conflicting types}}
+       ^
+
+"Test_name.c", line 60: error: declaration is incompatible with "void f_triple2(int *)" (declared at line 59)
+  void f_triple2(float *f); // expected-error{{conflicting types}}
+       ^
+
+"Test_name.c", line 70: error: argument of type "TU" (aka "union <unnamed>") is incompatible with parameter of type "int *"
+    f_callee(tu); // expected-error{{passing 'TU' to parameter of incompatible type 'int *'}}
+             ^
+
+"Test_name.c", line 70: warning: variable "tu" is used before its value is set
+    f_callee(tu); // expected-error{{passing 'TU' to parameter of incompatible type 'int *'}}
+             ^
+
+"Test_name.c", line 73: warning: variable "i" is used before its value is set
+    f_callee(i);
+             ^
+
+"Test_name.c", line 96: warning: "union <unnamed>" cannot be transparent because field "i" does not have the same size as the first field
+  } TU2 __attribute__((transparent_union));
+                       ^
+
+"Test_name.c", line 98: warning: "union <unnamed>" cannot be transparent because field "i" does not have the same size as the first field
+  typedef union __attribute__((transparent_union)){
+                                                  ^
+
+"Test_name.c", line 105: warning: "union <unnamed>" cannot be transparent because its first field has a floating-point type
+  } TU3 __attribute__((transparent_union));
+                       ^
+
+"Test_name.c", line 109: warning: unknown attribute "ext_vector_type"
+  typedef int int4 __attribute__((ext_vector_type(4)));
+                                  ^
+
+"Test_name.c", line 134: error: incomplete type "void" is not allowed
+  union pr30520v { void b; } __attribute__((transparent_union)); // expected-error {{field has incomplete type 'void'}}
+                        ^
+
+"Test_name.c", line 136: error: a flexible array member cannot be declared in an otherwise-empty type
+  union pr30520a { int b[]; } __attribute__((transparent_union)); // expected-warning {{flexible array member 'b' in a union is a GNU extension}}
+                          ^
+
+"Test_name.c", line 139: error: incomplete type "struct stb" is not allowed
+  union pr30520s { struct stb b; } __attribute__((transparent_union)); // expected-error {{field has incomplete type 'struct stb'}}
+                              ^
+
+"Test_name.c", line 141: error: incomplete type "struct stb" is not allowed
+  union pr30520s2 { int *v; struct stb b; } __attribute__((transparent_union)); // expected-error {{field has incomplete type 'struct stb'}}
+                                       ^
+
+"Test_name.c", line 141: warning: "union pr30520s2" cannot be transparent because field "b" does not have the same size as the first field
+  union pr30520s2 { int *v; struct stb b; } __attribute__((transparent_union)); // expected-error {{field has incomplete type 'struct stb'}}
+        ^
+
+12 errors detected in the compilation of "Test_name.c".

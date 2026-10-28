@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: warning: excess initializers are ignored
+    V mask = { 1, 2, 3, 0 };
+                  ^
+
+"Test_name.c", line 13: warning: function "__builtin_shuffle" declared implicitly
+    *p = __builtin_shuffle (*p, mask);
+         ^
+
+"Test_name.c", line 19: warning: excess initializers are ignored
+    V mask = { 1, 2, 3, 0 };
+                  ^
+
+"Test_name.c", line 20: warning: function "__builtin_shuffle" declared implicitly
+    *p = __builtin_shuffle (*p, *q, mask);
+         ^
+
+"Test_name.c", line 26: warning: excess initializers are ignored
+    V a = { 1, 2, 3, 0 };
+               ^
+
+"Test_name.c", line 27: warning: function "__builtin_shuffle" declared implicitly
+    *p = __builtin_shuffle (a, *mask);
+         ^
+
+"Test_name.c", line 33: warning: excess initializers are ignored
+    V a = { 1, 2, 3, 0 };
+               ^
+
+"Test_name.c", line 34: warning: excess initializers are ignored
+    V b = { 2, 3, 4, 1 };
+               ^
+
+"Test_name.c", line 35: warning: function "__builtin_shuffle" declared implicitly
+    *p = __builtin_shuffle (a, b, *mask);
+         ^
+

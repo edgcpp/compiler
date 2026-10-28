@@ -1,0 +1,354 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 33: warning: argument of type "int" is incompatible with parameter of type "const char *"
+    X = CFSTR(242); // expected-error {{CFString literal is not a string constant}} expected-error {{incompatible integer to pointer conversion}}
+              ^
+
+"Test_name.c", line 33: warning: conversion of nonzero integer to pointer
+    X = CFSTR(242); // expected-error {{CFString literal is not a string constant}} expected-error {{incompatible integer to pointer conversion}}
+              ^
+
+"Test_name.c", line 34: error: too many arguments in function call
+    X = CFSTR("foo", "bar"); // expected-error {{too many arguments to function call}}
+                     ^
+
+"Test_name.c", line 30: warning: variable "X" was set but never used
+    const void *X;
+                ^
+
+"Test_name.c", line 43: error: first argument must be a pointer to integer or enum type
+    old = __sync_fetch_and_add();  // expected-error {{too few arguments to function call}}
+                               ^
+
+"Test_name.c", line 44: error: too few arguments in function call
+    old = __sync_fetch_and_add(&old);  // expected-error {{too few arguments to function call}}
+                                   ^
+
+"Test_name.c", line 45: error: complex integral types are not supported
+    old = __sync_fetch_and_add((unsigned*)0, 42i); // expected-warning {{imaginary constants are a C2y extension}}
+                                               ^
+
+"Test_name.c", line 41: warning: variable "i" was declared but never referenced
+    unsigned i, old;
+             ^
+
+"Test_name.c", line 87: error: function call is not allowed in a constant expression
+    case __builtin_eh_return_data_regno(0):  // constant foldable.
+         ^
+
+"Test_name.c", line 101: warning: function "__builtin_isles" declared implicitly
+    __builtin_isles(a, b); // expected-error{{use of unknown builtin}}
+    ^
+
+"Test_name.c", line 119: error: expected an expression
+    return __builtin_constant_p() + // expected-error{{too few arguments}}
+                                ^
+
+"Test_name.c", line 120: error: expected a ")"
+           __builtin_constant_p(1, 2); // expected-error {{too many arguments}}
+                                 ^
+
+"Test_name.c", line 134: warning: unknown attribute "vector_size"
+  typedef int __attribute__((vector_size(16))) IntVector;
+                             ^
+
+"Test_name.c", line 148: warning: use of a const variable in a constant expression is nonstandard in C
+    T(test17_n);
+    ^
+
+"Test_name.c", line 148: warning: variable "arr" was declared but never referenced
+    T(test17_n);
+    ^
+
+"Test_name.c", line 149: warning: variable "arr" was declared but never referenced
+    T(&test17_c[3] - test17_c);
+    ^
+
+"Test_name.c", line 150: error: complex integral types are not supported
+    T(3i + 5); // expected-warning {{imaginary constant}}
+    ^
+
+"Test_name.c", line 150: warning: variable "arr" was declared but never referenced
+    T(3i + 5); // expected-warning {{imaginary constant}}
+    ^
+
+"Test_name.c", line 151: warning: variable "arr" was declared but never referenced
+    T(4.2 * 7.6);
+    ^
+
+"Test_name.c", line 152: warning: variable "arr" was declared but never referenced
+    T(EnumValue1);
+    ^
+
+"Test_name.c", line 153: warning: variable "arr" was declared but never referenced
+    T((enum Enum)(int)EnumValue2);
+    ^
+
+"Test_name.c", line 157: warning: variable "arr" was declared but never referenced
+    T("string literal");
+    ^
+
+"Test_name.c", line 158: error: the size of an array must be greater than zero
+    T((double*)"string literal");
+    ^
+
+"Test_name.c", line 159: error: the size of an array must be greater than zero
+    T("string literal" + 0);
+    ^
+
+"Test_name.c", line 160: error: the size of an array must be greater than zero
+    T((long)"string literal");
+    ^
+
+"Test_name.c", line 163: warning: variable "arr" was declared but never referenced
+    F("string literal" + 1);
+    ^
+
+"Test_name.c", line 164: warning: variable "arr" was declared but never referenced
+    F(&test17_n);
+    ^
+
+"Test_name.c", line 165: warning: variable "arr" was declared but never referenced
+    F(test17_c);
+    ^
+
+"Test_name.c", line 166: warning: variable "arr" was declared but never referenced
+    F(&test17_c);
+    ^
+
+"Test_name.c", line 167: warning: variable "arr" was declared but never referenced
+    F(&test17_d);
+    ^
+
+"Test_name.c", line 168: warning: variable "arr" was declared but never referenced
+    F((struct Aggregate){0, 1});
+    ^
+
+"Test_name.c", line 169: warning: excess initializers are ignored
+    F((IntVector){0, 1, 2, 3});
+    ^
+
+"Test_name.c", line 169: warning: variable "arr" was declared but never referenced
+    F((IntVector){0, 1, 2, 3});
+    ^
+
+"Test_name.c", line 170: warning: variable "arr" was declared but never referenced
+    F(test17);
+    ^
+
+"Test_name.c", line 176: error: function call is not allowed in a constant expression
+    ASSERT(OPT("abc")); // expected-warning {{expression is not an integer constant expression; folding it to a constant is a GNU extension}}
+    ^
+
+"Test_name.c", line 177: error: function call is not allowed in a constant expression
+    ASSERT(!OPT("abcd")); // expected-warning {{expression is not an integer constant expression; folding it to a constant is a GNU extension}}
+    ^
+
+"Test_name.c", line 180: warning: variable "arr" was declared but never referenced
+    ASSERT(!OPT(test17_c));
+    ^
+
+"Test_name.c", line 181: warning: variable "arr" was declared but never referenced
+    ASSERT(!OPT(&test17_c[0]));
+    ^
+
+"Test_name.c", line 182: warning: variable "arr" was declared but never referenced
+    ASSERT(!OPT((char*)test17_c));
+    ^
+
+"Test_name.c", line 184: warning: variable "arr" was declared but never referenced
+    ASSERT(!OPT(test17_d));        // expected-warning {{folding}}
+    ^
+
+"Test_name.c", line 185: warning: variable "arr" was declared but never referenced
+    ASSERT(!OPT(&test17_d[0]));    // expected-warning {{folding}}
+    ^
+
+"Test_name.c", line 186: warning: variable "arr" was declared but never referenced
+    ASSERT(!OPT((char*)test17_d)); // expected-warning {{folding}}
+    ^
+
+"Test_name.c", line 203: error: too few arguments in function call
+    ptr = __builtin___memccpy_chk(dst, src, '\037', sizeof(src));      // expected-error {{too few arguments to function call}}
+                                                               ^
+
+"Test_name.c", line 204: warning: a value of type "unsigned long" cannot be assigned to an entity of type "void *"
+    ptr = __builtin___strlcpy_chk(dst, src, sizeof(dst), sizeof(dst)); // expected-error {{incompatible integer to pointer conversion}}
+        ^
+
+"Test_name.c", line 205: warning: a value of type "unsigned long" cannot be assigned to an entity of type "void *"
+    ptr = __builtin___strlcat_chk(dst, src, sizeof(dst), sizeof(dst)); // expected-error {{incompatible integer to pointer conversion}}
+        ^
+
+"Test_name.c", line 196: warning: variable "result" was set but never used
+    size_t result;
+           ^
+
+"Test_name.c", line 197: warning: variable "ptr" was set but never used
+    void *ptr;
+          ^
+
+"Test_name.c", line 209: warning: function "__assume" declared implicitly
+    __assume(1); // expected-error {{call to undeclared function '__assume'; ISO C99 and later do not support implicit function declarations}}
+    ^
+
+"Test_name.c", line 210: warning: function "__noop" declared implicitly
+    __noop(1); // expected-error {{call to undeclared function '__noop'; ISO C99 and later do not support implicit function declarations}}
+    ^
+
+"Test_name.c", line 211: warning: function "__debugbreak" declared implicitly
+    __debugbreak(); // expected-error {{call to undeclared function '__debugbreak'; ISO C99 and later do not support implicit function declarations}}
+    ^
+
+"Test_name.c", line 263: error: too few arguments in function call
+    __builtin_launder(); // expected-error {{too few arguments to function call, expected 1, have 0}}
+                      ^
+
+"Test_name.c", line 264: error: too many arguments in function call
+    __builtin_launder(p, p); // expected-error {{too many arguments to function call, expected 1, have 2}}
+                         ^
+
+"Test_name.c", line 266: warning: argument of type "int" is incompatible with parameter of type "void *"
+    __builtin_launder(x); // expected-error {{non-pointer argument to '__builtin_launder' is not allowed}}
+                      ^
+
+"Test_name.c", line 266: warning: variable "x" is used before its value is set
+    __builtin_launder(x); // expected-error {{non-pointer argument to '__builtin_launder' is not allowed}}
+                      ^
+
+"Test_name.c", line 269: warning: argument of type "const void *" is incompatible with parameter of type "void *"
+    __builtin_launder(cvp); // expected-error {{void pointer argument to '__builtin_launder' is not allowed}}
+                      ^
+
+"Test_name.c", line 270: warning: argument of type "const volatile int *" is incompatible with parameter of type "void *"
+    const volatile int *id = __builtin_launder(ip);
+                                               ^
+
+"Test_name.c", line 271: warning: argument of type "const volatile int *" is incompatible with parameter of type "void *"
+    int *id2 = __builtin_launder(ip); // expected-warning {{discards qualifiers}}
+                                 ^
+
+"Test_name.c", line 277: warning: argument of type "const int *" is incompatible with parameter of type "volatile void *"
+    __sync_fetch_and_add(ptr, 1); // expected-error{{address argument to atomic builtin cannot be const-qualified ('const int *' invalid)}}
+                         ^
+
+"Test_name.c", line 278: warning: argument of type "const int *" is incompatible with parameter of type "volatile void *"
+    __atomic_fetch_add(ptr, 1, 0);  // expected-error {{address argument to atomic operation must be a pointer to non-const type ('const int *' invalid)}}
+                       ^
+
+"Test_name.c", line 282: error: synchronized operations are valid only on objects of size 1, 2, 4, or 8
+    __sync_fetch_and_add(ptr, value); // expected-error {{atomic memory operand must have a power-of-two size}}
+                         ^
+
+"Test_name.c", line 284: error: synchronized operations are valid only on objects of size 1, 2, 4, or 8
+    __sync_nand_and_fetch(ptr, value); // expected-error {{atomic memory operand must have a power-of-two size}}
+                          ^
+
+"Test_name.c", line 286: error: synchronized operations are valid only on objects of size 1, 2, 4, or 8
+    __atomic_fetch_add(ptr, 1, 0); // expected-error {{argument to atomic builtin of type '_BitInt' is not supported}}
+                       ^
+
+"Test_name.c", line 310: error: synchronized operations are valid only on objects of size 1, 2, 4, or 8
+    __sync_fetch_and_add(ptr, value); // expected-error {{atomic memory operand must have a power-of-two size}}
+                         ^
+
+"Test_name.c", line 312: error: synchronized operations are valid only on objects of size 1, 2, 4, or 8
+    __sync_nand_and_fetch(ptr, value); // expected-error {{atomic memory operand must have a power-of-two size}}
+                          ^
+
+"Test_name.c", line 322: error: function call requires one argument
+    (void)__builtin_signbit(); // expected-error{{too few arguments to function call, expected 1, have 0}}
+                           ^
+
+"Test_name.c", line 323: error: function call requires one argument
+    (void)__builtin_signbit(1.0, 2.0, 3.0); // expected-error{{too many arguments to function call, expected 1, have 3}}
+                           ^
+
+"Test_name.c", line 324: error: function call requires a real floating-point argument
+    (void)__builtin_signbit(1); // expected-error {{floating point classification requires argument of floating point type (passed in 'int')}}
+                           ^
+
+"Test_name.c", line 329: error: too few arguments in function call
+    (void)__builtin_signbitf(); // expected-error{{too few arguments to function call, expected 1, have 0}}
+                             ^
+
+"Test_name.c", line 330: error: too many arguments in function call
+    (void)__builtin_signbitf(1.0, 2.0, 3.0); // expected-error{{too many arguments to function call, expected 1, have 3}}
+                                  ^
+
+"Test_name.c", line 336: error: too few arguments in function call
+    (void)__builtin_signbitl(); // expected-error{{too few arguments to function call, expected 1, have 0}}
+                             ^
+
+"Test_name.c", line 337: error: too many arguments in function call
+    (void)__builtin_signbitl(1.0, 2.0, 3.0); // expected-error{{too many arguments to function call, expected 1, have 3}}
+                                  ^
+
+"Test_name.c", line 357: warning: call to __builtin_is_constant_evaluated appearing in a non-constexpr function always produces "false"
+    return __builtin_is_constant_evaluated();
+                                          ^
+
+"Test_name.c", line 361: error: expected an expression
+    __builtin_complex(); // expected-error {{too few}}
+                      ^
+
+"Test_name.c", line 361: error: expected a ","
+    __builtin_complex(); // expected-error {{too few}}
+                      ^
+
+"Test_name.c", line 361: error: expected an expression
+    __builtin_complex(); // expected-error {{too few}}
+                      ^
+
+"Test_name.c", line 362: error: expected a ","
+    __builtin_complex(1); // expected-error {{too few}}
+                       ^
+
+"Test_name.c", line 362: error: expected an expression
+    __builtin_complex(1); // expected-error {{too few}}
+                       ^
+
+"Test_name.c", line 362: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1); // expected-error {{too few}}
+                      ^
+
+"Test_name.c", line 363: error: expected a ")"
+    __builtin_complex(1, 2, 3); // expected-error {{too many}}
+                          ^
+
+"Test_name.c", line 363: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1, 2, 3); // expected-error {{too many}}
+                      ^
+
+"Test_name.c", line 363: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1, 2, 3); // expected-error {{too many}}
+                         ^
+
+"Test_name.c", line 369: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1, 2); // expected-error {{argument type 'int' is not a real floating point type}}
+                      ^
+
+"Test_name.c", line 369: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1, 2); // expected-error {{argument type 'int' is not a real floating point type}}
+                         ^
+
+"Test_name.c", line 370: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1, 2.0); // expected-error {{argument type 'int' is not a real floating point type}}
+                      ^
+
+"Test_name.c", line 371: error: expected an operand of real floating-point type (not "int")
+    __builtin_complex(1.0, 2); // expected-error {{argument type 'int' is not a real floating point type}}
+                           ^
+
+"Test_name.c", line 373: error: __builtin_complex requires operands of compatible types (unlike "double" and "float")
+    __builtin_complex(1.0, 2.0f); // expected-error {{arguments are of different types ('double' vs 'float')}}
+    ^
+
+"Test_name.c", line 374: error: __builtin_complex requires operands of compatible types (unlike "float" and "double")
+    __builtin_complex(1.0f, 2.0); // expected-error {{arguments are of different types ('float' vs 'double')}}
+    ^
+
+"Test_name.c", line 388: warning: missing return statement at end of non-void function "test_is_fpclass"
+  }
+  ^
+
+43 errors detected in the compilation of "Test_name.c".

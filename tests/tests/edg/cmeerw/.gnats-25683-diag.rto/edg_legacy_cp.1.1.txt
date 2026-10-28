@@ -1,0 +1,48 @@
+fe_only -DTEST_NUMBER=1 -tused --c++17 Test_name.c
+"Test_name.c", line 14: error: identifier "nontmpl_undef_1" is undefined
+      if constexpr (false) nontmpl_undef_1; // error
+                           ^
+
+"Test_name.c", line 15: error: identifier "nontmpl_undef_2" is undefined
+      if constexpr (true) nontmpl_undef_2;  // error
+                          ^
+
+"Test_name.c", line 9: error: static assertion failed with "fails for I=0,J=-2"
+      static_assert(I == J, "fails for I=0,J=-2");
+      ^
+"Test_name.c", line 9: note: the final comparison was 0 == -2
+      static_assert(I == J, "fails for I=0,J=-2");
+                      ^
+          detected during instantiation of "void diag_non_templ::bar<I,J>() [with I=0, J=-2]" at line 18
+
+"Test_name.c", line 35: error: identifier "tmpl_undef_3" is undefined
+      if constexpr (I > 0) tmpl_undef_3; // error
+                           ^
+          detected during instantiation of "void diag_templ_defn::foo<I>() [with I=1]" at line 48
+
+"Test_name.c", line 27: error: static assertion failed with "fails for I=0,j=-5 and I=1,J=-6"
+      static_assert(I == J, "fails for I=0,j=-5 and I=1,J=-6");
+      ^
+"Test_name.c", line 27: note: the final comparison was 0 == -5
+      static_assert(I == J, "fails for I=0,j=-5 and I=1,J=-6");
+                      ^
+          detected during:
+            instantiation of "void diag_templ_defn::bar<I,J>() [with I=0, J=-5]" at line 43
+            instantiation of "void diag_templ_defn::foo<I>() [with I=1]" at line 48
+
+"Test_name.c", line 27: error: static assertion failed with "fails for I=0,j=-5 and I=1,J=-6"
+      static_assert(I == J, "fails for I=0,j=-5 and I=1,J=-6");
+      ^
+"Test_name.c", line 27: note: the final comparison was 1 == -6
+      static_assert(I == J, "fails for I=0,j=-5 and I=1,J=-6");
+                      ^
+          detected during:
+            instantiation of "void diag_templ_defn::bar<I,J>() [with I=1, J=-6]" at line 44
+            instantiation of "void diag_templ_defn::foo<I>() [with I=1]" at line 48
+
+"Test_name.c", line 63: error: class "diag_dpdt_condition::D<false>" has no member "type"
+          typename D<B>::type t;        // error
+                         ^
+          detected during instantiation of "void diag_dpdt_condition::foo<B>() [with B=false]" at line 69
+
+7 errors detected in the compilation of "Test_name.c".

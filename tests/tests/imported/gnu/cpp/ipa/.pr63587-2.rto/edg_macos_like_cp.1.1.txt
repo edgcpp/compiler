@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 200: warning: missing return statement at end of non-void function "boost::log::make_output_expression<LeftT>::make(LeftT, RightT &)"
+    }
+    ^
+
+"Test_name.c", line 214: warning: missing return statement at end of non-void function "boost::log::make_output_actor<ActorT<LeftExprT>, RightT, ValueT>::make"
+    }
+    ^
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=int, T=<unnamed>::my_class, FallbackPolicyT=boost::log::value_extractor, TagT=void]"
+  }
+  ^
+          detected during:
+            instantiation of "boost::log::make_output_actor<boost::actor<LeftExprT>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>::value_type>::type boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=int, T=<unnamed>::my_class, FallbackPolicyT=boost::log::value_extractor, TagT=void]" at line 250
+            instantiation of "void default_formatting<<unnamed>>::test_method() [with <unnamed>=int]" at line 241
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=int, T=int, FallbackPolicyT=boost::log::value_extractor, TagT=void]"
+  }
+  ^
+          detected during:
+            instantiation of "boost::log::make_output_actor<boost::actor<LeftExprT>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>::value_type>::type boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=int, T=int, FallbackPolicyT=boost::log::value_extractor, TagT=void]" at line 251
+            instantiation of "void default_formatting<<unnamed>>::test_method() [with <unnamed>=int]" at line 241
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=boost::log::attribute_output_terminal<boost::actor<int>, boost::log::to_log_fun>, T=int, FallbackPolicyT=boost::log::value_extractor, TagT=void]"
+  }
+  ^
+          detected during:
+            instantiation of "boost::log::make_output_actor<boost::actor<LeftExprT>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>::value_type>::type boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=boost::log::attribute_output_terminal<boost::actor<int>, boost::log::to_log_fun>, T=int, FallbackPolicyT=boost::log::value_extractor, TagT=void]" at line 252
+            instantiation of "void default_formatting<<unnamed>>::test_method() [with <unnamed>=int]" at line 241
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=boost::log::attribute_output_terminal<boost::actor<boost::log::attribute_output_terminal<boost::actor<int>, boost::log::to_log_fun>>, boost::log::to_log_fun>, T=int, FallbackPolicyT=boost::log::value_extractor, TagT=void]"
+  }
+  ^
+          detected during:
+            instantiation of "boost::log::make_output_actor<boost::actor<LeftExprT>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>, boost::log::attribute_actor<TagT, boost::log::value_extractor, void, boost::actor>::value_type>::type boost::log::operator<<(boost::actor<LeftExprT>, boost::log::attribute_actor<T, FallbackPolicyT, TagT, boost::actor>) [with LeftExprT=boost::log::attribute_output_terminal<boost::actor<boost::log::attribute_output_terminal<boost::actor<int>, boost::log::to_log_fun>>, boost::log::to_log_fun>, T=int, FallbackPolicyT=boost::log::value_extractor, TagT=void]" at line 252
+            instantiation of "void default_formatting<<unnamed>>::test_method() [with <unnamed>=int]" at line 241
+
+"Test_name.c", line 184: warning: function "boost::log::attr<AttributeValueT>(boost::attribute_name) [with AttributeValueT=<unnamed>::my_class]" was referenced but not defined
+  attribute_actor<AttributeValueT> attr (attribute_name); // { dg-warning "used but never defined" }
+                                   ^
+

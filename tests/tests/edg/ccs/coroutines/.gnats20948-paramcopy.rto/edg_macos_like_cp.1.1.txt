@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++20 --set_flag=coroutines --set_flag=no_checking_pragmas -tused Test_name.c
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function '_Z1fiRf1BPS0_RS0_OS0_':
+Test_name.c:33:139: error: 'co_await__TXXXXXXXXX' undeclared (first use in this function)
+Test_name.c:33:139: note: each undeclared identifier is reported only once for each function it appears in
+Test_name.c:38:250: error: '__TXXXXXXXXX' undeclared (first use in this function); did you mean '__TXXXXXXXXX'?
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

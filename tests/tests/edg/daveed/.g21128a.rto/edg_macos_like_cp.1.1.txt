@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c11 Test_name.c
+"Test_name.c", line 8: warning: the alignment of an array of unspecified bound is nonstandard in C
+  long k = _Alignof(int[]);
+                    ^
+
+"Test_name.c", line 8: error: function call is not allowed in a constant expression
+  long k = (alignof(int [])); 
+            ^
+
+"Test_name.c", line 8: error: expected an expression
+  long k = (alignof(int [])); 
+                    ^
+
+2 errors detected in the compilation of "Test_name.c".

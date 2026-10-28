@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 11: error: type name is not allowed
+  constexpr bool is_constructible_v = __is_constructible(T, Ts...);
+                                                         ^
+
+"Test_name.c", line 11: error: type name is not allowed
+  constexpr bool is_constructible_v = __is_constructible(T, Ts...);
+                                                            ^
+
+"Test_name.c", line 11: error: identifier "__is_constructible" is undefined
+  constexpr bool is_constructible_v = __is_constructible(T, Ts...);
+                                      ^
+          detected during instantiation of "const bool is_constructible_v [with T=any, Ts=<optional<any> &&>]" at line 32
+
+"Test_name.c", line 32: warning: variable "oa3" was declared but never referenced
+    optional<any> oa3(oa2);
+                  ^
+
+3 errors detected in the compilation of "Test_name.c".

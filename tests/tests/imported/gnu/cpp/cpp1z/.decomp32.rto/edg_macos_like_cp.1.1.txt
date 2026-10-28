@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 16: warning: integer conversion resulted in a change of sign
+      static constexpr unsigned __int128 value = -1;
+                                                 ^
+
+"Test_name.c", line 21: warning: structured bindings are a C++17 feature
+  auto [a] = A{};	// { dg-error "1 name provided" }
+       ^
+
+"Test_name.c", line 21: error: std::tuple_size<"A">::value is not a valid integral constant-expression
+  auto [a] = A{};	// { dg-error "1 name provided" }
+       ^
+
+"Test_name.c", line 25: warning: structured bindings are a C++17 feature
+  auto [b] = B{};	// { dg-error "1 name provided" "" { target int128 } }
+       ^
+
+"Test_name.c", line 25: error: "std::tuple_element" not defined
+  auto [b] = B{};	// { dg-error "1 name provided" "" { target int128 } }
+       ^
+
+"Test_name.c", line 28: warning: structured bindings are a C++17 feature
+  auto [c, d] = B{};	// { dg-error "2 names provided" "" { target int128 } }
+       ^
+
+"Test_name.c", line 28: error: "std::tuple_element" not defined
+  auto [c, d] = B{};	// { dg-error "2 names provided" "" { target int128 } }
+       ^
+
+"Test_name.c", line 32: warning: structured bindings are a C++17 feature
+  auto [e, f, g] = A{};	// { dg-error "3 names provided" }
+       ^
+
+"Test_name.c", line 32: error: std::tuple_size<"A">::value is not a valid integral constant-expression
+  auto [e, f, g] = A{};	// { dg-error "3 names provided" }
+       ^
+
+4 errors detected in the compilation of "Test_name.c".

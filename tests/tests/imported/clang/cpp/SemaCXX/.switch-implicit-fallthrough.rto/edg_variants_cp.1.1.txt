@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: warning: statement is unreachable
+        if (n - 1) {
+        ^
+
+"Test_name.c", line 188: warning: statement is unreachable
+        n += 300;
+        ^
+
+"Test_name.c", line 205: warning: statement is unreachable
+        n += 300;
+        ^
+
+"Test_name.c", line 314: warning: statement is unreachable
+        n += 300;
+        ^
+
+"Test_name.c", line 313: error: fallthrough statement must precede switch case label or default
+        [[clang::fallthrough]]; // expected-warning{{fallthrough annotation in unreachable code}}
+        ^
+
+"Test_name.c", line 316: error: fallthrough statement must precede switch case label or default
+        [[clang::fallthrough]]; // expected-error{{fallthrough annotation does not directly precede switch label}}
+        ^
+
+"Test_name.c", line 319: error: fallthrough statement must precede switch case label or default
+        [[clang::fallthrough]]; // expected-error{{fallthrough annotation does not directly precede switch label}}
+        ^
+
+"Test_name.c", line 323: error: fallthrough statement must precede switch case label or default
+        [[clang::fallthrough]]; // expected-error{{fallthrough annotation does not directly precede switch label}}
+        ^
+
+"Test_name.c", line 329: error: the "fallthrough" attribute may only appear in an enclosing switch statement
+    [[clang::fallthrough]]; // expected-error{{fallthrough annotation is outside switch statement}}
+      ^
+
+"Test_name.c", line 331: error: the "fallthrough" attribute only applies to null statements
+    [[clang::fallthrough]]  // expected-error{{'clang::fallthrough' attribute only applies to empty statements}}
+      ^
+
+"Test_name.c", line 337: error: the "fallthrough" attribute only applies to null statements
+        [[clang::fallthrough]]  // expected-error{{'clang::fallthrough' attribute only applies to empty statements}}
+          ^
+
+"Test_name.c", line 340: error: the "fallthrough" attribute only applies to null statements
+      [[clang::fallthrough]]    // expected-error{{'clang::fallthrough' attribute is only allowed on empty statements}} expected-note{{did you forget ';'?}}
+        ^
+
+8 errors detected in the compilation of "Test_name.c".

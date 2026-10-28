@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions Test_name.c
+"Test_name.c", line 25: error: function "f" has already been defined (previous definition at line 24)
+  void f(int [[clang::annotate_type("foo")]]) {} // expected-error {{redefinition of 'f'}}
+       ^
+
+"Test_name.c", line 33: error: class "S2<int>" has already been defined (previous definition at line 30)
+  struct S2<int [[clang::annotate_type("foo")]]> {}; // expected-error {{redefinition of 'S2<int>'}}
+         ^
+
+"Test_name.c", line 37: warning: variable "val" was declared but never referenced
+    int [[clang::annotate_type("foo", Is...)]] val;
+                                               ^
+
+"Test_name.c", line 39: warning: missing return statement at end of non-void function "f2"
+  int f2() { variadic_func_template<1, 2, 3>(); }
+                                                ^
+
+"Test_name.c", line 66: warning: attributes ignored here
+  [[clang::annotate_type("foo")]] extern "C" int extern_c_func(); // expected-error {{an attribute list cannot appear here}}
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 35: warning: variable "tp" was declared but never referenced
+    T *tp = dp; // expected-error{{cannot initialize a variable of type 'int *' with an lvalue of type 'double *'}}
+       ^
+
+"Test_name.c", line 78: error: more than one instance of overloaded function "g" matches the argument list:
+            function template "int &g<T>(int_c<sizeof(<expression>)> *)" (declared at line 73)
+            function template "float &g<T>()" (declared at line 75)
+    float &fp2 = g<X3>();  // Not ambiguous.
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,155 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 17: error: initialization is not constant
+    constexpr S s1; // expected-error {{constant expression}} expected-note {{in call to 'S()'}}
+                ^
+"Test_name.c", line 14: note: access to uninitialized object
+  constexpr int extract(const S &s) { return s.n; } // expected-note {{read of object outside its lifetime is not allowed in a constant expression}}
+                                              ^
+"Test_name.c", line 9: note: called from:
+    constexpr S() : n(extract(*this)), m(0) {} // expected-note {{in call to 'extract(s1)'}}
+                             ^
+
+"Test_name.c", line 18: warning: variable "s2" was declared but never referenced
+    constexpr S s2(10);
+                ^
+
+"Test_name.c", line 21: warning: unknown attribute "vector_size"
+  typedef __attribute__((vector_size(16))) int vector_int;
+                         ^
+
+"Test_name.c", line 35: error: _Complex can only be used with floating-point types
+  constexpr int test_printing(int a, float b, _Complex int c, _Complex float d,
+                                              ^
+
+"Test_name.c", line 40: error: complex integral types are not supported
+  static_assert(test_printing(12, 39.762, 3 + 4i, 12.9 + 3.6i, &u2.arr[4], u2.another.arr[2], (vector_int){5, 1, 2, 3}, u1) == 0, ""); // \
+                                               ^
+
+"Test_name.c", line 40: error: a compound literal is not allowed in an integral constant expression
+  static_assert(test_printing(12, 39.762, 3 + 4i, 12.9 + 3.6i, &u2.arr[4], u2.another.arr[2], (vector_int){5, 1, 2, 3}, u1) == 0, ""); // \
+                                                                                               ^
+
+"Test_name.c", line 50: error: expression must have a constant value
+  static_assert(passLargeArray(v) == 0, ""); // expected-error {{constant expression}} expected-note {{in call to 'passLargeArray({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...}})'}}
+                ^
+"Test_name.c", line 48: note: attempt to access storage one position past the end of an array of 256 elements
+  constexpr int get(const int *p) { return *p; } // expected-note {{read of dereferenced one-past-the-end pointer}}
+                                           ^
+"Test_name.c", line 49: note: called from:
+  constexpr int passLargeArray(V v) { return get(v.arr+256); } // expected-note {{in call to 'get(&v.arr[256])'}}
+                                                ^
+
+"Test_name.c", line 60: error: expression must have a constant value
+  static_assert(badness(myUnion), ""); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 59: note: invalid access to inactive member "Union::a" of union (member "Union::b" is active)
+  constexpr int badness(Union u) { return u.a + u.b; } // expected-note {{read of member 'a' of union with active member 'b'}}
+                                           ^
+
+"Test_name.c", line 71: error: expression must have a constant value
+  static_assert(MemPtr(&MemPtrTest::n, &MemPtrTest::f, mpt.*&MemPtrTest::n), ""); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 69: note: attempt to access run-time storage
+    return c; // expected-note {{read of non-constexpr variable 'mpt'}}
+           ^
+
+"Test_name.c", line 77: error: expression must have a constant value
+  constexpr char c = get("test\0\\\"\t\a\b\234"); // \
+                     ^
+"Test_name.c", line 75: note: cannot access position -1 in array of 12 elements
+  constexpr CharT get(const CharT *p) { return p[-1]; } // expected-note 5{{}}
+                                                ^
+
+"Test_name.c", line 79: error: expression must have a constant value
+  constexpr char c8 = get(u8"test\0\\\"\t\a\b\234"); // \
+                      ^
+"Test_name.c", line 75: note: cannot access position -1 in array of 12 elements
+  constexpr CharT get(const CharT *p) { return p[-1]; } // expected-note 5{{}}
+                                                ^
+
+"Test_name.c", line 81: error: expression must have a constant value
+  constexpr char16_t c16 = get(u"test\0\\\"\t\a\b\234\u1234"); // \
+                           ^
+"Test_name.c", line 75: note: cannot access position -1 in array of 13 elements
+  constexpr CharT get(const CharT *p) { return p[-1]; } // expected-note 5{{}}
+                                                ^
+
+"Test_name.c", line 83: error: expression must have a constant value
+  constexpr char32_t c32 = get(U"test\0\\\"\t\a\b\234\u1234\U0010ffff"); // \
+                           ^
+"Test_name.c", line 75: note: cannot access position -1 in array of 14 elements
+  constexpr CharT get(const CharT *p) { return p[-1]; } // expected-note 5{{}}
+                                                ^
+
+"Test_name.c", line 85: error: expression must have a constant value
+  constexpr wchar_t wc = get(L"test\0\\\"\t\a\b\234\u1234\xffffffff"); // \
+                         ^
+"Test_name.c", line 75: note: cannot access position -1 in array of 14 elements
+  constexpr CharT get(const CharT *p) { return p[-1]; } // expected-note 5{{}}
+                                                ^
+
+"Test_name.c", line 88: warning: a universal character name must designate a valid code point
+  constexpr char32_t c32_err = get(U"\U00110000"); // expected-error {{invalid universal character}}
+                                     ^
+
+"Test_name.c", line 88: error: expression must have a constant value
+  constexpr char32_t c32_err = get(U"\U00110000"); // expected-error {{invalid universal character}}
+                               ^
+"Test_name.c", line 75: note: cannot access position -1 in array of 2 elements
+  constexpr CharT get(const CharT *p) { return p[-1]; } // expected-note 5{{}}
+                                                ^
+
+"Test_name.c", line 95: error: expression must have a constant value
+    static_assert(mulBy3(fold((LabelDiffTy)&&a-(LabelDiffTy)&&b)) == 3, ""); // expected-error {{constant expression}} expected-note {{call to 'mulBy3(&&a - &&b)'}}
+                  ^
+"Test_name.c", line 95: note: conversion from "LabelDiffTy *" (aka "unsigned long *") to "LabelDiffTy" (aka "unsigned long") is invalid in constant-expression evaluation
+    static_assert(mulBy3(fold((LabelDiffTy)&&a-(LabelDiffTy)&&b)) == 3, ""); // expected-error {{constant expression}} expected-note {{call to 'mulBy3(&&a - &&b)'}}
+                                                                  ^
+
+"Test_name.c", line 100: error: expression must have a constant value
+  constexpr bool test_bool_0 = test_bool_printing(false); // expected-error {{constant expr}} expected-note {{in call to 'test_bool_printing(false)'}}
+                               ^
+"Test_name.c", line 99: note: division by zero
+  constexpr bool test_bool_printing(bool b) { return 1 / !(2*b | !(2*b)); } // expected-note 2{{division by zero}}
+                                                       ^
+
+"Test_name.c", line 101: error: expression must have a constant value
+  constexpr bool test_bool_1 = test_bool_printing(true); // expected-error {{constant expr}} expected-note {{in call to 'test_bool_printing(true)'}}
+                               ^
+"Test_name.c", line 99: note: division by zero
+  constexpr bool test_bool_printing(bool b) { return 1 / !(2*b | !(2*b)); } // expected-note 2{{division by zero}}
+                                                       ^
+
+"Test_name.c", line 77: warning: variable "c" was declared but never referenced
+  constexpr char c = get("test\0\\\"\t\a\b\234"); // \
+                 ^
+
+"Test_name.c", line 79: warning: variable "c8" was declared but never referenced
+  constexpr char c8 = get(u8"test\0\\\"\t\a\b\234"); // \
+                 ^
+
+"Test_name.c", line 81: warning: variable "c16" was declared but never referenced
+  constexpr char16_t c16 = get(u"test\0\\\"\t\a\b\234\u1234"); // \
+                     ^
+
+"Test_name.c", line 83: warning: variable "c32" was declared but never referenced
+  constexpr char32_t c32 = get(U"test\0\\\"\t\a\b\234\u1234\U0010ffff"); // \
+                     ^
+
+"Test_name.c", line 85: warning: variable "wc" was declared but never referenced
+  constexpr wchar_t wc = get(L"test\0\\\"\t\a\b\234\u1234\xffffffff"); // \
+                    ^
+
+"Test_name.c", line 88: warning: variable "c32_err" was declared but never referenced
+  constexpr char32_t c32_err = get(U"\U00110000"); // expected-error {{invalid universal character}}
+                     ^
+
+"Test_name.c", line 100: warning: variable "test_bool_0" was declared but never referenced
+  constexpr bool test_bool_0 = test_bool_printing(false); // expected-error {{constant expr}} expected-note {{in call to 'test_bool_printing(false)'}}
+                 ^
+
+"Test_name.c", line 101: warning: variable "test_bool_1" was declared but never referenced
+  constexpr bool test_bool_1 = test_bool_printing(true); // expected-error {{constant expr}} expected-note {{in call to 'test_bool_printing(true)'}}
+                 ^
+
+16 errors detected in the compilation of "Test_name.c".

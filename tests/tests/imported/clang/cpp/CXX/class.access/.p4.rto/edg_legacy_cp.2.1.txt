@@ -1,0 +1,297 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions --exceptions -w --exceptions --exceptions --c++03 -w --exceptions --exceptions Test_name.c
+"Test_name.c", line 35: error: function "test0::A::foo(Protected &)" (declared at line 26) is inaccessible
+      op->foo(ProtectedInst); // expected-error {{'foo' is a protected member}}
+          ^
+
+"Test_name.c", line 36: error: function "test0::A::foo(Private &)" (declared at line 28) is inaccessible
+      op->foo(PrivateInst); // expected-error {{'foo' is a private member}}
+          ^
+
+"Test_name.c", line 39: error: function "test0::A::foo(Protected &)" (declared at line 26) is inaccessible
+      void (A::*b)(Protected&) = &A::foo; // expected-error {{'foo' is a protected member}}
+                                     ^
+
+"Test_name.c", line 40: error: function "test0::A::foo(Private &)" (declared at line 28) is inaccessible
+      void (A::*c)(Private&) = &A::foo; // expected-error {{'foo' is a private member}}
+                                   ^
+
+"Test_name.c", line 45: error: function "test0::A::foo(Protected &)" (declared at line 26) is inaccessible
+      op->foo(ProtectedInst); // expected-error {{'foo' is a protected member}}
+          ^
+
+"Test_name.c", line 46: error: function "test0::A::foo(Private &)" (declared at line 28) is inaccessible
+      op->foo(PrivateInst); // expected-error {{'foo' is a private member}}
+          ^
+
+"Test_name.c", line 49: error: function "test0::A::foo(Protected &)" (declared at line 26) is inaccessible
+      void (B::*b)(Protected&) = &B::foo; // expected-error {{'foo' is a protected member}}
+                                     ^
+
+"Test_name.c", line 50: error: function "test0::A::foo(Private &)" (declared at line 28) is inaccessible
+      void (B::*c)(Private&) = &B::foo; // expected-error {{'foo' is a private member}}
+                                   ^
+
+"Test_name.c", line 84: error: function "test1::A::operator+(Protected &)" (declared at line 64) is inaccessible
+      a + prot; // expected-error {{'operator+' is a protected member}}
+        ^
+
+"Test_name.c", line 85: error: function "test1::A::operator+(Private &)" (declared at line 70) is inaccessible
+      a + priv; // expected-error {{'operator+' is a private member}}
+        ^
+
+"Test_name.c", line 87: error: function "test1::A::operator[](Protected &)" (declared at line 65) is inaccessible
+      a[prot]; // expected-error {{'operator[]' is a protected member}}
+       ^
+
+"Test_name.c", line 88: error: function "test1::A::operator[](Private &)" (declared at line 71) is inaccessible
+      a[priv]; // expected-error {{'operator[]' is a private member}}
+       ^
+
+"Test_name.c", line 90: error: function "test1::A::operator()(Protected &)" (declared at line 66) is inaccessible
+      a(prot); // expected-error {{'operator()' is a protected member}}
+       ^
+
+"Test_name.c", line 91: error: function "test1::A::operator()(Private &)" (declared at line 72) is inaccessible
+      a(priv); // expected-error {{'operator()' is a private member}}
+       ^
+
+"Test_name.c", line 92: error: function "test1::A::operator-" (declared at line 73) is inaccessible
+      -a;       // expected-error {{'operator-' is a private member}}
+      ^
+
+"Test_name.c", line 101: error: "test1::A::operator test1::A::ProtectedSurrogate() const" (declared at line 68) is inaccessible
+      ca(prot); // expected-error {{'operator void (*)(Protected &)' is a protected member}}
+      ^
+
+"Test_name.c", line 102: error: "test1::A::operator test1::A::PrivateSurrogate() const" (declared at line 75) is inaccessible
+      ca(priv); // expected-error {{'operator void (*)(Private &)' is a private member}}
+      ^
+
+"Test_name.c", line 115: error: "test2::A::A()" (declared at line 110) is inaccessible
+    A a; // expected-error {{calling a private constructor}}
+      ^
+
+"Test_name.c", line 119: error: "test2::A::A()" (declared at line 110) is inaccessible
+    class B : A { }; // expected-error {{base class 'A' has private default constructor}}
+              ^
+          detected during implicit generation of "test2::B::B()" at line 120
+
+"Test_name.c", line 127: error: "test2::A::A()" (declared at line 110) is inaccessible
+    class D : C { }; // expected-error {{inherited virtual base class 'A' has private default constructor}}
+              ^
+          detected during implicit generation of "test2::D::D()" at line 128
+
+"Test_name.c", line 152: error: "test3::A::~A()" (declared at line 148) is inaccessible
+    A a; // expected-error {{variable of type 'A' has private destructor}}
+      ^
+
+"Test_name.c", line 156: error: "test3::A::~A()" (declared at line 148) is inaccessible
+      A local; // expected-error {{variable of type 'A' has private destructor}}
+        ^
+
+"Test_name.c", line 176: error: "test3::Base<N>::~Base() [with N=1U]" (declared at line 160) is inaccessible
+      ~Derived2() {}
+      ^
+
+"Test_name.c", line 176: error: "test3::Base<N>::~Base() [with N=2U]" (declared at line 160) is inaccessible
+      ~Derived2() {}
+      ^
+
+"Test_name.c", line 176: error: "test3::Base<N>::~Base() [with N=3U]" (declared at line 160) is inaccessible
+      ~Derived2() {}
+      ^
+
+"Test_name.c", line 176: error: "test3::Base<N>::~Base() [with N=0U]" (declared at line 160) is inaccessible
+      ~Derived2() {}
+      ^
+
+"Test_name.c", line 176: error: "test3::Base2::~Base2()" (declared at line 161) is inaccessible
+      ~Derived2() {}
+      ^
+
+"Test_name.c", line 183: error: "test3::Base<N>::~Base() [with N=1U]" (declared at line 160) is inaccessible
+      virtual Base<1>, // expected-error 2 {{base class 'Base<1>' has private destructor}}
+              ^
+          detected during implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 184: error: "test3::Base<N>::~Base() [with N=2U]" (declared at line 160) is inaccessible
+      Base2, // expected-error 2 {{base class 'Base2' has private destructor}}
+      ^
+          detected during implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 185: error: "test3::Base<N>::~Base() [with N=3U]" (declared at line 160) is inaccessible
+      virtual Base3
+              ^
+          detected during implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 163: error: "test3::Base<N>::~Base() [with N=3U]" (declared at line 160) is inaccessible
+    class Base3 : virtual Base<3> { public: ~Base3(); }; // expected-error {{base class 'Base<3>' has private destructor}}
+                          ^
+          detected during:
+            implicit generation of "test3::Base3::Base3()" at line 187
+            implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 182: error: "test3::Base<N>::~Base() [with N=0U]" (declared at line 160) is inaccessible
+      Base<0>,  // expected-error 2 {{base class 'Base<0>' has private destructor}}
+      ^
+          detected during implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 161: error: "test3::Base<N>::~Base() [with N=2U]" (declared at line 160) is inaccessible
+    class Base2 : virtual Base<2> { ~Base2(); }; // expected-note 3 {{declared private here}} \
+                          ^
+          detected during:
+            implicit generation of "test3::Base2::Base2()" at line 187
+            implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 184: error: "test3::Base2::~Base2()" (declared at line 161) is inaccessible
+      Base2, // expected-error 2 {{base class 'Base2' has private destructor}}
+      ^
+          detected during implicit generation of "test3::Derived3::Derived3()" at line 187
+
+"Test_name.c", line 179: error: "test3::Base<N>::~Base() [with N=1U]" (declared at line 160) is inaccessible
+    class Derived3 : // expected-error 2 {{inherited virtual base class 'Base<2>' has private destructor}} \
+          ^
+          detected during implicit generation of "test3::Derived3::~Derived3()" at line 187
+
+"Test_name.c", line 179: error: "test3::Base<N>::~Base() [with N=2U]" (declared at line 160) is inaccessible
+    class Derived3 : // expected-error 2 {{inherited virtual base class 'Base<2>' has private destructor}} \
+          ^
+          detected during implicit generation of "test3::Derived3::~Derived3()" at line 187
+
+"Test_name.c", line 179: error: "test3::Base<N>::~Base() [with N=3U]" (declared at line 160) is inaccessible
+    class Derived3 : // expected-error 2 {{inherited virtual base class 'Base<2>' has private destructor}} \
+          ^
+          detected during implicit generation of "test3::Derived3::~Derived3()" at line 187
+
+"Test_name.c", line 179: error: "test3::Base<N>::~Base() [with N=0U]" (declared at line 160) is inaccessible
+    class Derived3 : // expected-error 2 {{inherited virtual base class 'Base<2>' has private destructor}} \
+          ^
+          detected during implicit generation of "test3::Derived3::~Derived3()" at line 187
+
+"Test_name.c", line 179: error: "test3::Base2::~Base2()" (declared at line 161) is inaccessible
+    class Derived3 : // expected-error 2 {{inherited virtual base class 'Base<2>' has private destructor}} \
+          ^
+          detected during implicit generation of "test3::Derived3::~Derived3()" at line 187
+
+"Test_name.c", line 288: error: "test4::Base::operator Private()" (declared at line 282) is inaccessible
+      Private test1() { return *this; } // expected-error {{'operator Private' is a private member}}
+                               ^
+
+"Test_name.c", line 291: error: "test4::Base::operator Private()" (declared at line 282) is inaccessible
+    Private test1(Derived1 &d) { return d; } // expected-error {{'operator Private' is a private member}}
+                                        ^
+
+"Test_name.c", line 292: error: "test4::Base::operator Public()" (declared at line 284) is inaccessible
+    Public test2(Derived1 &d) { return d; } // expected-error {{'operator Public' is a private member}}
+                                       ^
+
+"Test_name.c", line 296: error: "test4::Base::operator Private()" (declared at line 282) is inaccessible
+      Private test1() { return *this; } // expected-error {{'operator Private' is a private member}}
+                               ^
+
+"Test_name.c", line 299: error: "test4::Base::operator Private()" (declared at line 282) is inaccessible
+    Private test1(Derived2 &d) { return d; } // expected-error {{'operator Private' is a private member}}
+                                        ^
+
+"Test_name.c", line 307: error: "test4::Base::operator Public()" (declared at line 284) is inaccessible
+    Public test2(Derived3 &d) { return d; } // expected-error {{'operator Public' is a private member of 'test4::Base'}}
+                                       ^
+
+"Test_name.c", line 327: error: "void test5::A::operator=(const test5::A &)" (declared at line 320) is inaccessible
+    class Test1 { A a; }; // expected-error {{private member}}
+                    ^
+          detected during implicit generation of "test5::Test1 &test5::Test1::operator=(const test5::Test1 &)" at line 330
+
+"Test_name.c", line 333: error: "void test5::A::operator=(const test5::A &)" (declared at line 320) is inaccessible
+    class Test2 : A {}; // expected-error {{private member}}
+                  ^
+          detected during implicit generation of "test5::Test2 &test5::Test2::operator=(const test5::Test2 &)" at line 336
+
+"Test_name.c", line 364: error: "test6::A::A(const test6::A &)" (declared at line 357) is inaccessible
+    class Test1 { A a; }; // expected-error {{field of type 'A' has private copy constructor}}
+                    ^
+          detected during implicit generation of "test6::Test1::Test1(const test6::Test1 &)" at line 366
+
+"Test_name.c", line 369: error: "test6::A::A(const test6::A &)" (declared at line 357) is inaccessible
+    class Test2 : A {}; // expected-error {{base class 'A' has private copy constructor}}
+                  ^
+          detected during implicit generation of "test6::Test2::Test2(const test6::Test2 &)" at line 371
+
+"Test_name.c", line 423: error: member "test9::A::x" (declared at line 418) is inaccessible
+      static int getX() { return x; } // expected-error {{'x' is a private member of 'test9::A'}}
+                                 ^
+
+"Test_name.c", line 437: error: constant "test10::A::value" (declared at line 430) is inaccessible
+        value = A::value // expected-error {{'value' is a private member of 'test10::A'}}
+                   ^
+
+"Test_name.c", line 575: error: "test16::A::~A()" (declared at line 574) is inaccessible
+    void b() { throw A(); } // expected-error{{temporary of type 'A' has private destructor}} \
+                     ^
+
+"Test_name.c", line 584: error: class template "test17::A::Inner" (declared at line 581) is inaccessible
+    A::Inner<int> s; // expected-error {{'Inner' is a private member of 'test17::A'}}
+       ^
+
+"Test_name.c", line 613: error: "test20::Foo::Foo()" (declared at line 610) is inaccessible
+      Foo a; // expected-error {{calling a private constructor}}
+          ^
+
+"Test_name.c", line 627: error: class template "test21::A<T>::Inner" may not be redeclared in the current scope
+      template <class T> class A<T>::Inner; // expected-error{{non-friend class member 'Inner' cannot have a qualified name}}
+                                     ^
+
+"Test_name.c", line 627: error: class template "test21::A<T>::Inner" is not a class template
+      template <class T> class A<T>::Inner; // expected-error{{non-friend class member 'Inner' cannot have a qualified name}}
+                                     ^
+
+"Test_name.c", line 632: error: class "test21::A<T>::Inner [with T=int]" (declared at line 621) is inaccessible
+      A<int>::Inner i; // expected-error {{'Inner' is a private member}}
+              ^
+
+"Test_name.c", line 527: error: member "test15::A<T>::private_foo [with T=int]" (declared at line 520) is inaccessible
+        return a.private_foo; // expected-error {{private member}}
+                 ^
+          detected during instantiation of "int test15::A<T>::test1(test15::A<int> &) [with T=long]" at line 544
+
+"Test_name.c", line 531: error: member "test15::A<T>::private_sfoo [with T=int]" (declared at line 521) is inaccessible
+        return a.private_sfoo; // expected-error {{private member}}
+                 ^
+          detected during instantiation of "int test15::A<T>::test2(test15::A<int> &) [with T=long]" at line 544
+
+"Test_name.c", line 535: error: member "test15::A<T>::protected_foo [with T=int]" (declared at line 523) is inaccessible
+        return a.protected_foo; // expected-error {{protected member}}
+                 ^
+          detected during instantiation of "int test15::A<T>::test3(test15::A<int> &) [with T=long]" at line 544
+
+"Test_name.c", line 539: error: member "test15::A<T>::protected_sfoo [with T=int]" (declared at line 524) is inaccessible
+        return a.protected_sfoo; // expected-error {{protected member}}
+                 ^
+          detected during instantiation of "int test15::A<T>::test4(test15::A<int> &) [with T=long]" at line 544
+
+"Test_name.c", line 552: error: protected member "test15::A<T>::protected_foo [with T=int]" (declared at line 523) is not accessible through a "test15::A<int>" pointer or object
+        return a.protected_foo; // expected-error 2 {{protected member}}
+                 ^
+          detected during instantiation of "int test15::B<T>::test1(test15::A<int> &) [with T=int]" at line 568
+
+"Test_name.c", line 552: error: member "test15::A<T>::protected_foo [with T=int]" (declared at line 523) is inaccessible
+        return a.protected_foo; // expected-error 2 {{protected member}}
+                 ^
+          detected during instantiation of "int test15::B<T>::test1(test15::A<int> &) [with T=long]" at line 569
+
+"Test_name.c", line 556: error: member "test15::A<T>::protected_sfoo [with T=int]" (declared at line 524) is inaccessible
+        return a.protected_sfoo; // expected-error {{protected member}}
+                 ^
+          detected during instantiation of "int test15::B<T>::test2(test15::A<int> &) [with T=long]" at line 569
+
+"Test_name.c", line 560: error: member "test15::A<T>::protected_foo [with T=int]" (declared at line 523) is inaccessible
+        return b.protected_foo; // expected-error {{protected member}}
+                 ^
+          detected during instantiation of "int test15::B<T>::test3(test15::B<int> &) [with T=long]" at line 569
+
+"Test_name.c", line 564: error: member "test15::A<T>::protected_sfoo [with T=int]" (declared at line 524) is inaccessible
+        return b.protected_sfoo; // expected-error {{protected member}}
+                 ^
+          detected during instantiation of "int test15::B<T>::test4(test15::B<int> &) [with T=long]" at line 569
+
+66 errors detected in the compilation of "Test_name.c".

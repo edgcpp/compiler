@@ -1,0 +1,190 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -w Test_name.c
+"Test_name.c", line 28: error: a value of type "Y1" (aka "int") cannot be used to initialize an entity of type "N"
+  N t1 = 0 ? X1() : Y1(); // expected-error {{rvalue of type 'B1'}}
+         ^
+
+"Test_name.c", line 29: error: a value of type "X2" (aka "void") cannot be used to initialize an entity of type "N"
+  N t2 = 0 ? X2() : Y2(); // expected-error {{rvalue of type 'B2'}}
+         ^
+
+"Test_name.c", line 33: error: a value of type "Y1" (aka "int") cannot be used to initialize an entity of type "N"
+  N t3 = 0 ? xt3 : yt3; // expected-error {{lvalue of type 'const B1'}}
+         ^
+
+"Test_name.c", line 35: error: a value of type "__attribute((vector_size(4))) char" cannot be used to initialize an entity of type "N"
+  N t4 = X3() + Y3();   // expected-error {{rvalue of type 'B3'}}
+         ^
+
+"Test_name.c", line 37: error: a value of type "X3" (aka "__attribute((vector_size(4))) char") cannot be used to initialize an entity of type "N"
+  N t5 = A3() ? X3() : Y3(); // expected-error {{rvalue of type 'B3'}}
+         ^
+
+"Test_name.c", line 38: error: a value of type "X1" (aka "int") cannot be used to initialize an entity of type "N"
+  N t6 = A3() ? X1() : Y1(); // expected-error {{vector condition type 'A3' (vector of 4 'char' values) and result type '__attribute__((__vector_size__(4 * sizeof(B1)))) B1' (vector of 4 'B1' values) do not have elements of the same size}}
+         ^
+
+"Test_name.c", line 40: error: a value of type "float" cannot be used to initialize an entity of type "N"
+  N t7 = X4() + Y4(); // expected-error {{rvalue of type 'B4'}}
+         ^
+
+"Test_name.c", line 41: error: a value of type "float" cannot be used to initialize an entity of type "N"
+  N t8 = X4() * Y4(); // expected-error {{rvalue of type 'B4'}}
+         ^
+
+"Test_name.c", line 42: error: a value of type "float" cannot be used to initialize an entity of type "N"
+  N t9 = X5() * Y5(); // expected-error {{rvalue of type 'A4 __attribute__((matrix_type(3, 3)))'}}
+         ^
+
+"Test_name.c", line 48: error: no suitable conversion function from "S1<X1>" (aka "S1<int>") to "N" exists
+  N t10 = 0 ? S1<X1>() : S1<Y1>(); // expected-error {{from 'S1<B1>' (aka 'S1<int>')}}
+          ^
+
+"Test_name.c", line 50: error: no suitable conversion function from "S1<X1>::S2<X2>" (aka "S1<int>::S2<void>") to "N" exists
+  N t11 = 0 ? S1<X1>::S2<X2>() : S1<Y1>::S2<Y2>(); // expected-error {{from 'S1<int>::S2<B2>' (aka 'S1<int>::S2<void>')}}
+          ^
+
+"Test_name.c", line 54: error: no suitable conversion function from "Al<X1>" (aka "S1<int>") to "N" exists
+  N t12 = 0 ? Al<X1>() : Al<Y1>(); // expected-error {{from 'Al<B1>' (aka 'S1<int>')}}
+          ^
+
+"Test_name.c", line 61: error: a value of type "AS1Y1" (aka "B1") cannot be used to initialize an entity of type "N"
+  N t13 = 0 ? (AS1X1){} : (AS1Y1){}; // expected-error {{rvalue of type 'AS1 B1' (aka '__attribute__((address_space(1))) int')}}
+          ^
+
+"Test_name.c", line 62: error: a value of type "AS2Y1" (aka "B1") cannot be used to initialize an entity of type "N"
+  N t14 = 0 ? (AS1X1){} : (AS2Y1){}; // expected-error {{rvalue of type '__attribute__((address_space(1))) B1' (aka '__attribute__((address_space(1))) int')}}
+          ^
+
+"Test_name.c", line 66: error: a value of type "FY1 *" (aka "int (*)()") cannot be used to initialize an entity of type "N"
+  N t15 = 0 ? (FX1*){} : (FY1*){}; // expected-error {{rvalue of type 'B1 (*)()' (aka 'int (*)()')}}
+          ^
+
+"Test_name.c", line 76: error: a value of type "MFY1 *" (aka "int SS1::*(*)()") cannot be used to initialize an entity of type "N"
+  N t16 = 0 ? (MFX1*){} : (MFY1*){}; // expected-error {{rvalue of type 'B1 SB1::*(*)()'}}
+          ^
+
+"Test_name.c", line 78: error: a value of type "Y1 (SS1::*)()" (aka "int (SS1::*)()") cannot be used to initialize an entity of type "N"
+  N t17 = 0 ? (FX1 SX1::*){} : (FY1 SY1::*){}; // expected-error {{rvalue of type 'B1 (SB1::*)() __attribute__((thiscall))'}}
+          ^
+
+"Test_name.c", line 80: error: a value of type "Y1 *" (aka "int *") cannot be used to initialize an entity of type "N"
+  N t18 = 0 ? (__typeof(X1*)){} : (__typeof(Y1*)){}; // expected-error {{rvalue of type 'typeof(B1 *)' (aka 'int *')}}
+          ^
+
+"Test_name.c", line 90: error: a value of type "B1" cannot be used to initialize an entity of type "N"
+  N t19 = 0 ? (__underlying_type(EnumsX::X)){} : (__underlying_type(EnumsY::Y)){};
+          ^
+
+"Test_name.c", line 93: error: a value of type "B1" cannot be used to initialize an entity of type "N"
+  N t20 = 0 ? (__underlying_type(EnumsX::X)){} : (__underlying_type(EnumsY::X)){};
+          ^
+
+"Test_name.c", line 98: error: a value of type "QY" (aka "const SB1 *") cannot be used to initialize an entity of type "N"
+  N t23 = 0 ? (QX){} : (QY){}; // expected-error {{rvalue of type 'const SB1 *' (aka 'const SS1 *')}}
+          ^
+
+"Test_name.c", line 101: error: a value of type "Alias<X1>" (aka "short") cannot be used to initialize an entity of type "N"
+  N t24 = 0 ? (Alias<X1>){} : (Alias<Y1>){}; // expected-error {{rvalue of type 'Alias<B1>' (aka 'short')}}
+          ^
+
+"Test_name.c", line 102: error: a value of type "Alias<X2>" (aka "short") cannot be used to initialize an entity of type "N"
+  N t25 = 0 ? (Alias<X1>){} : (Alias<X2>){}; // expected-error {{rvalue of type 'short'}}
+          ^
+
+"Test_name.c", line 109: error: no suitable conversion function from "SB1" (aka "SS1") to "N" exists
+  N t26 = 0 ? t26_1 : t26_2; // expected-error {{from 'SB1' (aka 'SS1')}}
+          ^
+
+"Test_name.c", line 110: error: no suitable conversion function from "SB1" (aka "SS1") to "N" exists
+  N t27 = 0 ? t26_1 : t26_3; // expected-error {{from 'SB1' (aka 'SS1')}}
+          ^
+
+"Test_name.c", line 116: error: a value of type "X1" (aka "int") cannot be used to initialize an entity of type "N"
+  N t28 = *(RPB1){}; // expected-error {{lvalue of type 'Y1' (aka 'int')}}
+          ^
+
+"Test_name.c", line 118: error: a value of type "RPY1" (aka "int *") cannot be used to initialize an entity of type "N"
+  N t30 = t29;  // expected-error {{lvalue of type 'RPB1' (aka 'int *')}}
+          ^
+
+"Test_name.c", line 119: error: a value of type "X1" (aka "int") cannot be used to initialize an entity of type "N"
+  N t31 = *t29; // expected-error {{lvalue of type 'B1' (aka 'int')}}
+          ^
+
+"Test_name.c", line 128: error: a value of type "UPY1" (aka "int *") cannot be used to initialize an entity of type "N"
+  N t33 = t32;  // expected-error {{lvalue of type 'C::type1' (aka 'int *')}}
+          ^
+
+"Test_name.c", line 129: error: a value of type "X1" (aka "int") cannot be used to initialize an entity of type "N"
+  N t34 = *t32; // expected-error {{lvalue of type 'B1' (aka 'int')}}
+          ^
+
+"Test_name.c", line 138: error: identifier "id" is undefined
+    extern const pair<id, id> p;
+                      ^
+
+"Test_name.c", line 138: error: identifier "id" is undefined
+    extern const pair<id, id> p;
+                          ^
+
+"Test_name.c", line 139: error: identifier "id" is undefined
+    id t = false ? p.first : p.second;
+    ^
+
+"Test_name.c", line 147: error: a value of type "GH67603::A<decltype((C()))>" (aka "long") cannot be used to initialize an entity of type "N"
+      N t = 0 ? A<decltype(C())>() : A<decltype(D())>();
+            ^
+
+"Test_name.c", line 159: error: a value of type "const B1 *" cannot be used to initialize an entity of type "N"
+      N ta = a;
+             ^
+
+"Test_name.c", line 161: error: a value of type "const B1 *" cannot be used to initialize an entity of type "N"
+      N tb = b;
+             ^
+
+"Test_name.c", line 163: error: a value of type "const B1 *" cannot be used to initialize an entity of type "N"
+      N tc = 0 ? a : b;
+             ^
+
+"Test_name.c", line 172: error: a value of type "arrays::same_element::ConstB1 *" (aka "const B1 *") cannot be used to initialize an entity of type "N"
+      N ta = a;
+             ^
+
+"Test_name.c", line 174: error: a value of type "arrays::same_element::ConstB1 *" (aka "const B1 *") cannot be used to initialize an entity of type "N"
+      N tb = b;
+             ^
+
+"Test_name.c", line 176: error: a value of type "arrays::same_element::ConstB1 *" (aka "const B1 *") cannot be used to initialize an entity of type "N"
+      N tc = 0 ? a : b;
+             ^
+
+"Test_name.c", line 184: error: a value of type "const volatile X1 *" cannot be used to initialize an entity of type "N"
+      N ta = a;
+             ^
+
+"Test_name.c", line 186: error: a value of type "const volatile Y1 *" cannot be used to initialize an entity of type "N"
+      N tb = b;
+             ^
+
+"Test_name.c", line 188: error: a value of type "const volatile X1 *" cannot be used to initialize an entity of type "N"
+      N tc = 0 ? a : b;
+             ^
+
+"Test_name.c", line 201: error: a value of type "Y1 member_pointers::W<X2>::*" (aka "int member_pointers::W<void>::*") cannot be used to initialize an entity of type "N"
+    N t1 = 0 ? &W<X2>::a : &W<Y2>::b;
+           ^
+
+"Test_name.c", line 205: error: a value of type "Y1 member_pointers::W<X2>::*" (aka "int member_pointers::W<void>::*") cannot be used to initialize an entity of type "N"
+    N t3 = 0 ? &W1::a : &W2::b;
+           ^
+
+"Test_name.c", line 217: error: a value of type "void (*)(FunctionTypeExtInfo::RecordType::A *)" cannot be used to initialize an entity of type "N"
+      N t1 = 0 ? x : y;
+             ^
+
+"Test_name.c", line 228: error: a value of type "void (*)(FunctionTypeExtInfo::TypedefType::B *)" (aka "void (*)(FunctionTypeExtInfo::TypedefType::A *)") cannot be used to initialize an entity of type "N"
+      N t1 = 0 ? x : y;
+             ^
+
+47 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,178 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "ext_vector_type"
+  typedef float float4 __attribute__((ext_vector_type(4)));
+                                      ^
+
+"Test_name.c", line 6: warning: unknown attribute "ext_vector_type"
+  typedef int int3 __attribute__((ext_vector_type(3)));
+                                  ^
+
+"Test_name.c", line 7: warning: unknown attribute "ext_vector_type"
+  typedef unsigned unsigned4 __attribute__((ext_vector_type(4)));
+                                            ^
+
+"Test_name.c", line 14: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_max(iv);
+                                        ^
+
+"Test_name.c", line 17: error: too many arguments in function call
+    i = __builtin_reduce_max(v, v);
+                                ^
+
+"Test_name.c", line 20: error: too few arguments in function call
+    i = __builtin_reduce_max();
+                             ^
+
+"Test_name.c", line 23: error: "int" is not a vector type
+    i = __builtin_reduce_max(i);
+                             ^
+
+"Test_name.c", line 28: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_min(iv);
+                                        ^
+
+"Test_name.c", line 31: error: too many arguments in function call
+    i = __builtin_reduce_min(v, v);
+                                ^
+
+"Test_name.c", line 34: error: too few arguments in function call
+    i = __builtin_reduce_min();
+                             ^
+
+"Test_name.c", line 37: error: "int" is not a vector type
+    i = __builtin_reduce_min(i);
+                             ^
+
+"Test_name.c", line 42: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_add(iv);
+                                        ^
+
+"Test_name.c", line 45: error: too few arguments in function call
+    i = __builtin_reduce_add();
+                             ^
+
+"Test_name.c", line 48: error: too many arguments in function call
+    i = __builtin_reduce_add(iv, iv);
+                                 ^
+
+"Test_name.c", line 51: error: "int" is not a vector type
+    i = __builtin_reduce_add(i);
+                             ^
+
+"Test_name.c", line 54: error: "float" is not a vector type
+    i = __builtin_reduce_add(v);
+                             ^
+
+"Test_name.c", line 59: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_mul(iv);
+                                        ^
+
+"Test_name.c", line 62: error: too few arguments in function call
+    i = __builtin_reduce_mul();
+                             ^
+
+"Test_name.c", line 65: error: too many arguments in function call
+    i = __builtin_reduce_mul(iv, iv);
+                                 ^
+
+"Test_name.c", line 68: error: "int" is not a vector type
+    i = __builtin_reduce_mul(i);
+                             ^
+
+"Test_name.c", line 71: error: "float" is not a vector type
+    i = __builtin_reduce_mul(v);
+                             ^
+
+"Test_name.c", line 76: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_xor(iv);
+                                        ^
+
+"Test_name.c", line 79: error: too few arguments in function call
+    i = __builtin_reduce_xor();
+                             ^
+
+"Test_name.c", line 82: error: too many arguments in function call
+    i = __builtin_reduce_xor(iv, iv);
+                                 ^
+
+"Test_name.c", line 85: error: "int" is not a vector type
+    i = __builtin_reduce_xor(i);
+                             ^
+
+"Test_name.c", line 88: error: "float" is not a vector type
+    i = __builtin_reduce_xor(v);
+                             ^
+
+"Test_name.c", line 93: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_or(iv);
+                                       ^
+
+"Test_name.c", line 96: error: too few arguments in function call
+    i = __builtin_reduce_or();
+                            ^
+
+"Test_name.c", line 99: error: too many arguments in function call
+    i = __builtin_reduce_or(iv, iv);
+                                ^
+
+"Test_name.c", line 102: error: "int" is not a vector type
+    i = __builtin_reduce_or(i);
+                            ^
+
+"Test_name.c", line 105: error: "float" is not a vector type
+    i = __builtin_reduce_or(v);
+                            ^
+
+"Test_name.c", line 110: error: "int" is not a vector type
+    struct Foo s = __builtin_reduce_and(iv);
+                                        ^
+
+"Test_name.c", line 113: error: too few arguments in function call
+    i = __builtin_reduce_and();
+                             ^
+
+"Test_name.c", line 116: error: too many arguments in function call
+    i = __builtin_reduce_and(iv, iv);
+                                 ^
+
+"Test_name.c", line 119: error: "int" is not a vector type
+    i = __builtin_reduce_and(i);
+                             ^
+
+"Test_name.c", line 122: error: "float" is not a vector type
+    i = __builtin_reduce_and(v);
+                             ^
+
+"Test_name.c", line 127: error: "float" is not a vector type
+    struct Foo s = __builtin_reduce_maximum(v);
+                                            ^
+
+"Test_name.c", line 130: error: too many arguments in function call
+    i = __builtin_reduce_maximum(v, v);
+                                    ^
+
+"Test_name.c", line 133: error: too few arguments in function call
+    i = __builtin_reduce_maximum();
+                                 ^
+
+"Test_name.c", line 136: error: "int" is not a vector type
+    i = __builtin_reduce_maximum(i);
+                                 ^
+
+"Test_name.c", line 141: error: "float" is not a vector type
+    struct Foo s = __builtin_reduce_minimum(v);
+                                            ^
+
+"Test_name.c", line 144: error: too many arguments in function call
+    i = __builtin_reduce_minimum(v, v);
+                                    ^
+
+"Test_name.c", line 147: error: too few arguments in function call
+    i = __builtin_reduce_minimum();
+                                 ^
+
+"Test_name.c", line 150: error: "int" is not a vector type
+    i = __builtin_reduce_minimum(i);
+                                 ^
+
+41 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 127: warning: missing return statement at end of non-void function "std::_Vector_base<_Tp, _Alloc>::_M_get_Tp_allocator"
+  	}
+  	^
+
+"Test_name.c", line 158: warning: missing return statement at end of non-void function "QPaintDevice::width"
+      }
+      ^
+
+"Test_name.c", line 160: warning: missing return statement at end of non-void function "QPaintDevice::height"
+      }
+      ^
+
+"Test_name.c", line 196: warning: missing return statement at end of non-void function "PngWriter::writeQImageToPng"
+  }
+  ^
+
+"Test_name.c", line 58: warning: missing return statement at end of non-void function "std::__niter_base(_Iterator) [with _Iterator=char *]"
+      }
+      ^
+          detected during:
+            instantiation of "std::_Niter_base<_Iterator>::iterator_type std::__niter_base(_Iterator) [with _Iterator=char *]" at line 65
+            instantiation of "_OI std::fill_n(_OI, _Size, const _Tp &) [with _OI=char *, _Size=size_t, _Tp=char]" at line 105
+            instantiation of "void std::__uninitialized_fill_n<_TrivialValueType>::__uninit_fill_n(_ForwardIterator, _Size, const _Tp &) [with _TrivialValueType=true, _ForwardIterator=char *, _Size=size_t, _Tp=char]" at line 110
+            instantiation of "void std::uninitialized_fill_n(_ForwardIterator, _Size, const _Tp &) [with _ForwardIterator=char *, _Size=size_t, _Tp=char]" at line 113
+            instantiation of "void std::__uninitialized_fill_n_a(_ForwardIterator, _Size, const _Tp &, std::allocator<_Tp2> &) [with _ForwardIterator=char *, _Size=size_t, _Tp=char, _Tp2=char]" at line 151
+            instantiation of "void std::vector<_Tp, _Alloc>::_M_fill_initialize(std::vector<_Tp, _Alloc>::size_type, const std::vector<_Tp, _Alloc>::value_type &) [with _Tp=char, _Alloc=std::allocator<char>]" at line 148
+            instantiation of "std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>::size_type, const std::vector<_Tp, _Alloc>::value_type &, const std::vector<_Tp, _Alloc>::allocator_type &) [with _Tp=char, _Alloc=std::allocator<char>]" at line 191
+
+"Test_name.c", line 63: warning: missing return statement at end of non-void function "std::__fill_n_a(_OutputIterator, _Size, const _Tp &) [with _OutputIterator=char *, _Size=size_t, _Tp=char]"
+      }
+      ^
+          detected during:
+            instantiation of "__gnu_cxx::__enable_if<<expression>, _OutputIterator>::__type std::__fill_n_a(_OutputIterator, _Size, const _Tp &) [with _OutputIterator=char *, _Size=size_t, _Tp=char]" at line 65
+            instantiation of "_OI std::fill_n(_OI, _Size, const _Tp &) [with _OI=char *, _Size=size_t, _Tp=char]" at line 105
+            instantiation of "void std::__uninitialized_fill_n<_TrivialValueType>::__uninit_fill_n(_ForwardIterator, _Size, const _Tp &) [with _TrivialValueType=true, _ForwardIterator=char *, _Size=size_t, _Tp=char]" at line 110
+            instantiation of "void std::uninitialized_fill_n(_ForwardIterator, _Size, const _Tp &) [with _ForwardIterator=char *, _Size=size_t, _Tp=char]" at line 113
+            instantiation of "void std::__uninitialized_fill_n_a(_ForwardIterator, _Size, const _Tp &, std::allocator<_Tp2> &) [with _ForwardIterator=char *, _Size=size_t, _Tp=char, _Tp2=char]" at line 151
+            instantiation of "void std::vector<_Tp, _Alloc>::_M_fill_initialize(std::vector<_Tp, _Alloc>::size_type, const std::vector<_Tp, _Alloc>::value_type &) [with _Tp=char, _Alloc=std::allocator<char>]" at line 148
+            instantiation of "std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>::size_type, const std::vector<_Tp, _Alloc>::value_type &, const std::vector<_Tp, _Alloc>::allocator_type &) [with _Tp=char, _Alloc=std::allocator<char>]" at line 191
+

@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 36: warning: variable "c" was declared but never referenced
+    constexpr auto c = s.bar ();
+                   ^
+
+/usr/sbin/ld: Test_name.o: in function `auto S<T1>::foo() [with T1...=true, false, false, true, true, true, false, true]':
+Test_name.int.c:(.text+0xXX): undefined reference to `S<T1>::c [with T1...=true, false, false, true, true, true, false, true]'
+/usr/sbin/ld: Test_name.o: in function `auto S<T1>::bar() [with T1...=true, false, false, true, true, true, false, true]':
+Test_name.int.c:(.text+0xXX): undefined reference to `S<T1>::c [with T1...=true, false, false, true, true, true, false, true]'
+collect2: error: ld returned 1 exit status

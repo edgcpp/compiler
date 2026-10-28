@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 24: warning: variable "set" was declared but never referenced
+      int set;  // Non-template.
+          ^
+
+"Test_name.c", line 68: error: expected a ">"
+      if (x->end < 7) {  // expected-error{{no member named 'end' in 'PR11856::X'}}
+                    ^
+
+"Test_name.c", line 68: warning: variable "x" is used before its value is set
+      if (x->end < 7) {  // expected-error{{no member named 'end' in 'PR11856::X'}}
+          ^
+
+1 error detected in the compilation of "Test_name.c".

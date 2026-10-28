@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: error: static data member declaration is not allowed in this class
+    struct A { static int i; };   // { dg-error "shall not have" }
+               ^
+
+"Test_name.c", line 13: error: static data member declaration is not allowed in this class
+    struct B { static int j; };   // { dg-error "shall not have" }
+               ^
+
+2 errors detected in the compilation of "Test_name.c".

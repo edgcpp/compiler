@@ -1,0 +1,33 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 11: warning: a default bit-field initializer is a C++20 feature
+    int c : 5 = 1;		// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+              ^
+
+"Test_name.c", line 12: warning: a default bit-field initializer is a C++20 feature
+    int d : 6 { 2 };		// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+              ^
+
+"Test_name.c", line 14: warning: a default bit-field initializer is a C++20 feature
+    int f : (true ? 8 : b) = 4;	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+                           ^
+
+"Test_name.c", line 15: warning: a default bit-field initializer is a C++20 feature
+    int g : (true ? 9 : b) { 5 };	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+                           ^
+
+"Test_name.c", line 28: warning: a default bit-field initializer is a C++20 feature
+    int j : W = 7;		// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+              ^
+
+"Test_name.c", line 29: warning: a default bit-field initializer is a C++20 feature
+    int k : W { 8 };		// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+              ^
+
+"Test_name.c", line 31: warning: a default bit-field initializer is a C++20 feature
+    int m : (V ? W : b) = 9;	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+                        ^
+
+"Test_name.c", line 32: warning: a default bit-field initializer is a C++20 feature
+    int n : (V ? W : b) { 10 };	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+                        ^
+

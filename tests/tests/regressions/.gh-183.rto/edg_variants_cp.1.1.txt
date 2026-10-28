@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=150000 --diag_error=inline_gnu_noinline_conflict --c++17 Test_name.c
+"Test_name.c", line 25: error: routine is both "inline" and "noinline"
+  template< class T> __attribute((__noinline__)) inline T A::m3(T x) { return x; } 
+                                  ^
+
+"Test_name.c", line 32: error: routine is both "inline" and "noinline"
+  template< class T> __attribute((__noinline__)) inline T B< T> ::m(T x) { return x; } 
+                                  ^
+
+2 errors detected in the compilation of "Test_name.c".

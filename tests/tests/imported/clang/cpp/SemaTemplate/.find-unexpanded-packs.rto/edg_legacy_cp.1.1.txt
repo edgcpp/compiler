@@ -1,0 +1,100 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 25: error: pack expansion does not make use of any argument packs
+      f(Type()...); // expected-error {{does not contain any unexpanded}}
+              ^
+
+"Test_name.c", line 17: error: parameter pack "Ts" was referenced but not expanded
+      typedef Ts Type;
+              ^
+
+"Test_name.c", line 49: error: pack expansion does not make use of any argument packs
+      f(Type()...); // expected-error {{does not contain any unexpanded}}
+              ^
+
+"Test_name.c", line 42: error: parameter pack "Ts" was referenced but not expanded
+      using Type = Ts;
+                   ^
+
+"Test_name.c", line 75: error: pack expansion does not make use of any argument packs
+        using typename A::Type...; // expected-error {{does not contain any unexpanded}}
+                              ^
+
+"Test_name.c", line 93: error: parameter pack "Ts" was referenced but not expanded
+      Ts ts;
+      ^
+
+"Test_name.c", line 111: error: parameter pack "Ts" was referenced but not expanded
+      Ts ts(Ts);
+            ^
+
+"Test_name.c", line 111: error: parameter pack "Ts" was referenced but not expanded
+      Ts ts(Ts);
+      ^
+
+"Test_name.c", line 132: error: parameter pack "Ts" was referenced but not expanded
+        Ts ts;
+        ^
+
+"Test_name.c", line 148: warning: expression has no effect
+     Int<Ts>();
+     ^
+
+"Test_name.c", line 151: warning: expression has no effect
+     Int<Ts>{};
+     ^
+
+"Test_name.c", line 165: error: parameter pack "Ts" was referenced but not expanded
+    Int<Ts>(); // expected-error {{unexpanded}}
+        ^
+
+"Test_name.c", line 165: warning: expression has no effect
+    Int<Ts>(); // expected-error {{unexpanded}}
+    ^
+
+"Test_name.c", line 166: error: parameter pack "Ts" was referenced but not expanded
+    Int<Ts>{}; // expected-error {{unexpanded}}
+        ^
+
+"Test_name.c", line 166: warning: expression has no effect
+    Int<Ts>{}; // expected-error {{unexpanded}}
+    ^
+
+"Test_name.c", line 167: error: parameter pack "Ts" was referenced but not expanded
+    Class<Ts>(); // expected-error {{unexpanded}}
+          ^
+
+"Test_name.c", line 168: error: parameter pack "Ts" was referenced but not expanded
+    Class<Ts>{}; // expected-error {{unexpanded}}
+          ^
+
+"Test_name.c", line 142: warning: expression has no effect
+    (Int<Ts>(), ...);
+    ^
+          detected during instantiation of "void HiddenPack<Ts...>() [with Ts=<int>]" at line 161
+
+"Test_name.c", line 143: warning: expression has no effect
+    (Int<Ts>{}, ...);
+    ^
+          detected during instantiation of "void HiddenPack<Ts...>() [with Ts=<int>]" at line 161
+
+"Test_name.c", line 142: warning: expression has no effect
+    (Int<Ts>(), ...);
+     ^
+          detected during instantiation of "void HiddenPack<Ts...>() [with Ts=<int, float>]" at line 162
+
+"Test_name.c", line 142: warning: expression has no effect
+    (Int<Ts>(), ...);
+    ^
+          detected during instantiation of "void HiddenPack<Ts...>() [with Ts=<int, float>]" at line 162
+
+"Test_name.c", line 143: warning: expression has no effect
+    (Int<Ts>{}, ...);
+     ^
+          detected during instantiation of "void HiddenPack<Ts...>() [with Ts=<int, float>]" at line 162
+
+"Test_name.c", line 143: warning: expression has no effect
+    (Int<Ts>{}, ...);
+    ^
+          detected during instantiation of "void HiddenPack<Ts...>() [with Ts=<int, float>]" at line 162
+
+13 errors detected in the compilation of "Test_name.c".

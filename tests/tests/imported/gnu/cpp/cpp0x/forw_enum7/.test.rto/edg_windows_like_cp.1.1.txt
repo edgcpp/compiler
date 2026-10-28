@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 12: error: expected a declaration
+  template < typename T > { e1 };
+                          ^
+
+"Test_name.c", line 12: error: expected a ";"
+  template < typename T > { e1 };
+                          ^
+
+"Test_name.c", line 13: error: expected a declaration
+  template < typename T > { e2 };
+                          ^
+
+"Test_name.c", line 13: error: expected a ";"
+  template < typename T > { e2 };
+                          ^
+
+"Test_name.c", line 15: error: class "S1<int>" has no member "e1"
+  S1< int> ::E1 x1 = S1< int> ::e1; 
+                                ^
+
+"Test_name.c", line 16: error: enum "S1<T>::E1 [with T=int]" has no member "e1"
+  S1< int> ::E1 x11 = S1< int> ::E1::e1; 
+                                     ^
+
+"Test_name.c", line 17: error: enum "S1<T>::E2 [with T=int]" has no member "e2"
+  S1< int> ::E2 x2 = S1< int> ::E2::e2; 
+                                    ^
+
+"Test_name.c", line 19: error: class "S1<int>" has no member "e1"
+  S1< int> ::E1 ex1 = S1< int> ::e1; 
+                                 ^
+
+"Test_name.c", line 20: error: enum "S1<T>::E1 [with T=int]" has no member "e1"
+  S1< int> ::E1 ex11 = S1< int> ::E1::e1; 
+                                      ^
+
+"Test_name.c", line 21: error: enum "S1<T>::E2 [with T=int]" has no member "e2"
+  S1< int> ::E2 ex2 = S1< int> ::E2::e2; 
+                                     ^
+
+10 errors detected in the compilation of "Test_name.c".

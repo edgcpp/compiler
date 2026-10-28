@@ -1,0 +1,488 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++20 Test_name.c
+"Test_name.c", line 7: error: identifier "rsing" is undefined
+  int a(-rsing[2]); // expected-error {{undeclared identifier 'rsing'; did you mean 'using'?}}
+         ^
+
+"Test_name.c", line 48: error: "basetype" is not a nonstatic data member or base class of class "Derived"
+    Derived() : basetype() {} // expected-error{{initializer 'basetype' does not name a non-static data member or base class; did you mean the base class 'BaseType'?}}
+                ^
+
+"Test_name.c", line 54: error: class "Derived" has no member "Base_Type"
+    return st->Base_Type; // expected-error{{no member named 'Base_Type' in 'Derived'}}
+               ^
+
+"Test_name.c", line 60: error: identifier "somename" is undefined
+  somename Foo; // expected-error {{unknown type name 'somename'; did you mean 'some_name'?}}
+  ^
+
+"Test_name.c", line 62: error: name must be a namespace name
+  using namespace somename; // expected-error {{no namespace named 'somename'; did you mean 'SomeName'?}}
+                  ^
+
+"Test_name.c", line 74: error: class "st" has no field "fielda"
+  st var = { .fielda = 0.0 }; // expected-error{{field designator 'fielda' does not refer to any field in type 'st'; did you mean 'FieldA'?}}
+              ^
+
+"Test_name.c", line 83: error: this declaration has no storage class or type specifier
+  another_std::string str; // expected-error{{use of undeclared identifier 'another_std'; did you mean 'AnotherStd'?}}
+  ^
+
+"Test_name.c", line 83: error: expected a ";"
+  another_std::string str; // expected-error{{use of undeclared identifier 'another_std'; did you mean 'AnotherStd'?}}
+             ^
+
+"Test_name.c", line 84: error: expected a type specifier
+  another_str *cstr = new AnotherStr; // expected-error{{unknown type name 'AnotherStr'; did you mean 'another_str'?}}
+                          ^
+
+"Test_name.c", line 90: error: the operand of sizeof... must be a parameter pack name
+    static const unsigned value = sizeof...(TyreNames); // expected-error{{'TyreNames' does not refer to the name of a parameter pack; did you mean 'TypeNames'?}}
+                                            ^
+
+"Test_name.c", line 90: error: pack expansion does not make use of any argument packs
+    static const unsigned value = sizeof...(TyreNames); // expected-error{{'TyreNames' does not refer to the name of a parameter pack; did you mean 'TypeNames'?}}
+                                        ^
+
+"Test_name.c", line 98: error: namespace "unknown_type_test" has no member "stream_out"
+  unknown_type_test::stream_out out; // expected-error{{no type named 'stream_out' in namespace 'unknown_type_test'; did you mean 'StreamOut'?}}
+                     ^
+
+"Test_name.c", line 107: error: identifier "stream_out" is undefined
+    bar((stream_out)); // expected-error{{use of undeclared identifier 'stream_out'; did you mean 'stream_count'?}}
+         ^
+
+"Test_name.c", line 109: error: identifier "stream_out" is undefined
+  stream_out out; // expected-error{{unknown type name 'stream_out'; did you mean 'StreamOut'?}}
+  ^
+
+"Test_name.c", line 111: error: identifier "stream_out" is undefined
+    bar((stream_out)); // expected-error{{use of undeclared identifier 'stream_out'; did you mean 'stream_count'?}}
+         ^
+
+"Test_name.c", line 122: error: inherited member is not allowed
+  void TestRedecl::add_in(int i) {} // expected-error{{out-of-line definition of 'add_in' does not match any declaration in 'TestRedecl'; did you mean 'add_it'?}}
+                   ^
+
+"Test_name.c", line 132: error: identifier "somenetmessage" is undefined
+    foo(somenetmessage); // expected-error{{use of undeclared identifier 'somenetmessage'; did you mean 'somenetmsg'?}}
+        ^
+
+"Test_name.c", line 133: error: expected a ")"
+    foo((somenetmessage)data); // expected-error{{unknown type name 'somenetmessage'; did you mean 'SomeNetMessage'?}} expected-error{{incomplete type}}
+                        ^
+
+"Test_name.c", line 131: warning: variable "somenetmsg" was declared but never referenced
+    Message somenetmsg; // expected-note{{'somenetmsg' declared here}}
+            ^
+
+"Test_name.c", line 141: error: identifier "Invoke" is undefined
+    Invoke(); // expected-error{{use of undeclared identifier 'Invoke'}}
+    ^
+
+"Test_name.c", line 146: error: identifier "Invoke" is undefined
+    Invoke(); // expected-error{{use of undeclared identifier 'Invoke'}}
+    ^
+
+"Test_name.c", line 154: error: identifier "Provoke" is undefined
+    Provoke(); // expected-error{{use of undeclared identifier 'Provoke'}}
+    ^
+
+"Test_name.c", line 165: error: this range-based "for" statement requires a suitable "begin" function and none was found
+    for (auto b : R()) {} // expected-error {{invalid range expression of type 'R'}}
+                  ^
+
+"Test_name.c", line 165: error: this range-based "for" statement requires a suitable "end" function and none was found
+    for (auto b : R()) {} // expected-error {{invalid range expression of type 'R'}}
+                  ^
+
+"Test_name.c", line 176: error: inherited member is not allowed
+  void Child::add_types(int value) {} // expected-error{{out-of-line definition of 'add_types' does not match any declaration in 'Child'}}
+              ^
+
+"Test_name.c", line 190: error: identifier "ConstructExpr" is undefined
+      ConstructExpr *expr = // expected-error{{unknown type name 'ConstructExpr'; did you mean 'clash::ConstructExpr'?}}
+      ^
+
+"Test_name.c", line 190: error: identifier "expr" is undefined
+      ConstructExpr *expr = // expected-error{{unknown type name 'ConstructExpr'; did you mean 'clash::ConstructExpr'?}}
+                     ^
+
+"Test_name.c", line 199: error: namespace "test1" has no member "FooBar"
+    test1::FooBar *b;  // expected-error{{no type named 'FooBar' in namespace 'test1'; did you mean 'Foobar'?}}
+           ^
+
+"Test_name.c", line 203: error: identifier "unsinged" is undefined
+    void f(int, unsinged); // expected-error{{did you mean 'unsigned'}}
+                ^
+
+"Test_name.c", line 205: error: this declaration has no storage class or type specifier
+      unsinged : 4; // expected-error{{did you mean 'unsigned'}}
+      ^
+
+"Test_name.c", line 220: error: class "PR13051::S<int>" has no member "tempalte"
+      g(&S<int>::tempalte f<int>); // expected-error{{did you mean 'template'?}}
+                 ^
+
+"Test_name.c", line 220: error: expected a ")"
+      g(&S<int>::tempalte f<int>); // expected-error{{did you mean 'template'?}}
+                          ^
+
+"Test_name.c", line 221: error: class "PR13051::S<int>" has no member "opeartor"
+      g(&S<int>::opeartor bool); // expected-error{{did you mean 'operator'?}}
+                 ^
+
+"Test_name.c", line 221: error: expected a ")"
+      g(&S<int>::opeartor bool); // expected-error{{did you mean 'operator'?}}
+                          ^
+
+"Test_name.c", line 222: error: class "PR13051::S<int>" has no member "foo"
+      g(&S<int>::foo); // expected-error{{no member named 'foo' in 'PR13051::S<int>'; did you mean simply 'foo'?}}
+                 ^
+
+"Test_name.c", line 226: error: identifier "inf" is undefined
+  inf f(doulbe); // expected-error{{'int'}} expected-error{{'double'}}
+  ^
+
+"Test_name.c", line 226: error: identifier "doulbe" is undefined
+  inf f(doulbe); // expected-error{{'int'}} expected-error{{'double'}}
+        ^
+
+"Test_name.c", line 233: error: not a class or struct name
+  class bar : boo { }; // expected-error{{unknown class name 'boo'; did you mean 'foo'?}}
+              ^
+
+"Test_name.c", line 242: error: identifier "someFunc" is undefined
+        someFunc();  // expected-error{{use of undeclared identifier 'someFunc'; did you mean '::outer::somefunc'?}}
+        ^
+
+"Test_name.c", line 260: error: class "b6956809_test1::S1" has no member "methodd"
+      s.methodd(&b);  // expected-error{{no member named 'methodd' in 'b6956809_test1::S1'}}
+        ^
+
+"Test_name.c", line 273: error: class "b6956809_test1::S2" has no member "methodd"
+      s.methodd(&b);  // expected-error-re{{no member named 'methodd' in 'b6956809_test1::S2'{{$}}}}
+        ^
+
+"Test_name.c", line 286: error: class "b6956809_test2::S" has no member "methodd"
+      int k = s.methodd((void*)0);  // expected-error{{no member named 'methodd' in 'b6956809_test2::S'}}
+                ^
+
+"Test_name.c", line 296: error: identifier "Thing" is undefined
+  void f() { Thing t; } // expected-error{{unknown type name 'Thing'}}
+             ^
+
+"Test_name.c", line 301: error: identifier "status" is undefined
+     status = "OK";  // expected-error-re {{use of undeclared identifier 'status'{{$}}}}
+     ^
+
+"Test_name.c", line 316: error: class "PR13387::B" has no member "Createfoo"
+    x.Createfoo(0,0);  // expected-error {{no member named 'Createfoo' in 'PR13387::B'}}
+      ^
+
+"Test_name.c", line 317: error: class "PR13387::B" has no member "Createfoo"
+    x.Createfoo(0.f,0.f);  // expected-error {{no member named 'Createfoo' in 'PR13387::B'}}
+      ^
+
+"Test_name.c", line 324: error: identifier "goobar" is undefined
+    int k = goobar; // expected-error {{did you mean 'foobar'?}}
+            ^
+
+"Test_name.c", line 333: error: declaration is incompatible with "<error-type> f" (declared at line 226)
+  void f() {
+       ^
+
+"Test_name.c", line 334: error: identifier "data_struct" is undefined
+   data_struct->foo();  // expected-error-re{{use of undeclared identifier 'data_struct'{{$}}}}
+   ^
+
+"Test_name.c", line 343: error: too few arguments in function call
+    nab();  // expected-error{{too few arguments to function call, expected 1, have 0; did you mean '::PR12287::nab'?}}
+        ^
+
+"Test_name.c", line 361: error: too few arguments in function call
+    F.fnA(num);  // expected-error {{too few arguments to function call, expected 2, have 1; did you mean '::TemplateFunction::fnA'?}}
+             ^
+
+"Test_name.c", line 362: error: too many arguments in function call
+    F.fnB(num);  // expected-error {{too many arguments to function call, expected 0, have 1; did you mean '::TemplateFunction::fnB'?}}
+          ^
+
+"Test_name.c", line 368: error: namespace "using_suggestion_val_dropped_specifier::N" has no member "FFF"
+  using N::FFF; // expected-error {{no member named 'FFF' in namespace 'using_suggestion_val_dropped_specifier::N'; did you mean '::using_suggestion_val_dropped_specifier::FFF'?}}
+           ^
+
+"Test_name.c", line 378: error: identifier "Inner" is undefined
+  Inner Outer::MyMethod(Inner arg) {  // expected-error {{unknown type name 'Inner'; did you mean 'Outer::Inner'?}}
+  ^
+
+"Test_name.c", line 378: error: declaration is incompatible with "class_member_typo_corrections::Outer::Inner class_member_typo_corrections::Outer::MyMethod(class_member_typo_corrections::Outer::Inner)" (declared at line 375)
+  Inner Outer::MyMethod(Inner arg) {  // expected-error {{unknown type name 'Inner'; did you mean 'Outer::Inner'?}}
+               ^
+
+"Test_name.c", line 396: error: identifier "ENTITY" is undefined
+    case ENTITY:  // expected-error {{use of undeclared identifier 'ENTITY'; did you mean 'Result::ENTITY'?}}
+         ^
+
+"Test_name.c", line 397: error: identifier "LITERAL" is undefined
+    case LITERAL:  // expected-error {{use of undeclared identifier 'LITERAL'; did you mean 'Result::LITERAL'?}}
+         ^
+
+"Test_name.c", line 398: error: identifier "PREDICAT" is undefined
+    case PREDICAT:  // expected-error {{use of undeclared identifier 'PREDICAT'; did you mean 'Result::PREDICATE'?}}
+         ^
+
+"Test_name.c", line 417: error: identifier "SQUARE" is undefined
+    case SQUARE:  // expected-error-re {{use of undeclared identifier 'SQUARE'{{$}}}}
+         ^
+
+"Test_name.c", line 418: error: identifier "TRIANGLE" is undefined
+    case TRIANGLE:  // expected-error-re {{use of undeclared identifier 'TRIANGLE'{{$}}}}
+         ^
+
+"Test_name.c", line 419: error: identifier "CIRCE" is undefined
+    case CIRCE:  // expected-error-re {{use of undeclared identifier 'CIRCE'{{$}}}}
+         ^
+
+"Test_name.c", line 427: error: identifier "deadline_" is undefined
+      deadline_ = 1;  // expected-error-re {{use of undeclared identifier 'deadline_'{{$}}}}
+      ^
+
+"Test_name.c", line 433: error: identifier "req" is undefined
+      req.set_check(false);  // expected-error-re {{use of undeclared identifier 'req'{{$}}}}
+      ^
+
+"Test_name.c", line 443: error: zzzzzzzzzy is not a template
+    B zzzzzzzzzy<>; // expected-error {{template specialization requires 'template<>'}} expected-error {{no variable template matches specialization}}
+      ^
+
+"Test_name.c", line 449: error: identifier "my_menber" is undefined
+    void f() { my_menber = 1; }  // expected-error {{use of undeclared identifier 'my_menber'; did you mean 'my_member'?}}
+               ^
+
+"Test_name.c", line 457: error: identifier "de_" is undefined
+        de_;  // expected-error {{use of undeclared identifier 'de_'; did you mean 'de'?}} \
+        ^
+
+"Test_name.c", line 461: error: identifier "de_" is undefined
+        de_->bar()  // expected-error {{use of undeclared identifier 'de_'}}
+        ^
+
+"Test_name.c", line 462: error: expected a ";"
+      }
+      ^
+
+"Test_name.c", line 479: error: class "fix_class_name_qualifier::MessageHeaders" has no member "ParseMessageHeaders"
+    MessageHeaders::ParseMessageHeaders(5, 4); // expected-error {{no member named 'ParseMessageHeaders' in 'fix_class_name_qualifier::MessageHeaders'; did you mean 'MessageUtils::ParseMessageHeaders'?}}
+                    ^
+
+"Test_name.c", line 497: error: name followed by "::" must be a class or namespace name
+  PR18213::WrapperInfo ::PR18213::Wrappable<int>::kWrapperInfo = { 0 };  // expected-error {{no member named 'PR18213' in 'PR18213::WrapperInfo'; did you mean simply 'PR18213'?}} \
+                         ^
+
+"Test_name.c", line 497: error: expected an identifier
+  PR18213::WrapperInfo ::PR18213::Wrappable<int>::kWrapperInfo = { 0 };  // expected-error {{no member named 'PR18213' in 'PR18213::WrapperInfo'; did you mean simply 'PR18213'?}} \
+                                            ^
+
+"Test_name.c", line 497: error: expected a ";"
+  PR18213::WrapperInfo ::PR18213::Wrappable<int>::kWrapperInfo = { 0 };  // expected-error {{no member named 'PR18213' in 'PR18213::WrapperInfo'; did you mean simply 'PR18213'?}} \
+                                            ^
+
+"Test_name.c", line 506: error: identifier "x" is undefined
+  int y = x;  // expected-error-re {{use of undeclared identifier 'x'{{$}}}}
+          ^
+
+"Test_name.c", line 523: error: namespace "PR18685" has no member "BitVector"
+  PR18685::BitVector Map;  // expected-error-re {{no type named 'BitVector' in namespace 'PR18685'{{$}}}}
+           ^
+
+"Test_name.c", line 529: error: this declaration has no storage class or type specifier
+     Fizbin<int> qux; // expected-error {{no template named 'Fizbin'; did you mean '::shadowed_template::Fizbin'?}}
+     ^
+
+"Test_name.c", line 529: error: "Fizbin" has already been declared in the current scope
+     Fizbin<int> qux; // expected-error {{no template named 'Fizbin'; did you mean '::shadowed_template::Fizbin'?}}
+     ^
+
+"Test_name.c", line 529: error: expected a ";"
+     Fizbin<int> qux; // expected-error {{no template named 'Fizbin'; did you mean '::shadowed_template::Fizbin'?}}
+           ^
+
+"Test_name.c", line 535: error: identifier "Frobnats" is undefined
+    Frobnats fn; // expected-error {{unknown type name 'Frobnats'; did you mean 'Frobnatz'?}}
+    ^
+
+"Test_name.c", line 536: error: Frobnats is not a template
+    Frobnats<int> fni; // expected-error-re {{no template named 'Frobnats'{{$}}}}
+    ^
+
+"Test_name.c", line 544: error: identifier "barberry" is undefined
+    barberry();  // expected-error-re {{use of undeclared identifier 'barberry'{{$}}}}
+    ^
+
+"Test_name.c", line 563: error: too few arguments in function call
+    m->Start();  // expected-error-re {{too few arguments to function call, expected 1, have 0{{$}}}}
+             ^
+
+"Test_name.c", line 564: error: too few arguments in function call
+    m->Stop();  // expected-error-re {{too few arguments to function call, expected 1, have 0{{$}}}}
+            ^
+
+"Test_name.c", line 565: error: identifier "Stop" is undefined
+    Stop();  // expected-error {{use of undeclared identifier 'Stop'; did you mean 'Thread::Stop'?}}
+    ^
+
+"Test_name.c", line 579: error: identifier "p" is undefined
+    if (p)  // expected-error-re {{use of undeclared identifier 'p'{{$}}}}
+        ^
+
+"Test_name.c", line 592: error: class "PR19681::TypoA" has no member "private_memfn"
+      (void)static_cast<void(TypoB::*)(int)>(&TypoA::private_memfn);  // expected-error{{no member named 'private_memfn' in 'PR19681::TypoA'; did you mean '::PR19681::TypoB::private_memfn'?}}
+                                                     ^
+
+"Test_name.c", line 599: error: identifier "struc" is undefined
+        return struc(5.7);  // expected-error-re {{use of undeclared identifier 'struc'{{$}}}}
+               ^
+
+"Test_name.c", line 601: error: identifier "lon" is undefined
+        return lon(8.0);  // expected-error {{use of undeclared identifier 'lon'; did you mean 'long'?}}
+               ^
+
+"Test_name.c", line 611: error: class "testCXXDeclarationSpecifierParsing::Test" has no member "SomeSettings"
+    Test::SomeSettings some_settings; // expected-error {{no type named 'SomeSettings' in 'testCXXDeclarationSpecifierParsing::Test'; did you mean 'test::SomeSettings'?}}
+          ^
+
+"Test_name.c", line 612: warning: missing return statement at end of non-void function "testCXXDeclarationSpecifierParsing::bar"
+  }
+  ^
+
+"Test_name.c", line 622: error: identifier "AddObservationFn" is undefined
+    foo<AddObservationFn, int>(); // expected-error {{unknown type name 'AddObservationFn'; did you mean 'AddObservation'?}}
+        ^
+
+"Test_name.c", line 636: warning: missing return statement at end of non-void function "testIncludeTypeInTemplateArgument::bar1"
+  }
+  ^
+
+"Test_name.c", line 626: warning: variable "b" was declared but never referenced
+    int a = AddObservationFn, b; // expected-error-re {{use of undeclared identifier 'AddObservationFn'{{$}}}}
+                              ^
+
+"Test_name.c", line 628: warning: variable "AddObservation" was declared but never referenced
+    int AddObservation; // expected-note 3{{declared here}}
+        ^
+
+"Test_name.c", line 631: warning: variable "d" was declared but never referenced
+    int c = AddObservationFn, d; // expected-error {{use of undeclared identifier 'AddObservationFn'; did you mean}}
+                              ^
+
+"Test_name.c", line 646: error: identifier "AddObservationFn" is undefined
+        UsingImpl<AddObservationFn, const int>; // expected-error {{unknown type name 'AddObservationFn'; did you mean}}
+                  ^
+
+"Test_name.c", line 655: error: identifier "UsesMetadata" is undefined
+    if (UsesMetadata)  // expected-error-re {{use of undeclared identifier 'UsesMetadata'{{$}}}}
+        ^
+
+"Test_name.c", line 657: error: class "testNonStaticMemberHandling::Foo" has no member "UsesMetadata"
+    if (f.UsesMetadata)  // expected-error {{no member named 'UsesMetadata' in 'testNonStaticMemberHandling::Foo'}}
+          ^
+
+"Test_name.c", line 669: error: identifier "data_" is undefined
+        data_  // expected-error {{use of undeclared identifier 'data_'}}
+        ^
+
+"Test_name.c", line 670: error: expected an expression
+            [] =  // expected-error {{expected expression}}
+             ^
+
+"Test_name.c", line 680: error: expected an expression
+        (+)[data_];  // expected-error{{expected expression}} expected-error {{use of undeclared identifier 'data_'; did you mean 'data'}}
+          ^
+
+"Test_name.c", line 680: error: identifier "data_" is undefined
+        (+)[data_];  // expected-error{{expected expression}} expected-error {{use of undeclared identifier 'data_'; did you mean 'data'}}
+            ^
+
+"Test_name.c", line 688: error: expected a file name
+  int foo = __has_include(42); // expected-error {{use of undeclared identifier '__has_include'; did you mean 'has_include'?}}
+                          ^
+
+"Test_name.c", line 688: error: expected a ";"
+  int foo = __has_include(42); // expected-error {{use of undeclared identifier '__has_include'; did you mean 'has_include'?}}
+                            ^
+
+"Test_name.c", line 704: error: namespace "PR24781_using_crash::C::D" has no member "Foofoo"
+  using C::D::Foofoo;  // expected-error {{no member named 'Foofoo' in namespace 'PR24781_using_crash::C::D'; did you mean 'A::B::Foofoo'?}}
+              ^
+
+"Test_name.c", line 707: error: expected an expression
+  int d = ? L : d; // expected-error {{expected expression}} expected-error {{undeclared identifier}}
+          ^
+
+"Test_name.c", line 711: error: incomplete type "B0" is not allowed
+        (struct B0)e; // expected-error {{use of undeclared identifier}}
+         ^
+
+"Test_name.c", line 711: error: identifier "e" is undefined
+        (struct B0)e; // expected-error {{use of undeclared identifier}}
+                   ^
+
+"Test_name.c", line 719: error: identifier "c0is0" is undefined
+        sizeof(c0is0)]; // expected-error {{use of undeclared identifier}}
+               ^
+
+"Test_name.c", line 720: warning: missing return statement at end of non-void function "<unnamed>::g"
+  };
+  ^
+
+"Test_name.c", line 728: error: class "avoidRedundantRedefinitionErrors::Class" has no member "function2"
+  void Class::function2(int pid) { // expected-error {{out-of-line definition of 'function2' does not match any declaration in 'avoidRedundantRedefinitionErrors::Class'; did you mean 'function'?}}
+              ^
+
+"Test_name.c", line 735: error: function "avoidRedundantRedefinitionErrors::Class::function" has already been defined (previous definition at line 732)
+  void Class::function(int pid) { // expected-error {{redefinition of 'function'}}
+              ^
+
+"Test_name.c", line 742: error: namespace "avoidRedundantRedefinitionErrors::ns" has no member "create_test2"
+  void ns::create_test2() { // expected-error {{out-of-line definition of 'create_test2' does not match any declaration in namespace 'avoidRedundantRedefinitionErrors::ns'; did you mean 'create_test'?}}
+           ^
+
+"Test_name.c", line 757: error: identifier "g_var_long" is undefined
+    enum : typename decltype((g_var_long = throw))::a {
+                              ^
+
+"Test_name.c", line 758: error: identifier "g_volatile_uchar" is undefined
+      b = g_volatile_uchar // expected-error {{did you mean 'g_volatile_char'}}
+          ^
+
+"Test_name.c", line 778: warning: namespace "PR47272::A" was declared deprecated
+  using A::pr47272;  // expected-note{{'B::pr47272' declared here}} expected-warning{{'A' is deprecated}}
+        ^
+"Test_name.c", line 773: note: because of a "deprecated" attribute
+  namespace [[deprecated]] A { // expected-note{{'A' has been explicitly marked deprecated here}}
+              ^
+
+"Test_name.c", line 782: warning: namespace "PR47272::A" was declared deprecated
+  using A::pr47272;
+        ^
+"Test_name.c", line 773: note: because of a "deprecated" attribute
+  namespace [[deprecated]] A { // expected-note{{'A' has been explicitly marked deprecated here}}
+              ^
+
+"Test_name.c", line 786: error: the global scope has no "Take"
+    int x = ::Take(); // expected-error{{no member named 'Take' in the global namespace; did you mean 'Views::Take'?}}
+              ^
+
+"Test_name.c", line 787: error: the global scope has no "pr47272"
+    int y = ::pr47272; // expected-error{{no member named 'pr47272' in the global namespace; did you mean 'B::pr47272'?}}
+              ^
+
+"Test_name.c", line 717: warning: function "<unnamed>::g" was declared but never referenced
+  int g() {
+      ^
+
+"Test_name.c", line 752: warning: variable "PR46487::g_volatile_char" was declared but never referenced
+    const char g_volatile_char = 5; // expected-note {{here}}
+               ^
+
+109 errors detected in the compilation of "Test_name.c".

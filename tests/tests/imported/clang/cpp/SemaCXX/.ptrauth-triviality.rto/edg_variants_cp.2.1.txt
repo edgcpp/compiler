@@ -1,0 +1,198 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 --target linux_aarch64 Test_name.c
+"Test_name.c", line 21: error: expected a type specifier
+    int * AQ p_;
+          ^
+
+"Test_name.c", line 21: error: expected a ";"
+    int * AQ p_;
+             ^
+
+"Test_name.c", line 26: error: static assertion failed
+  static_assert(!__is_trivially_constructible(S1, const S1&));
+  ^
+
+"Test_name.c", line 27: error: static assertion failed
+  static_assert(!__is_trivially_assignable(S1, const S1&));
+  ^
+
+"Test_name.c", line 29: error: static assertion failed
+  static_assert(!__is_trivially_copyable(S1));
+  ^
+
+"Test_name.c", line 30: error: static assertion failed
+  static_assert(!__is_trivially_relocatable(S1)); // expected-warning{{deprecated}}
+  ^
+
+"Test_name.c", line 31: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(S1));
+                                                        ^
+
+"Test_name.c", line 31: error: identifier "__builtin_is_cpp_trivially_relocatable" is undefined
+  static_assert(!__builtin_is_cpp_trivially_relocatable(S1));
+                 ^
+
+"Test_name.c", line 32: error: static assertion failed
+  static_assert(!__is_trivially_equality_comparable(S1));
+  ^
+
+"Test_name.c", line 35: error: static assertion failed
+  static_assert(!__is_trivially_constructible(Holder<S1>, const Holder<S1>&));
+  ^
+
+"Test_name.c", line 36: error: static assertion failed
+  static_assert(!__is_trivially_assignable(Holder<S1>, const Holder<S1>&));
+  ^
+
+"Test_name.c", line 38: error: static assertion failed
+  static_assert(!__is_trivially_copyable(Holder<S1>));
+  ^
+
+"Test_name.c", line 39: error: static assertion failed
+  static_assert(!__is_trivially_relocatable(Holder<S1>)); // expected-warning{{deprecated}}
+  ^
+
+"Test_name.c", line 40: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(Holder<S1>));
+                                                        ^
+
+"Test_name.c", line 41: error: static assertion failed
+  static_assert(!__is_trivially_equality_comparable(Holder<S1>));
+  ^
+
+"Test_name.c", line 44: error: expected a type specifier
+    int * IQ p_;
+          ^
+
+"Test_name.c", line 44: error: expected a ";"
+    int * IQ p_;
+             ^
+
+"Test_name.c", line 54: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S2));
+                                                       ^
+
+"Test_name.c", line 63: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(Holder<S2>));
+                                                       ^
+
+"Test_name.c", line 79: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(S3));
+                                                        ^
+
+"Test_name.c", line 84: error: static assertion failed
+  static_assert(!__is_trivially_constructible(Holder<S3>, const Holder<S3>&));
+  ^
+
+"Test_name.c", line 89: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(Holder<S3>));
+                                                        ^
+
+"Test_name.c", line 104: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S4));
+                                                       ^
+
+"Test_name.c", line 108: error: static assertion failed
+  static_assert(!__is_trivially_constructible(Holder<S4>, const Holder<S4>&));
+  ^
+
+"Test_name.c", line 112: error: static assertion failed
+  static_assert(__is_trivially_relocatable(Holder<S4>)); // expected-warning{{deprecated}}
+  ^
+
+"Test_name.c", line 113: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(Holder<S4>));
+                                                       ^
+
+"Test_name.c", line 128: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S5));
+                                                       ^
+
+"Test_name.c", line 132: error: static assertion failed
+  static_assert(!__is_trivially_constructible(Holder<S5>, const Holder<S5>&));
+  ^
+
+"Test_name.c", line 136: error: static assertion failed
+  static_assert(__is_trivially_relocatable(Holder<S5>)); // expected-warning{{deprecated}}
+  ^
+
+"Test_name.c", line 137: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(Holder<S5>));
+                                                       ^
+
+"Test_name.c", line 141: error: expected a type specifier
+    __INTPTR_TYPE__ AQ_IP p_;
+                    ^
+
+"Test_name.c", line 141: error: expected a ";"
+    __INTPTR_TYPE__ AQ_IP p_;
+                          ^
+
+"Test_name.c", line 146: error: static assertion failed
+  static_assert(!__is_trivially_constructible(S6, const S6&));
+  ^
+
+"Test_name.c", line 147: error: static assertion failed
+  static_assert(!__is_trivially_assignable(S6, const S6&));
+  ^
+
+"Test_name.c", line 149: error: static assertion failed
+  static_assert(!__is_trivially_copyable(S6));
+  ^
+
+"Test_name.c", line 150: error: static assertion failed
+  static_assert(!__is_trivially_relocatable(S6)); // expected-warning{{deprecated}}
+  ^
+
+"Test_name.c", line 151: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(S6));
+                                                        ^
+
+"Test_name.c", line 152: error: static assertion failed
+  static_assert(!__is_trivially_equality_comparable(S6));
+  ^
+
+"Test_name.c", line 155: error: static assertion failed
+  static_assert(!__is_trivially_constructible(Holder<S6>, const Holder<S6>&));
+  ^
+
+"Test_name.c", line 156: error: static assertion failed
+  static_assert(!__is_trivially_assignable(Holder<S6>, const Holder<S6>&));
+  ^
+
+"Test_name.c", line 158: error: static assertion failed
+  static_assert(!__is_trivially_copyable(Holder<S6>));
+  ^
+
+"Test_name.c", line 159: error: static assertion failed
+  static_assert(!__is_trivially_relocatable(Holder<S6>)); // expected-warning{{deprecated}}
+  ^
+
+"Test_name.c", line 160: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(Holder<S6>));
+                                                        ^
+
+"Test_name.c", line 161: error: static assertion failed
+  static_assert(!__is_trivially_equality_comparable(Holder<S6>));
+  ^
+
+"Test_name.c", line 164: error: expected a type specifier
+    __INTPTR_TYPE__ IQ_IP p_;
+                    ^
+
+"Test_name.c", line 164: error: expected a ";"
+    __INTPTR_TYPE__ IQ_IP p_;
+                          ^
+
+"Test_name.c", line 174: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S7));
+                                                       ^
+
+"Test_name.c", line 183: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(Holder<S7>));
+                                                       ^
+
+"Test_name.c", line 189: error: type name is not allowed
+  template <class T> static const bool test_is_trivially_relocatable_v = __builtin_is_cpp_trivially_relocatable(T);
+                                                                                                                ^
+
+49 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 52: warning: variable "xref3" was declared but never referenced
+  static ATTR ((copy (xref2)))  int xref3;
+                                    ^
+
+"Test_name.c", line 53: warning: variable "xref4" was declared but never referenced
+  static ATTR ((copy (&xref3))) int xref4;
+                                    ^
+
+"Test_name.c", line 54: warning: variable "xref5" was declared but never referenced
+  static ATTR ((copy (xref4)))  int xref5;
+                                    ^
+
+"Test_name.c", line 55: warning: variable "xref6" was declared but never referenced
+  static ATTR ((copy (&xref5))) int xref6;
+                                    ^
+
+"Test_name.c", line 56: warning: variable "xref7" was declared but never referenced
+  static ATTR ((copy (xref6)))  int xref7;
+                                    ^
+
+"Test_name.c", line 57: warning: variable "xref8" was declared but never referenced
+  static ATTR ((copy (&xref7))) int xref8;
+                                    ^
+
+"Test_name.c", line 58: warning: variable "xref9" was declared but never referenced
+  static ATTR ((copy (xref8)))  int xref9;
+                                    ^
+

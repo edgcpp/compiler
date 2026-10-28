@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 6: warning: class "C" was declared deprecated
+  C c; // expected-warning {{'C' is deprecated}}
+    ^
+"Test_name.c", line 5: note: because of a "deprecated" attribute
+  class [[deprecated]] C {}; // expected-note {{'C' has been explicitly marked deprecated here}}
+          ^
+
+"Test_name.c", line 9: warning: type "t" was declared deprecated
+  t x = 42; // expected-warning {{'t' is deprecated}}
+    ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  typedef int t [[deprecated]]; // expected-note {{'t' has been explicitly marked deprecated here}}
+                  ^
+
+"Test_name.c", line 12: warning: variable "old" was declared deprecated
+  int use = old; // expected-warning {{'old' is deprecated}}
+            ^
+"Test_name.c", line 11: note: because of a "deprecated" attribute
+  [[deprecated]] int old = 42; // expected-note {{'old' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 15: warning: member "S::member" was declared deprecated
+  int use2 = s.member; // expected-warning {{'member' is deprecated}}
+               ^
+"Test_name.c", line 14: note: because of a "deprecated" attribute
+  struct S { [[deprecated]] int member = 42; } s; // expected-note {{'member' has been explicitly marked deprecated here}}
+               ^
+
+"Test_name.c", line 18: warning: function "f" was declared deprecated
+  int use3 = f(); // expected-warning {{'f' is deprecated}}
+             ^
+"Test_name.c", line 17: note: because of a "deprecated" attribute
+  [[deprecated]] int f() { return 42; } // expected-note {{'f' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 21: warning: enum "e" was declared deprecated
+  e my_enum; // expected-warning {{'e' is deprecated}}
+    ^
+"Test_name.c", line 20: note: because of a "deprecated" attribute
+  enum [[deprecated]] e { E }; // expected-note {{'e' has been explicitly marked deprecated here}}
+         ^
+
+"Test_name.c", line 26: warning: class "X<int>" was declared deprecated
+  X<int> x2; // expected-warning {{'X<int>' is deprecated}}
+         ^
+"Test_name.c", line 24: note: because of a "deprecated" attribute
+  template <> class [[deprecated]] X<int> {}; // expected-note {{'X<int>' has been explicitly marked deprecated here}}
+                      ^
+
+"Test_name.c", line 30: warning: class "X2<char>" was declared deprecated
+  X2<char> x3; // expected-warning {{'X2<char>' is deprecated}}
+           ^
+"Test_name.c", line 28: note: because of a "deprecated" attribute
+  template <typename T> class [[deprecated]] X2 {}; //expected-note {{'X2<char>' has been explicitly marked deprecated here}}
+                                ^
+
+"Test_name.c", line 53: warning: class "FunS" was declared deprecated
+    FunS f;// expected-warning {{'FunS' is deprecated}}
+         ^
+"Test_name.c", line 52: note: because of a "deprecated" attribute
+    struct [[deprecated]] FunS{}; // expected-note {{'FunS' has been explicitly marked deprecated here}}
+             ^
+
+"Test_name.c", line 69: warning: type "GH58547::A::ta" was declared deprecated
+  using t1 = typename A::ta; // expected-warning {{'ta' is deprecated}}
+        ^
+"Test_name.c", line 66: note: because of a "deprecated" attribute
+    using ta [[deprecated]] = int; // expected-note 2{{marked deprecated here}}
+               ^
+
+"Test_name.c", line 72: warning: type "GH58547::A::ta" was declared deprecated
+    using tb = typename B1::ta; // expected-warning {{'ta' is deprecated}}
+          ^
+"Test_name.c", line 66: note: because of a "deprecated" attribute
+    using ta [[deprecated]] = int; // expected-note 2{{marked deprecated here}}
+               ^
+          detected during instantiation of class "GH58547::B<B1> [with B1=GH58547::A]" at line 75
+
+"Test_name.c", line 89: warning: class "GH44496::function<void (int)>" was declared deprecated
+      [[maybe_unused]] function<void(int)> f; // expected-warning{{'function<void (int)>' is deprecated}}
+                                           ^
+"Test_name.c", line 85: note: because of a "deprecated" attribute
+  class __attribute__((deprecated)) function<void(A)> { };
+                       ^
+

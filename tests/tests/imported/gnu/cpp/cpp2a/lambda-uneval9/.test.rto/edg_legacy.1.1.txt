@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 lambda-uneval9.cc Test_name.c
+lambda-uneval9.cc:
+Test_name.c:
+/usr/sbin/ld: Test_name.o: in function `f()':
+Test_name.int.c:(.text+0xXX): multiple definition of `f()'; lambda-uneval9.o:lambda-uneval9.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `int counter<T1>() [with T1=f()::[lambda() (instance 1)]]':
+Test_name.int.c:(.text+0xXX): multiple definition of `int counter<T1>() [with T1=f()::[lambda() (instance 1)]]'; lambda-uneval9.o:lambda-uneval9.int.c:(.text+0xXX): first defined here
+collect2: error: ld returned 1 exit status

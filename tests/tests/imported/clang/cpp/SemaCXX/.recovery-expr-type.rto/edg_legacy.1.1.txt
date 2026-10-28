@@ -1,0 +1,130 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 18: warning: variable "s" was declared but never referenced
+    int s = sizeof(make_indestructible()); // expected-error {{deleted}}
+        ^
+
+"Test_name.c", line 21: warning: variable "array" was declared but never referenced
+    int array[ss];
+        ^
+
+"Test_name.c", line 28: error: too many arguments in function call
+  static_assert(1 == foo(1), ""); // expected-error {{no matching function}}
+                         ^
+
+"Test_name.c", line 35: error: too many arguments in function call
+    typeof(foo(42)) var; // expected-error {{no matching function}} \
+               ^
+
+"Test_name.c", line 38: error: too many arguments in function call
+    int a = foo(1); // expected-error {{no matching function}} \
+                ^
+
+"Test_name.c", line 42: error: too many arguments in function call
+    int s = sizeof(foo(42)); // expected-error {{no matching function}} \
+                       ^
+
+"Test_name.c", line 53: error: no instance of function template "test3::templated" matches the argument list
+  constexpr int A = templated<0>(); // expected-error{{no matching function}}
+                    ^
+
+"Test_name.c", line 62: error: no instance of function template "test3::AA<T>::getB [with T=int]" matches the argument list
+      return AA<T>::getB(); // expected-error{{no matching function for call to 'getB'}}
+             ^
+"Test_name.c", line 58: note: candidate function template "test3::AA<T>::getB [with T=int]" failed deduction
+    static constexpr int getB() { // expected-note{{candidate template ignored}}
+                         ^
+          detected during instantiation of "int test3::AA<T>::foo2() [with T=int]" at line 66
+
+"Test_name.c", line 73: error: too few arguments in function call
+  int &&k = f(); // expected-error {{no matching function for call}}
+              ^
+
+"Test_name.c", line 79: error: a pack expansion cannot be used as an argument for non-pack template parameter "T" of alias template "test5::U"
+    template<typename...Ts> U<Ts...>& f(); // expected-error {{pack expansion used as argument for non-pack parameter of alias template}}
+                                ^
+
+"Test_name.c", line 90: error: the default constructor of "test6::T" cannot be referenced -- it is a deleted function
+    (T(T())); // expected-error {{call to deleted constructor}}
+       ^
+
+"Test_name.c", line 101: error: the default constructor of "test7::C" cannot be referenced -- it is a deleted function
+    f(C()); // expected-error {{call to deleted constructor}} \
+      ^
+
+"Test_name.c", line 101: error: initial value of reference to non-const must be an lvalue
+    f(C()); // expected-error {{call to deleted constructor}} \
+      ^
+
+"Test_name.c", line 109: error: cast to incomplete array type "test8::arr" (aka "int []") is not allowed
+  int v = arr(); // expected-error {{array types cannot be value-initialized}} \
+          ^
+
+"Test_name.c", line 116: error: cannot deduce the return type of function "test9::f" (declared at line 114); it has not been defined
+  static_assert(sizeof(f(1)), ""); // expected-error {{no matching function for call to 'f'}}
+                       ^
+
+"Test_name.c", line 116: error: too many arguments in function call
+  static_assert(sizeof(f(1)), ""); // expected-error {{no matching function for call to 'f'}}
+                         ^
+
+"Test_name.c", line 122: error: too many arguments in function call
+  template<typename T> const int k = f(T()); // expected-error {{no matching function}}
+                                       ^
+          detected during instantiation of "const int test10::k [with T=int]" at line 123
+
+"Test_name.c", line 142: error: no instance of constructor "test11::S<T>::S [with T=void *]" matches the argument list
+            argument types are: (int)
+    bar(S(123)); // expected-error {{no matching conversion for functional-style cast from 'int' to 'S<void *>'}}
+        ^
+"Test_name.c", line 135: note: function "test11::S<T>::S(const test11::S<void *> &) [with T=void *]" does not match because argument #1 does not match parameter
+  struct S { // expected-note {{candidate}}
+         ^
+"Test_name.c", line 136: note: function "test11::S<T>::S(T) [with T=void *]" does not match because argument #1 does not match parameter
+    S(T t);  // expected-note {{candidate}}
+    ^
+
+"Test_name.c", line 148: error: identifier "no_such_function" is undefined
+  int fun(int *foo = no_such_function()); // expected-error {{undeclared identifier}}
+                     ^
+
+"Test_name.c", line 155: error: incomplete type "test13::Circular" is not allowed
+    Circular_A = Circular(1), // expected-error {{'Circular' is an incomplete type}}
+                 ^
+
+"Test_name.c", line 164: error: identifier "undef" is undefined
+    int * const c(undef()); // expected-error {{undeclared identifier}}
+                  ^
+
+"Test_name.c", line 169: warning: missing return statement at end of non-void function "test14::memset"
+  }
+  ^
+
+"Test_name.c", line 163: warning: parameter "b" was set but never used
+  extern "C" void *memset(void *, int b, unsigned long) {
+                                      ^
+
+"Test_name.c", line 175: error: identifier "undefined" is undefined
+      void m(int (&)[undefined()]) {} // expected-error {{undeclared identifier}}
+                     ^
+
+"Test_name.c", line 184: error: function "test16::foo" returns incomplete type "test16::A<int, int>"
+  A<int, int> foo() { // expected-error {{implicit instantiation of undefined template}}
+              ^
+
+"Test_name.c", line 186: error: incomplete type "test16::A<int, int>" is not allowed
+      return A<int, int>{1}; // expected-error 2{{implicit instantiation of undefined template}}
+             ^
+
+"Test_name.c", line 187: warning: statement is unreachable
+    return A<int, int>(1); // expected-error 2{{implicit instantiation of undefined template}}
+    ^
+
+"Test_name.c", line 187: error: incomplete type "test16::A<int, int>" is not allowed
+    return A<int, int>(1); // expected-error 2{{implicit instantiation of undefined template}}
+           ^
+
+"Test_name.c", line 53: warning: variable "test3::A" was declared but never referenced
+  constexpr int A = templated<0>(); // expected-error{{no matching function}}
+                ^
+
+23 errors detected in the compilation of "Test_name.c".

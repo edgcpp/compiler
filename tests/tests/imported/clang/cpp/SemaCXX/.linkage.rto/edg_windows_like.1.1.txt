@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 16: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } A;
+      ^
+"Test_name.c", line 15: note: type is not C-like because of this member declaration
+      void *foo() { return 0; }
+            ^
+
+"Test_name.c", line 32: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } A;
+      ^
+"Test_name.c", line 27: note: type is not C-like because of this member declaration
+      template <unsigned n> void *foo() { return 0; }
+                                  ^
+
+"Test_name.c", line 51: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } A;
+      ^
+"Test_name.c", line 48: note: type is not C-like because of this member declaration
+      void foo(B<0> *b) {
+           ^
+
+"Test_name.c", line 106: warning: variable "test5::bar" was declared but never referenced
+      const foo bar[]  = {
+                ^
+

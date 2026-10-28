@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 25: error: expression must have pointer-to-object type but it has type "int"
+    return ((*x < *y) | (*x <= *y))[2];
+                                    ^
+
+"Test_name.c", line 30: error: too many initializer values
+    v4f x = {0,1,2,3};
+               ^
+
+"Test_name.c", line 31: error: too many initializer values
+    Vec<const volatile float,4>::type f = {-1,5,2,3.1};
+                                              ^
+
+"Test_name.c", line 33: error: expression must have pointer-to-object type but it has type "int"
+    eat (c[3]);
+           ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,93 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 64: error: no suitable conversion function from "TwoLevelPtrMem" to "const float X::*const X::*" exists
+    const float X::* const X::* pm2 = apm; // expected-note {{instantiation of}}
+                                      ^
+
+"Test_name.c", line 96: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToTRef<Expected>::operator T &()"
+      }
+      ^
+
+"Test_name.c", line 120: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToConstTRef<Expected>::operator const T &()"
+      }
+      ^
+
+"Test_name.c", line 122: error: no suitable conversion function from "non_ptr_ref_cv_qual::ConvToConstTRef<int>" to "const int" exists
+    const int test_conv_to_const_t_ref_1 = ConvToConstTRef<int>();
+                                           ^
+
+"Test_name.c", line 130: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToArr::operator non_ptr_ref_cv_qual::Arr<int, N> &()"
+      }
+      ^
+
+"Test_name.c", line 139: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToConstArr::operator const non_ptr_ref_cv_qual::Arr<int, N> &()"
+      }
+      ^
+
+"Test_name.c", line 141: error: initial value of reference to non-const must be an lvalue
+    Arr<int, 3> &test_conv_to_const_arr_1 = ConvToConstArr(); // expected-error {{no viable}}
+                                            ^
+
+"Test_name.c", line 150: error: initial value of reference to non-const must be an lvalue
+    void (&fn2)(int) noexcept(true)  = ConvToFunction<false>(); // expected-error {{no viable}}
+                                       ^
+
+"Test_name.c", line 22: warning: variable "p" is used before its value is set
+      return p;
+             ^
+          detected during instantiation of "AnyThreeLevelPtr::operator T ***() const [with T=int]" at line 29
+
+"Test_name.c", line 20: error: expression must be a modifiable lvalue
+      x = 0; // expected-error 2{{const-qualified type}}
+      ^
+          detected during instantiation of "AnyThreeLevelPtr::operator T ***() const [with T=const int]" at line 31
+
+"Test_name.c", line 22: warning: variable "p" is used before its value is set
+      return p;
+             ^
+          detected during instantiation of "AnyThreeLevelPtr::operator T ***() const [with T=const int]" at line 31
+
+"Test_name.c", line 20: error: expression must be a modifiable lvalue
+      x = 0; // expected-error 2{{const-qualified type}}
+      ^
+          detected during instantiation of "AnyThreeLevelPtr::operator T ***() const [with T=const double]" at line 33
+
+"Test_name.c", line 22: warning: variable "p" is used before its value is set
+      return p;
+             ^
+          detected during instantiation of "AnyThreeLevelPtr::operator T ***() const [with T=const double]" at line 33
+
+"Test_name.c", line 43: error: expression must be a modifiable lvalue
+      x = 0; // expected-error {{const-qualified type}}
+      ^
+          detected during instantiation of "AnyPtrMem::operator T Class::*() const [with Class=X, T=const float]" at line 49
+
+"Test_name.c", line 57: error: expression must be a modifiable lvalue
+      x = 0; // expected-error 2{{const-qualified type}}
+      ^
+          detected during instantiation of "TwoLevelPtrMem::operator T Class1::*Class2::*() const [with Class1=X, Class2=X, T=const double]" at line 67
+
+"Test_name.c", line 76: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToT<Expected>::operator T() [with Expected=int, T=int]"
+      }
+      ^
+          detected during instantiation of "non_ptr_ref_cv_qual::ConvToT<Expected>::operator T() [with Expected=int, T=int]" at line 78
+
+"Test_name.c", line 76: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToT<Expected>::operator T() [with Expected=non_ptr_ref_cv_qual::Dest, T=non_ptr_ref_cv_qual::Dest]"
+      }
+      ^
+          detected during instantiation of "non_ptr_ref_cv_qual::ConvToT<Expected>::operator T() [with Expected=non_ptr_ref_cv_qual::Dest, T=non_ptr_ref_cv_qual::Dest]" at line 87
+
+"Test_name.c", line 95: error: type "Check" has already been defined (previous definition at line 94)
+        using Check = Expected;
+              ^
+          detected during instantiation of "non_ptr_ref_cv_qual::ConvToTRef<Expected>::operator T &() [with Expected=const non_ptr_ref_cv_qual::Dest, T=non_ptr_ref_cv_qual::Dest]" at line 101
+
+"Test_name.c", line 110: warning: missing return statement at end of non-void function "non_ptr_ref_cv_qual::ConvToConstT<Expected>::operator const T() [with Expected=int, T=int]"
+      }
+      ^
+          detected during instantiation of "non_ptr_ref_cv_qual::ConvToConstT<Expected>::operator const T() [with Expected=int, T=int]" at line 112
+
+"Test_name.c", line 122: warning: variable "non_ptr_ref_cv_qual::test_conv_to_const_t_ref_1" was declared but never referenced
+    const int test_conv_to_const_t_ref_1 = ConvToConstTRef<int>();
+              ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,176 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 96: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&barf); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+
+"Test_name.c", line 98: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&foo::barf); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+
+"Test_name.c", line 101: error: nonstandard form for taking the address of a member function
+        bindm (&barf); // { dg-error "no matching function" }
+               ^
+
+"Test_name.c", line 108: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&barf);
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+
+"Test_name.c", line 109: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&foo::barf); // { dg-error "ambiguous" }
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+
+"Test_name.c", line 36: error: a nonstatic member reference must be relative to a specific object
+        bind (&bait); // { dg-error "non-static data member" }
+               ^
+
+"Test_name.c", line 44: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&barf); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+
+"Test_name.c", line 46: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&foo::barf); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+
+"Test_name.c", line 49: error: nonstandard form for taking the address of a member function
+        bindm (&barf); // { dg-error "no matching function" }
+               ^
+
+"Test_name.c", line 56: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&barf);
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+
+"Test_name.c", line 57: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&foo::barf); // { dg-error "ambiguous" }
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+
+"Test_name.c", line 60: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&bark); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+
+"Test_name.c", line 62: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&bar::bark); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+
+"Test_name.c", line 65: error: nonstandard form for taking the address of a member function
+        bindm (&bark); // { dg-error "no matching function" }
+               ^
+
+"Test_name.c", line 72: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&bark);
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+
+"Test_name.c", line 73: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&bar::bark); // { dg-error "ambiguous" }
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+
+"Test_name.c", line 88: error: a nonstatic member reference must be relative to a specific object
+        bind (&bait); // { dg-error "non-static data member" }
+               ^
+          detected during instantiation of "foo::barT<T>::barT() [with T=void]" at line 131
+
+"Test_name.c", line 112: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&bark); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+          detected during instantiation of "foo::barT<T>::barT() [with T=void]" at line 131
+
+"Test_name.c", line 114: error: no instance of function template "bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind (&barT::bark); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 9: note: candidate function template "bind" failed deduction
+  template<class F> void bind(F f) {} // { dg-message "note" }
+                         ^
+          detected during instantiation of "foo::barT<T>::barT() [with T=void]" at line 131
+
+"Test_name.c", line 117: error: nonstandard form for taking the address of a member function
+        bindm (&bark); // { dg-error "no matching function" }
+               ^
+          detected during instantiation of "foo::barT<T>::barT() [with T=void]" at line 131
+
+"Test_name.c", line 124: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&bark);
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+          detected during instantiation of "foo::barT<T>::barT() [with T=void]" at line 131
+
+"Test_name.c", line 125: error: more than one instance of overloaded function "bindb" matches the argument list:
+            function template "void bindb(F (*)(T))" (declared at line 18)
+            function template "void bindb(F (T::*)())" (declared at line 19)
+            argument types are: (<unknown-type>)
+        bindb (&barT::bark); // { dg-error "ambiguous" }
+        ^
+"Test_name.c", line 17: note: candidate function template "bindb(F)" failed deduction
+  template<class F> void bindb(F f) {}
+                         ^
+          detected during instantiation of "foo::barT<T>::barT() [with T=void]" at line 131
+
+22 errors detected in the compilation of "Test_name.c".

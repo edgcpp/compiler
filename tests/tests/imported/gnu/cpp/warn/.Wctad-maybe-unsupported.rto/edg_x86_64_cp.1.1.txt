@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 69: error: a parameter may not have void type
+  C(T) { } 
+    ^
+          detected during instantiation of class "C<T> [with T=void]" at line 74
+
+"Test_name.c", line 75: error: static assertion failed
+  static_assert(__is_same(__decltype(c2), C< int> ));
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,16 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 15: warning: integer conversion resulted in a change of sign
+    s.c = -64;
+          ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c:8:37: error: expected '(' before 'a'
+Test_name.c: In function 'main':
+Test_name.c:13:3: error: 'struct S' has no member named 'a'
+Test_name.c:14:3: error: 'struct S' has no member named 'b'
+Test_name.c:15:3: error: 'struct S' has no member named 'c'
+Test_name.c:16:23: error: 'struct S' has no member named 'a'
+Test_name.c:16:58: error: 'struct S' has no member named 'b'
+Test_name.c:16:103: error: 'struct S' has no member named 'c'
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

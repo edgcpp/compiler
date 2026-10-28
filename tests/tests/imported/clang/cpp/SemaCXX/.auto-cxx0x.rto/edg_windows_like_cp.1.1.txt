@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 6: error: invalid combination of type specifiers
+    auto int a; // expected-warning {{'auto' storage class specifier is not permitted in C++11, and will not be supported in future releases}}
+         ^
+
+"Test_name.c", line 7: error: invalid combination of type specifiers
+    int auto b; // expected-error{{cannot combine with previous 'int' declaration specifier}}
+        ^
+
+"Test_name.c", line 10: error: "auto" function requires a trailing return type
+  typedef auto PR25449(); // expected-error {{'auto' not allowed in typedef}}
+          ^
+
+"Test_name.c", line 12: error: cannot deduce "auto" type (initializer required)
+  thread_local auto x; // expected-error {{requires an initializer}}
+                    ^
+
+4 errors detected in the compilation of "Test_name.c".

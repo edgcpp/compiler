@@ -1,0 +1,110 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 6: error: this declaration has no storage class or type specifier
+  __thread extern int g1;		/* { dg-error "'__thread' before 'extern'" } */
+  ^
+
+"Test_name.c", line 6: error: expected a ";"
+  __thread extern int g1;		/* { dg-error "'__thread' before 'extern'" } */
+           ^
+
+"Test_name.c", line 7: error: this declaration has no storage class or type specifier
+  __thread static int g2;		/* { dg-error "'__thread' before 'static'" } */
+  ^
+
+"Test_name.c", line 7: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread static int g2;		/* { dg-error "'__thread' before 'static'" } */
+  ^
+
+"Test_name.c", line 7: error: expected a ";"
+  __thread static int g2;		/* { dg-error "'__thread' before 'static'" } */
+           ^
+
+"Test_name.c", line 8: error: variable "__thread" is not a type name
+  __thread __thread int g3;	/* { dg-error "duplicate '__thread'" } */
+  ^
+
+"Test_name.c", line 8: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread __thread int g3;	/* { dg-error "duplicate '__thread'" } */
+           ^
+
+"Test_name.c", line 8: error: expected a ";"
+  __thread __thread int g3;	/* { dg-error "duplicate '__thread'" } */
+                    ^
+
+"Test_name.c", line 9: error: explicit type is missing ("int" assumed)
+  typedef __thread int g4;	/* { dg-error "9:multiple storage classes" } */
+          ^
+
+"Test_name.c", line 9: error: "__thread" has already been declared in the current scope
+  typedef __thread int g4;	/* { dg-error "9:multiple storage classes" } */
+          ^
+
+"Test_name.c", line 9: error: expected a ";"
+  typedef __thread int g4;	/* { dg-error "9:multiple storage classes" } */
+                   ^
+
+"Test_name.c", line 13: error: invalid combination of type specifiers
+    __thread int l1;		/* { dg-error "3:function-scope .l1. implicitly auto and declared '__thread'" } */
+             ^
+
+"Test_name.c", line 14: error: cannot deduce "auto" type (initializer required)
+    auto __thread int l2;		/* { dg-error "3:multiple storage classes|data types" } */
+         ^
+
+"Test_name.c", line 14: error: expected a ";"
+    auto __thread int l2;		/* { dg-error "3:multiple storage classes|data types" } */
+                  ^
+
+"Test_name.c", line 15: warning: expression has no effect
+    __thread extern int l3;	/* { dg-error "'__thread' before 'extern'" } */
+    ^
+
+"Test_name.c", line 15: error: expected a ";"
+    __thread extern int l3;	/* { dg-error "'__thread' before 'extern'" } */
+             ^
+
+"Test_name.c", line 16: error: explicit type is missing ("int" assumed)
+    register __thread int l4;	/* { dg-error "3:multiple storage classes" } */
+             ^
+
+"Test_name.c", line 16: error: "__thread" has already been declared in the current scope
+    register __thread int l4;	/* { dg-error "3:multiple storage classes" } */
+             ^
+
+"Test_name.c", line 16: error: expected a ";"
+    register __thread int l4;	/* { dg-error "3:multiple storage classes" } */
+                      ^
+
+"Test_name.c", line 16: warning: variable "__thread" was declared but never referenced
+    register __thread int l4;	/* { dg-error "3:multiple storage classes" } */
+             ^
+
+"Test_name.c", line 19: error: invalid combination of type specifiers
+  __thread void f1 ();		/* { dg-error "1:storage class .__thread. invalid for function" } */
+           ^
+
+"Test_name.c", line 20: error: invalid combination of type specifiers
+  extern __thread void f2 ();	/* { dg-error "8:storage class .__thread. invalid for function" } */
+                  ^
+
+"Test_name.c", line 21: error: invalid combination of type specifiers
+  static __thread void f3 ();	/* { dg-error "8:storage class .__thread. invalid for function" } */
+                  ^
+
+"Test_name.c", line 22: error: invalid combination of type specifiers
+  __thread void f4 () { }		/* { dg-error "1:storage class .__thread. invalid for function" } */
+           ^
+
+"Test_name.c", line 24: error: invalid combination of type specifiers
+  void bar(__thread int p1);	/* { dg-error "10:storage class specified for parameter" } */
+                    ^
+
+"Test_name.c", line 27: error: invalid combination of type specifiers
+    __thread int i;		/* { dg-error "3:storage class specified" } */
+             ^
+
+"Test_name.c", line 21: warning: function "f3" was declared but never referenced
+  static __thread void f3 ();	/* { dg-error "8:storage class .__thread. invalid for function" } */
+                       ^
+
+24 errors detected in the compilation of "Test_name.c".

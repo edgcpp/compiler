@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef __INT8_TYPE__ __attribute__((__vector_size__ (4))) U;
+                                       ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef __INT32_TYPE__ __attribute__((__vector_size__ (4))) V;
+                                        ^
+
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+  typedef __UINT64_TYPE__ __attribute__((__vector_size__ (8))) W;
+                                         ^
+
+"Test_name.c", line 19: warning: function "__builtin_convertvector" declared implicitly
+    V v = __builtin_convertvector (i | w >> 2, V);
+          ^
+
+"Test_name.c", line 19: error: type name is not allowed
+    V v = __builtin_convertvector (i | w >> 2, V);
+                                               ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "int"
+    U u = (U) v[0] + h;
+                ^
+
+2 errors detected in the compilation of "Test_name.c".

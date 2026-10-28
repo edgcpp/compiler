@@ -1,0 +1,282 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 153: warning: integer conversion resulted in a change of sign
+    if (clz512 (-1) != 0
+                ^
+
+"Test_name.c", line 154: warning: integer conversion resulted in a change of sign
+        || clzd512 (-1) != 0
+                    ^
+
+"Test_name.c", line 155: warning: integer conversion resulted in a change of sign
+        || clzD512 (-1, 0) != 0
+                    ^
+
+"Test_name.c", line 156: warning: integer conversion resulted in a change of sign
+        || ctz512 (-1) != 0
+                   ^
+
+"Test_name.c", line 157: warning: integer conversion resulted in a change of sign
+        || ctzd512 (-1) != 0
+                    ^
+
+"Test_name.c", line 158: warning: integer conversion resulted in a change of sign
+        || ctzD512 (-1, 17) != 0
+                    ^
+
+"Test_name.c", line 161: warning: integer conversion resulted in a change of sign
+        || parity512 (-1) != 0
+                      ^
+
+"Test_name.c", line 162: warning: integer conversion resulted in a change of sign
+        || popcount512 (-1) != 512
+                        ^
+
+"Test_name.c", line 177: warning: integer operation result is out of range
+        || ctz512 (((unsigned _BitInt(512)) -1) << 42) != 42
+                                                   ^
+
+"Test_name.c", line 178: warning: integer operation result is out of range
+        || ctz512 (((unsigned _BitInt(512)) -1) << 57) != 57
+                                                   ^
+
+"Test_name.c", line 180: warning: integer operation result is out of range
+        || ctzd512 (((unsigned _BitInt(512)) -1) << 149) != 149
+                                                    ^
+
+"Test_name.c", line 182: warning: integer conversion resulted in a change of sign
+        || clrsb512 ((unsigned _BitInt(512 - 4)) -1) != 3
+                     ^
+
+"Test_name.c", line 183: warning: integer conversion resulted in a change of sign
+        || clrsb512 ((unsigned _BitInt(512 - 28)) -1) != 27
+                     ^
+
+"Test_name.c", line 184: warning: integer conversion resulted in a change of sign
+        || clrsb512 ((unsigned _BitInt(512 - 29)) -1) != 28
+                     ^
+
+"Test_name.c", line 188: warning: integer operation result is out of range
+        || ffs512 (((unsigned _BitInt(512)) -1) << 42) != 43
+                                                   ^
+
+"Test_name.c", line 189: warning: integer operation result is out of range
+        || ffs512 (((unsigned _BitInt(512)) -1) << 57) != 58
+                                                   ^
+
+"Test_name.c", line 191: warning: integer operation result is out of range
+        || ffs512 (((unsigned _BitInt(512)) -1) << 149) != 150
+                                                   ^
+
+"Test_name.c", line 198: warning: integer operation result is out of range
+        || __builtin_ctzg (((unsigned _BitInt(512)) -1) << 42) != 42
+                                                           ^
+
+"Test_name.c", line 199: warning: integer operation result is out of range
+        || __builtin_ctzg (((unsigned _BitInt(512)) -1) << 57) != 57
+                                                           ^
+
+"Test_name.c", line 201: warning: integer operation result is out of range
+        || __builtin_ctzg (((unsigned _BitInt(512)) -1) << 149, 512) != 149
+                                                           ^
+
+"Test_name.c", line 209: warning: integer operation result is out of range
+        || __builtin_ffsg ((_BitInt(512)) (((unsigned _BitInt(512)) -1) << 42)) != 43
+                                                                           ^
+
+"Test_name.c", line 210: warning: integer operation result is out of range
+        || __builtin_ffsg ((_BitInt(512)) (((unsigned _BitInt(512)) -1) << 57)) != 58
+                                                                           ^
+
+"Test_name.c", line 212: warning: integer operation result is out of range
+        || __builtin_ffsg ((_BitInt(512)) (((unsigned _BitInt(512)) -1) << 149)) != 150
+                                                                           ^
+
+"Test_name.c", line 215: error: integer constant is too large
+    if (parity512 (8278593062772967967574644592392030907507244457324713380127157444008480135136016412791369421272159911061801023217823646324038055629840240503699995274750141uwb) != __builtin_parityg (8278593062772967967574644592392030907507244457324713380127157444008480135136016412791369421272159911061801023217823646324038055629840240503699995274750141uwb)
+                   ^
+
+"Test_name.c", line 215: error: integer constant is too large
+    if (parity512 (8278593062772967967574644592392030907507244457324713380127157444008480135136016412791369421272159911061801023217823646324038055629840240503699995274750141uwb) != __builtin_parityg (8278593062772967967574644592392030907507244457324713380127157444008480135136016412791369421272159911061801023217823646324038055629840240503699995274750141uwb)
+                                                                                                                                                                                                        ^
+
+"Test_name.c", line 216: error: integer constant is too large
+        || parity512 (663951521760319802637316646127146913163123967584512032007606686578544864655291546789196279408181546344880831465704154822174055168766759305688225967189384uwb) != __builtin_parityg (663951521760319802637316646127146913163123967584512032007606686578544864655291546789196279408181546344880831465704154822174055168766759305688225967189384uwb)
+                      ^
+
+"Test_name.c", line 216: error: integer constant is too large
+        || parity512 (663951521760319802637316646127146913163123967584512032007606686578544864655291546789196279408181546344880831465704154822174055168766759305688225967189384uwb) != __builtin_parityg (663951521760319802637316646127146913163123967584512032007606686578544864655291546789196279408181546344880831465704154822174055168766759305688225967189384uwb)
+                                                                                                                                                                                                          ^
+
+"Test_name.c", line 217: error: integer constant is too large
+        || parity512 (8114152627481936575035564712656624361256533214211179387274127464949371919139038942819974113641465089580051998523156404968195970853124179018281296621919217uwb) != __builtin_parityg (8114152627481936575035564712656624361256533214211179387274127464949371919139038942819974113641465089580051998523156404968195970853124179018281296621919217uwb)
+                      ^
+
+"Test_name.c", line 217: error: integer constant is too large
+        || parity512 (8114152627481936575035564712656624361256533214211179387274127464949371919139038942819974113641465089580051998523156404968195970853124179018281296621919217uwb) != __builtin_parityg (8114152627481936575035564712656624361256533214211179387274127464949371919139038942819974113641465089580051998523156404968195970853124179018281296621919217uwb)
+                                                                                                                                                                                                           ^
+
+"Test_name.c", line 218: error: integer constant is too large
+        || popcount512 (697171368046392901434470580443928282938585745214587494987284546386421344865289735592202298494880955572094546861862007016154025065165834164941207378563932uwb) != __builtin_popcountg (697171368046392901434470580443928282938585745214587494987284546386421344865289735592202298494880955572094546861862007016154025065165834164941207378563932uwb)
+                        ^
+
+"Test_name.c", line 218: error: integer constant is too large
+        || popcount512 (697171368046392901434470580443928282938585745214587494987284546386421344865289735592202298494880955572094546861862007016154025065165834164941207378563932uwb) != __builtin_popcountg (697171368046392901434470580443928282938585745214587494987284546386421344865289735592202298494880955572094546861862007016154025065165834164941207378563932uwb)
+                                                                                                                                                                                                              ^
+
+"Test_name.c", line 219: error: integer constant is too large
+        || popcount512 (12625357869391866487124235043239209385173615631331705015179232007319637649427586947822360147798041278948617160703315666047585702906648747835331939389354450uwb) != __builtin_popcountg (12625357869391866487124235043239209385173615631331705015179232007319637649427586947822360147798041278948617160703315666047585702906648747835331939389354450uwb)
+                        ^
+
+"Test_name.c", line 219: error: integer constant is too large
+        || popcount512 (12625357869391866487124235043239209385173615631331705015179232007319637649427586947822360147798041278948617160703315666047585702906648747835331939389354450uwb) != __builtin_popcountg (12625357869391866487124235043239209385173615631331705015179232007319637649427586947822360147798041278948617160703315666047585702906648747835331939389354450uwb)
+                                                                                                                                                                                                                ^
+
+"Test_name.c", line 220: error: integer constant is too large
+        || popcount512 (12989863959706456104163426941303698078341934896544520782734564901708926112239778316241786242633862403309192697330635825122310265805838908726925342761646021uwb) != __builtin_popcountg (12989863959706456104163426941303698078341934896544520782734564901708926112239778316241786242633862403309192697330635825122310265805838908726925342761646021uwb))
+                        ^
+
+"Test_name.c", line 220: error: integer constant is too large
+        || popcount512 (12989863959706456104163426941303698078341934896544520782734564901708926112239778316241786242633862403309192697330635825122310265805838908726925342761646021uwb) != __builtin_popcountg (12989863959706456104163426941303698078341934896544520782734564901708926112239778316241786242633862403309192697330635825122310265805838908726925342761646021uwb))
+                                                                                                                                                                                                                ^
+
+"Test_name.c", line 239: warning: integer conversion resulted in a change of sign
+    if (clz523 (-1) != 0
+                ^
+
+"Test_name.c", line 240: warning: integer conversion resulted in a change of sign
+        || clzd523 (-1) != 0
+                    ^
+
+"Test_name.c", line 241: warning: integer conversion resulted in a change of sign
+        || clzD523 (-1, 15) != 0
+                    ^
+
+"Test_name.c", line 242: warning: integer conversion resulted in a change of sign
+        || ctz523 (-1) != 0
+                   ^
+
+"Test_name.c", line 243: warning: integer conversion resulted in a change of sign
+        || ctzd523 (-1) != 0
+                    ^
+
+"Test_name.c", line 244: warning: integer conversion resulted in a change of sign
+        || ctzD523 (-1, -57) != 0
+                    ^
+
+"Test_name.c", line 247: warning: integer conversion resulted in a change of sign
+        || parity523 (-1) != 1
+                      ^
+
+"Test_name.c", line 248: warning: integer conversion resulted in a change of sign
+        || popcount523 (-1) != 523
+                        ^
+
+"Test_name.c", line 263: warning: integer operation result is out of range
+        || ctz523 (((unsigned _BitInt(523)) -1) << 42) != 42
+                                                   ^
+
+"Test_name.c", line 264: warning: integer operation result is out of range
+        || ctz523 (((unsigned _BitInt(523)) -1) << 57) != 57
+                                                   ^
+
+"Test_name.c", line 266: warning: integer operation result is out of range
+        || ctzd523 (((unsigned _BitInt(523)) -1) << 149) != 149
+                                                    ^
+
+"Test_name.c", line 268: warning: integer conversion resulted in a change of sign
+        || clrsb523 ((unsigned _BitInt(523 - 4)) -1) != 3
+                     ^
+
+"Test_name.c", line 269: warning: integer conversion resulted in a change of sign
+        || clrsb523 ((unsigned _BitInt(523 - 28)) -1) != 27
+                     ^
+
+"Test_name.c", line 270: warning: integer conversion resulted in a change of sign
+        || clrsb523 ((unsigned _BitInt(523 - 29)) -1) != 28
+                     ^
+
+"Test_name.c", line 274: warning: integer operation result is out of range
+        || ffs523 (((unsigned _BitInt(523)) -1) << 42) != 43
+                                                   ^
+
+"Test_name.c", line 275: warning: integer operation result is out of range
+        || ffs523 (((unsigned _BitInt(523)) -1) << 57) != 58
+                                                   ^
+
+"Test_name.c", line 277: warning: integer operation result is out of range
+        || ffs523 (((unsigned _BitInt(523)) -1) << 149) != 150
+                                                   ^
+
+"Test_name.c", line 284: warning: integer operation result is out of range
+        || __builtin_ctzg (((unsigned _BitInt(523)) -1) << 42) != 42
+                                                           ^
+
+"Test_name.c", line 285: warning: integer operation result is out of range
+        || __builtin_ctzg (((unsigned _BitInt(523)) -1) << 57) != 57
+                                                           ^
+
+"Test_name.c", line 287: warning: integer operation result is out of range
+        || __builtin_ctzg (((unsigned _BitInt(523)) -1) << 149, 523) != 149
+                                                           ^
+
+"Test_name.c", line 295: warning: integer operation result is out of range
+        || __builtin_ffsg ((_BitInt(523)) (((unsigned _BitInt(523)) -1) << 42)) != 43
+                                                                           ^
+
+"Test_name.c", line 296: warning: integer operation result is out of range
+        || __builtin_ffsg ((_BitInt(523)) (((unsigned _BitInt(523)) -1) << 57)) != 58
+                                                                           ^
+
+"Test_name.c", line 298: warning: integer operation result is out of range
+        || __builtin_ffsg ((_BitInt(523)) (((unsigned _BitInt(523)) -1) << 149)) != 150
+                                                                           ^
+
+"Test_name.c", line 301: error: integer constant is too large
+    if (parity523 (14226628251091586975416900831427560438504550751597528218770815297642064445318137709184907300499591292677456563377096100346699421879373024906380724757049700104uwb) != __builtin_parityg (14226628251091586975416900831427560438504550751597528218770815297642064445318137709184907300499591292677456563377096100346699421879373024906380724757049700104uwb)
+                   ^
+
+"Test_name.c", line 301: error: integer constant is too large
+    if (parity523 (14226628251091586975416900831427560438504550751597528218770815297642064445318137709184907300499591292677456563377096100346699421879373024906380724757049700104uwb) != __builtin_parityg (14226628251091586975416900831427560438504550751597528218770815297642064445318137709184907300499591292677456563377096100346699421879373024906380724757049700104uwb)
+                                                                                                                                                                                                            ^
+
+"Test_name.c", line 302: error: integer constant is too large
+        || parity523 (20688958227123188226117538663818621034852702121556301239818743230005799574164516085541310491875153692467123662601853835357822935286851364843928714141587045255uwb) != __builtin_parityg (20688958227123188226117538663818621034852702121556301239818743230005799574164516085541310491875153692467123662601853835357822935286851364843928714141587045255uwb)
+                      ^
+
+"Test_name.c", line 302: error: integer constant is too large
+        || parity523 (20688958227123188226117538663818621034852702121556301239818743230005799574164516085541310491875153692467123662601853835357822935286851364843928714141587045255uwb) != __builtin_parityg (20688958227123188226117538663818621034852702121556301239818743230005799574164516085541310491875153692467123662601853835357822935286851364843928714141587045255uwb)
+                                                                                                                                                                                                               ^
+
+"Test_name.c", line 303: error: integer constant is too large
+        || parity523 (8927708174664018648856542263215989788443763271738485875573765922613438023117960552135374015673598803453205044464280019640319125968982118836809392169156450404uwb) != __builtin_parityg (8927708174664018648856542263215989788443763271738485875573765922613438023117960552135374015673598803453205044464280019640319125968982118836809392169156450404uwb)
+                      ^
+
+"Test_name.c", line 303: error: integer constant is too large
+        || parity523 (8927708174664018648856542263215989788443763271738485875573765922613438023117960552135374015673598803453205044464280019640319125968982118836809392169156450404uwb) != __builtin_parityg (8927708174664018648856542263215989788443763271738485875573765922613438023117960552135374015673598803453205044464280019640319125968982118836809392169156450404uwb)
+                                                                                                                                                                                                              ^
+
+"Test_name.c", line 304: error: integer constant is too large
+        || popcount523 (27178327344587654457581274852432957423537947348354896748701960885269035920194935311522194372418922852798513401240689173265979378157685169921449935364246334672uwb) != __builtin_popcountg (27178327344587654457581274852432957423537947348354896748701960885269035920194935311522194372418922852798513401240689173265979378157685169921449935364246334672uwb)
+                        ^
+
+"Test_name.c", line 304: error: integer constant is too large
+        || popcount523 (27178327344587654457581274852432957423537947348354896748701960885269035920194935311522194372418922852798513401240689173265979378157685169921449935364246334672uwb) != __builtin_popcountg (27178327344587654457581274852432957423537947348354896748701960885269035920194935311522194372418922852798513401240689173265979378157685169921449935364246334672uwb)
+                                                                                                                                                                                                                   ^
+
+"Test_name.c", line 305: error: integer constant is too large
+        || popcount523 (5307736750284212829931201546806718535860789684371772688568780952567669490917265125893664418036905110148872995350655890585853451175740907670080602411287166989uwb) != __builtin_popcountg (5307736750284212829931201546806718535860789684371772688568780952567669490917265125893664418036905110148872995350655890585853451175740907670080602411287166989uwb)
+                        ^
+
+"Test_name.c", line 305: error: integer constant is too large
+        || popcount523 (5307736750284212829931201546806718535860789684371772688568780952567669490917265125893664418036905110148872995350655890585853451175740907670080602411287166989uwb) != __builtin_popcountg (5307736750284212829931201546806718535860789684371772688568780952567669490917265125893664418036905110148872995350655890585853451175740907670080602411287166989uwb)
+                                                                                                                                                                                                                  ^
+
+"Test_name.c", line 306: error: integer constant is too large
+        || popcount523 (21261096432069432668470452941790780841888331284195411465624030283325239673941548816191698556934198698768393659379577567450765073013688585051560340496749593370uwb) != __builtin_popcountg (21261096432069432668470452941790780841888331284195411465624030283325239673941548816191698556934198698768393659379577567450765073013688585051560340496749593370uwb))
+                        ^
+
+"Test_name.c", line 306: error: integer constant is too large
+        || popcount523 (21261096432069432668470452941790780841888331284195411465624030283325239673941548816191698556934198698768393659379577567450765073013688585051560340496749593370uwb) != __builtin_popcountg (21261096432069432668470452941790780841888331284195411465624030283325239673941548816191698556934198698768393659379577567450765073013688585051560340496749593370uwb))
+                                                                                                                                                                                                                   ^
+
+24 errors detected in the compilation of "Test_name.c".

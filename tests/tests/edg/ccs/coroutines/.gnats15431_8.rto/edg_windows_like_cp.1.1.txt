@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --microsoft_version 1900 --set_flag coroutines -tused Test_name.c
+"Test_name.c", line 7: warning: expression has no effect
+    arg0;
+    ^
+
+"/edg/workspace/bases/docker/dev-env/gcc/include/coroutine.stdh", line 71: error: constexpr function return is non-constant
+  return *((std::coroutine_handle< void>  *)addr); 
+         ^
+
+1 error detected in the compilation of "Test_name.c".

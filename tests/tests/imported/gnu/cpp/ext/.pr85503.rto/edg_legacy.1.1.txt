@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 48: warning: unknown attribute "altivec"
+  typedef __attribute__((altivec(vector__))) double bb;
+                         ^
+
+"Test_name.c", line 51: error: identifier "__builtin_vec_vsx_ld" is undefined
+  template <> bb aw(const double *ba) { return __builtin_vec_vsx_ld(0, ba); }
+                                               ^
+
+"Test_name.c", line 155: error: "ak<bk, cy, cx>::ak(cy, cx) [with bk=be, cy=const ai<double, 2, 1, 0, 2, 1>, cx=const al<ai<double, 2, 1, 0, 2, 1>>]" provides no initializer for:
+            const member "ak<bk, cy, cx>::da [with bk=be, cy=const ai<double, 2, 1, 0, 2, 1>, cx=const al<ai<double, 2, 1, 0, 2, 1>>]"
+    ak(cy, cx cz) : da(), db(cz) {}
+                                 ^
+          detected during:
+            instantiation of "ak<bk, cy, cx>::ak(cy, cx) [with bk=be, cy=const ai<double, 2, 1, 0, 2, 1>, cx=const al<ai<double, 2, 1, 0, 2, 1>>]" at line 70
+            instantiation of "ak<be, const as, const bm> aj<as>::operator-(bm) [with as=ai<double, 2, 1, 0, 2, 1>, bm=al<ai<double, 2, 1, 0, 2, 1>>]" at line 219
+
+"Test_name.c", line 105: error: "bp<ak<bk, ce, cf>>::bp(ak<bk, ce, cf>) [with bk=be, ce=const ai<double, 2, 1, 0, 2, 1>, cf=const al<ai<double, 2, 1, 0, 2, 1>>]" provides no initializer for:
+            const member "bp<ak<bk, ce, cf>>::cg [with bk=be, ce=const ai<double, 2, 1, 0, 2, 1>, cf=const al<ai<double, 2, 1, 0, 2, 1>>]"
+    bp(ak< bk, ce, cf > bs) : cg(), ch(bs.ci()) {}
+                                                ^
+          detected during:
+            instantiation of "bp<ak<bk, ce, cf>>::bp(ak<bk, ce, cf>) [with bk=be, ce=const ai<double, 2, 1, 0, 2, 1>, cf=const al<ai<double, 2, 1, 0, 2, 1>>]" at line 101
+            instantiation of "br<ak<bk, ce, cf>>::br(ak<bk, ce, cf>) [with bk=be, ce=const ai<double, 2, 1, 0, 2, 1>, cf=const al<ai<double, 2, 1, 0, 2, 1>>]" at line 182
+            instantiation of "redux_evaluator<_XprType>::redux_evaluator(redux_evaluator<_XprType>::cd) [with _XprType=ak<be, const ai<double, 2, 1, 0, 2, 1>, const al<ai<double, 2, 1, 0, 2, 1>>>]" at line 194
+            instantiation of "bf<as>::bg bf<as>::bl(const bk &) const [with as=ak<be, const ai<double, 2, 1, 0, 2, 1>, const al<ai<double, 2, 1, 0, 2, 1>>>, bk=bc]" at line 199
+            instantiation of "bf<as>::bg bf<as>::bj() const [with as=ak<be, const ai<double, 2, 1, 0, 2, 1>, const al<ai<double, 2, 1, 0, 2, 1>>>]" at line 162
+            instantiation of "int aj<as>::bo() const [with as=ak<be, const ai<double, 2, 1, 0, 2, 1>, const al<ai<double, 2, 1, 0, 2, 1>>>]" at line 219
+
+3 errors detected in the compilation of "Test_name.c".

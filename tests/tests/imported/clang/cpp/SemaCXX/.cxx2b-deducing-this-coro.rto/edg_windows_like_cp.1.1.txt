@@ -1,0 +1,27 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 24: warning: missing return statement at end of non-void function "coro_test<T>::promise_type::operator new(unsigned long, Arg &&, Args &...)"
+          }
+          ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 35: error: static assertion failed with "Ok"
+    static_assert(!__is_same(Ret, S&), "Ok");
+    ^
+          detected during instantiation of class "std::coroutine_traits<coro_test<S &>, Ret, P...> [with Ret=S &, P=<int>]" at line 42
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 41: error: no default constructor exists for class "coro_test<S &>::promise_type"
+      coro_test<S&> ok(this S&, int) {
+                    ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 41: error: no instance of overloaded "coro_test<T>::promise_type::operator new [with T=S &]" matches the argument list
+            argument types are: (unsigned long)
+      coro_test<S&> ok(this S&, int) {
+                    ^
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 22: note: number of parameters of function template "coro_test<T>::promise_type::operator new [with T=S &]" does not match the call
+          void* operator new(decltype(0zu) sz, Arg&&, Args&... args) {
+                ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 49: error: no default constructor exists for class "coro_test<int>::promise_type"
+      coro_test<int> ko(this const S&) {
+                     ^
+
+4 errors detected in the compilation of "Test_name.c".

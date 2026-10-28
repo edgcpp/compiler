@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 16: warning: external/internal linkage conflict with previous declaration at line 14
+    static void f() {}  // Previously caused an infinite loop.  The 4.6 change
+                ^
+
+"Test_name.c", line 16: warning: function "N::f" was declared but never referenced
+    static void f() {}  // Previously caused an infinite loop.  The 4.6 change
+                ^
+

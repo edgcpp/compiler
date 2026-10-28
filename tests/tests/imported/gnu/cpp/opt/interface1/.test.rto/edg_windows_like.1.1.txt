@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics interface1-a.cc Test_name.c
+interface1-a.cc:
+Test_name.c:
+"./opt/interface1.C", line 5: warning: unrecognized #pragma
+  #pragma implementation "interface1.h"
+          ^
+
+"./opt/interface1.h", line 1: warning: unrecognized #pragma
+  #pragma interface "interface1.h"
+          ^
+
+/usr/sbin/ld: interface1-a.o: in function `g()':
+interface1-a.int.c:(.text+0xXX): undefined reference to `Test::f()'
+collect2: error: ld returned 1 exit status

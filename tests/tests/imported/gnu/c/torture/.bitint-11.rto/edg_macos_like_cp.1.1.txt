@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 --strict_gnu Test_name.c
+"Test_name.c", line 21: warning: signed bit field of length 1
+    int i : 1;
+        ^
+
+"Test_name.c", line 59: error: integer constant is too large
+    _BitInt(188) b188 = 51625354135609169507415940782602403562057573230992065937wb;
+                        ^
+
+"Test_name.c", line 65: error: integer constant is too large
+        != int128_val (51625354135609169667420599386607708010744598469228066319wb,
+           ^
+
+"Test_name.c", line 70: error: integer constant is too large
+    _BitInt(575) b575 = -20179593413257295974034559327597105210986698104682733481090257927308152867107766179792744096926808179875378122328280563720406829353405990702024578604764643194143342705864832wb;
+                         ^
+
+"Test_name.c", line 76: error: integer constant is too large
+        != int128_val (-20179593413257295974034559327597105210986698104682733481090257927308152867107766179792744096926808179875378122328280563720406829353405830697365974599460194507118104469864450wb,
+           ^
+
+4 errors detected in the compilation of "Test_name.c".

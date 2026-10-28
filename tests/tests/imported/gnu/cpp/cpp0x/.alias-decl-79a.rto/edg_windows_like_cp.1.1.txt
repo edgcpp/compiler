@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 22: error: static assertion failed with ""
+    static_assert(!is_same<T, B>::value, "");
+    ^
+          detected during instantiation of "void f<N>() [with N=4]" at line 42
+
+"Test_name.c", line 23: error: static assertion failed with ""
+    static_assert(!is_same<A<T>, A<B>>::value, "");
+    ^
+          detected during instantiation of "void f<N>() [with N=4]" at line 42
+
+2 errors detected in the compilation of "Test_name.c".

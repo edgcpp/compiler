@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: error: invalid symbolic operand name "val"
+    asm volatile ("lw (r1), %0[val]": "=&b"(Val)); // expected-error {{invalid output constraint '=&b' in asm}}
+    ^
+
+"Test_name.c", line 6: warning: variable "Val" was set but never used
+    int Val;
+        ^
+
+"Test_name.c", line 12: warning: variable "foo" was set but never used
+    long long foo = 0, bar = 0;
+              ^
+
+"Test_name.c", line 17: error: unknown register name "r1"
+    register int x asm("r1");
+                       ^
+
+"Test_name.c", line 18: warning: variable "x" is used before its value is set
+    asm volatile("nop" :: "r"(x) : "%r1"); // expected-error {{conflicts with asm clobber list}}
+                              ^
+
+"Test_name.c", line 18: error: unknown register name "%r1"
+    asm volatile("nop" :: "r"(x) : "%r1"); // expected-error {{conflicts with asm clobber list}}
+                                   ^
+
+"Test_name.c", line 19: error: unknown register name "%r1"
+    asm volatile("nop" :: "l"(x) : "%r1"); // expected-error {{conflicts with asm clobber list}}
+                                   ^
+
+"Test_name.c", line 20: error: unknown register name "%r1"
+    asm volatile("nop" : "=r"(x) :: "%r1"); // expected-error {{conflicts with asm clobber list}}
+                                    ^
+
+5 errors detected in the compilation of "Test_name.c".

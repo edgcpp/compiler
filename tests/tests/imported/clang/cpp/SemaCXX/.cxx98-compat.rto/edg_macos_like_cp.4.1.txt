@@ -1,0 +1,84 @@
+fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -DCXX14COMPAT -DCXX17COMPAT Test_name.c
+"Test_name.c", line 21: error: identifier "__auto_type" is undefined
+    __auto_type x = 0; // Ok
+    ^
+
+"Test_name.c", line 22: warning: variable "y" was declared but never referenced
+    decltype(auto) y = 0; // expected-warning {{'decltype' type specifier is incompatible with C++98}}
+                   ^
+
+"Test_name.c", line 82: warning: variable "x" was declared but never referenced
+    int x { 0 }; // expected-warning {{generalized initializer lists are incompatible with C++98}}
+        ^
+
+"Test_name.c", line 83: warning: variable "s" was set but never used
+    S<int> s = {}; // ok, aggregate
+           ^
+
+"Test_name.c", line 91: warning: variable "r" was declared but never referenced
+    const int &r = { 0 }; // expected-warning {{reference initialized from initializer list is incompatible with C++98}}
+               ^
+
+"Test_name.c", line 92: warning: variable "rr" was declared but never referenced
+    struct { int a; const int &r; } rr = { 0, {0} }; // expected-warning {{reference initialized from initializer list is incompatible with C++98}}
+                                    ^
+
+"Test_name.c", line 134: warning: variable "agg" was declared but never referenced
+    struct Agg { int a, b; } const &agg = { 1, 2 }; // expected-warning {{reference initialized from initializer list is incompatible with C++98}}
+                                    ^
+
+"Test_name.c", line 179: warning: pointless friend declaration
+    friend void FriendMember::MemberFn(); // expected-warning {{friend declaration naming a member of the declaring class is incompatible with C++98}}
+                              ^
+
+"Test_name.c", line 287: warning: variable "k" was declared but never referenced
+    int k = T::enum_val; // expected-warning {{enumeration type in nested name specifier is incompatible with C++98}}
+        ^
+
+"Test_name.c", line 292: warning: transfer of control bypasses initialization of:
+            variable "tnp1" (declared at line 293)
+    goto DirectJump; // expected-warning {{jump from this goto statement to its label is incompatible with C++98}}
+    ^
+
+"Test_name.c", line 302: warning: variable "tnp3" was declared but never referenced
+      TrivialButNonPOD tnp3; // expected-note {{jump bypasses initialization of non-POD variable}}
+                       ^
+
+"Test_name.c", line 301: warning: transfer of control bypasses initialization of:
+            variable "tnp3" (declared at line 302)
+    switch (n) {
+    ^
+
+"Test_name.c", line 293: warning: variable "tnp1" was declared but never referenced
+    TrivialButNonPOD tnp1; // expected-note {{jump bypasses initialization of non-POD variable}}
+                     ^
+
+"Test_name.c", line 299: warning: variable "tnp2" was declared but never referenced
+    TrivialButNonPOD tnp2; // expected-note {{jump bypasses initialization of non-POD variable}}
+                     ^
+
+"Test_name.c", line 404: error: a member with an in-class initializer must be const
+    template<typename T> static T* var<T*> = new T();
+                                             ^
+
+"Test_name.c", line 434: warning: variable "t" was declared but never referenced
+    CTAD t = s; // expected-warning {{class template argument deduction is incompatible with C++ standards before C++17}}
+         ^
+
+"Test_name.c", line 441: error: enumerator "GH161702::S::A" has already been declared in this scope at line 440
+    using E::A; // expected-warning {{enumeration type in nested name specifier is incompatible with C++98}}
+             ^
+
+"Test_name.c", line 159: warning: variable "align_of" was declared but never referenced
+  const int align_of = alignof(int); // expected-warning {{alignof expressions are incompatible with C++98}}
+            ^
+
+"Test_name.c", line 163: warning: variable "decl_type" was declared but never referenced
+  decltype(const_expr) decl_type = 0; // expected-warning {{'decltype' type specifier is incompatible with C++98}}
+                       ^
+
+"Test_name.c", line 164: warning: variable "decl_type2" was declared but never referenced
+  __decltype(const_expr) decl_type2 = 0; // ok
+                         ^
+
+3 errors detected in the compilation of "Test_name.c".

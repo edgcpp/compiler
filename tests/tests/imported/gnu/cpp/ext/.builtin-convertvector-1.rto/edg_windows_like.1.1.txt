@@ -1,0 +1,96 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size (4 * sizeof (int))));
+                                  ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef unsigned int v4usi __attribute__((vector_size (4 * sizeof (unsigned int))));
+                                            ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef float v4sf __attribute__((vector_size (4 * sizeof (float))));
+                                    ^
+
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef double v4df __attribute__((vector_size (4 * sizeof (double))));
+                                     ^
+
+"Test_name.c", line 10: warning: unknown attribute "vector_size"
+  typedef long long v256di __attribute__((vector_size (256 * sizeof (long long))));
+                                          ^
+
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+  typedef double v256df __attribute__((vector_size (256 * sizeof (double))));
+                                       ^
+
+"Test_name.c", line 17: error: type name is not allowed
+    *y = __builtin_convertvector (*x, v4si);
+                                      ^
+
+"Test_name.c", line 17: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, v4si);
+         ^
+
+"Test_name.c", line 24: error: type name is not allowed
+    *y = __builtin_convertvector (*x, v4si);
+                                      ^
+
+"Test_name.c", line 24: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, v4si);
+         ^
+          detected during instantiation of "void f2(T *, v4si *) [with T=v4sf]" at line 88
+
+"Test_name.c", line 31: error: type name is not allowed
+    *y = __builtin_convertvector (*x, T);
+                                      ^
+
+"Test_name.c", line 31: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, T);
+         ^
+
+"Test_name.c", line 38: error: type name is not allowed
+    *y = __builtin_convertvector (*x, v4si);
+                                      ^
+
+"Test_name.c", line 38: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, v4si);
+         ^
+
+"Test_name.c", line 45: error: type name is not allowed
+    *y = __builtin_convertvector (*x, U);
+                                      ^
+
+"Test_name.c", line 45: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, U);
+         ^
+          detected during instantiation of "void f5(T *, U *) [with T=v4si, U=v4df]" at line 118
+
+"Test_name.c", line 52: error: type name is not allowed
+    *y = __builtin_convertvector (*x, T);
+                                      ^
+
+"Test_name.c", line 52: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, T);
+         ^
+
+"Test_name.c", line 59: error: type name is not allowed
+    *y = __builtin_convertvector (*x, v256df);
+                                      ^
+
+"Test_name.c", line 59: error: identifier "__builtin_convertvector" is undefined
+    *y = __builtin_convertvector (*x, v256df);
+         ^
+
+"Test_name.c", line 66: error: too many initializer values
+    v4si a = { 1, 2, -3, -4 };
+                  ^
+
+"Test_name.c", line 67: error: type name is not allowed
+    *x = __builtin_convertvector (a, v4df);
+                                     ^
+
+"Test_name.c", line 67: error: identifier "__builtin_convertvector" is undefined
+    *x = __builtin_convertvector (a, v4df);
+         ^
+
+17 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,44 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 10: error: division by zero
+    static const T value = 10 / Divisor; // expected-error{{in-class initializer for static data member is not a constant expression}} \
+                              ^
+          detected during instantiation of class "X<T, Divisor> [with T=int, Divisor=0]" at line 16
+
+"Test_name.c", line 50: warning: variable "DC" was declared but never referenced
+    DefCon &DC = Z<DefCon>::value;
+            ^
+
+"Test_name.c", line 51: warning: variable "NDC" was declared but never referenced
+    NoDefCon &NDC = Z<NoDefCon>::value; // expected-note{{instantiation}}
+              ^
+
+"Test_name.c", line 83: warning: variable "x" was declared but never referenced
+    Z1<Y1<X1>::value> x;
+                      ^
+
+"Test_name.c", line 84: warning: variable "y" was declared but never referenced
+    int y[Y1<X1>::value];
+        ^
+
+"Test_name.c", line 85: warning: variable "x2" was declared but never referenced
+    Z1<Y2<X2>::value> x2;
+                      ^
+
+"Test_name.c", line 86: warning: variable "y2" was declared but never referenced
+    int y2[Y2<X2>::value];
+        ^
+
+"Test_name.c", line 161: error: a value of type "const char *" cannot be used to initialize an entity of type "const char (&)[4]"
+      static void g1() { const char (&ref)[4] = kMessage; } // expected-error {{could not bind to an lvalue of type 'const char[5]'}}
+                                                ^
+
+"Test_name.c", line 162: error: a value of type "const char *" cannot be used to initialize an entity of type "const char (&)[5]"
+      static void g2() { const char (&ref)[5] = kMessage; } // expected-error {{could not bind to an lvalue of type 'const char[4]'}}
+                                                ^
+
+"Test_name.c", line 41: error: no default constructor exists for class "NoDefCon"
+  T Z<T>::value; // expected-error{{no matching constructor}}
+          ^
+          detected during implicit definition of "NoDefCon Z<T>::value [with T=NoDefCon]" at line 51
+
+4 errors detected in the compilation of "Test_name.c".

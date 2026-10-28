@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 58: warning: variable "j" was declared but never referenced
+  /* expected-error {{expected a for, while, or do-while loop to follow '#pragma unroll'}} */ int j = Length;
+                                                                                                  ^
+
+"Test_name.c", line 60: warning: variable "k" was declared but never referenced
+  /* expected-error {{expected a for, while, or do-while loop to follow '#pragma unroll'}} */ int k = Length;
+                                                                                                  ^
+
+"Test_name.c", line 62: warning: variable "l" was declared but never referenced
+  /* expected-error {{expected a for, while, or do-while loop to follow '#pragma nounroll'}} */ int l = Length;
+                                                                                                    ^
+
+"Test_name.c", line 130: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  using size_t = unsigned long long;
+        ^
+
+"Test_name.c", line 144: warning: unrecognized GCC pragma
+  #pragma GCC unroll Flag ? 0 : N // Ok, allow 0.
+              ^
+
+"Test_name.c", line 134: warning: variable "N" was declared but never referenced
+    constexpr int N = 100;
+                  ^
+

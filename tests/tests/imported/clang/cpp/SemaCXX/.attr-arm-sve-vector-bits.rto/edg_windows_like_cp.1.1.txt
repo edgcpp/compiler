@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --target linux_aarch64 Test_name.c
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 8: error: identifier "__SVInt8_t" is undefined
+  typedef __SVInt8_t svint8_t;
+          ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 12: error: identifier "__SVBool_t" is undefined
+  typedef __SVBool_t svbool_t;
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

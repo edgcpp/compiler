@@ -1,0 +1,299 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --ms_extensions Test_name.c
+"Test_name.c", line 5: warning: a user-provided literal suffix must begin with "_"
+  8gi///===--- recovery.cpp ---===// // expected-error {{unqualified-id}}
+  ^
+
+"Test_name.c", line 5: error: expected a declaration
+  8gi///===--- recovery.cpp ---===// // expected-error {{unqualified-id}}
+  ^
+
+"Test_name.c", line 14: warning: parsing restarts here after previous syntax error
+  int x;
+       ^
+
+"Test_name.c", line 15: error: this declaration has no storage class or type specifier
+  Std::Important y;
+  ^
+
+"Test_name.c", line 15: error: expected a ";"
+  Std::Important y;
+     ^
+
+"Test_name.c", line 17: error: this declaration has no storage class or type specifier
+  extenr "C" { // expected-error {{did you mean 'extern'}}
+  ^
+
+"Test_name.c", line 17: error: expected a ";"
+  extenr "C" { // expected-error {{did you mean 'extern'}}
+         ^
+
+"Test_name.c", line 30: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 31: warning: a user-provided literal suffix must begin with "_"
+  8S::S() : a{ 5 }, b{ 6 }, c{ 2 } { // expected-error {{unqualified-id}}
+  ^
+
+"Test_name.c", line 31: error: expected a declaration
+  8S::S() : a{ 5 }, b{ 6 }, c{ 2 } { // expected-error {{unqualified-id}}
+  ^
+
+"Test_name.c", line 34: warning: parsing restarts here after previous syntax error
+  int k;
+       ^
+
+"Test_name.c", line 35: error: identifier "k" is undefined
+  int l = k // expected-error {{expected ';'}}
+          ^
+
+"Test_name.c", line 36: error: expected a ";"
+  constexpr int foo();
+  ^
+
+"Test_name.c", line 38: warning: a user-provided literal suffix must begin with "_"
+  5int m = { l }, n = m; // expected-error {{unqualified-id}}
+  ^
+
+"Test_name.c", line 38: error: expected a declaration
+  5int m = { l }, n = m; // expected-error {{unqualified-id}}
+  ^
+
+"Test_name.c", line 45: error: expected a declaration
+    namespace N { int g(); } // expected-note {{still within definition of 'MissingBrace::S' here}}
+    ^
+
+"Test_name.c", line 48: error: name followed by "::" must be a class or namespace name
+    int k2 = S().f() + N::g();
+                       ^
+
+"Test_name.c", line 52: error: expected a declaration
+    namespace X { // expected-note {{still within definition of 'MissingBrace::PR17949' here}}
+    ^
+
+"Test_name.c", line 56: error: expected a ";"
+  namespace N {
+  ^
+
+"Test_name.c", line 62: warning: parsing restarts here after previous syntax error
+  } *u[3];
+         ^
+
+"Test_name.c", line 63: error: identifier "uuuu" is undefined
+  uuuu v; // expected-error {{did you mean 'Uuuu'}}
+  ^
+
+"Test_name.c", line 68: error: class "MissingBrace::S::Redefined" has already been defined (previous definition at line 65)
+  struct Redefined { // expected-error {{redefinition}}
+         ^
+
+"Test_name.c", line 73: error: expected a declaration
+  namespace N {
+  ^
+
+"Test_name.c", line 79: warning: parsing restarts here after previous syntax error
+  static int afterMissingSemi1();
+                                ^
+
+"Test_name.c", line 82: error: expected a ";"
+  MissingSemi1 *afterMissingSemi2;
+               ^
+
+"Test_name.c", line 85: error: the global scope has no "MissingSemi1"
+  ::MissingSemi1 afterMissingSemi3;
+    ^
+
+"Test_name.c", line 85: error: expected a ";"
+  ::MissingSemi1 afterMissingSemi3;
+                 ^
+
+"Test_name.c", line 87: error: invalid storage class for a class member
+  extern N::afterMissingSemi4 afterMissingSemi4b;
+  ^
+
+"Test_name.c", line 87: error: explicit type is missing ("int" assumed)
+  extern N::afterMissingSemi4 afterMissingSemi4b;
+         ^
+
+"Test_name.c", line 87: error: expected a ";"
+  extern N::afterMissingSemi4 afterMissingSemi4b;
+          ^
+
+"Test_name.c", line 89: error: "N" has already been declared in the current scope
+  N::afterMissingSemi4 (afterMissingSemi4b);
+  ^
+
+"Test_name.c", line 89: error: expected a ";"
+  N::afterMissingSemi4 (afterMissingSemi4b);
+   ^
+
+"Test_name.c", line 93: error: "N" has already been declared in the current scope
+  N::afterMissingSemi5 (afterMissingSemi5b);
+  ^
+
+"Test_name.c", line 93: error: expected a ";"
+  N::afterMissingSemi5 (afterMissingSemi5b);
+   ^
+
+"Test_name.c", line 97: error: expected a ";"
+  MissingSemiT<int> msi;
+  ^
+
+"Test_name.c", line 101: error: expected a ";"
+    static MissingSemi5 ms1;
+                        ^
+
+"Test_name.c", line 107: error: "MissingSemi5" has already been declared in the current scope
+    static MissingSemi5 *p;
+           ^
+
+"Test_name.c", line 107: error: expected a ";"
+    static MissingSemi5 *p;
+                        ^
+
+"Test_name.c", line 125: error: expected a declaration
+  namespace NS {
+  ^
+
+"Test_name.c", line 129: warning: parsing restarts here after previous syntax error
+  NS::Foo<int> missingSemiBeforeFunctionReturningTemplateId1();
+                                                              ^
+
+"Test_name.c", line 131: error: a class-qualified name is required
+  using NS::Foo;
+        ^
+
+"Test_name.c", line 131: error: expected a ";"
+  using NS::Foo;
+          ^
+
+"Test_name.c", line 133: error: Foo is not a template
+  Foo<int> missingSemiBeforeFunctionReturningTemplateId2();
+  ^
+
+"Test_name.c", line 133: error: expected a ";"
+  Foo<int> missingSemiBeforeFunctionReturningTemplateId2();
+           ^
+
+"Test_name.c", line 135: error: expected a declaration
+  namespace PR17084 {
+  ^
+
+"Test_name.c", line 165: warning: parsing restarts here after previous syntax error
+      case V4:: break; // expected-error{{'V4' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                     ^
+
+"Test_name.c", line 166: error: expected a declaration
+      case V6:: func_3();   // expected-error{{'V6' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+      ^
+
+"Test_name.c", line 48: error: the default constructor of "MissingBrace::S" cannot be referenced -- it is a deleted function
+    int k2 = S().f() + N::g();
+             ^
+
+"Test_name.c", line 48: error: the generated default constructor for "MissingBrace::S" cannot be used in an initializer for its own data member
+    int k2 = S().f() + N::g();
+             ^
+
+"Test_name.c", line 112: error: expected a ";"
+    if (true) {}
+    ^
+
+"Test_name.c", line 119: error: expected a ";"
+    Inner1 i1;
+           ^
+
+"Test_name.c", line 119: warning: variable "Inner1" was declared but never referenced
+    Inner1 i1;
+    ^
+
+"Test_name.c", line 122: warning: variable "Inner5" was declared but never referenced
+    Inner5;
+    ^
+
+"Test_name.c", line 115: warning: local class member function "Inner2::Inner2(int)" requires a definition
+    struct Inner2 { Inner2(int); } // ok, no missing ';' here
+                    ^
+
+"Test_name.c", line 168: error: expected a ";"
+    }
+    ^
+
+"Test_name.c", line 169: error: identifier "EC3" is undefined
+    void func_2(EC3 x) {
+                ^
+
+"Test_name.c", line 171: error: name followed by "::" must be a class or namespace name
+      case EC3::V0:  break;
+           ^
+
+"Test_name.c", line 172: error: name followed by "::" must be a class or namespace name
+      case EC3::V5:: break; // expected-error{{'V5' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+           ^
+
+"Test_name.c", line 172: error: expected an identifier
+      case EC3::V5:: break; // expected-error{{'V5' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                     ^
+
+"Test_name.c", line 172: error: expected a ":"
+      case EC3::V5:: break; // expected-error{{'V5' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                     ^
+
+"Test_name.c", line 173: warning: expected a statement
+      }
+      ^
+
+"Test_name.c", line 181: error: expected an identifier
+      case TS1<T>::A:: break;  // expected-error{{expected unqualified-id}}
+                       ^
+
+"Test_name.c", line 181: error: expected a ":"
+      case TS1<T>::A:: break;  // expected-error{{expected unqualified-id}}
+                       ^
+
+"Test_name.c", line 182: warning: expected a statement
+      }
+      ^
+
+"Test_name.c", line 194: error: name followed by "::" must be a class or namespace name
+      return x ? S::n :: 0;  // expected-error{{'n' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                    ^
+
+"Test_name.c", line 194: error: expected an identifier
+      return x ? S::n :: 0;  // expected-error{{'n' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                         ^
+
+"Test_name.c", line 194: error: expected a ":"
+      return x ? S::n :: 0;  // expected-error{{'n' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                         ^
+
+"Test_name.c", line 197: error: name followed by "::" must be a class or namespace name
+      return x ? s.nn :: x;  // expected-error{{'nn' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                   ^
+
+"Test_name.c", line 197: error: expected a ":"
+      return x ? s.nn :: x;  // expected-error{{'nn' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                          ^
+
+"Test_name.c", line 200: error: name followed by "::" must be a class or namespace name
+      return x ? s.nn :: S::n;  // expected-error{{'nn' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                   ^
+
+"Test_name.c", line 200: error: expected a ":"
+      return x ? s.nn :: S::n;  // expected-error{{'nn' cannot appear before '::' because it is not a class, namespace, or enumeration; did you mean ':'?}}
+                             ^
+
+"Test_name.c", line 207: error: expected an identifier
+    struct S2 :: S3 :: public S2 {  // expected-error{{'public' cannot be a part of nested name specifier; did you mean ':'?}}
+                       ^
+
+"Test_name.c", line 209: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 181: error: name followed by "::" must be a class or namespace name
+      case TS1<T>::A:: break;  // expected-error{{expected unqualified-id}}
+                   ^
+          detected during instantiation of "void func<T>(int) [with T=int]" at line 185
+
+59 errors detected in the compilation of "Test_name.c".

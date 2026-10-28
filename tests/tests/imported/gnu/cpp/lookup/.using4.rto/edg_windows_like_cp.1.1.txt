@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 15: error: a class-qualified name is not allowed
+                  using Foo<T>::i;	// { dg-error "member at non-class scope" "" { target c++17_down } }
+                        ^
+
+1 error detected in the compilation of "Test_name.c".

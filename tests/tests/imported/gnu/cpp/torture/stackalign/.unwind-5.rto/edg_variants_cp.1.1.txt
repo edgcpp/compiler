@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./torture/stackalign/test-unwind.h", line 62: warning: variable "dummy" was set but never used
+          int dummy;
+              ^
+
+"./torture/stackalign/unwind-5.C", line 22: warning: variable "dummy" was set but never used
+    { int dummy; __asm__ __volatile__ ( "movl %1, %0" : "=D" (dummy) : "i" (-1) ); __asm__ __volatile__ ( "movl %1, %0" : "=S" (dummy) : "i" (-2) ); __asm__ __volatile__ ( "movl %1, %0" : "=b" (dummy) : "i" (-3) ); };
+          ^
+

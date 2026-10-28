@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 20: error: no instance of function template "dpdt_fn_type::f" matches the argument list
+            argument types are: (dpdt_fn_type::C<int>, dpdt_fn_type::C<int>)
+      f(C<int>{}, C<int>{});      // works
+      ^
+"Test_name.c", line 14: note: candidate function template "dpdt_fn_type::f" failed deduction
+    void f(C<T>, C<U>) { }
+         ^
+
+"Test_name.c", line 23: error: no instance of function template "dpdt_fn_type::f" matches the argument list
+            argument types are: (dpdt_fn_type::C<int>, dpdt_fn_type::C<long>)
+      f(C<int>{}, C<long>{});     // fails
+      ^
+"Test_name.c", line 14: note: candidate function template "dpdt_fn_type::f" failed deduction
+    void f(C<T>, C<U>) { }
+         ^
+
+"Test_name.c", line 41: error: a nontype template parameter may not have class type
+    template<decltype(auto) v = b>
+                                ^
+
+"Test_name.c", line 47: error: a nontype template parameter may not have class type
+    template<decltype(auto) v = C::b>
+                                ^
+
+4 errors detected in the compilation of "Test_name.c".

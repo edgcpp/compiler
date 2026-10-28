@@ -1,0 +1,6 @@
+cpfe -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 5: warning: statement is unreachable
+    return [] { if constexpr (B) while (false) {} return 1; return 2; }();
+                                                            ^
+          detected during instantiation of "int h<B>() [with B=false]" at line 8
+

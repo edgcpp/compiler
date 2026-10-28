@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "std::reverse_iterator<_Iterator>::operator+"
+      reverse_iterator operator+(difference_type __n) const {}
+                                                             ^
+
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "std::reverse_iterator<_Iterator>::operator+="
+      reverse_iterator& operator+=(difference_type __n) { }
+                                                          ^
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "std::less<_Tp>::operator()"
+      bool operator()(const _Tp& __x, const _Tp& __y) const { }
+                                                              ^
+
+"Test_name.c", line 85: warning: missing return statement at end of non-void function "std::_Rb_tree_node_base::_S_minimum"
+      static _Base_ptr _S_minimum(_Base_ptr __x) { }
+                                                   ^
+
+"Test_name.c", line 86: warning: missing return statement at end of non-void function "std::_Rb_tree_node_base::_S_maximum"
+      static _Base_ptr _S_maximum(_Base_ptr __x) { }
+                                                   ^
+
+"Test_name.c", line 94: warning: missing return statement at end of non-void function "std::_Rb_tree_iterator<_Tp>::operator->"
+      pointer operator->() const { }
+                                   ^
+
+"Test_name.c", line 95: warning: missing return statement at end of non-void function "std::_Rb_tree_iterator<_Tp>::operator++"
+      _Self operator++(int) { }
+                              ^
+

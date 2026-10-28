@@ -1,0 +1,138 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 11: error: "#" not expected here
+  [[clang::assume(#)]] void f1();           // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 11: error: expected an expression
+  [[clang::assume(#)]] void f1();           // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 14: error: "#" not expected here
+  [[clang::assume(##)]] void f2();          // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 14: error: expected an expression
+  [[clang::assume(##)]] void f2();          // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 14: error: "#" not expected here
+  [[clang::assume(##)]] void f2();          // c-error {{expected expression}} \
+                   ^
+
+"Test_name.c", line 17: error: "#" not expected here
+  [[clang::assume(1#2#3)]] void f3();       // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+                   ^
+
+"Test_name.c", line 17: error: expected a ")"
+  [[clang::assume(1#2#3)]] void f3();       // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+                   ^
+
+"Test_name.c", line 17: error: "#" not expected here
+  [[clang::assume(1#2#3)]] void f3();       // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+                     ^
+
+"Test_name.c", line 17: warning: attribute "clang::assume" does not apply here
+  [[clang::assume(1#2#3)]] void f3();       // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+    ^
+
+"Test_name.c", line 23: warning: attribute namespace "unknown" is unrecognized
+  [[unknown::unknown(#)]] void f4();        // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+    ^
+
+"Test_name.c", line 23: error: "#" not expected here
+  [[unknown::unknown(#)]] void f4();        // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                     ^
+
+"Test_name.c", line 26: warning: attribute namespace "unknown" is unrecognized
+  [[unknown::unknown(##)]] void f5();       // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+    ^
+
+"Test_name.c", line 26: error: "#" not expected here
+  [[unknown::unknown(##)]] void f5();       // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                     ^
+
+"Test_name.c", line 26: error: "#" not expected here
+  [[unknown::unknown(##)]] void f5();       // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                      ^
+
+"Test_name.c", line 29: warning: attribute namespace "unknown" is unrecognized
+  [[unknown::unknown(1#2#3)]] void f6();    // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+    ^
+
+"Test_name.c", line 29: error: "#" not expected here
+  [[unknown::unknown(1#2#3)]] void f6();    // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                      ^
+
+"Test_name.c", line 29: error: "#" not expected here
+  [[unknown::unknown(1#2#3)]] void f6();    // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                        ^
+
+"Test_name.c", line 33: error: "#" not expected here
+  [[clang::assume(%:)]] void f7();          // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 33: error: expected an expression
+  [[clang::assume(%:)]] void f7();          // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 37: error: "#" not expected here
+  [[clang::assume(%:%:)]] void f8();        // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 37: error: expected an expression
+  [[clang::assume(%:%:)]] void f8();        // c-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 37: error: "#" not expected here
+  [[clang::assume(%:%:)]] void f8();        // c-error {{expected expression}} \
+                    ^
+
+"Test_name.c", line 40: error: "#" not expected here
+  [[clang::assume(1%:2%:3)]] void f9();     // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+                   ^
+
+"Test_name.c", line 40: error: expected a ")"
+  [[clang::assume(1%:2%:3)]] void f9();     // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+                   ^
+
+"Test_name.c", line 40: error: "#" not expected here
+  [[clang::assume(1%:2%:3)]] void f9();     // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+                      ^
+
+"Test_name.c", line 40: warning: attribute "clang::assume" does not apply here
+  [[clang::assume(1%:2%:3)]] void f9();     // c-error {{use of this expression in an 'assume' attribute requires parentheses}} \
+    ^
+
+"Test_name.c", line 46: warning: attribute namespace "unknown" is unrecognized
+  [[unknown::unknown(%:)]] void f10();      // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+    ^
+
+"Test_name.c", line 46: error: "#" not expected here
+  [[unknown::unknown(%:)]] void f10();      // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                     ^
+
+"Test_name.c", line 49: warning: attribute namespace "unknown" is unrecognized
+  [[unknown::unknown(%:%:)]] void f11();    // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+    ^
+
+"Test_name.c", line 49: error: "#" not expected here
+  [[unknown::unknown(%:%:)]] void f11();    // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                     ^
+
+"Test_name.c", line 49: error: "#" not expected here
+  [[unknown::unknown(%:%:)]] void f11();    // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                       ^
+
+"Test_name.c", line 52: warning: attribute namespace "unknown" is unrecognized
+  [[unknown::unknown(1%:2%:3)]] void f12(); // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+    ^
+
+"Test_name.c", line 52: error: "#" not expected here
+  [[unknown::unknown(1%:2%:3)]] void f12(); // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                      ^
+
+"Test_name.c", line 52: error: "#" not expected here
+  [[unknown::unknown(1%:2%:3)]] void f12(); // c-warning {{unknown attribute 'unknown::unknown' ignored}} \
+                         ^
+
+26 errors detected in the compilation of "Test_name.c".

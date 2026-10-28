@@ -1,0 +1,266 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 14: error: invalid specifier for structured binding declaration
+    int && [ d ] = c;			// { dg-error "structured binding declaration cannot have type 'int'" }
+    ^
+
+"Test_name.c", line 14: error: no suitable conversion function from "B" to "int" exists
+    int && [ d ] = c;			// { dg-error "structured binding declaration cannot have type 'int'" }
+                   ^
+
+"Test_name.c", line 16: error: invalid specifier for structured binding declaration
+    char & [ e, f, ff ] { b };		// { dg-error "structured binding declaration cannot have type 'char'" }
+    ^
+
+"Test_name.c", line 16: error: no suitable conversion function from "A" to "char" exists
+    char & [ e, f, ff ] { b };		// { dg-error "structured binding declaration cannot have type 'char'" }
+                          ^
+
+"Test_name.c", line 18: warning: structured bindings are a C++17 feature
+    auto&[g,h,i]=b;			// { dg-warning "structured bindings only available with '-std=c..17' or '-std=gnu..17'" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 19: error: type name is not allowed
+    decltype (auto) [ j ] = c;		// { dg-error "structured binding declaration cannot have type 'decltype.auto.'" "" { target c++14 } }
+              ^
+
+"Test_name.c", line 19: error: type name is not allowed
+    decltype (auto) [ j ] = c;		// { dg-error "structured binding declaration cannot have type 'decltype.auto.'" "" { target c++14 } }
+    ^
+
+"Test_name.c", line 19: error: identifier "j" is undefined
+    decltype (auto) [ j ] = c;		// { dg-error "structured binding declaration cannot have type 'decltype.auto.'" "" { target c++14 } }
+                      ^
+
+"Test_name.c", line 22: error: reference to reference is not allowed
+    auto & & && & [ m, n, o ] = b;	// { dg-error "multiple ref-qualifiers" }
+           ^
+
+"Test_name.c", line 22: warning: structured bindings are a C++17 feature
+    auto & & && & [ m, n, o ] = b;	// { dg-error "multiple ref-qualifiers" }
+                  ^
+
+"Test_name.c", line 24: warning: structured bindings are a C++17 feature
+    constexpr auto [ p ] = c;		// { dg-error "structured binding declaration cannot be 'constexpr'" }
+                   ^
+
+"Test_name.c", line 24: error: a structured binding cannot be declared "constexpr"
+    constexpr auto [ p ] = c;		// { dg-error "structured binding declaration cannot be 'constexpr'" }
+    ^
+
+"Test_name.c", line 26: error: invalid specifier outside a class declaration
+    friend auto [ q ] = c;		// { dg-error "'friend' used outside of class" }
+    ^
+
+"Test_name.c", line 26: warning: structured bindings are a C++17 feature
+    friend auto [ q ] = c;		// { dg-error "'friend' used outside of class" }
+                ^
+
+"Test_name.c", line 28: warning: structured bindings are a C++17 feature
+    typedef auto [ r ] = c;		// { dg-error "structured binding declaration cannot be 'typedef'" }
+                 ^
+
+"Test_name.c", line 28: error: a structured binding cannot declare an explicit storage class
+    typedef auto [ r ] = c;		// { dg-error "structured binding declaration cannot be 'typedef'" }
+    ^
+
+"Test_name.c", line 28: error: "auto" is not allowed here
+    typedef auto [ r ] = c;		// { dg-error "structured binding declaration cannot be 'typedef'" }
+            ^
+
+"Test_name.c", line 28: error: expected a ";"
+    typedef auto [ r ] = c;		// { dg-error "structured binding declaration cannot be 'typedef'" }
+                       ^
+
+"Test_name.c", line 30: warning: "inline" is not allowed
+    inline auto [ s ] = c;		// { dg-error "structured binding declaration cannot be 'inline'" }
+    ^
+
+"Test_name.c", line 30: warning: structured bindings are a C++17 feature
+    inline auto [ s ] = c;		// { dg-error "structured binding declaration cannot be 'inline'" }
+                ^
+
+"Test_name.c", line 32: warning: structured bindings are a C++17 feature
+    __restrict auto [ t ] = c;		// { dg-error "invalid use of 'restrict'" }
+                    ^
+
+"Test_name.c", line 34: error: invalid combination of type specifiers
+    long long auto [ u ] = c;		// { dg-error "'long long' specified with 'auto'" }
+              ^
+
+"Test_name.c", line 34: error: invalid specifier for structured binding declaration
+    long long auto [ u ] = c;		// { dg-error "'long long' specified with 'auto'" }
+    ^
+
+"Test_name.c", line 36: error: invalid specifier outside a class declaration
+    virtual auto [ v ] = c;		// { dg-error "'virtual' outside class declaration" }
+    ^
+
+"Test_name.c", line 36: warning: structured bindings are a C++17 feature
+    virtual auto [ v ] = c;		// { dg-error "'virtual' outside class declaration" }
+                 ^
+
+"Test_name.c", line 38: error: "auto" is not allowed here
+    explicit auto [ w ] = c;		// { dg-error "'explicit' outside class declaration" }
+             ^
+
+"Test_name.c", line 38: error: invalid specifier for structured binding declaration
+    explicit auto [ w ] = c;		// { dg-error "'explicit' outside class declaration" }
+    ^
+
+"Test_name.c", line 38: error: "explicit" is not allowed
+    explicit auto [ w ] = c;		// { dg-error "'explicit' outside class declaration" }
+    ^
+
+"Test_name.c", line 40: warning: structured bindings are a C++17 feature
+    static auto [ x ] = c;		// { dg-warning "structured binding declaration can be 'static' only in" "" { target c++17_down } }
+                ^
+
+"Test_name.c", line 40: error: a structured binding cannot declare an explicit storage class
+    static auto [ x ] = c;		// { dg-warning "structured binding declaration can be 'static' only in" "" { target c++17_down } }
+    ^
+
+"Test_name.c", line 42: warning: structured bindings are a C++17 feature
+    extern auto [ y ] { c };		// { dg-error "structured binding declaration cannot be 'extern'" }
+                ^
+
+"Test_name.c", line 42: error: a structured binding cannot declare an explicit storage class
+    extern auto [ y ] { c };		// { dg-error "structured binding declaration cannot be 'extern'" }
+    ^
+
+"Test_name.c", line 44: warning: structured bindings are a C++17 feature
+    thread_local auto [ z ] = c;		// { dg-warning "structured binding declaration can be 'thread_local' only in" "" { target c++17_down } }
+                      ^
+
+"Test_name.c", line 44: error: a structured binding cannot declare an explicit storage class
+    thread_local auto [ z ] = c;		// { dg-warning "structured binding declaration can be 'thread_local' only in" "" { target c++17_down } }
+    ^
+
+"Test_name.c", line 18: warning: structured binding "g" was declared but never referenced
+    auto&[g,h,i]=b;			// { dg-warning "structured bindings only available with '-std=c..17' or '-std=gnu..17'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 24: warning: structured binding "p" was declared but never referenced
+    constexpr auto [ p ] = c;		// { dg-error "structured binding declaration cannot be 'constexpr'" }
+                     ^
+
+"Test_name.c", line 26: warning: structured binding "q" was declared but never referenced
+    friend auto [ q ] = c;		// { dg-error "'friend' used outside of class" }
+                  ^
+
+"Test_name.c", line 30: warning: structured binding "s" was declared but never referenced
+    inline auto [ s ] = c;		// { dg-error "structured binding declaration cannot be 'inline'" }
+                  ^
+
+"Test_name.c", line 32: warning: structured binding "t" was declared but never referenced
+    __restrict auto [ t ] = c;		// { dg-error "invalid use of 'restrict'" }
+                      ^
+
+"Test_name.c", line 36: warning: structured binding "v" was declared but never referenced
+    virtual auto [ v ] = c;		// { dg-error "'virtual' outside class declaration" }
+                   ^
+
+"Test_name.c", line 40: warning: structured binding "x" was declared but never referenced
+    static auto [ x ] = c;		// { dg-warning "structured binding declaration can be 'static' only in" "" { target c++17_down } }
+                  ^
+
+"Test_name.c", line 42: warning: structured binding "y" was declared but never referenced
+    extern auto [ y ] { c };		// { dg-error "structured binding declaration cannot be 'extern'" }
+                  ^
+
+"Test_name.c", line 44: warning: structured binding "z" was declared but never referenced
+    thread_local auto [ z ] = c;		// { dg-warning "structured binding declaration can be 'thread_local' only in" "" { target c++17_down } }
+                        ^
+
+"Test_name.c", line 48: error: this declaration has no storage class or type specifier
+  __thread auto [ z2 ] = B ();		// { dg-warning "structured binding declaration can be '__thread' only in" "" { target c++17_down } }
+  ^
+
+"Test_name.c", line 48: error: expected a ";"
+  __thread auto [ z2 ] = B ();		// { dg-warning "structured binding declaration can be '__thread' only in" "" { target c++17_down } }
+           ^
+
+"Test_name.c", line 52: error: identifier "p" is undefined
+  test2 (auto & [ p ] = bar ())		// { dg-error "'p' was not declared in this scope" }
+                  ^
+
+"Test_name.c", line 61: warning: structured bindings are a C++17 feature
+    auto [ d, e, f ] = arr;		// { dg-error "only 3 names provided" }
+         ^
+
+"Test_name.c", line 61: error: there are more elements than there are binding names
+    auto [ d, e, f ] = arr;		// { dg-error "only 3 names provided" }
+         ^
+
+"Test_name.c", line 64: warning: structured bindings are a C++17 feature
+    auto & [ g, h, i, j, k ] = arr;	// { dg-error "5 names provided" }
+           ^
+
+"Test_name.c", line 64: error: too many identifiers
+    auto & [ g, h, i, j, k ] = arr;	// { dg-error "5 names provided" }
+                         ^
+
+"Test_name.c", line 67: warning: structured bindings are a C++17 feature
+    auto [ l, m ] = b;			// { dg-error "only 2 names provided" }
+         ^
+
+"Test_name.c", line 67: error: there are more elements than there are binding names
+    auto [ l, m ] = b;			// { dg-error "only 2 names provided" }
+         ^
+
+"Test_name.c", line 70: warning: structured bindings are a C++17 feature
+    auto & [ n, o, p, q ] = b;		// { dg-error "4 names provided" }
+           ^
+
+"Test_name.c", line 70: error: too many identifiers
+    auto & [ n, o, p, q ] = b;		// { dg-error "4 names provided" }
+                      ^
+
+"Test_name.c", line 73: warning: structured bindings are a C++17 feature
+    auto [] { c };			// { dg-error "empty structured binding declaration" }
+         ^
+
+"Test_name.c", line 73: error: expected an identifier
+    auto [] { c };			// { dg-error "empty structured binding declaration" }
+          ^
+
+"Test_name.c", line 73: error: expected a "]"
+    auto [] { c };			// { dg-error "empty structured binding declaration" }
+            ^
+
+"Test_name.c", line 73: error: there are more elements than there are binding names
+    auto [] { c };			// { dg-error "empty structured binding declaration" }
+         ^
+
+"Test_name.c", line 75: warning: structured bindings are a C++17 feature
+    auto [ r, s ] = c;			// { dg-error "2 names provided" }
+         ^
+
+"Test_name.c", line 75: error: too many identifiers
+    auto [ r, s ] = c;			// { dg-error "2 names provided" }
+              ^
+
+"Test_name.c", line 61: warning: structured binding "d" was declared but never referenced
+    auto [ d, e, f ] = arr;		// { dg-error "only 3 names provided" }
+           ^
+
+"Test_name.c", line 64: warning: structured binding "g" was declared but never referenced
+    auto & [ g, h, i, j, k ] = arr;	// { dg-error "5 names provided" }
+             ^
+
+"Test_name.c", line 67: warning: structured binding "l" was declared but never referenced
+    auto [ l, m ] = b;			// { dg-error "only 2 names provided" }
+           ^
+
+"Test_name.c", line 70: warning: structured binding "n" was declared but never referenced
+    auto & [ n, o, p, q ] = b;		// { dg-error "4 names provided" }
+             ^
+
+"Test_name.c", line 73: warning: variable "<unnamed>" was declared but never referenced
+    auto [] { c };			// { dg-error "empty structured binding declaration" }
+         ^
+
+"Test_name.c", line 75: warning: structured binding "r" was declared but never referenced
+    auto [ r, s ] = c;			// { dg-error "2 names provided" }
+           ^
+
+33 errors detected in the compilation of "Test_name.c".

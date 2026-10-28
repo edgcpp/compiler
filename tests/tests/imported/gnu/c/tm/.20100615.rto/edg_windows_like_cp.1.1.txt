@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 34: error: identifier "__transaction_atomic" is undefined
+    __transaction_atomic {
+    ^
+
+"Test_name.c", line 34: error: expected a ";"
+    __transaction_atomic {
+                         ^
+
+"Test_name.c", line 38: warning: parsing restarts here after previous syntax error
+    return min;
+              ^
+
+"Test_name.c", line 39: warning: missing return statement at end of non-void function "set_new"
+  }
+  ^
+
+"Test_name.c", line 33: warning: variable "min" was declared but never referenced
+    node_t *min, *max;
+            ^
+
+"Test_name.c", line 33: warning: variable "max" was declared but never referenced
+    node_t *min, *max;
+                  ^
+
+"Test_name.c", line 21: warning: function "new_node" was declared but never referenced
+  static node_t *new_node(node_t *next)
+                 ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 24: warning: missing return statement at end of non-void function "_Rb_tree_iterator<_Tp>::operator--"
+        }
+        ^
+
+"Test_name.c", line 30: error: identifier "__transaction_relaxed" is undefined
+      __transaction_relaxed
+      ^
+
+"Test_name.c", line 31: error: expected a ";"
+        {
+        ^
+
+"Test_name.c", line 34: warning: parsing restarts here after previous syntax error
+    }
+    ^
+
+"Test_name.c", line 29: warning: variable "it" was declared but never referenced
+      _Rb_tree_iterator<int>::iterator it;
+                                       ^
+
+2 errors detected in the compilation of "Test_name.c".

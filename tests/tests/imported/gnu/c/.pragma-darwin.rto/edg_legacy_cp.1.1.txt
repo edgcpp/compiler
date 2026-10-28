@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 46: warning: variable "x" was declared but never referenced
+    int x, z;  /* { dg-warning "unused variable 'z'" } */
+        ^
+
+"Test_name.c", line 46: warning: variable "z" was declared but never referenced
+    int x, z;  /* { dg-warning "unused variable 'z'" } */
+           ^
+
+"Test_name.c", line 67: warning: variable "a" was declared but never referenced
+    int a, b;
+        ^
+
+"Test_name.c", line 67: warning: variable "b" was declared but never referenced
+    int a, b;
+           ^
+

@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 -DNOERROR -DNOERROR -DCPP -DCPP -DCPP -DCPP -DCPP -DCPP --c Test_name.c
+"Test_name.c", line 61: warning: variable "a" is used before its value is set
+    return a - b;
+           ^
+
+"Test_name.c", line 61: warning: variable "b" is used before its value is set
+    return a - b;
+               ^
+
+"Test_name.c", line 68: warning: variable "a" is used before its value is set
+    return a - b;
+           ^
+
+"Test_name.c", line 68: warning: variable "b" is used before its value is set
+    return a - b;
+               ^
+
+"Test_name.c", line 75: warning: variable "bufd" is used before its value is set
+    buff[1] = bufd[2];
+              ^
+
+"Test_name.c", line 73: warning: variable "buff" was set but never used
+    char buff[sizeof(float_t)];
+         ^
+
+"Test_name.c", line 84: warning: variable "a" is used before its value is set
+    return a - b;
+           ^
+
+"Test_name.c", line 84: warning: variable "b" is used before its value is set
+    return a - b;
+               ^
+
+"Test_name.c", line 90: warning: variable "v" was declared but never referenced
+    int v = _Generic( 1.0L, double_t:1, default:0);
+        ^
+
+"Test_name.c", line 96: warning: variable "f" was declared but never referenced
+    float f = (float_t)1; 
+          ^
+
+"Test_name.c", line 97: warning: variable "d" was declared but never referenced
+    double d = (double_t)2; 
+           ^
+
+"Test_name.c", line 102: warning: variable "c1" was declared but never referenced
+    float c1 = (float_t)12;
+          ^
+
+"Test_name.c", line 103: warning: variable "c2" was declared but never referenced
+    double c2 = (double_t)13;
+           ^
+
+"Test_name.c", line 116: warning: explicit type is missing ("int" assumed)
+    auto resf = [](float_t f) { return f; };
+         ^
+
+"Test_name.c", line 116: error: expected an expression
+    auto resf = [](float_t f) { return f; };
+                ^
+
+"Test_name.c", line 117: warning: explicit type is missing ("int" assumed)
+    auto resd = [](double_t g) { return g; };
+         ^
+
+"Test_name.c", line 117: error: expected an expression
+    auto resd = [](double_t g) { return g; };
+                ^
+
+"Test_name.c", line 122: error: identifier "using" is undefined
+    using Ft = float_t;
+    ^
+
+"Test_name.c", line 122: error: type name is not allowed
+    using Ft = float_t;
+               ^
+
+"Test_name.c", line 123: error: identifier "using" is undefined
+    using Dt = double_t;
+    ^
+
+"Test_name.c", line 123: error: type name is not allowed
+    using Dt = double_t;
+               ^
+
+"Test_name.c", line 124: error: expected a ";"
+    Ft a;
+       ^
+
+"Test_name.c", line 125: error: expected a ";"
+    Dt b;
+       ^
+
+8 errors detected in the compilation of "Test_name.c".

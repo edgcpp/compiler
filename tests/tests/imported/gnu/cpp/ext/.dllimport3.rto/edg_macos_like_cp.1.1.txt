@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 17: warning: variable "dummy" was declared but never referenced
+    void* dummy  = (void*) &f;
+          ^
+
+"Test_name.c", line 20: error: variable "f" has already been defined (previous definition at line 13)
+  struct Foo f;	// { dg-warning "referenced with dll linkage" }
+             ^
+
+1 error detected in the compilation of "Test_name.c".

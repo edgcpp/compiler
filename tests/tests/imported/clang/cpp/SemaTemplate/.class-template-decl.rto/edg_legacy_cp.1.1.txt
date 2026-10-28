@@ -1,0 +1,95 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 22: error: this declaration may not have extern "C" linkage
+    template<typename T> class D; // expected-error{{templates must have C++ linkage}}
+    ^
+
+"Test_name.c", line 23: error: this declaration may not have extern "C" linkage
+    template<typename T> class A<T **>; // expected-error{{templates must have C++ linkage}}
+    ^
+
+"Test_name.c", line 24: error: this declaration may not have extern "C" linkage
+    template<> class A<int[3]>; // expected-error{{templates must have C++ linkage}}
+    ^
+
+"Test_name.c", line 30: error: this declaration may not have extern "C" linkage
+      template<typename T> class D; // expected-error{{templates must have C++ linkage}}
+      ^
+
+"Test_name.c", line 31: error: this declaration may not have extern "C" linkage
+      template<typename T> void f(); // expected-error{{templates must have C++ linkage}}
+      ^
+
+"Test_name.c", line 37: error: declaration is incompatible with template parameter "T" (declared at line 5)
+  template<int N> class A; // expected-error{{template parameter has a different kind in template redeclaration}}
+               ^
+
+"Test_name.c", line 45: warning: declaration is incompatible with constant "int N" (declared at line 39)
+  template<long> class NonTypeTemplateParm; // expected-error{{template non-type parameter has a different type 'long' in template redeclaration}}
+               ^
+
+"Test_name.c", line 52: error: declaration is incompatible with template template parameter "X" (declared at line 47)
+  template<typename> class TemplateTemplateParm; // expected-error{{template parameter has a different kind in template redeclaration}}
+                   ^
+
+"Test_name.c", line 54: error: declaration is incompatible with template template parameter "X" (declared at line 47)
+  template<template<typename T, int> class X> class TemplateTemplateParm; // expected-error{{too many template parameters in template template parameter redeclaration}}
+                                           ^
+
+"Test_name.c", line 60: error: class template "test" has already been defined (previous definition at line 56)
+  struct test : T {}; // expected-error{{redefinition}}
+         ^
+
+"Test_name.c", line 68: error: a template declaration is not allowed here
+    template<typename T> class X; // expected-error{{templates can only be declared in namespace or class scope}}
+    ^
+
+"Test_name.c", line 71: error: variable cannot have incomplete type "X1"
+  template<typename T> class X1 var; // expected-error {{variable has incomplete type 'class X1'}} \
+                       ^
+
+"Test_name.c", line 77: error: namespace "M" has no member "C3"
+  template<typename T> class M::C3 { }; // expected-error{{out-of-line definition of 'C3' does not match any declaration in namespace 'M'}}
+                                ^
+
+"Test_name.c", line 93: warning: variable "y" was declared but never referenced
+      Foo<int>::Bar<int> y(x);
+                         ^
+
+"Test_name.c", line 119: error: "A" has already been declared in the current scope
+    template<typename T> struct A; // expected-error {{different kind of symbol}}
+                                ^
+
+"Test_name.c", line 122: error: "B" has already been declared in the current scope
+    template<typename T> struct B { // expected-error {{different kind of symbol}}
+                                ^
+
+"Test_name.c", line 132: error: "C" has already been declared in the current scope
+      template<typename T> struct C; // expected-error {{different kind of symbol}}
+                                  ^
+
+"Test_name.c", line 135: error: "D" has already been declared in the current scope
+      template<typename T> struct D { // expected-error {{different kind of symbol}}
+                                  ^
+
+"Test_name.c", line 139: error: a class template cannot be defined in a friend declaration
+      template<typename T> friend struct E { // expected-error {{cannot define a type in a friend}}
+                                         ^
+
+"Test_name.c", line 147: error: "H" has already been declared in the current scope
+      template<typename T> friend struct H; // expected-error {{different kind of symbol}}
+                                         ^
+
+"Test_name.c", line 160: error: this declaration may not have extern "C" linkage
+  extern "C" template <typename T> // expected-error{{templates must have C++ linkage}}
+             ^
+
+"Test_name.c", line 163: warning: expression has no effect
+    pT;
+    ^
+
+"Test_name.c", line 170: error: object of abstract class type "abstract_dependent_class::A<T>" is not allowed:
+            function "abstract_dependent_class::A<T>::clone" is a pure virtual function
+    template<typename T> A<T> *A<T>::clone() { return new A<T>; } // expected-error {{abstract class type 'A<T>'}}
+                                                          ^
+
+20 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,83 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++14 Test_name.c
+"Test_name.c", line 13: error: invalid redeclaration of member function "MVReference::bar()" (declared at line 12)
+    int __attribute__((cpu_specific(ivybridge))) bar(void);
+                                                 ^
+
+"Test_name.c", line 22: error: nonstandard form for taking the address of a member function
+    +MVReference::bar;
+     ^
+
+"Test_name.c", line 22: error: expression must have arithmetic or unscoped enum type
+    +MVReference::bar;
+     ^
+
+"Test_name.c", line 24: error: nonstandard form for taking the address of a member function
+    +MVReference::foo;
+     ^
+
+"Test_name.c", line 24: error: expression must have arithmetic or unscoped enum type
+    +MVReference::foo;
+     ^
+
+"Test_name.c", line 26: warning: expression has no effect
+    &MVReference::bar;
+    ^
+
+"Test_name.c", line 28: warning: expression has no effect
+    &MVReference::foo;
+    ^
+
+"Test_name.c", line 36: error: function "foo2" (declared at line 34) was previously not declared constexpr
+  constexpr int __attribute__((cpu_specific(ivybridge))) foo2(void);
+  ^
+
+"Test_name.c", line 40: warning: missing return statement at end of non-void function "bar"
+  int __attribute__((cpu_dispatch(ivybridge))) bar(void) {}
+                                                          ^
+
+"Test_name.c", line 44: warning: missing return statement at end of non-void function "bar2"
+  int __attribute__((cpu_dispatch(ivybridge))) bar2(void) {}
+                                                           ^
+
+"Test_name.c", line 48: warning: missing return statement at end of non-void function "<unnamed>::bar3"
+  static int __attribute__((cpu_dispatch(ivybridge))) bar3(void) {}
+                                                                  ^
+
+"Test_name.c", line 58: error: cannot overload functions distinguished by return type alone
+  int __attribute__((cpu_specific(sandybridge))) diff_return(void);
+                                                 ^
+
+"Test_name.c", line 63: error: exception specification is incompatible with that of previous function "diff_noexcept" (declared at line 60):
+            previously specified: no exceptions will be thrown
+  int __attribute__((cpu_specific(sandybridge))) diff_noexcept(void) noexcept(false);
+                                                                     ^
+
+"Test_name.c", line 80: warning: missing return statement at end of non-void function "S::foo2(T)"
+    int __attribute__((cpu_dispatch(ivybridge))) foo2(T) {}
+                                                          ^
+
+"Test_name.c", line 90: error: function "diff_mangle" has already been defined (previous definition at line 87)
+  int __attribute__((cpu_specific(sandybridge))) diff_mangle(void) { return 0; }
+                                                 ^
+
+"Test_name.c", line 98: error: function "N::DiffDecl()" conflicts with using-declaration of function "DiffDecl()"
+  __attribute__((cpu_dispatch(atom))) void DiffDecl();
+                                           ^
+
+"Test_name.c", line 118: error: function "OutOfLine::foo" has already been defined (previous definition at line 117)
+  int __attribute__((cpu_specific(sandybridge))) OutOfLine::foo(int) { return 1; }
+                                                            ^
+
+"Test_name.c", line 121: warning: missing return statement at end of non-void function "CppSpelling"
+  [[clang::cpu_specific(ivybridge,atom)]] int CppSpelling(){}
+                                                            ^
+
+"Test_name.c", line 40: warning: function "bar" was declared but never referenced
+  int __attribute__((cpu_dispatch(ivybridge))) bar(void) {}
+                                               ^
+
+"Test_name.c", line 48: warning: function "<unnamed>::bar3" was declared but never referenced
+  static int __attribute__((cpu_dispatch(ivybridge))) bar3(void) {}
+                                                      ^
+
+11 errors detected in the compilation of "Test_name.c".

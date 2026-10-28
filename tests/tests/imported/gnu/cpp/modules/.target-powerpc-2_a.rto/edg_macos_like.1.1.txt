@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef unsigned char  vec_t __attribute__((vector_size(16)));
+                                              ^
+
+"Test_name.c", line 12: error: incomplete type "void" is not allowed
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+  ^
+
+"Test_name.c", line 12: error: identifier "__vector_quad" is undefined
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+        ^
+
+"Test_name.c", line 12: error: identifier "dst" is undefined
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+                       ^
+
+"Test_name.c", line 12: error: type name is not allowed
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+                            ^
+
+"Test_name.c", line 12: error: identifier "vec" is undefined
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+                                   ^
+
+"Test_name.c", line 12: error: identifier "__vector_pair" is undefined
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+                                        ^
+
+"Test_name.c", line 12: error: identifier "pvecp" is undefined
+  foo0 (__vector_quad *dst, vec_t *vec, __vector_pair *pvecp)
+                                                       ^
+
+"Test_name.c", line 13: error: expected a ";"
+  {
+  ^
+
+8 errors detected in the compilation of "Test_name.c".

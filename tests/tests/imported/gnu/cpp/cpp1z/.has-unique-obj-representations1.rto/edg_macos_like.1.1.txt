@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 17: warning: declared size for bit field is larger than the size of the bit field type; truncated to 32 bits
+  struct A { int i : INTB * 2; int j; };			// { dg-warning "exceeds its type" }
+                     ^
+
+"Test_name.c", line 20: warning: declared size for bit field is larger than the size of the bit field type; truncated to 32 bits
+  struct D { int a : INTB + 1; int b : INTB - 1; };	// { dg-warning "exceeds its type" }
+                     ^
+
+"Test_name.c", line 36: error: _Complex can only be used with floating-point types
+  static_assert (__has_unique_object_representations (_Complex int) == true, "");
+                                                      ^
+
+"Test_name.c", line 40: warning: unknown attribute "vector_size"
+  static_assert (__has_unique_object_representations (int __attribute__((vector_size (16)))) == true, "");
+                                                                         ^
+
+"Test_name.c", line 41: warning: unknown attribute "vector_size"
+  static_assert (__has_unique_object_representations (float __attribute__((vector_size (16)))) == false, "");
+                                                                           ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,44 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 19: error: qualified name is not allowed
+    template <typename S> void X<S>::f() __attribute__((locks_excluded())); // expected-error{{nested name specifier 'X<S>' for declaration does not refer into a class, class template or class template partial specialization}} \
+                               ^
+
+"Test_name.c", line 29: error: type name is not allowed
+    typedef int __attribute__((aligned(int))) T2; // expected-error {{expected '(' for function-style cast}}
+                                       ^
+
+"Test_name.c", line 36: error: expected an expression
+    void (*__attribute__((attrA)) *__attribute__((attrB)) fn_ptr_ptr)() = &fn_ptr; // expected-warning{{unknown attribute 'attrA' ignored}} expected-warning{{unknown attribute 'attrB' ignored}}
+           ^
+
+"Test_name.c", line 36: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    void (*__attribute__((attrA)) *__attribute__((attrB)) fn_ptr_ptr)() = &fn_ptr; // expected-warning{{unknown attribute 'attrA' ignored}} expected-warning{{unknown attribute 'attrB' ignored}}
+    ^
+
+"Test_name.c", line 38: warning: variable "fn_lref" was declared but never referenced
+    void (&__attribute__((attr)) fn_lref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
+                                 ^
+
+"Test_name.c", line 39: warning: variable "fn_rref" was declared but never referenced
+    void (&&__attribute__((attr)) fn_rref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
+                                  ^
+
+"Test_name.c", line 42: warning: variable "pi" was set but never used
+    int (*__attribute__((attr(i[1]))) pi);  // expected-warning{{unknown attribute 'attr' ignored}}
+                                      ^
+
+"Test_name.c", line 46: error: expected a string literal
+  [[deprecated([""])]] int WrongArgs; // expected-error {{expected string literal as argument of 'deprecated' attribute}}
+               ^
+
+"Test_name.c", line 51: error: expected a ","
+  [[foo bar]] int NoComma; // expected-error {{expected ','}} \
+        ^
+
+At end of source: error: expected a ","
+
+At end of source: error: expected a "]"
+
+At end of source: error: expected a declaration
+
+9 errors detected in the compilation of "Test_name.c".

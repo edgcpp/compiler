@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 15: warning: attribute "weak" does not apply here
+  struct __attribute__((weak)) s0 {}; // expected-warning {{'weak' attribute only applies to variables, functions, and classes}}
+                        ^
+
+"Test_name.c", line 18: error: the "weak" attribute can only appear on functions and variables with external linkage
+  static int f(void) __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                    ^
+
+"Test_name.c", line 19: error: the "weak" attribute can only appear on functions and variables with external linkage
+  static int x __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                              ^
+
+"Test_name.c", line 29: error: the "weak" attribute can only appear on functions and variables with external linkage
+  extern int pr14946_x  __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                       ^
+
+"Test_name.c", line 32: error: the "weak" attribute can only appear on functions and variables with external linkage
+  void pr14946_f(void) __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                      ^
+
+"Test_name.c", line 18: warning: function "f" was declared but never referenced
+  static int f(void) __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+             ^
+
+"Test_name.c", line 19: warning: variable "x" was declared but never referenced
+  static int x __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+             ^
+
+"Test_name.c", line 28: warning: variable "pr14946_x" was declared but never referenced
+  static int pr14946_x;
+             ^
+
+"Test_name.c", line 31: warning: function "pr14946_f" was declared but never referenced
+  static void pr14946_f(void);
+              ^
+
+4 errors detected in the compilation of "Test_name.c".

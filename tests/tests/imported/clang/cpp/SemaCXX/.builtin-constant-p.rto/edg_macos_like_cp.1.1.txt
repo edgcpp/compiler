@@ -1,0 +1,39 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 6: error: identifier "__INTPTR_TYPE__" is undefined
+  using intptr_t = __INTPTR_TYPE__;
+                   ^
+
+"Test_name.c", line 50: error: static assertion failed
+  static_assert(!bcp(&x));
+  ^
+
+"Test_name.c", line 64: error: static assertion failed
+  static_assert(__builtin_constant_p((int*)123)); // ... but GCC accepts this
+  ^
+
+"Test_name.c", line 110: error: static assertion failed
+  static_assert(mutate4() == 11);
+  ^
+"Test_name.c", line 110: note: the final comparison was 10 == 11
+  static_assert(mutate4() == 11);
+                          ^
+
+"Test_name.c", line 119: error: static assertion failed
+  static_assert(mutate5() == 11);
+  ^
+"Test_name.c", line 119: note: the final comparison was 10 == 11
+  static_assert(mutate5() == 11);
+                          ^
+
+"Test_name.c", line 133: error: static assertion failed
+  static_assert(mutate6(false) == 11);
+  ^
+"Test_name.c", line 133: note: the final comparison was 10 == 11
+  static_assert(mutate6(false) == 11);
+                               ^
+
+"Test_name.c", line 140: error: static assertion failed
+  static_assert(__builtin_constant_p(&typeid(int)));
+  ^
+
+7 errors detected in the compilation of "Test_name.c".

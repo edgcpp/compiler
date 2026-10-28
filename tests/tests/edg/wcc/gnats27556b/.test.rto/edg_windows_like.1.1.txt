@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --multi_trans_unit --c++14 --clang --clang_version=160000 other-tu.c Test_name.c
+"code.h", line 1: warning: unknown attribute "__visibility__"
+  void __attribute__((__visibility__("hidden"))) __attribute__((__visibility__("default"))) foo();
+                      ^
+
+"code.h", line 1: warning: unknown attribute "__visibility__"
+  void __attribute__((__visibility__("hidden"))) __attribute__((__visibility__("default"))) foo();
+                                                                ^
+
+"code.h", line 1: warning: unknown attribute "__visibility__"
+  void __attribute__((__visibility__("hidden"))) __attribute__((__visibility__("default"))) foo();
+                      ^
+          detected during compilation of secondary translation unit "Test_name.c"
+
+"code.h", line 1: warning: unknown attribute "__visibility__"
+  void __attribute__((__visibility__("hidden"))) __attribute__((__visibility__("default"))) foo();
+                                                                ^
+          detected during compilation of secondary translation unit "Test_name.c"
+

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 130: error: "X" is not a nonstatic data member or base class of class "PR7179::X::Y"
+        template <class T> Y(T x) : X(x) { }
+                                    ^
+
+1 error detected in the compilation of "Test_name.c".

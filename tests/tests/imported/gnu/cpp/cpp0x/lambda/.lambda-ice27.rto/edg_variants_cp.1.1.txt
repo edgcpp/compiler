@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: error: "i" has already been declared in the current scope
+    i = [] { virtual }();  // { dg-error "redeclaration|expected" }
+    ^
+
+"Test_name.c", line 9: error: invalid specifier outside a class declaration
+    i = [] { virtual }();  // { dg-error "redeclaration|expected" }
+             ^
+
+"Test_name.c", line 9: error: expected an identifier
+    i = [] { virtual }();  // { dg-error "redeclaration|expected" }
+                     ^
+
+"Test_name.c", line 9: error: expected a ";"
+    i = [] { virtual }();  // { dg-error "redeclaration|expected" }
+                     ^
+
+"Test_name.c", line 8: warning: variable "i" was declared but never referenced
+    int i,
+        ^
+
+4 errors detected in the compilation of "Test_name.c".

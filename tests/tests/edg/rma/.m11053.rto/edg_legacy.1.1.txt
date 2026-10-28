@@ -1,0 +1,14 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 11: remark: function "C::C_nest::C_nest(int)" cannot be inlined
+  		C_nest(int ii) : i(ii) { }
+  		^
+
+"Test_name.c", line 16: remark: function "C::C(int)" cannot be inlined
+  	C(int ii) : i(ii) , m(ii) { }
+  	^
+
+"Test_name.c", line 23: error: "C_nest" has already been declared in the current scope
+  	struct C_nest {
+  	       ^
+
+1 error detected in the compilation of "Test_name.c".

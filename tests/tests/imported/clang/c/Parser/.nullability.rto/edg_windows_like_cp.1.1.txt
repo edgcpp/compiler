@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 5: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  _Nonnull int *ptr; // expected-warning{{type nullability specifier '_Nonnull' is a Clang extension}}
+  ^
+
+"Test_name.c", line 9: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  _Nonnull int *ptr2; // no-warning
+  ^
+
+"Test_name.c", line 17: catastrophic error: #error directive: Nullability on array parameters should always be supported
+  #  error Nullability on array parameters should always be supported
+     ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

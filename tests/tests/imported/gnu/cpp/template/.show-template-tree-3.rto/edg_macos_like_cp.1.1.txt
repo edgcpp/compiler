@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/type_traits", line 519: error: identifier "__float128" is undefined
+      struct __is_floating_point_helper<__float128>
+                                        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/stl_algobase.h", line 1073: error: identifier "__float128" is undefined
+    __size_to_integer(__float128 __n) { return (long long)__n; }
+                      ^
+
+"./template/show-template-tree-3.C", line 25: error: no suitable user-defined conversion from "std::vector<double, std::allocator<double>>" to "std::vector<float, std::allocator<float>>" exists
+    takes_vf (vector<double> ());
+              ^
+
+"./template/show-template-tree-3.C", line 31: error: no suitable user-defined conversion from "std::map<int, std::vector<double, std::allocator<double>>, std::less<int>, std::allocator<std::pair<const int, std::vector<double, std::allocator<double>>>>>" to "std::map<int, std::vector<float, std::allocator<float>>, std::less<int>, std::allocator<std::pair<const int, std::vector<float, std::allocator<float>>>>>" exists
+    takes_mivf (map<int, vector<double> > ());
+                ^
+
+"./template/show-template-tree-3.C", line 38: warning: missing return statement at end of non-void function "test"
+  }
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

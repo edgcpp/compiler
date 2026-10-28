@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 7: warning: variable "f" was set but never used
+    auto f = [](int) { return true; };
+         ^
+
+"Test_name.c", line 8: warning: variable "n" was declared but never referenced
+    int n = [&](auto i) requires (f(sizeof(i))) { return 99; }(12);
+        ^
+
+"Test_name.c", line 9: warning: variable "m" was declared but never referenced
+    int m = [](auto i) requires (f(sizeof(i))) { return 99; }(12);
+        ^
+
+Internal error: assertion failed at: "mem_manage.c", line <suppressed> in expensive_il_entry_prefix_of
+
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

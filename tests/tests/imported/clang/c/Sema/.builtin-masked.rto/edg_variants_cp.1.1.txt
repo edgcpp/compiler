@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: error: too few arguments in function call
+    (void)__builtin_masked_load(mask); // expected-error {{too few arguments to function call, expected 2, have 1}}
+                                    ^
+
+"Test_name.c", line 12: error: too many arguments in function call
+    (void)__builtin_masked_load(mask, pf, pf, pf); // expected-error {{too many arguments to function call, expected at most 3, have 4}}
+                                              ^
+
+"Test_name.c", line 13: error: argument must be a pointer to a scalar type
+    (void)__builtin_masked_load(mask, mask); // expected-error {{2nd argument must be a scalar pointer}}
+                                      ^
+
+"Test_name.c", line 14: error: incorrect argument type (should be "__attribute((ext_vector_type(2))) int")
+    (void)__builtin_masked_load(mask2, pf, thru); // expected-error {{3rd argument must be a 'int __attribute__((ext_vector_type(2)))' (vector of 2 'int' values)}}
+                                           ^
+
+"Test_name.c", line 26: error: too few arguments in function call
+    (void)__builtin_masked_expand_load(mask); // expected-error {{too few arguments to function call, expected 2, have 1}}
+                                           ^
+
+"Test_name.c", line 27: error: too many arguments in function call
+    (void)__builtin_masked_expand_load(mask, pf, pf, pf); // expected-error {{too many arguments to function call, expected at most 3, have 4}}
+                                                 ^
+
+"Test_name.c", line 28: error: argument must be a pointer to a scalar type
+    (void)__builtin_masked_expand_load(mask, mask); // expected-error {{2nd argument must be a scalar pointer}}
+                                             ^
+
+"Test_name.c", line 29: error: too many arguments in function call
+    (void)__builtin_masked_expand_load(mask2, pf, thru); // expected-error {{3rd argument must be a 'int __attribute__((ext_vector_type(2)))' (vector of 2 'int' values)}}
+                                                  ^
+
+"Test_name.c", line 41: error: too few arguments in function call
+    __builtin_masked_gather(mask); // expected-error {{too few arguments to function call, expected 3, have 1}}
+                                ^
+
+"Test_name.c", line 42: error: too many arguments in function call
+    __builtin_masked_gather(mask, p, p, p, p, p); // expected-error {{too many arguments to function call, expected at most 4, have 6}}
+                                        ^
+
+"Test_name.c", line 43: error: argument must be a vector of boolean types
+    __builtin_masked_gather(p, p, p); // expected-error {{1st argument must be a vector of boolean types (was 'int *')}}
+                            ^
+
+"Test_name.c", line 44: error: a vector type (with the same number of elements as the first argument) is required
+    __builtin_masked_gather(mask, p, p); // expected-error {{1st argument must be a vector of integer types (was 'int *')}}
+                                  ^
+
+"Test_name.c", line 45: error: a vector type (with the same number of elements as the first argument) is required
+    __builtin_masked_gather(mask2, idx, p); // expected-error {{all arguments to '__builtin_masked_gather' must have the same number of elements (was 'v2b'}}
+                                   ^
+
+"Test_name.c", line 46: error: too many arguments in function call
+    __builtin_masked_gather(mask, idx, p, thru); // expected-error {{4th argument must be a 'int __attribute__((ext_vector_type(8)))' (vector of 8 'int' values)}}
+                                          ^
+
+"Test_name.c", line 47: error: argument must be a pointer to a scalar type
+    __builtin_masked_gather(mask, idx, &idx); // expected-error {{3rd argument must be a scalar pointer}}
+                                       ^
+
+"Test_name.c", line 61: error: incorrect argument type (should be "__attribute((ext_vector_type(8))) const int")
+    __builtin_masked_load(mask, ptr, v);
+                                     ^
+
+"Test_name.c", line 62: error: incorrect argument type (should be "__attribute((ext_vector_type(8))) volatile int")
+    (void)__builtin_masked_load(mask, (volatile int *)ptr, v); // expected-error {{sending 'volatile int *' to parameter of incompatible type 'int *': type mismatch at 2nd parameter ('volatile int *' vs 'int *')}}
+                                                           ^
+
+"Test_name.c", line 66: error: argument must be a pointer to a scalar type
+    (void)__builtin_masked_gather(mask, idx, ptr);
+                                             ^
+
+"Test_name.c", line 67: error: argument must be a pointer to a scalar type
+    (void)__builtin_masked_gather(mask, idx, (volatile int *)ptr); // expected-error {{sending 'volatile int *' to parameter of incompatible type 'int *': type mismatch at 2nd parameter ('volatile int *' vs 'int *')}}
+                                             ^
+
+"Test_name.c", line 85: error: argument must be a pointer to a scalar type
+    (void)__builtin_masked_gather(mask, v, ptr);// expected-error {{sending 'volatile int *' to parameter of incompatible type 'int *': type mismatch at 2nd parameter ('volatile int *' vs 'int *')}}
+                                           ^
+
+"Test_name.c", line 103: error: argument must be a pointer to a scalar type
+    (void)__builtin_masked_gather(mask, v, ptr); // expected-error {{'_Atomic(int) *' to parameter of incompatible type 'int *': type mismatch at 2nd parameter ('_Atomic(int) *' vs 'int *')}}
+                                           ^
+
+21 errors detected in the compilation of "Test_name.c".

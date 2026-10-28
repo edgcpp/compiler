@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --set_flag=no_very_expensive_checking --exceptions --exceptions --c++17 Test_name.c
+"Test_name.c", line N: error: operand types are incompatible ("void" and "FourInts" (aka "int"))
+    (void)(four_ints ? (void)1 : four_ints); // expected-error {{GNU vector conditional operand cannot be void}}
+                               ^
+
+"Test_name.c", line N: error: expression must have arithmetic or unscoped enum type
+    (void)(four_ints ?: (void)1);            // expected-error {{GNU vector conditional operand cannot be void}}
+                        ^
+
+"Test_name.c", line N: error: expression must have arithmetic or unscoped enum type
+    (void)(four_ints ? four_uints : se); // expected-error {{cannot convert between vector and non-scalar values ('FourUInts' (vector of 4 'unsigned int' values) and 'SE'}}
+                                    ^
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: internal error: assertion failed
+
+
+7 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

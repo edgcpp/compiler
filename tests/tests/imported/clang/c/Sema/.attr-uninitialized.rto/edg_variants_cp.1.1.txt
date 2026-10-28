@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: variable "dont_initialize_me" was declared but never referenced
+    int dont_initialize_me __attribute((uninitialized));
+        ^
+
+"Test_name.c", line 10: warning: variable "im_bad" was declared but never referenced
+    int im_bad __attribute((uninitialized("zero")));  // expected-error {{'uninitialized' attribute takes no arguments}}
+        ^
+
+"Test_name.c", line 11: warning: variable "im_baaad" was declared but never referenced
+    static int im_baaad __attribute((uninitialized)); // expected-warning {{'uninitialized' attribute only applies to local variables}}
+               ^
+
+"Test_name.c", line 16: warning: variable "and_the_whole_world_has_to" was declared but never referenced
+  static int and_the_whole_world_has_to __attribute((uninitialized)); // expected-warning {{'uninitialized' attribute only applies to local variables}}
+             ^
+

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 19: warning: expression has no effect
+      box->i; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 49: warning: variable "x" is used before its value is set
+           &x[0];  // expected-warning {{expression result unused}}
+            ^
+
+"Test_name.c", line 96: warning: variable "i" was set but never used
+    int i = 0;
+        ^
+
+"Test_name.c", line 49: warning: expression has no effect
+           &x[0];  // expected-warning {{expression result unused}}
+           ^
+          detected during instantiation of "void test2::std::basic_string<T>::method() const [with T=char]" at line 54
+

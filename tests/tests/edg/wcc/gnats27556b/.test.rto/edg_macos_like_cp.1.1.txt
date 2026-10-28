@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --multi_trans_unit --c++14 --clang --clang_version=160000 other-tu.c Test_name.c
+"code.h", line 1: warning: visibility attribute ignored because it conflicts with a previous declaration
+  void __attribute__((__visibility__("hidden"))) __attribute__((__visibility__("default"))) foo();
+                                                                ^
+
+"code.h", line 1: warning: visibility attribute ignored because it conflicts with a previous declaration
+  void __attribute__((__visibility__("hidden"))) __attribute__((__visibility__("default"))) foo();
+                                                                ^
+
+Catastrophic error: cannot open source file "./cpfe-cp-gen-be/other-tu.c"
+
+1 catastrophic error detected in the compilation of "./cpfe-cp-gen-be/other-tu.c".
+Compilation terminated.

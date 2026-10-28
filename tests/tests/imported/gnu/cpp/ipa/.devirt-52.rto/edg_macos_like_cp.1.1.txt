@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 44: warning: missing return statement at end of non-void function "F<D<W>>::bar"
+      }
+      ^
+
+"Test_name.c", line 47: warning: missing return statement at end of non-void function "F<D<W>>::bar"
+      }
+      ^
+
+"Test_name.c", line 52: warning: missing return statement at end of non-void function "F<D<W>>::baz"
+    }
+    ^
+
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "foo<V>(B) [with V=D<C>]"
+  template <typename V> V foo (B) {}
+                                   ^
+          detected during:
+            instantiation of "V foo<V>(B) [with V=D<C>]" at line 50
+            instantiation of "D<W> F<D<W>>::baz() const [with W=int]" at line 43
+            instantiation of "A<char, int> F<D<W>>::bar(const B &) const [with W=int]" 
+

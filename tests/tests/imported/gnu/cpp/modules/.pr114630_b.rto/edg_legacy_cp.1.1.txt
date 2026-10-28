@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"./modules/pr114630.h", line 5: warning: variable "x" was declared but never referenced
+    int x;
+        ^
+
+"./modules/pr114630_b.C", line 7: catastrophic error: could not find module file for module "X"
+  import X;
+         ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

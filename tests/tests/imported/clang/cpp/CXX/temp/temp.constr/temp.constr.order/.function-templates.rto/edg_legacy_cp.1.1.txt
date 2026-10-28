@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 13: error: more than one instance of overloaded function "a" matches the argument list:
+            function template "bool a<T>()" (declared at line 7)
+            function template "bool a<T>()" (declared at line 11)
+  bool av = a<unsigned>(); // expected-error {{call to 'a' is ambiguous}}
+            ^
+
+"Test_name.c", line 71: error: more than one instance of overloaded function "f" matches the argument list:
+            function template "void f<T,U>()" (declared at line 64)
+            function template "void f<T,U>()" (declared at line 68)
+  static_assert(sizeof(f<long long, int>()));
+                       ^
+
+"Test_name.c", line 82: warning: missing return statement at end of non-void function "g<T>()"
+  int g() { }
+            ^
+
+"Test_name.c", line 85: warning: missing return statement at end of non-void function "g<T>()"
+  int g() { }
+            ^
+
+2 errors detected in the compilation of "Test_name.c".

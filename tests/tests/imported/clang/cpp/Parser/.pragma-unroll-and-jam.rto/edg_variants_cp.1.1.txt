@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 9: warning: variable "i" was declared but never referenced
+    int i = 0;
+        ^
+
+"Test_name.c", line 49: warning: variable "j" was declared but never referenced
+  /* expected-error {{expected a for, while, or do-while loop to follow '#pragma unroll_and_jam'}} */ int j = Length;
+                                                                                                          ^
+
+"Test_name.c", line 51: warning: variable "k" was declared but never referenced
+  /* expected-error {{expected a for, while, or do-while loop to follow '#pragma unroll_and_jam'}} */ int k = Length;
+                                                                                                          ^
+
+"Test_name.c", line 53: warning: variable "l" was declared but never referenced
+  /* expected-error {{expected a for, while, or do-while loop to follow '#pragma nounroll_and_jam'}} */ int l = Length;
+                                                                                                            ^
+

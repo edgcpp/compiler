@@ -1,0 +1,32 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: warning: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  int __GIMPLE (ssa,startwith("fre")) __attribute__((noipa))
+                ^
+
+"Test_name.c", line 12: error: expected a ")"
+  int __GIMPLE (ssa,startwith("fre")) __attribute__((noipa))
+                             ^
+
+"Test_name.c", line 12: error: attributes are not permitted in a function definition
+  int __GIMPLE (ssa,startwith("fre")) __attribute__((noipa))
+                                      ^
+
+"Test_name.c", line 13: error: expected a declaration
+  foo (float *p)
+  ^
+
+"Test_name.c", line 12: warning: standard requires that parameter "ssa" be given a type by a subsequent declaration ("int" assumed)
+  int __GIMPLE (ssa,startwith("fre")) __attribute__((noipa))
+                ^
+
+"Test_name.c", line 12: warning: standard requires that parameter "startwith" be given a type by a subsequent declaration ("int" assumed)
+  int __GIMPLE (ssa,startwith("fre")) __attribute__((noipa))
+                    ^
+
+At end of source: error: expected a "{"
+
+At end of source: warning: missing return statement at end of non-void function "__GIMPLE"
+
+At end of source: error: expected a "}"
+
+5 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,95 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 9: error: no instance of function template "PR15360::f" matches the argument list
+      f<int(int), int(*)(int), nullptr>(); // expected-note{{in instantiation of}}
+      ^
+"Test_name.c", line 7: note: substituting explicit template arguments "<int (int), int (*)(int), nullptr>" for function template "PR15360::f" failed
+    U f() { return &F; } // expected-error{{cannot take the address of an rvalue of type 'int (*)(int)'}} expected-error{{cannot take the address of an rvalue of type 'int *'}}
+      ^
+
+"Test_name.c", line 10: error: no instance of function template "PR15360::f" matches the argument list
+      f<int[3], int*, nullptr>(); // expected-note{{in instantiation of}}
+      ^
+"Test_name.c", line 7: note: substituting explicit template arguments "<int [3], int *, nullptr>" for function template "PR15360::f" failed
+    U f() { return &F; } // expected-error{{cannot take the address of an rvalue of type 'int (*)(int)'}} expected-error{{cannot take the address of an rvalue of type 'int *'}}
+      ^
+
+"Test_name.c", line 30: error: "auto" is not allowed here
+    template<auto> struct A { };  // expected-error {{until C++17}}
+             ^
+
+"Test_name.c", line 36: error: no suitable conversion function from "check_conversion_early::X" to "int" exists
+    template<X &x> struct A<x> {}; // expected-error {{not implicitly convertible}}
+                            ^
+
+"Test_name.c", line 36: warning: constant "x" is not used in or cannot be deduced from the template argument list of class template "check_conversion_early::A<<error-constant>>"
+    template<X &x> struct A<x> {}; // expected-error {{not implicitly convertible}}
+                ^
+
+"Test_name.c", line 39: warning: constant "y" is not used in or cannot be deduced from the template argument list of class template "check_conversion_early::A<<expression>>"
+    template<Y &y> struct A<y> {}; // expected-error {{cannot be deduced}} expected-note {{'y'}}
+                ^
+
+"Test_name.c", line 49: error: no instance of function template "ReportCorrectParam::TempFunc" matches the argument list
+    TempFunc<1, -1, 1>();
+    ^
+"Test_name.c", line 44: note: substituting explicit template arguments "<1, -1, 1>" for function template "ReportCorrectParam::TempFunc" failed
+  void TempFunc() {}
+       ^
+
+"Test_name.c", line 104: error: class "Column<kEta, double>" has no member "ls"
+    Column<kEta, double>().ls();    // expected-error {{<kEta,}}
+                           ^
+
+"Test_name.c", line 105: error: class "Column<kDes, double>" has no member "ls"
+    Column<kDes, double>().ls();    // expected-error {{<kDes,}}
+                           ^
+
+"Test_name.c", line 106: error: class "Column<(const char *)nullptr, double>" has no member "ls"
+    Column<nullptr, double>().ls(); // expected-error {{<nullptr,}}
+                              ^
+
+"Test_name.c", line 107: error: class "Dolumn<kEta, double>" has no member "ls"
+    Dolumn<kEta, double>().ls();    // expected-error {{<kEta,}}
+                           ^
+
+"Test_name.c", line 108: error: class "Dolumn<kDes, double>" has no member "ls"
+    Dolumn<kDes, double>().ls();    // expected-error {{<kDes,}}
+                           ^
+
+"Test_name.c", line 109: error: class "Folumn<&kEta, double>" has no member "ls"
+    Folumn<&kEta, double>().ls();   // expected-error {{<&kEta,}}
+                            ^
+
+"Test_name.c", line 110: error: class "Folumn<&kDes, double>" has no member "ls"
+    Folumn<&kDes, double>().ls();   // expected-error {{<&kDes,}}
+                            ^
+
+"Test_name.c", line 111: error: class "Golumn<&kEta, double>" has no member "ls"
+    Golumn<&kEta, double>().ls();   // expected-error {{<&kEta,}}
+                            ^
+
+"Test_name.c", line 112: error: class "Golumn<&kDes, double>" has no member "ls"
+    Golumn<&kDes, double>().ls();   // expected-error {{<&kDes,}}
+                            ^
+
+"Test_name.c", line 113: error: class "Holumn<&kNull, double>" has no member "ls"
+    Holumn<&kNull, double>().ls();  // expected-error {{<&kNull,}}
+                             ^
+
+"Test_name.c", line 114: error: class "Jolumn<(const char *const *const *)kZero, double>" has no member "ls"
+    Jolumn<kZero, double>().ls();   // expected-error {{<kZero,}}
+                            ^
+
+"Test_name.c", line 115: error: class "Iolumn<&kZero, double>" has no member "ls"
+    Iolumn<&kZero, double>().ls();  // expected-error {{<&kZero,}}
+                             ^
+
+"Test_name.c", line 116: error: class "Kolumn<&container::a>" has no member "ls"
+    Kolumn<&container::a>().ls();   // expected-error {{<&container::a}}
+                            ^
+
+"Test_name.c", line 117: error: class "Kolumn<(int container::*)0>" has no member "ls"
+    Kolumn<nullptr>().ls();         // expected-error {{<nullptr}}
+                      ^
+
+19 errors detected in the compilation of "Test_name.c".

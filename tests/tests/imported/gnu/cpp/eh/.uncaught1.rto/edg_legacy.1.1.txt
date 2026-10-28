@@ -1,0 +1,35 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./eh/uncaught1.C", line 51: warning: function "std::uncaught_exception" was declared deprecated ("use 'std::uncaught_exceptions()' instead")
+    test (id, id, std::uncaught_exception ());
+                       ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 126: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__ ("use '" "std::uncaught_exceptions()" "' instead")))
+                    ^
+
+"./eh/uncaught1.C", line 57: warning: function "std::uncaught_exception" was declared deprecated ("use 'std::uncaught_exceptions()' instead")
+    test (id, x.id, std::uncaught_exception ());
+                         ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 126: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__ ("use '" "std::uncaught_exceptions()" "' instead")))
+                    ^
+
+"./eh/uncaught1.C", line 62: warning: function "std::uncaught_exception" was declared deprecated ("use 'std::uncaught_exceptions()' instead")
+    test (id, id, std::uncaught_exception ());
+                       ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 126: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__ ("use '" "std::uncaught_exceptions()" "' instead")))
+                    ^
+
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(bad_alloc.o): in function `std::bad_alloc::bad_alloc()':
+/edg/workspace/lib_src/bad_alloc.c:39: multiple definition of `std::bad_alloc::bad_alloc()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(exception.o): in function `std::exception::exception()':
+/edg/workspace/lib_src/exception.c:37: multiple definition of `std::exception::exception()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::operator ==(const std::type_info &) const':
+/edg/workspace/lib_src/typeinfo.c:35: multiple definition of `std::type_info::operator ==(const std::type_info &) const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::name() const':
+/edg/workspace/lib_src/typeinfo.c:93: multiple definition of `std::type_info::name() const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `std::__exception_ptr::exception_ptr::exception_ptr(const std::__exception_ptr::exception_ptr &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__exception_ptr::exception_ptr::_M_addref()'
+/usr/sbin/ld: Test_name.o: in function `std::__exception_ptr::exception_ptr::~exception_ptr()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__exception_ptr::exception_ptr::_M_release()'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,51 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 26: error: static assertion failed
+  static_assert(__datasizeof(HasUsablePadding) == 5);
+  ^
+"Test_name.c", line 26: note: the final comparison was 8 == 5
+  static_assert(__datasizeof(HasUsablePadding) == 5);
+                                               ^
+
+"Test_name.c", line 27: warning: incomplete type "void" is not allowed
+  static_assert(__datasizeof(void)); // expected-error {{invalid application of '__datasizeof' to an incomplete type 'void'}}
+                             ^
+
+"Test_name.c", line 28: error: incomplete type "Incomplete" is not allowed
+  static_assert(__datasizeof(Incomplete)); // expected-error {{invalid application of '__datasizeof' to an incomplete type 'Incomplete'}}
+                             ^
+
+"Test_name.c", line 37: error: static assertion failed
+    static_assert(__datasizeof(*p3) == 5);
+    ^
+"Test_name.c", line 37: note: the final comparison was 8 == 5
+    static_assert(__datasizeof(*p3) == 5);
+                                    ^
+
+"Test_name.c", line 31: warning: variable "p" was set but never used
+    int* p = nullptr;
+         ^
+
+"Test_name.c", line 32: warning: variable "p2" was set but never used
+    HasPadding* p2 = nullptr;
+                ^
+
+"Test_name.c", line 33: warning: variable "p3" was set but never used
+    HasUsablePadding* p3 = nullptr;
+                      ^
+
+"Test_name.c", line 56: error: static assertion failed
+  static_assert(S{}.i == 9);
+  ^
+"Test_name.c", line 56: note: the final comparison was 12 == 9
+  static_assert(S{}.i == 9);
+                      ^
+
+"Test_name.c", line 61: error: incomplete type "GH80284::Bar" is not allowed
+    Bar x; // expected-error{{field has incomplete type}}
+        ^
+
+"Test_name.c", line 63: warning: variable "GH80284::a" was declared but never referenced
+  constexpr int a = __datasizeof(Foo);
+                ^
+
+5 errors detected in the compilation of "Test_name.c".

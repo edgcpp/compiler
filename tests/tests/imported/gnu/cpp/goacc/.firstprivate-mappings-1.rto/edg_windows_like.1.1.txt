@@ -1,0 +1,286 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./goacc/firstprivate-mappings-1.C", line 46: warning: unrecognized #pragma
+  #pragma acc parallel copyout (spo) firstprivate (spi)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 61: warning: unrecognized #pragma
+  #pragma acc parallel copyout (bo) firstprivate (bi)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 90: warning: unrecognized #pragma
+  #pragma acc parallel copyout (i8o) firstprivate (i8i) copyout (u8o) firstprivate (u8i) copyout (i16o) firstprivate (i16i) copyout (u16o) firstprivate (u16i) copyout (i32o) firstprivate (i32i) copyout (u32o) firstprivate (u32i) copyout (i64o) firstprivate (i64i) copyout (u64o) firstprivate (u64i)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 142: warning: unrecognized #pragma
+  #pragma acc parallel copyout (i128o) firstprivate (i128i) copyout(u128o) firstprivate (u128i)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 164: warning: unrecognized #pragma
+  #pragma acc parallel copyout (flto) firstprivate (flti) copyout (dblo) firstprivate (dbli)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 185: warning: unrecognized #pragma
+  #pragma acc parallel copyout (ldblo) firstprivate (ldbli)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 198: error: _Complex can only be used with floating-point types
+  c (_Complex unsigned char &cuci,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 199: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+     _Complex signed short &cssi,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 200: error: _Complex can only be used with floating-point types
+     _Complex unsigned int &cuii,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 201: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+     _Complex signed long &csli,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 205: error: _Complex can only be used with floating-point types
+    _Complex unsigned char cuco;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 206: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex signed short csso;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 207: error: _Complex can only be used with floating-point types
+    _Complex unsigned int cuio;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 208: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex signed long cslo;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 211: warning: unrecognized #pragma
+  #pragma acc parallel copyout (cuco) firstprivate (cuci) copyout (csso) firstprivate (cssi) copyout (cuio) firstprivate (cuii) copyout (cslo) firstprivate (csli) copyout (cflto) firstprivate (cflti) copyout (cdblo) firstprivate (cdbli)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 225: error: complex integral types are not supported
+      cuco = (cuci += (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 226: error: complex integral types are not supported
+      csso = (cssi -= (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 227: error: complex integral types are not supported
+      cuio = (cuii += (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 228: error: complex integral types are not supported
+      cslo = (csli -= (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 229: error: complex integral types are not supported
+      cflto = (cflti -= (1 + 1j));
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 230: error: complex integral types are not supported
+      cdblo = (cdbli -= (1 + 1j));
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 232: error: complex integral types are not supported
+    if (cuco != cuci + (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 234: error: complex integral types are not supported
+    if (csso != cssi - (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 236: error: complex integral types are not supported
+    if (cuio != cuii + (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 238: error: complex integral types are not supported
+    if (cslo != csli - (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 240: error: complex integral types are not supported
+    if (cflto != cflti - (1 + 1j))
+                               ^
+
+"./goacc/firstprivate-mappings-1.C", line 242: error: complex integral types are not supported
+    if (cdblo != cdbli - (1 + 1j))
+                               ^
+
+"./goacc/firstprivate-mappings-1.C", line 252: warning: unrecognized #pragma
+  #pragma acc parallel copyout (cldblo) firstprivate (cldbli)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 256: error: complex integral types are not supported
+      cldblo = (cldbli -= (1 + 1j));
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 258: error: complex integral types are not supported
+    if (cldblo != cldbli - (1 + 1j))
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 271: warning: unknown attribute "vector_size"
+  typedef uint8_t __attribute__ ((vector_size (2 * sizeof (uint8_t)))) v2u8;
+                                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 272: warning: unknown attribute "vector_size"
+  typedef int16_t __attribute__ ((vector_size (4 * sizeof (int16_t)))) v4i16;
+                                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 273: warning: unknown attribute "vector_size"
+  typedef uint32_t __attribute__ ((vector_size (8 * sizeof (uint32_t)))) v8u32;
+                                   ^
+
+"./goacc/firstprivate-mappings-1.C", line 274: warning: unknown attribute "vector_size"
+  typedef int64_t __attribute__ ((vector_size (16 * sizeof (int64_t)))) v16i64;
+                                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 275: warning: unknown attribute "vector_size"
+  typedef float __attribute__ ((vector_size (1 * sizeof (float)))) v1flt;
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 276: warning: unknown attribute "vector_size"
+  typedef float __attribute__ ((vector_size (2 * sizeof (float)))) v2flt;
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 277: warning: unknown attribute "vector_size"
+  typedef float __attribute__ ((vector_size (4 * sizeof (float)))) v4flt;
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 278: warning: unknown attribute "vector_size"
+  typedef float __attribute__ ((vector_size (8 * sizeof (float)))) v8flt;
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 279: warning: unknown attribute "vector_size"
+  typedef double __attribute__ ((vector_size (1 * sizeof (double)))) v1dbl;
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 280: warning: unknown attribute "vector_size"
+  typedef double __attribute__ ((vector_size (2 * sizeof (double)))) v2dbl;
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 281: warning: unknown attribute "vector_size"
+  typedef double __attribute__ ((vector_size (4 * sizeof (double)))) v4dbl;
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 282: warning: unknown attribute "vector_size"
+  typedef double __attribute__ ((vector_size (8 * sizeof (double)))) v8dbl;
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 301: warning: unrecognized #pragma
+  #pragma acc parallel copyout (v2u8o) firstprivate (v2u8i) copyout (v4i16o) firstprivate (v4i16i) copyout (v8u32o) firstprivate (v8u32i) copyout (v16i64o) firstprivate (v16i64i) copyout (v1flto) firstprivate (v1flti) copyout (v2flto) firstprivate (v2flti) copyout (v4flto) firstprivate (v4flti) copyout (v8flto) firstprivate (v8flti) copyout (v1dblo) firstprivate (v1dbli) copyout (v2dblo) firstprivate (v2dbli) copyout (v4dblo) firstprivate (v4dbli) copyout (v8dblo) firstprivate (v8dbli)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 369: warning: unknown attribute "vector_size"
+  typedef long double __attribute__ ((vector_size (1 * sizeof (long double)))) v1ldbl;
+                                      ^
+
+"./goacc/firstprivate-mappings-1.C", line 370: warning: unknown attribute "vector_size"
+  typedef long double __attribute__ ((vector_size (2 * sizeof (long double)))) v2ldbl;
+                                      ^
+
+"./goacc/firstprivate-mappings-1.C", line 371: warning: unknown attribute "vector_size"
+  typedef long double __attribute__ ((vector_size (4 * sizeof (long double)))) v4ldbl;
+                                      ^
+
+"./goacc/firstprivate-mappings-1.C", line 372: warning: unknown attribute "vector_size"
+  typedef long double __attribute__ ((vector_size (8 * sizeof (long double)))) v8ldbl;
+                                      ^
+
+"./goacc/firstprivate-mappings-1.C", line 382: warning: unrecognized #pragma
+  #pragma acc parallel copyout (v1ldblo) firstprivate (v1ldbli) copyout (v2ldblo) firstprivate (v2ldbli) copyout (v4ldblo) firstprivate (v4ldbli) copyout (v8ldblo) firstprivate (v8ldbli)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 415: warning: unrecognized #pragma
+  #pragma acc parallel copyout (array_so)
+          ^
+
+"./goacc/firstprivate-mappings-1.C", line 480: error: _Complex can only be used with floating-point types
+      _Complex unsigned char cuci = 1 + 2j;
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 480: error: complex integral types are not supported
+      _Complex unsigned char cuci = 1 + 2j;
+                                         ^
+
+"./goacc/firstprivate-mappings-1.C", line 481: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+      _Complex signed short cssi = -2 + (-4j);
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 481: error: complex integral types are not supported
+      _Complex signed short cssi = -2 + (-4j);
+                                           ^
+
+"./goacc/firstprivate-mappings-1.C", line 482: error: _Complex can only be used with floating-point types
+      _Complex unsigned int cuii = 3 + 6j;
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 482: error: complex integral types are not supported
+      _Complex unsigned int cuii = 3 + 6j;
+                                        ^
+
+"./goacc/firstprivate-mappings-1.C", line 483: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+      _Complex signed long csli = -4 + (-8j);
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 483: error: complex integral types are not supported
+      _Complex signed long csli = -4 + (-8j);
+                                          ^
+
+"./goacc/firstprivate-mappings-1.C", line 484: error: complex integral types are not supported
+      _Complex float cflti = .5 + 1j;
+                                   ^
+
+"./goacc/firstprivate-mappings-1.C", line 495: error: too many initializer values
+      v2u8 v2u8i = {2, 3};
+                       ^
+
+"./goacc/firstprivate-mappings-1.C", line 496: error: too many initializer values
+      v4i16 v4i16i = { -1, -2, 5, 4 };
+                           ^
+
+"./goacc/firstprivate-mappings-1.C", line 497: error: too many initializer values
+      v8u32 v8u32i = { 3, 6, 9, 11};
+                          ^
+
+"./goacc/firstprivate-mappings-1.C", line 498: error: too many initializer values
+      v16i64 v16i64i = { 10, 21, -25, 44, 31, -1, 1, 222, -1, -12, 52, -44, -13, 1, -1, -222};
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 500: error: too many initializer values
+      v2flt v2flti = { 1.5, -2.5 };
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 501: error: too many initializer values
+      v4flt v4flti = { 3.5, -4.5, -5.5, -6.5 };
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 502: error: too many initializer values
+      v8flt v8flti = { -7.5, 8.5, 9.5, 10.5, -11.5, -12.5, 13.5, 14.5 };
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 504: error: too many initializer values
+      v2dbl v2dbli = { -1.25, -2.25 };
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 505: error: too many initializer values
+      v4dbl v4dbli = { 3.25, -4.25, 5.25, 6.25 };
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 506: error: too many initializer values
+      v8dbl v8dbli = { 7.25, 8.25, -9.25, -10.25, -11.25, 12.25, 13.25, -14.25 };
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 515: error: too many initializer values
+      v2ldbl v2ldbli = { 1.125, -2.125 };
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 516: error: too many initializer values
+      v4ldbl v4ldbli = { -3.125, -4.125, 5.125, -6.125 };
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 517: error: too many initializer values
+      v8ldbl v8ldbli = { 7.125, -8.125, -9.125, 10.125, 11.125, 12.125, 13.125, 14.125 };
+                                ^
+
+44 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions --exceptions Test_name.c
+"Test_name.c", line 79: warning: variable "values" was declared but never referenced
+    int values[5] = { Values... }; // expected-error{{excess elements in array initializer}}
+        ^
+
+"Test_name.c", line 116: error: a value of type "HasMixins<A, B, D> *" cannot be used to initialize an entity of type "C *"
+  C *checkC = new HasMixins<A, B, D>; // expected-error{{cannot initialize a variable of type 'C *' with an rvalue of type 'HasMixins<A, B, D> *'}}
+              ^
+
+"Test_name.c", line 120: error: pack expansion does not make use of any argument packs
+  struct BrokenMixins : public Mixins... { }; // expected-error{{pack expansion does not contain any unexpanded parameter packs}}
+                                     ^
+
+"Test_name.c", line 146: error: pack expansion does not make use of any argument packs
+    X() : member()... { } // expected-error{{pack expansion for initialization of member 'member'}}
+                  ^
+
+"Test_name.c", line 230: warning: variable "arr" was declared but never referenced
+        int arr[] = {T().x...};
+            ^
+
+"Test_name.c", line 245: warning: variable "y" was declared but never referenced
+        alignas(T...) int y;
+                          ^
+
+"Test_name.c", line 273: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { void h(T); }); // expected-error {{unexpanded parameter pack 'T'}}
+                           ^
+
+"Test_name.c", line 274: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { struct A : T {}; }); // expected-error {{unexpanded parameter pack 'T'}}
+                               ^
+
+"Test_name.c", line 276: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { struct A : T... { using T::x; }; }); // expected-error {{unexpanded parameter pack 'T'}}
+                                            ^
+
+"Test_name.c", line 277: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { struct A : T... { using typename T::U; }; }); // expected-error {{unexpanded parameter pack 'T'}}
+                                                     ^
+
+"Test_name.c", line 280: warning: variable "arr" was declared but never referenced
+      swallow([=] { int arr[] = {T().x}; }); // expected-error {{unexpanded parameter pack 'T'}}
+                        ^
+
+"Test_name.c", line 280: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { int arr[] = {T().x}; }); // expected-error {{unexpanded parameter pack 'T'}}
+                                 ^
+
+"Test_name.c", line 281: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { struct B : T... { B() : T{0} {} }; }); // expected-error {{unexpanded parameter pack 'T'}}
+                                            ^
+
+"Test_name.c", line 282: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { f<T>(); }); // expected-error {{unexpanded parameter pack 'T'}}
+                      ^
+
+"Test_name.c", line 283: warning: variable "y" was declared but never referenced
+      swallow([=] { alignas(T) int y; }); // expected-error {{unexpanded parameter pack 'T'}}
+                                   ^
+
+"Test_name.c", line 283: error: parameter pack "T" was referenced but not expanded
+      swallow([=] { alignas(T) int y; }); // expected-error {{unexpanded parameter pack 'T'}}
+                            ^
+
+"Test_name.c", line 285: error: parameter pack "t" was referenced but not expanded
+            [t]{}(); // expected-error {{unexpanded parameter pack 't'}}
+             ^
+
+"Test_name.c", line 294: warning: variable "x" was declared but never referenced
+      [[gnu::aligned(alignof(T))...]] int x; // expected-error {{cannot be used as an attribute pack}} expected-error {{unexpanded}}
+                                          ^
+
+"Test_name.c", line 79: error: too many initializer values
+    int values[5] = { Values... }; // expected-error{{excess elements in array initializer}}
+                      ^
+          detected during instantiation of "void initializer_list_expansion<Values...>() [with Values=<1, 2, 3, 4, 5, 6>]" at line 84
+
+"Test_name.c", line 80: error: too many arguments in function call
+    five_args(Values...); // expected-error{{no matching function for call to 'five_args'}}
+              ^
+          detected during instantiation of "void initializer_list_expansion<Values...>() [with Values=<1, 2, 3, 4, 5, 6>]" at line 84
+
+"Test_name.c", line 130: error: too many initializer values
+  HasMixins<Mixins...>::HasMixins(int i): Mixins(i)... { }
+                                                 ^
+          detected during instantiation of "HasMixins<Mixins...>::HasMixins(int) [with Mixins=<A, B>]" at line 139
+
+"Test_name.c", line 130: error: too many initializer values
+  HasMixins<Mixins...>::HasMixins(int i): Mixins(i)... { }
+                                                 ^
+          detected during instantiation of "HasMixins<Mixins...>::HasMixins(int) [with Mixins=<A, B>]" at line 139
+
+16 errors detected in the compilation of "Test_name.c".

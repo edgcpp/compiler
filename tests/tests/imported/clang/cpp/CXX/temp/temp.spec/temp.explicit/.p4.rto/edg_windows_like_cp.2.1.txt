@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 29: error: class "X0<T>::Inner [with T=long]" is not an entity that can be instantiated
+  template struct X0<long>::Inner; // expected-warning{{explicit instantiation of 'Inner' that occurs after an explicit specialization has no effect}}
+           ^
+
+"Test_name.c", line 48: warning: missing return statement at end of non-void function "test0::foo<T>::compare"
+    }
+    ^
+
+"Test_name.c", line 47: warning: variable "ptr" was declared but never referenced
+      void *ptr = x;
+            ^
+
+"Test_name.c", line 7: error: function "f0(T) [with T=int]" cannot be instantiated -- no template definition was supplied
+  template void f0(int); // expected-error{{explicit instantiation of undefined function template}}
+           ^
+
+"Test_name.c", line 18: error: function "X0<T>::f1 [with T=int]" cannot be instantiated -- no template definition was supplied
+  template void X0<int>::f1(); // expected-error{{explicit instantiation of undefined member function}}
+           ^
+
+"Test_name.c", line 20: error: member "X0<T>::value [with T=int]" cannot be instantiated -- no template definition was supplied
+  template int X0<int>::value; // expected-error{{explicit instantiation of undefined static data member}}
+           ^
+
+4 errors detected in the compilation of "Test_name.c".

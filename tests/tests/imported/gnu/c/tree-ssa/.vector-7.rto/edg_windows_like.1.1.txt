@@ -1,0 +1,46 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef __INT8_TYPE__ v16qi __attribute__((vector_size(16),may_alias,aligned(1)));
+                                             ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef __INT32_TYPE__ v4si __attribute__((vector_size(16),may_alias,aligned(1)));
+                                             ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (v1[i] != (v4si) { 2, 3, 4, 5 }[i])
+             ^
+
+"Test_name.c", line 20: warning: excess initializers are ignored
+      if (v1[i] != (v4si) { 2, 3, 4, 5 }[i])
+                               ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (v1[i] != (v4si) { 2, 3, 4, 5 }[i])
+                                         ^
+
+"Test_name.c", line 24: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (v2[i] != (v4si) { 0, 1, 0, 3 }[i])
+             ^
+
+"Test_name.c", line 24: warning: excess initializers are ignored
+      if (v2[i] != (v4si) { 0, 1, 0, 3 }[i])
+                               ^
+
+"Test_name.c", line 24: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (v2[i] != (v4si) { 0, 1, 0, 3 }[i])
+                                         ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (v3[i] !=
+             ^
+
+"Test_name.c", line 32: warning: excess initializers are ignored
+  	(v4si) { 0x04030201, 0x08070605, 0x0c0b0a09, 0x100f0e0d }[i]
+  	                     ^
+
+"Test_name.c", line 32: error: expression must have pointer-to-object type but it has type "unsigned int"
+  	(v4si) { 0x04030201, 0x08070605, 0x0c0b0a09, 0x100f0e0d }[i]
+  	                                                          ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,34 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 6: remark: function "V1::V1()" cannot be inlined
+  class V1 { public: virtual void Aout5() {} };
+        ^
+          detected during:
+            implicit generation of "V1::V1()" at line 14
+            implicit generation of "E::E()" at line 14
+
+"Test_name.c", line 7: remark: function "V2::V2()" cannot be inlined
+  class V2 { public: virtual void Aout5() {} };
+        ^
+          detected during:
+            implicit generation of "V2::V2()" at line 14
+            implicit generation of "E::E()" at line 14
+
+"Test_name.c", line 9: remark: function "A::A()" cannot be inlined
+  class A : public virtual V1, public virtual V2 { public: void Aout5() {}
+        ^
+          detected during:
+            implicit generation of "A::A()" at line 14
+            implicit generation of "E::E()" at line 14
+
+"Test_name.c", line 11: remark: function "B::B()" cannot be inlined
+  class B : public virtual V1, public virtual V2 {};
+        ^
+          detected during:
+            implicit generation of "B::B()" at line 14
+            implicit generation of "E::E()" at line 14
+
+"Test_name.c", line 12: remark: function "E::E()" cannot be inlined
+  class E : public A, public B {};
+        ^
+          detected during implicit generation of "E::E()" at line 14
+

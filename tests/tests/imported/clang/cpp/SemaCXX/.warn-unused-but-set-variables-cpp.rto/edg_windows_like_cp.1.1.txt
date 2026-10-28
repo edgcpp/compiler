@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 25: warning: variable "t" is used before its value is set
+    s = t;
+        ^
+
+"Test_name.c", line 30: warning: variable "swu2" is used before its value is set
+    swu = swu2;
+          ^
+
+"Test_name.c", line 16: warning: variable "y" was set but never used
+    int y; // expected-warning{{variable 'y' set but not used}}
+        ^
+
+"Test_name.c", line 23: warning: variable "s" was set but never used
+    struct S s;
+             ^
+
+"Test_name.c", line 28: warning: variable "swu" was set but never used
+    struct SWarnUnused swu; // expected-warning{{variable 'swu' set but not used}}
+                       ^
+
+"Test_name.c", line 38: error: expected an expression
+    (void)^() {
+          ^
+
+"Test_name.c", line 45: warning: parsing restarts here after previous syntax error
+    };
+     ^
+
+"Test_name.c", line 52: warning: variable "a" was declared but never referenced
+    char a[x];
+         ^
+
+"Test_name.c", line 53: warning: variable "b" was declared but never referenced
+    char b[y];
+         ^
+
+1 error detected in the compilation of "Test_name.c".

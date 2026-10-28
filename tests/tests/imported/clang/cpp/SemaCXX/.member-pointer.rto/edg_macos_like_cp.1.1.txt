@@ -1,0 +1,384 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 17: error: exception specification is not allowed
+  void (*A::*ppfie)() throw();
+                      ^
+
+"Test_name.c", line 22: warning: an enum-type name qualifier is a C++11 feature
+  int B::*pbi;
+      ^
+
+"Test_name.c", line 22: error: "B" is not a class type
+  int B::*pbi;
+      ^
+
+"Test_name.c", line 27: error: expected an identifier
+  int C::*pci; // expected-error {{'pci' does not point into a class}}
+         ^
+
+"Test_name.c", line 27: error: expected a ";"
+  int C::*pci; // expected-error {{'pci' does not point into a class}}
+         ^
+
+"Test_name.c", line 28: error: pointer to member of type void is not allowed
+  void A::*pdv; // expected-error {{'pdv' declared as a member pointer to void}}
+       ^
+
+"Test_name.c", line 29: error: pointer to member of reference type is not allowed
+  int& A::*pdr; // expected-error {{'pdr' declared as a member pointer to a reference}}
+       ^
+
+"Test_name.c", line 48: error: derived class "F" contains more than one instance of class "A"
+    int F::*pdif = pdi1; // expected-error {{ambiguous conversion from pointer to member of base class 'A' to pointer to member of derived class 'F':}}
+                   ^
+
+"Test_name.c", line 49: error: cannot convert pointer to member of base class "A" to pointer to member of derived class "G" -- base class is virtual
+    int G::*pdig = pdi1; // expected-error {{conversion from pointer to member of class 'A' to pointer to member of class 'G' via virtual base 'D' is not allowed}}
+                   ^
+
+"Test_name.c", line 52: error: a value of type "int D::*" cannot be assigned to an entity of type "int A::*"
+    pdi1 = pdid; // expected-error {{assigning to 'int A::*' from incompatible type 'int D::*'}}
+         ^
+
+"Test_name.c", line 57: warning: variable "pf2" is used before its value is set
+    bool b1 = (pf == pf2); (void)b1;
+                     ^
+
+"Test_name.c", line 36: warning: variable "b" was set but never used
+    bool b = pdi1;
+         ^
+
+"Test_name.c", line 57: warning: variable "b1" was set but never used
+    bool b1 = (pf == pf2); (void)b1;
+         ^
+
+"Test_name.c", line 58: warning: variable "b2" was set but never used
+    bool b2 = (pf != pf2); (void)b2;
+         ^
+
+"Test_name.c", line 59: warning: variable "b3" was set but never used
+    bool b3 = (pf == pf3); (void)b3;
+         ^
+
+"Test_name.c", line 60: warning: variable "b4" was set but never used
+    bool b4 = (pf != 0); (void)b4;
+         ^
+
+"Test_name.c", line 93: error: a pointer to a bound function may only be used to call the function
+    &hm.f; // expected-error {{cannot create a non-constant pointer to member function}}
+        ^
+
+"Test_name.c", line 87: warning: variable "pmi" was declared but never referenced
+    int HasMembers::*pmi = &HasMembers::i;
+                     ^
+
+"Test_name.c", line 88: warning: variable "pni" was declared but never referenced
+    int *pni = &Fake::i;
+         ^
+
+"Test_name.c", line 89: warning: variable "pmii" was declared but never referenced
+    int *pmii = &hm.i;
+         ^
+
+"Test_name.c", line 91: warning: variable "pmf" was declared but never referenced
+    void (HasMembers::*pmf)() = &HasMembers::f;
+                       ^
+
+"Test_name.c", line 92: warning: variable "pnf" was declared but never referenced
+    void (*pnf)() = &Fake::f;
+           ^
+
+"Test_name.c", line 95: warning: variable "pmgv" was declared but never referenced
+    void (HasMembers::*pmgv)() = &HasMembers::g;
+                       ^
+
+"Test_name.c", line 96: warning: variable "pmgi" was declared but never referenced
+    void (HasMembers::*pmgi)(int) = &HasMembers::g;
+                       ^
+
+"Test_name.c", line 97: warning: variable "pmgd" was declared but never referenced
+    void (*pmgd)(double) = &HasMembers::g;
+           ^
+
+"Test_name.c", line 99: warning: variable "pmd" was declared but never referenced
+    void (HasMembers::*pmd)() = &HasMembers::d;
+                       ^
+
+"Test_name.c", line 118: error: no operator "->*" matches these operands
+            operand types are: HasMembers ->* int HasMembers::*
+    (void)(hm->*pi); // expected-error {{left hand operand to ->* must be a pointer to class compatible with the right hand operand, but is 'HasMembers'}}
+             ^
+"Test_name.c", line 118: note: built-in operator->*(<pointer to object>, <pointer-to-member>) does not match because argument #1 does not match parameter
+    (void)(hm->*pi); // expected-error {{left hand operand to ->* must be a pointer to class compatible with the right hand operand, but is 'HasMembers'}}
+             ^
+
+"Test_name.c", line 119: error: expression must have class type but it has type "HasMembers *"
+    (void)(phm.*pi); // expected-error {{left hand operand to .* must be a class compatible with the right hand operand, but is 'HasMembers *'}}
+           ^
+
+"Test_name.c", line 120: error: expression must have class type but it has type "int"
+    (void)(i.*pi); // expected-error {{left hand operand to .* must be a class compatible with the right hand operand, but is 'int'}}
+           ^
+
+"Test_name.c", line 122: error: expression must have pointer-to-class type but it has type "int *"
+    (void)(ptr->*pi); // expected-error {{left hand operand to ->* must be a pointer to class compatible with the right hand operand, but is 'int *'}}
+           ^
+
+"Test_name.c", line 122: warning: variable "ptr" is used before its value is set
+    (void)(ptr->*pi); // expected-error {{left hand operand to ->* must be a pointer to class compatible with the right hand operand, but is 'int *'}}
+           ^
+
+"Test_name.c", line 129: error: base class "A" is ambiguous
+    (void)(f.*pai); // expected-error {{ambiguous conversion from derived class 'F' to base class 'A'}}
+           ^
+
+"Test_name.c", line 130: error: base class "A" is ambiguous
+    (void)(ptrf->*pai); // expected-error {{ambiguous conversion from derived class 'F' to base class 'A'}}
+           ^
+
+"Test_name.c", line 132: error: conversion to inaccessible base class "A" is not allowed
+    (void)(h.*pai); // expected-error {{cannot cast 'H' to its private base class 'A'}}
+           ^
+
+"Test_name.c", line 133: error: conversion to inaccessible base class "A" is not allowed
+    (void)(ptrh->*pai); // expected-error {{cannot cast 'H' to its private base class 'A'}}
+           ^
+
+"Test_name.c", line 135: error: expression must have pointer-to-member type
+    (void)(hm.*i); // expected-error {{pointer-to-member}}
+               ^
+
+"Test_name.c", line 136: error: expression must have pointer-to-member type
+    (void)(phm->*i); // expected-error {{pointer-to-member}}
+                 ^
+
+"Test_name.c", line 141: warning: variable "inc" is used before its value is set
+    (void)(inc->*pii);
+           ^
+
+"Test_name.c", line 159: error: nonstandard form for taking the address of a member function
+        p = &h; // expected-error {{must explicitly qualify}}
+            ^
+
+"Test_name.c", line 160: error: a pointer to a bound function may only be used to call the function
+        p = &this->h; // expected-error {{cannot create a non-constant pointer to member function}}
+                   ^
+
+"Test_name.c", line 161: error: a pointer to a bound function may only be used to call the function
+        p = &(*this).h; // expected-error {{cannot create a non-constant pointer to member function}}
+                     ^
+
+"Test_name.c", line 158: warning: variable "p" was set but never used
+        void (c::*p)();
+                  ^
+
+"Test_name.c", line 172: error: pointer-to-member selection class types are incompatible ("pr6783::X" and "pr6783::Base")
+      return object->*p2m; // expected-error {{left hand operand to ->*}}
+                   ^
+
+"Test_name.c", line 213: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+          bind(&nonstat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 214: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+          bind(&A::nonstat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 216: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+          bind(&mixed); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 217: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+          bind(&A::mixed); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 219: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+          bind(&stat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 220: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+          bind(&A::stat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 226: error: nonstandard form for taking the address of a member function
+          bindmem(&nonstat); // expected-error {{no matching function for call}}
+                  ^
+
+"Test_name.c", line 229: error: nonstandard form for taking the address of a member function
+          bindmem(&mixed); // expected-error {{no matching function for call}}
+                  ^
+
+"Test_name.c", line 232: error: no instance of function template "rdar8358512::bindmem" matches the argument list
+            argument types are: (<unknown-type>)
+          bindmem(&stat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 198: note: candidate function template "rdar8358512::bindmem" failed deduction
+    template <class F, class T> void bindmem(F (T::*f)()); // expected-note 4 {{candidate template ignored}}
+                                     ^
+
+"Test_name.c", line 233: error: no instance of function template "rdar8358512::bindmem" matches the argument list
+            argument types are: (<unknown-type>)
+          bindmem(&A::stat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 198: note: candidate function template "rdar8358512::bindmem" failed deduction
+    template <class F, class T> void bindmem(F (T::*f)()); // expected-note 4 {{candidate template ignored}}
+                                     ^
+
+"Test_name.c", line 239: error: no instance of function template "rdar8358512::bindfn" matches the argument list
+            argument types are: (<unknown-type>)
+          bindfn(&nonstat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 199: note: candidate function template "rdar8358512::bindfn" failed deduction
+    template <class F> void bindfn(F (*f)()); // expected-note 4 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 240: error: no instance of function template "rdar8358512::bindfn" matches the argument list
+            argument types are: (<unknown-type>)
+          bindfn(&A::nonstat); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 199: note: candidate function template "rdar8358512::bindfn" failed deduction
+    template <class F> void bindfn(F (*f)()); // expected-note 4 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 242: error: no instance of function template "rdar8358512::bindfn" matches the argument list
+            argument types are: (<unknown-type>)
+          bindfn(&mixed); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 199: note: candidate function template "rdar8358512::bindfn" failed deduction
+    template <class F> void bindfn(F (*f)()); // expected-note 4 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 243: error: no instance of function template "rdar8358512::bindfn" matches the argument list
+            argument types are: (<unknown-type>)
+          bindfn(&A::mixed); // expected-error {{no matching function for call}}
+          ^
+"Test_name.c", line 199: note: candidate function template "rdar8358512::bindfn" failed deduction
+    template <class F> void bindfn(F (*f)()); // expected-note 4 {{candidate template ignored}}
+                            ^
+
+"Test_name.c", line 298: warning: missing return statement at end of non-void function "PR9973::dm<R, T>::operator()(U)"
+      { call(u); } // expected-note{{in instantiation of}}
+                 ^
+
+"Test_name.c", line 310: warning: variable "t" is used before its value is set
+      mem_fn(&test::nullary_v)(t); // expected-note{{in instantiation of}}
+                               ^
+
+"Test_name.c", line 331: error: incomplete type "test9::FOO" is not allowed
+    struct FOO BAR;
+               ^
+
+"Test_name.c", line 335: error: expected a ";"
+    struct C { int BAR::*mp; };
+                      ^
+
+"Test_name.c", line 342: error: "GH132494::E" is not a class type
+    void f(int E::*); // expected-error {{member pointer does not point into a class}}
+               ^
+
+"Test_name.c", line 345: error: "GH132494::E" is not a class type
+      int T::*foo; // expected-error {{'foo' does not point into a class}}
+          ^
+          detected during instantiation of class "GH132494::A<T> [with T=GH132494::E]" at line 347
+
+"Test_name.c", line 352: error: "auto" is not allowed here
+      static auto Resolve() -> Func;
+             ^
+
+"Test_name.c", line 352: error: expected a ";"
+      static auto Resolve() -> Func;
+                            ^
+
+"Test_name.c", line 384: warning: defaulted functions are a C++11 feature
+      virtual ~Filter() = default;
+                          ^
+
+"Test_name.c", line 418: warning: alias declarations are a C++11 feature
+    using CA = const A;
+          ^
+
+"Test_name.c", line 275: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind(&nonstat); // expected-error {{no matching function for call}}
+        ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+          detected during instantiation of "void rdar8358512::B<T>::test0b() [with T=int]" at line 286
+
+"Test_name.c", line 276: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind(&B::nonstat); // expected-error {{no matching function for call}}
+        ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+          detected during instantiation of "void rdar8358512::B<T>::test0b() [with T=int]" at line 286
+
+"Test_name.c", line 278: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind(&mixed); // expected-error {{no matching function for call}}
+        ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+          detected during instantiation of "void rdar8358512::B<T>::test0b() [with T=int]" at line 286
+
+"Test_name.c", line 279: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind(&B::mixed); // expected-error {{no matching function for call}}
+        ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+          detected during instantiation of "void rdar8358512::B<T>::test0b() [with T=int]" at line 286
+
+"Test_name.c", line 281: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind(&stat); // expected-error {{no matching function for call}}
+        ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+          detected during instantiation of "void rdar8358512::B<T>::test0b() [with T=int]" at line 286
+
+"Test_name.c", line 282: error: no instance of function template "rdar8358512::bind" matches the argument list
+            argument types are: (<unknown-type>)
+        bind(&B::stat); // expected-error {{no matching function for call}}
+        ^
+"Test_name.c", line 197: note: candidate function template "rdar8358512::bind" failed deduction
+    template <class F> void bind(F f); // expected-note 12 {{candidate template ignored}}
+                            ^
+          detected during instantiation of "void rdar8358512::B<T>::test0b() [with T=int]" at line 286
+
+"Test_name.c", line 295: error: a pointer to a bound function may only be used to call the function
+      { return u->*f_; } // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}} expected-error {{non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'}}
+                   ^
+          detected during:
+            instantiation of "int &PR9973::dm<R, T>::call(U) [with R=int (), T=PR9973::test, U=PR9973::test *]" at line 298
+            instantiation of "int PR9973::dm<R, T>::operator()(U) [with R=int (), T=PR9973::test, U=PR9973::test *]" at line 310
+
+51 errors detected in the compilation of "Test_name.c".

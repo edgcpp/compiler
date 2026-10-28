@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 627: warning: unknown attribute "vector_size"
+    __emit_expression_range (0, (vector(4, float)){2., 2., 2., 2.} + 1); /* { dg-warning "range" } */
+                                 ^
+
+"Test_name.c", line 627: error: too many initializer values
+    __emit_expression_range (0, (vector(4, float)){2., 2., 2., 2.} + 1); /* { dg-warning "range" } */
+                                                       ^
+
+"Test_name.c", line 634: warning: unknown attribute "vector_size"
+    __emit_expression_range (0, 1 + (vector(4, float)){2., 2., 2., 2.}); /* { dg-warning "range" } */
+                                     ^
+
+"Test_name.c", line 634: error: too many initializer values
+    __emit_expression_range (0, 1 + (vector(4, float)){2., 2., 2., 2.}); /* { dg-warning "range" } */
+                                                           ^
+
+"Test_name.c", line 673: error: identifier "__transaction_atomic" is undefined
+    i = __transaction_atomic (42); /* { dg-error "without transactional memory support enabled" } */
+        ^
+
+"Test_name.c", line 678: error: identifier "__transaction_relaxed" is undefined
+    i = __transaction_relaxed (42); /* { dg-error "without transactional memory support enabled" } */
+        ^
+
+"Test_name.c", line 672: warning: variable "i" was set but never used
+    int i;
+        ^
+
+"Test_name.c", line 770: error: "this" may only be used inside a nonstatic member function
+    this; /* { dg-error "invalid use of 'this' in non-member function" } */
+    ^
+
+"Test_name.c", line 846: warning: declaration does not declare anything
+    example_template <int>; /* { dg-warning "declaration does not declare anything" } */
+    ^
+
+"Test_name.c", line 902: error: function "base::priv" (declared at line 785) is inaccessible
+    ((base *)1)->priv (); // { dg-error " is private " }
+                 ^
+
+6 errors detected in the compilation of "Test_name.c".

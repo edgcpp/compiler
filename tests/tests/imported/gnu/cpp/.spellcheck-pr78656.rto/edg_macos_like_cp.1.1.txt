@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/type_traits", line 519: error: identifier "__float128" is undefined
+      struct __is_floating_point_helper<__float128>
+                                        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/stl_algobase.h", line 1073: error: identifier "__float128" is undefined
+    __size_to_integer(__float128 __n) { return (long long)__n; }
+                      ^
+
+"./spellcheck-pr78656.C", line 7: error: namespace "std" has no member "allocate"
+    return std::allocate<char>().allocate(n);
+                ^
+
+"./spellcheck-pr78656.C", line 7: error: type name is not allowed
+    return std::allocate<char>().allocate(n);
+                         ^
+
+"./spellcheck-pr78656.C", line 7: error: expected an expression
+    return std::allocate<char>().allocate(n);
+                               ^
+
+"./spellcheck-pr78656.C", line 20: error: namespace "std" has no member "alocator"
+    return std::alocator<char>().allocate(n);
+                ^
+
+"./spellcheck-pr78656.C", line 20: error: type name is not allowed
+    return std::alocator<char>().allocate(n);
+                         ^
+
+"./spellcheck-pr78656.C", line 20: error: expected an expression
+    return std::alocator<char>().allocate(n);
+                               ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,138 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 38: error: identifier "__thread" is undefined
+  __thread non_aligned_struct foo;
+  ^
+
+"Test_name.c", line 38: error: expected a ";"
+  __thread non_aligned_struct foo;
+                              ^
+
+"Test_name.c", line 41: error: identifier "__thread" is undefined
+  __thread aligned_struct                    bar; // expected-error{{alignment (64) of thread-local variable}}
+  ^
+
+"Test_name.c", line 41: error: expected a ";"
+  __thread aligned_struct                    bar; // expected-error{{alignment (64) of thread-local variable}}
+                                             ^
+
+"Test_name.c", line 44: error: identifier "__thread" is undefined
+  __thread non_aligned_struct                bar2 __attribute__(( aligned(64) )); // expected-error{{alignment (64) of thread-local variable}}
+  ^
+
+"Test_name.c", line 44: error: variable "non_aligned_struct" has already been defined (previous definition at line 38)
+  __thread non_aligned_struct                bar2 __attribute__(( aligned(64) )); // expected-error{{alignment (64) of thread-local variable}}
+           ^
+
+"Test_name.c", line 44: error: expected a ";"
+  __thread non_aligned_struct                bar2 __attribute__(( aligned(64) )); // expected-error{{alignment (64) of thread-local variable}}
+                                             ^
+
+"Test_name.c", line 47: error: identifier "__thread" is undefined
+  __thread struct_with_aligned_field         bar3; // expected-error{{alignment (64) of thread-local variable}}
+  ^
+
+"Test_name.c", line 47: error: expected a ";"
+  __thread struct_with_aligned_field         bar3; // expected-error{{alignment (64) of thread-local variable}}
+                                             ^
+
+"Test_name.c", line 50: error: identifier "__thread" is undefined
+  __thread another_aligned_struct            bar4; // expected-error{{alignment (64) of thread-local variable}}
+  ^
+
+"Test_name.c", line 50: error: "another_aligned_struct" has already been declared in the current scope
+  __thread another_aligned_struct            bar4; // expected-error{{alignment (64) of thread-local variable}}
+           ^
+
+"Test_name.c", line 50: error: expected a ";"
+  __thread another_aligned_struct            bar4; // expected-error{{alignment (64) of thread-local variable}}
+                                             ^
+
+"Test_name.c", line 53: error: identifier "__thread" is undefined
+  __thread yet_another_aligned_struct        bar5; // expected-error{{alignment (64) of thread-local variable}}
+  ^
+
+"Test_name.c", line 53: error: "yet_another_aligned_struct" has already been declared in the current scope
+  __thread yet_another_aligned_struct        bar5; // expected-error{{alignment (64) of thread-local variable}}
+           ^
+
+"Test_name.c", line 53: error: expected a ";"
+  __thread yet_another_aligned_struct        bar5; // expected-error{{alignment (64) of thread-local variable}}
+                                             ^
+
+"Test_name.c", line 56: error: identifier "__thread" is undefined
+  __thread templated_struct                  bar6; // expected-error{{no viable constructor or deduction guide for deduction of template arguments of 'templated_struct'}}
+  ^
+
+"Test_name.c", line 56: error: "templated_struct" has already been declared in the current scope
+  __thread templated_struct                  bar6; // expected-error{{no viable constructor or deduction guide for deduction of template arguments of 'templated_struct'}}
+           ^
+
+"Test_name.c", line 56: error: expected a ";"
+  __thread templated_struct                  bar6; // expected-error{{no viable constructor or deduction guide for deduction of template arguments of 'templated_struct'}}
+                                             ^
+
+"Test_name.c", line 60: error: identifier "foo" is undefined
+      return foo.some_data[0] + bar.some_data[1] + bar2.some_data[2] +
+             ^
+
+"Test_name.c", line 60: error: identifier "bar" is undefined
+      return foo.some_data[0] + bar.some_data[1] + bar2.some_data[2] +
+                                ^
+
+"Test_name.c", line 60: error: identifier "bar2" is undefined
+      return foo.some_data[0] + bar.some_data[1] + bar2.some_data[2] +
+                                                   ^
+
+"Test_name.c", line 61: error: identifier "bar3" is undefined
+             bar3.some_aligned_data[3] + bar4.some_data[4] +
+             ^
+
+"Test_name.c", line 61: error: identifier "bar4" is undefined
+             bar3.some_aligned_data[3] + bar4.some_data[4] +
+                                         ^
+
+"Test_name.c", line 62: error: identifier "bar5" is undefined
+             bar5.some_data[5];
+             ^
+
+"Test_name.c", line 66: error: identifier "__thread" is undefined
+      static __thread T t;
+             ^
+
+"Test_name.c", line 66: error: template parameter "T" may not be redeclared in this scope
+      static __thread T t;
+                      ^
+
+"Test_name.c", line 66: error: expected a ";"
+      static __thread T t;
+                        ^
+
+"Test_name.c", line 67: error: member "templated_tls<T>::T" is not a type name
+      T other_t __attribute__(( aligned(64) ));
+      ^
+
+"Test_name.c", line 69: error: this declaration has no storage class or type specifier
+   __thread templated_tls<int> blah; // expected-error{{alignment (64) of thread-local variable}}
+   ^
+
+"Test_name.c", line 69: error: expected a ";"
+   __thread templated_tls<int> blah; // expected-error{{alignment (64) of thread-local variable}}
+            ^
+
+"Test_name.c", line 79: error: thread-local storage class is not valid here
+    template<int J> static inline thread_local int b alignas(J) = J; // expected-error{{alignment (64) of thread-local variable}}
+                    ^
+
+"Test_name.c", line 80: error: expected a ";"
+    static int __thread __attribute__((aligned(N))) x; // expected-error{{alignment (64) of thread-local variable}}
+                                                    ^
+
+"Test_name.c", line 94: error: identifier "blah" is undefined
+      return blah.other_t * 2 + S<64>::b<64>; // expected-note{{in instantiation of static data member 'S<64>::b' requested here}}
+             ^
+
+"Test_name.c", line 86: warning: variable "s_instance" was declared but never referenced
+      S<64> s_instance; // expected-note{{in instantiation of template class 'S<64>' requested here}}
+            ^
+
+33 errors detected in the compilation of "Test_name.c".

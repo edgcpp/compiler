@@ -1,0 +1,218 @@
+fe_only -DTEST_NUMBER=3 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"C/drs/dr0xx.c", line 99: error: function "dr004" has already been defined (previous definition at line 98)
+  int dr004(void) {return 1;}
+      ^
+
+"C/drs/dr0xx.c", line 120: error: expected a type specifier
+  void dr009_f((dr009_t));
+               ^
+
+"C/drs/dr0xx.c", line 129: error: incomplete type "dr010_t" (aka "int []") is not allowed
+  int dr010_c = sizeof(dr010_t);
+                       ^
+
+"C/drs/dr0xx.c", line 151: warning: function "_Static_assert" declared implicitly
+      _Static_assert(sizeof(i) == 10 * sizeof(int), "fail");
+      ^
+
+"C/drs/dr0xx.c", line 153: error: incomplete type "int []" is not allowed
+    (void)sizeof(i);
+                ^
+
+"C/drs/dr0xx.c", line 157: warning: function "_Static_assert" declared implicitly
+    _Static_assert(sizeof(dr011_a) == 10 * sizeof(int), "fail");
+    ^
+
+"C/drs/dr0xx.c", line 197: warning: function "_Static_assert" declared implicitly
+    _Static_assert(__builtin_types_compatible_p(__typeof__(+s.small_int_bitfield), int), "fail");
+    ^
+
+"C/drs/dr0xx.c", line 208: error: expected a type specifier
+  _Static_assert(((1) + (1)) == 2, "fail");
+                 ^
+
+"C/drs/dr0xx.c", line 208: error: expected a type specifier
+  _Static_assert(((1) + (1)) == 2, "fail");
+                                   ^
+
+"C/drs/dr0xx.c", line 208: warning: this declaration has no storage class or type specifier
+  _Static_assert(((1) + (1)) == 2, "fail");
+  ^
+
+"C/drs/dr0xx.c", line 216: error: expected a type specifier
+  _Static_assert(__builtin_types_compatible_p(struct S { int a; }, union U { int a; }), "fail");
+                 ^
+
+"C/drs/dr0xx.c", line 216: error: expected a type specifier
+  _Static_assert(__builtin_types_compatible_p(struct S { int a; }, union U { int a; }), "fail");
+                                                                                        ^
+
+"C/drs/dr0xx.c", line 216: warning: this declaration has no storage class or type specifier
+  _Static_assert(__builtin_types_compatible_p(struct S { int a; }, union U { int a; }), "fail");
+  ^
+
+"C/drs/dr0xx.c", line 223: warning: integer operation result is out of range
+    case 2147483647 + 1: break;
+                    ^
+
+"C/drs/dr0xx.c", line 229: warning: integer conversion resulted in a change of sign
+    case 2147483647 + 2ul: break;
+         ^
+
+"C/drs/dr0xx.c", line 231: warning: integer operation result is out of range
+    case (2147483647 * 4) / 4: break;
+                     ^
+
+"C/drs/dr0xx.c", line 241: error: this operator is not allowed in a constant expression
+  int dr032 = (1, 2);
+                ^
+
+"C/drs/dr0xx.c", line 248: warning: declaration is not visible outside of function
+    int a(enum b {x, y});
+               ^
+
+"C/drs/dr0xx.c", line 250: error: identifier "x" is undefined
+    int test = x;
+               ^
+
+"C/drs/dr0xx.c", line 254: warning: declaration is not visible outside of function
+    enum m{q, r} c; {
+         ^
+
+"C/drs/dr0xx.c", line 258: warning: variable "test" was declared but never referenced
+    int test = q;
+        ^
+
+"C/drs/dr0xx.c", line 268: error: expected a type specifier
+  _Static_assert(0x000E + 0x0100 == 0x000E + 0x0100, "fail");
+                 ^
+
+"C/drs/dr0xx.c", line 268: error: expected a type specifier
+  _Static_assert(0x000E + 0x0100 == 0x000E + 0x0100, "fail");
+                                                     ^
+
+"C/drs/dr0xx.c", line 268: warning: this declaration has no storage class or type specifier
+  _Static_assert(0x000E + 0x0100 == 0x000E + 0x0100, "fail");
+  ^
+
+"C/drs/dr0xx.c", line 273: error: expected a type specifier
+  _Static_assert(sizeof('a') == sizeof(int), "fail");
+                 ^
+
+"C/drs/dr0xx.c", line 273: error: expected a type specifier
+  _Static_assert(sizeof('a') == sizeof(int), "fail");
+                                             ^
+
+"C/drs/dr0xx.c", line 273: warning: this declaration has no storage class or type specifier
+  _Static_assert(sizeof('a') == sizeof(int), "fail");
+  ^
+
+"C/drs/dr0xx.c", line 283: error: incomplete type "struct dr040" is not allowed
+    int i[__builtin_offsetof(struct dr040, s)];
+                                         ^
+
+"C/drs/dr0xx.c", line 306: error: expression must have pointer-to-struct-or-union type but it has type "void *"
+     ((void*)0)->a;
+     ^
+
+"C/drs/dr0xx.c", line 345: error: identifier "NULL" is undefined
+    (void)NULL;
+          ^
+
+"C/drs/dr0xx.c", line 376: warning: return value type does not match the function type
+    return (*pi = i, 0);
+           ^
+
+"C/drs/dr0xx.c", line 450: error: incomplete type "struct dr084_t" is not allowed
+  void dr084_2(struct dr084_t val) {}
+               ^
+
+"C/drs/dr0xx.c", line 462: warning: argument of type "struct dr088_t_1 *" is incompatible with parameter of type "struct dr088_t_1 *"
+    dr088_f((struct dr088_t_1 *)0);
+            ^
+
+"C/drs/dr0xx.c", line 492: error: a value of type "struct One" cannot be used to initialize an entity of type "struct Two"
+    } two = one;
+            ^
+
+"C/drs/dr0xx.c", line 492: warning: variable "one" is used before its value is set
+    } two = one;
+            ^
+
+"C/drs/dr0xx.c", line 494: error: a value of type "struct One" cannot be assigned to an entity of type "struct Two"
+    two = one;
+        ^
+
+"C/drs/dr0xx.c", line 502: error: array of functions is not allowed
+    func_type array_funcs[10];
+              ^
+
+"C/drs/dr0xx.c", line 504: error: array of void is not allowed
+    void array_void[10];
+         ^
+
+"C/drs/dr0xx.c", line 507: error: incomplete type "struct S [10]" is not allowed
+    struct S s[10];
+             ^
+
+"C/drs/dr0xx.c", line 510: error: incomplete type "union U [10]" is not allowed
+    union U u[10];
+            ^
+
+"C/drs/dr0xx.c", line 513: error: incomplete type "int [][]" is not allowed
+    int never_completed_incomplete_array[][];
+        ^
+
+"C/drs/dr0xx.c", line 527: warning: arithmetic on pointer to void or function type
+    ++fp;
+    ^
+
+"C/drs/dr0xx.c", line 527: error: expression must be a modifiable lvalue
+    ++fp;
+      ^
+
+"C/drs/dr0xx.c", line 528: warning: arithmetic on pointer to void or function type
+    fp++;
+      ^
+
+"C/drs/dr0xx.c", line 528: error: expression must be a modifiable lvalue
+    fp++;
+    ^
+
+"C/drs/dr0xx.c", line 529: warning: arithmetic on pointer to void or function type
+    --fp;
+    ^
+
+"C/drs/dr0xx.c", line 529: error: expression must be a modifiable lvalue
+    --fp;
+      ^
+
+"C/drs/dr0xx.c", line 530: warning: arithmetic on pointer to void or function type
+    fp--;
+      ^
+
+"C/drs/dr0xx.c", line 530: error: expression must be a modifiable lvalue
+    fp--;
+    ^
+
+"C/drs/dr0xx.c", line 532: warning: variable "incomplete_ptr" is used before its value is set
+    (*incomplete_ptr)++;
+      ^
+
+"C/drs/dr0xx.c", line 532: error: expression must have arithmetic or pointer type
+    (*incomplete_ptr)++;
+    ^
+
+"C/drs/dr0xx.c", line 533: error: expression must have arithmetic or pointer type
+    ++(*incomplete_ptr);
+      ^
+
+"C/drs/dr0xx.c", line 534: error: expression must have arithmetic or pointer type
+    (*incomplete_ptr)--;
+    ^
+
+"C/drs/dr0xx.c", line 535: error: expression must have arithmetic or pointer type
+    --(*incomplete_ptr);
+      ^
+
+33 errors detected in the compilation of "Test_name.c".

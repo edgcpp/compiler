@@ -1,0 +1,220 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 25: error: expected a ";"
+      };
+      ^
+
+"Test_name.c", line 27: error: a "final" class type cannot be used as a base class
+      struct T final : S {}; // expected-error {{base 'S' is marked 'final'}}
+                       ^
+
+"Test_name.c", line 28: error: expected a ";"
+      struct T bar : S {}; // expected-error {{expected ';' after top level declarator}} expected-error {{expected unqualified-id}}
+                   ^
+
+"Test_name.c", line 32: error: incomplete type "final::U" is not allowed
+    struct U final _Alignas(4) {}; // expected-error 3{{}} expected-note {{}}
+             ^
+
+"Test_name.c", line 32: error: expected a ";"
+    struct U final _Alignas(4) {}; // expected-error 3{{}} expected-note {{}}
+                   ^
+
+"Test_name.c", line 54: error: underlying type of enum type must be an integral type
+      enum E : T { a = 1, b = 2, c = 3, 4 }; // expected-error {{non-integral type}} expected-error {{expected identifier}}
+               ^
+
+"Test_name.c", line 54: error: expected an identifier
+      enum E : T { a = 1, b = 2, c = 3, 4 }; // expected-error {{non-integral type}} expected-error {{expected identifier}}
+                                        ^
+
+"Test_name.c", line 66: error: expected an identifier
+      enum E : int { a = 1 } { b = 2 }; // expected-error {{expected ';' after enum}} expected-error {{expected member name}}
+                             ^
+
+"Test_name.c", line 66: error: expected a ";"
+      enum E : int { a = 1 } { b = 2 }; // expected-error {{expected ';' after enum}} expected-error {{expected member name}}
+                             ^
+
+"Test_name.c", line 70: error: expected an identifier
+      enum E : int { 1 }; // expected-error {{expected identifier}}
+                     ^
+
+"Test_name.c", line 78: error: this constant expression has type "bitfield::U" instead of the required "int" type
+      enum E : int { a = U() }; // expected-error {{no viable conversion}}
+                         ^
+
+"Test_name.c", line 84: error: this constant expression has type "const bitfield::U" instead of the required "int" type
+      enum E : int { a = id(U()) }; // expected-error {{no viable conversion}}
+                         ^
+
+"Test_name.c", line 90: error: expected either a definition or a tag name
+      enum : undeclared_type { v = 0 }; // expected-error {{unknown type name 'undeclared_type'}}
+           ^
+
+"Test_name.c", line 90: error: identifier "undeclared_type" is undefined
+      enum : undeclared_type { v = 0 }; // expected-error {{unknown type name 'undeclared_type'}}
+             ^
+
+"Test_name.c", line 90: error: expected a ";"
+      enum : undeclared_type { v = 0 }; // expected-error {{unknown type name 'undeclared_type'}}
+                             ^
+
+"Test_name.c", line 91: error: expected a ";"
+      enum E : undeclared_type { w = 0 }; // expected-error {{unknown type name 'undeclared_type'}}
+                               ^
+
+"Test_name.c", line 92: error: either a bit field with an incomplete enum type or an opaque enumeration with an invalid base type
+      enum X : undeclared_type { x = 0 }; // expected-error {{unknown type name 'undeclared_type'}}
+           ^
+
+"Test_name.c", line 92: error: expected a ";"
+      enum X : undeclared_type { x = 0 }; // expected-error {{unknown type name 'undeclared_type'}}
+                               ^
+
+"Test_name.c", line 110: error: a trailing return type requires the "auto" type specifier
+        S(a)()->n; // ok, expression; expected-warning{{expression result unused}}
+              ^
+
+"Test_name.c", line 111: error: a trailing return type requires the "auto" type specifier
+        S(a)(int())->n; // ok, expression; expected-warning{{expression result unused}}
+                   ^
+
+"Test_name.c", line 112: error: cannot overload functions distinguished by return type alone
+        auto(a)()->n; // ok, function declaration
+             ^
+
+"Test_name.c", line 114: error: cannot determine which instance of overloaded function "a" is intended
+        using T = decltype(a);
+                           ^
+
+"Test_name.c", line 123: warning: missing "typename" is nonstandard here
+      void e(S::S()); // expected-error {{is a constructor name}}
+             ^
+
+"Test_name.c", line 125: error: invalid redeclaration of member function "ellipsis::S<T...>::f(ellipsis::S<T...> *...)" (declared at line 124)
+      void f(S(...args)[sizeof(T)]); // expected-error {{redeclared}}
+           ^
+
+"Test_name.c", line 126: error: invalid redeclaration of member function "ellipsis::S<T...>::f(ellipsis::S<T...> *...)" (declared at line 124)
+      void f(S ...args[sizeof(T)]); // expected-error {{redeclared}}
+           ^
+
+"Test_name.c", line 127: error: an unnamed parameter pack declaration cannot be parenthesized
+      void g(S(...[sizeof(T)])); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+               ^
+
+"Test_name.c", line 128: error: function returning array is not allowed
+      void g(S(...)[sizeof(T)]); // expected-error {{function cannot return array type}}
+                   ^
+
+"Test_name.c", line 128: error: parameter pack "T" was referenced but not expanded
+      void g(S(...)[sizeof(T)]); // expected-error {{function cannot return array type}}
+                           ^
+
+"Test_name.c", line 129: error: parameter pack "T" was referenced but not expanded
+      void h(T(...)); // function type, expected-error {{unexpanded parameter pack}}
+             ^
+
+"Test_name.c", line 132: error: invalid redeclaration of member function "ellipsis::S<T...>::i(int (*)(T...))" (declared at line 131)
+      void i(int(T...a)); // expected-error {{redeclared}}
+           ^
+
+"Test_name.c", line 133: error: parameter pack "T" was referenced but not expanded
+      void i(int(T, ...)); // function type, expected-error {{unexpanded parameter pack}}
+                 ^
+
+"Test_name.c", line 134: error: expected a ")"
+      void i(int(T, ...a)); // expected-error {{expected ')'}} expected-note {{to match}} expected-error {{unexpanded parameter pack}}
+                       ^
+
+"Test_name.c", line 134: error: parameter pack "T" was referenced but not expanded
+      void i(int(T, ...a)); // expected-error {{expected ')'}} expected-note {{to match}} expected-error {{unexpanded parameter pack}}
+                 ^
+
+"Test_name.c", line 134: error: invalid redeclaration of member function "ellipsis::S<T...>::i(int (*)(T, ...))" (declared at line 133)
+      void i(int(T, ...a)); // expected-error {{expected ')'}} expected-note {{to match}} expected-error {{unexpanded parameter pack}}
+           ^
+
+"Test_name.c", line 136: error: pack expansion does not make use of any argument packs
+      void j(int(int...a)); // expected-error {{does not contain any unexpanded parameter packs}}
+                    ^
+
+"Test_name.c", line 137: error: pack expansion does not make use of any argument packs
+      void j(T(int...)); // expected-error {{unexpanded parameter pack}}
+                  ^
+
+"Test_name.c", line 137: error: parameter pack "T" was referenced but not expanded
+      void j(T(int...)); // expected-error {{unexpanded parameter pack}}
+             ^
+
+"Test_name.c", line 138: error: parameter pack "T" was referenced but not expanded
+      void j(T(T...)); // expected-error {{unexpanded parameter pack}}
+             ^
+
+"Test_name.c", line 139: error: function returning function is not allowed
+      void k(int(...)(T)); // expected-error {{cannot return function type}}
+                      ^
+
+"Test_name.c", line 139: error: parameter pack "T" was referenced but not expanded
+      void k(int(...)(T)); // expected-error {{cannot return function type}}
+                      ^
+
+"Test_name.c", line 141: error: expected a ")"
+      void l(int(&...)(T)); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+                  ^
+
+"Test_name.c", line 141: error: parameter pack "T" was referenced but not expanded
+      void l(int(&...)(T)); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+                       ^
+
+"Test_name.c", line 142: error: expected a ")"
+      void l(int(*...)(T)); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+                  ^
+
+"Test_name.c", line 142: error: parameter pack "T" was referenced but not expanded
+      void l(int(*...)(T)); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+                       ^
+
+"Test_name.c", line 143: error: expected a ")"
+      void l(int(S<int>::*...)(T)); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+                          ^
+
+"Test_name.c", line 143: error: parameter pack "T" was referenced but not expanded
+      void l(int(S<int>::*...)(T)); // expected-warning {{ISO C++11 requires a parenthesized pack declaration to have a name}}
+                               ^
+
+"Test_name.c", line 162: error: expected a ")"
+      CtorSink x1(int(t) ..., int(x)); // ok, declares object x1
+                            ^
+
+"Test_name.c", line 163: error: a value of type "ellipsis::CtorSink (*)(int, ...)" cannot be used to initialize an entity of type "ellipsis::CtorSink *"
+      CtorSink *p1 = &x1;
+                     ^
+
+"Test_name.c", line 183: warning: variable "pf2" was declared but never referenced
+      void (*pf2)() {};
+             ^
+
+"Test_name.c", line 184: warning: variable "pmf3" was declared but never referenced
+      void (X::*pmf3)() {&X::foo};
+                ^
+
+"Test_name.c", line 185: warning: variable "pmf4" was declared but never referenced
+      void (X::*pmf4)() = {&X::foo};
+                ^
+
+"Test_name.c", line 167: warning: expression has no effect
+      UnsignedTmplArgSink<((T *)0, 42u) ...> **t0p = &t0; // expected-warning 2{{left operand of comma operator has no effect}}
+                           ^
+          detected during instantiation of "void ellipsis::foo(int, T...) [with T=<int, int>]" at line 170
+
+"Test_name.c", line 167: warning: expression has no effect
+      UnsignedTmplArgSink<((T *)0, 42u) ...> **t0p = &t0; // expected-warning 2{{left operand of comma operator has no effect}}
+                           ^
+          detected during instantiation of "void ellipsis::foo(int, T...) [with T=<int, int>]" at line 170
+
+"Test_name.c", line 47: warning: variable "bitfield::d" was declared but never referenced
+    constexpr T a, b, c, d;
+                         ^
+
+47 errors detected in the compilation of "Test_name.c".

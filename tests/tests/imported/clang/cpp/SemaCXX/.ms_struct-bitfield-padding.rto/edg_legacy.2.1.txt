@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 91: warning: bit field cannot contain all values of the enumerated type
+    EnumU8 : 0;
+             ^
+
+"Test_name.c", line 94: error: static assertion failed
+  static_assert(sizeof(J) == 1);
+  ^
+"Test_name.c", line 94: note: the final comparison was 4 == 1
+  static_assert(sizeof(J) == 1);
+                          ^
+
+"Test_name.c", line 98: warning: bit field cannot contain all values of the enumerated type
+    EnumU8 : 0;
+             ^
+
+"Test_name.c", line 100: error: static assertion failed
+  static_assert(sizeof(K) == 1);
+  ^
+"Test_name.c", line 100: note: the final comparison was 4 == 1
+  static_assert(sizeof(K) == 1);
+                          ^
+
+2 errors detected in the compilation of "Test_name.c".

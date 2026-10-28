@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: warning: statement is unreachable
+        for (j = ({ continue; 0; });	// { dg-error "invalid exit" }
+                              ^
+
+"Test_name.c", line 12: warning: statement is unreachable
+  	   j < ({ continue; 10; });	// { dg-error "invalid exit" }
+  	                    ^
+
+"Test_name.c", line 13: warning: statement is unreachable
+  	   j += ({ continue; 1; }))	// { dg-error "invalid exit" }
+  	                     ^
+
+"Test_name.c", line 17: warning: statement is unreachable
+        for (j = ({ break; 0; });		// { dg-error "invalid exit" }
+                           ^
+
+"Test_name.c", line 18: warning: statement is unreachable
+  	   j < ({ break; 10; });	// { dg-error "invalid exit" }
+  	                 ^
+
+"Test_name.c", line 19: warning: statement is unreachable
+  	   j += ({ break; 1; }))	// { dg-error "invalid exit" }
+  	                  ^
+

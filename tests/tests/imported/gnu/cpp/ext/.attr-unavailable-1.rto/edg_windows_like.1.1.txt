@@ -1,0 +1,184 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: type "INT1" was declared declared unavailable
+  typedef INT1 INT1a; 			/* { dg-error "'INT1' is unavailable" "" } */
+               ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable));
+                                  ^
+
+"Test_name.c", line 13: error: type "INT1" was declared declared unavailable
+  INT1 should_be_unavailable; 		/* { dg-error "'INT1' is unavailable" "" } */
+       ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable));
+                                  ^
+
+"Test_name.c", line 17: error: type "INT1" was declared declared unavailable
+  INT1 f2(void) { return 0; }		/* { dg-error "'INT1' is unavailable" "" } */
+       ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable));
+                                  ^
+
+"Test_name.c", line 20: error: type "INT2" was declared declared unavailable
+  INT2 f4(void) { return 0; }		/* { dg-error "'INT2' is unavailable" "" } */
+       ^
+"Test_name.c", line 8: note: because of an "unavailable" attribute
+  typedef INT1 INT2 __attribute__ ((__unavailable__));
+                                    ^
+
+"Test_name.c", line 21: error: type "INT2" was declared declared unavailable
+  int f5(INT2 x);				/* { dg-error "'INT2' is unavailable" "" } */
+      ^
+"Test_name.c", line 8: note: because of an "unavailable" attribute
+  typedef INT1 INT2 __attribute__ ((__unavailable__));
+                                    ^
+
+"Test_name.c", line 29: error: type "Color" was declared declared unavailable
+  Color k;				/* { dg-error "'Color' is unavailable" "" } */
+        ^
+"Test_name.c", line 24: note: because of an "unavailable" attribute
+  typedef enum Color {red, green, blue} Color __attribute__((unavailable));
+                                                             ^
+
+"Test_name.c", line 50: error: type "INT1" was declared declared unavailable
+     INT1 w;				/* { dg-error "'INT1' is unavailable" "" } */
+          ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable));
+                                  ^
+
+"Test_name.c", line 54: error: function "f1" was declared declared unavailable
+     int (*pf)() = f1;			/* { dg-error "'INT1 f1\\(\\)' is unavailable" "" } */
+                   ^
+"Test_name.c", line 16: note: because of an "unavailable" attribute
+  INT1 f1(void) __attribute__ ((unavailable));
+                                ^
+
+"Test_name.c", line 56: warning: variable "w" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+         ^
+
+"Test_name.c", line 56: warning: variable "x" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+             ^
+
+"Test_name.c", line 56: error: variable "x" was declared declared unavailable
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+             ^
+"Test_name.c", line 51: note: because of an "unavailable" attribute
+     int x __attribute__ ((unavailable));
+                           ^
+
+"Test_name.c", line 56: warning: variable "y" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+                 ^
+
+"Test_name.c", line 56: error: variable "y" was declared declared unavailable
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+                 ^
+"Test_name.c", line 52: note: because of an "unavailable" attribute
+     int y __attribute__ ((__unavailable__));
+                           ^
+
+"Test_name.c", line 56: error: variable "g2" was declared declared unavailable
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+                          ^
+"Test_name.c", line 27: note: because of an "unavailable" attribute
+  int g2 __attribute__ ((unavailable));
+                         ^
+
+"Test_name.c", line 56: error: variable "g3" was declared declared unavailable
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable" "" } */
+                               ^
+"Test_name.c", line 28: note: because of an "unavailable" attribute
+  int g3 __attribute__ ((__unavailable__));
+                         ^
+
+"Test_name.c", line 60: error: function "f1" was declared declared unavailable
+     return f1(); 			/* { dg-error "'INT1 f1\\(\\)' is unavailable" "f1" } */
+            ^
+"Test_name.c", line 16: note: because of an "unavailable" attribute
+  INT1 f1(void) __attribute__ ((unavailable));
+                                ^
+
+"Test_name.c", line 53: warning: variable "z" was set but never used
+     int z;
+         ^
+
+"Test_name.c", line 54: warning: variable "pf" was declared but never referenced
+     int (*pf)() = f1;			/* { dg-error "'INT1 f1\\(\\)' is unavailable" "" } */
+           ^
+
+"Test_name.c", line 68: error: member "S1::field2" was declared declared unavailable
+       return p->field2;			/* { dg-error "'S1::field2' is unavailable" "" } */
+                 ^
+"Test_name.c", line 33: note: because of an "unavailable" attribute
+    int field2 __attribute__ ((unavailable));
+                               ^
+
+"Test_name.c", line 69: error: member "S1::field4" was declared declared unavailable
+    else if (lp.field4)			/* { dg-error "'S1::field4' is unavailable" "" } */
+                ^
+"Test_name.c", line 35: note: because of an "unavailable" attribute
+    int field4 __attribute__ ((__unavailable__));
+                               ^
+
+"Test_name.c", line 69: warning: variable "lp" is used before its value is set
+    else if (lp.field4)			/* { dg-error "'S1::field4' is unavailable" "" } */
+             ^
+
+"Test_name.c", line 73: warning: expression has no effect
+    p->u2.field9;				/* { dg-error "'S1::u2' is unavailable" "" } */
+    ^
+
+"Test_name.c", line 73: error: member "S1::u2" was declared declared unavailable
+    p->u2.field9;				/* { dg-error "'S1::u2' is unavailable" "" } */
+       ^
+"Test_name.c", line 45: note: because of an "unavailable" attribute
+    } u2 __attribute__ ((unavailable));
+                         ^
+
+"Test_name.c", line 74: error: member "S1::<unnamed>::field6" was declared declared unavailable
+    return p->u1.field6 + p->field8;	/* { dg-error "'S1::<unnamed union>::field6' is unavailable" "" } */
+                 ^
+"Test_name.c", line 38: note: because of an "unavailable" attribute
+      int field6 __attribute__ ((unavailable));
+                                 ^
+
+"Test_name.c", line 74: error: member "S1::field8" was declared declared unavailable
+    return p->u1.field6 + p->field8;	/* { dg-error "'S1::<unnamed union>::field6' is unavailable" "" } */
+                             ^
+"Test_name.c", line 41: note: because of an "unavailable" attribute
+    int field8:1 __attribute__ ((unavailable));
+                                 ^
+
+"Test_name.c", line 80: error: type "INT1" was declared declared unavailable
+    INT1 y; 				/* { dg-error "'INT1' is unavailable" "" } */
+         ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable));
+                                  ^
+
+"Test_name.c", line 83: error: class "SS1" was declared declared unavailable
+  struct SS1 *p1;				/* { dg-error "'SS1' is unavailable" "" } */
+              ^
+"Test_name.c", line 81: note: because of an "unavailable" attribute
+  } __attribute__ ((unavailable));
+                    ^
+
+"Test_name.c", line 90: error: class "SS2" was declared declared unavailable
+  struct SS2 *p2;				/* { dg-error "'SS2' is unavailable" "" } */
+              ^
+"Test_name.c", line 85: note: because of an "unavailable" attribute
+  struct __attribute__ ((__unavailable__)) SS2 {
+                         ^
+
+"Test_name.c", line 101: error: class "T" was declared declared unavailable
+  T *p3;				// { dg-error "'T' is unavailable" }
+     ^
+"Test_name.c", line 99: note: because of an "unavailable" attribute
+  } __attribute__ ((unavailable));
+                    ^
+
+22 errors detected in the compilation of "Test_name.c".

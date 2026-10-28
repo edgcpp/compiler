@@ -1,0 +1,43 @@
+eccp -DTEST_NUMBER=2 -r -x -tused --set_flag=no_checking_pragmas Test_name.c
+"Test_name.c", line 9: remark: function "S::S()" cannot be inlined
+           S(){ printf("S(%ld)\n",(char*)this-(char*)b0);}
+           ^
+
+"Test_name.c", line 10: remark: function "S::S(int)" cannot be inlined
+           S(int j){ printf("S(%ld) j=%d\n",(char*)this-(char*)b0, j);}
+           ^
+
+"Test_name.c", line 12: remark: function "S::S(S &)" cannot be inlined
+           S(S& x){printf("S(%ld,%ld)\n",(char*)this-(char*)b0,&x);};
+           ^
+
+"Test_name.c", line 15: remark: function "array::array()" cannot be inlined
+  struct array {
+         ^
+          detected during implicit generation of "array::array()" at line 17
+
+"Test_name.c", line 15: remark: function "array::~array" cannot be inlined
+  struct array {
+         ^
+          detected during implicit generation of "array::~array()" at line 17
+
+"Test_name.c", line 15: remark: function "array::array(array &)" cannot be inlined
+  struct array {
+         ^
+          detected during implicit generation of "array::array(array &)" at line 17
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function '__ct__1SFv':
+Test_name.c:9:216: error: too many arguments to function 'printf'; expected 0, have 2
+Test_name.c:4:12: note: declared here
+Test_name.c: In function '__ct__1SFi':
+Test_name.c:10:216: error: too many arguments to function 'printf'; expected 0, have 3
+Test_name.c:4:12: note: declared here
+Test_name.c: In function '__dt__1SFv':
+Test_name.c:11:91: error: too many arguments to function 'printf'; expected 0, have 2
+Test_name.c:4:12: note: declared here
+Test_name.c: In function '__ct__1SFR1S':
+Test_name.c:12:216: error: too many arguments to function 'printf'; expected 0, have 3
+Test_name.c:4:12: note: declared here
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

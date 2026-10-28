@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions Test_name.c
+"SemaCXX/constant-expression-cxx2a.cpp", line 45: warning: expression has no effect
+    constexpr int k = (1 <=> 1, 0);
+                       ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 121: error: expression must have a constant value
+  constexpr bool tc9 = (&dummy <=> &dummy2) != 0;
+                       ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 121: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool tc9 = (&dummy <=> &dummy2) != 0;
+                               ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 176: error: static assertion failed
+    static_assert(d.ba == 'B');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 176: note: the final comparison was 65 == 66
+    static_assert(d.ba == 'B');
+                       ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 181: error: static assertion failed
+    static_assert(a.f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 181: note: the final comparison was 65 == 68
+    static_assert(a.f() == 'D');
+                        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 182: error: static assertion failed
+    static_assert(b.f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 182: note: the final comparison was 66 == 68
+    static_assert(b.f() == 'D');
+                        ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 186: error: expression must have a constant value
+    static_assert(d_not_constexpr.f() == 'D');
+                  ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 186: note: attempt to access run-time storage
+    static_assert(d_not_constexpr.f() == 'D');
+                                   ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 199: error: return type is not identical to nor covariant with return type "const Virtual::A *" of overridden virtual function "Virtual::Covariant1::f"
+      constexpr virtual const D *f() const { return &this->d; }
+                                 ^
+          detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::B]" at line 202
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 199: error: return type is not identical to nor covariant with return type "const Virtual::A *" of overridden virtual function "Virtual::Covariant1::f"
+      constexpr virtual const D *f() const { return &this->d; }
+                                 ^
+          detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::C]" at line 203
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 207: error: static assertion failed
+    static_assert(cb1->f()->a == 'A');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 207: note: the final comparison was 123 == 65
+    static_assert(cb1->f()->a == 'A');
+                              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 208: error: static assertion failed
+    static_assert(cb1->f() == (B*)&cb.d);
+    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 209: error: static assertion failed
+    static_assert(cb1->f()->f() == 'D');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 209: note: the final comparison was 65 == 68
+    static_assert(cb1->f()->f() == 'D');
+                                ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 210: warning: integer conversion resulted in a change of sign
+    static_assert(cb2->f()->b == 'B');
+                  ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 210: error: static assertion failed
+    static_assert(cb2->f()->b == 'B');
+    ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 210: note: the final comparison was VALUE == 66
+    static_assert(cb2->f()->b == 'B');
+                              ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 211: error: static assertion failed
+    static_assert(cb2->f() == &cb.d);
+    ^
+
+AddressSanitizer:DEADLYSIGNAL
+eccp: front end returned an exit status of 139

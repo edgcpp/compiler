@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --set_flag=no_checking_pragmas Test_name.c
+"Test_name.c", line 26: warning: variable "vla" was declared but never referenced
+    int vla[a.b.fn ()];
+        ^
+
+"Test_name.c", line 26: error: the size of an array must be greater than zero
+    int vla [ a . b . fn ( ) ];
+              ^
+          detected during instantiation of "void A<T>::test() [with T=char]" at line 33
+
+1 error detected in the compilation of "Test_name.c".

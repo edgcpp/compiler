@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 13: warning: inline variables are a C++17 feature
+  inline const bool is_same<T, T> = true;
+  ^
+
+"Test_name.c", line 19: warning: explicit lambda template parameters are a C++20 feature
+    auto L0 = []<typename T>(T arg) {
+                ^
+
+"Test_name.c", line 20: error: static assertion failed
+      static_assert(is_same<T, int>); // expected-error {{static assertion failed}}
+      ^
+          detected during instantiation of function "lambda [](T)->auto [with T=double]" at line 23
+
+"Test_name.c", line 25: warning: constant "I" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+    auto L1 = []<int I> {
+                     ^
+
+"Test_name.c", line 26: error: static assertion failed
+      static_assert(I == 5); // expected-error {{static assertion failed}}
+      ^
+"Test_name.c", line 26: note: the final comparison was 6 == 5
+      static_assert(I == 5); // expected-error {{static assertion failed}}
+                      ^
+          detected during instantiation of function "lambda []()->auto [with I=6]" at line 29
+
+"Test_name.c", line 32: error: static assertion failed
+      static_assert(is_same<T<U>, DummyTemplate<float> >); // // expected-error {{static assertion failed}}
+      ^
+          detected during instantiation of function "lambda [](T<U> &&)->auto [with T=DummyTemplate, U=double]" at line 35
+
+"Test_name.c", line 41: warning: declaration of "T" hides template parameter
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                           ^
+
+"Test_name.c", line 49: warning: constant "x" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+                ^
+          detected during instantiation of "T outer<T>() [with T=int]" at line 54
+
+"Test_name.c", line 54: error: expression must have a constant value
+  static_assert(outer<int>() == 123); // cxx11-cxx14-error {{not an integral constant expression}} cxx11-cxx14-note {{in call}}
+                ^
+"Test_name.c", line 49: note: cannot call non-constexpr function "lambda []()->auto [with x=123]" (declared at line 49)
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+                                            ^
+
+"Test_name.c", line 49: error: no instance of function template "lambda []()->auto" matches the argument list
+            object type is: lambda []()->auto
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+                                            ^
+"Test_name.c", line 49: note: substituting explicit template arguments "<123>" for function template "lambda []()->auto" failed
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+             ^
+          detected during instantiation of "T outer<T>() [with T=int *]" at line 55
+
+5 errors detected in the compilation of "Test_name.c".

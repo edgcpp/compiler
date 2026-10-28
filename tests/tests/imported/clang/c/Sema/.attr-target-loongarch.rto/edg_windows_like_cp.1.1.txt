@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: target attribute not recognized
+  void __attribute__((target("default"))) bar(void) {}
+                             ^
+
+"Test_name.c", line 9: warning: target attribute not recognized
+  void __attribute__((target("arch=invalid"))) foo(void) {}
+                             ^
+
+"Test_name.c", line 12: warning: target attribute not recognized
+  void __attribute__((target("+div32"))) plusfeature(void) {}
+                             ^
+
+"Test_name.c", line 15: warning: target attribute not recognized
+  void __attribute__((target("-div32"))) minusfeature(void) {}
+                             ^
+
+"Test_name.c", line 18: warning: target attribute not recognized
+  int __attribute__((target("aaa"))) test_feature(void) { return 4; }
+                            ^
+
+"Test_name.c", line 21: warning: target attribute not recognized
+  int __attribute__((target("no-aaa"))) test_nofeature(void) { return 4; }
+                            ^
+
+"Test_name.c", line 24: warning: target attribute not recognized
+  int __attribute__((target("arch=la464,arch=la664"))) test_duplarch(void) { return 4; }
+                            ^
+
+"Test_name.c", line 24: warning: target attribute not recognized
+  int __attribute__((target("arch=la464,arch=la664"))) test_duplarch(void) { return 4; }
+                            ^
+
+"Test_name.c", line 27: warning: target attribute not recognized
+  int __attribute__((target("tune=la64v1.0"))) test_tune(void) { return 4; }
+                            ^
+

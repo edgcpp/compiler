@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 15: warning: variable "n" was declared but never referenced
+    unsigned long n = (unsigned long) &p[5];
+                  ^
+
+"Test_name.c", line 17: warning: variable "m" was declared but never referenced
+    unsigned long m = (unsigned long) &p[x];
+                  ^
+
+"Test_name.c", line 23: warning: variable "a" was declared but never referenced
+    bool a = (bool) &p[5];
+         ^
+
+"Test_name.c", line 25: warning: variable "b" was declared but never referenced
+    bool b = (bool) &p[x];
+         ^
+
+"Test_name.c", line 28: warning: variable "a1" was declared but never referenced
+    bool a1 = &p[5];
+         ^
+
+"Test_name.c", line 30: warning: variable "b1" was declared but never referenced
+    bool b1 = &p[x];
+         ^
+
+"Test_name.c", line 67: warning: variable "n" was declared but never referenced
+    unsigned long n = (unsigned long) &5[p];
+                  ^
+
+"Test_name.c", line 73: warning: variable "n" was declared but never referenced
+    int n = p[5];
+        ^
+
+"Test_name.c", line 87: warning: variable "n" was declared but never referenced
+    int n = &p[9] - &p[4];
+        ^
+
+"Test_name.c", line 118: warning: expression has no effect
+  void unsafe_h(void* p) { ((char*)p)[10]; }
+                           ^
+

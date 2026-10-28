@@ -1,0 +1,343 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 --exceptions --exceptions Test_name.c
+"Test_name.c", line 48: error: expected a type specifier
+    struct S {} * sp = new S::S;
+                           ^
+
+"Test_name.c", line 51: error: a fully qualified constructor call is not allowed
+      S::S(a);
+      ^
+
+"Test_name.c", line 51: error: identifier "a" is undefined
+      S::S(a);
+           ^
+
+"Test_name.c", line 78: error: type name is not allowed
+      W<int>::W w1a;
+      ^
+
+"Test_name.c", line 78: error: expected a ";"
+      W<int>::W w1a;
+                ^
+
+"Test_name.c", line 109: error: overloaded function "cwg1310::W<T>::W [with T=int]" is not a type name
+      TTy<W<int>::W> tt1a;
+          ^
+
+"Test_name.c", line 80: warning: variable "w1ax" was declared but never referenced
+      W<int>::W::X w1ax;
+                   ^
+
+"Test_name.c", line 81: warning: variable "w1b" was declared but never referenced
+      W<int>::W<int> w1b;
+                     ^
+
+"Test_name.c", line 83: warning: variable "w1bx" was declared but never referenced
+      W<int>::W<int>::X w1bx;
+                        ^
+
+"Test_name.c", line 84: warning: variable "w2a" was declared but never referenced
+      typename W<int>::W w2a;
+                         ^
+
+"Test_name.c", line 87: warning: variable "w2ax" was declared but never referenced
+      typename W<int>::W::X w2ax;
+                            ^
+
+"Test_name.c", line 89: warning: variable "w2b" was declared but never referenced
+      typename W<int>::W<int> w2b;
+                              ^
+
+"Test_name.c", line 92: warning: variable "w2bx" was declared but never referenced
+      typename W<int>::W<int>::X w2bx;
+                                 ^
+
+"Test_name.c", line 94: warning: variable "w3" was declared but never referenced
+      W<int>::template W<int> w3;
+                              ^
+
+"Test_name.c", line 97: warning: variable "w3x" was declared but never referenced
+      W<int>::template W<int>::X w3x;
+                                 ^
+
+"Test_name.c", line 99: warning: variable "w4" was declared but never referenced
+      typename W<int>::template W<int> w4;
+                                       ^
+
+"Test_name.c", line 103: warning: variable "w4x" was declared but never referenced
+      typename W<int>::template W<int>::X w4x;
+                                          ^
+
+"Test_name.c", line 107: warning: variable "tt1" was declared but never referenced
+      TT<W<int>::W> tt1;
+                    ^
+
+"Test_name.c", line 109: warning: variable "tt1a" was declared but never referenced
+      TTy<W<int>::W> tt1a;
+                     ^
+
+"Test_name.c", line 111: warning: variable "tt2" was declared but never referenced
+      TT<W<int>::template W> tt2;
+                             ^
+
+"Test_name.c", line 114: warning: variable "tt3" was declared but never referenced
+      TT<W<int>::WBase> tt3;
+                        ^
+
+"Test_name.c", line 115: warning: variable "tt3a" was declared but never referenced
+      TTy<W<int>::WBase> tt3a;
+                         ^
+
+"Test_name.c", line 116: warning: variable "tt4" was declared but never referenced
+      TT<W<int>::template WBase> tt4;
+                                 ^
+
+"Test_name.c", line 159: warning: constant "I" is not used in or cannot be deduced from the template argument list of class template "cwg1315::A<<expression>, <expression>>"
+    template <int I> struct A<I + 5, I * 2> {};
+                  ^
+
+"Test_name.c", line 174: warning: this partial specialization would have made the instantiation of class "cwg1315::B<1, 2, 2>" ambiguous
+    template <int I, int K> struct B<I, I + 1, K> {}; // #cwg1315-B-2
+                                   ^
+
+"Test_name.c", line 175: error: more than one partial specialization matches the template argument list of class "cwg1315::B<1, 2, 4>"
+            "cwg1315::B<I, <expression>, K>" (declared at line 165)
+            "cwg1315::B<I, <expression>, K>" (declared at line 174)
+    B<1, 2, 4> b3;
+               ^
+
+"Test_name.c", line 192: error: identifier "T" is undefined
+      void f() throw(T) {}
+                     ^
+
+"Test_name.c", line 204: error: incompatible exception specifications
+    void (A::*af1)() throw(A::T) = &A::f;
+                                   ^
+
+"Test_name.c", line 207: error: incompatible exception specifications
+    void (A::*af2)() throw() = &A::f;
+                               ^
+
+"Test_name.c", line 218: error: identifier "T" is undefined
+      void f() throw(T, typename U::type) {}
+                     ^
+
+"Test_name.c", line 218: error: a class or namespace qualified name is required
+      void f() throw(T, typename U::type) {}
+                                 ^
+          detected during instantiation of class "cwg1330::B<U> [with U=int]" at line 230
+
+"Test_name.c", line 218: error: expected a ")"
+      void f() throw(T, typename U::type) {}
+                                  ^
+          detected during instantiation of class "cwg1330::B<U> [with U=int]" at line 230
+
+"Test_name.c", line 244: error: incompatible exception specifications
+    void (B<P>::*bpf1)() throw(B<P>::T, int) = &B<P>::f;
+                                               ^
+
+"Test_name.c", line 249: error: incompatible exception specifications
+    void (B<P>::*bpf2)() throw(int) = &B<P>::f;
+                                      ^
+
+"Test_name.c", line 255: error: incompatible exception specifications
+    void (B<P>::*bpf4)() throw() = &B<P>::f;
+                                   ^
+
+"Test_name.c", line 265: error: a class or namespace qualified name is required
+    template<typename T> int f() throw(typename T::error) { return 0; } // #cwg1330-f
+                                                ^
+          detected during instantiation of "cwg1330::f" based on template argument <int> at line 281
+
+"Test_name.c", line 265: error: expected a ")"
+    template<typename T> int f() throw(typename T::error) { return 0; } // #cwg1330-f
+                                                 ^
+          detected during instantiation of "cwg1330::f" based on template argument <int> at line 281
+
+"Test_name.c", line 265: error: a class or namespace qualified name is required
+    template<typename T> int f() throw(typename T::error) { return 0; } // #cwg1330-f
+                                                ^
+          detected during instantiation of "cwg1330::f" based on template argument <short> at line 286
+
+"Test_name.c", line 265: error: expected a ")"
+    template<typename T> int f() throw(typename T::error) { return 0; } // #cwg1330-f
+                                                 ^
+          detected during instantiation of "cwg1330::f" based on template argument <short> at line 286
+
+"Test_name.c", line 292: error: a class or namespace qualified name is required
+      C() throw(typename T::type); // #cwg1330-C
+                         ^
+          detected during instantiation of class "cwg1330::C<T> [with T=void]" at line 302
+
+"Test_name.c", line 292: error: expected a ")"
+      C() throw(typename T::type); // #cwg1330-C
+                          ^
+          detected during instantiation of class "cwg1330::C<T> [with T=void]" at line 302
+
+"Test_name.c", line 316: warning: expression has no effect
+    (*a).*p;
+    ^
+
+"Test_name.c", line 318: warning: expression has no effect
+    a->*p;
+    ^
+
+"Test_name.c", line 341: warning: "auto" as a type specifier is nonstandard in this mode
+    auto a(1);
+    ^
+
+"Test_name.c", line 343: warning: "auto" as a type specifier is nonstandard in this mode
+    auto b(1, 2);
+    ^
+
+"Test_name.c", line 343: error: too many initializer values
+    auto b(1, 2);
+              ^
+
+"Test_name.c", line 356: warning: "auto" as a type specifier is nonstandard in this mode
+      auto x(ts...);
+      ^
+
+"Test_name.c", line 384: warning: "auto" as a type specifier is nonstandard in this mode
+    auto x = 5, *y = &x;
+    ^
+
+"Test_name.c", line 386: warning: "auto" as a type specifier is nonstandard in this mode
+    auto z = y, *q = y;
+    ^
+
+"Test_name.c", line 386: error: "auto" type is "int" for this entity, but was previously implied to be "int *"
+    auto z = y, *q = y;
+                 ^
+
+"Test_name.c", line 566: error: no instance of function template "cwg1388::f" matches the argument list
+            argument types are: (int, int)
+      f(0, 0);
+      ^
+"Test_name.c", line 557: note: candidate function template "cwg1388::f" failed deduction
+    template<typename A, typename ...T> void f(T..., A); // #cwg1388-f
+                                             ^
+
+"Test_name.c", line 570: error: no instance of function template "cwg1388::f" matches the argument list
+            argument types are: (int, int)
+      f<int>(0, 0);
+      ^
+"Test_name.c", line 557: note: function template "cwg1388::f" does not match because argument #1 is provided for an empty parameter pack
+    template<typename A, typename ...T> void f(T..., A); // #cwg1388-f
+                                             ^
+
+"Test_name.c", line 574: error: no instance of function template "cwg1388::f" matches the argument list
+            argument types are: (int, int)
+      f<int, int, int>(0, 0);
+      ^
+"Test_name.c", line 557: note: candidate function template "cwg1388::f" failed deduction
+    template<typename A, typename ...T> void f(T..., A); // #cwg1388-f
+                                             ^
+
+"Test_name.c", line 579: error: no instance of function template "cwg1388::g" matches the argument list
+            argument types are: (int, int)
+      g(0, 0);
+      ^
+"Test_name.c", line 559: note: candidate function template "cwg1388::g" failed deduction
+    template<typename ...T> void g(T..., int); // #cwg1388-g
+                                 ^
+
+"Test_name.c", line 583: error: no instance of function template "cwg1388::g" matches the argument list
+            argument types are: (int)
+      g<int>(0);
+      ^
+"Test_name.c", line 559: note: candidate function template "cwg1388::g" failed deduction
+    template<typename ...T> void g(T..., int); // #cwg1388-g
+                                 ^
+
+"Test_name.c", line 589: error: no instance of function template "cwg1388::h" matches the argument list
+            argument types are: (int, int)
+      h(0, 0);
+      ^
+"Test_name.c", line 561: note: candidate function template "cwg1388::h" failed deduction
+    template<typename ...T, typename A> void h(T..., A); // #cwg1388-h
+                                             ^
+
+"Test_name.c", line 593: error: no instance of function template "cwg1388::h" matches the argument list
+            argument types are: (int, int)
+      h<int, int>(0, 0);
+      ^
+"Test_name.c", line 561: note: candidate function template "cwg1388::h" failed deduction
+    template<typename ...T, typename A> void h(T..., A); // #cwg1388-h
+                                             ^
+
+"Test_name.c", line 614: error: no instance of function template "cwg1388::f_pair_1" matches the argument list
+            argument types are: (cwg1388::pair<int, char>, cwg1388::pair<long, char>, int)
+      f_pair_1<int, long>(a, b, 0);
+      ^
+"Test_name.c", line 603: note: candidate function template "cwg1388::f_pair_1" failed deduction
+    template<typename ...T, typename ...U> void f_pair_1(pair<T, U>..., int); // #cwg1388-f-1
+                                                ^
+
+"Test_name.c", line 619: error: no instance of function template "cwg1388::f_pair_3" matches the argument list
+            argument types are: (cwg1388::pair<int, char>, cwg1388::pair<long, char>, cwg1388::tuple<char>)
+      f_pair_3<int, long>(a, b, tuple<char>());
+      ^
+"Test_name.c", line 608: note: candidate function template "cwg1388::f_pair_3" failed deduction
+    template<typename ...T, typename ...U> void f_pair_3(pair<T, U>..., tuple<U...>); // #cwg1388-f-3
+                                                ^
+
+"Test_name.c", line 623: error: no instance of function template "cwg1388::f_pair_4" matches the argument list
+            argument types are: (cwg1388::pair<int, char>, cwg1388::pair<long, char>, int, long, const char [4])
+      f_pair_4<int, long>(a, b, 0, 0L, "foo");
+      ^
+"Test_name.c", line 611: note: function template "cwg1388::f_pair_4" does not match because argument #5 does not match parameter
+    template<typename ...T> void f_pair_4(pair<T, char>..., T...); // #cwg1388-f-4
+                                 ^
+
+"Test_name.c", line 631: error: a class or namespace qualified name is required
+    template<typename T> struct C { C(int); typename T::error error; }; // #cwg1391-C
+                                                     ^
+          detected during instantiation of class "cwg1391::C<T> [with T=int]" at line 649
+
+"Test_name.c", line 631: error: global-scope qualifier (leading "::") is not allowed
+    template<typename T> struct C { C(int); typename T::error error; }; // #cwg1391-C
+                                                      ^
+          detected during instantiation of class "cwg1391::C<T> [with T=int]" at line 649
+
+"Test_name.c", line 631: error: expected a ";"
+    template<typename T> struct C { C(int); typename T::error error; }; // #cwg1391-C
+                                                              ^
+          detected during instantiation of class "cwg1391::C<T> [with T=int]" at line 649
+
+"Test_name.c", line 631: error: expected a ";"
+    template<typename T> struct C { C(int); typename T::error error; }; // #cwg1391-C
+                                                              ^
+          detected during instantiation of class "cwg1391::C<T> [with T=double]" at line 684
+
+"Test_name.c", line 689: warning: deleted functions are a C++11 feature
+      template<typename T> int a(T, short) = delete; // #cwg1391-a-short
+                                           ^
+
+"Test_name.c", line 692: error: more than one instance of overloaded function "cwg1391::partial_ordering::a" matches the argument list:
+            function template "int cwg1391::partial_ordering::a(T, short)" (declared at line 689)
+            function template "int cwg1391::partial_ordering::a(T *, char)" (declared at line 691)
+            argument types are: (int *, int)
+      int test_a = a((int*)0, 0);
+                   ^
+
+"Test_name.c", line 703: error: more than one instance of overloaded function "cwg1391::partial_ordering::b" matches the argument list:
+            function template "int cwg1391::partial_ordering::b(T, int)" (declared at line 700)
+            function template "int cwg1391::partial_ordering::b(T *, U)" (declared at line 702)
+            argument types are: (int *, int)
+      int test_b = b((int*)0, 0);
+                   ^
+
+"Test_name.c", line 758: error: no instance of function template "cwg1399::f" matches the argument list
+            argument types are: (int, int, int)
+      f(0, 0, 0);
+      ^
+"Test_name.c", line 753: note: number of parameters of function template "cwg1399::f" does not match the call
+    template<typename ...T> void f(T..., int, T...) {} // #cwg1399-f
+                                 ^
+
+"Test_name.c", line 356: error: this pack expansion produced an empty list of expressions, and an expression is needed here
+      auto x(ts...);
+             ^
+          detected during instantiation of "void cwg1346::f(Ts...) [with Ts=<>]" at line 361
+
+42 errors detected in the compilation of "Test_name.c".

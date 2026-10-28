@@ -1,0 +1,30 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 10: error: the result of a statement expression cannot have a type involving a variable-length array
+          return sizeof *({ n = 10; int x[n]; &x; });
+                          ^
+
+"Test_name.c", line 15: error: the result of a statement expression cannot have a type involving a variable-length array
+          return (*({
+                    ^
+
+"Test_name.c", line 26: error: the result of a statement expression cannot have a type involving a variable-length array
+          return (*({
+                    ^
+
+"Test_name.c", line 38: error: the result of a statement expression cannot have a type involving a variable-length array
+          return sizeof(*({
+                          ^
+
+"Test_name.c", line 50: error: the result of a statement expression cannot have a type involving a variable-length array
+          return (*({
+                    ^
+
+"Test_name.c", line 49: warning: variable "n" was declared but never referenced
+  	int n = 0;			/* { dg-warning "unused variable" } */
+  	    ^
+
+"Test_name.c", line 61: error: the result of a statement expression cannot have a type involving a variable-length array
+          return (*({
+                    ^
+
+6 errors detected in the compilation of "Test_name.c".

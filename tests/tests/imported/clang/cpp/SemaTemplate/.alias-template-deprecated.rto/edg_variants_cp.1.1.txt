@@ -1,0 +1,96 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 24: warning: type "UsingWithAttr<int>" was declared deprecated
+  typedef UsingWithAttr<int> TDUsingWithAttr;
+                             ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  using UsingWithAttr __attribute__((deprecated)) = NoAttr<T>;
+                                     ^
+
+"Test_name.c", line 34: warning: type "UsingWithAttr<float>" was declared deprecated
+    UsingWithAttr<float> f2;
+                         ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  using UsingWithAttr __attribute__((deprecated)) = NoAttr<T>;
+                                     ^
+
+"Test_name.c", line 38: warning: type "UsingWithAttr<short>" was declared deprecated
+  void foo(NoAttr<short> s1, UsingWithAttr<short> s2) {
+       ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  using UsingWithAttr __attribute__((deprecated)) = NoAttr<T>;
+                                     ^
+
+"Test_name.c", line 52: warning: type "UsingWithAttr<int>" was declared deprecated
+    UsingWithAttr<int> objUsingWA;
+                       ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  using UsingWithAttr __attribute__((deprecated)) = NoAttr<T>;
+                                     ^
+
+"Test_name.c", line 55: warning: type "UsingWithAttr<int>" was declared deprecated
+    NoAttr<UsingWithAttr<int>> s;
+                               ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  using UsingWithAttr __attribute__((deprecated)) = NoAttr<T>;
+                                     ^
+
+"Test_name.c", line 61: warning: type "UsingWithAttr<int>" was declared deprecated
+    using X = UsingWithAttr<DepInt>;
+          ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  using UsingWithAttr __attribute__((deprecated)) = NoAttr<T>;
+                                     ^
+
+"Test_name.c", line 67: warning: type "UsingInstWithAttr" was declared deprecated
+    UsingInstWithAttr objUIWA;
+                      ^
+"Test_name.c", line 18: note: because of a "deprecated" attribute
+  using UsingInstWithAttr __attribute__((deprecated)) = NoAttr<int>;
+                                         ^
+
+"Test_name.c", line 70: warning: type "TDWithAttr" was declared deprecated
+    TDWithAttr objTDWA;
+               ^
+"Test_name.c", line 21: note: because of a "deprecated" attribute
+  typedef NoAttr<int> TDWithAttr __attribute__((deprecated));
+                                                ^
+
+"Test_name.c", line 73: warning: type "UsingTDWithAttr" was declared deprecated
+    UsingTDWithAttr objUTDWA;
+                    ^
+"Test_name.c", line 29: note: because of a "deprecated" attribute
+  using UsingTDWithAttr __attribute__((deprecated)) = TDNoAttr;
+                                       ^
+
+"Test_name.c", line 49: warning: variable "obj" was declared but never referenced
+    NoAttr<int> obj; // Okay
+                ^
+
+"Test_name.c", line 52: warning: variable "objUsingWA" was declared but never referenced
+    UsingWithAttr<int> objUsingWA;
+                       ^
+
+"Test_name.c", line 55: warning: variable "s" was declared but never referenced
+    NoAttr<UsingWithAttr<int>> s;
+                               ^
+
+"Test_name.c", line 67: warning: variable "objUIWA" was declared but never referenced
+    UsingInstWithAttr objUIWA;
+                      ^
+
+"Test_name.c", line 70: warning: variable "objTDWA" was declared but never referenced
+    TDWithAttr objTDWA;
+               ^
+
+"Test_name.c", line 73: warning: variable "objUTDWA" was declared but never referenced
+    UsingTDWithAttr objUTDWA;
+                    ^
+
+"Test_name.c", line 76: warning: variable "objUsingWCPPA" was declared but never referenced
+    UsingWithCPPAttr<int> objUsingWCPPA;
+                          ^
+
+"Test_name.c", line 79: warning: variable "objUICPPWA" was declared but never referenced
+    UsingInstWithCPPAttr objUICPPWA;
+                         ^
+

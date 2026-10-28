@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 -tused --c++20 Test_name.c
+"Test_name.c", line 7: error: array designators are nonstandard in C++
+    T v[1][1] = {{ [0][0] = 0 }};
+                   ^
+          detected during instantiation of "void f<T>() [with T=short]" at line 11
+
+"Test_name.c", line 7: error: array designators are nonstandard in C++
+    T v[1][1] = {{ [0][0] = 0 }};
+                      ^
+          detected during instantiation of "void f<T>() [with T=short]" at line 11
+
+"Test_name.c", line 7: error: a designator cannot be used with a non-aggregate type "short"
+    T v[1][1] = {{ [0][0] = 0 }};
+                      ^
+          detected during instantiation of "void f<T>() [with T=short]" at line 11
+
+"Test_name.c", line 7: error: too many initializer values
+    T v[1][1] = {{ [0][0] = 0 }};
+                            ^
+          detected during instantiation of "void f<T>() [with T=short]" at line 11
+
+4 errors detected in the compilation of "Test_name.c".

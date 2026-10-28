@@ -1,0 +1,138 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 14: warning: variable "a" is used before its value is set
+    T(a)->m = 7;
+      ^
+
+"Test_name.c", line 15: error: expression must be a modifiable lvalue
+    int(a)++; // expected-error {{assignment to cast is illegal}}
+    ^
+
+"Test_name.c", line 16: error: expression must be a modifiable lvalue
+    __extension__ int(a)++; // expected-error {{assignment to cast is illegal}}
+                  ^
+
+"Test_name.c", line 17: error: expected a ")"
+    __typeof(int)(a,5)<<a; // expected-error {{excess elements in scalar initializer}} expected-warning {{expression result unused}}
+                   ^
+
+"Test_name.c", line 17: warning: expression has no effect
+    __typeof(int)(a,5)<<a; // expected-error {{excess elements in scalar initializer}} expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 20: warning: expression has no effect
+    for (int(a)+1;;) {} // expected-warning {{expression result unused}}
+         ^
+
+"Test_name.c", line 21: warning: statement is unreachable
+    a = sizeof(int()+1);
+    ^
+
+"Test_name.c", line 24: warning: expression has no effect
+    (int(1)); // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 27: error: cast to type "int ()" is not allowed
+    (int())1; // expected-error {{C-style cast from 'int' to 'int ()' is not allowed}}
+     ^
+
+"Test_name.c", line 40: error: expression must be a pointer to a complete object type
+    __typeof(*V()) f5(); // expected-error {{indirection not permitted on operand of type 'V' (aka 'void *')}}
+              ^
+
+"Test_name.c", line 43: error: "d" has already been declared in the current scope
+    T(d)[5]; // expected-error {{redefinition of 'd'}}
+      ^
+
+"Test_name.c", line 23: warning: variable "a2" was declared but never referenced
+    typeof(int()+1) a2; // expected-error {{extension used}}
+                    ^
+
+"Test_name.c", line 31: warning: variable "d" was declared but never referenced
+    T(*d)(int(p)); // expected-note {{previous}}
+       ^
+
+"Test_name.c", line 41: warning: variable "multi1" was declared but never referenced
+    T multi1,
+      ^
+
+"Test_name.c", line 43: warning: variable "d" was declared but never referenced
+    T(d)[5]; // expected-error {{redefinition of 'd'}}
+      ^
+
+"Test_name.c", line 44: warning: variable "f" was declared but never referenced
+    typeof(int[])(f) = { 1, 2 }; // expected-error {{extension used}}
+                  ^
+
+"Test_name.c", line 46: warning: variable "d2" was declared but never referenced
+    int(d2) __attribute__(());
+        ^
+
+"Test_name.c", line 70: warning: variable "a" was declared but never referenced
+      int a, b, c, d, e, // expected-note {{change this ',' to a ';' to call 'func'}}
+          ^
+
+"Test_name.c", line 70: warning: variable "b" was declared but never referenced
+      int a, b, c, d, e, // expected-note {{change this ',' to a ';' to call 'func'}}
+             ^
+
+"Test_name.c", line 70: warning: variable "c" was declared but never referenced
+      int a, b, c, d, e, // expected-note {{change this ',' to a ';' to call 'func'}}
+                ^
+
+"Test_name.c", line 70: warning: variable "d" was declared but never referenced
+      int a, b, c, d, e, // expected-note {{change this ',' to a ';' to call 'func'}}
+                   ^
+
+"Test_name.c", line 70: warning: variable "e" was declared but never referenced
+      int a, b, c, d, e, // expected-note {{change this ',' to a ';' to call 'func'}}
+                      ^
+
+"Test_name.c", line 79: warning: variable "f" was declared but never referenced
+      int f = 0, // g = 0; expected-note {{change this ',' to a ';' to call 'func2'}}
+          ^
+
+"Test_name.c", line 107: error: argument of type "int" is incompatible with parameter of type "int (*)(C)"
+    fn(1); // expected-error {{no matching function}}
+       ^
+
+"Test_name.c", line 116: error: function "PR11874::foo" is not a type name
+      const foo* f1 = 0; // expected-error {{must use 'class' tag to refer to type 'foo' in this scope}}
+            ^
+
+"Test_name.c", line 117: error: identifier "f2" is undefined
+      foo* f2 = 0; // expected-error {{must use 'class' tag to refer to type 'foo' in this scope}}
+           ^
+
+"Test_name.c", line 118: warning: expression has no effect
+      foo f3; // expected-error {{must use 'class' tag to refer to type 'foo' in this scope}}
+      ^
+
+"Test_name.c", line 118: error: expected a ";"
+      foo f3; // expected-error {{must use 'class' tag to refer to type 'foo' in this scope}}
+          ^
+
+"Test_name.c", line 116: warning: variable "f1" was declared but never referenced
+      const foo* f1 = 0; // expected-error {{must use 'class' tag to refer to type 'foo' in this scope}}
+                 ^
+
+"Test_name.c", line 125: error: variable "PR11874::baz" is not a type name
+    const baz* b1 = 0; // expected-error {{must use 'class' tag to refer to type 'baz' in this scope}}
+          ^
+
+"Test_name.c", line 126: error: identifier "b2" is undefined
+    baz* b2; // expected-error {{use of undeclared identifier 'b2'}}
+         ^
+
+"Test_name.c", line 127: warning: expression has no effect
+    baz b3; // expected-error {{must use 'class' tag to refer to type 'baz' in this scope}}
+    ^
+
+"Test_name.c", line 127: error: expected a ";"
+    baz b3; // expected-error {{must use 'class' tag to refer to type 'baz' in this scope}}
+        ^
+
+"Test_name.c", line 125: warning: variable "b1" was declared but never referenced
+    const baz* b1 = 0; // expected-error {{must use 'class' tag to refer to type 'baz' in this scope}}
+               ^
+
+13 errors detected in the compilation of "Test_name.c".

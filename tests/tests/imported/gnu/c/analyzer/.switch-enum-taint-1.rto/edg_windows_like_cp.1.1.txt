@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./analyzer/switch-enum-taint-1.c", line 29: warning: missing return statement at end of non-void function "test_all_values_covered_implicit_default_1"
+  }
+  ^
+
+"./analyzer/switch-enum-taint-1.c", line 80: warning: statement is unreachable
+    __analyzer_dump_path ();
+    ^
+
+"./analyzer/switch-enum-taint-1.c", line 97: warning: statement is unreachable
+    __analyzer_dump_path ();
+    ^
+

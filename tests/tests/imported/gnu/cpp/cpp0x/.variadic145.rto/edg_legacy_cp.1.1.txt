@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 11: warning: constant "<unnamed>" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "D<_Functor (_Bound_args...)>::operator()"
+    template <typename... _Args, decltype(declval<_Functor>)>
+                                                            ^
+
+"Test_name.c", line 13: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+      0(forward<_Args>...);
+      ^
+
+1 error detected in the compilation of "Test_name.c".

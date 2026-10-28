@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 12: error: 80-bit floating-point types are not supported in this configuration
+  typedef float __attribute__((mode(XF))) __attribute__((vector_size(256))) vec_t7;
+                               ^
+
+"Test_name.c", line 15: error: invalid argument to attribute "mode"
+  typedef int v8qi __attribute__ ((mode(V8QI)));
+                                        ^
+
+"Test_name.c", line 15: error: invalid redeclaration of type name "v8qi" (declared at line 14)
+  typedef int v8qi __attribute__ ((mode(V8QI)));
+              ^
+
+"Test_name.c", line 18: error: invalid argument to attribute "mode"
+  typedef float v4sf __attribute__((mode(V4SF)));
+                                         ^
+
+"Test_name.c", line 20: warning: typedef name has already been declared (with similar type)
+  typedef float v4sf __attribute__((mode(SF)))  __attribute__ ((vector_size(16)));
+                ^
+
+"Test_name.c", line 23: error: invalid argument to attribute "mode"
+  typedef float __attribute__((mode(QC))) __attribute__((vector_size(256))) vec_t8;
+                                    ^
+
+"Test_name.c", line 26: error: invalid argument to attribute "mode"
+  typedef _Complex float __attribute__((mode(HC))) __attribute__((vector_size(256))) vec_t9;
+                                             ^
+
+"Test_name.c", line 28: error: an attribute specifies a mode incompatible with "int"
+  typedef int __attribute__((mode(SC))) __attribute__((vector_size(256))) vec_t10;
+                             ^
+
+"Test_name.c", line 31: error: an attribute specifies a mode incompatible with "float"
+  typedef float __attribute__((mode(DC))) __attribute__((vector_size(256))) vec_t11;
+                               ^
+
+"Test_name.c", line 34: error: 80-bit floating-point types are not supported in this configuration
+  typedef _Complex float __attribute__((mode(XC))) __attribute__((vector_size(256))) vec_t12;
+                                        ^
+
+"Test_name.c", line 36: error: invalid argument to attribute "mode"
+  typedef int __attribute__((mode(V3QI))) v3qi;
+                                  ^
+
+10 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c23 Test_name.c
+"Test_name.c", line 6: warning: variable "b" was set but never used
+    typeof_unqual(a) b = 1;
+                     ^
+
+"Test_name.c", line 16: warning: const variable "a" requires an initializer
+    const char              a;
+                             ^
+
+"Test_name.c", line 17: warning: const variable "b" requires an initializer
+    const char              b;
+                             ^
+
+"Test_name.c", line 18: warning: const variable "c" requires an initializer
+    const char              c;
+                             ^
+
+"Test_name.c", line 12: warning: variable "alphabet" was set but never used
+    const char* const alphabet[3] = {
+                      ^
+
+"Test_name.c", line 19: warning: variable "arr" was set but never used
+    typeof_unqual(alphabet) arr = {&a, &b, &c};
+                            ^
+
+"Test_name.c", line 6: error: expected a ";"
+  __typeof__(a) b = 1; 
+                ^
+
+"Test_name.c", line 8: error: identifier "b" is undefined
+  b = 2; 
+  ^
+
+"Test_name.c", line 19: error: expected a ";"
+  __typeof__(alphabet) arr = {&a, &b, &c}; 
+                       ^
+
+"Test_name.c", line 20: error: identifier "arr" is undefined
+  arr[0] = &c; 
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

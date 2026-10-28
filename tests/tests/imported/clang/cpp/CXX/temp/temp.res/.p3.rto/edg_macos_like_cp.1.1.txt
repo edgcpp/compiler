@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 18: error: nontype "A<T>::B [with T=T]" is not a template
+                        <T>::B<T> f1();
+                             ^
+
+"Test_name.c", line 19: error: nontype "A<T>::C [with T=T]" is not a template
+  template<typename T> A<T>::C<T> f2(); // expected-warning {{missing 'typename'}}
+                             ^
+
+"Test_name.c", line 22: error: nontype "A<T>::C [with T=T]" is not a template
+  template<typename T> A<T>::C<X>::X(T) {}
+                             ^
+
+"Test_name.c", line 23: error: nontype "A<T>::C [with T=T]" is not a template
+  template<typename T> A<T>::C<X>::X::Y::Y(T) {}
+                             ^
+
+"Test_name.c", line 25: error: nontype "A<T>::B [with T=T]" is not a template
+  template<typename T> int A<T>::B<T>::*f3() {} // expected-error {{expected unqualified-id}}
+                                 ^
+
+"Test_name.c", line 26: error: nontype "A<T>::C [with T=T]" is not a template
+  template<typename T> int A<T>::C<X>::*f4() {} // expected-error {{expected unqualified-id}}
+                                 ^
+
+"Test_name.c", line 28: error: name followed by "::" must be a class or namespace name
+  template<typename T> int A<T>::template C<int>::*f5() {}
+                                          ^
+
+"Test_name.c", line 28: warning: missing return statement at end of non-void function "f5<T>()"
+  template<typename T> int A<T>::template C<int>::*f5() {}
+                                                         ^
+
+"Test_name.c", line 31: warning: "T f6()" declares a non-template function -- add <> to refer to a template instance
+    friend A<T>::C<T> f6(); // ok, same as 'friend T f6();'
+                      ^
+
+"Test_name.c", line 33: error: nontype "A<T>::C [with T=U]" is not a template
+    friend A<U>::C<T> f7(); // expected-error {{use 'template' keyword to treat 'C' as a dependent template name}} expected-warning {{missing 'typename'}}
+                 ^
+
+"Test_name.c", line 34: warning: missing "typename" is nonstandard here
+    friend A<U>::template C<T> f8(); // expected-warning {{missing 'typename'}}
+           ^
+
+"Test_name.c", line 34: warning: "A<U>::C<T> f8()" declares a non-template function -- add <> to refer to a template instance
+    friend A<U>::template C<T> f8(); // expected-warning {{missing 'typename'}}
+                               ^
+
+8 errors detected in the compilation of "Test_name.c".

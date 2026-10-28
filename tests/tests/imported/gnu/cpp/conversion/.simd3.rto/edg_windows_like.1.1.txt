@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  float __attribute__((vector_size(16))) b;
+                       ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  int __attribute__((vector_size(16))) d;
+                     ^
+
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  myint __attribute__((vector_size(16))) d2;
+                       ^
+
+"Test_name.c", line 10: warning: unknown attribute "vector_size"
+  unsigned int __attribute__((vector_size(16))) e;
+                              ^
+

@@ -1,0 +1,44 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 27: error: "template" is not allowed
+    template <> static S<Q>::f() // expected-error +{{}}
+    ^
+
+"Test_name.c", line 28: warning: variable templates are a C++14 feature
+  }
+  ^
+
+"Test_name.c", line 28: error: expected a ";"
+  }
+  ^
+
+"Test_name.c", line 33: error: UnknownBase is not a template
+      struct LocalStruct : UnknownBase<Mumble, C> { };  // expected-error {{use of undeclared identifier 'Mumble'}}
+                           ^
+
+"Test_name.c", line 33: error: identifier "Mumble" is undefined
+      struct LocalStruct : UnknownBase<Mumble, C> { };  // expected-error {{use of undeclared identifier 'Mumble'}}
+                                       ^
+
+"Test_name.c", line 39: error: UnknownBase is not a template
+      struct LocalStruct2 : UnknownBase<C> { };  // expected-error {{no template named 'UnknownBase'}}
+                            ^
+
+"Test_name.c", line 70: error: class "test1::NonTemplateClass" has no member "UndeclaredMethod"
+    void NonTemplateClass::UndeclaredMethod() {}
+                           ^
+
+"Test_name.c", line 77: warning: expression has no effect
+      S<T2>::template S<int>;
+      ^
+
+"Test_name.c", line 65: error: identifier "UndeclaredMethod" is undefined
+      UndeclaredMethod(resource_data);
+      ^
+          detected during instantiation of "void test1::NonTemplateClass::MemberFuncTemplate(test1::ArraySlice<T>, int) [with T=test1::Foo]" at line 60
+
+"Test_name.c", line 77: warning: declaration does not declare anything
+      S<T2>::template S<int>;
+      ^
+          detected during instantiation of "void GH135621::f<T2>() [with T2=int]" at line 80
+
+7 errors detected in the compilation of "Test_name.c".

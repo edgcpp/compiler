@@ -1,0 +1,58 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 11: error: function template "PR44786::f" has already been defined (previous definition at line 7)
+    template<typename T> void f(decltype(T{} <=> T{})) {} // expected-error {{redefinition}}
+                              ^
+
+"Test_name.c", line 18: error: too few parameters for this operator function
+  int operator<=>(); // expected-error {{overloaded 'operator<=>' must have at least one parameter of class or enumeration type}}
+      ^
+
+"Test_name.c", line 18: error: nonmember operator requires a parameter with class or enum type
+  int operator<=>(); // expected-error {{overloaded 'operator<=>' must have at least one parameter of class or enumeration type}}
+      ^
+
+"Test_name.c", line 19: error: too few parameters for this operator function
+  int operator<=>(A); // expected-error {{overloaded 'operator<=>' must be a binary operator}}
+      ^
+
+"Test_name.c", line 20: error: nonmember operator requires a parameter with class or enum type
+  int operator<=>(int, int); // expected-error {{overloaded 'operator<=>' must have at least one parameter of class or enumeration type}}
+      ^
+
+"Test_name.c", line 21: error: too many parameters for this operator function
+  int operator<=>(A, A, A); // expected-error {{overloaded 'operator<=>' must be a binary operator}}
+      ^
+
+"Test_name.c", line 22: error: ellipsis is not allowed in operator function parameter list
+  int operator<=>(A, A, ...); // expected-error {{overloaded 'operator<=>' cannot be variadic}}
+      ^
+
+"Test_name.c", line 23: error: default argument is not allowed
+  int operator<=>(int, A = {}); // expected-error {{parameter of overloaded 'operator<=>' cannot have a default argument}}
+                         ^
+
+"Test_name.c", line 29: error: nonmember operator requires a parameter with class or enum type
+    friend int operator<=>(int, int); // expected-error {{overloaded 'operator<=>' must have at least one parameter of class or enumeration type}}
+               ^
+
+"Test_name.c", line 30: error: too few parameters for this operator function
+    void operator<=>(); // expected-error {{overloaded 'operator<=>' must be a binary operator}};
+         ^
+
+"Test_name.c", line 31: error: ellipsis is not allowed in operator function parameter list
+    void operator<=>(A, ...); // expected-error {{overloaded 'operator<=>' cannot be variadic}}
+         ^
+
+"Test_name.c", line 32: error: too many parameters for this operator function
+    void operator<=>(A, A); // expected-error {{overloaded 'operator<=>' must be a binary operator}};
+         ^
+
+"Test_name.c", line 66: warning: unknown attribute "vector_size"
+      __attribute__((vector_size(32))) double numbers;           // expected-note {{declared here}}
+                     ^
+
+"Test_name.c", line 65: error: no valid std::partial_ordering type found (<compare> must be included)
+  struct comparable_t {
+         ^
+
+13 errors detected in the compilation of "Test_name.c".

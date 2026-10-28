@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef int __attribute__((vector_size(4*sizeof(int)))) vint;
+                             ^
+
+"Test_name.c", line 10: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int foo(int x) {
+                 ^
+
+"Test_name.c", line 15: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int corge(int x) {
+                 ^
+
+"Test_name.c", line 23: warning: unknown attribute "noipa"
+  __attribute__((noipa)) vint thud(vint x) {
+                 ^
+
+"Test_name.c", line 31: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int bar(int x) {
+                 ^
+
+"Test_name.c", line 36: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int baz(int x) {
+                 ^
+
+"Test_name.c", line 41: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int quux(int x) {
+                 ^
+
+"Test_name.c", line 46: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int waldo(int x) {
+                 ^
+
+"Test_name.c", line 51: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int fred(int x) {
+                 ^
+
+"Test_name.c", line 56: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int goo(int x) {
+                 ^
+
+"Test_name.c", line 61: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int qux(int x) {
+                 ^
+

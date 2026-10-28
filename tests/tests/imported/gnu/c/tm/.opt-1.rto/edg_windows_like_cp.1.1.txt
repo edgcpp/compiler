@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 25: error: identifier "__transaction_atomic" is undefined
+    __transaction_atomic
+    ^
+
+"Test_name.c", line 26: error: expected a ";"
+      {
+      ^
+
+"Test_name.c", line 32: warning: parsing restarts here after previous syntax error
+    printf("tmp3 = %d\n", tmp3);
+                               ^
+
+"Test_name.c", line 23: warning: variable "tmp3" was declared but never referenced
+    int tmp3;
+        ^
+
+2 errors detected in the compilation of "Test_name.c".

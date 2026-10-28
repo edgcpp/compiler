@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions --exceptions Test_name.c
+"Test_name.c", line 56: error: identifier "co_await" is undefined
+    co_await a; // expected-warning {{support for std::experimental::coroutine_traits will be removed}}
+    ^
+
+"Test_name.c", line 56: error: "a" has already been declared in the current scope
+    co_await a; // expected-warning {{support for std::experimental::coroutine_traits will be removed}}
+             ^
+
+"Test_name.c", line 57: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+"Test_name.c", line 55: warning: variable "a" was declared but never referenced
+    A a{};
+      ^
+
+"Test_name.c", line 62: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 62: error: "a" has already been declared in the current scope
+    co_await a;
+             ^
+
+"Test_name.c", line 63: warning: missing return statement at end of non-void function "f_dep(T)"
+  }
+  ^
+
+"Test_name.c", line 61: warning: variable "a" was declared but never referenced
+    A a{};
+      ^
+
+"Test_name.c", line 86: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 87: warning: missing return statement at end of non-void function "f2"
+  }
+  ^
+
+"Test_name.c", line 107: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 108: warning: missing return statement at end of non-void function "f3"
+  }
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

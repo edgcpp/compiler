@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions Test_name.c
+"Test_name.c", line 12: warning: variable "ip" was declared but never referenced
+      int *ip = I; // expected-error{{cannot initialize}}
+           ^
+
+"Test_name.c", line 27: warning: variable "ip" was declared but never referenced
+      int *ip = I; // expected-error{{cannot initialize}}
+           ^
+
+"Test_name.c", line 44: warning: variable "ip" was declared but never referenced
+      int *ip = I; // expected-error{{cannot initialize}}
+           ^
+
+"Test_name.c", line 95: warning: function "X5::operator new" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    new (0, 0) X5; // okay, we found X5::operator delete but didn't pick it
+    ^
+
+"Test_name.c", line 108: warning: variable "ip" was declared but never referenced
+      int *ip = I; // expected-error{{cannot initialize}}
+           ^
+
+"Test_name.c", line 12: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int *ip = I; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X0<I>::operator delete(void *, size_t) [with I=1]" at line 17
+
+"Test_name.c", line 27: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int *ip = I; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X1<I>::operator delete(void *) [with I=1]" at line 32
+
+"Test_name.c", line 44: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int *ip = I; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X2<I>::operator delete(void *, int, int) [with I=1]" at line 51
+
+"Test_name.c", line 63: error: a value of type "double *" cannot be used to initialize an entity of type "int *"
+      int *ip = &x; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X3::operator delete(void *, T, T) [with T=double]" at line 68
+
+"Test_name.c", line 80: error: a value of type "double *" cannot be used to initialize an entity of type "int *"
+    int *ip = &x; // expected-error{{cannot initialize}}
+              ^
+          detected during instantiation of "void operator delete(void *, T, T) [with T=double]" at line 84
+
+"Test_name.c", line 104: error: return value type does not match the function type
+      return I; // expected-error{{cannot initialize}}
+             ^
+          detected during instantiation of "void *X6<I>::operator new(size_t) [with I=3]" at line 113
+
+"Test_name.c", line 108: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int *ip = I; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X6<I>::operator delete(void *) [with I=3]" at line 113
+
+7 errors detected in the compilation of "Test_name.c".

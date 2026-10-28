@@ -1,0 +1,117 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 119: warning: controlling expression is constant
+    if (f1) {} // expected-warning {{address of function 'f1' will always evaluate to 'true'}} \
+        ^
+
+"Test_name.c", line 123: warning: controlling expression is constant
+    if (S::f2) {} // expected-warning {{address of function 'S::f2' will always evaluate to 'true'}} \
+        ^
+
+"Test_name.c", line 133: warning: controlling expression is constant
+    if (f3) {}
+        ^
+
+"Test_name.c", line 135: warning: controlling expression is constant
+    if (S2::f4) {}
+        ^
+
+"Test_name.c", line 115: warning: variable "b" was set but never used
+    bool b;
+         ^
+
+"Test_name.c", line 150: warning: controlling expression is constant
+      (void)GetValue(b);
+            ^
+
+"Test_name.c", line 153: warning: controlling expression is constant
+      if (b) {}
+          ^
+
+"Test_name.c", line 155: warning: controlling expression is constant
+      if (b) {}
+          ^
+
+"Test_name.c", line 157: warning: controlling expression is constant
+      if (c.x) {}
+          ^
+
+"Test_name.c", line 159: warning: controlling expression is constant
+      if (str) {}
+          ^
+
+"Test_name.c", line 178: warning: controlling expression is constant
+      if (&b) {}
+          ^
+
+"Test_name.c", line 180: warning: controlling expression is constant
+      if (&c) {}
+          ^
+
+"Test_name.c", line 182: warning: controlling expression is constant
+      if (&s.a) {}
+          ^
+
+"Test_name.c", line 186: warning: controlling expression is constant
+      if (&S::a) {}
+          ^
+
+"Test_name.c", line 200: warning: controlling expression is constant
+      assert(array);
+      ^
+
+"Test_name.c", line 201: warning: controlling expression is constant
+      assert(array && "expecting null pointer");
+      ^
+
+"Test_name.c", line 201: warning: controlling expression is constant
+      assert(array && "expecting null pointer");
+      ^
+
+"Test_name.c", line 204: warning: controlling expression is constant
+      assert(fun);
+      ^
+
+"Test_name.c", line 205: warning: controlling expression is constant
+      assert(fun && "expecting null pointer");
+      ^
+
+"Test_name.c", line 205: warning: controlling expression is constant
+      assert(fun && "expecting null pointer");
+      ^
+
+"Test_name.c", line 210: warning: controlling expression is constant
+      zero_on_null(&x);
+      ^
+
+"Test_name.c", line 210: warning: expression has no effect
+      zero_on_null(&x);
+      ^
+
+"Test_name.c", line 211: warning: controlling expression is constant
+      assert(zero_on_null(&x));
+      ^
+
+"Test_name.c", line 212: warning: controlling expression is constant
+      assert(&x);
+      ^
+
+"Test_name.c", line 213: warning: controlling expression is constant
+      assert(&x && "expecting null pointer");
+      ^
+
+"Test_name.c", line 213: warning: controlling expression is constant
+      assert(&x && "expecting null pointer");
+      ^
+
+"Test_name.c", line 221: warning: controlling expression is constant
+    template<int *p> void f() { if (p) {} } // expected-warning 2{{will always evaluate to 'true'}} expected-cxx11-warning {{implicit conversion of nullptr}}
+                                    ^
+
+"Test_name.c", line 222: warning: controlling expression is constant
+    template<int (*p)[3]> void g() { if (p) {} } // expected-warning 2{{will always evaluate to 'true'}} expected-cxx11-warning {{implicit conversion of nullptr}}
+                                         ^
+
+"Test_name.c", line 223: warning: controlling expression is constant
+    template<int (*p)()> void h() { if (p) {} }
+                                        ^
+

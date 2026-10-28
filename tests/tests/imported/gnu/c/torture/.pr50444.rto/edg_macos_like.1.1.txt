@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef long long __m128i __attribute__ ((__vector_size__ (16),
+                                            ^
+
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+  typedef int __v4si __attribute__ ((__vector_size__ (16)));
+                                     ^
+
+"Test_name.c", line 10: warning: unknown attribute "__vector_size__"
+  typedef long long __v2di __attribute__ ((__vector_size__ (16)));
+                                           ^
+
+"Test_name.c", line 30: error: builtin function is not available because vector types are not supported
+    ret.m = (__m128i)__builtin_ia32_pxor128 ((__v2di)in.m, (__v2di)k.m);
+                     ^
+
+"Test_name.c", line 54: warning: excess initializers are ignored
+    e->key.m = (__m128i)(__v4si){ 0, 0, 0, 0 };
+                                     ^
+
+1 error detected in the compilation of "Test_name.c".

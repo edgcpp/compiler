@@ -1,0 +1,24 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "noipa"
+  __attribute__((noipa)) V
+                 ^
+
+"Test_name.c", line 17: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function 'foo__Fa16_L':
+Test_name.c:14:125: error: used vector type where scalar is required
+Test_name.c:14:247: error: used vector type where scalar is required
+Test_name.c: In function 'bar__FPa32_LT1':
+Test_name.c:20:145: error: used vector type where scalar is required
+Test_name.c:20:165: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+Test_name.c:20:282: error: used vector type where scalar is required
+Test_name.c:20:16: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+Test_name.c:20:133: error: used vector type where scalar is required
+Test_name.c:20:153: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+Test_name.c:20:270: error: used vector type where scalar is required
+Test_name.c:20:290: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

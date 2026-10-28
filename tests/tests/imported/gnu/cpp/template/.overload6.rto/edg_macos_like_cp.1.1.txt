@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 18: error: a pointer to a bound function may only be used to call the function
+    unique(A().begin); // { dg-error "invalid use of non-static member function" }
+               ^
+
+"Test_name.c", line 18: error: no instance of function template "unique" matches the argument list
+            argument types are: (<error-type>)
+    unique(A().begin); // { dg-error "invalid use of non-static member function" }
+    ^
+"Test_name.c", line 9: note: number of parameters of function template "unique" does not match the call
+  template<typename T> void unique(T,T);
+                            ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 --strict_gnu Test_name.c
+"./c90-const-expr-11.c", line 21: warning: integer operation result is out of range
+                          + 1 };
+                          ^
+
+"./c90-const-expr-11.c", line 23: warning: floating-point value does not fit in required integral type
+    struct t c = { ((double)1.79769313486231570814527423731704357e+308L) 
+                   ^
+
+"./c90-const-expr-11.c", line 21: warning: variable "b" was declared but never referenced
+    struct t b = { 0x7fffffff 
+             ^
+

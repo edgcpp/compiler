@@ -1,0 +1,79 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 6: error: the "weak" attribute can only appear on functions and variables with external linkage
+  static int test0 __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                  ^
+
+"Test_name.c", line 7: error: the "weak" attribute can only appear on functions and variables with external linkage
+  static void test1() __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                     ^
+
+"Test_name.c", line 9: warning: attribute "weak" does not apply here
+  namespace test2 __attribute__((weak)) { // expected-warning {{'weak' attribute only applies to variables, functions, and classes}}
+                                 ^
+
+"Test_name.c", line 13: error: the "weak" attribute can only appear on functions and variables with external linkage
+    int test3 __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                             ^
+
+"Test_name.c", line 14: error: the "weak" attribute can only appear on functions and variables with external linkage
+    void test4() __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                ^
+
+"Test_name.c", line 23: error: the "weak" attribute can only appear on functions and variables with external linkage
+      static void test6() __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                                         ^
+
+"Test_name.c", line 32: error: the "weak" attribute can only appear on functions and variables with external linkage
+    void test7() __attribute__((weak)) {}
+                                ^
+          detected during instantiation of class "Test7<T> [with T=<unnamed>::Internal]" at line 38
+
+"Test_name.c", line 33: error: the "weak" attribute can only appear on functions and variables with external linkage
+    static int var __attribute__((weak));
+                                  ^
+          detected during instantiation of class "Test7<T> [with T=<unnamed>::Internal]" at line 38
+
+"Test_name.c", line 41: warning: attribute "weak" does not apply here
+  class __attribute__((weak)) Test8 {}; // OK
+                       ^
+
+"Test_name.c", line 50: error: expression must have a constant value
+  constexpr bool weak_function_is_non_null = &weak_function != nullptr; // expected-error {{must be initialized by a constant expression}}
+                                             ^
+"Test_name.c", line 50: note: address of "weak" function "weak_function" is not constant
+  constexpr bool weak_function_is_non_null = &weak_function != nullptr; // expected-error {{must be initialized by a constant expression}}
+                                             ^
+
+"Test_name.c", line 6: warning: variable "test0" was declared but never referenced
+  static int test0 __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+             ^
+
+"Test_name.c", line 7: warning: function "test1" was declared but never referenced
+  static void test1() __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+              ^
+
+"Test_name.c", line 50: warning: variable "weak_function_is_non_null" was declared but never referenced
+  constexpr bool weak_function_is_non_null = &weak_function != nullptr; // expected-error {{must be initialized by a constant expression}}
+                 ^
+
+"Test_name.c", line 52: warning: variable "weak_method_is_non_null" was declared but never referenced
+  constexpr bool weak_method_is_non_null = &WithWeakMember::weak_method != nullptr; // expected-error {{must be initialized by a constant expression}}
+                 ^
+
+"Test_name.c", line 59: warning: variable "virtual_weak_method_is_non_null" was declared but never referenced
+  constexpr bool virtual_weak_method_is_non_null = &WithWeakMember::virtual_weak_method != nullptr; // expected-error {{must be initialized by a constant expression}}
+                 ^
+
+"Test_name.c", line 13: warning: variable "<unnamed>::test3" was declared but never referenced
+    int test3 __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+        ^
+
+"Test_name.c", line 14: warning: function "<unnamed>::test4" was declared but never referenced
+    void test4() __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+         ^
+
+"Test_name.c", line 23: warning: function "<unnamed>::Test6::test6" was declared but never referenced
+      static void test6() __attribute__((weak)); // expected-error {{weak declaration cannot have internal linkage}}
+                  ^
+
+8 errors detected in the compilation of "Test_name.c".

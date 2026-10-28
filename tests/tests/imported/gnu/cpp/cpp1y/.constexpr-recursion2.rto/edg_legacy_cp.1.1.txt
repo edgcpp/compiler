@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 16: error: expression must have a constant value
+    enum E { a = f1<0> () }; // { dg-error "called in a constant expression before its definition is complete|is not an integer constant" }
+                 ^
+"Test_name.c", line 16: note: this call cannot be evaluated because the target function function "f1<N>() [with N=0]" (declared at line 14) is not constexpr or not completely defined yet
+    enum E { a = f1<0> () }; // { dg-error "called in a constant expression before its definition is complete|is not an integer constant" }
+                       ^
+          detected during instantiation of "X f1<N>() [with N=0]" at line 16
+
+"Test_name.c", line 22: error: expression must have a constant value
+    enum E { a = f3 () };	// { dg-error "called in a constant expression before its definition is complete|is not an integer constant" }
+                 ^
+"Test_name.c", line 22: note: this call cannot be evaluated because the target function function "f3" (declared at line 20) is not constexpr or not completely defined yet
+    enum E { a = f3 () };	// { dg-error "called in a constant expression before its definition is complete|is not an integer constant" }
+                    ^
+
+2 errors detected in the compilation of "Test_name.c".

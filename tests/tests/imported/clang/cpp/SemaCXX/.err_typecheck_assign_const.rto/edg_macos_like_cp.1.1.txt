@@ -1,0 +1,110 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: error: expression must be a modifiable lvalue
+    global = 2;  // expected-error{{cannot assign to variable 'global' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 12: error: expression must be a modifiable lvalue
+    local = 0;  // expected-error{{cannot assign to variable 'local' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 16: error: expression must be a modifiable lvalue
+    parameter = 2;  // expected-error{{cannot assign to variable 'parameter' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 24: error: expression must be a modifiable lvalue
+      const_field = 4;  // expected-error{{cannot assign to non-static data member 'const_field' with const-qualified type 'const int'}}
+      ^
+
+"Test_name.c", line 25: error: expression must be a modifiable lvalue
+      static_const_field = 4;  // expected-error{{cannot assign to variable 'static_const_field' with const-qualified type 'const int'}}
+      ^
+
+"Test_name.c", line 28: error: expression must be a modifiable lvalue
+      field = 4;  // expected-error{{cannot assign to non-static data member within const member function 'test_const'}}
+      ^
+
+"Test_name.c", line 29: error: expression must be a modifiable lvalue
+      const_field = 4 ;  // expected-error{{cannot assign to non-static data member 'const_field' with const-qualified type 'const int'}}
+      ^
+
+"Test_name.c", line 30: error: expression must be a modifiable lvalue
+      static_const_field = 4;  // expected-error{{cannot assign to variable 'static_const_field' with const-qualified type 'const int'}}
+      ^
+
+"Test_name.c", line 37: error: expression must be a modifiable lvalue
+    return_const_ref() = 10;  // expected-error{{cannot assign to return value because function 'return_const_ref' returns a const value}}
+    ^
+
+"Test_name.c", line 48: error: expression must be a modifiable lvalue
+    s5.const_field = 5;  // expected-error{{cannot assign to non-static data member 'const_field' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 69: error: expression must be a modifiable lvalue
+    u4.u3.u2.u1.a = 5;  // expected-error{{cannot assign to non-static data member 'u2' with const-qualified type 'const U2'}}
+    ^
+
+"Test_name.c", line 85: error: expression must be a modifiable lvalue
+    c.b.a.z = 5;  // expected-error{{cannot assign to variable 'c' with const-qualified type 'const C'}}
+    ^
+
+"Test_name.c", line 87: error: expression must be a modifiable lvalue
+    getc().b.a.z = 5;  // expected-error{{cannot assign to return value because function 'getc' returns a const value}}
+    ^
+
+"Test_name.c", line 94: error: expression must be a modifiable lvalue
+    d->n = 0;  // expected-error{{cannot assign to non-static data member 'n' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 97: error: expression must be a modifiable lvalue
+    e.d->n = 0;  // expected-error{{cannot assign to non-static data member 'n' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 104: error: expression must be a modifiable lvalue
+    f->n = 0;    // expected-error{{cannot assign to variable 'f' with const-qualified type 'const F *'}}
+    ^
+
+"Test_name.c", line 104: warning: variable "f" is used before its value is set
+    f->n = 0;    // expected-error{{cannot assign to variable 'f' with const-qualified type 'const F *'}}
+    ^
+
+"Test_name.c", line 107: error: expression must be a modifiable lvalue
+    g.f->n = 0;  // expected-error{{cannot assign to non-static data member 'f' with const-qualified type 'const F *'}}
+    ^
+
+"Test_name.c", line 107: warning: variable "g" is used before its value is set
+    g.f->n = 0;  // expected-error{{cannot assign to non-static data member 'f' with const-qualified type 'const F *'}}
+    ^
+
+"Test_name.c", line 114: error: expression must be a modifiable lvalue
+    x = 5;  // expected-error{{cannot assign to variable 'x' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 115: error: expression must be a modifiable lvalue
+    y = 5;  // expected-error{{cannot assign to variable 'y' with const-qualified type 'const int &'}}
+    ^
+
+"Test_name.c", line 124: error: expression must be a modifiable lvalue
+    h.a = 1;  // expected-error {{cannot assign to non-static data member 'a' with const-qualified type 'const int'}}
+    ^
+
+"Test_name.c", line 125: error: expression must be a modifiable lvalue
+    h.b = 2;  // expected-error {{cannot assign to non-static data member 'b' with const-qualified type 'const int &'}}
+    ^
+
+"Test_name.c", line 132: error: expression must be a modifiable lvalue
+    bar()() = 0; // expected-error {{read-only variable is not assignable}}
+    ^
+
+"Test_name.c", line 138: error: expression must have class type but it has type "const float4"
+    void AssignMe() const { v.x = 1; } // expected-error {{cannot assign to non-static data member within const member function 'AssignMe'}} \
+                            ^
+
+"Test_name.c", line 145: error: expression must have pointer-to-object type but it has type "float4_2" (aka "float")
+    void AssignMe() const { v[0] = 1; } // expected-error {{cannot assign to non-static data member within const member function 'AssignMe'}} \
+                            ^
+
+"Test_name.c", line 151: error: expression must be a modifiable lvalue
+    void AssignMe() const { v[0] = 1; } // expected-error {{cannot assign to non-static data member within const member function 'AssignMe'}} \
+                            ^
+
+25 errors detected in the compilation of "Test_name.c".

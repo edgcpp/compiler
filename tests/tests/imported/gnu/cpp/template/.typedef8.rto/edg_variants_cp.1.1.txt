@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 9: warning: missing return statement at end of non-void function "tuple<T0, T1>::operator=(const pair<U1, U2> &)"
+    tuple& operator=(const pair<U1, U2>& k) { }
+                                              ^
+
+"Test_name.c", line 11: warning: missing return statement at end of non-void function "tie(T1 &, T2 &)"
+  template<class T1, class T2> inline tuple<T1&, T2&> tie(T1& t1, T2& t2) { }
+                                                                            ^
+

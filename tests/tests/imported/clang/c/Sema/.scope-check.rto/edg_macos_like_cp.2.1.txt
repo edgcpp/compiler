@@ -1,0 +1,287 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 --strict_gnu Test_name.c
+"Test_name.c", line 6: error: transfer of control bypasses initialization of:
+            variable length array "a" (declared at line 7)
+            variable length array "b" (declared at line 8)
+    goto L;    // expected-error{{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 8: warning: variable "b" was declared but never referenced
+    int b[x];  // expected-note {{jump bypasses initialization of variable length array}}
+        ^
+
+"Test_name.c", line 14: error: transfer of control bypasses initialization of:
+            variable length array dimension (declared at line 15)
+    goto L;            // expected-error{{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 32: warning: statement is unreachable
+    test4(x);
+    ^
+
+"Test_name.c", line 30: error: transfer of control bypasses initialization of:
+            variable length array "a" (declared at line 31)
+    goto L;       // expected-error{{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 43: warning: statement is unreachable
+    return sizeof a;
+    ^
+
+"Test_name.c", line 48: error: label "x" was referenced but not defined
+    goto x;  // expected-error {{use of undeclared label 'x'}}
+         ^
+
+"Test_name.c", line 54: warning: variable "a" was set but never used
+      int a[x];       // expected-note {{jump bypasses initialization of variable length array}}
+          ^
+
+"Test_name.c", line 52: error: transfer of control bypasses initialization of:
+            variable length array "a" (declared at line 54)
+    switch (x) {
+    ^
+
+"Test_name.c", line 63: error: transfer of control bypasses initialization of:
+            variable length array "arr" (declared at line 64)
+    goto L2;     // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 64: warning: variable "arr" was declared but never referenced
+    for (int arr[x];   // expected-note {{jump bypasses initialization of variable length array}}  
+             ^
+
+"Test_name.c", line 69: warning: statement is unreachable
+    goto L3;   // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 69: error: transfer of control into a statement expression is not allowed
+    goto L3;   // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 70: warning: variable "a" was declared but never referenced
+    int Y = ({  int a[x];   // expected-note {{jump bypasses initialization of variable length array}} \
+                    ^
+
+"Test_name.c", line 74: error: transfer of control bypasses initialization of:
+            variable length array "A" (declared at line 76)
+            variable length array "B" (declared at line 77)
+    goto L4; // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 76: warning: variable "A" was declared but never referenced
+      int A[x],  // expected-note {{jump bypasses initialization of variable length array}}
+          ^
+
+"Test_name.c", line 77: warning: variable "B" was declared but never referenced
+          B[x];  // expected-note {{jump bypasses initialization of variable length array}}
+          ^
+
+"Test_name.c", line 87: warning: statement is unreachable
+                     4; }); 
+                     ^
+
+"Test_name.c", line 86: warning: transfer of control bypasses initialization of:
+            variable "B" (declared at line 83)
+                         goto L6;
+                         ^
+
+"Test_name.c", line 83: warning: variable "A" was declared but never referenced
+      int A[x], B = ({ if (x)
+          ^
+
+"Test_name.c", line 98: warning: statement is unreachable
+                       4; }),
+                       ^
+
+"Test_name.c", line 97: warning: transfer of control bypasses initialization of:
+            variable "B" (declared at line 94)
+                         goto L8;  // expected-error {{cannot jump from this goto statement to its label}}
+                         ^
+
+"Test_name.c", line 97: error: transfer of control bypasses initialization of:
+            variable length array "C" (declared at line 99)
+                         goto L8;  // expected-error {{cannot jump from this goto statement to its label}}
+                         ^
+
+"Test_name.c", line 94: warning: variable "A" was declared but never referenced
+      int A[x], B = ({ if (x)
+          ^
+
+"Test_name.c", line 99: warning: variable "C" was declared but never referenced
+          C[x];   // expected-note {{jump bypasses initialization of variable length array}}
+          ^
+
+"Test_name.c", line 110: warning: statement is unreachable
+             4; })];
+             ^
+
+"Test_name.c", line 109: error: transfer of control bypasses initialization of:
+            variable length array "A" (declared at line 105)
+                 goto L10;  // fixme-error {{cannot jump from this goto statement to its label}}
+                 ^
+
+"Test_name.c", line 105: warning: variable "A" was declared but never referenced
+      int A[({ if (x)
+          ^
+
+"Test_name.c", line 123: warning: dynamic initialization in unreachable code
+      int y = 4;   // fixme-warn: skips initializer.
+          ^
+
+"Test_name.c", line 121: warning: transfer of control bypasses initialization of:
+            variable "y" (declared at line 123)
+      goto L12;
+      ^
+
+"Test_name.c", line 123: warning: variable "y" was declared but never referenced
+      int y = 4;   // fixme-warn: skips initializer.
+          ^
+
+"Test_name.c", line 130: warning: statement is unreachable
+    return x == ({             // expected-note {{jump enters a statement expression}}
+    ^
+
+"Test_name.c", line 129: error: transfer of control into a statement expression is not allowed
+    goto L1;     // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 131: warning: variable "a" was declared but never referenced
+                   int a[x];   // expected-note {{jump bypasses initialization of variable length array}}
+                       ^
+
+"Test_name.c", line 147: warning: statement is unreachable
+    goto L3;  // ok
+    ^
+
+"Test_name.c", line 148: warning: statement is unreachable
+    goto L4;  // ok
+    ^
+
+"Test_name.c", line 150: warning: dynamic initialization in unreachable code
+    void *Ptrs[] = {
+          ^
+
+"Test_name.c", line 137: warning: variable "Y" was declared but never referenced
+    int Y;
+        ^
+
+"Test_name.c", line 138: warning: variable "Z" was declared but never referenced
+    int Z = 4;
+        ^
+
+"Test_name.c", line 142: warning: variable "a" was declared but never referenced
+    int a[n]; // expected-note {{jump bypasses initialization of variable length array}}
+        ^
+
+"Test_name.c", line 150: warning: variable "Ptrs" was declared but never referenced
+    void *Ptrs[] = {
+          ^
+
+"Test_name.c", line 157: error: transfer of control bypasses initialization of:
+            variable length array dimension (declared at line 158)
+    goto L0;     // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 161: error: transfer of control bypasses initialization of:
+            variable length array "b" (declared at line 162)
+            variable length array "c" (declared at line 162)
+    goto L1;      // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 164: error: transfer of control bypasses initialization of:
+            variable length array "d" (declared at line 165)
+    goto L2;     // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 162: warning: variable "b" was declared but never referenced
+    A b, c[10];        // expected-note 2 {{jump bypasses initialization of variable length array}}
+      ^
+
+"Test_name.c", line 162: warning: variable "c" was declared but never referenced
+    A b, c[10];        // expected-note 2 {{jump bypasses initialization of variable length array}}
+         ^
+
+"Test_name.c", line 165: warning: variable "d" was declared but never referenced
+    A d[n];      // expected-note {{jump bypasses initialization of variable length array}}
+      ^
+
+"Test_name.c", line 171: error: expected an expression
+    void *P = ^{
+              ^
+
+"Test_name.c", line 180: warning: parsing restarts here after previous syntax error
+    };
+     ^
+
+"Test_name.c", line 186: error: expected an expression
+    void *P = ^{
+              ^
+
+"Test_name.c", line 196: warning: parsing restarts here after previous syntax error
+    };
+     ^
+
+"Test_name.c", line 200: warning: variable "vla" was declared but never referenced
+    int vla[n];
+        ^
+
+"Test_name.c", line 203: warning: variable "ps" was declared but never referenced
+    static void *ps[] = { &&a0 };
+                 ^
+
+"Test_name.c", line 212: warning: variable "vla" was set but never used
+      int vla[n];
+          ^
+
+"Test_name.c", line 207: warning: variable "ps" was declared but never referenced
+    static void *ps[] = { &&a0, &&a1 };
+                 ^
+
+"Test_name.c", line 230: warning: variable "vla" was set but never used
+      char vla[n]; // expected-note {{jump bypasses initialization}}
+           ^
+
+"Test_name.c", line 224: warning: variable "addrs" was declared but never referenced
+    static const void *addrs[] = { &&L1, &&L2 };
+                       ^
+
+"Test_name.c", line 236: error: labels can be referenced only in function definitions
+  int test16(int [sizeof &&z]); // expected-error {{use of address-of-label extension outside of a function body}}
+                           ^
+
+"Test_name.c", line 241: warning: statement is unreachable
+      (void)sizeof (int){({ L:; 1; })}; // expected-note {{jump enters a statement expression}}
+      ^
+
+"Test_name.c", line 240: error: transfer of control into a statement expression is not allowed
+      goto L; // expected-error {{cannot jump from this goto statement to its label}}
+      ^
+
+"Test_name.c", line 245: warning: statement is unreachable
+      (void)({ M:; 1; }); // expected-note {{jump enters a statement expression}}
+      ^
+
+"Test_name.c", line 244: error: transfer of control into a statement expression is not allowed
+      goto M; // expected-error {{cannot jump from this goto statement to its label}}
+      ^
+
+"Test_name.c", line 248: warning: statement is unreachable
+      (void)({ goto N; 1; });  // ok
+                       ^
+
+"Test_name.c", line 252: warning: statement is unreachable
+      (void)sizeof (int){({ goto O; 1; })}; // ok (not evaluated)
+                                    ^
+
+"Test_name.c", line 257: warning: statement is unreachable
+      return;
+      ^
+
+"Test_name.c", line 258: warning: statement is unreachable
+      (void)({P:1;});  // expected-note {{jump enters a statement expression}}
+      ^
+
+"Test_name.c", line 256: error: transfer of control into a statement expression is not allowed
+      (void)sizeof(({goto P;}), 0); // expected-error {{cannot jump from this goto statement to its label}}
+                     ^
+
+20 errors detected in the compilation of "Test_name.c".

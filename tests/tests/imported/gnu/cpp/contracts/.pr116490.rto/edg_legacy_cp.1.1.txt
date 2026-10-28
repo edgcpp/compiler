@@ -1,0 +1,66 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 9: error: expected a ","
+  [[pre : t == 9 ]] {
+        ^
+
+"Test_name.c", line 9: error: expected a "]"
+  [[pre : t == 9 ]] {
+        ^
+
+"Test_name.c", line 9: error: expected a ";"
+  [[pre : t == 9 ]] {
+        ^
+
+"Test_name.c", line 12: warning: parsing restarts here after previous syntax error
+  template void foo<int>(int i);
+                               ^
+
+"Test_name.c", line 19: error: expected a ","
+    [[pre : t == 9 ]] {
+          ^
+
+"Test_name.c", line 19: error: expected a "]"
+    [[pre : t == 9 ]] {
+          ^
+
+"Test_name.c", line 19: error: expected a ";"
+    [[pre : t == 9 ]] {
+          ^
+
+"Test_name.c", line 30: error: expected a ","
+    [[pre : t == 9 ]] {
+          ^
+
+"Test_name.c", line 30: error: expected a "]"
+    [[pre : t == 9 ]] {
+          ^
+
+"Test_name.c", line 30: error: expected a ";"
+    [[pre : t == 9 ]] {
+          ^
+
+"Test_name.c", line 37: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"Test_name.c", line 41: error: class "S" has no member "fooStatic"
+  template void S::fooStatic<int>(int i);
+                   ^
+
+"Test_name.c", line 41: error: invalid explicit instantiation declaration
+  template void S::fooStatic<int>(int i);
+           ^
+
+"Test_name.c", line 41: error: expected a ";"
+  template void S::fooStatic<int>(int i);
+                            ^
+
+"Test_name.c", line 52: error: class "S" has no member "fooStatic"
+     S::fooStatic(3);
+        ^
+
+"Test_name.c", line 39: error: function "S::fooS(T) [with T=int]" cannot be instantiated -- no template definition was supplied
+  template void S::fooS<int>(int i);
+           ^
+
+14 errors detected in the compilation of "Test_name.c".

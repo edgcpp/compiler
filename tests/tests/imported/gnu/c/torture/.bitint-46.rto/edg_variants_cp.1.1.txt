@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 23: error: integer constant is too large
+    if (foo (59) != 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffwb)
+                    ^
+
+"Test_name.c", line 27: error: integer constant is too large
+    if (foo (1) != 0x7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffewb)
+                   ^
+
+"Test_name.c", line 29: error: integer constant is too large
+    if (foo (11) != 0x001fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffwb)
+                    ^
+
+"Test_name.c", line 31: error: integer constant is too large
+    if (foo (123) != 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffwb)
+                     ^
+
+4 errors detected in the compilation of "Test_name.c".

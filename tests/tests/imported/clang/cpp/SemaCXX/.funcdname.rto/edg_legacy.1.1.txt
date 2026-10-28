@@ -1,0 +1,31 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 -w --ms_compatibility --ms_extensions Test_name.c
+"Test_name.c", line 7: error: static assertion failed with "?foo??YAHXZ"
+    static_assert(sizeof(__FUNCDNAME__) == 12, "?foo@@YAHXZ");
+    ^
+"Test_name.c", line 7: note: the final comparison was 8 == 12
+    static_assert(sizeof(__FUNCDNAME__) == 12, "?foo@@YAHXZ");
+                                        ^
+
+"Test_name.c", line 21: error: static assertion failed with "??0A??QAE?XZ"
+      static_assert(sizeof(__FUNCDNAME__) == 13, "??0A@@QAE@XZ");
+      ^
+"Test_name.c", line 21: note: the final comparison was 11 == 13
+      static_assert(sizeof(__FUNCDNAME__) == 13, "??0A@@QAE@XZ");
+                                          ^
+
+"Test_name.c", line 24: error: static assertion failed with "??1A??QAE?XZ"
+      static_assert(sizeof(__FUNCDNAME__) == 13, "??1A@@QAE@XZ");
+      ^
+"Test_name.c", line 24: note: the final comparison was 11 == 13
+      static_assert(sizeof(__FUNCDNAME__) == 13, "??1A@@QAE@XZ");
+                                          ^
+
+"Test_name.c", line 14: error: static assertion failed with "???baz?H??YAHXZ"
+    static_assert(sizeof(__FUNCDNAME__) == 16, "??$baz@H@@YAHXZ");
+    ^
+"Test_name.c", line 14: note: the final comparison was 21 == 16
+    static_assert(sizeof(__FUNCDNAME__) == 16, "??$baz@H@@YAHXZ");
+                                        ^
+          detected during instantiation of "int baz<T>() [with T=int]" at line 31
+
+4 errors detected in the compilation of "Test_name.c".

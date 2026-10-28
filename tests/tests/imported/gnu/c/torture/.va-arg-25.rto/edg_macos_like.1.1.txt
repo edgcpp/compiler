@@ -1,0 +1,49 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/va-arg-25.c", line 15: warning: unknown attribute "vector_size"
+  const __attribute__((vector_size(16))) unsigned int v1 = {10,11,12,13};
+                       ^
+
+"./torture/va-arg-25.c", line 15: warning: excess initializers are ignored
+  const __attribute__((vector_size(16))) unsigned int v1 = {10,11,12,13};
+                                                               ^
+
+"./torture/va-arg-25.c", line 16: warning: unknown attribute "vector_size"
+  const __attribute__((vector_size(16))) unsigned int v2 = {20,21,22,23};
+                       ^
+
+"./torture/va-arg-25.c", line 16: warning: excess initializers are ignored
+  const __attribute__((vector_size(16))) unsigned int v2 = {20,21,22,23};
+                                                               ^
+
+"./torture/va-arg-25.c", line 23: warning: unknown attribute "vector_size"
+    __attribute__((vector_size(16))) unsigned int v;
+                   ^
+
+"./torture/va-arg-25.c", line 26: warning: unknown attribute "vector_size"
+       __attribute__((vector_size(16))) unsigned int
+                      ^
+
+"./torture/va-arg-25.c", line 32: warning: unknown attribute "vector_size"
+       __attribute__((vector_size(16))) unsigned int
+                      ^
+
+"./torture/va-arg-25.c", line 41: warning: unknown attribute "vector_size"
+    foo (1, (__attribute__((vector_size(16))) unsigned int){10,11,12,13}, 2,
+                            ^
+
+"./torture/va-arg-25.c", line 41: warning: excess initializers are ignored
+    foo (1, (__attribute__((vector_size(16))) unsigned int){10,11,12,13}, 2,
+                                                               ^
+
+"./torture/va-arg-25.c", line 42: warning: unknown attribute "vector_size"
+         (__attribute__((vector_size(16))) unsigned int){20,21,22,23});
+                         ^
+
+"./torture/va-arg-25.c", line 42: warning: excess initializers are ignored
+         (__attribute__((vector_size(16))) unsigned int){20,21,22,23});
+                                                            ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+./torture/va-arg-25.c:25:12: error: expected identifier or '(' before '__builtin_c23_va_start'
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

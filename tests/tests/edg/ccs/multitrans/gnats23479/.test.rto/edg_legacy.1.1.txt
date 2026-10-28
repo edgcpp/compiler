@@ -1,0 +1,207 @@
+cpfe -DTEST_NUMBER=1 --c++17 -tused --multi_trans_unit Test_name.c gnats23479-2.C
+"test.h", line 62: error: type name is not allowed
+      template <int, typename b, bool = !__is_final(b)> struct bt;
+                                                    ^
+
+"test.h", line 62: error: identifier "__is_final" is undefined
+      template <int, typename b, bool = !__is_final(b)> struct bt;
+                                         ^
+
+"test.h", line 92: error: incomplete type "std::aq::bt<0, std::t, <error-constant>>" is not allowed
+      template <typename cl> struct u : bt<0, cl> {
+                                        ^
+          detected during instantiation of class "std::aq::u<cl> [with cl=std::t]" at line 107
+
+"test.h", line 69: error: incomplete type "std::aq::bt<0, std::aq::as, <error-constant>>" is not allowed
+        struct bw<bj, bk, bl, bn, bo, bd, true> : bt<0, bl>, bt<1, bn>, bt<2, bo> {
+                                                  ^
+          detected during:
+            instantiation of class "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 78
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 69: error: incomplete type "std::aq::bt<1, std::ag<std::ae<std::<unnamed>::o, int>>, <error-constant>>" (aka "std::aq::bt<1, std::ag<std::ae<char, int>>, <error-constant>>") is not allowed
+        struct bw<bj, bk, bl, bn, bo, bd, true> : bt<0, bl>, bt<1, bn>, bt<2, bo> {
+                                                             ^
+          detected during:
+            instantiation of class "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 78
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 69: error: incomplete type "std::aq::bt<2, std::aq::bc, <error-constant>>" is not allowed
+        struct bw<bj, bk, bl, bn, bo, bd, true> : bt<0, bl>, bt<1, bn>, bt<2, bo> {
+                                                                        ^
+          detected during:
+            instantiation of class "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 78
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 78: error: incomplete type "std::aq::bt<0, std::<unnamed>::o, <error-constant>>" (aka "std::aq::bt<0, char, <error-constant>>") is not allowed
+        struct ce : bw<bj, bk, bl, bn, bo, x, bh::ax::e>, bt<0, bm> {
+                                                          ^
+          detected during:
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 74: error: "bx" is not a nonstatic data member or base class of class "std::aq::bw<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, true>" (aka "std::aq::bw<char, std::ae<char, char>, std::aq::as, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, true>")
+      bw(bl cb, bn cc, bo cd, bd) : bx(cb), by(cc), bz(cd) {}
+                                    ^
+          detected during:
+            instantiation of "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true>::bw(bl, bn, bo, std::aq::bd) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 84
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 74: error: "by" is not a nonstatic data member or base class of class "std::aq::bw<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, true>" (aka "std::aq::bw<char, std::ae<char, char>, std::aq::as, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, true>")
+      bw(bl cb, bn cc, bo cd, bd) : bx(cb), by(cc), bz(cd) {}
+                                            ^
+          detected during:
+            instantiation of "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true>::bw(bl, bn, bo, std::aq::bd) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 84
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 74: error: "bz" is not a nonstatic data member or base class of class "std::aq::bw<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, true>" (aka "std::aq::bw<char, std::ae<char, char>, std::aq::as, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, true>")
+      bw(bl cb, bn cc, bo cd, bd) : bx(cb), by(cc), bz(cd) {}
+                                                    ^
+          detected during:
+            instantiation of "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true>::bw(bl, bn, bo, std::aq::bd) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 84
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 84: error: "ch" is not a nonstatic data member or base class of class "std::aq::ce<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::<unnamed>::o, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, std::dg<true>>" (aka "std::aq::ce<char, std::ae<char, char>, std::aq::as, char, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, std::dg<true>>")
+      ce(bl cb, bn cc, bo cd, x ci, bm cj) : cg(cb, cc, cd, ci), ch(cj) {}
+                                                                 ^
+          detected during:
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 96: error: "cm" is not a nonstatic data member or base class of class "std::aq::u<std::t>"
+        template <typename an> u(an) : cm(ad<an>) {}
+                                       ^
+          detected during:
+            instantiation of "std::aq::u<cl>::u(an) [with cl=std::t, an=std::t]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+
+"test.h", line 62: error: type name is not allowed
+      template <int, typename b, bool = !__is_final(b)> struct bt;
+                                                    ^
+          detected during compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 62: error: identifier "__is_final" is undefined
+      template <int, typename b, bool = !__is_final(b)> struct bt;
+                                         ^
+          detected during compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 92: error: incomplete type "std::aq::bt<0, std::t, <error-constant>>" is not allowed
+      template <typename cl> struct u : bt<0, cl> {
+                                        ^
+          detected during:
+            instantiation of class "std::aq::u<cl> [with cl=std::t]" at line 107
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 69: error: incomplete type "std::aq::bt<0, std::aq::as, <error-constant>>" is not allowed
+        struct bw<bj, bk, bl, bn, bo, bd, true> : bt<0, bl>, bt<1, bn>, bt<2, bo> {
+                                                  ^
+          detected during:
+            instantiation of class "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 78
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 69: error: incomplete type "std::aq::bt<1, std::ag<std::ae<std::<unnamed>::o, int>>, <error-constant>>" (aka "std::aq::bt<1, std::ag<std::ae<char, int>>, <error-constant>>") is not allowed
+        struct bw<bj, bk, bl, bn, bo, bd, true> : bt<0, bl>, bt<1, bn>, bt<2, bo> {
+                                                             ^
+          detected during:
+            instantiation of class "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 78
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 69: error: incomplete type "std::aq::bt<2, std::aq::bc, <error-constant>>" is not allowed
+        struct bw<bj, bk, bl, bn, bo, bd, true> : bt<0, bl>, bt<1, bn>, bt<2, bo> {
+                                                                        ^
+          detected during:
+            instantiation of class "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 78
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 78: error: incomplete type "std::aq::bt<0, std::<unnamed>::o, <error-constant>>" (aka "std::aq::bt<0, char, <error-constant>>") is not allowed
+        struct ce : bw<bj, bk, bl, bn, bo, x, bh::ax::e>, bt<0, bm> {
+                                                          ^
+          detected during:
+            instantiation of class "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 102
+            instantiation of class "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh> [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 136
+            instantiation of class "std::dk<bj, b, x, dh, an> [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 74: error: "bx" is not a nonstatic data member or base class of class "std::aq::bw<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, true>" (aka "std::aq::bw<char, std::ae<char, char>, std::aq::as, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, true>")
+      bw(bl cb, bn cc, bo cd, bd) : bx(cb), by(cc), bz(cd) {}
+                                    ^
+          detected during:
+            instantiation of "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true>::bw(bl, bn, bo, std::aq::bd) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 84
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 74: error: "by" is not a nonstatic data member or base class of class "std::aq::bw<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, true>" (aka "std::aq::bw<char, std::ae<char, char>, std::aq::as, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, true>")
+      bw(bl cb, bn cc, bo cd, bd) : bx(cb), by(cc), bz(cd) {}
+                                            ^
+          detected during:
+            instantiation of "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true>::bw(bl, bn, bo, std::aq::bd) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 84
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 74: error: "bz" is not a nonstatic data member or base class of class "std::aq::bw<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, true>" (aka "std::aq::bw<char, std::ae<char, char>, std::aq::as, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, true>")
+      bw(bl cb, bn cc, bo cd, bd) : bx(cb), by(cc), bz(cd) {}
+                                                    ^
+          detected during:
+            instantiation of "std::aq::bw<bj, bk, bl, bn, bo, std::aq::bd, true>::bw(bl, bn, bo, std::aq::bd) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc]" at line 84
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 84: error: "ch" is not a nonstatic data member or base class of class "std::aq::ce<std::<unnamed>::o, std::ae<std::<unnamed>::o, std::<unnamed>::o>, std::aq::as, std::<unnamed>::o, std::ag<std::ae<std::<unnamed>::o, int>>, std::aq::bc, std::aq::bd, std::dg<true>>" (aka "std::aq::ce<char, std::ae<char, char>, std::aq::as, char, std::ag<std::ae<char, int>>, std::aq::bc, std::aq::bd, std::dg<true>>")
+      ce(bl cb, bn cc, bo cd, x ci, bm cj) : cg(cb, cc, cd, ci), ch(cj) {}
+                                                                 ^
+          detected during:
+            instantiation of "std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::ce(bl, bn, bo, x, bm) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bh=std::aq::aw<true, false, true>]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+"test.h", line 96: error: "cm" is not a nonstatic data member or base class of class "std::aq::u<std::t>"
+        template <typename an> u(an) : cm(ad<an>) {}
+                                       ^
+          detected during:
+            instantiation of "std::aq::u<cl>::u(an) [with cl=std::t, an=std::t]" at line 124
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(bn, bo, x, bm, bl, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 126
+            instantiation of "std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cp(std::initializer_list<std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::ct>, std::aq::ce<bj, bk, bl, bm, bn, bo, x, bh>::q, bn, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cv, std::cp<bj, bk, an, bl, bm, bn, bo, x, bp, bh>::cu) [with bj=std::<unnamed>::o, bk=std::ae<std::<unnamed>::o, std::<unnamed>::o>, an=std::ag<std::ae<std::<unnamed>::o, std::<unnamed>::o>>, bl=std::aq::as, bm=std::<unnamed>::o, bn=std::ag<std::ae<std::<unnamed>::o, int>>, bo=std::aq::bc, x=std::aq::bd, bp=std::aq::be, bh=std::aq::aw<true, false, true>]" at line 144
+            instantiation of "std::dk<bj, b, x, dh, an>::dk(std::initializer_list<std::dk<bj, b, x, dh, an>::ct>, std::dk<bj, b, x, dh, an>::q, std::dk<bj, b, x, dh, an>::ca, std::dk<bj, b, x, dh, an>::cv) [with bj=std::<unnamed>::o, b=int, x=std::<unnamed>::o, dh=std::<unnamed>::o, an=std::ag<std::ae<std::<unnamed>::o, int>>]" at line 148
+            compilation of secondary translation unit "gnats23479-2.C"
+
+24 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,236 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 10: error: argument list for class template "non_dependent::C" is missing
+    static_assert( __edg_is_deducible(C, C<int>));
+                                      ^
+
+"Test_name.c", line 10: error: type name is not allowed
+    static_assert( __edg_is_deducible(C, C<int>));
+                                         ^
+
+"Test_name.c", line 10: error: identifier "__edg_is_deducible" is undefined
+    static_assert( __edg_is_deducible(C, C<int>));
+                   ^
+
+"Test_name.c", line 11: error: argument list for class template "non_dependent::C" is missing
+    static_assert( __edg_is_deducible(C, C<int *>));
+                                      ^
+
+"Test_name.c", line 11: error: type name is not allowed
+    static_assert( __edg_is_deducible(C, C<int *>));
+                                         ^
+
+"Test_name.c", line 12: error: argument list for class template "non_dependent::C" is missing
+    static_assert(!__edg_is_deducible(C, int));
+                                      ^
+
+"Test_name.c", line 12: error: type name is not allowed
+    static_assert(!__edg_is_deducible(C, int));
+                                         ^
+
+"Test_name.c", line 20: error: argument list for alias template "non_dependent::A" is missing
+    static_assert( __edg_is_deducible(A, C<int *>));
+                                      ^
+
+"Test_name.c", line 20: error: type name is not allowed
+    static_assert( __edg_is_deducible(A, C<int *>));
+                                         ^
+
+"Test_name.c", line 21: error: argument list for alias template "non_dependent::A" is missing
+    static_assert(!__edg_is_deducible(A, C<int>));
+                                      ^
+
+"Test_name.c", line 21: error: type name is not allowed
+    static_assert(!__edg_is_deducible(A, C<int>));
+                                         ^
+
+"Test_name.c", line 22: error: argument list for alias template "non_dependent::A" is missing
+    static_assert(!__edg_is_deducible(A, int));
+                                      ^
+
+"Test_name.c", line 22: error: type name is not allowed
+    static_assert(!__edg_is_deducible(A, int));
+                                         ^
+
+"Test_name.c", line 24: error: argument list for alias template "non_dependent::P" is missing
+    static_assert( __edg_is_deducible(P, int *));
+                                      ^
+
+"Test_name.c", line 24: error: type name is not allowed
+    static_assert( __edg_is_deducible(P, int *));
+                                         ^
+
+"Test_name.c", line 24: error: expected an expression
+    static_assert( __edg_is_deducible(P, int *));
+                                              ^
+
+"Test_name.c", line 25: error: argument list for alias template "non_dependent::P" is missing
+    static_assert(!__edg_is_deducible(P, int));
+                                      ^
+
+"Test_name.c", line 25: error: type name is not allowed
+    static_assert(!__edg_is_deducible(P, int));
+                                         ^
+
+"Test_name.c", line 37: error: argument list for alias template "use_default_arg::A" is missing
+    static_assert(!__edg_is_deducible(A, C<1, 1>));
+                                      ^
+
+"Test_name.c", line 37: error: type name is not allowed
+    static_assert(!__edg_is_deducible(A, C<1, 1>));
+                                         ^
+
+"Test_name.c", line 37: error: identifier "__edg_is_deducible" is undefined
+    static_assert(!__edg_is_deducible(A, C<1, 1>));
+                   ^
+
+"Test_name.c", line 38: error: argument list for alias template "use_default_arg::A" is missing
+    static_assert( __edg_is_deducible(A, C<1, 2>));
+                                      ^
+
+"Test_name.c", line 38: error: type name is not allowed
+    static_assert( __edg_is_deducible(A, C<1, 2>));
+                                         ^
+
+"Test_name.c", line 46: error: argument list for alias template "empty_pack::A" is missing
+    static_assert( __edg_is_deducible(A, int));
+                                      ^
+
+"Test_name.c", line 46: error: type name is not allowed
+    static_assert( __edg_is_deducible(A, int));
+                                         ^
+
+"Test_name.c", line 46: error: identifier "__edg_is_deducible" is undefined
+    static_assert( __edg_is_deducible(A, int));
+                   ^
+
+"Test_name.c", line 56: error: argument list for template template parameter "X" is missing
+    constexpr bool is_deducible_v = __edg_is_deducible(X, T);
+                                                       ^
+          detected during instantiation of "const bool dependent::is_deducible_v [with X=dependent::C, T=dependent::C<int>]" at line 58
+
+"Test_name.c", line 56: error: type name is not allowed
+    constexpr bool is_deducible_v = __edg_is_deducible(X, T);
+                                                          ^
+          detected during instantiation of "const bool dependent::is_deducible_v [with X=dependent::C, T=dependent::C<int>]" at line 58
+
+"Test_name.c", line 56: error: identifier "__edg_is_deducible" is undefined
+    constexpr bool is_deducible_v = __edg_is_deducible(X, T);
+                                    ^
+          detected during instantiation of "const bool dependent::is_deducible_v [with X=dependent::C, T=dependent::C<int>]" at line 58
+
+"Test_name.c", line 56: error: argument list for template template parameter "X" is missing
+    constexpr bool is_deducible_v = __edg_is_deducible(X, T);
+                                                       ^
+          detected during instantiation of "const bool dependent::is_deducible_v [with X=dependent::C, T=int]" at line 59
+
+"Test_name.c", line 56: error: type name is not allowed
+    constexpr bool is_deducible_v = __edg_is_deducible(X, T);
+                                                          ^
+          detected during instantiation of "const bool dependent::is_deducible_v [with X=dependent::C, T=int]" at line 59
+
+"Test_name.c", line 71: error: argument list for template template parameter "X" is missing
+      char arr1[ __edg_is_deducible(X, C<int>)];
+                                    ^
+
+"Test_name.c", line 71: error: type name is not allowed
+      char arr1[ __edg_is_deducible(X, C<int>)];
+                                       ^
+
+"Test_name.c", line 72: error: argument list for template template parameter "X" is missing
+      char arr2[!__edg_is_deducible(X, int)];
+                                    ^
+
+"Test_name.c", line 72: error: type name is not allowed
+      char arr2[!__edg_is_deducible(X, int)];
+                                       ^
+
+"Test_name.c", line 73: error: argument list for template "T::C" is missing
+      char arr3[!__edg_is_deducible(T::template C, C<int>)];
+                                                ^
+
+"Test_name.c", line 73: error: type name is not allowed
+      char arr3[!__edg_is_deducible(T::template C, C<int>)];
+                                                   ^
+
+"Test_name.c", line 74: error: argument list for template "T::C" is missing
+      char arr4[!__edg_is_deducible(T::template C, int)];
+                                                ^
+
+"Test_name.c", line 74: error: type name is not allowed
+      char arr4[!__edg_is_deducible(T::template C, int)];
+                                                   ^
+
+"Test_name.c", line 94: error: argument list for template template parameter "X" is missing
+    concept is_deducible = __edg_is_deducible(X, T);
+                                              ^
+
+"Test_name.c", line 94: error: type name is not allowed
+    concept is_deducible = __edg_is_deducible(X, T);
+                                                 ^
+
+"Test_name.c", line 94: error: identifier "__edg_is_deducible" is undefined
+    concept is_deducible = __edg_is_deducible(X, T);
+                           ^
+
+"Test_name.c", line 109: error: static assertion failed
+    static_assert(Z<C, B, C<int>>::foo(0) == 1);
+    ^
+"Test_name.c", line 109: note: the final comparison was 0 == 1
+    static_assert(Z<C, B, C<int>>::foo(0) == 1);
+                                          ^
+
+"Test_name.c", line 110: error: static assertion failed
+    static_assert(Z<C, B, B::C<int>>::foo(0) == 2);
+    ^
+"Test_name.c", line 110: note: the final comparison was 0 == 2
+    static_assert(Z<C, B, B::C<int>>::foo(0) == 2);
+                                             ^
+
+"Test_name.c", line 131: error: argument list for template "S::C" is missing
+    concept is_C_deducible = __edg_is_deducible(S::template C, T);
+                                                            ^
+
+"Test_name.c", line 131: error: type name is not allowed
+    concept is_C_deducible = __edg_is_deducible(S::template C, T);
+                                                               ^
+
+"Test_name.c", line 131: error: identifier "__edg_is_deducible" is undefined
+    concept is_C_deducible = __edg_is_deducible(S::template C, T);
+                             ^
+
+"Test_name.c", line 144: error: static assertion failed
+    static_assert(Z<B, B::C<int>>::foo(0) == 1);
+    ^
+"Test_name.c", line 144: note: the final comparison was 0 == 1
+    static_assert(Z<B, B::C<int>>::foo(0) == 1);
+                                          ^
+
+"Test_name.c", line 155: error: argument list for template "T::X" is missing
+      void foo(decltype(__edg_is_deducible(T::template X, U)));
+                                                       ^
+
+"Test_name.c", line 155: error: type name is not allowed
+      void foo(decltype(__edg_is_deducible(T::template X, U)));
+                                                          ^
+
+"Test_name.c", line 155: error: identifier "__edg_is_deducible" is undefined
+      void foo(decltype(__edg_is_deducible(T::template X, U)));
+                        ^
+
+"Test_name.c", line 156: error: argument list for template "T::Y" is missing
+      void foo(decltype(__edg_is_deducible(T::template Y, U)));
+                                                       ^
+
+"Test_name.c", line 156: error: type name is not allowed
+      void foo(decltype(__edg_is_deducible(T::template Y, U)));
+                                                          ^
+
+"Test_name.c", line 156: error: identifier "__edg_is_deducible" is undefined
+      void foo(decltype(__edg_is_deducible(T::template Y, U)));
+                        ^
+
+"Test_name.c", line 156: error: invalid redeclaration of member function "compare_expressions::C<T, U>::foo(<error-type>)" (declared at line 155)
+      void foo(decltype(__edg_is_deducible(T::template Y, U)));
+           ^
+
+55 errors detected in the compilation of "Test_name.c".

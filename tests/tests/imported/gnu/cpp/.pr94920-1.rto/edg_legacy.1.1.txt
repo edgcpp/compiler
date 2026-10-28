@@ -1,0 +1,53 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./pr94920.C", line 8: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int foo(int x) {
+                 ^
+
+"./pr94920.C", line 13: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int corge(int x) {
+                 ^
+
+"./pr94920.C", line 21: warning: unknown attribute "noipa"
+  __attribute__((noipa)) vint thud(vint x) {
+                 ^
+
+"./pr94920.C", line 29: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int bar(int x) {
+                 ^
+
+"./pr94920.C", line 34: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int baz(int x) {
+                 ^
+
+"./pr94920.C", line 39: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int quux(int x) {
+                 ^
+
+"./pr94920.C", line 44: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int waldo(int x) {
+                 ^
+
+"./pr94920.C", line 49: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int fred(int x) {
+                 ^
+
+"./pr94920.C", line 54: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int goo(int x) {
+                 ^
+
+"./pr94920.C", line 59: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int qux(int x) {
+                 ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+./pr94920.C: In function 'thud__Fa16_i':
+./pr94920.C:22:133: error: used vector type where scalar is required
+./pr94920.C:22:229: error: used vector type where scalar is required
+./pr94920.C:22:36: error: used vector type where scalar is required
+./pr94920.C:22:132: error: used vector type where scalar is required
+./pr94920.C:24:135: error: used vector type where scalar is required
+./pr94920.C:24:233: error: used vector type where scalar is required
+./pr94920.C:24:37: error: used vector type where scalar is required
+./pr94920.C:24:135: error: used vector type where scalar is required
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

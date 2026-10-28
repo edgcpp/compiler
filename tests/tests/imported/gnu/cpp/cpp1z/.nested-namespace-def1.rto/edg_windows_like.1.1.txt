@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 15: error: the "inline" keyword cannot be used on a nested namespace declaration
+  inline namespace D::E {} // { dg-error "cannot be inline" }
+  ^
+
+"Test_name.c", line 17: error: expected an identifier
+  namespace F::G:: {} // { dg-error "namespace name required" }
+                   ^
+
+"Test_name.c", line 19: warning: unknown attribute "visibility"
+  namespace G __attribute ((visibility ("default"))) ::H {} // { dg-error "cannot have attributes" }
+                            ^
+
+"Test_name.c", line 19: error: expected a "{"
+  namespace G __attribute ((visibility ("default"))) ::H {} // { dg-error "cannot have attributes" }
+                                                     ^
+
+"Test_name.c", line 21: error: expected a "{"
+  namespace H [[deprecated]] ::I {} // { dg-error "cannot have attributes|ignored" }
+              ^
+
+"Test_name.c", line 23: warning: unknown attribute "visibility"
+  namespace __attribute ((visibility ("default"))) I::J {} // { dg-error "cannot have attributes" }
+                          ^
+
+"Test_name.c", line 25: error: attributes may not appear here
+  namespace [[deprecated]] J::K {} // { dg-error "cannot have attributes|ignored" }
+              ^
+
+5 errors detected in the compilation of "Test_name.c".

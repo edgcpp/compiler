@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"SemaCXX/coro-lifetimebound.cpp", line 72: warning: variable "unsafe_lambda" was declared but never referenced
+    auto unsafe_lambda = [] [[clang::coro_wrapper]] (int b) {
+         ^
+
+"SemaCXX/coro-lifetimebound.cpp", line 78: warning: variable "unsafe_coro_lambda" was declared but never referenced
+    auto unsafe_coro_lambda = [&] (const int& b) -> Co<int> {
+         ^
+
+"SemaCXX/coro-lifetimebound.cpp", line 86: warning: variable "safe_lambda" was declared but never referenced
+    auto safe_lambda = [](int b) -> Co<int> {
+         ^
+

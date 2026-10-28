@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 10: warning: declaration of "T" hides template parameter
+    int f(T* ptr, int T::*pm) {
+                      ^
+          detected during instantiation of class "X1<T> [with T=int]" at line 17
+
+"Test_name.c", line 10: error: expected a ")"
+    int f(T* ptr, int T::*pm) {
+                       ^
+          detected during instantiation of class "X1<T> [with T=int]" at line 17
+
+"Test_name.c", line 21: error: pointer to member of reference type is not allowed
+    T f(Class &obj, T Class::*pm) { // expected-error{{to a reference}} \
+                      ^
+          detected during instantiation of class "X2<T, Class> [with T=int &, Class=Y]" at line 28
+
+"Test_name.c", line 21: error: pointer to member of type void is not allowed
+    T f(Class &obj, T Class::*pm) { // expected-error{{to a reference}} \
+                      ^
+          detected during instantiation of class "X2<T, Class> [with T=const void, Class=Y]" at line 29
+
+"Test_name.c", line 67: warning: variable "a" was declared but never referenced
+      int a[(int)sizeof(T)-42]; // expected-error{{array with a negative size}}
+          ^
+
+"Test_name.c", line 12: error: expression must have pointer-to-class type but it has type "int *"
+      return ptr->*pm;
+             ^
+          detected during instantiation of "int X1<T>::f(T *, int T::*) [with T=int]" at line 17
+
+"Test_name.c", line 12: error: expression must have pointer-to-member type
+      return ptr->*pm;
+                   ^
+          detected during instantiation of "int X1<T>::f(T *, int T::*) [with T=int]" at line 17
+
+"Test_name.c", line 67: error: the size of an array must be greater than zero
+      int a[(int)sizeof(T)-42]; // expected-error{{array with a negative size}}
+            ^
+          detected during instantiation of "void ValueDepMemberPointer::S<T>::instantiate() [with T=int]" at line 64
+
+6 errors detected in the compilation of "Test_name.c".

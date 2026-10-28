@@ -1,0 +1,67 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 14: warning: alignment-of operator applied to incomplete type
+  const int test3 = __alignof__(s1); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+                    ^
+
+"Test_name.c", line 22: warning: alignment-of operator applied to incomplete type
+    int test5 = __alignof__(s); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+                ^
+
+"Test_name.c", line 26: warning: alignment-of operator applied to incomplete type
+  const int test7 = __alignof__(S2::s); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+                    ^
+
+"Test_name.c", line 37: warning: alignment-of operator applied to incomplete type
+    static const int test9 = __alignof__(s2.s); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+                             ^
+
+"Test_name.c", line 40: warning: alignment-of operator applied to incomplete type
+    static const int test12 = __alignof__(S3::s2.s); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+                              ^
+
+"Test_name.c", line 57: error: incomplete type "S1" is not allowed
+    S1 s;  // expected-error {{incomplete type}}
+       ^
+
+"Test_name.c", line 64: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  static_assert(alignof(test14) == 4, "foo"); // expected-warning {{'alignof' applied to an expression is a GNU extension}}
+                       ^
+
+"Test_name.c", line 71: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    static_assert(alignof(n) == 32, ""); // expected-warning {{GNU extension}}
+                         ^
+
+"Test_name.c", line 76: error: the size of an array must be greater than zero
+    template<int N> int S<N>::a[N];
+                                ^
+          detected during implicit definition of "int alignof_array_expr::S<<unnamed>>::a[] [with <unnamed>=-1]" at line 78
+
+"Test_name.c", line 78: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    static_assert(alignof(S<-1>::a) == alignof(int), ""); // expected-warning {{GNU extension}}
+                         ^
+
+"Test_name.c", line 92: warning: variable "k1" was declared but never referenced
+    int k1[__alignof__(T1)];
+        ^
+
+"Test_name.c", line 107: error: identifier "invalid_type" is undefined
+    invalid_type a; // expected-error {{unknown type}}
+    ^
+
+"Test_name.c", line 14: warning: variable "test3" was declared but never referenced
+  const int test3 = __alignof__(s1); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+            ^
+
+"Test_name.c", line 25: warning: variable "test6" was declared but never referenced
+  const int test6 = __alignof__(S2::x);
+            ^
+
+"Test_name.c", line 26: warning: variable "test7" was declared but never referenced
+  const int test7 = __alignof__(S2::s); // expected-error {{invalid application of '__alignof' to an incomplete type 'S1'}}
+            ^
+
+"Test_name.c", line 60: warning: variable "test8" was declared but never referenced
+  const int test8 = __alignof__(S5::x);
+            ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 5: error: expression must be a pointer to a complete object type
+  template<int> void foo() { delete 0 ? 1 : 0; } // { dg-error "delete 0" }
+                                    ^
+
+1 error detected in the compilation of "Test_name.c".

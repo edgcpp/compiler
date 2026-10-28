@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=std::_Rb_tree_node<std::pair<const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>>>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `std::_Rb_tree_iterator<T1> &std::_Rb_tree_iterator<T1>::operator ++() [with T1=std::pair<const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::_Rb_tree_increment(std::_Rb_tree_node_base *)'
+/usr/sbin/ld: Test_name.o: in function `std::_Rb_tree_iterator<T1> &std::_Rb_tree_iterator<T1>::operator --() [with T1=std::pair<const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::_Rb_tree_decrement(std::_Rb_tree_node_base *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type &, __gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char, std::char_traits<char>, std::allocator<char>>(const T1 *, const T3 &) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `void std::__rb_tree::_Node_traits<T1, T1 *>::_S_insert_and_rebalance(bool, std::_Rb_tree_node_base *, std::_Rb_tree_node_base *, std::_Rb_tree_node_base &) [with T1=std::pair<const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::_Rb_tree_insert_and_rebalance(bool, std::_Rb_tree_node_base *, std::_Rb_tree_node_base *, std::_Rb_tree_node_base &)'
+collect2: error: ld returned 1 exit status

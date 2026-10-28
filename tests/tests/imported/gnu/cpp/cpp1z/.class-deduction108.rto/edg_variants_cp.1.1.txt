@@ -1,0 +1,106 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 34: warning: variable "a5" was declared but never referenced
+    A a5;
+      ^
+
+"Test_name.c", line 47: error: argument list for template template parameter "TT" is missing
+    static inline TT x5;
+                  ^
+
+"Test_name.c", line 44: error: no instance of constructor "A" matches the argument list
+            argument types are: (int)
+    static inline TT x1 = 0; // { dg-error "deduction|no match" }
+                     ^
+          detected during instantiation of class "B<TT> [with TT=A]" at line 59
+
+"Test_name.c", line 44: error: cannot deduce class template arguments
+    static inline TT x1 = 0; // { dg-error "deduction|no match" }
+                  ^
+          detected during instantiation of class "B<TT> [with TT=A]" at line 59
+
+"Test_name.c", line 45: error: copy-list-initialization cannot use "explicit" deduction guide "A(...)->A<int>"
+    static inline TT x2 = {0}; // { dg-error "explicit deduction guide" }
+                     ^
+          detected during instantiation of class "B<TT> [with TT=A]" at line 59
+
+"Test_name.c", line 53: error: no instance of constructor "A" matches the argument list
+            argument types are: (int)
+    static inline A a1 = t; // { dg-error "deduction|no match" }
+                    ^
+          detected during instantiation of class "C<T> [with T=int]" at line 60
+
+"Test_name.c", line 53: error: cannot deduce class template arguments
+    static inline A a1 = t; // { dg-error "deduction|no match" }
+                  ^
+          detected during instantiation of class "C<T> [with T=int]" at line 60
+
+"Test_name.c", line 54: error: copy-list-initialization cannot use "explicit" deduction guide "A(...)->A<int>"
+    static inline A a2 = {t}; // { dg-error "explicit deduction guide" }
+                    ^
+          detected during instantiation of class "C<T> [with T=int]" at line 60
+
+"Test_name.c", line 64: error: no instance of constructor "A" matches the argument list
+            argument types are: (int)
+    static constexpr TT x1 = 0; // { dg-error "deduction|no match" }
+                        ^
+          detected during instantiation of class "E<TT> [with TT=A]" at line 79
+
+"Test_name.c", line 64: error: cannot deduce class template arguments
+    static constexpr TT x1 = 0; // { dg-error "deduction|no match" }
+                     ^
+          detected during instantiation of class "E<TT> [with TT=A]" at line 79
+
+"Test_name.c", line 65: error: copy-list-initialization cannot use "explicit" deduction guide "A(...)->A<int>"
+    static constexpr TT x2 = {0}; // { dg-error "explicit deduction guide" }
+                        ^
+          detected during instantiation of class "E<TT> [with TT=A]" at line 79
+
+"Test_name.c", line 73: error: no instance of constructor "A" matches the argument list
+            argument types are: (const int)
+    static constexpr A a1 = t; // { dg-error "deduction|no match" }
+                       ^
+          detected during instantiation of class "F<T> [with T=int]" at line 80
+
+"Test_name.c", line 73: error: cannot deduce class template arguments
+    static constexpr A a1 = t; // { dg-error "deduction|no match" }
+                     ^
+          detected during instantiation of class "F<T> [with T=int]" at line 80
+
+"Test_name.c", line 74: error: copy-list-initialization cannot use "explicit" deduction guide "A(...)->A<int>"
+    static constexpr A a2 = {t}; // { dg-error "explicit deduction guide" }
+                       ^
+          detected during instantiation of class "F<T> [with T=int]" at line 80
+
+"Test_name.c", line 16: error: no instance of constructor "A" matches the argument list
+            argument types are: (int)
+    TT x1 = 0; // { dg-error "deduction|no match" }
+       ^
+          detected during instantiation of "void f<TT>() [with TT=A]" at line 39
+
+"Test_name.c", line 16: error: cannot deduce class template arguments
+    TT x1 = 0; // { dg-error "deduction|no match" }
+    ^
+          detected during instantiation of "void f<TT>() [with TT=A]" at line 39
+
+"Test_name.c", line 17: error: copy-list-initialization cannot use "explicit" deduction guide "A(...)->A<int>"
+    TT x2 = {0}; // { dg-error "explicit deduction guide" }
+       ^
+          detected during instantiation of "void f<TT>() [with TT=A]" at line 39
+
+"Test_name.c", line 30: error: no instance of constructor "A" matches the argument list
+            argument types are: (int)
+    A a1 = t; // { dg-error "deduction|no match" }
+      ^
+          detected during instantiation of "void g(T) [with T=int]" at line 40
+
+"Test_name.c", line 30: error: cannot deduce class template arguments
+    A a1 = t; // { dg-error "deduction|no match" }
+    ^
+          detected during instantiation of "void g(T) [with T=int]" at line 40
+
+"Test_name.c", line 31: error: copy-list-initialization cannot use "explicit" deduction guide "A(...)->A<int>"
+    A a2 = {t}; // { dg-error "explicit deduction guide" }
+      ^
+          detected during instantiation of "void g(T) [with T=int]" at line 40
+
+19 errors detected in the compilation of "Test_name.c".

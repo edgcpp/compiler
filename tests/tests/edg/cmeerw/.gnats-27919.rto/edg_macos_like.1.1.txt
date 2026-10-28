@@ -1,0 +1,118 @@
+fe_only -DTEST_NUMBER=1 -w --c++20 --target linux_aarch64 --clang_version 200100 Test_name.c
+"Test_name.c", line 5: error: identifier "__mfp8" is undefined
+  static_assert(sizeof(__mfp8) == 1);
+                       ^
+
+"Test_name.c", line 8: error: incomplete type "void" is not allowed
+  void f(__mfp8 v)
+       ^
+
+"Test_name.c", line 8: error: expected a ")"
+  void f(__mfp8 v)
+                ^
+
+"Test_name.c", line 9: error: expected a ";"
+  {
+  ^
+
+"Test_name.c", line 25: error: identifier "__SVMfloat8_t" is undefined
+  void f(__SVMfloat8_t v)
+         ^
+
+"Test_name.c", line 25: error: declaration is incompatible with "<error-type> f" (declared at line 8)
+  void f(__SVMfloat8_t v)
+       ^
+
+"Test_name.c", line 27: error: identifier "__SVMfloat8_t" is undefined
+    __SVMfloat8_t l;
+    ^
+
+"Test_name.c", line 29: error: identifier "__SVMfloat8_t" is undefined
+    l = __SVMfloat8_t();
+        ^
+
+"Test_name.c", line 32: error: "__mfp8" is not a type name
+    __edg_scalable_vector_type__(__mfp8, 1) lv;
+                                 ^
+
+"Test_name.c", line 38: error: identifier "__clang_svmfloat8x2_t" is undefined
+  void f(__clang_svmfloat8x2_t v)
+         ^
+
+"Test_name.c", line 38: error: function "f" has already been defined (previous definition at line 25)
+  void f(__clang_svmfloat8x2_t v)
+       ^
+
+"Test_name.c", line 40: error: identifier "__clang_svmfloat8x2_t" is undefined
+    __clang_svmfloat8x2_t l;
+    ^
+
+"Test_name.c", line 42: error: identifier "__clang_svmfloat8x2_t" is undefined
+    l = __clang_svmfloat8x2_t();
+        ^
+
+"Test_name.c", line 45: error: "__mfp8" is not a type name
+    __edg_scalable_vector_type__(__mfp8, 2) lv;
+                                 ^
+
+"Test_name.c", line 50: error: identifier "__clang_svmfloat8x3_t" is undefined
+  void f(__clang_svmfloat8x3_t v)
+         ^
+
+"Test_name.c", line 50: error: function "f" has already been defined (previous definition at line 25)
+  void f(__clang_svmfloat8x3_t v)
+       ^
+
+"Test_name.c", line 52: error: identifier "__clang_svmfloat8x3_t" is undefined
+    __clang_svmfloat8x3_t l;
+    ^
+
+"Test_name.c", line 54: error: identifier "__clang_svmfloat8x3_t" is undefined
+    l = __clang_svmfloat8x3_t();
+        ^
+
+"Test_name.c", line 57: error: "__mfp8" is not a type name
+    __edg_scalable_vector_type__(__mfp8, 3) lv;
+                                 ^
+
+"Test_name.c", line 62: error: identifier "__clang_svmfloat8x4_t" is undefined
+  void f(__clang_svmfloat8x4_t v)
+         ^
+
+"Test_name.c", line 62: error: function "f" has already been defined (previous definition at line 25)
+  void f(__clang_svmfloat8x4_t v)
+       ^
+
+"Test_name.c", line 64: error: identifier "__clang_svmfloat8x4_t" is undefined
+    __clang_svmfloat8x4_t l;
+    ^
+
+"Test_name.c", line 66: error: identifier "__clang_svmfloat8x4_t" is undefined
+    l = __clang_svmfloat8x4_t();
+        ^
+
+"Test_name.c", line 69: error: "__mfp8" is not a type name
+    __edg_scalable_vector_type__(__mfp8, 4) lv;
+                                 ^
+
+"Test_name.c", line 75: error: "__mfp8" is not a type name
+  typedef __attribute__((neon_vector_type(8)))  __mfp8 mfloat8x8_t;
+                                                ^
+
+"Test_name.c", line 76: error: "__mfp8" is not a type name
+  typedef __attribute__((neon_vector_type(16))) __mfp8 mfloat8x16_t;
+                                                ^
+
+"Test_name.c", line 78: error: declaration is incompatible with previous "f" (declared at line 8)
+  void f(mfloat8x8_t v8, mfloat8x16_t v16)
+       ^
+
+"Test_name.c", line 80: error: builtin function is not available because vector types are not supported
+    __builtin_neon_vcvt1_bf16_mf8_fpm(v8, 0);
+    ^
+
+"Test_name.c", line 81: error: builtin function is not available because vector types are not supported
+    __builtin_neon_vcvt1_high_bf16_mf8_fpm(v16, 0);
+    ^
+
+29 errors detected in the compilation of "Test_name.c".

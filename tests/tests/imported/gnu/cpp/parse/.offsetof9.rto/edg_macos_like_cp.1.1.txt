@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 12: error: expected a ")"
+  char a[__builtin_offsetof (S, sa->f)
+                                  ^
+
+"Test_name.c", line 20: error: expected a ")"
+    static int foo () { return __builtin_offsetof (T, sa->f); }
+                                                        ^
+
+"Test_name.c", line 24: error: expected a ")"
+  char b[__builtin_offsetof (T<5>, sa->f)
+                                     ^
+
+3 errors detected in the compilation of "Test_name.c".

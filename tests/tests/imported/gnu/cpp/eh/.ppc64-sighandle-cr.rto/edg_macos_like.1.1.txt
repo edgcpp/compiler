@@ -1,0 +1,42 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --exceptions Test_name.c
+"/mds/gnu/build/gcc-12.2.0/include/c++/12.2.0/bits/std_abs.h", line 102: error: identifier "__float128" is undefined
+    __float128
+    ^
+
+"/mds/gnu/build/gcc-12.2.0/include/c++/12.2.0/bits/std_abs.h", line 103: error: identifier "__float128" is undefined
+    abs(__float128 __x)
+        ^
+
+"./eh/ppc64-sighandle-cr.C", line 13: error: unknown register name "cr2"
+    __asm__ __volatile__ ("mtcrf %0,%1" : : "n" (1<<(7-2)), "r" (3<<(4*(7-2))) : "cr" "2");
+                                                                                 ^
+
+"./eh/ppc64-sighandle-cr.C", line 14: error: unknown register name "cr3"
+    __asm__ __volatile__ ("mtcrf %0,%1" : : "n" (1<<(7-3)), "r" (2<<(4*(7-3))) : "cr" "3");
+                                                                                 ^
+
+"./eh/ppc64-sighandle-cr.C", line 15: error: unknown register name "cr4"
+    __asm__ __volatile__ ("mtcrf %0,%1" : : "n" (1<<(7-4)), "r" (1<<(4*(7-4))) : "cr" "4");
+                                                                                 ^
+
+"./eh/ppc64-sighandle-cr.C", line 24: error: unknown register name "cr3"
+    asm ("mtcrf %1,%2" : "=f" (x) : "n" (1 << (7-3)), "r" (0), "0" (b) : "cr3");
+                                                                         ^
+
+"./eh/ppc64-sighandle-cr.C", line 40: error: unknown register name "cr2"
+    __asm__ __volatile__ ("mtcrf %0,%1" : : "n" (1<<(7-2)), "r" (6<<(4*(7-2))) : "cr" "2");
+                                                                                 ^
+
+"./eh/ppc64-sighandle-cr.C", line 41: error: unknown register name "cr3"
+    __asm__ __volatile__ ("mtcrf %0,%1" : : "n" (1<<(7-3)), "r" (9<<(4*(7-3))) : "cr" "3");
+                                                                                 ^
+
+"./eh/ppc64-sighandle-cr.C", line 42: error: unknown register name "cr4"
+    __asm__ __volatile__ ("mtcrf %0,%1" : : "n" (1<<(7-4)), "r" (12<<(4*(7-4))) : "cr" "4");
+                                                                                  ^
+
+"./eh/ppc64-sighandle-cr.C", line 31: warning: variable "status" was set but never used
+    int status;
+        ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 11: warning: variable "ri" was declared but never referenced
+    decltype(auto) ri = (i);
+                   ^
+
+"Test_name.c", line 12: warning: variable "rr" was declared but never referenced
+    decltype(auto) rr = (r);
+                   ^
+
+"Test_name.c", line 13: warning: variable "rr2" was declared but never referenced
+    decltype((r)) rr2 = (r);
+                  ^
+
+"Test_name.c", line 12: error: an rvalue reference cannot be bound to an lvalue
+  decltype(auto) rr = r; 
+                      ^
+
+1 error detected in the compilation of "Test_name.c".

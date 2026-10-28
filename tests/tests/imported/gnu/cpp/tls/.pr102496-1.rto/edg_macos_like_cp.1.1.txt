@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 14: error: explicit type is missing ("int" assumed)
+    extern __thread int t1;
+           ^
+
+"Test_name.c", line 14: error: expected a ";"
+    extern __thread int t1;
+                    ^
+
+"Test_name.c", line 15: error: identifier "t1" is undefined
+    return t1;
+           ^
+
+"Test_name.c", line 21: error: explicit type is missing ("int" assumed)
+    extern __thread int t2;
+           ^
+
+"Test_name.c", line 21: error: expected a ";"
+    extern __thread int t2;
+                    ^
+
+"Test_name.c", line 22: error: identifier "t2" is undefined
+    return foo <0> () + t2;
+                        ^
+
+6 errors detected in the compilation of "Test_name.c".

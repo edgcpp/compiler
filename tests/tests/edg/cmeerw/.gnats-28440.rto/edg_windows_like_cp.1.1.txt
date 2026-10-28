@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++20 --gn 150100 --target linux_aarch64 Test_name.c
+"Test_name.c", line 9: error: identifier "__builtin_aarch64_simd_oi" is undefined
+      __builtin_aarch64_simd_oi *p = 1;
+      ^
+
+"Test_name.c", line 9: error: identifier "p" is undefined
+      __builtin_aarch64_simd_oi *p = 1;
+                                 ^
+
+"Test_name.c", line 13: error: identifier "__Float32x2_t" is undefined
+      __Float32x2_t *p = 2;
+      ^
+
+"Test_name.c", line 13: error: identifier "p" is undefined
+      __Float32x2_t *p = 2;
+                     ^
+
+"Test_name.c", line 17: error: identifier "__Poly16x4_t" is undefined
+      __Poly16x4_t *p = 1;
+      ^
+
+"Test_name.c", line 17: error: identifier "p" is undefined
+      __Poly16x4_t *p = 1;
+                    ^
+
+6 errors detected in the compilation of "Test_name.c".

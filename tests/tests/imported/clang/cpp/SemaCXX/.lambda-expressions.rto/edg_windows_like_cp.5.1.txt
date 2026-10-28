@@ -1,0 +1,439 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 24: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+        []() { (void)Member; };     // expected-error {{'this' cannot be implicitly captured in this context}} expected-note {{explicitly capture 'this'}}
+                     ^
+
+"Test_name.c", line 25: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+        const int var = []() {(void)Member; return 0; }(); // expected-error {{'this' cannot be implicitly captured in this context}} expected-note {{explicitly capture 'this'}}
+                                    ^
+
+"Test_name.c", line 30: error: this enclosing-function local variable cannot be referenced in this lambda body because an enclosing lambda does not allow implicit captures
+        []{[this]{};};// expected-error {{'this' cannot be implicitly captured in this context}}
+            ^
+
+"Test_name.c", line 32: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+        [] { Overload(); }; // expected-error {{'this' cannot be implicitly captured in this context}} expected-note {{explicitly capture 'this'}}
+             ^
+
+"Test_name.c", line 34: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+        [] { (void)typeid(Overload(.5f)); }; // expected-error {{'this' cannot be implicitly captured in this context}} expected-note {{explicitly capture 'this'}}
+                          ^
+
+"Test_name.c", line 39: error: "this" may only be used inside a nonstatic member function
+      [this] () {}; // expected-error {{'this' cannot be captured in this context}}
+       ^
+
+"Test_name.c", line 47: warning: statement is unreachable
+      [](){ return ({return 1; 1;}); };
+                               ^
+
+"Test_name.c", line 48: warning: statement is unreachable
+      [](){ return ({return 'c'; 1;}); }; // expected-error {{must match previous return type}}
+                                 ^
+
+"Test_name.c", line 48: error: deduced return type "int" conflicts with previously deduced type "char"
+      [](){ return ({return 'c'; 1;}); }; // expected-error {{must match previous return type}}
+                   ^
+
+"Test_name.c", line 49: warning: statement is unreachable
+      []()->int{ return 'c'; return 1; };
+                             ^
+
+"Test_name.c", line 50: warning: statement is unreachable
+      [](){ return 'c'; return 1; };  // expected-error {{must match previous return type}}
+                        ^
+
+"Test_name.c", line 50: error: deduced return type "int" conflicts with previously deduced type "char"
+      [](){ return 'c'; return 1; };  // expected-error {{must match previous return type}}
+                               ^
+
+"Test_name.c", line 51: warning: statement is unreachable
+      []() { return; return (void)0; };
+                     ^
+
+"Test_name.c", line 52: warning: statement is unreachable
+      [](){ return 1; return 1; };
+                      ^
+
+"Test_name.c", line 59: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      []() { return a; }; // expected-error {{variable 'a' cannot be implicitly captured in a lambda with no capture-default specified}} expected-note {{begins here}} expected-note 2 {{capture 'a' by}} expected-note 2 {{default capture by}}
+                    ^
+
+"Test_name.c", line 62: error: a value of type "const int *" cannot be used to initialize an entity of type "int *"
+      [=]() { int* b = &a; }; // expected-error {{cannot initialize a variable of type 'int *' with an rvalue of type 'const int *'}}
+                       ^
+
+"Test_name.c", line 64: error: this enclosing-function local variable cannot be referenced in this lambda body because an enclosing lambda does not allow implicit captures
+      []() { return [&]() { return a; }; }; // expected-error {{variable 'a' cannot be implicitly captured in a lambda with no capture-default specified}} expected-note {{lambda expression begins here}} expected-note 2 {{capture 'a' by}} expected-note 2 {{default capture by}}
+                                   ^
+
+"Test_name.c", line 65: error: expected an expression
+      []() { return ^{ return a; }; };// expected-error {{variable 'a' cannot be implicitly captured in a lambda with no capture-default specified}} expected-note {{lambda expression begins here}} expected-note 2 {{capture 'a' by}} expected-note 2 {{default capture by}}
+                    ^
+
+"Test_name.c", line 66: error: this enclosing-function local variable cannot be referenced in this lambda body because an enclosing lambda does not allow implicit captures
+      []() { return [&a] { return a; }; }; // expected-error 2 {{variable 'a' cannot be implicitly captured in a lambda with no capture-default specified}} expected-note 2 {{lambda expression begins here}}  expected-note 4 {{capture 'a' by}} expected-note 4 {{default capture by}}
+                      ^
+
+"Test_name.c", line 77: error: a member of an outer-scope anonymous union cannot be referenced inside the body of a lambda
+      [=]() { return c; }; // expected-error {{unnamed variable cannot be implicitly captured in a lambda expression}}
+                     ^
+
+"Test_name.c", line 79: error: identifier "__block" is undefined
+      __block int e; // expected-note 2{{declared}}
+      ^
+
+"Test_name.c", line 79: error: expected a ";"
+      __block int e; // expected-note 2{{declared}}
+              ^
+
+"Test_name.c", line 80: error: identifier "e" is undefined
+      [&]() { return e; }; // expected-error {{__block variable 'e' cannot be captured in a lambda expression}}
+                     ^
+
+"Test_name.c", line 81: error: identifier "e" is undefined
+      [&e]() { return e; }; // expected-error {{__block variable 'e' cannot be captured in a lambda expression}}
+        ^
+
+"Test_name.c", line 81: error: identifier "e" is undefined
+      [&e]() { return e; }; // expected-error {{__block variable 'e' cannot be captured in a lambda expression}}
+                      ^
+
+"Test_name.c", line 84: warning: variable "f" is used before its value is set
+      [&]() { return f[2]; };
+                     ^
+
+"Test_name.c", line 85: error: expected an expression
+      (void) ^{ return []() { return f[2]; }; }; // expected-error {{variable 'f' cannot be implicitly captured in a lambda with no capture-default specified}} \
+             ^
+
+"Test_name.c", line 91: error: class "G" has no copy constructor to copy a const object
+      [=]() { return [=]{ const G* gg = &g; return gg->a; }(); }; // expected-error {{no matching constructor for initialization of 'G'}}
+                                         ^
+
+"Test_name.c", line 92: error: expected an expression
+      (void)^{ return [=]{ const G* gg = &g; return gg->a; }(); }; // expected-error 2 {{no matching constructor for initialization of 'const G'}}
+            ^
+
+"Test_name.c", line 95: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      []() { return h; }; // expected-error {{variable 'h' cannot be implicitly captured in a lambda with no capture-default specified}} expected-note {{lambda expression begins here}} expected-note 2 {{capture 'h' by}} expected-note 2 {{default capture by}}
+                    ^
+
+"Test_name.c", line 101: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      [] { return ref_i; }; // expected-error {{variable 'ref_i' cannot be implicitly captured in a lambda with no capture-default specified}} expected-note {{lambda expression begins here}} expected-note 2 {{capture 'ref_i' by}} expected-note 2 {{default capture by}}
+                  ^
+
+"Test_name.c", line 88: warning: local class member function "G::G()" requires a definition
+      struct G { G(); G(G&); int a; }; // expected-note 6 {{not viable}}
+                 ^
+
+"Test_name.c", line 88: warning: local class member function "G::G(G &)" requires a definition
+      struct G { G(); G(G&); int a; }; // expected-note 6 {{not viable}}
+                      ^
+
+"Test_name.c", line 112: error: the default constructor of "lambda []()->void" cannot be referenced -- it is a deleted function
+      decltype(a) b; // expected-error {{no matching constructor}}
+                  ^
+
+"Test_name.c", line 115: error: function "lambda []()->void::operator=(const lambda []()->void &)" (declared implicitly) cannot be referenced -- it is a deleted function
+      a = a; // expected-error {{copy assignment operator is implicitly deleted}}
+        ^
+
+"Test_name.c", line 116: error: function "lambda []()->void::operator=(const lambda []()->void &)" (declared implicitly) cannot be referenced -- it is a deleted function
+      a = static_cast<decltype(a)&&>(a); // expected-error {{copy assignment operator is implicitly deleted}}
+        ^
+
+"Test_name.c", line 113: warning: variable "c" was declared but never referenced
+      decltype(a) c = a;
+                  ^
+
+"Test_name.c", line 114: warning: variable "d" was declared but never referenced
+      decltype(a) d = static_cast<decltype(a)&&>(a);
+                  ^
+
+"Test_name.c", line 132: error: function "SpecialMembers::P::P(const SpecialMembers::P &)" (declared at line 119) cannot be referenced -- it is a deleted function
+      auto pp = [p]{}; // expected-error {{deleted constructor}} expected-cxx14-error {{deleted copy constructor of '(lambda}}
+                 ^
+
+"Test_name.c", line 132: error: "lambda []()->void::<unnamed>(const lambda []()->void &)" (declared implicitly), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+      auto pp = [p]{}; // expected-error {{deleted constructor}} expected-cxx14-error {{deleted copy constructor of '(lambda}}
+                ^
+
+"Test_name.c", line 134: error: function "SpecialMembers::Q::~Q()" (declared at line 122) cannot be referenced -- it is a deleted function
+      auto qq = [q]{}; // expected-error {{deleted function}} expected-note {{because}}
+                 ^
+
+"Test_name.c", line 134: error: function "lambda []()->void::~<unnamed>()" (declared implicitly) cannot be referenced -- it is a deleted function
+      auto qq = [q]{}; // expected-error {{deleted function}} expected-note {{because}}
+                ^
+
+"Test_name.c", line 134: error: "lambda []()->void::<unnamed>(const lambda []()->void &)" (declared implicitly), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+      auto qq = [q]{}; // expected-error {{deleted function}} expected-note {{because}}
+                ^
+
+"Test_name.c", line 134: error: "lambda []()->void::~<unnamed>()" (declared implicitly), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+      auto qq = [q]{}; // expected-error {{deleted function}} expected-note {{because}}
+                ^
+
+"Test_name.c", line 139: error: function "lambda []()->void::operator=(const lambda []()->void &)" (declared implicitly) cannot be referenced -- it is a deleted function
+      a = a; // expected-error {{copy assignment operator is implicitly deleted}}
+        ^
+
+"Test_name.c", line 140: error: function "lambda []()->void::operator=(const lambda []()->void &)" (declared implicitly) cannot be referenced -- it is a deleted function
+      a = static_cast<decltype(a)&&>(a); // expected-error {{copy assignment operator is implicitly deleted}}
+        ^
+
+"Test_name.c", line 137: warning: variable "b" was declared but never referenced
+      decltype(a) b = a;
+                  ^
+
+"Test_name.c", line 138: warning: variable "c" was declared but never referenced
+      decltype(a) c = static_cast<decltype(a)&&>(a); // ok, copies R
+                  ^
+
+"Test_name.c", line 165: warning: variable "arr" was declared but never referenced
+        int arr[n]; // expected-warning {{variable length arrays in C++ are a Clang extension}} \
+            ^
+
+"Test_name.c", line 171: error: the size of an array must be greater than zero
+        int arr[m]; // expected-error{{negative size}}
+                ^
+
+"Test_name.c", line 175: error: the size of an array must be greater than zero
+        int arr[m]; // expected-error{{negative size}}
+                ^
+
+"Test_name.c", line 179: error: the size of an array must be greater than zero
+        int arr[m]; // expected-error{{negative size}}
+                ^
+
+"Test_name.c", line 183: error: the size of an array must be greater than zero
+        int arr[m]; // expected-error{{negative size}}
+                ^
+
+"Test_name.c", line 191: warning: variable "l" was declared but never referenced
+    auto l = [&]() { ++result; };
+         ^
+
+"Test_name.c", line 198: error: expression must be a modifiable lvalue
+        n = 1; // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+        ^
+
+"Test_name.c", line 203: error: expression must be a modifiable lvalue
+        cnr = 1; // expected-error {{cannot assign to variable 'cnr' with const-qualified type 'const int &'}}
+        ^
+
+"Test_name.c", line 288: error: identifier "PR13860UndeclaredIdentifier" is undefined
+      auto x = PR13860UndeclaredIdentifier(); // expected-error {{use of undeclared identifier 'PR13860UndeclaredIdentifier'}}
+               ^
+
+"Test_name.c", line 306: warning: statement is unreachable
+      return 0;
+      ^
+
+"Test_name.c", line 343: warning: variable "s" was declared but never referenced
+    void f() { []() { S<int> s; }; }
+                             ^
+
+"Test_name.c", line 347: warning: variable "z" was declared but never referenced
+    void g() { auto z = [&]{ struct S { int n, m = n; }; }; }
+                    ^
+
+"Test_name.c", line 354: error: incomplete type "CaptureIncomplete::Incomplete" is not allowed
+      (void) [a] {}; // expected-error {{incomplete}}
+              ^
+
+"Test_name.c", line 357: error: incomplete type "CaptureIncomplete::Incomplete" is not allowed
+      (void) [=] { g(a); }; // expected-error {{incomplete}}
+                     ^
+
+"Test_name.c", line 377: error: object of abstract class type "CaptureAbstract::S" is not allowed:
+            function "CaptureAbstract::S::f" is a pure virtual function
+      [=] { return s.n; }; // expected-error {{abstract}}
+                   ^
+
+"Test_name.c", line 387: error: a nonstatic member reference must be relative to a specific object
+      int (*f())[true ? 1 : ([=]{ return n; }(), 0)];
+                                         ^
+
+"Test_name.c", line 393: error: a nonstatic member reference must be relative to a specific object
+      int g(int k = ([=]{ return n; }(), 0));
+                                 ^
+
+"Test_name.c", line 407: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+    int a = (4, []() { return n; }());  // expected-error {{'this' cannot be implicitly captured in this context}} \
+                              ^
+
+"Test_name.c", line 407: warning: expression has no effect
+    int a = (4, []() { return n; }());  // expected-error {{'this' cannot be implicitly captured in this context}} \
+             ^
+
+"Test_name.c", line 428: error: a variable declared with an auto type specifier cannot appear in its own initializer
+    auto x = [&x]{}; // expected-error {{cannot appear in its own init}}
+               ^
+
+"Test_name.c", line 428: warning: variable "x" was declared but never referenced
+    auto x = [&x]{}; // expected-error {{cannot appear in its own init}}
+         ^
+
+"Test_name.c", line 458: warning: variable "x" was declared but never referenced
+    int x = sizeof(xf);
+        ^
+
+"Test_name.c", line 543: warning: missing return statement at end of non-void function "PR23860::main"
+  }
+  ^
+
+"Test_name.c", line 552: error: identifier "undeclared_error" is undefined
+        return undeclared_error; // expected-error {{use of undeclared identifier}}
+               ^
+
+"Test_name.c", line 556: error: identifier "undef" is undefined
+      return undef(); // expected-error {{use of undeclared identifier}}
+             ^
+
+"Test_name.c", line 557: warning: statement is unreachable
+      return 0; // verify no init_conversion_failed diagnostic emitted.
+      ^
+
+"Test_name.c", line 550: warning: variable "blk" was declared but never referenced
+    auto blk = [](bool b) {
+         ^
+
+"Test_name.c", line 555: warning: variable "bar" was declared but never referenced
+    auto bar = []() {
+         ^
+
+"Test_name.c", line 569: warning: variable "inner" was declared but never referenced
+      auto inner = [](S<num> &X) {};
+           ^
+
+"Test_name.c", line 568: warning: variable "outer" was declared but never referenced
+    auto outer = []() {
+         ^
+
+"Test_name.c", line 580: warning: variable "y" was declared but never referenced
+    A a = [&] { int y = x; }; // cxx03-warning {{template argument uses unnamed type}} \
+                    ^
+
+"Test_name.c", line 582: warning: variable "y" was declared but never referenced
+    A b = [&] { [&] { [&] { int y = x; }; }; }; // cxx03-warning {{template argument uses unnamed type}} \
+                                ^
+
+"Test_name.c", line 584: warning: variable "y" was declared but never referenced
+    A d = [&](auto param) { int y = x; }; // cxx03-cxx11-error {{'auto' not allowed in lambda parameter}} \
+                                ^
+
+"Test_name.c", line 587: warning: variable "y" was declared but never referenced
+    A e = [&](auto param) { [&] { [&](auto param2) { int y = x; }; }; }; // cxx03-cxx11-error 2 {{'auto' not allowed in lambda parameter}} \
+                                                         ^
+
+"Test_name.c", line 600: warning: variable "y" was declared but never referenced
+      A f = [&] { int y = x; }; // cxx03-warning {{template argument uses unnamed type}} \
+                      ^
+
+"Test_name.c", line 609: warning: missing return statement at end of non-void function "PR27994::func"
+  }
+  ^
+
+"Test_name.c", line 622: error: expected an expression
+    auto s0 = S1([name=]() {}); // expected-error {{expected expression}}
+                       ^
+
+"Test_name.c", line 625: error: identifier "name" is undefined
+    auto s1 = S1([name=name]() {}); // expected-error {{use of undeclared identifier 'name'; did you mean 'name1'?}}
+                       ^
+
+"Test_name.c", line 638: warning: variable "x" was declared but never referenced
+      (void) [] { X<N> x; };
+                       ^
+
+"Test_name.c", line 646: error: member "PR94764::X::x" is not a variable
+        [x](){}; // expected-error{{class member 'x' cannot appear in capture list as it is not a variable}}
+         ^
+
+"Test_name.c", line 673: error: declaration is incompatible with function "lambda [](int)->void" (declared at line 652)
+      friend auto T::operator()(int) const; // cxx11-error {{'auto' return without trailing return type; deduced return types are a C++14 extension}} \
+                     ^
+
+"Test_name.c", line 703: error: identifier "Points" is undefined
+      auto inner_lambda = [](const X<Points>&) {};
+                                     ^
+
+"Test_name.c", line 711: error: identifier "operator()" is undefined
+    [&](int x){ operator()(); }(0); // expected-error {{undeclared 'operator()'}}
+                ^
+
+"Test_name.c", line 719: error: a member of an outer-scope anonymous union cannot be referenced inside the body of a lambda
+    [] { return i; }; // expected-error {{variable '' cannot be implicitly captured in a lambda with no capture-default specified}}
+                ^
+
+"Test_name.c", line 777: warning: variable "a" was declared but never referenced
+    auto a = []()__attribute__((b(({ return 0; })))){}; // expected-warning {{unknown attribute 'b' ignored}}
+         ^
+
+"Test_name.c", line 783: warning: expression has no effect
+    auto lambda = (test, []() noexcept(true) {});
+                   ^
+
+"Test_name.c", line 783: warning: variable "lambda" was declared but never referenced
+    auto lambda = (test, []() noexcept(true) {});
+         ^
+
+"Test_name.c", line 795: error: identifier "c" is undefined
+    return c; // expected-error {{use of undeclared identifier 'c'}}
+           ^
+
+"Test_name.c", line 276: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      f([&ts] { return (int)f(ts...); } ()...); // \
+                              ^
+          detected during instantiation of "void VariadicPackExpansion::nested2(Ts...) [with Ts=<int, int>]" at line 283
+
+"Test_name.c", line 276: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      f([&ts] { return (int)f(ts...); } ()...); // \
+                              ^
+          detected during instantiation of "void VariadicPackExpansion::nested2(Ts...) [with Ts=<int, int>]" at line 283
+
+"Test_name.c", line 415: error: function "PR18473::NoCopy::NoCopy(const PR18473::NoCopy &)" (declared at line 421) cannot be referenced -- it is a deleted function
+      (void) [=]{ int n = t; }; // expected-error {{deleted}}
+                          ^
+          detected during instantiation of "void PR18473::f<T>() [with T=PR18473::NoCopy]" at line 424
+
+"Test_name.c", line 437: error: identifier "Invalid_Function" is undefined
+    auto len = Invalid_Function((args)...);
+               ^
+          detected during instantiation of "void PR20731::Logger(Args &&...) [with Args=<>]" at line 443
+
+"Test_name.c", line 449: error: incomplete type "void" is not allowed
+    T t;
+      ^
+          detected during:
+            instantiation of class "PR20731::A<T> [with T=void]" at line 455
+            instantiation of "void PR20731::g(F) [with F=lambda []()->void]" at line 461
+
+"Test_name.c", line 474: error: identifier "some_undefined_function" is undefined
+    auto l = some_undefined_function(t);
+             ^
+          detected during instantiation of "void PR20731::p(T) [with T=int]" at line 478
+
+"Test_name.c", line 499: error: a class or namespace qualified name is required
+      auto x = [](typename T::ns::type &k) {};
+                           ^
+          detected during instantiation of "void error_in_transform_prototype::f(T) [with T=int]" at line 503
+
+"Test_name.c", line 499: error: global-scope qualifier (leading "::") is not allowed
+      auto x = [](typename T::ns::type &k) {};
+                            ^
+          detected during instantiation of "void error_in_transform_prototype::f(T) [with T=int]" at line 503
+
+"Test_name.c", line 499: error: expected a ")"
+      auto x = [](typename T::ns::type &k) {};
+                                ^
+          detected during instantiation of "void error_in_transform_prototype::f(T) [with T=int]" at line 503
+
+"Test_name.c", line 499: error: name followed by "::" must be a class or namespace name
+      auto x = [](typename T::ns::type &k) {};
+                              ^
+          detected during instantiation of "void error_in_transform_prototype::f(T) [with T=error_in_transform_prototype::S]" at line 504
+
+69 errors detected in the compilation of "Test_name.c".

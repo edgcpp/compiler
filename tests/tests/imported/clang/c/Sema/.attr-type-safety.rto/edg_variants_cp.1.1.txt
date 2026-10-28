@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 24: warning: variable "C_tag" was declared but never referenced
+  static const int C_tag [[clang::type_tag_for_datatype(c,int)]] = 10;
+                   ^
+
+"Test_name.c", line 25: warning: variable "D_tag" was declared but never referenced
+  static const int D_tag [[clang::type_tag_for_datatype(d,int)]] = 20;
+                   ^
+

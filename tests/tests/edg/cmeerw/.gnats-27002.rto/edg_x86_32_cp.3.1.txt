@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=3 --no_defer_parse_function_templates -tused --c++20 --clang_version 170000 Test_name.c
+"Test_name.c", line 40: error: identifier "__TXXXXXXXXX" is undefined
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+                                                                             ^
+
+"Test_name.c", line 47: error: identifier "__TXXXXXXXXX" is undefined
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+                                                                             ^
+
+"Test_name.c", line 64: error: identifier "__TXXXXXXXXX" is undefined
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+                                                                             ^
+
+"Test_name.c", line 71: error: identifier "__TXXXXXXXXX" is undefined
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+                                                                             ^
+
+"Test_name.c", line 114: error: identifier "__TXXXXXXXXX" is undefined
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, f); 
+                                                                             ^
+
+"Test_name.c", line 121: error: identifier "__TXXXXXXXXX" is undefined
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, f); 
+                                                                             ^
+
+"Test_name.c", line 40: error: a nonstatic member reference must be relative to a specific object
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+           ^
+          detected during instantiation of "X instantiated::implicit_return(T) [with T=int]" at line 53
+
+"Test_name.c", line 47: error: a nonstatic member reference must be relative to a specific object
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+           ^
+          detected during instantiation of "X instantiated::explicit_return(T) [with T=int]" at line 54
+
+"Test_name.c", line 64: error: a nonstatic member reference must be relative to a specific object
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+           ^
+          detected during instantiation of "X dependent_types_dependent_promise::implicit_return(T) [with T=int, U=std::suspend_always]" at line 77
+
+"Test_name.c", line 71: error: a nonstatic member reference must be relative to a specific object
+  co_yield std::template coroutine_traits< X, T> ::promise_type::yield_value(__TXXXXXXXXX, 1); 
+           ^
+          detected during instantiation of "X dependent_types_dependent_promise::explicit_return(T) [with T=int, U=std::suspend_always]" at line 78
+
+10 errors detected in the compilation of "Test_name.c".

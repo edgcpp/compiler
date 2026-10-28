@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: error: explicit type is missing ("int" assumed)
+  thread_local __thread int a;  // { dg-error "14:both .__thread. and .thread_local. specified" }
+               ^
+
+"Test_name.c", line 6: error: expected a ";"
+  thread_local __thread int a;  // { dg-error "14:both .__thread. and .thread_local. specified" }
+                        ^
+
+"Test_name.c", line 11: error: this declaration has no storage class or type specifier
+  __thread thread_local int b;  // { dg-error "10:both .__thread. and .thread_local. specified" }
+  ^
+
+"Test_name.c", line 11: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread thread_local int b;  // { dg-error "10:both .__thread. and .thread_local. specified" }
+  ^
+
+"Test_name.c", line 11: error: expected a ";"
+  __thread thread_local int b;  // { dg-error "10:both .__thread. and .thread_local. specified" }
+           ^
+
+5 errors detected in the compilation of "Test_name.c".

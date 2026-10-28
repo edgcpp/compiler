@@ -1,0 +1,267 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 26: warning: expression has no effect
+      (int&)(t);
+      ^
+
+"Test_name.c", line 27: warning: expression has no effect
+      const_cast<int&>(t);
+      ^
+
+"Test_name.c", line 28: warning: expression has no effect
+      static_cast<int&>(t);
+      ^
+
+"Test_name.c", line 29: warning: expression has no effect
+      reinterpret_cast<int&>(t);
+      ^
+
+"Test_name.c", line 56: warning: expression has no effect
+      (A&)(t);
+      ^
+
+"Test_name.c", line 57: warning: expression has no effect
+      const_cast<A&>(t);
+      ^
+
+"Test_name.c", line 58: warning: expression has no effect
+      static_cast<A&>(t);
+      ^
+
+"Test_name.c", line 59: warning: expression has no effect
+      reinterpret_cast<A&>(t);
+      ^
+
+"Test_name.c", line 69: warning: variable "n" is used before its value is set
+    (int)(n);
+          ^
+
+"Test_name.c", line 69: warning: expression has no effect
+    (int)(n);
+    ^
+
+"Test_name.c", line 70: warning: expression has no effect
+    static_cast<int>(n);
+    ^
+
+"Test_name.c", line 71: warning: expression has no effect
+    reinterpret_cast<int>(n);
+    ^
+
+"Test_name.c", line 73: warning: expression has no effect
+    (int*)(&n);                  // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 74: warning: expression has no effect
+    const_cast<int*>(&n);        // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 75: warning: expression has no effect
+    static_cast<int*>(&n);       // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 76: warning: expression has no effect
+    reinterpret_cast<int*>(&n);  // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 80: warning: expression has no effect
+    (int&)(m);                   // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 81: warning: expression has no effect
+    const_cast<int&>(m);         // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 82: warning: expression has no effect
+    static_cast<int&>(m);        // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 83: warning: expression has no effect
+    reinterpret_cast<int&>(m);   // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 87: warning: expression has no effect
+    (int&)(n);                   // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 88: warning: expression has no effect
+    const_cast<int&>(n);         // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 89: warning: expression has no effect
+    static_cast<int&>(n);        // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 90: warning: expression has no effect
+    reinterpret_cast<int&>(n);   // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 108: warning: expression has no effect
+    (A*)(&a);                   // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 109: warning: expression has no effect
+    const_cast<A*>(&a);         // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 110: warning: expression has no effect
+    static_cast<A*>(&a);        // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 111: warning: expression has no effect
+    reinterpret_cast<A*>(&a);   // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 112: warning: expression has no effect
+    dynamic_cast<A*>(&a);       // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 116: warning: expression has no effect
+    (A&)(b);                    // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 117: warning: expression has no effect
+    const_cast<A&>(b);          // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 118: warning: expression has no effect
+    static_cast<A&>(b);         // { dg-warning "3:useless cast" }     
+    ^
+
+"Test_name.c", line 119: warning: expression has no effect
+    static_cast<A&>(b);         // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 120: warning: expression has no effect
+    dynamic_cast<A&>(b);        // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 124: warning: expression has no effect
+    (A&)(a);                    // { dg-warning "3:useless cast" } 
+    ^
+
+"Test_name.c", line 125: warning: expression has no effect
+    const_cast<A&>(a);          // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 126: warning: expression has no effect
+    static_cast<A&>(a);         // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 127: warning: expression has no effect
+    reinterpret_cast<A&>(a);    // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 128: warning: expression has no effect
+    dynamic_cast<A&>(a);        // { dg-warning "3:useless cast" }
+    ^
+
+"Test_name.c", line 8: warning: expression has no effect
+      (int)(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 9: warning: expression has no effect
+      static_cast<int>(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 10: warning: expression has no effect
+      reinterpret_cast<int>(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 12: warning: expression has no effect
+      (int*)(&t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 13: warning: expression has no effect
+      const_cast<int*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 14: warning: expression has no effect
+      static_cast<int*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 15: warning: expression has no effect
+      reinterpret_cast<int*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 17: warning: expression has no effect
+      (int&)(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 18: warning: expression has no effect
+      const_cast<int&>(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 19: warning: expression has no effect
+      static_cast<int&>(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 20: warning: expression has no effect
+      reinterpret_cast<int&>(t);
+      ^
+          detected during instantiation of "void tmpl_f1(T &) [with T=int]" at line 85
+
+"Test_name.c", line 40: warning: expression has no effect
+      (A*)(&t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 41: warning: expression has no effect
+      const_cast<A*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 42: warning: expression has no effect
+      static_cast<A*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 43: warning: expression has no effect
+      reinterpret_cast<A*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 44: warning: expression has no effect
+      dynamic_cast<A*>(&t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 46: warning: expression has no effect
+      (A&)(t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 47: warning: expression has no effect
+      const_cast<A&>(t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 48: warning: expression has no effect
+      static_cast<A&>(t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 49: warning: expression has no effect
+      reinterpret_cast<A&>(t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 50: warning: expression has no effect
+      dynamic_cast<A&>(t);
+      ^
+          detected during instantiation of "void tmpl_f3(T &) [with T=A]" at line 122
+
+"Test_name.c", line 60: warning: expression has no effect
+      dynamic_cast<A&>(t);
+      ^
+          detected during instantiation of "void tmpl_f4(T) [with T=A]" at line 130
+

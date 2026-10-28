@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"./torture/pr104601.C", line 15: warning: ignoring return value from routine declared with "nodiscard" attribute
+    find_if (b, c, [&](auto e) { d = h(e); return d; });
+            ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/stl_algobase.h: In function '__CPR327____find_if__tm__290_Q2_9__gnu_cxx80__normal_iterator__tm__55_PiQ2_3std43vector__tm__29_iQ2_3std18allocator__tm__2_iQ3_J22J5__ops172_Iter_pred__tm__153_149__Ul1_FZ1Z__L1__foo__FQ2_J22JJ32JT1PFi_Q2_3std17optional__tm__2_i__3stdFZ1ZT1Z2Z_Z1Z':
+/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/stl_algobase.h:2105:1: error: for, while or do statement expected before 'auto'
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

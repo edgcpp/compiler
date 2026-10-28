@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 36: error: expected an identifier
+  N::M::template; // expected-error{{expected unqualified-id}}
+                ^
+
+"Test_name.c", line 37: error: argument list for class template "N::M::Promote" is missing
+  N::M::template Promote; // expected-error{{expected unqualified-id}}
+                 ^
+
+"Test_name.c", line 56: warning: name following "template" must be a template
+    typedef typename N::template B<T>::type type; // expected-error{{'B' following the 'template' keyword does not refer to a template}}
+                                 ^
+
+"Test_name.c", line 56: error: class "N::B" may not have a template argument list
+    typedef typename N::template B<T>::type type; // expected-error{{'B' following the 'template' keyword does not refer to a template}}
+                                 ^
+
+"Test_name.c", line 88: error: class "PR7385::has_xxx0<<unnamed>>::has_xxx0_introspect<int> [with <unnamed>=int]" has no member "value"
+      static const int value = has_xxx0_introspect<int>::value; // expected-error{{no member named 'value'}}
+                                                         ^
+          detected during instantiation of class "PR7385::has_xxx0<<unnamed>> [with <unnamed>=int]" at line 92
+
+"Test_name.c", line 109: error: name followed by "::" must be a class or namespace name
+    { nt<>:: } // expected-error{{qualified name refers into a specialization of function template 'nt'}} \
+      ^
+
+"Test_name.c", line 109: error: expected an identifier
+    { nt<>:: } // expected-error{{qualified name refers into a specialization of function template 'nt'}} \
+             ^
+
+"Test_name.c", line 109: error: expected a ";"
+    { nt<>:: } // expected-error{{qualified name refers into a specialization of function template 'nt'}} \
+             ^
+
+"Test_name.c", line 119: error: name followed by "::" must be a class or namespace name
+      f<int>:: // expected-error{{qualified name refers into a specialization of function template 'f'}}
+      ^
+
+"Test_name.c", line 120: error: expected an identifier
+    } // expected-error{{expected unqualified-id}}
+    ^
+
+"Test_name.c", line 120: error: expected a ";"
+    } // expected-error{{expected unqualified-id}}
+    ^
+
+"Test_name.c", line 128: error: function template "PR9226::X::f" is not a type name
+      typedef typename T::template f<U> type; // expected-error{{template name refers to non-type template 'PR9226::X::template f'}}
+                       ^
+          detected during instantiation of class "PR9226::Y<T, U> [with T=PR9226::X, U=int]" at line 131
+
+"Test_name.c", line 140: warning: variable "f" was declared but never referenced
+      int s<T>::template n<T>::* f; // expected-error{{implicit instantiation of undefined template 'PR9449::s<int>'}}
+                                 ^
+
+"Test_name.c", line 189: error: name followed by "::" must be a class or namespace name
+    template <class T> struct A<T, typename Z<T(0)>::X>;
+                                            ^
+
+"Test_name.c", line 140: error: incomplete type "PR9449::s<int>" is not allowed
+      int s<T>::template n<T>::* f; // expected-error{{implicit instantiation of undefined template 'PR9449::s<int>'}}
+          ^
+          detected during instantiation of "void PR9449::f<T>() [with T=int]" at line 143
+
+"Test_name.c", line 140: error: expected a ";"
+      int s<T>::template n<T>::* f; // expected-error{{implicit instantiation of undefined template 'PR9449::s<int>'}}
+                          ^
+          detected during instantiation of "void PR9449::f<T>() [with T=int]" at line 143
+
+14 errors detected in the compilation of "Test_name.c".

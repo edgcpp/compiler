@@ -1,0 +1,36 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-synth10.C", line 30: error: static assertion failed
+    static_assert (c1 < c2);
+    ^
+
+"./cpp2a/spaceship-synth10.C", line 31: error: static assertion failed
+    static_assert (c3 < c1);
+    ^
+
+"./cpp2a/spaceship-synth10.C", line 35: error: static assertion failed
+    static_assert (d1 < d2);
+    ^
+
+"./cpp2a/spaceship-synth10.C", line 36: error: static assertion failed
+    static_assert (d3 < d1);
+    ^
+
+"./cpp2a/spaceship-synth10.C", line 40: error: expression must have a constant value
+    static_assert (e1 < e2);
+                   ^
+"./cpp2a/spaceship-synth10.C", line 37: note: cannot evaluate an initializer for a flexible array member
+    constexpr E e1 = { 1, {} };
+                          ^
+
+"./cpp2a/spaceship-synth10.C", line 41: error: expression must have a constant value
+    static_assert (e1 == e3);
+                   ^
+"./cpp2a/spaceship-synth10.C", line 37: note: cannot evaluate an initializer for a flexible array member
+    constexpr E e1 = { 1, {} };
+                          ^
+
+7 errors detected in the compilation of "Test_name.c".

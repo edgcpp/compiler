@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 16: warning: attribute is supported only in 32-bit x86 configurations
+  void (__attribute__((cdecl)) *pboo2)(void *) = boo; // expected-error {{incompatible function pointer types initializing 'void (*)(void *) __attribute__((cdecl))' with an expression of type '__attribute__((preserve_none)) void (void *)'}}
+                       ^
+

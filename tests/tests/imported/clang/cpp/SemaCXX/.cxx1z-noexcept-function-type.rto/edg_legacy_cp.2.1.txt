@@ -1,0 +1,100 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions --exceptions Test_name.c
+"Test_name.c", line 12: error: function template "redecl1" has already been defined (previous definition at line 10)
+  template<typename T> void redecl1() noexcept(noexcept(T())) {} // expected-error {{redefinition}}
+                            ^
+
+"Test_name.c", line 15: error: exception specification is incompatible with that of previous function template "redecl2" (declared at line 14)
+  template<bool A, bool B> void redecl2() noexcept(B); // expected-error {{does not match previous}}
+                                          ^
+
+"Test_name.c", line 18: error: dynamic exception specifications are not permitted in this mode
+  template<typename A, typename B> void redecl3() throw(A); // expected-note {{previous}}
+                                                  ^
+
+"Test_name.c", line 19: error: dynamic exception specifications are not permitted in this mode
+  template<typename A, typename B> void redecl3() throw(B); // expected-error {{does not match previous}}
+                                                  ^
+
+"Test_name.c", line 32: error: incompatible exception specifications
+  void (*init_with_mismatched_type_b)(int) noexcept = redecl4<false>; // expected-error {{cannot initialize a variable of type}}
+                                                      ^
+
+"Test_name.c", line 44: error: invalid type conversion
+  static_assert(noexcept(static_cast<decltype(init_with_exact_type_a)>(init_with_exact_type_b)(0))); // expected-error {{is not allowed}}
+                         ^
+
+"Test_name.c", line 44: error: static assertion failed
+  static_assert(noexcept(static_cast<decltype(init_with_exact_type_a)>(init_with_exact_type_b)(0))); // expected-error {{is not allowed}}
+  ^
+
+"Test_name.c", line 48: warning: missing return statement at end of non-void function "get_fn<B>()->void (*)() noexcept"
+  template<bool B> auto get_fn() noexcept -> void (*)() noexcept(B) {}
+                                                                     ^
+
+"Test_name.c", line 72: error: expression must have a constant value
+      template <class T> auto foo(T) noexcept(ca) { return true; }
+                                              ^
+"Test_name.c", line 72: note: attempt to access run-time storage
+      template <class T> auto foo(T) noexcept(ca) { return true; }
+                                              ^
+          detected during:
+            instantiation of "auto DependentDefaultCtorExceptionSpec::NoexceptWithThis<<unnamed>>::foo(T) [with <unnamed>=int, T=int]" at line 72
+            instantiation of "auto DependentDefaultCtorExceptionSpec::NoexceptWithThis<<unnamed>>::foo(T) [with <unnamed>=int, T=int]" at line 83
+
+"Test_name.c", line 92: error: dynamic exception specifications are not permitted in this mode
+    void f0(void p() throw(int));
+                     ^
+
+"Test_name.c", line 115: error: dynamic exception specifications are not permitted in this mode
+    template<typename T> void g(void() throw(T)); // expected-note {{substitution failure}}
+                                       ^
+
+"Test_name.c", line 115: error: incomplete type "void" is not allowed
+    template<typename T> void g(void() throw(T)); // expected-note {{substitution failure}}
+                                             ^
+          detected during instantiation of "CompatWarning::g" based on template argument <void> at line 117
+
+"Test_name.c", line 123: error: function "CompatWarning::h<T>(...) [with T=void]" (declared at line 122) cannot be referenced -- it is a deleted function
+    void test_h() { h<void>(nullptr); } // expected-error {{deleted}}
+                    ^
+
+"Test_name.c", line 140: error: expression must have a constant value
+    typedef int arr[strcmp("bar", "foo") + 4 * strncmp("foo", "bar", 4)]; // expected-warning {{variable length array folded to constant array as an extension}} \
+                    ^
+"Test_name.c", line 140: note: cannot call non-constexpr function "Builtins::strcmp" (declared at line 136)
+    typedef int arr[strcmp("bar", "foo") + 4 * strncmp("foo", "bar", 4)]; // expected-warning {{variable length array folded to constant array as an extension}} \
+                    ^
+
+"Test_name.c", line 179: error: function "operator delete(void *, OperatorDelete::W)" (declared at line 168) cannot be referenced -- it is a deleted function
+    A *w = new (W{}) A; // expected-error {{deleted function}}
+           ^
+
+"Test_name.c", line 180: error: function "operator delete(void *, OperatorDelete::X) noexcept(true)" (declared at line 170) cannot be referenced -- it is a deleted function
+    A *x = new (X{}) A; // expected-error {{deleted function}}
+           ^
+
+"Test_name.c", line 181: error: function "operator delete(void *, OperatorDelete::Y)" (declared at line 172) cannot be referenced -- it is a deleted function
+    A *y = new (Y{}) A; // expected-error {{deleted function}}
+           ^
+
+"Test_name.c", line 182: error: function "operator delete(void *, OperatorDelete::Z) noexcept(true)" (declared at line 174) cannot be referenced -- it is a deleted function
+    A *z = new (Z{}) A; // expected-error {{deleted function}}
+           ^
+
+"Test_name.c", line 184: warning: function "operator new(size_t, OperatorDelete::T<N, D>) [with N=false, D=false]" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    A *t00 = new (T<false, false>{}) A; // expected-error {{deleted function}}
+             ^
+
+"Test_name.c", line 185: warning: function "operator new(size_t, OperatorDelete::T<N, D>) [with N=false, D=true]" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    A *t01 = new (T<false, true>{}) A; // expected-error {{deleted function}}
+             ^
+
+"Test_name.c", line 186: warning: function "operator new(size_t, OperatorDelete::T<N, D>) [with N=true, D=false]" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    A *t10 = new (T<true, false>{}) A; // expected-error {{deleted function}}
+             ^
+
+"Test_name.c", line 187: warning: function "operator new(size_t, OperatorDelete::T<N, D>) [with N=true, D=true]" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    A *t11 = new (T<true, true>{}) A; // expected-error {{deleted function}}
+             ^
+
+17 errors detected in the compilation of "Test_name.c".

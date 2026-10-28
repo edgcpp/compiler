@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 15: error: expected an expression
+    v8b m1 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) int);
+                                        ^
+
+"Test_name.c", line 15: error: a value of type "void" cannot be used to initialize an entity of type "v8b" (aka "bool")
+    v8b m1 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) int);
+             ^
+
+"Test_name.c", line 16: error: expected an expression
+    v8b m2 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) unsigned);
+                                        ^
+
+"Test_name.c", line 16: error: a value of type "void" cannot be used to initialize an entity of type "v8b" (aka "bool")
+    v8b m2 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) unsigned);
+             ^
+
+"Test_name.c", line 17: error: expected an expression
+    v8b m3 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) long);
+                                        ^
+
+"Test_name.c", line 17: error: a value of type "void" cannot be used to initialize an entity of type "v8b" (aka "bool")
+    v8b m3 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) long);
+             ^
+
+"Test_name.c", line 18: error: expected an expression
+    v8b m4 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) unsigned long);
+                                        ^
+
+"Test_name.c", line 18: error: a value of type "void" cannot be used to initialize an entity of type "v8b" (aka "bool")
+    v8b m4 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) unsigned long);
+             ^
+
+"Test_name.c", line 19: error: expected an expression
+    v8b m5 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) char);
+                                        ^
+
+"Test_name.c", line 19: error: a value of type "void" cannot be used to initialize an entity of type "v8b" (aka "bool")
+    v8b m5 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) char);
+             ^
+
+"Test_name.c", line 20: error: expected an expression
+    v8b m6 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) unsigned char);
+                                        ^
+
+"Test_name.c", line 20: error: a value of type "void" cannot be used to initialize an entity of type "v8b" (aka "bool")
+    v8b m6 = __builtin_convertvector(v, __attribute__((ext_vector_type(8))) unsigned char);
+             ^
+
+12 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 33: warning: variable "y" was declared but never referenced
+    const int *y = vp;                // c-warning {{implicit conversion when initializing 'const int *' with an expression of type 'void *' is not permitted in C++}} \
+               ^
+
+"Test_name.c", line 43: warning: variable "b1" was set but never used
+    __attribute__((address_space(0))) char *b1 = (void *)0; // c-warning {{implicit conversion when initializing '__attribute__((address_space(0))) char *' with an expression of type 'void *' is not permitted in C++}} \
+                                            ^
+
+"Test_name.c", line 45: warning: variable "b2" was set but never used
+    __attribute__((address_space(0))) void *b2 = (void *)0; // c-warning {{implicit conversion when initializing '__attribute__((address_space(0))) void *' with an expression of type 'void *' is not permitted in C++}} \
+                                            ^
+
+"Test_name.c", line 47: warning: variable "b3" was set but never used
+    char *b3 = (void *)0; // c-warning {{implicit conversion when initializing 'char *' with an expression of type 'void *' is not permitted in C++}} \
+          ^
+
+"Test_name.c", line 77: warning: variable "ptr1" was set but never used
+    char *ptr1 = NULL; // Ok
+          ^
+
+"Test_name.c", line 78: warning: variable "ptr2" was set but never used
+    char *ptr2 = SOMETHING_NOT_SPELLED_NULL; // Ok
+          ^
+
+"Test_name.c", line 79: warning: variable "ptr3" was set but never used
+    char *ptr3 = SOMETHING_THAT_IS_NOT_NULL; // c-warning {{implicit conversion when initializing 'char *' with an expression of type 'void *' is not permitted in C++}} \
+          ^
+
+"Test_name.c", line 92: warning: variable "x" was declared but never referenced
+    static T_Ref _Atomic x = ATOMIC_VAR_INIT((void*)NULL); // c-warning {{implicit conversion when initializing '_Atomic(T_Ref)' with an expression of type 'void *' is not permitted in C++}} \
+                         ^
+
+"Test_name.c", line 94: warning: variable "y" was declared but never referenced
+    static T_Ref const y = ATOMIC_VAR_INIT((void*)NULL);   // c-warning {{implicit conversion when initializing 'const T_Ref' (aka 'const struct T *const') with an expression of type 'void *' is not permitted in C++}} \
+                       ^
+
+"Test_name.c", line 96: warning: variable "z" was declared but never referenced
+    static T_Ref z = ATOMIC_VAR_INIT((void*)NULL);         // c-warning {{implicit conversion when initializing 'T_Ref' (aka 'const struct T *') with an expression of type 'void *' is not permitted in C++}} \
+                 ^
+
+"Test_name.c", line 56: error: identifier "__nullptr" is undefined
+  b2 = (__nullptr); 
+        ^
+
+1 error detected in the compilation of "Test_name.c".

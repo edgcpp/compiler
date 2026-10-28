@@ -1,0 +1,15 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics thunk11-aux.cc Test_name.c
+thunk11-aux.cc:
+Test_name.c:
+/usr/sbin/ld: Test_name.o: in function `A::~A()':
+Test_name.int.c:(.text+0xXX): multiple definition of `A::~A()'; thunk11-aux.o:thunk11-aux.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `B::~B()':
+Test_name.int.c:(.text+0xXX): multiple definition of `B::~B()'; thunk11-aux.o:thunk11-aux.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `C::~C()':
+Test_name.int.c:(.text+0xXX): multiple definition of `C::~C()'; thunk11-aux.o:thunk11-aux.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `C::foo()':
+Test_name.int.c:(.text+0xXX): multiple definition of `C::foo()'; thunk11-aux.o:thunk11-aux.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o:(.bss+0x0): multiple definition of `type identifier for A'; thunk11-aux.o:(.bss+0x0): first defined here
+/usr/sbin/ld: Test_name.o:(.bss+0x1): multiple definition of `type identifier for B'; thunk11-aux.o:(.bss+0x1): first defined here
+/usr/sbin/ld: Test_name.o:(.bss+0x2): multiple definition of `type identifier for C'; thunk11-aux.o:(.bss+0x2): first defined here
+collect2: error: ld returned 1 exit status

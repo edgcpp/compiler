@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: error: function returning function is not allowed
+    A(int)(); // { dg-error "declared" }
+           ^
+
+"Test_name.c", line 7: error: this declaration has no storage class or type specifier
+    A(int)(); // { dg-error "declared" }
+    ^
+
+"Test_name.c", line 10: error: operand types are incompatible ("A" and "int")
+  template<int> void foo(bool b, A a) { b ? a : 0; } // { dg-error "?:" }
+                                              ^
+
+3 errors detected in the compilation of "Test_name.c".

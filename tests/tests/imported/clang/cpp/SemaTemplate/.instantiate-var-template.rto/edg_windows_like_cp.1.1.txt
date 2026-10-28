@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 30: warning: incomplete type "void" is not allowed
+    template<typename T> constexpr T b = a<sizeof(sizeof(f(T())))>; // expected-error {{invalid application of 'sizeof' to an incomplete type 'void'}}
+                                                        ^
+          detected during instantiation of "const T InstantiationDependent::b [with T=char]" at line 33
+
+"Test_name.c", line 36: warning: variable "check" was declared but never referenced
+      int check[a<sizeof(sizeof(f(T())))> == 0 ? 1 : -1]; // expected-error {{array with a negative size}}
+          ^
+
+"Test_name.c", line 42: error: too few arguments for class template "PR24483::A"
+    template<typename... T> A<T...> models;
+                                  ^
+          detected during instantiation of "PR24483::A<T...> PR24483::models [with T=<>]" at line 43
+
+"Test_name.c", line 43: error: variable cannot have incomplete type "PR24483::B"
+    template<> struct B models<>; // expected-error {{incomplete type 'struct B'}} expected-note {{forward declaration}}
+               ^
+
+"Test_name.c", line 48: error: excessive recursion at instantiation of variable "InvalidInsertPos::v<int, -64>"
+    template<int N> decltype(v<int, N-1>) v<int, N>;
+                                       ^
+          detected during:
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-63]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-62]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-61]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-60]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-59]" at line 48
+            [ 54 instantiation contexts not shown ]
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-4]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-3]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-2]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=-1]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=0]" at line 49
+
+"Test_name.c", line 48: error: excessive recursion at instantiation of variable "InvalidInsertPos::v<int, 436>"
+    template<int N> decltype(v<int, N-1>) v<int, N>;
+                                       ^
+          detected during:
+            instantiation of "T InvalidInsertPos::v [with T=int, N=437]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=438]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=439]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=440]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=441]" at line 48
+            [ 54 instantiation contexts not shown ]
+            instantiation of "T InvalidInsertPos::v [with T=int, N=496]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=497]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=498]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=499]" at line 48
+            instantiation of "T InvalidInsertPos::v [with T=int, N=500]" at line 50
+
+"Test_name.c", line 55: error: a variable declared with an auto type specifier cannot appear in its own initializer
+    auto g = sizeof(g<!B>);
+                    ^
+          detected during:
+            instantiation of "auto GH97881_comment::g [with B=true]" at line 55
+            instantiation of "auto GH97881_comment::g [with B=false]" at line 60
+
+5 errors detected in the compilation of "Test_name.c".

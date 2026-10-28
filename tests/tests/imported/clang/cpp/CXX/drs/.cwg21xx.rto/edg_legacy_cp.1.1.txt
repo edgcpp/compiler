@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 --exceptions --exceptions Test_name.c
+"Test_name.c", line 37: error: a template argument may not reference a non-external entity
+        return X<&n>::n; // ok, value-dependent
+                 ^
+
+"Test_name.c", line 57: error: class "cwg2100::Y<1, true>" has no member "declared_later"
+        return Y<n>::declared_later;
+                     ^
+
+"Test_name.c", line 62: error: class "cwg2100::Y<2, true>" has no member "declared_later"
+        return Y<n>::declared_later;
+                     ^
+
+"Test_name.c", line 66: warning: this partial specialization would have been used to instantiate class "cwg2100::Y<2, true>"
+    template<int N> struct Y<N> {
+                           ^
+
+"Test_name.c", line 77: error: reference to local variable of enclosing function is not allowed
+          int &s = r;
+                   ^
+
+"Test_name.c", line 94: error: static assertion failed with ""
+    static_assert(!__is_standard_layout(E), "");
+    ^
+
+"Test_name.c", line 202: error: incomplete type "S" is not allowed
+    struct S *a = (1 == 1) ? new struct S : new struct S;
+                                 ^
+
+"Test_name.c", line 202: error: incomplete type "S" is not allowed
+    struct S *a = (1 == 1) ? new struct S : new struct S;
+                                                ^
+
+"Test_name.c", line 221: error: type definition is not allowed
+    sizeof(struct E{});
+           ^
+
+"Test_name.c", line 295: warning: rvalue references are a C++11 feature
+      A &operator=(A &&); // #cwg2180-A-move
+                     ^
+
+"Test_name.c", line 299: error: "cwg2180::A &cwg2180::A::operator=(const cwg2180::A &)" (declared at line 294) is inaccessible
+    struct B : virtual A { // #cwg2180-B
+                       ^
+
+"Test_name.c", line 299: error: "cwg2180::A &cwg2180::A::operator=(cwg2180::A &&)" (declared at line 295) is inaccessible
+    struct B : virtual A { // #cwg2180-B
+                       ^
+
+"Test_name.c", line 341: error: typedef "S" may not be used in an elaborated type specifier
+    struct S s;
+           ^
+
+"Test_name.c", line 37: error: class "cwg2100::X<<error-constant>, true>" has no member "n"
+        return X<&n>::n; // ok, value-dependent
+                      ^
+          detected during instantiation of "int cwg2100::A<T>::g() [with T=int]" at line 49
+
+12 errors detected in the compilation of "Test_name.c".

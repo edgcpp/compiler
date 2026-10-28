@@ -1,0 +1,258 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 61: error: this declaration has no storage class or type specifier
+    __thread int ti = 100; // precxx17-note {{here}}
+    ^
+
+"Test_name.c", line 61: error: expected a ";"
+    __thread int ti = 100; // precxx17-note {{here}}
+             ^
+
+"Test_name.c", line 75: error: expression must have a constant value
+      X0<i> x0a;
+         ^
+
+"Test_name.c", line 85: error: argument of type "int (*)[10]" is incompatible with template parameter of type "int *"
+      X0<&iarr> x0b_addr; // precxx17-error {{cannot be converted to a value of type 'int *'}} cxx17-error {{value of type 'int (*)[10]' is not implicitly convertible to 'int *'}}
+         ^
+
+"Test_name.c", line 86: error: argument of type "int" is incompatible with template parameter of type "int *"
+      X0<ki> x0c; // precxx17-error {{must have its address taken}} cxx17-error {{value of type 'const int' is not implicitly convertible to 'int *'}}
+         ^
+
+"Test_name.c", line 91: error: argument of type "const int *" is incompatible with template parameter of type "int *"
+      X0<&ki> x0c_addr; // precxx17-error {{cannot be converted to a value of type 'int *'}} cxx17-error {{value of type 'const int *' is not implicitly convertible to 'int *'}}
+         ^
+
+"Test_name.c", line 96: error: identifier "ti" is undefined
+      X0<&ti> x0d_addr;
+          ^
+
+"Test_name.c", line 110: error: a template argument may not reference a non-external entity
+      X1<f_internal> x1d;
+         ^
+
+"Test_name.c", line 115: error: a template argument may not reference a non-external entity
+      X1<&f_internal> x1d_addr;
+         ^
+
+"Test_name.c", line 121: error: initial value of reference to non-const must be an lvalue
+      X2<&i> x2a_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int *' is not implicitly convertible to 'int &'}}
+         ^
+
+"Test_name.c", line 122: error: a reference of type "int &" (not const-qualified) cannot be initialized with a value of type "int [10]"
+      X2<iarr> x2b; // precxx17-error {{cannot bind to template argument of type 'int[10]'}} cxx17-error {{value of type 'int[10]' is not implicitly convertible to 'int &'}}
+         ^
+
+"Test_name.c", line 123: error: initial value of reference to non-const must be an lvalue
+      X2<&iarr> x2b_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int (*)[10]' is not implicitly convertible to 'int &'}}
+         ^
+
+"Test_name.c", line 124: error: qualifiers dropped in binding reference of type "int &" to initializer of type "const int"
+      X2<ki> x2c; // precxx17-error {{ignores qualifiers}} cxx17-error {{value of type 'const int' is not implicitly convertible to 'int &'}}
+         ^
+
+"Test_name.c", line 129: error: a template argument may not reference a non-external entity
+      X2k<ki> x2kc;
+          ^
+
+"Test_name.c", line 134: error: initialization requiring a temporary or conversion is not allowed
+      X2k<&ki> x2kc_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'const int *' is not implicitly convertible to 'const int &'}}
+          ^
+
+"Test_name.c", line 141: error: initial value of reference to non-const must be an lvalue
+      X3<&f> x3a_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int (*)(int)' is not implicitly convertible to 'int (&)(int)'}}
+         ^
+
+"Test_name.c", line 143: error: initial value of reference to non-const must be an lvalue
+      X3<&f_tmpl> x3b_addr; // precxx17-error {{address taken}} cxx17-error {{value of type '<overloaded function type>' is not implicitly convertible to 'int (&)(int)'}}
+         ^
+
+"Test_name.c", line 145: error: initial value of reference to non-const must be an lvalue
+      X3<&f_tmpl<int> > x3c_addr; // precxx17-error {{address taken}} cxx17-error {{value of type '<overloaded function type>' is not implicitly convertible to 'int (&)(int)'}}
+         ^
+
+"Test_name.c", line 146: error: a template argument may not reference a non-external entity
+      X3<f_internal> x3d;
+         ^
+
+"Test_name.c", line 151: error: initial value of reference to non-const must be an lvalue
+      X3<&f_internal> x3d_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int (*)(int)' is not implicitly convertible to 'int (&)(int)'}}
+         ^
+
+"Test_name.c", line 163: error: expression must have a constant value
+      X0<&n> x0_no_linkage;
+         ^
+
+"Test_name.c", line 172: warning: missing return statement at end of non-void function "Local::f"
+      struct Local { static int f() {} }; // precxx17-note {{here}}
+                                     ^
+
+"Test_name.c", line 173: error: argument of type "int (*)()" is incompatible with template parameter of type "int (*)(int)"
+      X1<&Local::f> x1_no_linkage; // precxx17-error {{non-type template argument refers to function 'f' that does not have linkage}} cxx17-error {{value of type 'int (*)()' is not implicitly convertible to 'int (*)(int)'}}
+         ^
+
+"Test_name.c", line 174: error: argument of type "int addr_of_obj_or_func::S::*" is incompatible with template parameter of type "int *"
+      X0<&S::NonStaticMember> x0_non_static; // precxx17-error {{non-static data member}} cxx17-error {{value of type 'int S::*' is not implicitly convertible to 'int *'}}
+         ^
+
+"Test_name.c", line 75: warning: variable "x0a" was declared but never referenced
+      X0<i> x0a;
+            ^
+
+"Test_name.c", line 83: warning: variable "x0a_addr" was declared but never referenced
+      X0<&i> x0a_addr;
+             ^
+
+"Test_name.c", line 84: warning: variable "x0b" was declared but never referenced
+      X0<iarr> x0b;
+               ^
+
+"Test_name.c", line 85: warning: variable "x0b_addr" was declared but never referenced
+      X0<&iarr> x0b_addr; // precxx17-error {{cannot be converted to a value of type 'int *'}} cxx17-error {{value of type 'int (*)[10]' is not implicitly convertible to 'int *'}}
+                ^
+
+"Test_name.c", line 86: warning: variable "x0c" was declared but never referenced
+      X0<ki> x0c; // precxx17-error {{must have its address taken}} cxx17-error {{value of type 'const int' is not implicitly convertible to 'int *'}}
+             ^
+
+"Test_name.c", line 91: warning: variable "x0c_addr" was declared but never referenced
+      X0<&ki> x0c_addr; // precxx17-error {{cannot be converted to a value of type 'int *'}} cxx17-error {{value of type 'const int *' is not implicitly convertible to 'int *'}}
+              ^
+
+"Test_name.c", line 96: warning: variable "x0d_addr" was declared but never referenced
+      X0<&ti> x0d_addr;
+              ^
+
+"Test_name.c", line 104: warning: variable "x1a" was declared but never referenced
+      X1<f> x1a;
+            ^
+
+"Test_name.c", line 105: warning: variable "x1a_addr" was declared but never referenced
+      X1<&f> x1a_addr;
+             ^
+
+"Test_name.c", line 106: warning: variable "x1b" was declared but never referenced
+      X1<f_tmpl> x1b;
+                 ^
+
+"Test_name.c", line 107: warning: variable "x1b_addr" was declared but never referenced
+      X1<&f_tmpl> x1b_addr;
+                  ^
+
+"Test_name.c", line 108: warning: variable "x1c" was declared but never referenced
+      X1<f_tmpl<int> > x1c;
+                       ^
+
+"Test_name.c", line 109: warning: variable "x1c_addr" was declared but never referenced
+      X1<&f_tmpl<int> > x1c_addr;
+                        ^
+
+"Test_name.c", line 110: warning: variable "x1d" was declared but never referenced
+      X1<f_internal> x1d;
+                     ^
+
+"Test_name.c", line 115: warning: variable "x1d_addr" was declared but never referenced
+      X1<&f_internal> x1d_addr;
+                      ^
+
+"Test_name.c", line 120: warning: variable "x2a" was declared but never referenced
+      X2<i> x2a;
+            ^
+
+"Test_name.c", line 121: warning: variable "x2a_addr" was declared but never referenced
+      X2<&i> x2a_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int *' is not implicitly convertible to 'int &'}}
+             ^
+
+"Test_name.c", line 122: warning: variable "x2b" was declared but never referenced
+      X2<iarr> x2b; // precxx17-error {{cannot bind to template argument of type 'int[10]'}} cxx17-error {{value of type 'int[10]' is not implicitly convertible to 'int &'}}
+               ^
+
+"Test_name.c", line 123: warning: variable "x2b_addr" was declared but never referenced
+      X2<&iarr> x2b_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int (*)[10]' is not implicitly convertible to 'int &'}}
+                ^
+
+"Test_name.c", line 124: warning: variable "x2c" was declared but never referenced
+      X2<ki> x2c; // precxx17-error {{ignores qualifiers}} cxx17-error {{value of type 'const int' is not implicitly convertible to 'int &'}}
+             ^
+
+"Test_name.c", line 129: warning: variable "x2kc" was declared but never referenced
+      X2k<ki> x2kc;
+              ^
+
+"Test_name.c", line 134: warning: variable "x2kc_addr" was declared but never referenced
+      X2k<&ki> x2kc_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'const int *' is not implicitly convertible to 'const int &'}}
+               ^
+
+"Test_name.c", line 139: warning: variable "x2d_addr" was declared but never referenced
+      X2<ti> x2d_addr; // precxx17-error {{refers to thread-local object}} cxx17-error {{non-type template argument is not a constant expression}}
+             ^
+
+"Test_name.c", line 140: warning: variable "x3a" was declared but never referenced
+      X3<f> x3a;
+            ^
+
+"Test_name.c", line 141: warning: variable "x3a_addr" was declared but never referenced
+      X3<&f> x3a_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int (*)(int)' is not implicitly convertible to 'int (&)(int)'}}
+             ^
+
+"Test_name.c", line 142: warning: variable "x3b" was declared but never referenced
+      X3<f_tmpl> x3b;
+                 ^
+
+"Test_name.c", line 143: warning: variable "x3b_addr" was declared but never referenced
+      X3<&f_tmpl> x3b_addr; // precxx17-error {{address taken}} cxx17-error {{value of type '<overloaded function type>' is not implicitly convertible to 'int (&)(int)'}}
+                  ^
+
+"Test_name.c", line 144: warning: variable "x3c" was declared but never referenced
+      X3<f_tmpl<int> > x3c;
+                       ^
+
+"Test_name.c", line 145: warning: variable "x3c_addr" was declared but never referenced
+      X3<&f_tmpl<int> > x3c_addr; // precxx17-error {{address taken}} cxx17-error {{value of type '<overloaded function type>' is not implicitly convertible to 'int (&)(int)'}}
+                        ^
+
+"Test_name.c", line 146: warning: variable "x3d" was declared but never referenced
+      X3<f_internal> x3d;
+                     ^
+
+"Test_name.c", line 151: warning: variable "x3d_addr" was declared but never referenced
+      X3<&f_internal> x3d_addr; // precxx17-error {{address taken}} cxx17-error {{value of type 'int (*)(int)' is not implicitly convertible to 'int (&)(int)'}}
+                      ^
+
+"Test_name.c", line 163: warning: variable "x0_no_linkage" was declared but never referenced
+      X0<&n> x0_no_linkage;
+             ^
+
+"Test_name.c", line 173: warning: variable "x1_no_linkage" was declared but never referenced
+      X1<&Local::f> x1_no_linkage; // precxx17-error {{non-type template argument refers to function 'f' that does not have linkage}} cxx17-error {{value of type 'int (*)()' is not implicitly convertible to 'int (*)(int)'}}
+                    ^
+
+"Test_name.c", line 174: warning: variable "x0_non_static" was declared but never referenced
+      X0<&S::NonStaticMember> x0_non_static; // precxx17-error {{non-static data member}} cxx17-error {{value of type 'int S::*' is not implicitly convertible to 'int *'}}
+                              ^
+
+"Test_name.c", line 186: error: non-integral operation not allowed in nontype template argument
+    X0<&i + 2> x0a; // precxx17-error{{non-type template argument does not refer to any declaration}} \
+          ^
+
+"Test_name.c", line 194: error: expression must have a constant value
+    X0<iptr> x0b;
+       ^
+
+"Test_name.c", line 202: error: non-integral operation not allowed in nontype template argument
+    X0<(int*)1> x0c;
+        ^
+
+"Test_name.c", line 206: error: non-integral operation not allowed in nontype template argument
+    X0<__builtin_constant_p(0) ? (int*)1 : (int*)1> x0d;
+                                  ^
+
+"Test_name.c", line 206: error: non-integral operation not allowed in nontype template argument
+    X0<__builtin_constant_p(0) ? (int*)1 : (int*)1> x0d;
+                                         ^
+
+"Test_name.c", line 66: warning: function "addr_of_obj_or_func::f_internal" was referenced but not defined
+    static int f_internal(int);
+               ^
+
+28 errors detected in the compilation of "Test_name.c".

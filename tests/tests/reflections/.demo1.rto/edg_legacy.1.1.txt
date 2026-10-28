@@ -1,0 +1,141 @@
+eccp -DTEST_NUMBER=1 --c++26 --set_flag=reflection Test_name.c
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(bad_alloc.o): in function `std::bad_alloc::bad_alloc()':
+/edg/workspace/lib_src/bad_alloc.c:39: multiple definition of `std::bad_alloc::bad_alloc()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(exception.o): in function `std::exception::exception()':
+/edg/workspace/lib_src/exception.c:37: multiple definition of `std::exception::exception()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::name() const':
+/edg/workspace/lib_src/typeinfo.c:93: multiple definition of `std::type_info::name() const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::to_string(float)::[lambda(char *, unsigned long) (instance 1)]::operator ()(char *, unsigned long) const':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::to_chars(char *, char *, float)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::to_string(double)::[lambda(char *, unsigned long) (instance 1)]::operator ()(char *, unsigned long) const':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::to_chars(char *, char *, double)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::to_string(long double)::[lambda(char *, unsigned long) (instance 1)]::operator ()(char *, unsigned long) const':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::to_chars(char *, char *, long double)'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator<T1>::allocate(unsigned long) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=wchar_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator<T1>::allocate(unsigned long) [with T1=wchar_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `std::_Hash_impl::hash(const void *, unsigned long, unsigned long)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::_Hash_bytes(const void *, unsigned long, unsigned long)'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator_traits<std::allocator<T1>>::allocate(std::allocator<T1> &, unsigned long) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator_traits<std::allocator<T1>>::allocate(std::allocator<T1> &, unsigned long) [with T1=wchar_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char8_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator<T1>::allocate(unsigned long) [with T1=char8_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator_traits<std::allocator<T1>>::allocate(std::allocator<T1> &, unsigned long) [with T1=char8_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char16_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator<T1>::allocate(unsigned long) [with T1=char16_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator_traits<std::allocator<T1>>::allocate(std::allocator<T1> &, unsigned long) [with T1=char16_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char32_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator<T1>::allocate(unsigned long) [with T1=char32_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::allocator_traits<std::allocator<T1>>::allocate(std::allocator<T1> &, unsigned long) [with T1=char32_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `std::text_encoding::_S_find_id(std::text_encoding::id)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::text_encoding::aliases_view::_Iterator::operator *() const':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::text_encoding::aliases_view::_Iterator::operator ++()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::text_encoding::aliases_view::_Iterator::operator --()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::text_encoding::aliases_view::_Iterator::operator +=(int)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::system_error::system_error(std::error_code, const char *)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::runtime_error(const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>> &)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for std::system_error'
+/usr/sbin/ld: Test_name.o: in function `std::bad_weak_ptr::bad_weak_ptr()':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for std::bad_weak_ptr'
+/usr/sbin/ld: Test_name.o: in function `allocate__Q2_3std26__new_allocator__tm__4_mxiFUlPCv_PZ1Z':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `allocate__Q2_3std20allocator__tm__4_mxiFUl_PZ1Z':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__CPR123__allocate__Q2_3std65allocator_traits__ps__30_Q2_3std20allocator__tm__4_Z1Z__tm__4_mxiSFRQ2_3stdJ51JUl_PZ1Z':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__CPR307___M_allocate__Q2_3std53_Vector_base__tm__33_mxiQ2_3std20allocator__tm__4_mxiFUl_Q3_9__gnu_cxx204__alloc_traits__tm__181_Q4_J82J44__alloc_traits__tm__22_Z2ZQ2_Z2Z10value_type17rebind__tm__4_Z1Z5otherQ5_J82JJ132JJ178JJ197JJ166J7pointer':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__CPR230____vc__Q2_3std47vector__tm__33_mxiQ2_3std20allocator__tm__4_mxiFUl_Q3_9__gnu_cxx138__alloc_traits__tm__115_Q3_3std26_Vector_base__tm__7_Z1ZZ2Z14_Tp_alloc_typeQ4_3stdJ113JJ141J10value_type9reference':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `_S_check_init_len__Q2_3std47vector__tm__33_mxiQ2_3std20allocator__tm__4_mxiSFUlRCZ2Z_Ul':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_S_allocate(T3 &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type std::__cxx11::basic_string<T1, T2, T3>::_M_check(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const char *) const [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_out_of_range_fmt(const char *, ...)'
+/usr/sbin/ld: Test_name.o: in function `void std::__cxx11::basic_string<T1, T2, T3>::_M_check_length(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const char *) const [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char, std::char_traits<char>, std::allocator<char>>(const T1 *, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const T3 &) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_S_allocate(T3 &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=wchar_t, T2=std::char_traits<wchar_t>, T3=std::allocator<wchar_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=wchar_t, T2=std::char_traits<wchar_t>, T3=std::allocator<wchar_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>>(const T1 *, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const T3 &) [with T1=wchar_t, T2=std::char_traits<wchar_t>, T3=std::allocator<wchar_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_S_allocate(T3 &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char8_t, T2=std::char_traits<char8_t>, T3=std::allocator<char8_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char8_t, T2=std::char_traits<char8_t>, T3=std::allocator<char8_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char8_t, std::char_traits<char8_t>, std::allocator<char8_t>>(const T1 *, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const T3 &) [with T1=char8_t, T2=std::char_traits<char8_t>, T3=std::allocator<char8_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_S_allocate(T3 &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char16_t, T2=std::char_traits<char16_t>, T3=std::allocator<char16_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char16_t, T2=std::char_traits<char16_t>, T3=std::allocator<char16_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t>>(const T1 *, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const T3 &) [with T1=char16_t, T2=std::char_traits<char16_t>, T3=std::allocator<char16_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_S_allocate(T3 &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char32_t, T2=std::char_traits<char32_t>, T3=std::allocator<char32_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<T3, T3::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type &, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type) [with T1=char32_t, T2=std::char_traits<char32_t>, T3=std::allocator<char32_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char32_t, std::char_traits<char32_t>, std::allocator<char32_t>>(const T1 *, __gnu_cxx::__alloc_traits<T3, T3::value_type>::size_type, const T3 &) [with T1=char32_t, T2=std::char_traits<char32_t>, T3=std::allocator<char32_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::ranges::__detail::__max_size_type::operator /=(const std::ranges::__detail::__max_size_type &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::ranges::__detail::__max_size_type::operator <<=(const std::ranges::__detail::__max_size_type &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::ranges::__detail::__max_size_type::operator >>=(const std::ranges::__detail::__max_size_type &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::ranges::__detail::__max_diff_type::operator /=(const std::ranges::__detail::__max_diff_type &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::ranges::__detail::__max_diff_type::operator %=(const std::ranges::__detail::__max_diff_type &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__exception_ptr::exception_ptr::exception_ptr(const std::__exception_ptr::exception_ptr &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__exception_ptr::exception_ptr::_M_addref()'
+/usr/sbin/ld: Test_name.o: in function `std::__exception_ptr::exception_ptr::~exception_ptr()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__exception_ptr::exception_ptr::_M_release()'
+/usr/sbin/ld: Test_name.o: in function `void std::__detail::__platform_wait<T1>(const T1 *, int) [with T1=int]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_system_error(int)'
+/usr/sbin/ld: Test_name.o: in function `std::__sv_check(unsigned long, unsigned long, const char *)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_out_of_range_fmt(const char *, ...)'
+/usr/sbin/ld: Test_name.o: in function `std::to_chars_result std::__to_chars_i<T1>(char *, char *, T1, int) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::to_chars_result std::__to_chars_i<T1>(char *, char *, T1, int) [with T1=signed char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::to_chars_result std::__to_chars_i<T1>(char *, char *, T1, int) [with T1=unsigned char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::to_chars_result std::__to_chars_i<T1>(char *, char *, T1, int) [with T1=short]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::to_chars_result std::__to_chars_i<T1>(char *, char *, T1, int) [with T1=unsigned short]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o:Test_name.int.c:(.text+0xXX): more undefined references to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)' follow
+/usr/sbin/ld: Test_name.o:(.data+0xc50): undefined reference to `std::runtime_error::~runtime_error()'
+collect2: error: ld returned 1 exit status

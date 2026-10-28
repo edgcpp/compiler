@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 -w Test_name.c
+"Test_name.c", line 13: error: "f0" is not a nonstatic data member or base class of class "A<<unnamed>>"
+    A () : f0 (), f1 () {}	// { dg-error "" }
+           ^
+
+"Test_name.c", line 13: error: constructor delegates directly or indirectly to itself
+    A () : f0 (), f1 () {}	// { dg-error "" }
+           ^
+          detected during:
+            instantiation of "A<<unnamed>>::A() [with <unnamed>=S]" at line 28
+            instantiation of "B<T1, T2> &operator<<(B<T1, T2> &, int) [with T1=S, T2=S]" at line 32
+
+"Test_name.c", line 13: error: a delegating constructor cannot have other mem-initializers
+    A () : f0 (), f1 () {}	// { dg-error "" }
+                ^
+          detected during:
+            instantiation of "A<<unnamed>>::A() [with <unnamed>=S]" at line 28
+            instantiation of "B<T1, T2> &operator<<(B<T1, T2> &, int) [with T1=S, T2=S]" at line 32
+
+3 errors detected in the compilation of "Test_name.c".

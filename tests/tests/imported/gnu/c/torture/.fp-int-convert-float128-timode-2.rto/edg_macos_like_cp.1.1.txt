@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 22: error: identifier "__float128" is undefined
+    __float128 d = c;
+    ^
+
+"Test_name.c", line 23: error: extra text after expected end of number
+    if (d != 0x1.000000000000ffffffffffffffffp112q)
+                                                 ^
+
+"Test_name.c", line 23: warning: floating-point value cannot be represented exactly
+    if (d != 0x1.000000000000ffffffffffffffffp112q)
+             ^
+
+2 errors detected in the compilation of "Test_name.c".

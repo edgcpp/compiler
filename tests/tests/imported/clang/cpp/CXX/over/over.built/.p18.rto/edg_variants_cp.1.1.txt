@@ -1,0 +1,98 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: expression must have integral or unscoped enum type
+    (void)(f % 3);  // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 10: error: expression must have integral or unscoped enum type
+    (void)(pi % 3); // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 14: error: expression must have integral or unscoped enum type
+    (void)(3 % f);  // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 16: error: expression must have integral or unscoped enum type
+    (void)(3 % pi); // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 21: error: expression must have integral or unscoped enum type
+    (void)(f & 3);  // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 23: error: expression must have integral or unscoped enum type
+    (void)(pi & 3); // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 27: error: expression must have integral or unscoped enum type
+    (void)(3 & f);  // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 29: error: expression must have integral or unscoped enum type
+    (void)(3 & pi); // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 34: error: expression must have integral or unscoped enum type
+    (void)(f ^ 3);  // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 36: error: expression must have integral or unscoped enum type
+    (void)(pi ^ 3); // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 40: error: expression must have integral or unscoped enum type
+    (void)(3 ^ f);  // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 42: error: expression must have integral or unscoped enum type
+    (void)(3 ^ pi); // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 47: error: expression must have integral or unscoped enum type
+    (void)(f | 3);  // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 49: error: expression must have integral or unscoped enum type
+    (void)(pi | 3); // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 53: error: expression must have integral or unscoped enum type
+    (void)(3 | f);  // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 55: error: expression must have integral or unscoped enum type
+    (void)(3 | pi); // expected-error {{invalid operands}}
+               ^
+
+"Test_name.c", line 60: error: expression must have integral or unscoped enum type
+    (void)(f << 3);  // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 62: error: expression must have integral or unscoped enum type
+    (void)(pi << 3); // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 66: error: expression must have integral or unscoped enum type
+    (void)(3 << f);  // expected-error {{invalid operands}}
+                ^
+
+"Test_name.c", line 68: error: expression must have integral or unscoped enum type
+    (void)(3 << pi); // expected-error {{invalid operands}}
+                ^
+
+"Test_name.c", line 73: error: expression must have integral or unscoped enum type
+    (void)(f >> 3);  // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 75: error: expression must have integral or unscoped enum type
+    (void)(pi >> 3); // expected-error {{invalid operands}}
+           ^
+
+"Test_name.c", line 79: error: expression must have integral or unscoped enum type
+    (void)(3 >> f);  // expected-error {{invalid operands}}
+                ^
+
+"Test_name.c", line 81: error: expression must have integral or unscoped enum type
+    (void)(3 >> pi); // expected-error {{invalid operands}}
+                ^
+
+24 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 35: warning: variable "b" is used before its value is set
+    return test_2_callee (i + 1, b); /* { dg-error "cannot tail-call: " } */
+                                 ^
+
+"Test_name.c", line 49: error: expected a ";"
+    {
+    ^
+
+"Test_name.c", line 55: warning: type qualifiers on function types are ignored
+  volatile fn_ptr_t fn_ptr;
+  ^
+
+1 error detected in the compilation of "Test_name.c".

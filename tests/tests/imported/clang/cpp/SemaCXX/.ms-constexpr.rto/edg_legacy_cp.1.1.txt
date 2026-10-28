@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_compatibility --c++20 Test_name.c
+"Test_name.c", line 7: error: expression must have a constant value
+  static_assert(test_log2());
+                ^
+"Test_name.c", line 6: note: cannot call non-constexpr function "log2" (declared at line 5)
+  constexpr bool test_log2() { [[msvc::constexpr]] return log2(32) == 5; }
+                                                          ^
+
+"Test_name.c", line 23: error: expression must have a constant value
+  static_assert(test_complex_expr());
+                ^
+"Test_name.c", line 21: note: cannot call non-constexpr function "get_value" (declared at line 9)
+    [[msvc::constexpr]] return get_value(get_value(42) - 1337 + get_value(-32) - 5 + (get_value(1) ? get_value(0) : get_value(2))) == get_value(0);
+                                         ^
+
+"Test_name.c", line 28: error: expression must have a constant value
+  static_assert(test_get_msconstexpr_true());
+                ^
+"Test_name.c", line 27: note: cannot call non-constexpr function "get_msconstexpr_true" (declared at line 26)
+  constexpr bool test_get_msconstexpr_true() { [[msvc::constexpr]] return get_msconstexpr_true(); }
+                                                                          ^
+
+"Test_name.c", line 38: error: expression must have a constant value
+  static_assert(S2::check()); // expected-error {{static assertion expression is not an integral constant expression}} \
+                ^
+"Test_name.c", line 34: note: cannot call non-constexpr function "S2::S2()" (declared at line 32)
+      static constexpr bool check() { [[msvc::constexpr]] return S2{}.value(); } // expected-error {{constexpr function never produces a constant expression}} \
+                                                                 ^
+
+4 errors detected in the compilation of "Test_name.c".

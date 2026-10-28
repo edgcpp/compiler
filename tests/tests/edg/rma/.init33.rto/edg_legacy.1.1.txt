@@ -1,0 +1,49 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 9: remark: function "S::S()" cannot be inlined
+           S(){ printf("S(%ld)\n",(char*)this-(char*)b0);}
+           ^
+
+"Test_name.c", line 10: remark: function "S::S(int)" cannot be inlined
+           S(int j){ printf("S(%ld) j=%d\n",(char*)this-(char*)b0, j);}
+           ^
+
+"Test_name.c", line 12: remark: function "S::S(S &)" cannot be inlined
+           S(S& x){printf("S(%ld,%ld)\n",(char*)this-(char*)b0,&x);};
+           ^
+
+"Test_name.c", line 15: remark: function "array::array()" cannot be inlined
+  struct array {
+         ^
+          detected during implicit generation of "array::array()" at line 17
+
+"Test_name.c", line 15: remark: function "array::~array" cannot be inlined
+  struct array {
+         ^
+          detected during implicit generation of "array::~array()" at line 17
+
+"Test_name.c", line 15: remark: function "array::array(array &)" cannot be inlined
+  struct array {
+         ^
+          detected during implicit generation of "array::array(array &)" at line 17
+
+"Test_name.c", line 17: error: "S::S(S &)", required for copy that was eliminated, is not callable because reference parameter cannot be bound to rvalue
+  } s1, s2=s1, s3[5] = {1, 2, 3, 4, 5};
+                        ^
+
+"Test_name.c", line 17: error: "S::S(S &)", required for copy that was eliminated, is not callable because reference parameter cannot be bound to rvalue
+  } s1, s2=s1, s3[5] = {1, 2, 3, 4, 5};
+                           ^
+
+"Test_name.c", line 17: error: "S::S(S &)", required for copy that was eliminated, is not callable because reference parameter cannot be bound to rvalue
+  } s1, s2=s1, s3[5] = {1, 2, 3, 4, 5};
+                              ^
+
+"Test_name.c", line 17: error: "S::S(S &)", required for copy that was eliminated, is not callable because reference parameter cannot be bound to rvalue
+  } s1, s2=s1, s3[5] = {1, 2, 3, 4, 5};
+                                 ^
+
+"Test_name.c", line 17: error: "S::S(S &)", required for copy that was eliminated, is not callable because reference parameter cannot be bound to rvalue
+  } s1, s2=s1, s3[5] = {1, 2, 3, 4, 5};
+                                    ^
+
+5 errors detected in the compilation of "Test_name.c".

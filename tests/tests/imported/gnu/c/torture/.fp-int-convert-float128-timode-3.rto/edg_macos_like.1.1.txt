@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/fp-int-convert-float128-timode-3.c", line 21: error: identifier "__float128" is undefined
+    __float128 ru = u128, rs = s128;
+    ^
+
+"./torture/fp-int-convert-float128-timode-3.c", line 22: error: extra text after expected end of number
+    if (ru != 0x1.ffffffffffffffffffffffffffffp127q)
+                                                  ^
+
+"./torture/fp-int-convert-float128-timode-3.c", line 22: warning: floating-point value cannot be represented exactly
+    if (ru != 0x1.ffffffffffffffffffffffffffffp127q)
+              ^
+
+"./torture/fp-int-convert-float128-timode-3.c", line 24: error: extra text after expected end of number
+    if (rs != 0x1.ffffffffffffffffffffffffffffp126q)
+                                                  ^
+
+"./torture/fp-int-convert-float128-timode-3.c", line 24: warning: floating-point value cannot be represented exactly
+    if (rs != 0x1.ffffffffffffffffffffffffffffp126q)
+              ^
+
+3 errors detected in the compilation of "Test_name.c".

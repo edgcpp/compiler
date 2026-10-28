@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gcc Test_name.c
+"Test_name.c", line 14: error: attribute "constructor" does not take arguments
+  void f(void) __attribute__((constructor(0)));
+                                         ^
+
+"Test_name.c", line 15: error: attribute "destructor" does not take arguments
+  void g(void) __attribute__((destructor(0)));
+                                        ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++14 --g++ Test_name.c
+"Test_name.c", line 13: warning: variable "a" was declared but never referenced
+    int a = ({ struct A{} b; 42; }); // Previously a spurious error, now okay
+        ^
+

@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: warning: attribute "aligned" does not apply here
+  __attribute__((aligned(64)))
+                 ^
+
+"Test_name.c", line 10: warning: variable "f" was declared but never referenced
+    int f;
+        ^
+
+"Test_name.c", line 19: error: expected a statement
+  }
+  ^
+
+"Test_name.c", line 17: warning: attribute "aligned" does not apply here
+  __attribute__((aligned(64)))
+                 ^
+
+"Test_name.c", line 23: warning: attribute "nodiscard" does not apply here
+    [[nodiscard]]
+      ^
+
+"Test_name.c", line 26: warning: variable "f" was declared but never referenced
+    int f;
+        ^
+
+"Test_name.c", line 35: error: expected a statement
+  }
+  ^
+
+"Test_name.c", line 33: warning: attribute "nodiscard" does not apply here
+    [[nodiscard]]
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

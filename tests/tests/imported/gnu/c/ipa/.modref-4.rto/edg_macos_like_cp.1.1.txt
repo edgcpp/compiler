@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 20: error: expected a ";"
+    {
+    ^
+
+"Test_name.c", line 28: warning: parsing restarts here after previous syntax error
+    u.s.a = 1;
+             ^
+
+"Test_name.c", line 32: warning: variable "u" is used before its value is set
+    if (u.s.a != 0)
+        ^
+
+"Test_name.c", line 16: warning: variable "t" was declared but never referenced
+    struct T t = { { 0, 0 } };
+             ^
+
+"Test_name.c", line 6: warning: function "foo" was declared but never referenced
+  static __attribute__((noipa)) int foo (void)
+                                    ^
+
+1 error detected in the compilation of "Test_name.c".

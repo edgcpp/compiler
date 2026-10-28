@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 16: warning: attribute is supported only in 32-bit x86 configurations
+      void __attribute__((cdecl)) f();
+                          ^
+
+"Test_name.c", line 31: warning: attribute is supported only in 32-bit x86 configurations
+      virtual void __attribute__((stdcall)) g();  // expected-warning {{'stdcall' calling convention is not supported for this target}}
+                                  ^
+

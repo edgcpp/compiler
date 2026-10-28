@@ -1,0 +1,69 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 9: warning: variable "x1" was declared but never referenced
+    int [[clang::annotate_type("bar")]] x1;
+                                        ^
+
+"Test_name.c", line 10: warning: variable "x2" was declared but never referenced
+    int *[[clang::annotate_type("bar")]] x2;
+                                         ^
+
+"Test_name.c", line 11: warning: variable "x3" was declared but never referenced
+    int *[[clang::annotate_type("bar", 1)]] x3;
+                                            ^
+
+"Test_name.c", line 12: warning: variable "x4" was declared but never referenced
+    int *[[clang::annotate_type("bar", 1 + 2)]] x4;
+                                                ^
+
+"Test_name.c", line 13: warning: variable "x5" was declared but never referenced
+    struct {} [[clang::annotate_type("foo")]] x5;
+                                              ^
+
+"Test_name.c", line 14: warning: variable "array" was declared but never referenced
+    int [[clang::annotate_type("int")]] *[[clang::annotate_type("ptr")]] array[10] [[clang::annotate_type("arr")]];
+                                                                         ^
+
+"Test_name.c", line 19: warning: variable "y1" was declared but never referenced
+    int __attribute__((annotate_type("bar"))) y1;  // expected-warning {{unknown attribute 'annotate_type' ignored}}
+                                              ^
+
+"Test_name.c", line 20: warning: variable "y2" was declared but never referenced
+    int *__attribute__((annotate_type("bar"))) y2; // expected-warning {{unknown attribute 'annotate_type' ignored}}
+                                               ^
+
+"Test_name.c", line 23: warning: variable "z1" was declared but never referenced
+    [[clang::annotate_type("bar")]] int *z1; // expected-error {{'clang::annotate_type' attribute cannot be applied to a declaration}}
+                                         ^
+
+"Test_name.c", line 24: warning: variable "z2" was declared but never referenced
+    int *z2 [[clang::annotate_type("bar")]]; // expected-error {{'clang::annotate_type' attribute cannot be applied to a declaration}}
+         ^
+
+"Test_name.c", line 26: warning: variable "z3" was declared but never referenced
+    int *[[clang::annotate_type(1)]] z3; // expected-error {{expected string literal as argument of 'annotate_type' attribute}}
+                                     ^
+
+"Test_name.c", line 27: warning: variable "z4" was declared but never referenced
+    int *[[clang::annotate_type()]] z4; // expected-error {{'clang::annotate_type' attribute takes at least 1 argument}}
+                                    ^
+
+"Test_name.c", line 28: warning: variable "z5" was declared but never referenced
+    int *[[clang::annotate_type]] z5; // expected-error {{'clang::annotate_type' attribute takes at least 1 argument}}
+                                  ^
+
+"Test_name.c", line 29: warning: variable "z6" was declared but never referenced
+    int *[[clang::annotate_type(some_function())]] z6; // expected-error {{expected string literal as argument of 'annotate_type' attribute}}
+                                                   ^
+
+"Test_name.c", line 30: warning: variable "z7" was declared but never referenced
+    int *[[clang::annotate_type("bar", some_function())]] z7; // expected-error {{'clang::annotate_type' attribute requires parameter 1 to be a constant expression}} expected-note{{subexpression not valid in a constant expression}}
+                                                          ^
+
+"Test_name.c", line 31: warning: variable "z8" was declared but never referenced
+    int *[[clang::annotate_type("bar", z7)]] z8; // expected-error {{'clang::annotate_type' attribute requires parameter 1 to be a constant expression}} expected-note{{subexpression not valid in a constant expression}}
+                                             ^
+
+"Test_name.c", line 32: warning: variable "z9" was declared but never referenced
+    int *[[clang::annotate_type("bar", int)]] z9; // expected-error {{expected expression}}
+                                              ^
+

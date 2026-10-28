@@ -1,0 +1,12 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o: in function `_start':
+(.text+0xXX): undefined reference to `main'
+/usr/sbin/ld: Test_name.o: in function `_ZN2N12N22N31XILi1EE3booINS1_1CIN35_GLOBAL__N__11_Test_name_c_cd1f9cc31DIxEELb0EEEEEvxxxRT_':
+Test_name.int.c:(.text+0xXX): undefined reference to `_ZN2N12N22N32ACC1Ei'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `_ZN2N12N22N32AC2m1EN1R1SIFvvEEE'
+/usr/sbin/ld: Test_name.o: in function `_ZN2N12N22N32AB3booINS1_1CIN35_GLOBAL__N__11_Test_name_c_cd1f9cc31DIxEELb0EEEEEvlllT_':
+Test_name.int.c:(.text+0xXX): undefined reference to `_ZN1R1YIN2N12N22N31XILi0EEEEptEv'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `_ZN1R1YIN2N12N22N31XILi1EEEEptEv'
+/usr/sbin/ld: Test_name.o: in function `_ZN2N12N22N31CIN35_GLOBAL__N__11_Test_name_c_cd1f9cc31DIxEELb0EE3booElll':
+Test_name.int.c:(.text+0xXX): undefined reference to `_ZN2N12N22N32AB4blehEv'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,48 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 18: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 24: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 49: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 68: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 146: warning: missing return statement at end of non-void function "Foo_Log_Handler_Stream::write_message"
+  }
+  ^
+
+"Test_name.c", line 90: warning: missing return statement at end of non-void function "std::__check_facet(const _Facet *)"
+    }
+    ^
+          detected during:
+            instantiation of "std::basic_ios<_CharT, _Traits>::char_type std::basic_ios<_CharT, _Traits>::widen(char) const [with _CharT=char, _Traits=std::char_traits<char>]" at line 127
+            instantiation of "std::basic_ostream<_CharT, _Traits> &std::endl(std::basic_ostream<_CharT, _Traits> &) [with _CharT=char, _Traits=std::char_traits<char>]" at line 143
+
+"Test_name.c", line 82: warning: missing return statement at end of non-void function "std::ctype<_CharT>::widen"
+      }
+      ^
+          detected during:
+            instantiation of "std::basic_ios<_CharT, _Traits>::char_type std::basic_ios<_CharT, _Traits>::widen(char) const [with _CharT=char, _Traits=std::char_traits<char>]" at line 127
+            instantiation of "std::basic_ostream<_CharT, _Traits> &std::endl(std::basic_ostream<_CharT, _Traits> &) [with _CharT=char, _Traits=std::char_traits<char>]" at line 143
+
+"Test_name.c", line 85: warning: missing return statement at end of non-void function "std::ctype<_CharT>::do_widen"
+      }
+      ^
+          detected during:
+            instantiation of "std::ctype<_CharT>::char_type std::ctype<_CharT>::widen(char) const [with _CharT=char]" at line 106
+            instantiation of "std::basic_ios<_CharT, _Traits>::char_type std::basic_ios<_CharT, _Traits>::widen(char) const [with _CharT=char, _Traits=std::char_traits<char>]" at line 127
+            instantiation of "std::basic_ostream<_CharT, _Traits> &std::endl(std::basic_ostream<_CharT, _Traits> &) [with _CharT=char, _Traits=std::char_traits<char>]" at line 143
+
+"Test_name.c", line 133: warning: missing return statement at end of non-void function "std::flush(std::basic_ostream<_CharT, _Traits> &)"
+    }
+    ^
+          detected during instantiation of "std::basic_ostream<_CharT, _Traits> &std::endl(std::basic_ostream<_CharT, _Traits> &) [with _CharT=char, _Traits=std::char_traits<char>]" at line 143
+

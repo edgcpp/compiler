@@ -1,0 +1,77 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 8: error: expected a "("
+  void a(void *p __attribute__((pass_object_size))); //expected-error{{'pass_object_size' attribute takes one argument}}
+                                                ^
+
+"Test_name.c", line 9: error: expression must be an integral constant expression
+  void b(void *p __attribute__((pass_object_size(1.0)))); //expected-error{{'pass_object_size' attribute requires parameter 1 to be an integer constant}}
+                                                 ^
+
+"Test_name.c", line 11: error: the argument of the "pass_object_size" attribute 4 must be a value between 0 and 3
+  void c(void *p __attribute__((pass_object_size(4)))); //expected-error{{'pass_object_size' attribute requires integer constant between 0 and 3 inclusive}}
+                                ^
+
+"Test_name.c", line 12: error: the argument of the "pass_object_size" attribute -1 must be a value between 0 and 3
+  void d(void *p __attribute__((pass_object_size(-1)))); //expected-error{{'pass_object_size' attribute requires integer constant between 0 and 3 inclusive}}
+                                ^
+
+"Test_name.c", line 14: error: the argument of the "pass_object_size" attribute 0 must be a value between 0 and 3
+  void e(void *p __attribute__((pass_object_size(1ULL<<32)))); //expected-error{{integer constant expression evaluates to value 4294967296 that cannot be represented in a 32-bit unsigned integer type}}
+                                ^
+
+"Test_name.c", line 46: error: cannot take the address of a function with a parameter declared with the "pass_object_size" attribute
+    void (*p)(void *) = NotOverloaded; //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+                        ^
+
+"Test_name.c", line 47: error: cannot take the address of a function with a parameter declared with the "pass_object_size" attribute
+    void (*p2)(void *) = &NotOverloaded; //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+                          ^
+
+"Test_name.c", line 55: error: cannot take the address of a function with a parameter declared with the "pass_object_size" attribute
+    TakeFn(NotOverloaded); //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+           ^
+
+"Test_name.c", line 56: error: cannot take the address of a function with a parameter declared with the "pass_object_size" attribute
+    TakeFn(&NotOverloaded); //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+            ^
+
+"Test_name.c", line 58: error: no instance of overloaded function "TakeFnOvl" matches the argument list
+            argument types are: (void (void *))
+    TakeFnOvl(NotOverloaded); //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+    ^
+"Test_name.c", line 37: note: function "TakeFnOvl(void (*)(int *)) C++" does not match because argument #1 does not match parameter
+  void TakeFnOvl(void (*)(int *)) overloaded;
+       ^
+"Test_name.c", line 36: note: function "TakeFnOvl(void (*)(void *)) C++" does not match because argument #1 does not match parameter
+  void TakeFnOvl(void (*)(void *)) overloaded;
+       ^
+
+"Test_name.c", line 59: error: cannot take the address of a function with a parameter declared with the "pass_object_size" attribute
+    TakeFnOvl(&NotOverloaded); //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+               ^
+
+"Test_name.c", line 62: error: cannot take the address of a function with a parameter declared with the "pass_object_size" attribute
+    (&NotOverloaded)(&P); //expected-error{{cannot take address of function 'NotOverloaded' because parameter 1 has pass_object_size attribute}}
+      ^
+
+"Test_name.c", line 49: warning: variable "p3" was declared but never referenced
+    void (*p3)(void *) = IsOverloaded; //expected-error{{incompatible function pointer types initializing 'void (*)(void *)' with an expression of type '<overloaded function type>'}}
+           ^
+
+"Test_name.c", line 50: warning: variable "p4" was declared but never referenced
+    void (*p4)(void *) = &IsOverloaded; //expected-error{{incompatible function pointer types initializing 'void (*)(void *)' with an expression of type '<overloaded function type>'}}
+           ^
+
+"Test_name.c", line 52: warning: variable "p5" was declared but never referenced
+    void (*p5)(char *) = IsOverloaded;
+           ^
+
+"Test_name.c", line 53: warning: variable "p6" was declared but never referenced
+    void (*p6)(char *) = &IsOverloaded;
+           ^
+
+"Test_name.c", line 67: error: declaration is incompatible with "void mismatch(void *)" (declared at line 66)
+  void mismatch(void *p __attribute__((pass_dynamic_object_size(0)))); // expected-error {{conflicting pass_object_size attributes on parameters}}
+       ^
+
+13 errors detected in the compilation of "Test_name.c".

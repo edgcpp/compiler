@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang_v 70500 Test_name.c
+"Test_name.c", line 13: warning: attribute "warn_unused_result" is ignored for void return type
+    void f() __attribute__((warn_unused_result)) {}
+                            ^
+
+"Test_name.c", line 16: warning: unknown attribute "visibility"
+    __attribute__((visibility("default"))) A<int>::X Foo();
+                   ^
+

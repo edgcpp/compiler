@@ -1,0 +1,150 @@
+fe_only -DTEST_NUMBER=7 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 -DWI --ms_extensions Test_name.c
+"Test_name.c", line 15: warning: attribute "dllimport" does not apply here
+  __declspec(dllimport) typedef int typedef1;
+             ^
+
+"Test_name.c", line 17: warning: attribute "dllimport" does not apply here
+  typedef __declspec(dllimport) int typedef2;
+                     ^
+
+"Test_name.c", line 19: warning: attribute "dllimport" does not apply here
+  typedef int __declspec(dllimport) typedef3;
+                         ^
+
+"Test_name.c", line 21: warning: attribute "dllimport" does not apply here
+  typedef __declspec(dllimport) void (*FunTy)(void);
+                     ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+  int *VarForInit = &GlobalDecl; // expected-error{{initializer element is not a compile-time constant}}
+                    ^
+
+"Test_name.c", line 46: error: variable "ExternGlobalInit" may not be initialized
+  __declspec(dllimport) extern int ExternGlobalInit = 1; // expected-error{{definition of dllimport data}}
+                                   ^
+
+"Test_name.c", line 47: error: variable "GlobalInit1" may not be initialized
+  __declspec(dllimport) int GlobalInit1 = 1; // expected-error{{definition of dllimport data}}
+                            ^
+
+"Test_name.c", line 48: error: variable "GlobalInit2" may not be initialized
+  int __declspec(dllimport) GlobalInit2 = 1; // expected-error{{definition of dllimport data}}
+                            ^
+
+"Test_name.c", line 60: warning: dllexport/dllimport conflict with "ExternGlobalDeclInit" (declared at line 54); dllexport assumed
+  int ExternGlobalDeclInit = 1;
+      ^
+
+"Test_name.c", line 71: warning: dllexport/dllimport conflict with "GlobalDeclInit" (declared at line 65); dllexport assumed
+  int GlobalDeclInit = 1;
+      ^
+
+"Test_name.c", line 110: warning: dllexport/dllimport conflict with "GlobalRedecl3" (declared at line 109); dllimport/dllexport dropped
+                        extern int GlobalRedecl3; // expected-warning{{'GlobalRedecl3' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                                   ^
+
+"Test_name.c", line 115: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl4" (declared at line 113)
+  __declspec(dllimport) extern int GlobalRedecl4; // expected-error{{redeclaration of 'GlobalRedecl4' cannot add 'dllimport' attribute}}
+                                   ^
+
+"Test_name.c", line 119: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl5" (declared at line 118)
+  __declspec(dllimport) extern int GlobalRedecl5; // expected-warning{{redeclaration of 'GlobalRedecl5' should not add 'dllimport' attribute}}
+                                   ^
+
+"Test_name.c", line 123: error: dllexport/dllimport requires external linkage
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+                                   ^
+
+"Test_name.c", line 126: error: a thread-local variable cannot be declared with "dllimport" or "dllexport"
+  __declspec(dllimport) __thread int ThreadLocalGlobal; // expected-error{{'ThreadLocalGlobal' cannot be thread local when declared 'dllimport'}}
+                                     ^
+
+"Test_name.c", line 134: error: declaration is incompatible with previous "LocalRedecl1" (declared at line 129)
+    __declspec(dllimport) int LocalRedecl1; // expected-error{{redeclaration of 'LocalRedecl1' with a different type: 'int' vs 'float'}}
+                              ^
+
+"Test_name.c", line 134: error: redeclaration cannot add dllexport/dllimport to "LocalRedecl1" (declared at line 134)
+    __declspec(dllimport) int LocalRedecl1; // expected-error{{redeclaration of 'LocalRedecl1' with a different type: 'int' vs 'float'}}
+                              ^
+
+"Test_name.c", line 139: error: an initializer is not allowed on a local declaration of an extern variable
+    __declspec(dllimport)        int LocalVarDef = 1; // expected-error{{definition of dllimport data}}
+                                                 ^
+
+"Test_name.c", line 141: error: an initializer is not allowed on a local declaration of an extern variable
+    __declspec(dllimport) extern int ExternLocalVarDef = 1; // expected-error{{definition of dllimport data}}
+                                                       ^
+
+"Test_name.c", line 135: warning: variable "LocalRedecl2" was declared but never referenced
+    int *__attribute__((dllimport)) LocalRedecl2; // expected-error{{redeclaration of 'LocalRedecl2' with a different type: 'int *' vs 'float'}}
+                                    ^
+
+"Test_name.c", line 136: warning: variable "LocalRedecl3" was declared but never referenced
+    int LocalRedecl3 __attribute__((dllimport)); // expected-error{{redeclaration of 'LocalRedecl3' with a different type: 'int' vs 'float'}}
+        ^
+
+"Test_name.c", line 142: warning: variable "StaticLocalVar" was declared but never referenced
+    __declspec(dllimport) static int StaticLocalVar; // expected-error{{'StaticLocalVar' must have external linkage when declared 'dllimport'}}
+                                     ^
+
+"Test_name.c", line 167: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport) void def(void) {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                             ^
+
+"Test_name.c", line 182: warning: dllexport/dllimport conflict with "redecl2" (declared at line 181); dllimport/dllexport dropped
+                        void redecl2(void); // expected-warning{{'redecl2' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                             ^
+
+"Test_name.c", line 194: warning: dllexport/dllimport conflict with "redecl3" (declared at line 187); dllexport assumed
+                        void redecl3(void) {}
+                             ^
+
+"Test_name.c", line 198: error: redeclaration cannot add dllexport/dllimport to "redecl4" (declared at line 196)
+  __declspec(dllimport) void redecl4(void); // expected-warning{{redeclaration of 'redecl4' should not add 'dllimport' attribute}}
+                             ^
+
+"Test_name.c", line 202: error: redeclaration cannot add dllexport/dllimport to "redecl5" (declared at line 201)
+  __declspec(dllimport) void redecl5(void); // expected-warning{{redeclaration of 'redecl5' should not add 'dllimport' attribute}}
+                             ^
+
+"Test_name.c", line 219: error: redeclaration cannot add dllexport/dllimport to "redecl7" (declared at line 218)
+  __declspec(dllimport) inline void redecl7(void) {}
+                                    ^
+
+"Test_name.c", line 223: error: identifier "unknowntype" is undefined
+  void __declspec(dllimport) redecl8(unknowntype X); // expected-error{{unknown type name 'unknowntype'}}
+                                     ^
+
+"Test_name.c", line 224: error: identifier "unknowntype" is undefined
+  void redecl8(unknowntype X) { } // expected-error{{unknown type name 'unknowntype'}}
+               ^
+
+"Test_name.c", line 224: warning: dllexport/dllimport conflict with "redecl8" (declared at line 223); dllexport assumed
+  void redecl8(unknowntype X) { } // expected-error{{unknown type name 'unknowntype'}}
+       ^
+
+"Test_name.c", line 228: error: declaration is incompatible with "void redecl9(void)" (declared at line 227)
+  int redecl9(void) {} // expected-error{{conflicting types for 'redecl9'}}
+      ^
+
+"Test_name.c", line 228: warning: missing return statement at end of non-void function "redecl9"
+  int redecl9(void) {} // expected-error{{conflicting types for 'redecl9'}}
+                     ^
+
+"Test_name.c", line 231: error: dllexport/dllimport requires external linkage
+  __declspec(dllimport) static int staticFunc(void); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+                                   ^
+
+"Test_name.c", line 235: warning: variable "staticLocal" was declared but never referenced
+    __declspec(dllimport) static int staticLocal; // expected-error{{'staticLocal' must have external linkage when declared 'dllimport'}}
+                                     ^
+
+"Test_name.c", line 123: warning: variable "StaticGlobal" was declared but never referenced
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+                                   ^
+
+"Test_name.c", line 231: warning: function "staticFunc" was declared but never referenced
+  __declspec(dllimport) static int staticFunc(void); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+                                   ^
+
+20 errors detected in the compilation of "Test_name.c".

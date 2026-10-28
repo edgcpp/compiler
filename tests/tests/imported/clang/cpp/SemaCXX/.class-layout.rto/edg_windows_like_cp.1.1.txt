@@ -1,0 +1,146 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 70: error: the size of an array must be greater than zero
+  SA(3, sizeof(D) == 8);
+  ^
+
+"Test_name.c", line 125: error: the size of an array must be greater than zero
+  SA(0, sizeof(G) == 24);
+  ^
+
+"Test_name.c", line 141: error: the size of an array must be greater than zero
+  SA(0, sizeof(H) == 24);
+  ^
+
+"Test_name.c", line 161: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 178: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 199: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 220: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 247: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 32);
+    ^
+
+"Test_name.c", line 274: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 32);
+    ^
+
+"Test_name.c", line 293: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 24);
+    ^
+
+"Test_name.c", line 316: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 24);
+    ^
+
+"Test_name.c", line 337: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 367: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 32);
+    ^
+
+"Test_name.c", line 403: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 88);
+    ^
+
+"Test_name.c", line 431: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 128);
+    ^
+
+"Test_name.c", line 460: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 40);
+    ^
+
+"Test_name.c", line 479: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 502: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 16);
+    ^
+
+"Test_name.c", line 531: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 40);
+    ^
+
+"Test_name.c", line 561: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 512);
+    ^
+
+"Test_name.c", line 607: error: the size of an array must be greater than zero
+    SA(0, sizeof(might_use_tail_padding) == 80);
+    ^
+
+"Test_name.c", line 623: error: static assertion failed with ""
+    _Static_assert(_Alignof(B) == _Alignof(int), "");
+    ^
+"Test_name.c", line 623: note: the final comparison was 1 == 4
+    _Static_assert(_Alignof(B) == _Alignof(int), "");
+                               ^
+
+"Test_name.c", line 624: warning: offsetof applied to a type other than a standard-layout class
+    _Static_assert(__builtin_offsetof(B, n) == 4, "");
+                                      ^
+
+"Test_name.c", line 624: error: static assertion failed with ""
+    _Static_assert(__builtin_offsetof(B, n) == 4, "");
+    ^
+"Test_name.c", line 624: note: the final comparison was 1 == 4
+    _Static_assert(__builtin_offsetof(B, n) == 4, "");
+                                            ^
+
+"Test_name.c", line 631: warning: offsetof applied to a type other than a standard-layout class
+    _Static_assert(__builtin_offsetof(C, n) == 2, "");
+                                      ^
+
+"Test_name.c", line 638: error: static assertion failed with ""
+    _Static_assert(_Alignof(D) == 2, "");
+    ^
+"Test_name.c", line 638: note: the final comparison was 1 == 2
+    _Static_assert(_Alignof(D) == 2, "");
+                               ^
+
+"Test_name.c", line 639: warning: offsetof applied to a type other than a standard-layout class
+    _Static_assert(__builtin_offsetof(D, n) == 2, "");
+                                      ^
+
+"Test_name.c", line 639: error: static assertion failed with ""
+    _Static_assert(__builtin_offsetof(D, n) == 2, "");
+    ^
+"Test_name.c", line 639: note: the final comparison was 1 == 2
+    _Static_assert(__builtin_offsetof(D, n) == 2, "");
+                                            ^
+
+"Test_name.c", line 656: warning: packing attribute on the parent type is ignored for this field of class type "non_pod::t1" that is not standard-layout
+    t1 v1;
+       ^
+
+"Test_name.c", line 690: warning: offsetof applied to a type other than a standard-layout class
+  _Static_assert(__builtin_offsetof(C, b) == 3, "");
+                                    ^
+
+"Test_name.c", line 695: warning: defaulted functions are a C++11 feature
+    t1() = default;
+           ^
+
+"Test_name.c", line 696: warning: deleted functions are a C++11 feature
+    t1(const t1&) = delete;
+                    ^
+
+"Test_name.c", line 698: warning: rvalue references are a C++11 feature
+    t1(t1&&) = default;
+         ^
+
+25 errors detected in the compilation of "Test_name.c".

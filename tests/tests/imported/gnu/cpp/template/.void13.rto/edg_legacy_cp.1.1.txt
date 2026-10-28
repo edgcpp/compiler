@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: a template parameter may not have void type
+  template<void> struct B : A  // { dg-error "not a valid type" }
+           ^
+
+"Test_name.c", line 12: warning: expression has no effect
+    B() { this->i; }
+          ^
+
+1 error detected in the compilation of "Test_name.c".

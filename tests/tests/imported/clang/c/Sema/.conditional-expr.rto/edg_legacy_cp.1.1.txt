@@ -1,0 +1,146 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: error: expression must be a modifiable lvalue
+    *(0 ? (double *)0 : (void *)(int *)0) = 0; /* expected-error {{incomplete type 'void' is not assignable}}
+    ^
+
+"Test_name.c", line 9: error: expression must be a modifiable lvalue
+    *(0 ? (double *)0 : (void *)(double *)0) = 0; /* expected-error {{incomplete type 'void' is not assignable}}
+    ^
+
+"Test_name.c", line 11: warning: operand types are incompatible ("double *" and "int *")
+    *(0 ? (double *)0 : (int *)(void *)0) = 0; /* expected-error {{incomplete type 'void' is not assignable}}
+                      ^
+
+"Test_name.c", line 15: error: expression must be a modifiable lvalue
+    *((void *) 0) = 0; /* expected-error {{incomplete type 'void' is not assignable}}
+    ^
+
+"Test_name.c", line 21: warning: variable "vp" is used before its value is set
+    dp = vp;
+         ^
+
+"Test_name.c", line 23: warning: a value of type "double *" cannot be assigned to an entity of type "int *"
+    ip = dp; // expected-error {{incompatible pointer types assigning to 'int *' from 'double *'}}
+       ^
+
+"Test_name.c", line 24: warning: a value of type "int *" cannot be assigned to an entity of type "double *"
+    dp = ip; // expected-error {{incompatible pointer types assigning to 'double *' from 'int *'}}
+       ^
+
+"Test_name.c", line 27: warning: a value of type "double *" cannot be assigned to an entity of type "int *"
+    ip = 0 ? (double *)0 : (void *)0; // expected-error {{incompatible pointer types assigning to 'int *' from 'double *'}}
+       ^
+
+"Test_name.c", line 30: warning: variable "cip" is used before its value is set
+    vp = (0 ? vp : cip); // expected-warning {{discards qualifiers}}
+                   ^
+
+"Test_name.c", line 30: warning: a value of type "const void *" cannot be assigned to an entity of type "void *"
+    vp = (0 ? vp : cip); // expected-warning {{discards qualifiers}}
+       ^
+
+"Test_name.c", line 31: warning: a value of type "const void *" cannot be assigned to an entity of type "void *"
+    vp = (0 ? cip : vp); // expected-warning {{discards qualifiers}}
+       ^
+
+"Test_name.c", line 36: warning: variable "pf" is used before its value is set
+    pf = (i ? pf : pv);
+              ^
+
+"Test_name.c", line 36: warning: variable "pv" is used before its value is set
+    pf = (i ? pf : pv);
+                   ^
+
+"Test_name.c", line 40: warning: variable "ee" is used before its value is set
+    ee = ee ? &x : ee ? &i : &e; // expected-warning {{pointer type mismatch}}
+         ^
+
+"Test_name.c", line 40: warning: operand types are incompatible ("int *" and "enum <unnamed> *")
+    ee = ee ? &x : ee ? &i : &e; // expected-warning {{pointer type mismatch}}
+                           ^
+
+"Test_name.c", line 40: warning: operand types are incompatible ("short *" and "int *")
+    ee = ee ? &x : ee ? &i : &e; // expected-warning {{pointer type mismatch}}
+                 ^
+
+"Test_name.c", line 40: warning: a value of type "short *" cannot be assigned to an entity of type "enum <unnamed> *"
+    ee = ee ? &x : ee ? &i : &e; // expected-warning {{pointer type mismatch}}
+       ^
+
+"Test_name.c", line 72: warning: variable "const_int" is used before its value is set
+    *(test0 ? const_int : nonconst_int) = 42; // expected-error {{read-only variable is not assignable}}
+              ^
+
+"Test_name.c", line 72: warning: variable "nonconst_int" is used before its value is set
+    *(test0 ? const_int : nonconst_int) = 42; // expected-error {{read-only variable is not assignable}}
+                          ^
+
+"Test_name.c", line 72: error: expression must be a modifiable lvalue
+    *(test0 ? const_int : nonconst_int) = 42; // expected-error {{read-only variable is not assignable}}
+    ^
+
+"Test_name.c", line 73: error: expression must be a modifiable lvalue
+    *(test0 ? nonconst_int : const_int) = 42; // expected-error {{read-only variable is not assignable}}
+    ^
+
+"Test_name.c", line 78: warning: expression has no effect
+    sizeof(*(test0 ? incomplete : complete)); // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 79: warning: expression has no effect
+    sizeof(*(test0 ? complete : incomplete)); // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 83: warning: variable "adr2" is used before its value is set
+    test0 ? adr2 : adr3; // expected-error{{conditional operator with the second and third operands of type  ('__attribute__((address_space(2))) int *' and '__attribute__((address_space(3))) int *') which are pointers to non-overlapping address spaces}}
+            ^
+
+"Test_name.c", line 83: warning: variable "adr3" is used before its value is set
+    test0 ? adr2 : adr3; // expected-error{{conditional operator with the second and third operands of type  ('__attribute__((address_space(2))) int *' and '__attribute__((address_space(3))) int *') which are pointers to non-overlapping address spaces}}
+                   ^
+
+"Test_name.c", line 83: warning: expression has no effect
+    test0 ? adr2 : adr3; // expected-error{{conditional operator with the second and third operands of type  ('__attribute__((address_space(2))) int *' and '__attribute__((address_space(3))) int *') which are pointers to non-overlapping address spaces}}
+    ^
+
+"Test_name.c", line 86: warning: expression has no effect
+    (test0 ? (test0 ? adr2 : adr2) : nonconst_int); // expected-error{{conditional operator with the second and third operands of type  ('__attribute__((address_space(2))) int *' and 'int *') which are pointers to non-overlapping address spaces}}
+    ^
+
+"Test_name.c", line 101: warning: operand types are incompatible ("int" and "void *")
+    return a ? f1() : nil; // expected-warning {{pointer/integer type mismatch in conditional expression ('int' and 'void *')}} expected-error {{incompatible pointer to integer conversion returning 'void *' from a function with result type 'int'}}
+                    ^
+
+"Test_name.c", line 101: warning: return value type does not match the function type
+    return a ? f1() : nil; // expected-warning {{pointer/integer type mismatch in conditional expression ('int' and 'void *')}} expected-error {{incompatible pointer to integer conversion returning 'void *' from a function with result type 'int'}}
+           ^
+
+"Test_name.c", line 113: error: operand types are incompatible ("struct A" and "void *")
+    (void)(1 ? A1 : NULL); // expected-error{{non-pointer operand type 'struct A' incompatible with NULL}}
+                  ^
+
+"Test_name.c", line 113: warning: variable "A1" is used before its value is set
+    (void)(1 ? A1 : NULL); // expected-error{{non-pointer operand type 'struct A' incompatible with NULL}}
+               ^
+
+"Test_name.c", line 114: error: operand types are incompatible ("void *" and "struct A")
+    (void)(1 ? NULL : A1); // expected-error{{non-pointer operand type 'struct A' incompatible with NULL}}
+                    ^
+
+"Test_name.c", line 115: error: expression must have arithmetic type
+    (void)(1 ? 0 : A1); // expected-error{{incompatible operand types}}
+                   ^
+
+"Test_name.c", line 116: error: operand types are incompatible ("void *" and "struct A")
+    (void)(1 ? (void*)0 : A1); // expected-error{{incompatible operand types}}
+                        ^
+
+"Test_name.c", line 117: error: operand types are incompatible ("struct A" and "void *")
+    (void)(1 ? A1: (void*)0); // expected-error{{incompatible operand types}}
+                 ^
+
+"Test_name.c", line 118: error: operand types are incompatible ("struct A" and "void *")
+    (void)(1 ? A1 : (NULL)); // expected-error{{non-pointer operand type 'struct A' incompatible with NULL}}
+                  ^
+
+11 errors detected in the compilation of "Test_name.c".

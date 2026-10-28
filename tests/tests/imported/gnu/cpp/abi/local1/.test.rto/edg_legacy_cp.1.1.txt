@@ -1,0 +1,15 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics local1-a.cc Test_name.c
+local1-a.cc:
+Test_name.c:
+/usr/sbin/ld: Test_name.o: in function `B::b()':
+Test_name.int.c:(.text+0xXX): multiple definition of `B::b()'; local1-a.o:local1-a.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o:(.bss+0x0): multiple definition of `type identifier for B'; local1-a.o:(.bss+0x0): first defined here
+/usr/sbin/ld: Test_name.o: in function `B::B()':
+Test_name.int.c:(.text+0xXX): multiple definition of `B::B()'; local1-a.o:local1-a.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(exception.o): in function `std::exception::exception()':
+/edg/workspace/lib_src/exception.c:37: multiple definition of `std::exception::exception()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::operator ==(const std::type_info &) const':
+/edg/workspace/lib_src/typeinfo.c:35: multiple definition of `std::type_info::operator ==(const std::type_info &) const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::name() const':
+/edg/workspace/lib_src/typeinfo.c:93: multiple definition of `std::type_info::name() const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+collect2: error: ld returned 1 exit status

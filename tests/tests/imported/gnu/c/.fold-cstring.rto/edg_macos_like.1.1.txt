@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 21: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size(16)));
+                                  ^
+
+"Test_name.c", line 31: error: expression must have pointer-to-object type but it has type "int"
+        if ((*(v4si *)&xconstant.x[16])[1] != 0x31323334)
+                                        ^
+
+"Test_name.c", line 33: error: _Complex can only be used with floating-point types
+        if (__imag (*(_Complex int *)&xconstant.x[8]) != 0x37363534)
+                      ^
+
+"Test_name.c", line 40: error: expression must have pointer-to-object type but it has type "int"
+        if ((*(v4si *)&xconstant.x[16])[1] != 0x34333231)
+                                        ^
+
+"Test_name.c", line 42: error: _Complex can only be used with floating-point types
+        if (__imag (*(_Complex int *)&xconstant.x[8]) != 0x34353637)
+                      ^
+
+4 errors detected in the compilation of "Test_name.c".

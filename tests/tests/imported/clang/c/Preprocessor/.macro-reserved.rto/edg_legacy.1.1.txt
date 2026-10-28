@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: warning: incompatible redefinition of macro "__STDC__"
+  #define __STDC__ 1 // expected-warning {{redefining builtin macro}}
+          ^
+
+"Test_name.c", line 60: warning: unrecognized #pragma
+  #pragma clang diagnostic warning "-Wreserved-macro-identifier"
+          ^
+

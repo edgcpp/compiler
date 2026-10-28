@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 17: error: argument list for class template "Base" is missing
+  Derived<T>::Derived() : Base(4) { } // { dg-error "have any field" }
+                          ^
+
+1 error detected in the compilation of "Test_name.c".

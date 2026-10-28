@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-err5.C", line 19: error: comparison between two different enum types ("E1" and "E2")
+    e <=> f;
+      ^
+
+"./cpp2a/spaceship-err5.C", line 19: warning: expression has no effect
+    e <=> f;
+    ^
+
+"./cpp2a/spaceship-err5.C", line 20: error: comparison between two different enum types ("E2" and "E1")
+    f <=> e;
+      ^
+
+"./cpp2a/spaceship-err5.C", line 20: warning: expression has no effect
+    f <=> e;
+    ^
+
+"./cpp2a/spaceship-err5.C", line 21: error: comparison between two different enum types ("E1" and "E2")
+    e1 <=> e2;
+       ^
+
+"./cpp2a/spaceship-err5.C", line 21: warning: expression has no effect
+    e1 <=> e2;
+    ^
+
+"./cpp2a/spaceship-err5.C", line 22: error: comparison between two different enum types ("E2" and "E1")
+    e2 <=> e1;
+       ^
+
+"./cpp2a/spaceship-err5.C", line 22: warning: expression has no effect
+    e2 <=> e1;
+    ^
+
+5 errors detected in the compilation of "Test_name.c".

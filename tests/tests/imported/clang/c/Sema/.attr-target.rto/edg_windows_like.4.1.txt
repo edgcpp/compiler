@@ -1,0 +1,81 @@
+fe_only -DTEST_NUMBER=4 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 11: warning: target attribute not recognized
+  int __attribute__((target("avx,sse4.2,arch=ivybridge"))) foo(void) { return 4; }
+                            ^
+
+"Test_name.c", line 11: warning: target attribute not recognized
+  int __attribute__((target("avx,sse4.2,arch=ivybridge"))) foo(void) { return 4; }
+                            ^
+
+"Test_name.c", line 11: warning: target attribute not recognized
+  int __attribute__((target("avx,sse4.2,arch=ivybridge"))) foo(void) { return 4; }
+                            ^
+
+"Test_name.c", line 15: warning: target attribute not recognized
+  int __attribute__((target("tune=sandybridge"))) baz(void) { return 4; }
+                            ^
+
+"Test_name.c", line 17: warning: target attribute not recognized
+  int __attribute__((target("fpmath=387"))) walrus(void) { return 4; }
+                            ^
+
+"Test_name.c", line 19: warning: target attribute not recognized
+  int __attribute__((target("avx,sse4.2,arch=hiss"))) meow(void) {  return 4; }
+                            ^
+
+"Test_name.c", line 19: warning: target attribute not recognized
+  int __attribute__((target("avx,sse4.2,arch=hiss"))) meow(void) {  return 4; }
+                            ^
+
+"Test_name.c", line 19: warning: target attribute not recognized
+  int __attribute__((target("avx,sse4.2,arch=hiss"))) meow(void) {  return 4; }
+                            ^
+
+"Test_name.c", line 21: warning: target attribute not recognized
+  int __attribute__((target("woof"))) bark(void) {  return 4; }
+                            ^
+
+"Test_name.c", line 23: warning: target attribute not recognized
+  int __attribute__((target("arch="))) turtle(void) { return 4; }
+                            ^
+
+"Test_name.c", line 25: warning: target attribute not recognized
+  int __attribute__((target("arch=hiss,arch=woof"))) pine_tree(void) { return 4; }
+                            ^
+
+"Test_name.c", line 25: warning: target attribute not recognized
+  int __attribute__((target("arch=hiss,arch=woof"))) pine_tree(void) { return 4; }
+                            ^
+
+"Test_name.c", line 27: warning: target attribute not recognized
+  int __attribute__((target("arch=ivybridge,arch=haswell"))) oak_tree(void) { return 4; }
+                            ^
+
+"Test_name.c", line 27: warning: target attribute not recognized
+  int __attribute__((target("arch=ivybridge,arch=haswell"))) oak_tree(void) { return 4; }
+                            ^
+
+"Test_name.c", line 29: warning: target attribute not recognized
+  int __attribute__((target("branch-protection=none"))) birch_tree(void) { return 5; }
+                            ^
+
+"Test_name.c", line 31: warning: target attribute not recognized
+  int __attribute__((target("tune=hiss,tune=woof"))) apple_tree(void) { return 4; }
+                            ^
+
+"Test_name.c", line 31: warning: target attribute not recognized
+  int __attribute__((target("tune=hiss,tune=woof"))) apple_tree(void) { return 4; }
+                            ^
+
+"Test_name.c", line 34: warning: target attribute not recognized
+  void __attribute__((target("x86-64"))) baseline(void) {}
+                             ^
+
+"Test_name.c", line 36: warning: target attribute not recognized
+  void __attribute__((target("x86-64-v2"))) v2(void) {}
+                             ^
+
+"Test_name.c", line 38: warning: target attribute not recognized
+  int __attribute__((target("sha"))) good_target_but_not_for_fmv() { return 5; }
+                            ^
+

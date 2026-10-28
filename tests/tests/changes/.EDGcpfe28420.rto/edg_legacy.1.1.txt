@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 10: error: function call is not allowed in a constant expression
+    e = __underlying_type(E)()  // Previously accepted.  Now an error.
+        ^
+
+"Test_name.c", line 10: error: type name is not allowed
+    e = __underlying_type(E)()  // Previously accepted.  Now an error.
+                          ^
+
+"Test_name.c", line 10: error: function call is not allowed in a constant expression
+    e = __underlying_type(E)()  // Previously accepted.  Now an error.
+        ^
+
+3 errors detected in the compilation of "Test_name.c".

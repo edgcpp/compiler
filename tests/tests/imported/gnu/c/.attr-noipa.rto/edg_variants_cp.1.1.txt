@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "fn12"
+  }
+  ^
+
+"Test_name.c", line 117: warning: missing return statement at end of non-void function "fn16"
+  }
+  ^
+
+"Test_name.c", line 130: warning: missing return statement at end of non-void function "fn18"
+  }
+  ^
+
+"Test_name.c", line 8: warning: function "fn1" was declared but never referenced
+  fn1 (void) /* { dg-warning "inline function \[^\n\]* given attribute 'noinline'" "" } */
+  ^
+
+"Test_name.c", line 55: warning: function "fn7" was declared but never referenced
+  fn7 (void)
+  ^
+

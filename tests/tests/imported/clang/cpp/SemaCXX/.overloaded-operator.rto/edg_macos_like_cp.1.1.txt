@@ -1,0 +1,334 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 31: error: more than one operator "-" matches these operands:
+            function "operator-(Y, Y)" (declared at line 26)
+            function "operator-(Z, Z)" (declared at line 27)
+            operand types are: Y - Z
+    bool b = y - z; // expected-error{{use of overloaded operator '-' is ambiguous}}
+               ^
+"Test_name.c", line 31: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    bool b = y - z; // expected-error{{use of overloaded operator '-' is ambiguous}}
+               ^
+"Test_name.c", line 31: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    bool b = y - z; // expected-error{{use of overloaded operator '-' is ambiguous}}
+               ^
+
+"Test_name.c", line 46: error: more than one operator "==" matches these operands:
+            function "operator==(A &, Z &)" (declared at line 40)
+            function "A::operator==(Z &)" (declared at line 35)
+            operand types are: A == Z
+    a == z; // expected-error{{use of overloaded operator '==' is ambiguous}}
+      ^
+"Test_name.c", line 46: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    a == z; // expected-error{{use of overloaded operator '==' is ambiguous}}
+      ^
+"Test_name.c", line 46: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    a == z; // expected-error{{use of overloaded operator '==' is ambiguous}}
+      ^
+
+"Test_name.c", line 47: error: no operator "==" matches these operands
+            operand types are: const A == Z
+    ac == z; // expected-error{{invalid operands to binary expression ('const A' and 'Z')}}
+       ^
+"Test_name.c", line 40: note: function "operator==" does not match because argument #1 does not match parameter
+  bool operator==(A&, Z&); // expected-note 3{{candidate function}} \
+       ^
+"Test_name.c", line 47: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    ac == z; // expected-error{{invalid operands to binary expression ('const A' and 'Z')}}
+       ^
+"Test_name.c", line 47: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    ac == z; // expected-error{{invalid operands to binary expression ('const A' and 'Z')}}
+       ^
+
+"Test_name.c", line 85: error: initial value of reference to non-const must be an lvalue
+    float &f4 = (enum1 == next_enum1);  // expected-error{{non-const lvalue reference to type 'float' cannot bind to a temporary of type 'bool'}}
+                ^
+
+"Test_name.c", line 114: warning: variable "quuux" is used before its value is set
+    (void)(pr5244_BAR == quuux.quux);
+                         ^
+
+"Test_name.c", line 169: warning: expression has no effect
+    X& xr = (x, x); // expected-warning {{left operand of comma operator has no effect}}
+             ^
+
+"Test_name.c", line 169: warning: variable "xr" was declared but never referenced
+    X& xr = (x, x); // expected-warning {{left operand of comma operator has no effect}}
+       ^
+
+"Test_name.c", line 192: error: no instance of overloaded function "Callable::operator()" matches the argument list
+            object type is: Callable
+    c(); // expected-error{{no matching function for call to object of type 'Callable'}}
+    ^
+"Test_name.c", line 176: note: number of parameters of function "Callable::operator()(float)" does not match the call
+    double& operator()(float); // expected-note{{candidate function}}
+            ^
+"Test_name.c", line 174: note: number of parameters of function "Callable::operator()(int, double, long, ...)" does not match the call
+    float& operator()(int, double, long, ...); // expected-note{{candidate function}}
+           ^
+"Test_name.c", line 173: note: number of parameters of function "Callable::operator()(int, double)" does not match the call
+    int& operator()(int, double = 2.71828); // expected-note{{candidate function}}
+         ^
+
+"Test_name.c", line 220: error: there is more than one way an object of type "ConvertToFunc" can be called for the argument list:
+            surrogate function from conversion function "ConvertToFunc::operator Func1 *()"
+            surrogate function from conversion function "ConvertToFunc::operator Func2 &()"
+            argument types are: (long, double)
+            object type is: ConvertToFunc
+    ctf((long int)17, 2.0); // expected-error{{call to object of type 'ConvertToFunc' is ambiguous}}
+    ^
+"Test_name.c", line 212: note: number of parameters of function "ConvertToFunc::operator()" does not match the call
+    void operator()();
+         ^
+
+"Test_name.c", line 225: error: there is more than one way an object of type "ConvertToFuncDerived" can be called for the argument list:
+            surrogate function from conversion function "ConvertToFuncDerived::operator Func2 &()"
+            surrogate function from conversion function "ConvertToFuncDerived::operator Func1 *()"
+            argument types are: (long, double)
+            object type is: ConvertToFuncDerived
+    ctfd((long int)17, 2.0); // expected-error{{call to object of type 'ConvertToFuncDerived' is ambiguous}}
+    ^
+"Test_name.c", line 212: note: number of parameters of function "ConvertToFunc::operator()" does not match the call
+    void operator()();
+         ^
+
+"Test_name.c", line 244: error: operator -> or ->* applied to "const Arrow2" instead of to a pointer type
+    a3->m; // expected-error{{no viable overloaded 'operator->'}}
+    ^
+
+"Test_name.c", line 284: error: loop in sequence of "operator->" functions starting at class "AX"
+    a->b = 0; // expected-error {{circular pointer delegation detected}}
+    ^
+
+"Test_name.c", line 300: error: loop in sequence of "operator->" functions starting at class "CircA"
+    a->val = 0; // expected-error {{circular pointer delegation detected}}
+    ^
+
+"Test_name.c", line 331: warning: variable "s" was set but never used
+      short s = 0;
+            ^
+
+"Test_name.c", line 357: error: no operator "[]" matches these operands
+            operand types are: pr5900::NotAnArray [ int ]
+      x[0] = 0; // expected-error {{does not provide a subscript operator}}
+       ^
+"Test_name.c", line 357: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      x[0] = 0; // expected-error {{does not provide a subscript operator}}
+       ^
+"Test_name.c", line 357: note: built-in operator[](<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      x[0] = 0; // expected-error {{does not provide a subscript operator}}
+       ^
+
+"Test_name.c", line 365: error: no operator "[]" matches these operands
+            operand types are: const pr5900::NonConstArray [ int ]
+      return x[0]; // expected-error {{no viable overloaded operator[] for type}}
+              ^
+"Test_name.c", line 365: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      return x[0]; // expected-error {{no viable overloaded operator[] for type}}
+              ^
+"Test_name.c", line 365: note: built-in operator[](<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      return x[0]; // expected-error {{no viable overloaded operator[] for type}}
+              ^
+
+"Test_name.c", line 372: error: call of an object of a class type without appropriate operator() or conversion functions to pointer-to-function type
+      x(); // expected-error {{does not provide a call operator}}
+      ^
+
+"Test_name.c", line 409: error: a pointer to a bound function may only be used to call the function
+        .i; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+         ^
+
+"Test_name.c", line 415: error: too many parameters for this operator function
+    inline bool operator==(StringRef LHS, StringRef RHS) { // expected-error{{overloaded 'operator==' must be a binary operator (has 3 parameters)}}
+                ^
+
+"Test_name.c", line 444: error: no operator "[]" matches these operands
+            operand types are: test10::A [ <unknown-type> ]
+      a[&bar<int>]; // expected-error {{no viable overloaded operator[]}}
+       ^
+"Test_name.c", line 431: note: function "test10::A::operator[]" does not match because argument #1 does not match parameter
+      void operator[](float (*fn)(int)); // expected-note 2 {{not viable: no overload of 'bar' matching 'float (*)(int)'}}
+           ^
+"Test_name.c", line 444: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      a[&bar<int>]; // expected-error {{no viable overloaded operator[]}}
+       ^
+"Test_name.c", line 444: note: built-in operator[](<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      a[&bar<int>]; // expected-error {{no viable overloaded operator[]}}
+       ^
+
+"Test_name.c", line 445: error: no operator "[]" matches these operands
+            operand types are: test10::A [ <unknown-type> ]
+      a[bar<int>]; // expected-error {{no viable overloaded operator[]}}
+       ^
+"Test_name.c", line 431: note: function "test10::A::operator[]" does not match because argument #1 does not match parameter
+      void operator[](float (*fn)(int)); // expected-note 2 {{not viable: no overload of 'bar' matching 'float (*)(int)'}}
+           ^
+"Test_name.c", line 445: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      a[bar<int>]; // expected-error {{no viable overloaded operator[]}}
+       ^
+"Test_name.c", line 445: note: built-in operator[](<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      a[bar<int>]; // expected-error {{no viable overloaded operator[]}}
+       ^
+
+"Test_name.c", line 455: error: too few parameters for this operator function
+    InvalidOperatorEquals operator=() = delete; // expected-error {{overloaded 'operator=' must be a binary operator}}
+                          ^
+
+"Test_name.c", line 461: error: expression must be a modifiable lvalue
+      Result = 1; // expected-error {{no viable overloaded '='}} // expected-note {{type 'PointerUnion<int *, float *>' is incomplete}}
+      ^
+
+"Test_name.c", line 493: error: no operator "++" matches these operands
+            operand types are: ++ PR14995::D
+      ++d; // expected-error{{cannot increment value of type 'D'}}
+      ^
+"Test_name.c", line 488: note: number of parameters of function template "PR14995::operator++(PR14995::D, T)" does not match the call
+    template<typename T> void operator++(D, T) {}
+                              ^
+"Test_name.c", line 467: note: function template "PR14995::operator++(PR14995::B, T...)" does not match because argument #1 does not match parameter
+    template<typename ...T> void operator++(B, T...) {}
+                                 ^
+"Test_name.c", line 493: note: built-in operator++(<arithmetic>) does not match because argument #1 does not match parameter
+      ++d; // expected-error{{cannot increment value of type 'D'}}
+      ^
+"Test_name.c", line 493: note: built-in operator++(<pointer to object>) does not match because argument #1 does not match parameter
+      ++d; // expected-error{{cannot increment value of type 'D'}}
+      ^
+
+"Test_name.c", line 497: error: extra parameter of postfix "operator++" must be of type "int"
+      void operator++(T...) {} // expected-error{{parameter of overloaded post-increment operator must have type 'int' (not 'char')}}
+           ^
+          detected during instantiation of class "PR14995::E<T...> [with T=<char>]" at line 500
+
+"Test_name.c", line 504: warning: missing return statement at end of non-void function "PR14995::F::operator++(T...)"
+      int operator++ (T...) {}
+                             ^
+
+"Test_name.c", line 507: error: no instance of function template "PR14995::F::operator++" matches the argument list
+            argument types are: (int, int)
+            object type is: PR14995::F
+    int k1 = F().operator++(0, 0);
+                 ^
+"Test_name.c", line 504: note: candidate function template "PR14995::F::operator++" failed deduction
+      int operator++ (T...) {}
+          ^
+
+"Test_name.c", line 504: error: extra parameter of postfix "operator++" must be of type "int"
+      int operator++ (T...) {}
+          ^
+          detected during instantiation of "PR14995::F::operator++" based on template argument <char> at line 508
+
+"Test_name.c", line 508: error: no instance of function template "PR14995::F::operator++" matches the argument list
+            argument types are: (char)
+            object type is: PR14995::F
+    int k2 = F().operator++('0');
+                 ^
+
+"Test_name.c", line 538: error: operator -> or ->* applied to "NoADLForMemberOnlyOperators::B<NoADLForMemberOnlyOperators::A<void>>" instead of to a pointer type
+      (void)b1->n; // expected-error {{is not a pointer}}
+            ^
+
+"Test_name.c", line 539: error: no operator "[]" matches these operands
+            operand types are: NoADLForMemberOnlyOperators::B<NoADLForMemberOnlyOperators::A<int>> [ int ]
+      b2[3]; // expected-error {{does not provide a subscript}}
+        ^
+"Test_name.c", line 539: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      b2[3]; // expected-error {{does not provide a subscript}}
+        ^
+"Test_name.c", line 539: note: built-in operator[](<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      b2[3]; // expected-error {{does not provide a subscript}}
+        ^
+
+"Test_name.c", line 533: error: a class or namespace qualified name is required
+    template<typename T> struct A { typename T::error e; }; // expected-error {{type 'char' cannot be used prior to '::'}}
+                                             ^
+          detected during instantiation of class "NoADLForMemberOnlyOperators::A<T> [with T=char]" at line 540
+
+"Test_name.c", line 533: error: global-scope qualifier (leading "::") is not allowed
+    template<typename T> struct A { typename T::error e; }; // expected-error {{type 'char' cannot be used prior to '::'}}
+                                              ^
+          detected during instantiation of class "NoADLForMemberOnlyOperators::A<T> [with T=char]" at line 540
+
+"Test_name.c", line 533: error: expected a ";"
+    template<typename T> struct A { typename T::error e; }; // expected-error {{type 'char' cannot be used prior to '::'}}
+                                                      ^
+          detected during instantiation of class "NoADLForMemberOnlyOperators::A<T> [with T=char]" at line 540
+
+"Test_name.c", line 540: error: no operator "/" matches these operands
+            operand types are: NoADLForMemberOnlyOperators::B<NoADLForMemberOnlyOperators::A<char>> / int
+      b3 / 0; // expected-note {{in instantiation of}} expected-error {{invalid operands to}}
+         ^
+"Test_name.c", line 540: note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+      b3 / 0; // expected-note {{in instantiation of}} expected-error {{invalid operands to}}
+         ^
+
+"Test_name.c", line 552: error: function "PR27027::operator+(T) [with T=PR27027::A]" (declared at line 547) cannot be referenced -- it is a deleted function
+      +a; // expected-error {{overload resolution selected deleted operator '+'}}
+      ^
+
+"Test_name.c", line 553: error: function "PR27027::operator+(T, T) [with T=PR27027::A]" (declared at line 546) cannot be referenced -- it is a deleted function
+      a + a; // expected-error {{overload resolution selected deleted operator '+'}}
+        ^
+
+"Test_name.c", line 559: error: function "PR27027::operator+(T) [with T=PR27027::A]" (declared at line 547) cannot be referenced -- it is a deleted function
+    bool test_global_1 = +a_global; // expected-error {{overload resolution selected deleted operator '+'}}
+                         ^
+
+"Test_name.c", line 559: error: a value of type "void" cannot be used to initialize an entity of type "bool"
+    bool test_global_1 = +a_global; // expected-error {{overload resolution selected deleted operator '+'}}
+                         ^
+
+"Test_name.c", line 560: error: function "PR27027::operator+(T, T) [with T=PR27027::A]" (declared at line 546) cannot be referenced -- it is a deleted function
+    bool test_global_2 = a_global + a_global; // expected-error {{overload resolution selected deleted operator '+'}}
+                                  ^
+
+"Test_name.c", line 560: error: a value of type "void" cannot be used to initialize an entity of type "bool"
+    bool test_global_2 = a_global + a_global; // expected-error {{overload resolution selected deleted operator '+'}}
+                         ^
+
+"Test_name.c", line 622: error: expected a type specifier
+    void operator--(this c) = delete; //precxx23-error {{explicit object parameters are incompatible with C++ standards before C++2b}} \
+                    ^
+
+"Test_name.c", line 625: error: expected a type specifier
+    void operator--(this c, int) = delete; //precxx23-error {{explicit object parameters are incompatible with C++ standards before C++2b}} \
+                    ^
+
+"Test_name.c", line 625: error: too many parameters for this operator function
+    void operator--(this c, int) = delete; //precxx23-error {{explicit object parameters are incompatible with C++ standards before C++2b}} \
+         ^
+
+"Test_name.c", line 632: error: function "GH78314::a::operator--()" (declared at line 615) cannot be referenced -- it is a deleted function
+    --aa; // expected-error {{overload resolution selected deleted operator '--'}}
+    ^
+
+"Test_name.c", line 633: error: function "GH78314::a::operator--(int)" (declared at line 617) cannot be referenced -- it is a deleted function
+    aa--; // expected-error {{overload resolution selected deleted operator '--'}}
+      ^
+
+"Test_name.c", line 636: error: no operator "--" matches these operands
+            operand types are: -- GH78314::c
+    --cc; // expected-error {{overload resolution selected deleted operator '--'}}
+    ^
+"Test_name.c", line 622: note: number of parameters of function "GH78314::c::operator--" does not match the call
+    void operator--(this c) = delete; //precxx23-error {{explicit object parameters are incompatible with C++ standards before C++2b}} \
+         ^
+"Test_name.c", line 636: note: built-in operator--(<non-bool arithmetic>) does not match because argument #1 does not match parameter
+    --cc; // expected-error {{overload resolution selected deleted operator '--'}}
+    ^
+"Test_name.c", line 636: note: built-in operator--(<pointer to object>) does not match because argument #1 does not match parameter
+    --cc; // expected-error {{overload resolution selected deleted operator '--'}}
+    ^
+
+"Test_name.c", line 637: error: function "GH78314::c::operator--" (declared at line 622) is inaccessible
+    cc--; // expected-error {{overload resolution selected deleted operator '--'}}
+      ^
+
+"Test_name.c", line 637: error: function "GH78314::c::operator--(<error-type>)" (declared at line 622) cannot be referenced -- it is a deleted function
+    cc--; // expected-error {{overload resolution selected deleted operator '--'}}
+      ^
+
+"Test_name.c", line 644: error: function "GH78314::b::operator++()" (declared at line 641) cannot be referenced -- it is a deleted function
+      ++bb; // expected-error {{overload resolution selected deleted operator '++'}}
+      ^
+
+45 errors detected in the compilation of "Test_name.c".

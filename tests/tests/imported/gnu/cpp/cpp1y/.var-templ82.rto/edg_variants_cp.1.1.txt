@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 10: error: too few arguments for variable template "vt"
+    bool a = vt<T>;       // { dg-error "wrong number" }
+                 ^
+
+"Test_name.c", line 12: error: too many arguments for variable template "vt"
+    bool c = vt<T, T, T>; // { dg-error "number" }
+                      ^
+
+"Test_name.c", line 13: error: expected a type specifier
+    bool d = vt<T, 42>;   // { dg-error "mismatch" }
+                   ^
+
+"Test_name.c", line 11: warning: variable "b" was declared but never referenced
+    bool b = vt<T, T>;
+         ^
+
+"Test_name.c", line 13: warning: variable "d" was declared but never referenced
+    bool d = vt<T, 42>;   // { dg-error "mismatch" }
+         ^
+
+3 errors detected in the compilation of "Test_name.c".

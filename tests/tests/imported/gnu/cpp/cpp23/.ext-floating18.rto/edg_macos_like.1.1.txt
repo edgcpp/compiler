@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"Test_name.c", line 26: error: more than one instance of overloaded function "foo" matches the argument list:
+            function "foo(double)" (declared at line 9)
+            function "foo(long double)" (declared at line 10)
+            argument types are: (std::float64_t)
+  static_assert (foo (1.0f64) == 2);
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

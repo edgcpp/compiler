@@ -1,0 +1,110 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 20: warning: unknown attribute "vector_size"
+  DEFVEC (extern, 27);
+  ^
+
+"Test_name.c", line 20: error: static assertion failed with "sizeof (CONCAT (Vec, 27)) == POW2 (27)"
+  DEFVEC (extern, 27);
+  ^
+
+"Test_name.c", line 20: error: static assertion failed with "sizeof (CONCAT (v, 27)) == POW2 (27)"
+  DEFVEC (extern, 27);
+  ^
+
+"Test_name.c", line 21: warning: unknown attribute "vector_size"
+  DEFVEC (extern, 28);
+  ^
+
+"Test_name.c", line 21: error: static assertion failed with "sizeof (CONCAT (Vec, 28)) == POW2 (28)"
+  DEFVEC (extern, 28);
+  ^
+
+"Test_name.c", line 21: error: static assertion failed with "sizeof (CONCAT (v, 28)) == POW2 (28)"
+  DEFVEC (extern, 28);
+  ^
+
+"Test_name.c", line 22: warning: unknown attribute "vector_size"
+  DEFVEC (extern, 29);
+  ^
+
+"Test_name.c", line 22: error: static assertion failed with "sizeof (CONCAT (Vec, 29)) == POW2 (29)"
+  DEFVEC (extern, 29);
+  ^
+
+"Test_name.c", line 22: error: static assertion failed with "sizeof (CONCAT (v, 29)) == POW2 (29)"
+  DEFVEC (extern, 29);
+  ^
+
+"Test_name.c", line 23: warning: unknown attribute "vector_size"
+  DEFVEC (extern, 30);
+  ^
+
+"Test_name.c", line 23: error: static assertion failed with "sizeof (CONCAT (Vec, 30)) == POW2 (30)"
+  DEFVEC (extern, 30);
+  ^
+
+"Test_name.c", line 23: error: static assertion failed with "sizeof (CONCAT (v, 30)) == POW2 (30)"
+  DEFVEC (extern, 30);
+  ^
+
+"Test_name.c", line 27: warning: unknown attribute "vector_size"
+  VEC (POW2 (63)) char v63;     /* { dg-error  "'vector_size' attribute argument value '9223372036854775808' exceeds 9223372036854775807" "not-ILP32" { target { ! ilp32 } } } */
+  ^
+
+"Test_name.c", line 39: warning: unknown attribute "vector_size"
+    DEFVEC (auto, 27);
+    ^
+
+"Test_name.c", line 39: error: static assertion failed with "sizeof (CONCAT (Vec, 27)) == POW2 (27)"
+    DEFVEC (auto, 27);
+    ^
+
+"Test_name.c", line 39: error: static assertion failed with "sizeof (CONCAT (v, 27)) == POW2 (27)"
+    DEFVEC (auto, 27);
+    ^
+
+"Test_name.c", line 40: warning: unknown attribute "vector_size"
+    DEFVEC (auto, 28);
+    ^
+
+"Test_name.c", line 40: error: static assertion failed with "sizeof (CONCAT (Vec, 28)) == POW2 (28)"
+    DEFVEC (auto, 28);
+    ^
+
+"Test_name.c", line 40: error: static assertion failed with "sizeof (CONCAT (v, 28)) == POW2 (28)"
+    DEFVEC (auto, 28);
+    ^
+
+"Test_name.c", line 41: warning: unknown attribute "vector_size"
+    DEFVEC (auto, 29);
+    ^
+
+"Test_name.c", line 41: error: static assertion failed with "sizeof (CONCAT (Vec, 29)) == POW2 (29)"
+    DEFVEC (auto, 29);
+    ^
+
+"Test_name.c", line 41: error: static assertion failed with "sizeof (CONCAT (v, 29)) == POW2 (29)"
+    DEFVEC (auto, 29);
+    ^
+
+"Test_name.c", line 42: warning: unknown attribute "vector_size"
+    DEFVEC (auto, 30);
+    ^
+
+"Test_name.c", line 42: error: static assertion failed with "sizeof (CONCAT (Vec, 30)) == POW2 (30)"
+    DEFVEC (auto, 30);
+    ^
+
+"Test_name.c", line 42: error: static assertion failed with "sizeof (CONCAT (v, 30)) == POW2 (30)"
+    DEFVEC (auto, 30);
+    ^
+
+"Test_name.c", line 46: warning: unknown attribute "vector_size"
+    VEC (POW2 (63)) char v63;   /* { dg-error  "'vector_size' attribute argument value '9223372036854775808' exceeds 9223372036854775807" "not-ILP32" { target { ! ilp32 } } } */
+    ^
+
+"Test_name.c", line 46: warning: variable "v63" was declared but never referenced
+    VEC (POW2 (63)) char v63;   /* { dg-error  "'vector_size' attribute argument value '9223372036854775808' exceeds 9223372036854775807" "not-ILP32" { target { ! ilp32 } } } */
+                         ^
+
+16 errors detected in the compilation of "Test_name.c".

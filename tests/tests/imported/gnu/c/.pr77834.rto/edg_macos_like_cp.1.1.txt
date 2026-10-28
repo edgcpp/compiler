@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 15: error: expression must have pointer-to-object type but it has type "int"
+        if (u[0]) v ^= u[w];
+              ^
+
+"Test_name.c", line 15: error: expression must have pointer-to-object type but it has type "int"
+        if (u[0]) v ^= u[w];
+                         ^
+
+"Test_name.c", line 17: error: expression must have pointer-to-object type but it has type "int"
+    while ((V) { 0, u[w] }[1]);
+                      ^
+
+"Test_name.c", line 17: warning: excess initializers are ignored
+    while ((V) { 0, u[w] }[1]);
+                    ^
+
+"Test_name.c", line 17: error: expression must have pointer-to-object type but it has type "int"
+    while ((V) { 0, u[w] }[1]);
+                           ^
+
+"Test_name.c", line 18: error: expression must have pointer-to-object type but it has type "int"
+    u = (V) { v[v[0]], u[u[0]] };
+                  ^
+
+"Test_name.c", line 18: error: expression must have pointer-to-object type but it has type "int"
+    u = (V) { v[v[0]], u[u[0]] };
+                           ^
+
+"Test_name.c", line 18: warning: excess initializers are ignored
+    u = (V) { v[v[0]], u[u[0]] };
+                       ^
+
+6 errors detected in the compilation of "Test_name.c".

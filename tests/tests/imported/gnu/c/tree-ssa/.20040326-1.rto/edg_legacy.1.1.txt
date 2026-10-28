@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c89 --strict_gnu Test_name.c
+"Test_name.c", line 15: warning: variable "table" is used before its value is set
+    int tem = Faref (table, elt);
+                     ^
+
+"Test_name.c", line 15: warning: variable "elt" is used before its value is set
+    int tem = Faref (table, elt);
+                            ^
+
+"Test_name.c", line 16: warning: variable "c" is used before its value is set
+    Faset (table, elt, c);
+                       ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function 'main':
+Test_name.c:15:37: error: too many arguments to function 'Faref'; expected 0, have 2
+Test_name.c:16:2: error: too many arguments to function 'Faset'; expected 0, have 3
+Test_name.c:17:2: error: too many arguments to function 'Faset'; expected 0, have 3
+Test_name.c: In function 'Faref':
+Test_name.c:24:1: error: number of arguments doesn't match prototype
+Test_name.c:23:42: error: prototype declaration
+Test_name.c: In function 'Faset':
+Test_name.c:30:1: error: number of arguments doesn't match prototype
+Test_name.c:29:42: error: prototype declaration
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

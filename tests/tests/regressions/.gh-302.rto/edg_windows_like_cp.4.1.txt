@@ -1,0 +1,341 @@
+fe_only -DTEST_NUMBER=4 --il_display --no_il_lower --ms_c++20 --microsoft_version 1951 Test_name.c
+func-scope constructor-init#1
+next:                    func-scope constructor-init#2
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#1: non_type_param::A<N> (in non_type_param::C<N>)
+  start.seq:             15
+orig_type:               file-scope type#1: non_type_param::A<N>
+
+func-scope constructor-init#2
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#2: non_type_param::B (in non_type_param::C<N>)
+  start.seq:             15
+orig_type:               file-scope type#2: non_type_param::B
+
+func-scope scope#1
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#1: C
+constructor_inits:       func-scope constructor-init#1
+
+func-scope constructor-init#3
+next:                    func-scope constructor-init#4
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#3: type_param::A<T#(1,1)> (in type_param::C<T#(1,1)>)
+  start.seq:             29
+orig_type:               file-scope type#3: type_param::A<T#(1,1)>
+
+func-scope constructor-init#4
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#4: type_param::B (in type_param::C<T#(1,1)>)
+  start.seq:             29
+orig_type:               file-scope type#4: type_param::B
+
+func-scope scope#2
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#2: C
+constructor_inits:       func-scope constructor-init#3
+
+func-scope constructor-init#5
+next:                    func-scope constructor-init#6
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#5: template_param::A<P> (in template_param::C<P>)
+  start.seq:             46
+orig_type:               file-scope type#5: template_param::A<P>
+
+func-scope constructor-init#6
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#6: template_param::B (in template_param::C<P>)
+  start.seq:             46
+orig_type:               file-scope type#6: template_param::B
+
+func-scope scope#3
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#3: C
+constructor_inits:       func-scope constructor-init#5
+
+func-scope constructor-init#7
+next:                    func-scope constructor-init#8
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#7: non_type_param_functionally_equivalent::A<(+ N)>
+  start.seq:             60
+orig_type:               file-scope type#7: non_type_param_functionally_equivalent::A<(+ N)>
+
+func-scope constructor-init#8
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#8: non_type_param_functionally_equivalent::B (in non_type_param_functionally_equivalent::C<N>)
+  start.seq:             60
+orig_type:               file-scope type#8: non_type_param_functionally_equivalent::B
+
+func-scope scope#4
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#4: C
+constructor_inits:       func-scope constructor-init#7
+
+func-scope constructor-init#9
+next:                    func-scope constructor-init#10
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#9: non_type_param_functionally_equivalent::A<(N + 0)>
+  start.seq:             61
+orig_type:               file-scope type#9: non_type_param_functionally_equivalent::A<(N + 0)>
+
+func-scope constructor-init#10
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#8: non_type_param_functionally_equivalent::B (in non_type_param_functionally_equivalent::C<N>)
+  start.seq:             61
+orig_type:               file-scope type#8: non_type_param_functionally_equivalent::B
+
+func-scope scope#5
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#5: C
+constructor_inits:       func-scope constructor-init#9
+
+func-scope constructor-init#11
+next:                    func-scope constructor-init#12
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#10: using_decltype::A<decltype(T::a)> (in using_decltype::C<T#(1,1)>)
+  start.seq:             81
+orig_type:               file-scope type#10: using_decltype::A<decltype(T::a)>
+
+func-scope constructor-init#12
+next:                    func-scope constructor-init#13
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#11: using_decltype::A<decltype(T::b)> (in using_decltype::C<T#(1,1)>)
+  start.seq:             81
+orig_type:               file-scope type#11: using_decltype::A<decltype(T::b)>
+
+func-scope constructor-init#13
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#12: using_decltype::B (in using_decltype::C<T#(1,1)>)
+  start.seq:             81
+orig_type:               file-scope type#12: using_decltype::B
+
+func-scope scope#6
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#6: C
+constructor_inits:       func-scope constructor-init#11
+
+func-scope constructor-init#14
+next:                    func-scope constructor-init#15
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#10: using_decltype::A<decltype(T::a)> (in using_decltype::C<T#(1,1)>)
+  start.seq:             82
+orig_type:               file-scope type#10: using_decltype::A<decltype(T::a)>
+
+func-scope constructor-init#15
+next:                    func-scope constructor-init#16
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#11: using_decltype::A<decltype(T::b)> (in using_decltype::C<T#(1,1)>)
+  start.seq:             82
+orig_type:               file-scope type#11: using_decltype::A<decltype(T::b)>
+
+func-scope constructor-init#16
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#12: using_decltype::B (in using_decltype::C<T#(1,1)>)
+  start.seq:             82
+orig_type:               file-scope type#12: using_decltype::B
+
+func-scope scope#7
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#7: C
+constructor_inits:       func-scope constructor-init#14
+
+func-scope constructor-init#17
+next:                    func-scope constructor-init#18
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#13: non_type_param::A<1> (in non_type_param::C<1>)
+  start.seq:             15
+orig_type:               file-scope type#13: non_type_param::A<1>
+
+func-scope constructor-init#18
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#14: non_type_param::B (in non_type_param::C<1>)
+  start.seq:             15
+orig_type:               file-scope type#2: non_type_param::B
+
+func-scope scope#8
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#8: C
+constructor_inits:       func-scope constructor-init#17
+
+func-scope constructor-init#19
+next:                    func-scope constructor-init#20
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#15: type_param::A<int> (in type_param::C<int>)
+  start.seq:             29
+orig_type:               file-scope type#14: type_param::A<int>
+
+func-scope constructor-init#20
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#16: type_param::B (in type_param::C<int>)
+  start.seq:             29
+orig_type:               file-scope type#4: type_param::B
+
+func-scope scope#9
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#9: C
+constructor_inits:       func-scope constructor-init#19
+
+func-scope constructor-init#21
+next:                    func-scope constructor-init#22
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#17: template_param::A<template_param::X> (in template_param::C<template_param::X>)
+  start.seq:             46
+orig_type:               file-scope type#15: template_param::A<template_param::X>
+
+func-scope constructor-init#22
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#18: template_param::B (in template_param::C<template_param::X>)
+  start.seq:             46
+orig_type:               file-scope type#6: template_param::B
+
+func-scope scope#10
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#10: C
+constructor_inits:       func-scope constructor-init#21
+
+func-scope constructor-init#23
+next:                    func-scope constructor-init#24
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#19: non_type_param_functionally_equivalent::A<1> (in non_type_param_functionally_equivalent::C<1>)
+  start.seq:             60
+orig_type:               file-scope type#16: non_type_param_functionally_equivalent::A<1>
+
+func-scope constructor-init#24
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#20: non_type_param_functionally_equivalent::B (in non_type_param_functionally_equivalent::C<1>)
+  start.seq:             60
+orig_type:               file-scope type#8: non_type_param_functionally_equivalent::B
+
+func-scope scope#11
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#11: C
+constructor_inits:       func-scope constructor-init#23
+
+func-scope constructor-init#25
+next:                    func-scope constructor-init#26
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#19: non_type_param_functionally_equivalent::A<1> (in non_type_param_functionally_equivalent::C<1>)
+  start.seq:             61
+orig_type:               file-scope type#16: non_type_param_functionally_equivalent::A<1>
+
+func-scope constructor-init#26
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#20: non_type_param_functionally_equivalent::B (in non_type_param_functionally_equivalent::C<1>)
+  start.seq:             61
+orig_type:               file-scope type#8: non_type_param_functionally_equivalent::B
+
+func-scope scope#12
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#12: C
+constructor_inits:       func-scope constructor-init#25
+
+func-scope constructor-init#27
+next:                    func-scope constructor-init#28
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#21: using_decltype::A<int [1]> (in using_decltype::C<using_decltype::X<int [1], int [2]>>)
+  start.seq:             81
+orig_type:               file-scope type#17: using_decltype::A<int [1]>
+
+func-scope constructor-init#28
+next:                    func-scope constructor-init#29
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#22: using_decltype::A<int [2]> (in using_decltype::C<using_decltype::X<int [1], int [2]>>)
+  start.seq:             81
+orig_type:               file-scope type#18: using_decltype::A<int [2]>
+
+func-scope constructor-init#29
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#23: using_decltype::B (in using_decltype::C<using_decltype::X<int [1], int [2]>>)
+  start.seq:             81
+orig_type:               file-scope type#12: using_decltype::B
+
+func-scope scope#13
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#13: C
+constructor_inits:       func-scope constructor-init#27
+
+func-scope constructor-init#30
+next:                    func-scope constructor-init#31
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#21: using_decltype::A<int [1]> (in using_decltype::C<using_decltype::X<int [1], int [2]>>)
+  start.seq:             82
+orig_type:               file-scope type#17: using_decltype::A<int [1]>
+
+func-scope constructor-init#31
+next:                    func-scope constructor-init#32
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#22: using_decltype::A<int [2]> (in using_decltype::C<using_decltype::X<int [1], int [2]>>)
+  start.seq:             82
+orig_type:               file-scope type#18: using_decltype::A<int [2]>
+
+func-scope constructor-init#32
+next:                    NULL
+compiler_generated:      FALSE
+kind:                    cik_direct_base_class
+base_class:              file-scope base-class#23: using_decltype::B (in using_decltype::C<using_decltype::X<int [1], int [2]>>)
+  start.seq:             82
+orig_type:               file-scope type#12: using_decltype::B
+
+func-scope scope#14
+next:                    NULL
+kind:                    sck_function
+routine.ptr:             file-scope routine#14: C
+constructor_inits:       func-scope constructor-init#30
+

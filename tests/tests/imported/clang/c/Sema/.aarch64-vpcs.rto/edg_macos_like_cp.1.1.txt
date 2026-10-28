@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 11: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((cdecl)) foo2(void);                // expected-note {{previous declaration is here}}
+                      ^
+
+"Test_name.c", line 19: warning: parameter "ptr1" was set but never used
+  void foo4(fn_ty ptr1, aavpcs_fn_ty ptr2) {
+                  ^
+

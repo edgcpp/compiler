@@ -1,0 +1,26 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 21: warning: variable "y" is used before its value is set
+  void BB::g() { struct i x; struct ii y; x.n = y.n; }
+                                                ^
+
+"Test_name.c", line 21: warning: variable "x" was set but never used
+  void BB::g() { struct i x; struct ii y; x.n = y.n; }
+                          ^
+
+"Test_name.c", line 21: error: expected a ";"
+  void BB::g() { i x; ii y; x.n = y.n; } 
+                   ^
+
+"Test_name.c", line 21: error: expected a ";"
+  void BB::g() { i x; ii y; x.n = y.n; } 
+                         ^
+
+"Test_name.c", line 21: error: identifier "x" is undefined
+  void BB::g() { i x; ii y; x.n = y.n; } 
+                            ^
+
+"Test_name.c", line 21: error: identifier "y" is undefined
+  void BB::g() { i x; ii y; x.n = y.n; } 
+                                  ^
+
+4 errors detected in the compilation of "Test_name.c".

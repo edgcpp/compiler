@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef int __attribute__((__vector_size__ (32))) U;
+                             ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef double __attribute__((__vector_size__ (32))) F;
+                                ^
+
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+  typedef _Decimal64 __attribute__((__vector_size__ (32))) D;
+                                    ^
+
+"Test_name.c", line 9: warning: explicit type is missing ("int" assumed)
+  typedef _Decimal64 __attribute__((__vector_size__ (32))) D;
+          ^
+
+"Test_name.c", line 9: error: expected a ";"
+  typedef _Decimal64 __attribute__((__vector_size__ (32))) D;
+                                                           ^
+
+"Test_name.c", line 14: warning: function "__builtin_convertvector" declared implicitly
+    F f = __builtin_convertvector ((D) (-10.d < (D) ((D) (U) { 0, 0, 0, 0, 0, 0, 0, -0xe0 }
+          ^
+
+"Test_name.c", line 14: error: identifier "D" is undefined
+    F f = __builtin_convertvector ((D) (-10.d < (D) ((D) (U) { 0, 0, 0, 0, 0, 0, 0, -0xe0 }
+                                    ^
+
+"Test_name.c", line 14: error: extra text after expected end of number
+    F f = __builtin_convertvector ((D) (-10.d < (D) ((D) (U) { 0, 0, 0, 0, 0, 0, 0, -0xe0 }
+                                            ^
+
+"Test_name.c", line 14: error: type name is not allowed
+    F f = __builtin_convertvector ((D) (-10.d < (D) ((D) (U) { 0, 0, 0, 0, 0, 0, 0, -0xe0 }
+                                                          ^
+
+"Test_name.c", line 14: error: expected a ")"
+    F f = __builtin_convertvector ((D) (-10.d < (D) ((D) (U) { 0, 0, 0, 0, 0, 0, 0, -0xe0 }
+                                                             ^
+
+"Test_name.c", line 15: error: type name is not allowed
+  						   >= (D) { 80000000 })), F);
+  						                          ^
+
+6 errors detected in the compilation of "Test_name.c".

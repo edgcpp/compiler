@@ -5,6 +5,12 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   bool av = a<unsigned>(); // expected-error {{call to 'a' is ambiguous}}
             ^
 
+"Test_name.c", line 24: error: more than one instance of overloaded function "b" matches the argument list:
+            function template "bool b<T>()" (declared at line 19)
+            function template "bool b<T>()" (declared at line 22)
+  static_assert(b<int>());
+                ^
+
 "Test_name.c", line 71: error: more than one instance of overloaded function "f" matches the argument list:
             function template "void f<T,U>()" (declared at line 64)
             function template "void f<T,U>()" (declared at line 68)
@@ -19,4 +25,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   int g() { }
             ^
 
-2 errors detected in the compilation of "Test_name.c".
+3 errors detected in the compilation of "Test_name.c".

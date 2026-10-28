@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 5: error: "typedef" may not be specified here
+  template<typename T> typedef T X; // expected-error{{typedef cannot be a template}}
+                       ^
+
+"Test_name.c", line 8: error: an enumeration template declaration must refer to a previously declared member of a class template
+  enum t0 { A = T::x }; // expected-error{{enumeration cannot be a template}} \
+       ^
+
+"Test_name.c", line 12: warning: missing return statement at end of non-void function "f0<x>(int)"
+  template<int x> enum e0 f0(int a=x) {}
+                                       ^
+
+2 errors detected in the compilation of "Test_name.c".

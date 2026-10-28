@@ -1,0 +1,126 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 20: error: invalid redeclaration of member function "X0<T, U>::f0(T &)" (declared at line 18)
+    void f0(typename X0::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 24: error: invalid redeclaration of member function "X0<T, U>::f1(T &)" (declared at line 22)
+    void f1(typename X0<T, U>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 28: error: invalid redeclaration of member function "X0<T, U>::f2(T &)" (declared at line 26)
+    void f2(typename X0<T_type, U_type>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 32: error: invalid redeclaration of member function "X0<T, U>::f3(T &)" (declared at line 30)
+    void f3(typename ::X0<T_type, U_type>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 39: error: invalid redeclaration of member function "X0<T, U>::X1::g0(T &)" (declared at line 37)
+      void g0(typename X0::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 43: error: invalid redeclaration of member function "X0<T, U>::X1::g1(T &)" (declared at line 41)
+      void g1(typename X0<T, U>::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 47: error: invalid redeclaration of member function "X0<T, U>::X1::g2(T &)" (declared at line 45)
+      void g2(typename X0<T_type, U_type>::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 51: error: invalid redeclaration of member function "X0<T, U>::X1::g3(T &)" (declared at line 49)
+      void g3(typename ::X0<T_type, U_type>::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 55: error: invalid redeclaration of member function "X0<T, U>::X1::g4(T &)" (declared at line 53)
+      void g4(typename X1::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 59: error: invalid redeclaration of member function "X0<T, U>::X1::g5(T &)" (declared at line 57)
+      void g5(typename X0::X1::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 63: error: invalid redeclaration of member function "X0<T, U>::X1::g6(T &)" (declared at line 61)
+      void g6(typename X0<T, U>::X1::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 67: error: invalid redeclaration of member function "X0<T, U>::X1::g7(T &)" (declared at line 65)
+      void g7(typename ::X0<typename X1::my_T_type, U_type>::X1::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 71: error: invalid redeclaration of member function "X0<T, U>::X1::g8(T &)" (declared at line 69)
+      void g8(typename ::X0<typename X0<T_type, U>::X1::my_T_type, U_type>::X1::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 85: error: invalid redeclaration of member function "X0<T *, U *>::f0(T &)" (declared at line 83)
+    void f0(typename X0::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 89: error: invalid redeclaration of member function "X0<T *, U *>::f1(T &)" (declared at line 87)
+    void f1(typename X0<T*, U*>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 93: error: invalid redeclaration of member function "X0<T *, U *>::f2(T &)" (declared at line 91)
+    void f2(typename X0<T_type*, U_type*>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 97: error: invalid redeclaration of member function "X0<T *, U *>::f3(T &)" (declared at line 95)
+    void f3(typename ::X0<T_type*, U_type*>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 101: error: invalid redeclaration of member function "X0<T *, U *>::f4(T &)" (declared at line 99)
+    void f4(typename ::X0<Tptr, Uptr>::T_type&); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 105: error: invalid redeclaration of member function "X0<T *, U *>::f5(X0<T *, U *> *)" (declared at line 103)
+    void f5(::X0<T*, U*>*); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 112: error: invalid redeclaration of member function "X0<T *, U *>::X2::g0(T &)" (declared at line 110)
+      void g0(typename X0::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 116: error: invalid redeclaration of member function "X0<T *, U *>::X2::g1(T &)" (declared at line 114)
+      void g1(typename X0<T*, U*>::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 120: error: invalid redeclaration of member function "X0<T *, U *>::X2::g2(T &)" (declared at line 118)
+      void g2(typename X0<T_type*, U_type*>::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 124: error: invalid redeclaration of member function "X0<T *, U *>::X2::g3(T &)" (declared at line 122)
+      void g3(typename ::X0<T_type*, U_type*>::T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 128: error: invalid redeclaration of member function "X0<T *, U *>::X2::g4(T &)" (declared at line 126)
+      void g4(typename X2::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 132: error: invalid redeclaration of member function "X0<T *, U *>::X2::g5(T &)" (declared at line 130)
+      void g5(typename X0::X2::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 136: error: invalid redeclaration of member function "X0<T *, U *>::X2::g6(T &)" (declared at line 134)
+      void g6(typename X0<T*, U*>::X2::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 140: error: invalid redeclaration of member function "X0<T *, U *>::X2::g7(T &)" (declared at line 138)
+      void g7(typename ::X0<typename X2::my_T_type*, U_type*>::X2::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 144: error: invalid redeclaration of member function "X0<T *, U *>::X2::g8(T &)" (declared at line 142)
+      void g8(typename ::X0<typename X0<T_type*, U*>::X2::my_T_type*, U_type*>::X2::my_T_type&); // expected-error{{redecl}}
+           ^
+
+"Test_name.c", line 152: error: a value of type "float *" cannot be assigned to an entity of type "int *"
+      X1<T>::a = b; // expected-error{{incompatible}}
+               ^
+
+"Test_name.c", line 248: warning: missing return statement at end of non-void function "RebuildDependentScopeDeclRefExpr::X<T>::data"
+    template<typename T> N<X<T>::thing> X<T>::data() {}
+                                                      ^
+
+"Test_name.c", line 250: error: declaration is incompatible with "RebuildDependentScopeDeclRefExpr::N<0> RebuildDependentScopeDeclRefExpr::X<T>::foo()" (declared at line 246)
+    template<typename T> N<X<T>::think> X<T>::foo() {} // expected-error {{no member named 'think' in 'RebuildDependentScopeDeclRefExpr::X<T>'}}
+                                              ^
+
+30 errors detected in the compilation of "Test_name.c".

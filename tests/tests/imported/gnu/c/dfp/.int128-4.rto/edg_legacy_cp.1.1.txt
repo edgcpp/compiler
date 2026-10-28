@@ -1,0 +1,146 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"./dfp/int128-4.c", line 15: error: identifier "_Decimal32" is undefined
+  tests_32 (_Decimal32 d)
+            ^
+
+"./dfp/int128-4.c", line 21: error: identifier "_Decimal32" is undefined
+  testu_32 (_Decimal32 d)
+            ^
+
+"./dfp/int128-4.c", line 27: error: identifier "_Decimal64" is undefined
+  tests_64 (_Decimal64 d)
+            ^
+
+"./dfp/int128-4.c", line 33: error: identifier "_Decimal64" is undefined
+  testu_64 (_Decimal64 d)
+            ^
+
+"./dfp/int128-4.c", line 39: error: identifier "_Decimal128" is undefined
+  tests_128 (_Decimal128 d)
+             ^
+
+"./dfp/int128-4.c", line 45: error: identifier "_Decimal128" is undefined
+  testu_128 (_Decimal128 d)
+             ^
+
+"./dfp/int128-4.c", line 63: warning: function "__builtin_infd32" declared implicitly
+    check_invalid (tests_32 (__builtin_infd32 ()) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                             ^
+
+"./dfp/int128-4.c", line 65: warning: function "__builtin_nand32" declared implicitly
+    check_invalid (tests_32 (__builtin_nand32 ("")) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                             ^
+
+"./dfp/int128-4.c", line 66: error: extra text after expected end of number
+    check_invalid (tests_32 (-1701411.0e+32DF) == -((((__int128) (0x7ffffbe294adefdaULL)) << 64) | (0xd863b4a300000000ULL)), 0);
+                                           ^
+
+"./dfp/int128-4.c", line 67: error: extra text after expected end of number
+    check_invalid (tests_32 (-1701412.0e+32DF) == -((__int128) ((((unsigned __int128) 1) << 127) - 1)) - 1, 1);
+                                           ^
+
+"./dfp/int128-4.c", line 68: error: extra text after expected end of number
+    check_invalid (tests_32 (1701411.0e+32DF) == ((((__int128) (0x7ffffbe294adefdaULL)) << 64) | (0xd863b4a300000000ULL)), 0);
+                                          ^
+
+"./dfp/int128-4.c", line 69: error: extra text after expected end of number
+    check_invalid (tests_32 (1701412.0e+32DF) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                                          ^
+
+"./dfp/int128-4.c", line 73: error: extra text after expected end of number
+    check_invalid (testu_32 (-0.9999999DF) == 0U, 0);
+                                       ^
+
+"./dfp/int128-4.c", line 74: error: extra text after expected end of number
+    check_invalid (testu_32 (-1.0DF) == 0U, 1);
+                                 ^
+
+"./dfp/int128-4.c", line 75: error: extra text after expected end of number
+    check_invalid (testu_32 (3402823.0e+32DF) == ((((unsigned __int128) (0xfffffcb356c92111ULL)) << 64) | (0x367458c700000000ULL)), 0);
+                                          ^
+
+"./dfp/int128-4.c", line 76: error: extra text after expected end of number
+    check_invalid (testu_32 (3402824.0e+32DF) == (~(unsigned __int128) 0), 1);
+                                          ^
+
+"./dfp/int128-4.c", line 77: warning: function "__builtin_infd64" declared implicitly
+    check_invalid (tests_64 (__builtin_infd64 ()) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                             ^
+
+"./dfp/int128-4.c", line 79: warning: function "__builtin_nand64" declared implicitly
+    check_invalid (tests_64 (__builtin_nand64 ("")) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                             ^
+
+"./dfp/int128-4.c", line 80: error: extra text after expected end of number
+    check_invalid (tests_64 (-170141183460469.2e+24DD) == -((((__int128) (0x7ffffffffffff947ULL)) << 64) | (0xd26076f482000000ULL)), 0);
+                                                   ^
+
+"./dfp/int128-4.c", line 81: error: extra text after expected end of number
+    check_invalid (tests_64 (-170141183460469.3e+24DD) == -((__int128) ((((unsigned __int128) 1) << 127) - 1)) - 1, 1);
+                                                   ^
+
+"./dfp/int128-4.c", line 82: error: extra text after expected end of number
+    check_invalid (tests_64 (170141183460469.2e+24DD) == ((((__int128) (0x7ffffffffffff947ULL)) << 64) | (0xd26076f482000000ULL)), 0);
+                                                  ^
+
+"./dfp/int128-4.c", line 83: error: extra text after expected end of number
+    check_invalid (tests_64 (170141183460469.3e+24DD) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                                                  ^
+
+"./dfp/int128-4.c", line 87: error: extra text after expected end of number
+    check_invalid (testu_64 (-0.9999999999999999DD) == 0U, 0);
+                                                ^
+
+"./dfp/int128-4.c", line 88: error: extra text after expected end of number
+    check_invalid (testu_64 (-1.0DD) == 0U, 1);
+                                 ^
+
+"./dfp/int128-4.c", line 89: error: extra text after expected end of number
+    check_invalid (testu_64 (340282366920938.4e+24DD) == ((((unsigned __int128) (0xfffffffffffff28fULL)) << 64) | (0xa4c0ede904000000ULL)), 0);
+                                                  ^
+
+"./dfp/int128-4.c", line 90: error: extra text after expected end of number
+    check_invalid (testu_64 (340282366920938.5e+24DD) == (~(unsigned __int128) 0), 1);
+                                                  ^
+
+"./dfp/int128-4.c", line 91: warning: function "__builtin_infd128" declared implicitly
+    check_invalid (tests_128 (__builtin_infd128 ()) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                              ^
+
+"./dfp/int128-4.c", line 93: warning: function "__builtin_nand128" declared implicitly
+    check_invalid (tests_128 (__builtin_nand128 ("")) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                              ^
+
+"./dfp/int128-4.c", line 94: error: extra text after expected end of number
+    check_invalid (tests_128 (-1701411834604692317316873037158841.0e+5DL) == -((((__int128) (0x7fffffffffffffffULL)) << 64) | (0xffffffffffffe9a0ULL)), 0);
+                                                                      ^
+
+"./dfp/int128-4.c", line 95: error: extra text after expected end of number
+    check_invalid (tests_128 (-1701411834604692317316873037158842.0e+5DL) == -((__int128) ((((unsigned __int128) 1) << 127) - 1)) - 1, 1);
+                                                                      ^
+
+"./dfp/int128-4.c", line 96: error: extra text after expected end of number
+    check_invalid (tests_128 (1701411834604692317316873037158841.0e+5DL) == ((((__int128) (0x7fffffffffffffffULL)) << 64) | (0xffffffffffffe9a0ULL)), 0);
+                                                                     ^
+
+"./dfp/int128-4.c", line 97: error: extra text after expected end of number
+    check_invalid (tests_128 (1701411834604692317316873037158842.0e+5DL) == ((__int128) ((((unsigned __int128) 1) << 127) - 1)), 1);
+                                                                     ^
+
+"./dfp/int128-4.c", line 101: error: extra text after expected end of number
+    check_invalid (testu_128 (-0.9999999999999999999999999999999999DL) == 0U, 0);
+                                                                   ^
+
+"./dfp/int128-4.c", line 102: error: extra text after expected end of number
+    check_invalid (testu_128 (-1.0DL) == 0U, 1);
+                                  ^
+
+"./dfp/int128-4.c", line 103: error: extra text after expected end of number
+    check_invalid (testu_128 (3402823669209384634633746074317682.0e+5DL) == ((((unsigned __int128) (0xffffffffffffffffULL)) << 64) | (0xffffffffffffd340ULL)), 0);
+                                                                     ^
+
+"./dfp/int128-4.c", line 104: error: extra text after expected end of number
+    check_invalid (testu_128 (3402823669209384634633746074317683.0e+5DL) == (~(unsigned __int128) 0), 1);
+                                                                     ^
+
+30 errors detected in the compilation of "Test_name.c".

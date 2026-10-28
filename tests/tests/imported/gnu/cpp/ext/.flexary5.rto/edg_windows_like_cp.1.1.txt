@@ -1,0 +1,84 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./ext/flexary5.C", line 11: error: a flexible array member cannot be declared in an otherwise-empty type
+    char a[];
+            ^
+
+"./ext/flexary5.C", line 16: error: a flexible array member cannot be declared in an otherwise-empty type
+    char a[];
+            ^
+
+"./ext/flexary5.C", line 40: error: a flexible array member cannot be declared in an otherwise-empty type
+      char a[];
+              ^
+
+"./ext/flexary5.C", line 65: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D5, a) == sizeof (D5), "__builtin_offsetof (D5, a) == sizeof (D5)");
+                                     ^
+
+"./ext/flexary5.C", line 169: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D22, a) == sizeof (D22), "__builtin_offsetof (D22, a) == sizeof (D22)");
+                                     ^
+
+"./ext/flexary5.C", line 169: error: static assertion failed with "__builtin_offsetof (D22, a) == sizeof (D22)"
+  static_assert (__builtin_offsetof (D22, a) == sizeof (D22), "__builtin_offsetof (D22, a) == sizeof (D22)");
+  ^
+"./ext/flexary5.C", line 169: note: the final comparison was 8 == 16
+  static_assert (__builtin_offsetof (D22, a) == sizeof (D22), "__builtin_offsetof (D22, a) == sizeof (D22)");
+                                             ^
+
+"./ext/flexary5.C", line 173: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D23, a) == sizeof (D23), "__builtin_offsetof (D23, a) == sizeof (D23)");
+                                     ^
+
+"./ext/flexary5.C", line 173: error: static assertion failed with "__builtin_offsetof (D23, a) == sizeof (D23)"
+  static_assert (__builtin_offsetof (D23, a) == sizeof (D23), "__builtin_offsetof (D23, a) == sizeof (D23)");
+  ^
+"./ext/flexary5.C", line 173: note: the final comparison was 8 == 24
+  static_assert (__builtin_offsetof (D23, a) == sizeof (D23), "__builtin_offsetof (D23, a) == sizeof (D23)");
+                                             ^
+
+"./ext/flexary5.C", line 177: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D24, a) == sizeof (D24), "__builtin_offsetof (D24, a) == sizeof (D24)");
+                                     ^
+
+"./ext/flexary5.C", line 177: error: static assertion failed with "__builtin_offsetof (D24, a) == sizeof (D24)"
+  static_assert (__builtin_offsetof (D24, a) == sizeof (D24), "__builtin_offsetof (D24, a) == sizeof (D24)");
+  ^
+"./ext/flexary5.C", line 177: note: the final comparison was 8 == 24
+  static_assert (__builtin_offsetof (D24, a) == sizeof (D24), "__builtin_offsetof (D24, a) == sizeof (D24)");
+                                             ^
+
+"./ext/flexary5.C", line 183: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D25, a) == sizeof (D25), "__builtin_offsetof (D25, a) == sizeof (D25)");
+                                     ^
+
+"./ext/flexary5.C", line 183: error: static assertion failed with "__builtin_offsetof (D25, a) == sizeof (D25)"
+  static_assert (__builtin_offsetof (D25, a) == sizeof (D25), "__builtin_offsetof (D25, a) == sizeof (D25)");
+  ^
+"./ext/flexary5.C", line 183: note: the final comparison was 8 == 16
+  static_assert (__builtin_offsetof (D25, a) == sizeof (D25), "__builtin_offsetof (D25, a) == sizeof (D25)");
+                                             ^
+
+"./ext/flexary5.C", line 187: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D26, a) == sizeof (D26), "__builtin_offsetof (D26, a) == sizeof (D26)");
+                                     ^
+
+"./ext/flexary5.C", line 187: error: static assertion failed with "__builtin_offsetof (D26, a) == sizeof (D26)"
+  static_assert (__builtin_offsetof (D26, a) == sizeof (D26), "__builtin_offsetof (D26, a) == sizeof (D26)");
+  ^
+"./ext/flexary5.C", line 187: note: the final comparison was 8 == 24
+  static_assert (__builtin_offsetof (D26, a) == sizeof (D26), "__builtin_offsetof (D26, a) == sizeof (D26)");
+                                             ^
+
+"./ext/flexary5.C", line 191: warning: offsetof applied to a type other than a standard-layout class
+  static_assert (__builtin_offsetof (D27, a) == sizeof (D27), "__builtin_offsetof (D27, a) == sizeof (D27)");
+                                     ^
+
+"./ext/flexary5.C", line 191: error: static assertion failed with "__builtin_offsetof (D27, a) == sizeof (D27)"
+  static_assert (__builtin_offsetof (D27, a) == sizeof (D27), "__builtin_offsetof (D27, a) == sizeof (D27)");
+  ^
+"./ext/flexary5.C", line 191: note: the final comparison was 8 == 24
+  static_assert (__builtin_offsetof (D27, a) == sizeof (D27), "__builtin_offsetof (D27, a) == sizeof (D27)");
+                                             ^
+
+9 errors detected in the compilation of "Test_name.c".

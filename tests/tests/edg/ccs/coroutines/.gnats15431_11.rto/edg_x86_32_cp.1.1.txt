@@ -5,7 +5,7 @@ fe_only -DTEST_NUMBER=1 --microsoft_version 1900 --set_flag coroutines -tused Te
           detected during instantiation of "std::generator<int> f(T) [with T=int]" at line 10
 
 "/edg/workspace/bases/docker/dev-env/gcc-i686/include/coroutine.stdh", line 71: error: constexpr function return is non-constant
-  return *((std::coroutine_handle< void>  *)addr); 
+  return *((std::coroutine_handle< void>  *)(addr)); 
          ^
 
 1 error detected in the compilation of "Test_name.c".

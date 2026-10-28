@@ -1,0 +1,69 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 29: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+                  fv([&a(t)]()->decltype(auto) { //expected-error 3{{captured}}
+                         ^
+
+"Test_name.c", line 45: warning: variable "L" was declared but never referenced
+      auto L = [z = x + 2](int a) {
+           ^
+
+"Test_name.c", line 55: warning: variable "L" was declared but never referenced
+      auto L = [&z = x](int a) {
+           ^
+
+"Test_name.c", line 64: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+          return [j = k](int c) { //expected-error {{cannot be implicitly captured}}
+                      ^
+
+"Test_name.c", line 62: warning: variable "L" was declared but never referenced
+      auto L = [k = x](char a) {  //expected-note {{declared}}
+           ^
+
+"Test_name.c", line 72: warning: variable "L" was declared but never referenced
+      auto L = [k = x](char a) { 
+           ^
+
+"Test_name.c", line 82: warning: variable "L" was declared but never referenced
+      auto L = [k = x](char a) { 
+           ^
+
+"Test_name.c", line 192: warning: missing return statement at end of non-void function "classification_of_captures_of_init_captures::run"
+  }
+  ^
+
+"Test_name.c", line 199: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+    auto b = [x = {X()}] {}; // expected-error{{<initializer_list>}}
+                  ^
+
+"Test_name.c", line 199: error: cannot deduce "auto" type
+    auto b = [x = {X()}] {}; // expected-error{{<initializer_list>}}
+              ^
+
+"Test_name.c", line 205: warning: variable "init" is used before its value is set
+    auto find = [max = init](auto current) {
+                       ^
+
+"Test_name.c", line 206: error: expression must be a modifiable lvalue
+      max = current; // expected-error{{cannot assign to a variable captured by copy in a non-mutable lambda}}
+      ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=double]" at line 208
+
+"Test_name.c", line 213: error: identifier "y" is undefined
+    auto a = [x = y]{}; // expected-error{{use of undeclared identifier 'y'}}
+                  ^
+
+"Test_name.c", line 216: error: identifier "typo_boo" is undefined
+    auto b = [x = typo_boo]{}; // expected-error{{use of undeclared identifier 'typo_boo'; did you mean 'typo_foo'}}
+                  ^
+
+"Test_name.c", line 123: error: initial value of reference to non-const must be an lvalue
+        auto M = [&y = x](T b) { //expected-error {{cannot be implicitly captured}}
+                       ^
+          detected during instantiation of "int odr_use_within_init_capture_template::test(T) [with T=int]" at line 169
+
+"Test_name.c", line 151: error: initial value of reference to non-const must be an lvalue
+        auto M = [&y = x](T b) { //expected-error {{cannot be implicitly captured}}
+                       ^
+          detected during instantiation of "int odr_use_within_init_capture_template::test(T) [with T=int]" at line 169
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 16: error: the template argument list of the partial specialization includes a nontype argument whose type depends on a template parameter
+    struct C<int, U, 0>;
+           ^
+
+"Test_name.c", line 25: error: explicit type is missing ("int" assumed)
+    template<typename T, typename U, typename D<T>::type>
+                                     ^
+          detected during processing of template argument list for "failed_substitution::C" based on template arguments <int, U> at line 29
+
+"Test_name.c", line 25: error: qualified name is not allowed
+    template<typename T, typename U, typename D<T>::type>
+                                              ^
+          detected during processing of template argument list for "failed_substitution::C" based on template arguments <int, U> at line 29
+
+3 errors detected in the compilation of "Test_name.c".

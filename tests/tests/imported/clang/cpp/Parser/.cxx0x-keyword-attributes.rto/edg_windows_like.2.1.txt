@@ -1,0 +1,891 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --target linux_aarch64 Test_name.c
+"Test_name.c", line 43: error: this declaration has no storage class or type specifier
+  ATTR_USE int before_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+  ^
+
+"Test_name.c", line 43: error: expected a ";"
+  ATTR_USE int before_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+           ^
+
+"Test_name.c", line 44: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  int ATTR_USE between_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+      ^
+
+"Test_name.c", line 44: error: expected a ";"
+  int ATTR_USE between_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+               ^
+
+"Test_name.c", line 45: error: explicit type is missing ("int" assumed)
+  const ATTR_USE int between_attr_2 = 0; // expected-error {{'ATTR_NAME' cannot appear here}}
+        ^
+
+"Test_name.c", line 45: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  const ATTR_USE int between_attr_2 = 0; // expected-error {{'ATTR_NAME' cannot appear here}}
+        ^
+
+"Test_name.c", line 45: error: expected a ";"
+  const ATTR_USE int between_attr_2 = 0; // expected-error {{'ATTR_NAME' cannot appear here}}
+                 ^
+
+"Test_name.c", line 46: error: expected a ";"
+  int after_attr ATTR_USE; // expected-error {{'ATTR_NAME' only applies to function types}}
+                 ^
+
+"Test_name.c", line 47: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  int * ATTR_USE ptr_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+        ^
+
+"Test_name.c", line 47: error: expected a ";"
+  int * ATTR_USE ptr_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+                 ^
+
+"Test_name.c", line 48: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  int & ATTR_USE ref_attr = after_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+        ^
+
+"Test_name.c", line 48: error: expected a ";"
+  int & ATTR_USE ref_attr = after_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+                 ^
+
+"Test_name.c", line 49: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  int && ATTR_USE rref_attr = 0; // expected-error {{'ATTR_NAME' only applies to function types}}
+         ^
+
+"Test_name.c", line 49: error: expected a ";"
+  int && ATTR_USE rref_attr = 0; // expected-error {{'ATTR_NAME' only applies to function types}}
+                  ^
+
+"Test_name.c", line 50: error: expected a ";"
+  int array_attr [1] ATTR_USE; // expected-error {{'ATTR_NAME' only applies to function types}}
+                     ^
+
+"Test_name.c", line 51: error: expected a "{"
+  void fn_attr () ATTR_USE;
+                  ^
+
+"Test_name.c", line 54: error: invalid specifier outside a class declaration
+    virtual void f() const volatile && noexcept ATTR_USE final = 0;
+    ^
+
+"Test_name.c", line 54: error: a type qualifier is not allowed on a nonmember function
+    virtual void f() const volatile && noexcept ATTR_USE final = 0;
+                     ^
+
+"Test_name.c", line 54: error: a ref-qualifier is not allowed here
+    virtual void f() const volatile && noexcept ATTR_USE final = 0;
+                                    ^
+
+"Test_name.c", line 54: error: expected a ";"
+    virtual void f() const volatile && noexcept ATTR_USE final = 0;
+                                                ^
+
+"Test_name.c", line 56: error: incomplete type "ATTR_USE" is not allowed
+  struct ATTR_USE struct_attr; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                  ^
+
+"Test_name.c", line 57: error: incomplete type "ATTR_USE" is not allowed
+  class ATTR_USE class_attr {}; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                 ^
+
+"Test_name.c", line 58: error: tag kind of union is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  union ATTR_USE union_attr; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+        ^
+
+"Test_name.c", line 59: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE E { }; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+       ^
+
+"Test_name.c", line 61: error: this declaration has no storage class or type specifier
+  ATTR_USE struct struct_attr2;  // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 61: error: expected a ";"
+  ATTR_USE struct struct_attr2;  // expected-error {{misplaced 'ATTR_NAME'}}
+           ^
+
+"Test_name.c", line 62: error: this declaration has no storage class or type specifier
+  ATTR_USE class class_attr2; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 62: error: variable "test_misplacement::ATTR_USE" has already been defined (previous definition at line 61)
+  ATTR_USE class class_attr2; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 62: error: expected a ";"
+  ATTR_USE class class_attr2; // expected-error {{misplaced 'ATTR_NAME'}}
+           ^
+
+"Test_name.c", line 63: error: this declaration has no storage class or type specifier
+  ATTR_USE union union_attr2; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 63: error: variable "test_misplacement::ATTR_USE" has already been defined (previous definition at line 61)
+  ATTR_USE union union_attr2; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 63: error: expected a ";"
+  ATTR_USE union union_attr2; // expected-error {{misplaced 'ATTR_NAME'}}
+           ^
+
+"Test_name.c", line 64: error: this declaration has no storage class or type specifier
+  ATTR_USE enum  E2 { }; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 64: error: variable "test_misplacement::ATTR_USE" has already been defined (previous definition at line 61)
+  ATTR_USE enum  E2 { }; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 64: error: expected a ";"
+  ATTR_USE enum  E2 { }; // expected-error {{misplaced 'ATTR_NAME'}}
+           ^
+
+"Test_name.c", line 68: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class ATTR_USE ATTR_USE // expected-error 2 {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                 ^
+
+"Test_name.c", line 69: error: expected a ";"
+    attr_after_class_name_decl ATTR_USE ATTR_USE; // expected-error {{'ATTR_NAME' cannot appear here}} \
+    ^
+
+"Test_name.c", line 72: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class ATTR_USE ATTR_USE // expected-error 2 {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                 ^
+
+"Test_name.c", line 73: error: expected a ";"
+   attr_after_class_name_definition ATTR_USE ATTR_USE ATTR_USE{}; // expected-error {{'ATTR_NAME' cannot appear here}} \
+   ^
+
+"Test_name.c", line 76: error: incomplete type "ATTR_USE" is not allowed
+  class ATTR_USE c {}; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                 ^
+
+"Test_name.c", line 77: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class c ATTR_USE ATTR_USE x; // expected-error 2 {{'ATTR_NAME' only applies to function types}}
+          ^
+
+"Test_name.c", line 77: error: expected a ";"
+  class c ATTR_USE ATTR_USE x; // expected-error 2 {{'ATTR_NAME' only applies to function types}}
+                   ^
+
+"Test_name.c", line 78: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class c ATTR_USE ATTR_USE y ATTR_USE ATTR_USE; // expected-error 4 {{'ATTR_NAME' only applies to function types}}
+          ^
+
+"Test_name.c", line 78: error: expected a ";"
+  class c ATTR_USE ATTR_USE y ATTR_USE ATTR_USE; // expected-error 4 {{'ATTR_NAME' only applies to function types}}
+                   ^
+
+"Test_name.c", line 79: error: a compound literal is not allowed in an integral constant expression
+  class c final [(int){0}];
+                  ^
+
+"Test_name.c", line 82: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class ATTR_USE ATTR_USE final_class // expected-error 2 {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                 ^
+
+"Test_name.c", line 82: error: expected a ";"
+  class ATTR_USE ATTR_USE final_class // expected-error 2 {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                          ^
+
+"Test_name.c", line 85: warning: parsing restarts here after previous syntax error
+    ATTR_USE alignas(float) ATTR_USE alignas(float): base{}; // expected-error {{'ATTR_NAME' cannot appear here}}
+                                                           ^
+
+"Test_name.c", line 87: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class ATTR_USE ATTR_USE final_class_another // expected-error 2 {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                 ^
+
+"Test_name.c", line 87: error: expected a ";"
+  class ATTR_USE ATTR_USE final_class_another // expected-error 2 {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                          ^
+
+"Test_name.c", line 90: warning: parsing restarts here after previous syntax error
+    ATTR_USE ATTR_USE alignas(16) ATTR_USE{}; // expected-error {{'ATTR_NAME' cannot appear here}}
+                                            ^
+
+"Test_name.c", line 92: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  class after_class_close {} ATTR_USE; // expected-error {{'ATTR_NAME' cannot appear here, place it after "class" to apply it to the type declaration}}
+                             ^
+
+"Test_name.c", line 96: error: this declaration has no storage class or type specifier
+  ATTR_USE struct with_init_declarators {} init_declarator; // expected-error {{'ATTR_NAME' only applies to function types}}
+  ^
+
+"Test_name.c", line 96: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  ATTR_USE struct with_init_declarators {} init_declarator; // expected-error {{'ATTR_NAME' only applies to function types}}
+  ^
+
+"Test_name.c", line 96: error: expected a ";"
+  ATTR_USE struct with_init_declarators {} init_declarator; // expected-error {{'ATTR_NAME' only applies to function types}}
+           ^
+
+"Test_name.c", line 97: error: this declaration has no storage class or type specifier
+  ATTR_USE struct no_init_declarators; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 97: error: variable "ATTR_USE" has already been defined (previous definition at line 43)
+  ATTR_USE struct no_init_declarators; // expected-error {{misplaced 'ATTR_NAME'}}
+  ^
+
+"Test_name.c", line 97: error: expected a ";"
+  ATTR_USE struct no_init_declarators; // expected-error {{misplaced 'ATTR_NAME'}}
+           ^
+
+"Test_name.c", line 98: error: this declaration has no storage class or type specifier
+  template<typename> ATTR_USE struct no_init_declarators_template; // expected-error {{'ATTR_NAME' cannot appear here}}
+                     ^
+
+"Test_name.c", line 98: warning: variable templates are a C++14 feature
+  template<typename> ATTR_USE struct no_init_declarators_template; // expected-error {{'ATTR_NAME' cannot appear here}}
+                              ^
+
+"Test_name.c", line 98: error: "ATTR_USE" has already been declared in the current scope
+  template<typename> ATTR_USE struct no_init_declarators_template; // expected-error {{'ATTR_NAME' cannot appear here}}
+                     ^
+
+"Test_name.c", line 98: error: expected a ";"
+  template<typename> ATTR_USE struct no_init_declarators_template; // expected-error {{'ATTR_NAME' cannot appear here}}
+                              ^
+
+"Test_name.c", line 100: error: argument list for variable template "ATTR_USE" is missing
+    ATTR_USE struct with_init_declarators {} init_declarator; // expected-error {{'ATTR_NAME' only applies to function types}}
+    ^
+
+"Test_name.c", line 100: error: invalid combination of type specifiers
+    ATTR_USE struct with_init_declarators {} init_declarator; // expected-error {{'ATTR_NAME' only applies to function types}}
+             ^
+
+"Test_name.c", line 101: error: argument list for variable template "ATTR_USE" is missing
+    ATTR_USE struct no_init_declarators; // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 101: error: invalid combination of type specifiers
+    ATTR_USE struct no_init_declarators; // expected-error {{'ATTR_NAME' cannot appear here}}
+             ^
+
+"Test_name.c", line 103: error: argument list for variable template "ATTR_USE" is missing
+  ATTR_USE; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+  ^
+
+"Test_name.c", line 105: error: argument list for variable template "ATTR_USE" is missing
+    ATTR_USE ctordtor ATTR_USE () ATTR_USE; // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+    ^
+
+"Test_name.c", line 105: error: expected a ";"
+    ATTR_USE ctordtor ATTR_USE () ATTR_USE; // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+                      ^
+
+"Test_name.c", line 105: error: a field with the same name as its class cannot be declared in a class with a user-declared constructor
+    ATTR_USE ctordtor ATTR_USE () ATTR_USE; // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+             ^
+
+"Test_name.c", line 106: error: expected a ";"
+    ctordtor (C) ATTR_USE;
+                 ^
+
+"Test_name.c", line 107: error: argument list for variable template "ATTR_USE" is missing
+    ATTR_USE ~ctordtor ATTR_USE () ATTR_USE; // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+    ^
+
+"Test_name.c", line 107: error: return type may not be specified on a destructor
+    ATTR_USE ~ctordtor ATTR_USE () ATTR_USE; // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+    ^
+
+"Test_name.c", line 107: error: expected a ";"
+    ATTR_USE ~ctordtor ATTR_USE () ATTR_USE; // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+                       ^
+
+"Test_name.c", line 109: error: argument list for variable template "ATTR_USE" is missing
+  ATTR_USE ctordtor::ctordtor ATTR_USE () ATTR_USE {} // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+  ^
+
+"Test_name.c", line 109: error: a nonstatic data member may not be defined outside its class
+  ATTR_USE ctordtor::ctordtor ATTR_USE () ATTR_USE {} // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+                     ^
+
+"Test_name.c", line 109: error: expected a ";"
+  ATTR_USE ctordtor::ctordtor ATTR_USE () ATTR_USE {} // expected-error 2 {{'ATTR_NAME' cannot be applied to a declaration}}
+                              ^
+
+"Test_name.c", line 112: warning: parsing restarts here after previous syntax error
+  extern "C++" ATTR_USE int extern_attr; // expected-error {{'ATTR_NAME' only applies to function types}}
+                                       ^
+
+"Test_name.c", line 113: error: argument list for variable template "ATTR_USE" is missing
+  template <typename T> ATTR_USE void template_attr (); // expected-error {{'ATTR_NAME' cannot be applied to a declaration}}
+                        ^
+
+"Test_name.c", line 113: error: invalid combination of type specifiers
+  template <typename T> ATTR_USE void template_attr (); // expected-error {{'ATTR_NAME' cannot be applied to a declaration}}
+                                 ^
+
+"Test_name.c", line 114: error: argument list for variable template "ATTR_USE" is missing
+  ATTR_USE ATTR_USE int ATTR_USE ATTR_USE multi_attr ATTR_USE ATTR_USE; // expected-error 6 {{'ATTR_NAME' only applies to function types}}
+  ^
+
+"Test_name.c", line 114: error: "ATTR_USE" has already been declared in the current scope
+  ATTR_USE ATTR_USE int ATTR_USE ATTR_USE multi_attr ATTR_USE ATTR_USE; // expected-error 6 {{'ATTR_NAME' only applies to function types}}
+           ^
+
+"Test_name.c", line 114: error: expected a ";"
+  ATTR_USE ATTR_USE int ATTR_USE ATTR_USE multi_attr ATTR_USE ATTR_USE; // expected-error 6 {{'ATTR_NAME' only applies to function types}}
+                    ^
+
+"Test_name.c", line 116: error: expected a ";"
+  int (paren_attr) ATTR_USE; // expected-error {{'ATTR_NAME' cannot appear here}}
+                   ^
+
+"Test_name.c", line 117: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  unsigned ATTR_USE int attr_in_decl_spec; // expected-error {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 117: error: expected a ";"
+  unsigned ATTR_USE int attr_in_decl_spec; // expected-error {{'ATTR_NAME' cannot appear here}}
+                    ^
+
+"Test_name.c", line 118: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  unsigned ATTR_USE int ATTR_USE const double_decl_spec = 0; // expected-error 2 {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 118: error: expected a ";"
+  unsigned ATTR_USE int ATTR_USE const double_decl_spec = 0; // expected-error 2 {{'ATTR_NAME' cannot appear here}}
+                    ^
+
+"Test_name.c", line 120: error: expected a ";"
+    void const_after_attr () ATTR_USE const; // expected-error {{expected ';'}}
+                             ^
+
+"Test_name.c", line 122: error: explicit type is missing ("int" assumed)
+  extern "C++" ATTR_USE { } // expected-error {{'ATTR_NAME' cannot appear here}}
+               ^
+
+"Test_name.c", line 122: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  extern "C++" ATTR_USE { } // expected-error {{'ATTR_NAME' cannot appear here}}
+               ^
+
+"Test_name.c", line 123: error: expected a ";"
+  ATTR_USE extern "C++" { } // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 125: error: this declaration has no storage class or type specifier
+  ATTR_USE namespace ns { int i; } // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 125: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  ATTR_USE namespace ns { int i; } // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 125: error: expected a ";"
+  ATTR_USE namespace ns { int i; } // expected-error {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 127: error: this declaration has no storage class or type specifier
+  ATTR_USE asm(""); // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 127: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  ATTR_USE asm(""); // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 129: error: this declaration has no storage class or type specifier
+  ATTR_USE using ns::i; // expected-warning {{ISO C++}} \
+  ^
+
+"Test_name.c", line 129: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  ATTR_USE using ns::i; // expected-warning {{ISO C++}} \
+  ^
+
+"Test_name.c", line 129: error: expected a ";"
+  ATTR_USE using ns::i; // expected-warning {{ISO C++}} \
+           ^
+
+"Test_name.c", line 131: error: this declaration has no storage class or type specifier
+  ATTR_USE using namespace ns; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+  ^
+
+"Test_name.c", line 131: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  ATTR_USE using namespace ns; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+  ^
+
+"Test_name.c", line 131: error: expected a ";"
+  ATTR_USE using namespace ns; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+           ^
+
+"Test_name.c", line 132: error: expected a "{"
+  namespace ATTR_USE ns2 {} // expected-warning {{attributes on a namespace declaration are a C++17 extension}} \
+                     ^
+
+"Test_name.c", line 135: error: namespace-qualified name is required
+  using ATTR_USE alignas(4)ATTR_USE ns::i;          // expected-warning 2 {{ISO C++}} \
+        ^
+
+"Test_name.c", line 135: error: expected a ";"
+  using ATTR_USE alignas(4)ATTR_USE ns::i;          // expected-warning 2 {{ISO C++}} \
+                           ^
+
+"Test_name.c", line 140: error: namespace-qualified name is required
+  using ATTR_USE alignas(4) ATTR_USE foobar = int; // expected-error {{'ATTR_NAME' cannot appear here}} \
+        ^
+
+"Test_name.c", line 140: error: expected a ";"
+  using ATTR_USE alignas(4) ATTR_USE foobar = int; // expected-error {{'ATTR_NAME' cannot appear here}} \
+                            ^
+
+"Test_name.c", line 144: error: this declaration has no storage class or type specifier
+  ATTR_USE using T = int; // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 144: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  ATTR_USE using T = int; // expected-error {{'ATTR_NAME' cannot appear here}}
+  ^
+
+"Test_name.c", line 144: error: expected a ";"
+  ATTR_USE using T = int; // expected-error {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 145: error: identifier "T" is undefined
+  using T ATTR_USE = int; // expected-error {{'ATTR_NAME' only applies to function types}}
+        ^
+
+"Test_name.c", line 145: error: expected a ";"
+  using T ATTR_USE = int; // expected-error {{'ATTR_NAME' only applies to function types}}
+          ^
+
+"Test_name.c", line 146: error: expected an "="
+  template<typename T> using U ATTR_USE = T; // expected-error {{'ATTR_NAME' only applies to function types}}
+                               ^
+
+"Test_name.c", line 146: error: variable "ATTR_USE" is not a type name
+  template<typename T> using U ATTR_USE = T; // expected-error {{'ATTR_NAME' only applies to function types}}
+                               ^
+
+"Test_name.c", line 146: error: expected a ";"
+  template<typename T> using U ATTR_USE = T; // expected-error {{'ATTR_NAME' only applies to function types}}
+                                        ^
+
+"Test_name.c", line 147: error: identifier "ns" is undefined
+  using ns::i ATTR_USE; // expected-warning {{ISO C++}} \
+        ^
+
+"Test_name.c", line 147: error: expected a ";"
+  using ns::i ATTR_USE; // expected-warning {{ISO C++}} \
+          ^
+
+"Test_name.c", line 149: error: identifier "ns" is undefined
+  using ns::i ATTR_USE, ns::i ATTR_USE; // expected-warning 2 {{ISO C++}} \
+        ^
+
+"Test_name.c", line 149: error: expected a ";"
+  using ns::i ATTR_USE, ns::i ATTR_USE; // expected-warning 2 {{ISO C++}} \
+          ^
+
+"Test_name.c", line 156: error: this declaration has no storage class or type specifier
+    ATTR_USE using using_in_struct_base::i; // expected-warning {{ISO C++}} \
+    ^
+
+"Test_name.c", line 156: error: expected a ";"
+    ATTR_USE using using_in_struct_base::i; // expected-warning {{ISO C++}} \
+             ^
+
+"Test_name.c", line 158: error: expected a ";"
+    using using_in_struct_base::j ATTR_USE; // expected-warning {{ISO C++}} \
+                                  ^
+
+"Test_name.c", line 160: error: this declaration has no storage class or type specifier
+    ATTR_USE using using_in_struct_base::k ATTR_USE, using_in_struct_base::l ATTR_USE; // expected-warning 3 {{ISO C++}} \
+    ^
+
+"Test_name.c", line 160: error: "ATTR_USE" has already been declared in the current scope
+    ATTR_USE using using_in_struct_base::k ATTR_USE, using_in_struct_base::l ATTR_USE; // expected-warning 3 {{ISO C++}} \
+    ^
+
+"Test_name.c", line 160: error: expected a ";"
+    ATTR_USE using using_in_struct_base::k ATTR_USE, using_in_struct_base::l ATTR_USE; // expected-warning 3 {{ISO C++}} \
+             ^
+
+"Test_name.c", line 164: error: namespace-qualified name is required
+  using ATTR_USE ns::i; // expected-warning {{ISO C++}} \
+        ^
+
+"Test_name.c", line 164: error: expected a ";"
+  using ATTR_USE ns::i; // expected-warning {{ISO C++}} \
+                 ^
+
+"Test_name.c", line 167: error: identifier "T" is undefined
+  using T ATTR_USE = int; // expected-error {{'ATTR_NAME' only applies to function types}}
+        ^
+
+"Test_name.c", line 167: error: expected a ";"
+  using T ATTR_USE = int; // expected-error {{'ATTR_NAME' only applies to function types}}
+          ^
+
+"Test_name.c", line 169: error: variable "ATTR_USE" is not a type name
+  auto trailing() -> ATTR_USE const int; // expected-error {{'ATTR_NAME' cannot appear here}}
+                     ^
+
+"Test_name.c", line 169: error: invalid combination of type specifiers
+  auto trailing() -> ATTR_USE const int; // expected-error {{'ATTR_NAME' cannot appear here}}
+                                    ^
+
+"Test_name.c", line 170: error: explicit type is missing ("int" assumed)
+  auto trailing() -> const ATTR_USE int; // expected-error {{'ATTR_NAME' cannot appear here}}
+                     ^
+
+"Test_name.c", line 170: error: cannot overload functions distinguished by return type alone
+  auto trailing() -> const ATTR_USE int; // expected-error {{'ATTR_NAME' cannot appear here}}
+       ^
+
+"Test_name.c", line 170: error: expected a "{"
+  auto trailing() -> const ATTR_USE int; // expected-error {{'ATTR_NAME' cannot appear here}}
+                           ^
+
+"Test_name.c", line 174: warning: parsing restarts here after previous syntax error
+  namespace N {
+              ^
+
+"Test_name.c", line 176: warning: missing return statement at end of non-void function "<error>"
+  };
+  ^
+
+"Test_name.c", line 180: error: incomplete type "ATTR_USE" is not allowed
+  struct ATTR_USE N::S s; // expected-error {{'ATTR_NAME' cannot appear here}}
+                  ^
+
+"Test_name.c", line 180: error: expected a ";"
+  struct ATTR_USE N::S s; // expected-error {{'ATTR_NAME' cannot appear here}}
+                   ^
+
+"Test_name.c", line 181: error: expected an identifier
+  struct ATTR_USE Template<int> t; // expected-error {{'ATTR_NAME' cannot appear here}}
+                  ^
+
+"Test_name.c", line 181: error: expected a ";"
+  struct ATTR_USE Template<int> t; // expected-error {{'ATTR_NAME' cannot appear here}}
+                  ^
+
+"Test_name.c", line 182: error: incomplete type "ATTR_USE" is not allowed
+  struct ATTR_USE ::template Template<int> u; // expected-error {{'ATTR_NAME' cannot appear here}}
+         ^
+
+"Test_name.c", line 182: error: expected an identifier
+  struct ATTR_USE ::template Template<int> u; // expected-error {{'ATTR_NAME' cannot appear here}}
+                                     ^
+
+"Test_name.c", line 183: error: invalid explicit instantiation declaration
+  template struct ATTR_USE Template<char>; // expected-error {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 184: warning: attribute "pure" does not apply here
+  template struct __attribute__((pure)) Template<std::size_t>; // We still allow GNU-style attributes here
+                                 ^
+
+"Test_name.c", line 185: error: class "Template<void>" is not an entity that can be explicitly specialized
+  template <> struct ATTR_USE Template<void>; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                              ^
+
+"Test_name.c", line 187: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE E1 {}; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+       ^
+
+"Test_name.c", line 188: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE E2; // expected-error {{forbids forward references}} \
+       ^
+
+"Test_name.c", line 190: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE E1; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+       ^
+
+"Test_name.c", line 190: error: variable "E1" has already been defined (previous definition at line 187)
+  enum ATTR_USE E1; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                ^
+
+"Test_name.c", line 191: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE E3 : int; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+       ^
+
+"Test_name.c", line 191: error: expected a ";"
+  enum ATTR_USE E3 : int; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                   ^
+
+"Test_name.c", line 192: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE { // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+       ^
+
+"Test_name.c", line 193: error: expected a "}"
+    k_123 ATTR_USE = 123 // expected-warning {{attributes on an enumerator declaration are a C++17 extension}} \
+          ^
+"Test_name.c", line 192: note: to match this "{"
+  enum ATTR_USE { // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+                ^
+
+"Test_name.c", line 196: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE E1 e; // expected-error {{'ATTR_NAME' cannot appear here}}
+       ^
+
+"Test_name.c", line 196: error: variable "E1" has already been defined (previous definition at line 187)
+  enum ATTR_USE E1 e; // expected-error {{'ATTR_NAME' cannot appear here}}
+                ^
+
+"Test_name.c", line 196: error: expected a ";"
+  enum ATTR_USE E1 e; // expected-error {{'ATTR_NAME' cannot appear here}}
+                   ^
+
+"Test_name.c", line 197: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum ATTR_USE class E4 { }; // expected-error {{'ATTR_NAME' cannot appear here}}
+       ^
+
+"Test_name.c", line 197: error: invalid combination of type specifiers
+  enum ATTR_USE class E4 { }; // expected-error {{'ATTR_NAME' cannot appear here}}
+                ^
+
+"Test_name.c", line 198: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum struct ATTR_USE E5; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+              ^
+
+"Test_name.c", line 199: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  enum E6 {} ATTR_USE; // expected-error {{'ATTR_NAME' cannot appear here, place it after "enum" to apply it to the type declaration}}
+             ^
+
+"Test_name.c", line 202: error: invalid friend declaration
+    friend int f ATTR_USE (); // expected-error {{'ATTR_NAME' cannot appear here}} \
+    ^
+
+"Test_name.c", line 202: error: expected a ";"
+    friend int f ATTR_USE (); // expected-error {{'ATTR_NAME' cannot appear here}} \
+                 ^
+
+"Test_name.c", line 204: error: invalid friend declaration
+    friend int f2 ATTR_USE () {} // expected-error {{'ATTR_NAME' cannot be applied to a declaration}}
+    ^
+
+"Test_name.c", line 204: error: expected a ";"
+    friend int f2 ATTR_USE () {} // expected-error {{'ATTR_NAME' cannot be applied to a declaration}}
+                  ^
+
+"Test_name.c", line 206: error: this declaration has no storage class or type specifier
+    ATTR_USE friend int h() { // expected-error {{'ATTR_NAME' cannot be applied to a declaration}}
+    ^
+
+"Test_name.c", line 206: error: expected a ";"
+    ATTR_USE friend int h() { // expected-error {{'ATTR_NAME' cannot be applied to a declaration}}
+             ^
+
+"Test_name.c", line 209: error: invalid friend declaration
+    friend int f6 ATTR_USE (), f7 ATTR_USE (), f8 ATTR_USE (); // expected-error3 {{'ATTR_NAME' cannot appear here}} \
+    ^
+
+"Test_name.c", line 209: error: expected a ";"
+    friend int f6 ATTR_USE (), f7 ATTR_USE (), f8 ATTR_USE (); // expected-error3 {{'ATTR_NAME' cannot appear here}} \
+                  ^
+
+"Test_name.c", line 211: error: invalid friend declaration
+    friend class ATTR_USE C; // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 212: error: this declaration has no storage class or type specifier
+    ATTR_USE friend class D; // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 212: error: "ATTR_USE" has already been declared in the current scope
+    ATTR_USE friend class D; // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 212: error: expected a ";"
+    ATTR_USE friend class D; // expected-error {{'ATTR_NAME' cannot appear here}}
+             ^
+
+"Test_name.c", line 213: error: this declaration has no storage class or type specifier
+    ATTR_USE friend int; // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 213: error: "ATTR_USE" has already been declared in the current scope
+    ATTR_USE friend int; // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 213: error: expected a ";"
+    ATTR_USE friend int; // expected-error {{'ATTR_NAME' cannot appear here}}
+             ^
+
+"Test_name.c", line 216: error: this declaration has no storage class or type specifier
+  template ATTR_USE void tmpl(char); // expected-error {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 216: error: "<error-type> ATTR_USE" is not an entity that can be instantiated
+  template ATTR_USE void tmpl(char); // expected-error {{'ATTR_NAME' cannot appear here}}
+           ^
+
+"Test_name.c", line 216: error: expected a ";"
+  template ATTR_USE void tmpl(char); // expected-error {{'ATTR_NAME' cannot appear here}}
+                    ^
+
+"Test_name.c", line 217: error: "<error-type> ATTR_USE" is not an entity that can be instantiated
+  template void ATTR_USE tmpl(short); // expected-error {{'ATTR_NAME' only applies to function types}}
+                ^
+
+"Test_name.c", line 217: error: expected a ";"
+  template void ATTR_USE tmpl(short); // expected-error {{'ATTR_NAME' only applies to function types}}
+                         ^
+
+"Test_name.c", line 221: warning: expression has no effect
+    ATTR_USE ; // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 222: warning: expression has no effect
+    ATTR_USE { } // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 222: error: expected a ";"
+    ATTR_USE { } // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+             ^
+
+"Test_name.c", line 225: warning: expression has no effect
+    ATTR_USE do { // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 225: error: expected a ";"
+    ATTR_USE do { // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+             ^
+
+"Test_name.c", line 228: warning: expression has no effect
+    ATTR_USE while (0); // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 228: error: expected a ";"
+    ATTR_USE while (0); // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+             ^
+
+"Test_name.c", line 230: warning: expression has no effect
+    ATTR_USE switch (i) { // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 230: error: expected a ";"
+    ATTR_USE switch (i) { // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+             ^
+
+"Test_name.c", line 236: warning: parsing restarts here after previous syntax error
+    ATTR_USE goto there; // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+                       ^
+
+"Test_name.c", line 237: warning: expression has no effect
+    ATTR_USE there: // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+    ^
+
+"Test_name.c", line 237: error: expected a ";"
+    ATTR_USE there: // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+             ^
+
+"Test_name.c", line 243: warning: parsing restarts here after previous syntax error
+    void bar ATTR_USE (ATTR_USE int i, ATTR_USE int j); // expected-error 2 {{'ATTR_NAME' only applies to function types}} \
+                                                      ^
+
+"Test_name.c", line 245: error: expected a ")"
+    using FuncType = void (ATTR_USE int); // expected-error {{'ATTR_NAME' only applies to function types}}
+                           ^
+
+"Test_name.c", line 246: error: incomplete type "void" is not allowed
+    void baz(ATTR_USE...); // expected-error {{expected parameter declarator}}
+         ^
+
+"Test_name.c", line 246: error: expected a ")"
+    void baz(ATTR_USE...); // expected-error {{expected parameter declarator}}
+                     ^
+
+"Test_name.c", line 248: warning: expression has no effect
+    ATTR_USE return; // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+    ^
+
+"Test_name.c", line 248: error: expected a ";"
+    ATTR_USE return; // expected-error {{'ATTR_NAME' cannot be applied to a statement}}
+             ^
+
+"Test_name.c", line 253: error: expected a ";"
+    new int[42]ATTR_USE[5]ATTR_USE{}; // expected-error {{'ATTR_NAME' only applies to function types}}
+               ^
+
+"Test_name.c", line 258: error: expected a ")"
+    if (ATTR_USE bool b = true) { // expected-error {{'ATTR_NAME' only applies to function types}}
+                 ^
+
+"Test_name.c", line 259: error: expected a ")"
+      switch (ATTR_USE int n { 42 }) { // expected-error {{'ATTR_NAME' only applies to function types}}
+                       ^
+
+"Test_name.c", line 261: warning: expression has no effect
+        for (ATTR_USE int n = 0; ATTR_USE char b = n < 5; ++b) { // expected-error 2 {{'ATTR_NAME' only applies to function types}}
+             ^
+
+"Test_name.c", line 261: error: expected a ";"
+        for (ATTR_USE int n = 0; ATTR_USE char b = n < 5; ++b) { // expected-error 2 {{'ATTR_NAME' only applies to function types}}
+                      ^
+
+"Test_name.c", line 261: error: expected a ";"
+        for (ATTR_USE int n = 0; ATTR_USE char b = n < 5; ++b) { // expected-error 2 {{'ATTR_NAME' only applies to function types}}
+                                          ^
+
+"Test_name.c", line 261: error: identifier "b" is undefined
+        for (ATTR_USE int n = 0; ATTR_USE char b = n < 5; ++b) { // expected-error 2 {{'ATTR_NAME' only applies to function types}}
+                                                            ^
+
+"Test_name.c", line 269: warning: expression has no effect
+    for (ATTR_USE x = 0; ; ) {} // expected-error {{'ATTR_NAME' cannot appear here}}
+         ^
+
+"Test_name.c", line 269: error: expected a ";"
+    for (ATTR_USE x = 0; ; ) {} // expected-error {{'ATTR_NAME' cannot appear here}}
+                  ^
+
+"Test_name.c", line 270: error: expected a ";"
+    for (; ATTR_USE x < 5; ) {} // expected-error {{'ATTR_NAME' cannot appear here}}
+                    ^
+
+"Test_name.c", line 270: warning: loop is not reachable
+    for (; ATTR_USE x < 5; ) {} // expected-error {{'ATTR_NAME' cannot appear here}}
+    ^
+
+"Test_name.c", line 271: error: expected a ")"
+    while (ATTR_USE bool k { false }) { // expected-error {{'ATTR_NAME' only applies to function types}}
+                    ^
+
+"Test_name.c", line 273: error: expected a ")"
+    while (ATTR_USE true) { // expected-error {{'ATTR_NAME' cannot appear here}}
+                    ^
+
+"Test_name.c", line 276: error: expected a ")"
+    } while (ATTR_USE false); // expected-error {{'ATTR_NAME' cannot appear here}}
+                      ^
+
+"Test_name.c", line 278: error: variable "ATTR_USE" is not a type name
+    for (ATTR_USE int n : { 1, 2, 3 }) { // expected-error {{'ATTR_NAME' only applies to function types}}
+         ^
+
+"Test_name.c", line 278: error: invalid combination of type specifiers
+    for (ATTR_USE int n : { 1, 2, 3 }) { // expected-error {{'ATTR_NAME' only applies to function types}}
+                  ^
+
+"Test_name.c", line 265: warning: variable "x" was declared but never referenced
+    int x;
+        ^
+
+"Test_name.c", line 282: warning: unknown attribute "visibility"
+  enum class __attribute__((visibility("hidden"))) SecretKeepers {
+                            ^
+
+"Test_name.c", line 285: error: tag kind of enum is incompatible with declaration of class "ATTR_USE" (declared at line 56)
+  enum class ATTR_USE EvenMoreSecrets {}; // expected-error {{'ATTR_NAME' only applies to non-K&R-style functions}}
+             ^
+
+"Test_name.c", line 288: error: variable "ATTR_USE" has already been defined (previous definition at line 114)
+  unsigned ATTR_USE static int ATTR_USE v1; // expected-error {{'ATTR_NAME' only applies to function types}} \
+           ^
+
+"Test_name.c", line 288: error: expected a ";"
+  unsigned ATTR_USE static int ATTR_USE v1; // expected-error {{'ATTR_NAME' only applies to function types}} \
+                    ^
+
+"Test_name.c", line 290: error: explicit type is missing ("int" assumed)
+  typedef ATTR_USE unsigned long ATTR_USE v2; // expected-error {{'ATTR_NAME' only applies to function types}} \
+          ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

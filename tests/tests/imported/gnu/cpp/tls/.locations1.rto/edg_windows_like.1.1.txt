@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 5: error: identifier "__thread" is undefined
+  template <__thread int T> struct F {}; // { dg-error "11:storage class specified" }
+            ^
+
+"Test_name.c", line 5: error: invalid combination of type specifiers
+  template <__thread int T> struct F {}; // { dg-error "11:storage class specified" }
+                     ^
+
+"Test_name.c", line 6: error: a storage class may not be specified here
+  template <static __thread int T> struct G {}; // { dg-error "11:storage class specified" }
+            ^
+
+"Test_name.c", line 6: error: explicit type is missing ("int" assumed)
+  template <static __thread int T> struct G {}; // { dg-error "11:storage class specified" }
+            ^
+
+"Test_name.c", line 6: error: expected a "," or ">"
+  template <static __thread int T> struct G {}; // { dg-error "11:storage class specified" }
+                            ^
+
+5 errors detected in the compilation of "Test_name.c".

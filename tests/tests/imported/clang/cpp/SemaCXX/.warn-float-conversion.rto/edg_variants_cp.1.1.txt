@@ -1,0 +1,139 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -DFLOAT_CONVERSION -DZERO -DBOOL -DCONSTANT_BOOL -DOVERFLOW -DOVERFLOW -DZERO Test_name.c
+"Test_name.c", line 27: warning: variable "b" was set but never used
+    bool b;
+         ^
+
+"Test_name.c", line 28: warning: variable "c" was set but never used
+    char c;
+         ^
+
+"Test_name.c", line 29: warning: variable "i" was set but never used
+    int i;
+        ^
+
+"Test_name.c", line 30: warning: variable "l" was set but never used
+    long l;
+         ^
+
+"warn-float-conversion.cpp", line 11: warning: floating-point value does not fit in required integral type
+    int a4 = 1e30 + 1;  //expected-warning{{conversion}}
+             ^
+
+"warn-float-conversion.cpp", line 8: warning: variable "a1" was declared but never referenced
+    int a1 = 10.0/2.0;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 9: warning: variable "a2" was declared but never referenced
+    int a2 = 1.0/2.0;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 11: warning: variable "a4" was declared but never referenced
+    int a4 = 1e30 + 1;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 16: warning: variable "a1" was declared but never referenced
+    int a1 = 5.0;
+        ^
+
+"warn-float-conversion.cpp", line 17: warning: variable "a2" was declared but never referenced
+    int a2 = 1e3;
+        ^
+
+"warn-float-conversion.cpp", line 19: warning: variable "a3" was declared but never referenced
+    int a3 = 5.5;  // caught by -Wliteral-conversion
+        ^
+
+"warn-float-conversion.cpp", line 20: warning: variable "a4" was declared but never referenced
+    int a4 = 500.44;  // caught by -Wliteral-convserion
+        ^
+
+"warn-float-conversion.cpp", line 22: warning: variable "b1" was declared but never referenced
+    int b1 = 5.0 / 1.0;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 23: warning: variable "b2" was declared but never referenced
+    int b2 = 5.0 / 2.0;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 27: warning: variable "b3" was declared but never referenced
+    int b3 = five / 1.0;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 28: warning: variable "b4" was declared but never referenced
+    int b4 = five / 2.0;  //expected-warning{{conversion}}
+        ^
+
+"warn-float-conversion.cpp", line 30: warning: variable "f" was declared but never referenced
+    int f = 2147483646.5 + 1; // expected-warning{{implicit conversion from 'double' to 'int' changes value from 2147483647.5 to 2147483647}}
+        ^
+
+"warn-float-conversion.cpp", line 31: warning: variable "g" was declared but never referenced
+    unsigned g = -.5 + .01; // expected-warning{{implicit conversion from 'double' to 'unsigned int' changes non-zero value from -0.49 to 0}}
+             ^
+
+"warn-float-conversion.cpp", line 38: warning: variable "a1" was declared but never referenced
+    int a1 = half;  // expected-warning{{implicit conversion from 'const float' to 'int' changes non-zero value from 0.5 to 0}}
+        ^
+
+"warn-float-conversion.cpp", line 39: warning: variable "a2" was declared but never referenced
+    int a2 = 1.0 / 2.0;  // expected-warning{{implicit conversion from 'double' to 'int' changes non-zero value from 0.5 to 0}}
+        ^
+
+"warn-float-conversion.cpp", line 40: warning: variable "a3" was declared but never referenced
+    int a3 = 5;
+        ^
+
+"warn-float-conversion.cpp", line 46: warning: floating-point value does not fit in required integral type
+    char a = 500.0;  // caught by -Wliteral-conversion
+             ^
+
+"warn-float-conversion.cpp", line 47: warning: floating-point value does not fit in required integral type
+    char b = -500.0;  // caught by -Wliteral-conversion
+             ^
+
+"warn-float-conversion.cpp", line 50: warning: floating-point value does not fit in required integral type
+    char c = LargeNumber;  // expected-warning{{implicit conversion of out of range value from 'const float' to 'char' is undefined}}
+             ^
+
+"warn-float-conversion.cpp", line 51: warning: floating-point value does not fit in required integral type
+    char d = 400.0 + 400.0;  // expected-warning{{implicit conversion of out of range value from 'double' to 'char' is undefined}}
+             ^
+
+"warn-float-conversion.cpp", line 46: warning: variable "a" was declared but never referenced
+    char a = 500.0;  // caught by -Wliteral-conversion
+         ^
+
+"warn-float-conversion.cpp", line 47: warning: variable "b" was declared but never referenced
+    char b = -500.0;  // caught by -Wliteral-conversion
+         ^
+
+"warn-float-conversion.cpp", line 50: warning: variable "c" was declared but never referenced
+    char c = LargeNumber;  // expected-warning{{implicit conversion of out of range value from 'const float' to 'char' is undefined}}
+         ^
+
+"warn-float-conversion.cpp", line 51: warning: variable "d" was declared but never referenced
+    char d = 400.0 + 400.0;  // expected-warning{{implicit conversion of out of range value from 'double' to 'char' is undefined}}
+         ^
+
+"warn-float-conversion.cpp", line 53: warning: variable "e" was declared but never referenced
+    char e = 1.0 / 0.0;  // expected-warning{{implicit conversion of out of range value from 'double' to 'char' is undefined}}
+         ^
+
+"warn-float-conversion.cpp", line 85: warning: variable "a" is used before its value is set
+    float a = run1(a) + run2(a);
+                             ^
+
+"warn-float-conversion.cpp", line 86: warning: variable "b" is used before its value is set
+    char b = run1(b) + run2(b);  // expected-note {{in instantiation of function template specialization 'run1<char>' requested here}}
+                            ^
+
+"warn-float-conversion.cpp", line 72: warning: floating-point value does not fit in required integral type
+    return ret;  // expected-warning {{implicit conversion of out of range value from 'const float' to 'char' is undefined}}
+           ^
+          detected during instantiation of "T run1(T) [with T=char]" at line 86
+
+"warn-float-conversion.cpp", line 79: warning: floating-point value does not fit in required integral type
+      return ret;
+             ^
+          detected during instantiation of "T run2(T) [with T=char]" at line 86
+

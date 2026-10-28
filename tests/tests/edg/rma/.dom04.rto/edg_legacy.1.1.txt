@@ -1,0 +1,57 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 11: remark: function "X::X()" cannot be inlined
+  class X : virtual public A, public B { public: int i; };
+        ^
+          detected during:
+            implicit generation of "X::X()" at line 16
+            implicit generation of "C::C()" at line 16
+
+"Test_name.c", line 12: remark: function "Y::Y()" cannot be inlined
+  class Y : public B, virtual public A { public: int j; };
+        ^
+          detected during:
+            implicit generation of "Y::Y()" at line 16
+            implicit generation of "C::C()" at line 16
+
+"Test_name.c", line 13: remark: function "C::C()" cannot be inlined
+  class C : public X, public Y { void f(); };
+        ^
+          detected during implicit generation of "C::C()" at line 16
+
+"Test_name.c", line 17: error: "C::j" is ambiguous
+    return c.j;
+             ^
+
+"Test_name.c", line 24: error: base class "B" is ambiguous
+    B::i = 0;   // ambiguous
+       ^
+
+"Test_name.c", line 25: error: base class "B" is ambiguous
+    B::j = 0;   // ambiguous
+       ^
+
+"Test_name.c", line 27: error: "X::j" is ambiguous
+    X::j = 0;   // ambiguous
+       ^
+
+"Test_name.c", line 29: error: "Y::i" is ambiguous
+    Y::i = 0;   // ambiguous
+       ^
+
+"Test_name.c", line 32: error: "C::i" is ambiguous
+    C::i = 0;   // ambiguous
+       ^
+
+"Test_name.c", line 33: error: "C::j" is ambiguous
+    C::j = 0;   // ambiguous
+       ^
+
+"Test_name.c", line 35: error: "C::i" is ambiguous
+    i = 0;      // ambiguous
+    ^
+
+"Test_name.c", line 36: error: "C::j" is ambiguous
+    j = 0;      // ambiguous
+    ^
+
+9 errors detected in the compilation of "Test_name.c".

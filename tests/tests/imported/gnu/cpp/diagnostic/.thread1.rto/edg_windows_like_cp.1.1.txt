@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: error: this declaration has no storage class or type specifier
+  __thread int i __attribute__((unused)) = foo();  // { dg-error "14:non-local variable .i. declared .__thread. needs" }
+  ^
+
+"Test_name.c", line 7: error: expected a ";"
+  __thread int i __attribute__((unused)) = foo();  // { dg-error "14:non-local variable .i. declared .__thread. needs" }
+           ^
+
+"Test_name.c", line 15: error: variable "__thread" is not a type name
+  __thread S s __attribute__((unused));  // { dg-error "12:non-local variable .s. declared .__thread." }
+  ^
+
+"Test_name.c", line 15: error: expected a ";"
+  __thread S s __attribute__((unused));  // { dg-error "12:non-local variable .s. declared .__thread." }
+             ^
+
+4 errors detected in the compilation of "Test_name.c".

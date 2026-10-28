@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 11: warning: missing return statement at end of non-void function "foo<a, b>::funca<t>()"
+    b<a, t> funca() {}
+                     ^
+
+"Test_name.c", line 14: warning: missing return statement at end of non-void function "foo<a, b>::funcb<t>()"
+    type<t> funcb() {}
+                     ^
+
+"Test_name.c", line 23: error: parameter pack "T" was referenced but not expanded
+  using A = S<T>; // { dg-error "parameter packs not expanded" }
+              ^
+
+1 error detected in the compilation of "Test_name.c".

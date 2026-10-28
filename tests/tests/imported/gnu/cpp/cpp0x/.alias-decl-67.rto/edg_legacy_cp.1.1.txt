@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 25: error: cannot determine which instance of function template "s<r>::t" is intended
+    s(r) { t; }
+           ^
+
+"Test_name.c", line 19: error: incomplete type "o<false>" is not allowed
+  template <bool ab> using ac = typename o<ab>::i; // { dg-error "incomplete" }
+                                         ^
+          detected during:
+            instantiation of type "ac<false>" at line 26
+            instantiation of class "s<r> [with r=char [10]]" at line 32
+
+2 errors detected in the compilation of "Test_name.c".

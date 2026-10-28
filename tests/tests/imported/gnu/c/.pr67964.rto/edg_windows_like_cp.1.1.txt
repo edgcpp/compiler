@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: error: expected a ","
+  extern int fn0 (void) __attribute__ ((const const)); /* { dg-error "expected" } */
+                                              ^
+
+"Test_name.c", line 9: error: expected a ","
+  extern int fn2 (void) __attribute__ ((optimize (0) const)); /* { dg-error "expected" } */
+                                                     ^
+
+"Test_name.c", line 16: error: expected a ","
+  extern int fn8 (void) __attribute__ ((__noreturn__ __noreturn__)); /* { dg-error "expected" } */
+                                                     ^
+
+"Test_name.c", line 18: error: expected a ","
+  extern int fn10 (void) __attribute__ ((__cold__ __pure__ __noclone__)); /* { dg-error "expected" } */
+                                                  ^
+
+"Test_name.c", line 19: error: expected a ","
+  extern int fn11 (void) __attribute__ ((__cold__, __pure__ __noclone__)); /* { dg-error "expected" } */
+                                                            ^
+
+"Test_name.c", line 22: error: expected a ","
+  extern int a __attribute__ ((alias ("i") unused)); /* { dg-error "expected" } */
+                                           ^
+
+"Test_name.c", line 24: error: expected a ","
+  struct A { char p[6]; } __attribute__((__packed__ packed)); /* { dg-error "expected" } */
+                                                    ^
+
+7 errors detected in the compilation of "Test_name.c".

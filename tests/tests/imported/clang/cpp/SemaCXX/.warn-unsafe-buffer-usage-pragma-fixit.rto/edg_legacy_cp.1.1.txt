@@ -1,0 +1,97 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 8: warning: variable "tmp" was set but never used
+    int tmp;
+        ^
+
+"Test_name.c", line 22: warning: variable "tmp" was set but never used
+    int tmp;
+        ^
+
+"Test_name.c", line 58: warning: variable "tmp" was set but never used
+    int tmp;
+        ^
+
+"Test_name.c", line 110: warning: expression has no effect
+    p[5]; // not to note since the associated warning is suppressed
+    ^
+
+"Test_name.c", line 128: warning: variable "a" is used before its value is set
+    a[5] = 5;
+    ^
+
+"Test_name.c", line 130: warning: variable "b" is used before its value is set
+    a = b;
+        ^
+
+"Test_name.c", line 131: warning: variable "c" is used before its value is set
+    b = c;
+        ^
+
+"Test_name.c", line 144: warning: variable "a" is used before its value is set
+    a[5] = 5;
+    ^
+
+"Test_name.c", line 145: warning: variable "b" is used before its value is set
+    a = b;
+        ^
+
+"Test_name.c", line 146: warning: variable "c" is used before its value is set
+    b = c;
+        ^
+
+"Test_name.c", line 161: warning: variable "a" is used before its value is set
+    a[5] = 5;
+    ^
+
+"Test_name.c", line 163: warning: variable "b" is used before its value is set
+    b[5] = 5;
+    ^
+
+"Test_name.c", line 166: warning: variable "c" is used before its value is set
+    b = c;
+        ^
+
+"Test_name.c", line 181: warning: variable "c" is used before its value is set
+    c[5] = 5;
+    ^
+
+"Test_name.c", line 183: warning: variable "b" is used before its value is set
+    b[5] = 5;
+    ^
+
+"Test_name.c", line 174: warning: variable "a" was set but never used
+    int * a;
+          ^
+
+"Test_name.c", line 202: warning: variable "c" is used before its value is set
+    c[5] = 5;
+    ^
+
+"Test_name.c", line 204: warning: variable "b" is used before its value is set
+    b[5] = 5;
+    ^
+
+"Test_name.c", line 229: warning: variable "a" is used before its value is set
+    a[5] = 5;
+    ^
+
+"Test_name.c", line 231: warning: variable "b" is used before its value is set
+    a = b;
+        ^
+
+"Test_name.c", line 232: warning: variable "c" is used before its value is set
+    b = c;
+        ^
+
+"Test_name.c", line 234: warning: variable "d" is used before its value is set
+    d[5] = 5;
+    ^
+
+"Test_name.c", line 235: warning: variable "e" is used before its value is set
+    d = e;
+        ^
+
+"Test_name.c", line 236: warning: variable "f" is used before its value is set
+    e = f;
+        ^
+

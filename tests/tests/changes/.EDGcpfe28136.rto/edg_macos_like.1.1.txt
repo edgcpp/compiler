@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++17 --clang_v 999999 Test_name.c
+"Test_name.c", line 12: warning: unknown attribute "__ext_vector_type__"
+    using Vec __attribute__((__ext_vector_type__(N))) = T;
+                             ^
+
+"Test_name.c", line 15: error: no instance of function template "f" matches the argument list
+            argument types are: (int)
+    f(v);  // Now okay in Clang C++ modes.
+    ^
+"Test_name.c", line 13: note: candidate function template "f" failed deduction
+  template<unsigned long N> void f(Vec<int, N>) {}
+                                 ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,250 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: target attribute not recognized
+  void __attribute__((target("arch=sandybridge")))  no_default(void);
+                             ^
+
+"Test_name.c", line 19: error: expression must have arithmetic type
+    +has_def;
+     ^
+
+"Test_name.c", line 25: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) no_proto();
+                            ^
+
+"Test_name.c", line 30: error: function "redecl1" has already been defined (previous definition at line 29)
+  int __attribute__((target("arch=sandybridge")))  redecl1(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 30: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redecl1(void) { return 2; }
+                            ^
+
+"Test_name.c", line 34: error: function "redecl2" has already been defined (previous definition at line 32)
+  int __attribute__((target("arch=sandybridge")))  redecl2(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 34: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redecl2(void) { return 2; }
+                            ^
+
+"Test_name.c", line 37: error: function "redecl3" has already been defined (previous definition at line 36)
+  int __attribute__((target("arch=ivybridge"))) redecl3(void) { return 1; }
+                                                ^
+
+"Test_name.c", line 37: warning: target attribute not recognized
+  int __attribute__((target("arch=ivybridge"))) redecl3(void) { return 1; }
+                            ^
+
+"Test_name.c", line 38: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redecl3(void);
+                            ^
+
+"Test_name.c", line 39: error: function "redecl3" has already been defined (previous definition at line 36)
+  int __attribute__((target("arch=sandybridge")))  redecl3(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 39: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redecl3(void) { return 2; }
+                            ^
+
+"Test_name.c", line 42: error: function "redecl4" has already been defined (previous definition at line 41)
+  int __attribute__((target("arch=sandybridge")))  redecl4(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 42: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redecl4(void) { return 2; }
+                            ^
+
+"Test_name.c", line 43: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redecl4(void);
+                            ^
+
+"Test_name.c", line 46: error: function "redef" has already been defined (previous definition at line 45)
+  int __attribute__((target("arch=ivybridge"))) redef(void) { return 1; }
+                                                ^
+
+"Test_name.c", line 46: warning: target attribute not recognized
+  int __attribute__((target("arch=ivybridge"))) redef(void) { return 1; }
+                            ^
+
+"Test_name.c", line 47: error: function "redef" has already been defined (previous definition at line 45)
+  int __attribute__((target("arch=sandybridge")))  redef(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 47: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redef(void) { return 2; }
+                            ^
+
+"Test_name.c", line 50: error: function "redef" has already been defined (previous definition at line 45)
+  int __attribute__((target("arch=sandybridge")))  redef(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 50: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  redef(void) { return 2; }
+                            ^
+
+"Test_name.c", line 55: error: function "redef2" has already been defined (previous definition at line 52)
+  int __attribute__((target("default"))) redef2(void) { return 1;}
+                                         ^
+
+"Test_name.c", line 62: error: function "redef3" has already been defined (previous definition at line 57)
+  int __attribute__((target("default"))) redef3(void) { return 1; }
+                                         ^
+
+"Test_name.c", line 64: error: function "redef3" has already been defined (previous definition at line 57)
+  int __attribute__((target("sse4.2"))) redef3(void) { return 1; }
+                                        ^
+
+"Test_name.c", line 73: error: function "mv_after_use" has already been defined (previous definition at line 66)
+  int __attribute__((target("arch=sandybridge")))  mv_after_use(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 73: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  mv_after_use(void) { return 2; }
+                            ^
+
+"Test_name.c", line 75: warning: target attribute not recognized
+  int __attribute__((target("sse4.2,arch=sandybridge"))) mangle(void) { return 1; }
+                            ^
+
+"Test_name.c", line 78: error: function "mangle" has already been defined (previous definition at line 75)
+  int __attribute__((target("arch=sandybridge,sse4.2")))  mangle(void) { return 2; }
+                                                          ^
+
+"Test_name.c", line 78: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge,sse4.2")))  mangle(void) { return 2; }
+                            ^
+
+"Test_name.c", line 82: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  prev_no_target(void) { return 2; }
+                            ^
+
+"Test_name.c", line 83: error: function "prev_no_target" has already been defined (previous definition at line 82)
+  int __attribute__((target("arch=ivybridge")))  prev_no_target(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 83: warning: target attribute not recognized
+  int __attribute__((target("arch=ivybridge")))  prev_no_target(void) { return 2; }
+                            ^
+
+"Test_name.c", line 85: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge")))  prev_no_target2(void);
+                            ^
+
+"Test_name.c", line 89: warning: target attribute not recognized
+  int __attribute__((target("arch=ivybridge")))  prev_no_target2(void);
+                            ^
+
+"Test_name.c", line 93: warning: target attribute not recognized
+  void __attribute__((no_caller_saved_registers,target("arch=sandybridge")))
+                                                       ^
+
+"Test_name.c", line 102: warning: target attribute not recognized
+  void __attribute__((target("arch=sandybridge")))  addtl_attrs3(void);
+                             ^
+
+"Test_name.c", line 105: warning: target attribute not recognized
+  void __attribute__((target("arch=sandybridge")))  addtl_attrs4(void);
+                             ^
+
+"Test_name.c", line 107: warning: target attribute not recognized
+  void __attribute__((no_caller_saved_registers,target("arch=ivybridge")))  addtl_attrs4(void);
+                                                       ^
+
+"Test_name.c", line 111: warning: this declaration has no storage class or type specifier
+  __vectorcall int __attribute__((target("arch=sandybridge")))  diff_cc(void);
+  ^
+
+"Test_name.c", line 111: error: expected a ";"
+  __vectorcall int __attribute__((target("arch=sandybridge")))  diff_cc(void);
+               ^
+
+"Test_name.c", line 115: error: declaration is incompatible with "int diff_ret(void)" (declared at line 113)
+  short __attribute__((target("arch=sandybridge")))  diff_ret(void);
+                                                     ^
+
+"Test_name.c", line 115: warning: target attribute not recognized
+  short __attribute__((target("arch=sandybridge")))  diff_ret(void);
+                              ^
+
+"Test_name.c", line 118: warning: target attribute not recognized
+  void __attribute__((target("arch=sandybridge"))) addtl_attrs5(int*);
+                             ^
+
+"Test_name.c", line 121: warning: target attribute not recognized
+  void __attribute__((target("arch=sandybridge"), nothrow, used, nonnull)) addtl_attrs6(int*);
+                             ^
+
+"Test_name.c", line 124: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) bad_overload1(void);
+                            ^
+
+"Test_name.c", line 126: error: declaration is incompatible with "int bad_overload1(void)" (declared at line 123)
+  int bad_overload1(int);
+      ^
+
+"Test_name.c", line 131: error: declaration is incompatible with "int bad_overload2(int)" (declared at line 128)
+  int __attribute__((target("sse4.2"))) bad_overload2(void);
+                                        ^
+
+"Test_name.c", line 134: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) bad_overload2(void);
+                            ^
+
+"Test_name.c", line 139: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) bad_overload3(void);
+                            ^
+
+"Test_name.c", line 143: warning: target attribute not recognized
+  int __attribute__((__overloadable__)) __attribute__((target("arch=sandybridge"))) bad_overload4(void);
+                                                              ^
+
+"Test_name.c", line 146: error: declaration is incompatible with "int bad_overload5(void)" (declared at line 145)
+  int __attribute__((target("arch=sandybridge"))) bad_overload5(int);
+                                                  ^
+
+"Test_name.c", line 146: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) bad_overload5(int);
+                            ^
+
+"Test_name.c", line 149: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) good_overload1(void);
+                            ^
+
+"Test_name.c", line 154: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) good_overload2(void);
+                            ^
+
+"Test_name.c", line 159: warning: target attribute not recognized
+  int __attribute__((__overloadable__)) __attribute__((target("arch=sandybridge"))) good_overload3(void);
+                                                              ^
+
+"Test_name.c", line 166: warning: target attribute not recognized
+  int __attribute__((__overloadable__)) __attribute__((target("arch=sandybridge"))) good_overload4(void);
+                                                              ^
+
+"Test_name.c", line 169: warning: target attribute not recognized
+  int __attribute__((__overloadable__)) __attribute__((target("arch=sandybridge"))) good_overload5(int);
+                                                              ^
+
+"Test_name.c", line 172: warning: target attribute not recognized
+  int __attribute__((__overloadable__)) __attribute__((target("arch=sandybridge"))) good_overload6(int);
+                                                              ^
+
+"Test_name.c", line 175: warning: target attribute not recognized
+  int __attribute__((target("arch=sandybridge"))) good_overload7(int);
+                            ^
+
+"Test_name.c", line 179: warning: target attribute not recognized
+  int __attribute__((target("sha"))) no_priority1(void);
+                            ^
+
+"Test_name.c", line 184: warning: target attribute not recognized
+  int __attribute__((target("sha"))) no_priority2(void);
+                            ^
+
+"Test_name.c", line 189: warning: target attribute not recognized
+  int __attribute__((target("sha"))) no_priority3(void);
+                            ^
+
+20 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/inline.c", line 52: warning: inline specifier allowed on function declarations only
+  inline int a;
+  ^
+
+"Sema/inline.c", line 53: warning: inline specifier allowed on function declarations only
+  typedef inline int b;
+          ^
+
+"Sema/inline.c", line 54: error: invalid specifier on a parameter
+  int d(inline int a);
+        ^
+
+"Sema/inline.c", line 77: warning: variable "x" was declared but never referenced
+    static const int x = 0;
+                     ^
+
+"Sema/inline.c", line 78: warning: variable "y" was declared but never referenced
+    static int y = 0;
+               ^
+
+"Sema/inline.c", line 82: warning: variable "x" was declared but never referenced
+    static const int x = 0;
+                     ^
+
+"Sema/inline.c", line 83: warning: variable "y" was declared but never referenced
+    static int y = 0;
+               ^
+
+"inline.c", line 103: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    return staticVar;
+           ^
+
+"inline.c", line 102: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    staticFunction();
+    ^
+
+"XXX.h", line 3: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    return staticVar;
+           ^
+
+"XXX.h", line 2: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    staticFunction();
+    ^
+
+"Sema/inline.c", line 78: warning: a variable with static storage duration cannot be defined within an inline function
+    static int y = 0;
+               ^
+
+"Sema/inline.c", line 71: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    return staticVar;
+           ^
+
+"Sema/inline.c", line 70: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    staticFunction();
+    ^
+
+"Sema/inline.c", line 61: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    return staticVar;
+           ^
+
+"Sema/inline.c", line 60: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    staticFunction();
+    ^
+
+"Sema/inline.c", line 40: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    return constFunction();
+           ^
+
+"Sema/inline.c", line 16: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    return staticVar;
+           ^
+
+"Sema/inline.c", line 15: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    (void)staticStruct.x;
+          ^
+
+"Sema/inline.c", line 14: warning: an entity with internal linkage cannot be referenced within an inline function with external linkage
+    staticFunction();
+    ^
+
+"Sema/inline.c", line 10: warning: static function "staticFunction" treated as extern because it was referenced but not defined
+  static int staticFunction(void);
+             ^
+
+"Sema/inline.c", line 37: warning: static function "constFunction" treated as extern because it was referenced but not defined
+  static int constFunction(void) __attribute__((const));
+             ^
+
+1 error detected in the compilation of "Test_name.c".

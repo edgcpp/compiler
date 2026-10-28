@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 47: error: too many initializer values
+      { const int a{1, 2}; } // expected-error {{excess elements}}
+                       ^
+
+"Test_name.c", line 48: error: too many initializer values
+      { const int a = {1, 2}; } // expected-error {{excess elements}}
+                          ^
+
+"Test_name.c", line 50: error: invalid narrowing conversion from "int" to "short": constant value does not fit in destination type
+      { const short a{100000}; } // expected-error {{cannot be narrowed}} expected-note {{insert an explicit cast}} expected-warning {{changes value}}
+                      ^
+
+"Test_name.c", line 51: error: invalid narrowing conversion from "int" to "short": constant value does not fit in destination type
+      { const short a = {100000}; } // expected-error {{cannot be narrowed}} expected-note {{insert an explicit cast}} expected-warning {{changes value}}
+                         ^
+
+"Test_name.c", line 58: error: a brace-enclosed list is not allowed here
+      (void) ar[{1}]; // expected-error {{array subscript is not an integer}}
+                ^
+
+"Test_name.c", line 64: warning: variable "v" was declared but never referenced
+      auto v = int{1};
+           ^
+
+"Test_name.c", line 87: error: more than one instance of overloaded function "ambiguous" matches the argument list:
+            function "ambiguous(int, double)" (declared at line 85)
+            function "ambiguous(double, int)" (declared at line 86)
+            argument types are: ({...}, {...})
+      ambiguous({0}, {0}); // expected-error {{ambiguous}}
+      ^
+
+"Test_name.c", line 97: error: a brace-enclosed list is not allowed here
+      (void) int({0}); // expected-error {{cannot initialize non-class type 'int' with a parenthesized initializer list}}
+                 ^
+
+"Test_name.c", line 102: error: a brace-enclosed list is not allowed here
+      int *c = intptr({0});  // expected-error {{cannot initialize non-class type 'intptr' (aka 'int *') with a parenthesized initializer list}}
+                      ^
+
+"Test_name.c", line 96: warning: variable "a" was declared but never referenced
+      int a({0}); // expected-error {{cannot initialize non-class type 'int' with a parenthesized initializer list}}
+          ^
+
+"Test_name.c", line 100: warning: variable "b" was declared but never referenced
+      int *b({0});  // expected-error {{cannot initialize non-class type 'int *' with a parenthesized initializer list}}
+           ^
+
+"Test_name.c", line 112: error: a brace-enclosed list is not allowed here
+      T *c = tptr({0});
+                  ^
+
+"Test_name.c", line 110: warning: variable "b" was declared but never referenced
+      T *b({0});
+         ^
+
+"Test_name.c", line 140: warning: extra braces are nonstandard
+    template<typename T> valid braces2(decltype(T{{0}})*);
+                                                  ^
+          detected during instantiation of "excess_braces_sfinae::braces2" based on template argument <excess_braces_sfinae::X> at line 152
+
+9 errors detected in the compilation of "Test_name.c".

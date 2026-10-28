@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 13: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+      return (s->*ps)(1); // expected-error {{called object type 'int' is not a function or function pointer}}
+             ^
+
+"Test_name.c", line 23: error: taking the address of a bit field is not allowed
+  int S2::*pf = &S2::bitfield; // expected-error {{address of bit-field requested}}
+                ^
+
+"Test_name.c", line 24: error: taking the address of a bit field is not allowed
+  int S2::*anon_pf = &S2::anon_bitfield; // expected-error {{address of bit-field requested}}
+                     ^
+
+"Test_name.c", line 31: error: a pointer to a bound function may only be used to call the function
+      p->*m; // expected-error {{reference to non-static member function must be called}}
+          ^
+
+"Test_name.c", line 32: error: a pointer to a bound function may only be used to call the function
+      (void)(p->*m); // expected-error {{reference to non-static member function must be called}}
+            ^
+
+"Test_name.c", line 33: warning: nonstandard conversion of bound pointer-to-member to a function pointer
+      (void)(void*)(p->*m); // expected-error {{reference to non-static member function must be called}} expected-error {{cannot cast from type 'void' to pointer type 'void *'}}
+            ^
+
+"Test_name.c", line 34: warning: nonstandard conversion of bound pointer-to-member to a function pointer
+      (void)reinterpret_cast<void*>(p->*m); // expected-error {{reference to non-static member function must be called}} expected-error {{reinterpret_cast from 'void' to 'void *' is not allowed}}
+            ^
+
+"Test_name.c", line 35: error: a pointer to a bound function may only be used to call the function
+      if (p->*m) {} // expected-error {{reference to non-static member function must be called}} expected-error {{value of type 'void' is not contextually convertible to 'bool'}}
+              ^
+
+"Test_name.c", line 36: error: a pointer to a bound function may only be used to call the function
+      if (!(p->*m)) {} // expected-error {{reference to non-static member function must be called}} expected-error {{invalid argument type 'void' to unary expression}}
+           ^
+
+"Test_name.c", line 37: error: a pointer to a bound function may only be used to call the function
+      if (p->m) {}; // expected-error {{reference to non-static member function must be called}} expected-error {{value of type 'void' is not contextually convertible to 'bool'}}
+             ^
+
+"Test_name.c", line 38: error: a pointer to a bound function may only be used to call the function
+      if (!p->m) {}; // expected-error {{reference to non-static member function must be called}} expected-error {{invalid argument type 'void' to unary expression}}
+              ^
+
+9 errors detected in the compilation of "Test_name.c".

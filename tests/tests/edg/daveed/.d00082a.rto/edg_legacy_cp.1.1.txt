@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 16: error: class template and template parameter may not have the same name
+  template < class T > struct T { 
+                              ^
+
+"Test_name.c", line 17: error: identifier "A" is undefined
+    friend int main ( A < T > ) { } 
+                      ^
+
+2 errors detected in the compilation of "Test_name.c".

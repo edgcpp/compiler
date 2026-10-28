@@ -1,0 +1,163 @@
+fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
+file-scope type#1
+  name:                  file-scope id-name#1: "g_uint"
+  decl_position.seq:     9
+kind:                    tk_typeref
+typeref_type:            file-scope type#2: unsigned int
+kind:                    is_alias
+
+file-scope type#3
+  name:                  file-scope id-name#2: "E"
+  decl_position.seq:     13
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+enumerator_list_seen:    TRUE
+base_type:               file-scope type#1: first_definition::g_uint
+base_type_position.seq:  13
+
+file-scope type#4
+  name:                  file-scope id-name#3: "ns1_uint"
+  decl_position.seq:     18
+kind:                    tk_typeref
+typeref_type:            file-scope type#1: first_definition::g_uint
+kind:                    is_alias
+
+file-scope type#5
+  name:                  file-scope id-name#4: "ns2_uint"
+  decl_position.seq:     19
+kind:                    tk_typeref
+typeref_type:            file-scope type#1: first_definition::g_uint
+kind:                    is_alias
+
+file-scope type#6
+  name:                  file-scope id-name#1: "g_uint"
+  decl_position.seq:     32
+kind:                    tk_typeref
+typeref_type:            file-scope type#2: unsigned int
+kind:                    is_alias
+
+file-scope type#7
+  name:                  file-scope id-name#3: "ns1_uint"
+  decl_position.seq:     41
+kind:                    tk_typeref
+typeref_type:            file-scope type#6: second_definition::g_uint
+kind:                    is_alias
+
+file-scope type#8
+  name:                  file-scope id-name#4: "ns2_uint"
+  decl_position.seq:     42
+kind:                    tk_typeref
+typeref_type:            file-scope type#6: second_definition::g_uint
+kind:                    is_alias
+
+file-scope type#9
+  name:                  file-scope id-name#2: "E"
+  decl_position.seq:     47
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+enumerator_list_seen:    TRUE
+base_type:               file-scope type#7: second_definition::ns::ns1_uint
+base_type_position.seq:  47
+
+file-scope type#10
+  name:                  file-scope id-name#1: "g_uint"
+  decl_position.seq:     55
+kind:                    tk_typeref
+typeref_type:            file-scope type#2: unsigned int
+kind:                    is_alias
+
+file-scope type#11
+  name:                  file-scope id-name#3: "ns1_uint"
+  decl_position.seq:     64
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: third_definition::g_uint
+kind:                    is_alias
+
+file-scope type#12
+  name:                  file-scope id-name#4: "ns2_uint"
+  decl_position.seq:     65
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: third_definition::g_uint
+kind:                    is_alias
+
+file-scope type#13
+  name:                  file-scope id-name#2: "E"
+  decl_position.seq:     73
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+enumerator_list_seen:    TRUE
+base_type:               file-scope type#12: third_definition::ns::ns2_uint
+base_type_position.seq:  73
+
+file-scope src-seq-secondary-decl#1
+decl_position.seq:       16
+entity:                  file-scope namespace#1: ns
+declared_type:           NULL
+
+file-scope src-seq-secondary-decl#2
+decl_position.seq:       22
+entity:                  file-scope namespace#1: ns
+declared_type:           NULL
+
+file-scope src-seq-secondary-decl#3
+decl_position.seq:       24
+entity:                  file-scope type#3: first_definition::ns::E
+declared_type:           file-scope type#4: first_definition::ns::ns1_uint
+autonomous_tag_decl:     TRUE
+
+file-scope src-seq-secondary-decl#4
+decl_position.seq:       27
+entity:                  file-scope type#3: first_definition::ns::E
+declared_type:           file-scope type#5: first_definition::ns::ns2_uint
+autonomous_tag_decl:     TRUE
+
+file-scope src-seq-secondary-decl#5
+decl_position.seq:       36
+entity:                  file-scope type#9: second_definition::ns::E
+declared_type:           file-scope type#6: second_definition::g_uint
+autonomous_tag_decl:     TRUE
+
+file-scope src-seq-secondary-decl#6
+decl_position.seq:       39
+entity:                  file-scope namespace#2: ns
+declared_type:           NULL
+
+file-scope src-seq-secondary-decl#7
+decl_position.seq:       45
+entity:                  file-scope namespace#2: ns
+declared_type:           NULL
+
+file-scope src-seq-secondary-decl#8
+decl_position.seq:       50
+entity:                  file-scope type#9: second_definition::ns::E
+declared_type:           file-scope type#8: second_definition::ns::ns2_uint
+autonomous_tag_decl:     TRUE
+
+file-scope src-seq-secondary-decl#9
+decl_position.seq:       59
+entity:                  file-scope type#13: third_definition::ns::E
+declared_type:           file-scope type#10: third_definition::g_uint
+autonomous_tag_decl:     TRUE
+
+file-scope src-seq-secondary-decl#10
+decl_position.seq:       62
+entity:                  file-scope namespace#3: ns
+declared_type:           NULL
+
+file-scope src-seq-secondary-decl#11
+decl_position.seq:       68
+entity:                  file-scope namespace#3: ns
+declared_type:           NULL
+
+file-scope src-seq-secondary-decl#12
+decl_position.seq:       70
+entity:                  file-scope type#13: third_definition::ns::E
+declared_type:           file-scope type#11: third_definition::ns::ns1_uint
+autonomous_tag_decl:     TRUE
+

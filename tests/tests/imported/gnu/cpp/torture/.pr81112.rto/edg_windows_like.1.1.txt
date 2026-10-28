@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 27: warning: unknown attribute "__vector_size__"
+  typedef long long __m128i __attribute__ ((__vector_size__ (16), __may_alias__));
+                                            ^
+
+"Test_name.c", line 28: warning: unknown attribute "__vector_size__"
+  typedef int __v4si __attribute__ ((__vector_size__ (16)));
+                                     ^
+
+"Test_name.c", line 29: warning: unknown attribute "__vector_size__"
+  typedef char __v16qi __attribute__ ((__vector_size__ (16)));
+                                       ^
+
+"Test_name.c", line 30: warning: unknown attribute "__vector_size__"
+  typedef long long __m128i_u __attribute__ ((__vector_size__ (16), __may_alias__, __aligned__ (1)));
+                                              ^
+

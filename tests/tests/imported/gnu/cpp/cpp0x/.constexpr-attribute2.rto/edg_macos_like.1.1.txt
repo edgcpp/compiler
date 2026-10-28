@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 12: warning: unknown attribute "init_priority"
+  __attribute__((init_priority(prio))) t a;
+                 ^
+
+"Test_name.c", line 19: warning: unknown attribute "init_priority"
+  __attribute__((init_priority(E1::second))) t b; // Should not compile?
+                 ^
+
+"Test_name.c", line 26: warning: unknown attribute "init_priority"
+  __attribute__((init_priority(E2_second))) t c;
+                 ^
+
+"Test_name.c", line 31: warning: unknown attribute "vector_size"
+  typedef char vec __attribute__((vector_size(size)));
+                                  ^
+
+"Test_name.c", line 8: warning: variable "prio" was declared but never referenced
+  constexpr int prio = 123;
+                ^
+

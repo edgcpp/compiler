@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 10: warning: excess initializers are ignored
+    v4si m = { 2, 3, 6, 5 };
+                  ^
+
+"Test_name.c", line 11: warning: function "__builtin_shuffle" declared implicitly
+    v4si z = __builtin_shuffle (*x, *y, m);
+             ^
+
+"Test_name.c", line 12: error: expression must have pointer-to-object type but it has type "int"
+    return z[2];
+             ^
+
+1 error detected in the compilation of "Test_name.c".

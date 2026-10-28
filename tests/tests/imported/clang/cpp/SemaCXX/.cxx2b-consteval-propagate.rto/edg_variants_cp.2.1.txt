@@ -1,0 +1,192 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 19: error: the address of a consteval function cannot be used here
+  auto b = &f<int>;  // expected-error {{cannot take address of immediate function 'f<int>' outside of an immediate invocation}}
+           ^
+
+"Test_name.c", line 40: error: call to consteval function "id(int)" did not produce a valid constant expression
+  constexpr T h(T t = id(x)) { // expected-note {{read of non-const variable 'x' is not allowed in a constant expression}} \
+                        ^
+"Test_name.c", line 40: note: the value of variable "examples::x" (declared at line 37) cannot be used as a constant
+  constexpr T h(T t = id(x)) { // expected-note {{read of non-const variable 'x' is not allowed in a constant expression}} \
+                         ^
+          detected during:
+            instantiation of "T examples::h(T) [with T=int]" at line 47
+            instantiation of "T examples::hh<T>() [with T=int]" at line 51
+
+"Test_name.c", line 82: error: call to consteval function "f(T) [with T=int]" did not produce a valid constant expression
+  a bb(f<int>(foo<int>(7))); // expected-error{{call to immediate function 'f<int>' is not a constant expression}} \
+             ^
+"Test_name.c", line 82: note: constexpr function "nested::foo(T) [with T=int]" (declared at line 80) is not defined
+  a bb(f<int>(foo<int>(7))); // expected-error{{call to immediate function 'f<int>' is not a constant expression}} \
+              ^
+
+"Test_name.c", line 131: error: expression must have a constant value
+    [[maybe_unused]] S s{i};
+                        ^
+"Test_name.c", line 131: note: the value of parameter "i" (declared at line 130) cannot be used as a constant
+    [[maybe_unused]] S s{i};
+                         ^
+          detected during instantiation of "void constructors::g(auto) [with <auto-1>=int]" at line 134
+
+"Test_name.c", line 165: error: expression must have a constant value
+      S s(t); // expected-note {{'g<int>' is an immediate function because its body contains a call to a consteval constructor 'S' and that call is not a constant expression}}
+          ^
+"Test_name.c", line 165: note: the value of parameter "t" (declared at line 164) cannot be used as a constant
+      S s(t); // expected-note {{'g<int>' is an immediate function because its body contains a call to a consteval constructor 'S' and that call is not a constant expression}}
+          ^
+          detected during instantiation of "int ConstevalConstructor::g(auto) [with <auto-1>=int]" at line 168
+
+"Test_name.c", line 168: error: call to consteval function "ConstevalConstructor::g(auto) [with <auto-1>=int]" did not produce a valid constant expression
+  int i = g(x); // expected-error {{call to immediate function 'ConstevalConstructor::g<int>' is not a constant expression}} \
+           ^
+"Test_name.c", line 168: note: the value of variable "ConstevalConstructor::x" (declared at line 160) cannot be used as a constant
+  int i = g(x); // expected-error {{call to immediate function 'ConstevalConstructor::g<int>' is not a constant expression}} \
+            ^
+
+"Test_name.c", line 216: warning: call to __builtin_is_constant_evaluated appearing in a consteval context always produces "true"
+      if (!__builtin_is_constant_evaluated()) side_effect();
+                                          ^
+
+"Test_name.c", line 273: error: call to consteval function "UserDefinedConstructors::ConstevalCtr::ConstevalCtr(int)" did not produce a valid constant expression
+  ConstevalCtr c2(NonConst);
+                  ^
+"Test_name.c", line 273: note: the value of variable "UserDefinedConstructors::NonConst" (declared at line 263) cannot be used as a constant
+  ConstevalCtr c2(NonConst);
+                  ^
+
+"Test_name.c", line 286: error: call to consteval function "UserDefinedConstructors::ImmediateEscalating::ImmediateEscalating(T) [with T=int]" did not produce a valid constant expression
+  ImmediateEscalating c4(NonConst);
+                         ^
+"Test_name.c", line 286: note: the value of variable "UserDefinedConstructors::NonConst" (declared at line 263) cannot be used as a constant
+  ImmediateEscalating c4(NonConst);
+                         ^
+
+"Test_name.c", line 329: error: call to consteval function "GlobalAggregateInit::f" did not produce a valid constant expression
+      int j = f(i); // expected-error {{call to consteval function 'GlobalAggregateInit::f' is not a constant expression}} \
+               ^
+"Test_name.c", line 329: note: attempt to access run-time storage
+      int j = f(i); // expected-error {{call to consteval function 'GlobalAggregateInit::f' is not a constant expression}} \
+                ^
+
+"Test_name.c", line 341: error: call to consteval function "GH65985::invalid" did not produce a valid constant expression
+      return invalid();
+                    ^
+"Test_name.c", line 341: note: constexpr function "GH65985::invalid" (declared at line 339) is not defined
+      return invalid();
+             ^
+
+"Test_name.c", line 346: error: expression must have a constant value
+      static constexpr int a = escalating(0); // expected-note 2{{in call to}}
+                               ^
+"Test_name.c", line 341: note: constexpr function "GH65985::invalid" (declared at line 339) is not defined
+      return invalid();
+             ^
+
+"Test_name.c", line 514: error: call to consteval function "GH112677::ConstEval::ConstEval(int)" did not produce a valid constant expression
+      TemplateCtor(int arg) : val(arg) {} // expected-note {{undefined constructor 'ConstEval'}}
+                                 ^
+"Test_name.c", line 514: note: constexpr function "GH112677::ConstEval::ConstEval(int)" (declared at line 508) is not defined
+      TemplateCtor(int arg) : val(arg) {} // expected-note {{undefined constructor 'ConstEval'}}
+                                 ^
+
+"Test_name.c", line 520: error: call to consteval function "GH112677::C::C(int) [with Anything=int]" did not produce a valid constant expression
+  C c(0); // expected-note{{in implicit initialization for inherited constructor of 'C'}}
+      ^
+"Test_name.c", line 514: note: constexpr function "GH112677::ConstEval::ConstEval(int)" (declared at line 508) is not defined
+      TemplateCtor(int arg) : val(arg) {} // expected-note {{undefined constructor 'ConstEval'}}
+      ^
+"Test_name.c", line 517: note: called from:
+      using TemplateCtor::TemplateCtor; // expected-note {{in call to 'TemplateCtor<int>(0)'}}
+      ^
+
+"Test_name.c", line 548: error: call to consteval function "GH123405::tfn<<unnamed>>(int) [with <unnamed>=int]" did not produce a valid constant expression
+     tfn<int>(a); // expected-error {{call to immediate function 'GH123405::tfn<int>' is not a constant expression}}\
+             ^
+"Test_name.c", line 548: note: the value of variable "a" (declared at line 547) cannot be used as a constant
+     tfn<int>(a); // expected-error {{call to immediate function 'GH123405::tfn<int>' is not a constant expression}}\
+              ^
+
+"Test_name.c", line 548: warning: variable "a" is used before its value is set
+     tfn<int>(a); // expected-error {{call to immediate function 'GH123405::tfn<int>' is not a constant expression}}\
+              ^
+
+"Test_name.c", line 560: warning: variable "s" was declared but never referenced
+      S s;
+        ^
+
+"Test_name.c", line 564: warning: variable "s" was declared but never referenced
+      S s;
+        ^
+
+"Test_name.c", line 578: error: call to consteval function "GH119046::tfn<Cls>(int) [with Cls=GH119046::S]" did not produce a valid constant expression
+    return tfn<S>(a);
+                 ^
+"Test_name.c", line 578: note: the value of variable "a" (declared at line 577) cannot be used as a constant
+    return tfn<S>(a);
+                  ^
+
+"Test_name.c", line 627: warning: expression has no effect
+        &comptime_only;
+        ^
+
+"Test_name.c", line 471: error: call to consteval function "GH94935::f" did not produce a valid constant expression
+          GH94935::f(T::undef2());  // expected-error {{call to consteval function 'GH94935::f' is not a constant expression}} \
+                    ^
+"Test_name.c", line 471: note: constexpr function "GH94935::X::undef2" (declared at line 480) is not defined
+          GH94935::f(T::undef2());  // expected-error {{call to consteval function 'GH94935::f' is not a constant expression}} \
+                        ^
+          detected during instantiation of "void GH94935::G<T>::g() [with T=GH94935::X]" at line 485
+
+"Test_name.c", line 473: error: call to consteval function "GH94935::undef" did not produce a valid constant expression
+          GH94935::undef(T::fn());  // expected-error {{call to consteval function 'GH94935::undef' is not a constant expression}} \
+                        ^
+"Test_name.c", line 473: note: constexpr function "GH94935::undef" (declared at line 465) is not defined
+          GH94935::undef(T::fn());  // expected-error {{call to consteval function 'GH94935::undef' is not a constant expression}} \
+                   ^
+          detected during instantiation of "void GH94935::G<T>::g() [with T=GH94935::X]" at line 485
+
+"Test_name.c", line 80: warning: extern inline function "nested::foo(T) [with T=int]" was referenced but not defined
+  constexpr int foo(T t);     // expected-note {{declared here}}
+                ^
+
+"Test_name.c", line 89: warning: extern inline function "e2::f(T) [with T=int]" was referenced but not defined
+  constexpr int f(T t);
+                ^
+
+"Test_name.c", line 89: warning: extern inline function "e2::f(T) [with T=char]" was referenced but not defined
+  constexpr int f(T t);
+                ^
+
+"Test_name.c", line 237: warning: extern inline function "Defaulted::f" was referenced but not defined
+  consteval int f(int x);
+                ^
+
+"Test_name.c", line 245: warning: extern inline function "DefaultedUse::f" was referenced but not defined
+  consteval int f(int x);  // expected-note {{declared here}}
+                ^
+
+"Test_name.c", line 339: warning: extern inline function "GH65985::invalid" was referenced but not defined
+  consteval int invalid(); // expected-note 2{{declared here}}
+                ^
+
+"Test_name.c", line 355: warning: extern inline function "GH66324::allocate" was referenced but not defined
+  consteval int allocate();  // expected-note  2{{declared here}}
+                ^
+
+"Test_name.c", line 465: warning: extern inline function "GH94935::undef" was referenced but not defined
+  consteval void undef(int); // expected-note {{declared here}}
+                 ^
+
+"Test_name.c", line 480: warning: function "GH94935::X::undef2" was referenced but not defined
+      static consteval int undef2();  // expected-note {{declared here}}
+                           ^
+
+"Test_name.c", line 508: warning: function "GH112677::ConstEval::ConstEval(int)" was referenced but not defined
+    consteval ConstEval(int); // expected-note 2{{declared here}}
+              ^
+
+"Test_name.c", line 650: warning: extern inline function "GH109096::undefined" was referenced but not defined
+  consteval void undefined();
+                 ^
+
+17 errors detected in the compilation of "Test_name.c".

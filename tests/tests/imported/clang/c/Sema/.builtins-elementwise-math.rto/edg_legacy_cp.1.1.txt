@@ -1,0 +1,944 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 31: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_abs(i);
+                   ^
+
+"Test_name.c", line 34: error: too few arguments in function call
+    i = __builtin_elementwise_abs();
+                                  ^
+
+"Test_name.c", line 37: error: too many arguments in function call
+    i = __builtin_elementwise_abs(i, i);
+                                     ^
+
+"Test_name.c", line 40: error: a value of type "__attribute((ext_vector_type(4))) float" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_abs(v);
+      ^
+
+"Test_name.c", line 43: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_abs(u);
+                                  ^
+
+"Test_name.c", line 46: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_abs(uv);
+                                   ^
+
+"Test_name.c", line 51: error: both arguments must have the same type
+    i = __builtin_elementwise_add_sat(p, d);
+                                      ^
+
+"Test_name.c", line 54: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_add_sat(i, i);
+                     ^
+
+"Test_name.c", line 57: error: too few arguments in function call
+    i = __builtin_elementwise_add_sat(i);
+                                       ^
+
+"Test_name.c", line 60: error: too few arguments in function call
+    i = __builtin_elementwise_add_sat();
+                                      ^
+
+"Test_name.c", line 63: error: too many arguments in function call
+    i = __builtin_elementwise_add_sat(i, i, i);
+                                            ^
+
+"Test_name.c", line 66: error: both arguments must have the same type
+    i = __builtin_elementwise_add_sat(v, iv);
+                                      ^
+
+"Test_name.c", line 69: error: both arguments must have the same type
+    i = __builtin_elementwise_add_sat(iv, v);
+                                      ^
+
+"Test_name.c", line 72: error: both arguments must have the same type
+    i = __builtin_elementwise_add_sat(uv, iv);
+                                      ^
+
+"Test_name.c", line 75: error: type "float" is invalid as an argument for this builtin
+    v = __builtin_elementwise_add_sat(v, v);
+                                      ^
+
+"Test_name.c", line 78: error: both arguments must have the same type
+    s = __builtin_elementwise_add_sat(i, s);
+                                      ^
+
+"Test_name.c", line 85: error: both arguments must have the same type
+    i = __builtin_elementwise_add_sat(one, d);
+                                      ^
+
+"Test_name.c", line 89: warning: enumerated type mixed with another type
+    enum f x = __builtin_elementwise_add_sat(one, three);
+               ^
+
+"Test_name.c", line 93: warning: variable "ext" is used before its value is set
+    ext = __builtin_elementwise_add_sat(ext, ext);
+                                        ^
+
+"Test_name.c", line 104: error: type "int [10]" is invalid as an argument for this builtin
+    A = __builtin_elementwise_add_sat(A, A);
+                                      ^
+
+"Test_name.c", line 104: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_add_sat(A, A);
+    ^
+
+"Test_name.c", line 109: warning: variable "j" is used before its value is set
+    j = __builtin_elementwise_add_sat(i, j);
+                                         ^
+
+"Test_name.c", line 112: error: type "float __complex__" is invalid as an argument for this builtin
+    c1 = __builtin_elementwise_add_sat(c1, c2);
+                                       ^
+
+"Test_name.c", line 112: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_add_sat(c1, c2);
+                                       ^
+
+"Test_name.c", line 112: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_add_sat(c1, c2);
+                                           ^
+
+"Test_name.c", line 107: warning: variable "ii" was declared but never referenced
+    int(ii);
+        ^
+
+"Test_name.c", line 117: error: both arguments must have the same type
+    i = __builtin_elementwise_sub_sat(p, d);
+                                      ^
+
+"Test_name.c", line 120: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_sub_sat(i, i);
+                     ^
+
+"Test_name.c", line 123: error: too few arguments in function call
+    i = __builtin_elementwise_sub_sat(i);
+                                       ^
+
+"Test_name.c", line 126: error: too few arguments in function call
+    i = __builtin_elementwise_sub_sat();
+                                      ^
+
+"Test_name.c", line 129: error: too many arguments in function call
+    i = __builtin_elementwise_sub_sat(i, i, i);
+                                            ^
+
+"Test_name.c", line 132: error: both arguments must have the same type
+    i = __builtin_elementwise_sub_sat(v, iv);
+                                      ^
+
+"Test_name.c", line 135: error: both arguments must have the same type
+    i = __builtin_elementwise_sub_sat(iv, v);
+                                      ^
+
+"Test_name.c", line 138: error: both arguments must have the same type
+    i = __builtin_elementwise_sub_sat(uv, iv);
+                                      ^
+
+"Test_name.c", line 141: error: type "float" is invalid as an argument for this builtin
+    v = __builtin_elementwise_sub_sat(v, v);
+                                      ^
+
+"Test_name.c", line 144: error: both arguments must have the same type
+    s = __builtin_elementwise_sub_sat(i, s);
+                                      ^
+
+"Test_name.c", line 151: error: both arguments must have the same type
+    i = __builtin_elementwise_sub_sat(one, d);
+                                      ^
+
+"Test_name.c", line 155: warning: enumerated type mixed with another type
+    enum f x = __builtin_elementwise_sub_sat(one, three);
+               ^
+
+"Test_name.c", line 159: warning: variable "ext" is used before its value is set
+    ext = __builtin_elementwise_sub_sat(ext, ext);
+                                        ^
+
+"Test_name.c", line 170: error: type "int [10]" is invalid as an argument for this builtin
+    A = __builtin_elementwise_sub_sat(A, A);
+                                      ^
+
+"Test_name.c", line 170: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_sub_sat(A, A);
+    ^
+
+"Test_name.c", line 175: warning: variable "j" is used before its value is set
+    j = __builtin_elementwise_sub_sat(i, j);
+                                         ^
+
+"Test_name.c", line 178: error: type "float __complex__" is invalid as an argument for this builtin
+    c1 = __builtin_elementwise_sub_sat(c1, c2);
+                                       ^
+
+"Test_name.c", line 178: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_sub_sat(c1, c2);
+                                       ^
+
+"Test_name.c", line 178: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_sub_sat(c1, c2);
+                                           ^
+
+"Test_name.c", line 173: warning: variable "ii" was declared but never referenced
+    int(ii);
+        ^
+
+"Test_name.c", line 183: error: both arguments must have the same type
+    i = __builtin_elementwise_max(p, d);
+                                  ^
+
+"Test_name.c", line 186: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_max(i, i);
+                     ^
+
+"Test_name.c", line 189: error: too few arguments in function call
+    i = __builtin_elementwise_max(i);
+                                   ^
+
+"Test_name.c", line 192: error: too few arguments in function call
+    i = __builtin_elementwise_max();
+                                  ^
+
+"Test_name.c", line 195: error: too many arguments in function call
+    i = __builtin_elementwise_max(i, i, i);
+                                        ^
+
+"Test_name.c", line 198: error: both arguments must have the same type
+    i = __builtin_elementwise_max(v, iv);
+                                  ^
+
+"Test_name.c", line 201: error: both arguments must have the same type
+    i = __builtin_elementwise_max(uv, iv);
+                                  ^
+
+"Test_name.c", line 204: error: both arguments must have the same type
+    s = __builtin_elementwise_max(i, s);
+                                  ^
+
+"Test_name.c", line 211: error: both arguments must have the same type
+    i = __builtin_elementwise_max(one, d);
+                                  ^
+
+"Test_name.c", line 215: warning: enumerated type mixed with another type
+    enum f x = __builtin_elementwise_max(one, three);
+               ^
+
+"Test_name.c", line 219: warning: variable "ext" is used before its value is set
+    ext = __builtin_elementwise_max(ext, ext);
+                                    ^
+
+"Test_name.c", line 230: error: type "int [10]" is invalid as an argument for this builtin
+    A = __builtin_elementwise_max(A, A);
+                                  ^
+
+"Test_name.c", line 230: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_max(A, A);
+    ^
+
+"Test_name.c", line 235: warning: variable "j" is used before its value is set
+    j = __builtin_elementwise_max(i, j);
+                                     ^
+
+"Test_name.c", line 238: error: type "float __complex__" is invalid as an argument for this builtin
+    c1 = __builtin_elementwise_max(c1, c2);
+                                   ^
+
+"Test_name.c", line 238: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_max(c1, c2);
+                                   ^
+
+"Test_name.c", line 238: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_max(c1, c2);
+                                       ^
+
+"Test_name.c", line 215: warning: variable "x" was declared but never referenced
+    enum f x = __builtin_elementwise_max(one, three);
+           ^
+
+"Test_name.c", line 233: warning: variable "ii" was declared but never referenced
+    int(ii);
+        ^
+
+"Test_name.c", line 243: error: both arguments must have the same type
+    i = __builtin_elementwise_min(p, d);
+                                  ^
+
+"Test_name.c", line 246: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_min(i, i);
+                     ^
+
+"Test_name.c", line 249: error: too few arguments in function call
+    i = __builtin_elementwise_min(i);
+                                   ^
+
+"Test_name.c", line 252: error: too few arguments in function call
+    i = __builtin_elementwise_min();
+                                  ^
+
+"Test_name.c", line 255: error: too many arguments in function call
+    i = __builtin_elementwise_min(i, i, i);
+                                        ^
+
+"Test_name.c", line 258: error: both arguments must have the same type
+    i = __builtin_elementwise_min(v, iv);
+                                  ^
+
+"Test_name.c", line 261: error: both arguments must have the same type
+    i = __builtin_elementwise_min(uv, iv);
+                                  ^
+
+"Test_name.c", line 264: error: both arguments must have the same type
+    s = __builtin_elementwise_min(i, s);
+                                  ^
+
+"Test_name.c", line 271: error: both arguments must have the same type
+    i = __builtin_elementwise_min(one, d);
+                                  ^
+
+"Test_name.c", line 275: warning: enumerated type mixed with another type
+    enum f x = __builtin_elementwise_min(one, three);
+               ^
+
+"Test_name.c", line 279: warning: variable "ext" is used before its value is set
+    ext = __builtin_elementwise_min(ext, ext);
+                                    ^
+
+"Test_name.c", line 290: error: type "int [10]" is invalid as an argument for this builtin
+    A = __builtin_elementwise_min(A, A);
+                                  ^
+
+"Test_name.c", line 290: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_min(A, A);
+    ^
+
+"Test_name.c", line 295: warning: variable "j" is used before its value is set
+    j = __builtin_elementwise_min(i, j);
+                                     ^
+
+"Test_name.c", line 298: error: type "float __complex__" is invalid as an argument for this builtin
+    c1 = __builtin_elementwise_min(c1, c2);
+                                   ^
+
+"Test_name.c", line 298: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_min(c1, c2);
+                                   ^
+
+"Test_name.c", line 298: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_min(c1, c2);
+                                       ^
+
+"Test_name.c", line 275: warning: variable "x" was declared but never referenced
+    enum f x = __builtin_elementwise_min(one, three);
+           ^
+
+"Test_name.c", line 293: warning: variable "ii" was declared but never referenced
+    int(ii);
+        ^
+
+"Test_name.c", line 303: error: both arguments must have the same type
+    i = __builtin_elementwise_maximum(p, d);
+                                      ^
+
+"Test_name.c", line 306: error: a value of type "double" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_maximum(d, d);
+                     ^
+
+"Test_name.c", line 309: error: too few arguments in function call
+    i = __builtin_elementwise_maximum(i);
+                                       ^
+
+"Test_name.c", line 312: error: too few arguments in function call
+    i = __builtin_elementwise_maximum();
+                                      ^
+
+"Test_name.c", line 315: error: too many arguments in function call
+    i = __builtin_elementwise_maximum(i, i, i);
+                                            ^
+
+"Test_name.c", line 318: error: both arguments must have the same type
+    i = __builtin_elementwise_maximum(fv, iv);
+                                      ^
+
+"Test_name.c", line 321: error: both arguments must have the same type
+    i = __builtin_elementwise_maximum(uv, iv);
+                                      ^
+
+"Test_name.c", line 324: error: both arguments must have the same type
+    dv = __builtin_elementwise_maximum(fv, dv);
+                                       ^
+
+"Test_name.c", line 327: error: both arguments must have the same type
+    d = __builtin_elementwise_maximum(f, d);
+                                      ^
+
+"Test_name.c", line 332: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_maximum(iv, iv);
+                                      ^
+
+"Test_name.c", line 335: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_maximum(i, i);
+                                      ^
+
+"Test_name.c", line 339: error: type "int [10]" is invalid as an argument for this builtin
+    A = __builtin_elementwise_maximum(A, A);
+                                      ^
+
+"Test_name.c", line 339: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_maximum(A, A);
+    ^
+
+"Test_name.c", line 343: error: type "float __complex__" is invalid as an argument for this builtin
+    c1 = __builtin_elementwise_maximum(c1, c2);
+                                       ^
+
+"Test_name.c", line 343: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_maximum(c1, c2);
+                                       ^
+
+"Test_name.c", line 343: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_maximum(c1, c2);
+                                           ^
+
+"Test_name.c", line 348: error: both arguments must have the same type
+    i = __builtin_elementwise_minimum(p, d);
+                                      ^
+
+"Test_name.c", line 351: error: a value of type "double" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_minimum(d, d);
+                     ^
+
+"Test_name.c", line 354: error: too few arguments in function call
+    i = __builtin_elementwise_minimum(i);
+                                       ^
+
+"Test_name.c", line 357: error: too few arguments in function call
+    i = __builtin_elementwise_minimum();
+                                      ^
+
+"Test_name.c", line 360: error: too many arguments in function call
+    i = __builtin_elementwise_minimum(i, i, i);
+                                            ^
+
+"Test_name.c", line 363: error: both arguments must have the same type
+    i = __builtin_elementwise_minimum(fv, iv);
+                                      ^
+
+"Test_name.c", line 366: error: both arguments must have the same type
+    i = __builtin_elementwise_minimum(uv, iv);
+                                      ^
+
+"Test_name.c", line 369: error: both arguments must have the same type
+    dv = __builtin_elementwise_minimum(fv, dv);
+                                       ^
+
+"Test_name.c", line 372: error: both arguments must have the same type
+    d = __builtin_elementwise_minimum(f, d);
+                                      ^
+
+"Test_name.c", line 377: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_minimum(iv, iv);
+                                      ^
+
+"Test_name.c", line 380: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_minimum(i, i);
+                                      ^
+
+"Test_name.c", line 384: error: type "int [10]" is invalid as an argument for this builtin
+    A = __builtin_elementwise_minimum(A, A);
+                                      ^
+
+"Test_name.c", line 384: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_minimum(A, A);
+    ^
+
+"Test_name.c", line 388: error: type "float __complex__" is invalid as an argument for this builtin
+    c1 = __builtin_elementwise_minimum(c1, c2);
+                                       ^
+
+"Test_name.c", line 388: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_minimum(c1, c2);
+                                       ^
+
+"Test_name.c", line 388: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_minimum(c1, c2);
+                                           ^
+
+"Test_name.c", line 393: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(p, d);
+      ^
+
+"Test_name.c", line 396: error: a value of type "void" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_maximumnum(d, d);
+                     ^
+
+"Test_name.c", line 399: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(i);
+      ^
+
+"Test_name.c", line 402: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum();
+      ^
+
+"Test_name.c", line 405: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(i, i, i);
+      ^
+
+"Test_name.c", line 408: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(fv, iv);
+      ^
+
+"Test_name.c", line 411: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(uv, iv);
+      ^
+
+"Test_name.c", line 414: error: a value of type "void" cannot be assigned to an entity of type "double4" (aka "__attribute((ext_vector_type(4))) double")
+    dv = __builtin_elementwise_maximumnum(fv, dv);
+       ^
+
+"Test_name.c", line 417: error: a value of type "void" cannot be assigned to an entity of type "double"
+    d = __builtin_elementwise_maximumnum(f, d);
+      ^
+
+"Test_name.c", line 420: error: a value of type "void" cannot be assigned to an entity of type "float4" (aka "__attribute((ext_vector_type(4))) float")
+    fv = __builtin_elementwise_maximumnum(fv, fv);
+       ^
+
+"Test_name.c", line 422: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(iv, iv);
+      ^
+
+"Test_name.c", line 425: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_maximumnum(i, i);
+      ^
+
+"Test_name.c", line 429: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_maximumnum(A, A);
+    ^
+
+"Test_name.c", line 433: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_maximumnum(c1, c2);
+                                          ^
+
+"Test_name.c", line 433: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_maximumnum(c1, c2);
+                                              ^
+
+"Test_name.c", line 433: error: a value of type "void" cannot be assigned to an entity of type "float __complex__"
+    c1 = __builtin_elementwise_maximumnum(c1, c2);
+       ^
+
+"Test_name.c", line 438: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(p, d);
+      ^
+
+"Test_name.c", line 441: error: a value of type "void" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo foo = __builtin_elementwise_minimumnum(d, d);
+                     ^
+
+"Test_name.c", line 444: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(i);
+      ^
+
+"Test_name.c", line 447: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum();
+      ^
+
+"Test_name.c", line 450: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(i, i, i);
+      ^
+
+"Test_name.c", line 453: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(fv, iv);
+      ^
+
+"Test_name.c", line 456: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(uv, iv);
+      ^
+
+"Test_name.c", line 459: error: a value of type "void" cannot be assigned to an entity of type "double4" (aka "__attribute((ext_vector_type(4))) double")
+    dv = __builtin_elementwise_minimumnum(fv, dv);
+       ^
+
+"Test_name.c", line 462: error: a value of type "void" cannot be assigned to an entity of type "double"
+    d = __builtin_elementwise_minimumnum(f, d);
+      ^
+
+"Test_name.c", line 465: error: a value of type "void" cannot be assigned to an entity of type "float4" (aka "__attribute((ext_vector_type(4))) float")
+    fv = __builtin_elementwise_minimumnum(fv, fv);
+       ^
+
+"Test_name.c", line 467: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(iv, iv);
+      ^
+
+"Test_name.c", line 470: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_minimumnum(i, i);
+      ^
+
+"Test_name.c", line 474: error: expression must be a modifiable lvalue
+    A = __builtin_elementwise_minimumnum(A, A);
+    ^
+
+"Test_name.c", line 478: warning: variable "c1" is used before its value is set
+    c1 = __builtin_elementwise_minimumnum(c1, c2);
+                                          ^
+
+"Test_name.c", line 478: warning: variable "c2" is used before its value is set
+    c1 = __builtin_elementwise_minimumnum(c1, c2);
+                                              ^
+
+"Test_name.c", line 478: error: a value of type "void" cannot be assigned to an entity of type "float __complex__"
+    c1 = __builtin_elementwise_minimumnum(c1, c2);
+       ^
+
+"Test_name.c", line 484: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_bitreverse(i);
+                   ^
+
+"Test_name.c", line 487: error: too few arguments in function call
+    i = __builtin_elementwise_bitreverse();
+                                         ^
+
+"Test_name.c", line 490: error: type "float" is invalid as an argument for this builtin
+    i = __builtin_elementwise_bitreverse(f);
+                                         ^
+
+"Test_name.c", line 493: error: too many arguments in function call
+    i = __builtin_elementwise_bitreverse(f, f);
+                                            ^
+
+"Test_name.c", line 496: error: type "double" is invalid as an argument for this builtin
+    u = __builtin_elementwise_bitreverse(d);
+                                         ^
+
+"Test_name.c", line 499: error: type "float" is invalid as an argument for this builtin
+    v = __builtin_elementwise_bitreverse(v);
+                                         ^
+
+"Test_name.c", line 482: warning: parameter "u" was set but never used
+  void test_builtin_elementwise_bitreverse(int i, float f, double d, float4 v, int3 iv, unsigned u, unsigned4 uv) {
+                                                                                                 ^
+
+"Test_name.c", line 505: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_ceil(f);
+                   ^
+
+"Test_name.c", line 508: error: too few arguments in function call
+    i = __builtin_elementwise_ceil();
+                                   ^
+
+"Test_name.c", line 511: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_ceil(i);
+                                   ^
+
+"Test_name.c", line 514: error: too many arguments in function call
+    i = __builtin_elementwise_ceil(f, f);
+                                      ^
+
+"Test_name.c", line 517: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_ceil(u);
+                                   ^
+
+"Test_name.c", line 520: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_ceil(uv);
+                                    ^
+
+"Test_name.c", line 526: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_acos(f);
+                   ^
+
+"Test_name.c", line 529: error: too few arguments in function call
+    i = __builtin_elementwise_acos();
+                                   ^
+
+"Test_name.c", line 532: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_acos(i);
+                                   ^
+
+"Test_name.c", line 535: error: too many arguments in function call
+    i = __builtin_elementwise_acos(f, f);
+                                      ^
+
+"Test_name.c", line 538: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_acos(u);
+                                   ^
+
+"Test_name.c", line 541: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_acos(uv);
+                                    ^
+
+"Test_name.c", line 547: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_cos(f);
+                   ^
+
+"Test_name.c", line 550: error: too few arguments in function call
+    i = __builtin_elementwise_cos();
+                                  ^
+
+"Test_name.c", line 553: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_cos(i);
+                                  ^
+
+"Test_name.c", line 556: error: too many arguments in function call
+    i = __builtin_elementwise_cos(f, f);
+                                     ^
+
+"Test_name.c", line 559: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_cos(u);
+                                  ^
+
+"Test_name.c", line 562: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_cos(uv);
+                                   ^
+
+"Test_name.c", line 568: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_cosh(f);
+                   ^
+
+"Test_name.c", line 571: error: too few arguments in function call
+    i = __builtin_elementwise_cosh();
+                                   ^
+
+"Test_name.c", line 574: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_cosh(i);
+                                   ^
+
+"Test_name.c", line 577: error: too many arguments in function call
+    i = __builtin_elementwise_cosh(f, f);
+                                      ^
+
+"Test_name.c", line 580: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_cosh(u);
+                                   ^
+
+"Test_name.c", line 583: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_cosh(uv);
+                                    ^
+
+"Test_name.c", line 589: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_exp(f);
+                   ^
+
+"Test_name.c", line 592: error: too few arguments in function call
+    i = __builtin_elementwise_exp();
+                                  ^
+
+"Test_name.c", line 595: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_exp(i);
+                                  ^
+
+"Test_name.c", line 598: error: too many arguments in function call
+    i = __builtin_elementwise_exp(f, f);
+                                     ^
+
+"Test_name.c", line 601: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_exp(u);
+                                  ^
+
+"Test_name.c", line 604: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_exp(uv);
+                                   ^
+
+"Test_name.c", line 610: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_exp2(f);
+                   ^
+
+"Test_name.c", line 613: error: too few arguments in function call
+    i = __builtin_elementwise_exp2();
+                                   ^
+
+"Test_name.c", line 616: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_exp2(i);
+                                   ^
+
+"Test_name.c", line 619: error: too many arguments in function call
+    i = __builtin_elementwise_exp2(f, f);
+                                      ^
+
+"Test_name.c", line 622: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_exp2(u);
+                                   ^
+
+"Test_name.c", line 625: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_exp2(uv);
+                                    ^
+
+"Test_name.c", line 631: error: a value of type "void" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_exp10(f);
+                   ^
+
+"Test_name.c", line 634: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_exp10();
+      ^
+
+"Test_name.c", line 637: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_exp10(i);
+      ^
+
+"Test_name.c", line 640: error: a value of type "void" cannot be assigned to an entity of type "int"
+    i = __builtin_elementwise_exp10(f, f);
+      ^
+
+"Test_name.c", line 643: error: a value of type "void" cannot be assigned to an entity of type "unsigned int"
+    u = __builtin_elementwise_exp10(u);
+      ^
+
+"Test_name.c", line 646: error: a value of type "void" cannot be assigned to an entity of type "unsigned4" (aka "__attribute((ext_vector_type(4))) unsigned int")
+    uv = __builtin_elementwise_exp10(uv);
+       ^
+
+"Test_name.c", line 652: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_ldexp(f, i);
+                   ^
+
+"Test_name.c", line 655: error: too few arguments in function call
+    f = __builtin_elementwise_ldexp();
+                                    ^
+
+"Test_name.c", line 658: error: too few arguments in function call
+    f = __builtin_elementwise_ldexp(f);
+                                     ^
+
+"Test_name.c", line 661: error: too many arguments in function call
+    f = __builtin_elementwise_ldexp(f, i, i);
+                                          ^
+
+"Test_name.c", line 664: error: type "int" is invalid as an argument for this builtin
+    f = __builtin_elementwise_ldexp(i, i);
+                                    ^
+
+"Test_name.c", line 667: error: the second argument must be an integer type with the same shape (a scalar or vector type) as the first argument
+    f = __builtin_elementwise_ldexp(f, f);
+                                       ^
+
+"Test_name.c", line 670: error: the second argument must be an integer type with the same shape (a scalar or vector type) as the first argument
+    f = __builtin_elementwise_ldexp(v, iv);
+                                       ^
+
+"Test_name.c", line 673: error: the second argument must be an integer type with the same shape (a scalar or vector type) as the first argument
+    v = __builtin_elementwise_ldexp(v, i);
+                                       ^
+
+"Test_name.c", line 676: error: the second argument must be an integer type with the same shape (a scalar or vector type) as the first argument
+    v = __builtin_elementwise_ldexp(f, iv);
+                                       ^
+
+"Test_name.c", line 679: error: type "unsigned int" is invalid as an argument for this builtin
+    f = __builtin_elementwise_ldexp(u, i);
+                                    ^
+
+"Test_name.c", line 682: error: the second argument must be an integer type with the same shape (a scalar or vector type) as the first argument
+    f = __builtin_elementwise_ldexp(uv, i);
+                                        ^
+
+"Test_name.c", line 688: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_floor(f);
+                   ^
+
+"Test_name.c", line 691: error: too few arguments in function call
+    i = __builtin_elementwise_floor();
+                                    ^
+
+"Test_name.c", line 694: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_floor(i);
+                                    ^
+
+"Test_name.c", line 697: error: too many arguments in function call
+    i = __builtin_elementwise_floor(f, f);
+                                       ^
+
+"Test_name.c", line 700: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_floor(u);
+                                    ^
+
+"Test_name.c", line 703: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_floor(uv);
+                                     ^
+
+"Test_name.c", line 709: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_log(f);
+                   ^
+
+"Test_name.c", line 712: error: too few arguments in function call
+    i = __builtin_elementwise_log();
+                                  ^
+
+"Test_name.c", line 715: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_log(i);
+                                  ^
+
+"Test_name.c", line 718: error: too many arguments in function call
+    i = __builtin_elementwise_log(f, f);
+                                     ^
+
+"Test_name.c", line 721: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_log(u);
+                                  ^
+
+"Test_name.c", line 724: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_log(uv);
+                                   ^
+
+"Test_name.c", line 730: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_log10(f);
+                   ^
+
+"Test_name.c", line 733: error: too few arguments in function call
+    i = __builtin_elementwise_log10();
+                                    ^
+
+"Test_name.c", line 736: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_log10(i);
+                                    ^
+
+"Test_name.c", line 739: error: too many arguments in function call
+    i = __builtin_elementwise_log10(f, f);
+                                       ^
+
+"Test_name.c", line 742: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_log10(u);
+                                    ^
+
+"Test_name.c", line 745: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_log10(uv);
+                                     ^
+
+"Test_name.c", line 751: error: a value of type "float" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_log2(f);
+                   ^
+
+"Test_name.c", line 754: error: too few arguments in function call
+    i = __builtin_elementwise_log2();
+                                   ^
+
+"Test_name.c", line 757: error: type "int" is invalid as an argument for this builtin
+    i = __builtin_elementwise_log2(i);
+                                   ^
+
+"Test_name.c", line 760: error: too many arguments in function call
+    i = __builtin_elementwise_log2(f, f);
+                                      ^
+
+"Test_name.c", line 763: error: type "unsigned int" is invalid as an argument for this builtin
+    u = __builtin_elementwise_log2(u);
+                                   ^
+
+"Test_name.c", line 766: error: type "unsigned int" is invalid as an argument for this builtin
+    uv = __builtin_elementwise_log2(uv);
+                                    ^
+
+"Test_name.c", line 772: error: a value of type "int" cannot be used to initialize an entity of type "struct Foo"
+    struct Foo s = __builtin_elementwise_popcount(i);
+                   ^
+
+"Test_name.c", line 775: error: too few arguments in function call
+    i = __builtin_elementwise_popcount();
+                                       ^
+
+"Test_name.c", line 778: error: type "float" is invalid as an argument for this builtin
+    i = __builtin_elementwise_popcount(f);
+                                       ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

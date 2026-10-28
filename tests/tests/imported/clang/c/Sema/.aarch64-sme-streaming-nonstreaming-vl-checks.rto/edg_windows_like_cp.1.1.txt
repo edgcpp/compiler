@@ -1,0 +1,198 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 10: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_with_vl_arg(__SVInt8_t a) __arm_streaming;
+                                 ^
+
+"Test_name.c", line 10: error: expected a "{"
+  void sme_streaming_with_vl_arg(__SVInt8_t a) __arm_streaming;
+                                               ^
+
+"Test_name.c", line 23: warning: parsing restarts here after previous syntax error
+  void sme_no_streaming_calling_streaming_with_vl_args() {
+                                                         ^
+
+"Test_name.c", line 24: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t a;
+    ^
+
+"Test_name.c", line 24: error: "a" has already been declared in the current scope
+    __SVInt8_t a;
+               ^
+
+"Test_name.c", line 33: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_streaming_returns_vl();
+    ^
+
+"Test_name.c", line 33: warning: function "sme_streaming_returns_vl" declared implicitly
+    __SVInt8_t r = sme_streaming_returns_vl();
+                   ^
+
+"Test_name.c", line 36: error: expected a "{"
+  void sme_streaming_calling_non_streaming_with_vl_args(void) __arm_streaming {
+                                                              ^
+
+"Test_name.c", line 37: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t a;
+    ^
+
+"Test_name.c", line 40: warning: function "sme_no_streaming_with_vl_arg" declared implicitly
+    sme_no_streaming_with_vl_arg(a);
+    ^
+
+"Test_name.c", line 43: error: expected a "{"
+  void sme_streaming_calling_non_streaming_with_return_vl(void) __arm_streaming {
+                                                                ^
+
+"Test_name.c", line 46: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_no_streaming_returns_vl();
+    ^
+
+"Test_name.c", line 46: warning: function "sme_no_streaming_returns_vl" declared implicitly
+    __SVInt8_t r = sme_no_streaming_returns_vl();
+                   ^
+
+"Test_name.c", line 49: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_compatible_calling_streaming_with_vl_args(__SVInt8_t arg) __arm_streaming_compatible {
+                                                               ^
+
+"Test_name.c", line 49: error: expected a "{"
+  void sme_streaming_compatible_calling_streaming_with_vl_args(__SVInt8_t arg) __arm_streaming_compatible {
+                                                                               ^
+
+"Test_name.c", line 55: error: expected a "{"
+  void sme_streaming_compatible_calling_sme_streaming_return_vl(void) __arm_streaming_compatible {
+                                                                      ^
+
+"Test_name.c", line 58: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_streaming_returns_vl();
+    ^
+
+"Test_name.c", line 58: warning: function "sme_streaming_returns_vl" declared implicitly
+    __SVInt8_t r = sme_streaming_returns_vl();
+                   ^
+
+"Test_name.c", line 61: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_compatible_calling_no_streaming_with_vl_args(__SVInt8_t arg) __arm_streaming_compatible {
+                                                                  ^
+
+"Test_name.c", line 61: error: expected a "{"
+  void sme_streaming_compatible_calling_no_streaming_with_vl_args(__SVInt8_t arg) __arm_streaming_compatible {
+                                                                                  ^
+
+"Test_name.c", line 64: warning: function "sme_no_streaming_with_vl_arg" declared implicitly
+    sme_no_streaming_with_vl_arg(arg);
+    ^
+
+"Test_name.c", line 67: error: expected a "{"
+  void sme_streaming_compatible_calling_no_sme_streaming_return_vl(void) __arm_streaming_compatible {
+                                                                         ^
+
+"Test_name.c", line 70: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_no_streaming_returns_vl();
+    ^
+
+"Test_name.c", line 70: warning: function "sme_no_streaming_returns_vl" declared implicitly
+    __SVInt8_t r = sme_no_streaming_returns_vl();
+                   ^
+
+"Test_name.c", line 73: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_calling_streaming_with_vl_args(__SVInt8_t a) __arm_streaming {
+                                                    ^
+
+"Test_name.c", line 73: error: expected a "{"
+  void sme_streaming_calling_streaming_with_vl_args(__SVInt8_t a) __arm_streaming {
+                                                                  ^
+
+"Test_name.c", line 77: error: expected a "{"
+  void sme_streaming_calling_streaming_with_return_vl(void) __arm_streaming {
+                                                            ^
+
+"Test_name.c", line 78: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_streaming_returns_vl();
+    ^
+
+"Test_name.c", line 78: warning: function "sme_streaming_returns_vl" declared implicitly
+    __SVInt8_t r = sme_streaming_returns_vl();
+                   ^
+
+"Test_name.c", line 81: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_calling_streaming_compatible_with_vl_args(__SVInt8_t a) __arm_streaming {
+                                                               ^
+
+"Test_name.c", line 81: error: expected a "{"
+  void sme_streaming_calling_streaming_compatible_with_vl_args(__SVInt8_t a) __arm_streaming {
+                                                                             ^
+
+"Test_name.c", line 82: warning: function "sme_streaming_compatible_with_vl_arg" declared implicitly
+    sme_streaming_compatible_with_vl_arg(a);
+    ^
+
+"Test_name.c", line 85: error: expected a "{"
+  void sme_streaming_calling_streaming_compatible_with_return_vl(void) __arm_streaming {
+                                                                       ^
+
+"Test_name.c", line 86: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_streaming_compatible_returns_vl();
+    ^
+
+"Test_name.c", line 86: warning: function "sme_streaming_compatible_returns_vl" declared implicitly
+    __SVInt8_t r = sme_streaming_compatible_returns_vl();
+                   ^
+
+"Test_name.c", line 90: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t a;
+    ^
+
+"Test_name.c", line 91: warning: function "sme_streaming_compatible_with_vl_arg" declared implicitly
+    sme_streaming_compatible_with_vl_arg(a);
+    ^
+
+"Test_name.c", line 95: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_streaming_compatible_returns_vl();
+    ^
+
+"Test_name.c", line 95: warning: function "sme_streaming_compatible_returns_vl" declared implicitly
+    __SVInt8_t r = sme_streaming_compatible_returns_vl();
+                   ^
+
+"Test_name.c", line 99: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t a;
+    ^
+
+"Test_name.c", line 100: warning: function "sme_no_streaming_with_vl_arg" declared implicitly
+    sme_no_streaming_with_vl_arg(a);
+    ^
+
+"Test_name.c", line 104: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_no_streaming_returns_vl();
+    ^
+
+"Test_name.c", line 104: warning: function "sme_no_streaming_returns_vl" declared implicitly
+    __SVInt8_t r = sme_no_streaming_returns_vl();
+                   ^
+
+"Test_name.c", line 107: error: identifier "__SVInt8_t" is undefined
+  void sme_streaming_compatible_calling_streaming_compatible_with_vl_args(__SVInt8_t arg) __arm_streaming_compatible {
+                                                                          ^
+
+"Test_name.c", line 107: error: expected a "{"
+  void sme_streaming_compatible_calling_streaming_compatible_with_vl_args(__SVInt8_t arg) __arm_streaming_compatible {
+                                                                                          ^
+
+"Test_name.c", line 108: warning: function "sme_streaming_compatible_with_vl_arg" declared implicitly
+    sme_streaming_compatible_with_vl_arg(arg);
+    ^
+
+"Test_name.c", line 111: error: expected a "{"
+  void sme_streaming_compatible_calling_streaming_compatible_with_return_vl(void) __arm_streaming_compatible {
+                                                                                  ^
+
+"Test_name.c", line 112: error: identifier "__SVInt8_t" is undefined
+    __SVInt8_t r = sme_streaming_compatible_returns_vl();
+    ^
+
+"Test_name.c", line 112: warning: function "sme_streaming_compatible_returns_vl" declared implicitly
+    __SVInt8_t r = sme_streaming_compatible_returns_vl();
+                   ^
+
+33 errors detected in the compilation of "Test_name.c".

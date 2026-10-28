@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 5: error: inline specifier allowed on function declarations only
+  inline struct A;      // { dg-error "1:'inline'" }
+  ^
+
+"Test_name.c", line 6: error: invalid specifier outside a class declaration
+  virtual struct B;     // { dg-error "1:'virtual'" }
+  ^
+
+"Test_name.c", line 7: error: invalid specifier outside a class declaration
+  friend struct C;      // { dg-error "1:'friend'" }
+  ^
+
+"Test_name.c", line 8: error: "explicit" is not allowed
+  explicit struct D;    // { dg-error "1:'explicit'" }
+  ^
+
+"Test_name.c", line 9: error: mutable is not allowed
+  mutable struct E;     // { dg-error "1:a storage class" }
+  ^
+
+"Test_name.c", line 10: warning: type qualifiers are meaningless in this declaration
+  const struct F;       // { dg-error "1:'const'" }
+  ^
+
+"Test_name.c", line 11: warning: type qualifiers are meaningless in this declaration
+  volatile struct G;    // { dg-error "1:'volatile'" }
+  ^
+
+"Test_name.c", line 12: error: "restrict" is not allowed
+  __restrict struct H;  // { dg-error "1:'__restrict'" }
+  ^
+
+"Test_name.c", line 13: error: this declaration has no storage class or type specifier
+  __thread struct I;    // { dg-error "1:'__thread'" }
+  ^
+
+"Test_name.c", line 13: error: expected a ";"
+  __thread struct I;    // { dg-error "1:'__thread'" }
+           ^
+
+"Test_name.c", line 14: warning: declaration requires a typedef name
+  typedef struct J;     // { dg-warning "1:'typedef'" }
+                  ^
+
+"Test_name.c", line 15: error: "constexpr" is not valid here
+  constexpr struct K;   // { dg-error "1:'constexpr'" }
+  ^
+
+9 errors detected in the compilation of "Test_name.c".

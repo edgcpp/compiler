@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"./cpp23/ext-floating1.C", line 298: error: static assertion failed
+  static_assert (is_same<decltype (0.0f64 + 0.0f64x), _Float64x>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 299: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64x + 0.0F64), _Float64x>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 370: error: static assertion failed
+  static_assert (is_same<decltype (0.0 + 0.0f64), float64_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 371: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64 + 0.0), float64_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 374: error: static assertion failed
+  static_assert (is_same<decltype (0.0L + 0.0f64), long double>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 375: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64 + 0.0l), long double>::value);
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

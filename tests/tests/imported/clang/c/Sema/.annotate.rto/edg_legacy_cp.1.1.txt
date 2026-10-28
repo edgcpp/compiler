@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 8: warning: variable "x2" is used before its value is set
+    [[clang::annotate("bar")]] x2 += 1;
+                               ^
+
+"Test_name.c", line 13: warning: variable "z2" is used before its value is set
+    [[clang::annotate("bar", 1)]] z2 += 1;
+                                  ^
+
+"Test_name.c", line 15: warning: variable "z" is used before its value is set
+    int u = __builtin_annotation(z, (char*) 0); // expected-error {{second argument to __builtin_annotation must be a non-wide string constant}}
+                                 ^
+
+"Test_name.c", line 15: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int u = __builtin_annotation(z, (char*) 0); // expected-error {{second argument to __builtin_annotation must be a non-wide string constant}}
+            ^
+
+"Test_name.c", line 16: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int v = __builtin_annotation(z, (char*) L"bar"); // expected-error {{second argument to __builtin_annotation must be a non-wide string constant}}
+            ^
+
+"Test_name.c", line 17: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int w = __builtin_annotation(z, "foo");
+            ^
+
+"Test_name.c", line 18: error: a value of type "void" cannot be used to initialize an entity of type "float"
+    float b = __builtin_annotation(*a, "foo"); // expected-error {{first argument to __builtin_annotation must be an integer}}
+              ^
+
+"Test_name.c", line 22: warning: variable "c2" is used before its value is set
+    [[clang::annotate()]] c2 += 1;     // expected-error {{'clang::annotate' attribute takes at least 1 argument}}
+                          ^
+
+"Test_name.c", line 6: warning: variable "x" was declared but never referenced
+    __attribute__((annotate("bar"))) int x;
+                                         ^
+
+"Test_name.c", line 9: warning: variable "y" was declared but never referenced
+    __attribute__((annotate(1))) int y; // expected-error {{expected string literal as argument of 'annotate' attribute}}
+                                     ^
+
+"Test_name.c", line 10: warning: variable "y2" was declared but never referenced
+    [[clang::annotate(1)]] int y2; // expected-error {{expected string literal as argument of 'annotate' attribute}}
+                               ^
+
+"Test_name.c", line 20: warning: variable "c" was declared but never referenced
+    __attribute__((annotate())) int c; // expected-error {{'annotate' attribute takes at least 1 argument}}
+                                    ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 19: warning: a class type that is not trivially copyable passed through ellipsis
+    B b = A(); // calls B::B(...): #1, #2, and #3 are excluded from candidate set
+          ^
+
+/usr/sbin/ld: Test_name.o: in function `B::B(B &&)':
+Test_name.int.c:(.text+0xXX): undefined reference to `A::A<T1>(T1 &&) [with T1=A]'
+collect2: error: ld returned 1 exit status

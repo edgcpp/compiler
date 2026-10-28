@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"./cpp23/ext-floating.h", line 15: error: identifier "_Float128" is undefined
+    using float128_t = _Float128;
+                       ^
+
+"./cpp23/ext-floating11.C", line 50: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (foo (0.0f128, 0.0f128) != 3)
+            ^
+
+"./cpp23/ext-floating11.C", line 50: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (foo (0.0f128, 0.0f128) != 3)
+                     ^
+
+"./cpp23/ext-floating11.C", line 52: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (foo (0.0L, 0.0f128) != 3)
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,64 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions --exceptions Test_name.c
+"Test_name.c", line 20: error: incomplete type "cwg2512::A" is not allowed
+    typeid(*p);
+           ^
+
+"Test_name.c", line 32: error: identifier "E2" is undefined
+  enum E2 : S<E2>::I { e };
+              ^
+
+"Test_name.c", line 62: warning: constexpr if statements are a C++17 feature
+    if constexpr (sizeof(T) != sizeof(int)) {
+       ^
+
+"Test_name.c", line 77: error: static assertion failed
+    static_assert(false);
+    ^
+          detected during instantiation of class "cwg2518::S<Ty> [with Ty=double]" at line 92
+
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "cwg2518::test_specialization"
+  }
+  ^
+
+"Test_name.c", line 90: warning: variable "s1" was declared but never referenced
+    S<int> s1;
+           ^
+
+"Test_name.c", line 91: warning: variable "s2" was declared but never referenced
+    S<float> s2;
+             ^
+
+"Test_name.c", line 92: warning: variable "s3" was declared but never referenced
+    S<double> s3; // #cwg2518-S-double
+              ^
+
+"Test_name.c", line 110: warning: using-declaration ignored -- it refers to the current namespace
+  using ::cwg2521::operator"" _\u03C0___;
+        ^
+
+"Test_name.c", line 112: warning: using-declaration ignored -- it refers to the current namespace
+  using ::cwg2521::operator""_div;
+        ^
+
+"Test_name.c", line 299: error: static assertion failed with ""
+  static_assert(__is_layout_compatible(U, V), "");
+  ^
+
+"Test_name.c", line 357: error: static assertion failed with ""
+  static_assert(__is_literal(anonymous3), "");
+  ^
+
+"Test_name.c", line 371: error: static assertion failed with ""
+  static_assert(__is_literal(union2), "");
+  ^
+
+"Test_name.c", line 384: error: static assertion failed with ""
+  static_assert(__is_literal(union6), "");
+  ^
+
+"Test_name.c", line 64: error: static assertion failed with "must be int-sized"
+      static_assert(false, "must be int-sized");
+      ^
+          detected during instantiation of "void cwg2518::f(T) [with T=char]" at line 72
+
+8 errors detected in the compilation of "Test_name.c".

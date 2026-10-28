@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 --strict_gnu Test_name.c
+"Test_name.c", line 12: warning: excess initializers are ignored
+  vec v = { 1, 2, 3 }; /* { dg-warning "17:excess elements in vector initializer" } */
+               ^
+
+"Test_name.c", line 13: warning: excess initializers are ignored
+  int a1 = { 1, 2 }; /* { dg-warning "15:excess elements in scalar initializer" } */
+                ^
+
+"Test_name.c", line 14: warning: excess initializers are ignored
+  int a2[2] = { 1, 2, 3 }; /* { dg-warning "21:excess elements in array initializer" } */
+                      ^
+
+"Test_name.c", line 21: warning: excess initializers are ignored
+  union u u = { 1, 1.0 }; /* { dg-warning "18:excess elements in union initializer" } */
+                   ^
+

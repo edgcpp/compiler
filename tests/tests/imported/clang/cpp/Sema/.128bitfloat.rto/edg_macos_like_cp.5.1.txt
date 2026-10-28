@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -w Test_name.c
+"Test_name.c", line 40: error: identifier "__float128" is undefined
+  __float128 f;  // expected-error {{__float128 is not supported on this target}}
+  ^
+
+"Test_name.c", line 42: error: identifier "__float128" is undefined
+  template<> struct __is_floating_point_helper<__float128> {};  // expected-error {{__float128 is not supported on this target}}
+                                               ^
+
+"Test_name.c", line 44: error: identifier "__float128" is undefined
+  int g(int x, __float128 *y) {  // expected-error {{__float128 is not supported on this target}}
+               ^
+
+"Test_name.c", line 59: error: identifier "__ibm128" is undefined
+  __ibm128 i;                                                 // expected-error {{__ibm128 is not supported on this target}}
+  ^
+
+"Test_name.c", line 60: error: identifier "__ibm128" is undefined
+  template <> struct __is_floating_point_helper<__ibm128> {}; // expected-error {{__ibm128 is not supported on this target}}
+                                                ^
+
+"Test_name.c", line 60: error: class "__is_floating_point_helper<<error-type>>" has already been defined (previous definition at line 42)
+  template <> struct __is_floating_point_helper<__ibm128> {}; // expected-error {{__ibm128 is not supported on this target}}
+                     ^
+
+"Test_name.c", line 61: error: identifier "__ibm128" is undefined
+  int w(int x, __ibm128 *y) {                                 // expected-error {{__ibm128 is not supported on this target}}
+               ^
+
+7 errors detected in the compilation of "Test_name.c".

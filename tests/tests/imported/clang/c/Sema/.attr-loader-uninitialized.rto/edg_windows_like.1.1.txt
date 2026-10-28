@@ -1,0 +1,98 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "loader_uninitialized"
+  int good __attribute__((loader_uninitialized));
+                          ^
+
+"Test_name.c", line 7: warning: unknown attribute "loader_uninitialized"
+  static int local_ok __attribute__((loader_uninitialized));
+                                     ^
+
+"Test_name.c", line 8: warning: unknown attribute "visibility"
+  int hidden_ok __attribute__((visibility("hidden"))) __attribute__((loader_uninitialized));
+                               ^
+
+"Test_name.c", line 8: warning: unknown attribute "loader_uninitialized"
+  int hidden_ok __attribute__((visibility("hidden"))) __attribute__((loader_uninitialized));
+                                                                     ^
+
+"Test_name.c", line 10: warning: unknown attribute "loader_uninitialized"
+  const int can_still_be_const __attribute__((loader_uninitialized));
+                                              ^
+
+"Test_name.c", line 12: warning: unknown attribute "loader_uninitialized"
+  extern int external_rejected __attribute__((loader_uninitialized));
+                                              ^
+
+"Test_name.c", line 16: warning: unknown attribute "loader_uninitialized"
+  extern struct S incomplete_external_rejected __attribute__((loader_uninitialized));
+                                                              ^
+
+"Test_name.c", line 19: warning: unknown attribute "loader_uninitialized"
+  int noargs __attribute__((loader_uninitialized(0)));
+                            ^
+
+"Test_name.c", line 22: warning: unknown attribute "loader_uninitialized"
+  int init_rejected __attribute__((loader_uninitialized)) = 42;
+                                   ^
+
+"Test_name.c", line 26: warning: unknown attribute "loader_uninitialized"
+  int declaration_then_uninit_ok __attribute__((loader_uninitialized));
+                                                ^
+
+"Test_name.c", line 29: warning: unknown attribute "loader_uninitialized"
+  int definition_then_uninit_rejected __attribute__((loader_uninitialized));
+                                                     ^
+
+"Test_name.c", line 33: warning: unknown attribute "loader_uninitialized"
+  int tentative_repeated_ok __attribute__((loader_uninitialized));
+                                           ^
+
+"Test_name.c", line 34: warning: unknown attribute "loader_uninitialized"
+  int tentative_repeated_ok __attribute__((loader_uninitialized));
+                                           ^
+
+"Test_name.c", line 36: warning: this declaration has no storage class or type specifier
+  __private_extern__ int private_extern_can_be_initialised = 10;
+  ^
+
+"Test_name.c", line 36: error: expected a ";"
+  __private_extern__ int private_extern_can_be_initialised = 10;
+                     ^
+
+"Test_name.c", line 37: warning: this declaration has no storage class or type specifier
+  __private_extern__ int therefore_uninit_private_extern_ok __attribute__((loader_uninitialized));
+  ^
+
+"Test_name.c", line 37: error: expected a ";"
+  __private_extern__ int therefore_uninit_private_extern_ok __attribute__((loader_uninitialized));
+                     ^
+
+"Test_name.c", line 39: warning: this declaration has no storage class or type specifier
+  __private_extern__ int initialized_private_extern_rejected __attribute__((loader_uninitialized)) = 5;
+  ^
+
+"Test_name.c", line 39: error: expected a ";"
+  __private_extern__ int initialized_private_extern_rejected __attribute__((loader_uninitialized)) = 5;
+                     ^
+
+"Test_name.c", line 42: warning: unknown attribute "visibility"
+  extern __attribute__((visibility("hidden"))) int extern_hidden __attribute__((loader_uninitialized));
+                        ^
+
+"Test_name.c", line 42: warning: unknown attribute "loader_uninitialized"
+  extern __attribute__((visibility("hidden"))) int extern_hidden __attribute__((loader_uninitialized));
+                                                                                ^
+
+"Test_name.c", line 46: warning: unknown attribute "loader_uninitialized"
+  struct Incomplete incomplete __attribute__((loader_uninitialized));
+                                              ^
+
+"Test_name.c", line 7: warning: variable "local_ok" was declared but never referenced
+  static int local_ok __attribute__((loader_uninitialized));
+             ^
+
+"Test_name.c", line 46: error: variable "incomplete" was declared with a never-completed type
+  struct Incomplete incomplete __attribute__((loader_uninitialized));
+                    ^
+
+4 errors detected in the compilation of "Test_name.c".

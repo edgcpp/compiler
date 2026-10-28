@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: error: the size of an array in "new" must be non-negative
+    decltype(new int[-1]) p; // { dg-error "negative" }
+                     ^
+
+"Test_name.c", line 9: error: the size of an array in "new" must be non-negative
+    decltype(new int[0-1]) q; // { dg-error "negative" }
+                     ^
+
+"Test_name.c", line 10: error: the size of an array in "new" must be non-negative
+    decltype(new int[1*-1]) r; // { dg-error "negative" }
+                     ^
+
+"Test_name.c", line 8: warning: variable "p" was declared but never referenced
+    decltype(new int[-1]) p; // { dg-error "negative" }
+                          ^
+
+"Test_name.c", line 9: warning: variable "q" was declared but never referenced
+    decltype(new int[0-1]) q; // { dg-error "negative" }
+                           ^
+
+"Test_name.c", line 10: warning: variable "r" was declared but never referenced
+    decltype(new int[1*-1]) r; // { dg-error "negative" }
+                            ^
+
+"Test_name.c", line 13: error: the size of an array in "new" must be non-negative
+  decltype(new int[-1]) p; // { dg-error "negative" }
+                   ^
+
+"Test_name.c", line 14: error: the size of an array in "new" must be non-negative
+  decltype(new int[0-1]) q; // { dg-error "negative" }
+                   ^
+
+"Test_name.c", line 15: error: the size of an array in "new" must be non-negative
+  decltype(new int[1*-1]) r; // { dg-error "negative" }
+                   ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++14 --target linux_aarch64 Test_name.c
+"Test_name.c", line 18: error: function "diff_const" (declared at line 16) was previously declared constexpr
+  int __attribute__((target_version("sve2-bitperm"))) diff_const(void);
+                                                      ^
+
+"Test_name.c", line 22: error: function "diff_const1" (declared at line 20) was previously not declared constexpr
+  constexpr int __attribute__((target_version("sve2-aes"))) diff_const1(void);
+  ^
+
+"Test_name.c", line 30: error: external/internal linkage conflict with previous declaration at line 28
+  static int __attribute__((target_version("bti"))) diff_link1(void);
+                                                    ^
+
+"Test_name.c", line 37: error: function "<unnamed>::diff_link2" has already been defined (previous definition at line 36)
+  int __attribute__((target_version("sve2-bitperm"))) diff_link2(void) { return 1; }
+                                                      ^
+
+"Test_name.c", line 42: error: function "diff_inline" has already been defined (previous definition at line 40)
+  int __attribute__((target_version("fp16"))) diff_inline(void) { return 2; }
+                                              ^
+
+"Test_name.c", line 46: error: function "diff_inline1" has already been defined (previous definition at line 44)
+  int __attribute__((target_version("default"))) diff_inline1(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 50: error: cannot overload functions distinguished by return type alone
+  double __attribute__((target_version("rcpc"))) diff_type1(void);
+                                                 ^
+
+"Test_name.c", line 54: error: cannot overload functions distinguished by return type alone
+  auto __attribute__((target_version("bf16"))) diff_type2(void) -> long { return (long)1; }
+                                               ^
+
+"Test_name.c", line 59: error: function "diff_type3" has already been defined (previous definition at line 56)
+  int __attribute__((target_version("sve2-sha3"))) diff_type3(void) noexcept(true) { return 2; }
+                                                   ^
+
+"Test_name.c", line 70: error: function "extc" has already been defined (previous definition at line 67)
+  int __attribute__((target_version("lse"))) extc(void) { return 1; }
+                                             ^
+
+"Test_name.c", line 101: error: function "Nms::Decl()" conflicts with using-declaration of function "Decl()"
+  __attribute__((target_version("jscvt"))) void Decl();
+                                                ^
+
+"Test_name.c", line 106: error: invalid redeclaration of member function "Out::func()" (declared at line 105)
+    int __attribute__((target_version("ssbs"))) func(void);
+                                                ^
+
+"Test_name.c", line 109: error: function "Out::func" has already been defined (previous definition at line 108)
+  int __attribute__((target_version("ssbs"))) Out::func(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 114: error: function "Out::func" has already been defined (previous definition at line 108)
+  int __attribute__((target_version("rng"))) Out::func(void) { return 3; }
+                                                  ^
+
+"Test_name.c", line 24: warning: function "diff_link" was declared but never referenced
+  static int __attribute__((target_version("sve2-sha3"))) diff_link(void) { return 1; }
+                                                          ^
+
+14 errors detected in the compilation of "Test_name.c".

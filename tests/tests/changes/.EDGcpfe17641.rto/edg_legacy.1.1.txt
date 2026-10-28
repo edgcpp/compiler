@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 12: error: explicit type is missing ("int" assumed)
+  template<typename... T> void g(int i = 0, T... ps);
+           ^
+
+"Test_name.c", line 12: error: expected a "," or ">"
+  template<typename... T> void g(int i = 0, T... ps);
+                   ^
+
+"Test_name.c", line 12: error: identifier "T" is undefined
+  template<typename... T> void g(int i = 0, T... ps);
+                                            ^
+
+"Test_name.c", line 12: error: expected a ")"
+  template<typename... T> void g(int i = 0, T... ps);
+                                                 ^
+
+"Test_name.c", line 12: error: default argument not at end of parameter list
+  template<typename... T> void g(int i = 0, T... ps);
+                               ^
+
+"Test_name.c", line 13: error: explicit type is missing ("int" assumed)
+  template<typename... T> void g(int i, T... ps);
+           ^
+
+"Test_name.c", line 13: error: expected a "," or ">"
+  template<typename... T> void g(int i, T... ps);
+                   ^
+
+"Test_name.c", line 13: error: identifier "T" is undefined
+  template<typename... T> void g(int i, T... ps);
+                                        ^
+
+"Test_name.c", line 13: error: expected a ")"
+  template<typename... T> void g(int i, T... ps);
+                                             ^
+
+"Test_name.c", line 13: error: default argument not at end of parameter list
+  template<typename... T> void g(int i, T... ps);
+                               ^
+
+10 errors detected in the compilation of "Test_name.c".

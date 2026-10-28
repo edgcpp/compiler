@@ -1,0 +1,167 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions --exceptions Test_name.c
+"Test_name.c", line 21: error: no operator "[]" matches these operands
+            operand types are: cwg2007::B<cwg2007::A<void>> [ int ]
+  int a = b2[0];
+            ^
+"Test_name.c", line 21: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+  int a = b2[0];
+            ^
+"Test_name.c", line 21: note: built-in operator[](<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+  int a = b2[0];
+            ^
+
+"Test_name.c", line 24: error: class "cwg2007::B<cwg2007::A<void>>" has no member "foo"
+  int b = __builtin_addressof(b2)->foo;
+                                   ^
+
+"Test_name.c", line 36: error: expression must have a constant value
+    X<a> xa; // #cwg2026-xa
+      ^
+"Test_name.c", line 36: note: the value of variable "cwg2026::a" (declared at line 34) cannot be used as a constant
+    X<a> xa; // #cwg2026-xa
+      ^
+
+"Test_name.c", line 45: error: expression must have a constant value
+    constexpr int b = b;
+                      ^
+"Test_name.c", line 45: note: access to uninitialized object
+    constexpr int b = b;
+                      ^
+
+"Test_name.c", line 64: warning: variable "e" is used before its value is set
+      static const int e = e + 1; // #cwg2026-e
+                           ^
+
+"Test_name.c", line 66: error: expression must have a constant value
+      X<e> xe; // #cwg2026-xe
+        ^
+"Test_name.c", line 66: note: the value of variable "e" (declared at line 64) cannot be used as a constant
+      X<e> xe; // #cwg2026-xe
+        ^
+
+"Test_name.c", line 75: warning: variable "f" is used before its value is set
+      static constexpr int f = f;
+                               ^
+
+"Test_name.c", line 75: error: expression must have a constant value
+      static constexpr int f = f;
+                               ^
+"Test_name.c", line 75: note: access to uninitialized object
+      static constexpr int f = f;
+                               ^
+
+"Test_name.c", line 78: warning: variable "g" is used before its value is set
+      [[clang::require_constant_initialization]] static int g = g;
+                                                                ^
+
+"Test_name.c", line 66: warning: variable "xe" was declared but never referenced
+      X<e> xe; // #cwg2026-xe
+           ^
+
+"Test_name.c", line 127: warning: variable "s" was declared but never referenced
+      A::C::S<int> s;
+                   ^
+
+"Test_name.c", line 164: error: no instance of constructor "cwg2076::string::string" matches the argument list
+            argument types are: ({...})
+      foo({{{arg}}});
+          ^
+"Test_name.c", line 149: note: function "cwg2076::string::string(const cwg2076::string &)" does not match because argument #1 does not match parameter
+    struct string {
+           ^
+"Test_name.c", line 149: note: function "cwg2076::string::string(cwg2076::string &&)" does not match because argument #1 does not match parameter
+    struct string {
+           ^
+"Test_name.c", line 150: note: function "cwg2076::string::string(int)" does not match because argument #1 does not match parameter
+      string(int); // not an aggregate
+      ^
+
+"Test_name.c", line 169: error: no instance of constructor "cwg2076::string_view::string_view" matches the argument list
+            argument types are: ({...})
+      bar({{arg}});
+          ^
+"Test_name.c", line 146: note: function "cwg2076::string_view::string_view(const cwg2076::string_view &)" does not match because argument #1 does not match parameter
+    struct string_view {
+           ^
+"Test_name.c", line 146: note: function "cwg2076::string_view::string_view(cwg2076::string_view &&)" does not match because argument #1 does not match parameter
+    struct string_view {
+           ^
+"Test_name.c", line 147: note: function "cwg2076::string_view::string_view(int)" does not match because argument #1 does not match parameter
+      string_view(int); // not an aggregate
+      ^
+
+"Test_name.c", line 172: error: no instance of constructor "cwg2076::string_view::string_view" matches the argument list
+            argument types are: ({...})
+      bar({{{arg}}});
+          ^
+"Test_name.c", line 146: note: function "cwg2076::string_view::string_view(const cwg2076::string_view &)" does not match because argument #1 does not match parameter
+    struct string_view {
+           ^
+"Test_name.c", line 146: note: function "cwg2076::string_view::string_view(cwg2076::string_view &&)" does not match because argument #1 does not match parameter
+    struct string_view {
+           ^
+"Test_name.c", line 147: note: function "cwg2076::string_view::string_view(int)" does not match because argument #1 does not match parameter
+      string_view(int); // not an aggregate
+      ^
+
+"Test_name.c", line 180: error: identifier "x" is undefined
+    void test1(int x, int = sizeof(x)); // ok
+                                   ^
+
+"Test_name.c", line 182: error: identifier "x" is undefined
+    void test2(int x, int = decltype(x){}); // ok
+                                     ^
+
+"Test_name.c", line 220: error: reference to local variable of enclosing function is not allowed
+          int b = rb;
+                  ^
+
+"Test_name.c", line 223: error: reference to local variable of enclosing function is not allowed
+          int c = rc;
+                  ^
+
+"Test_name.c", line 302: warning: variable "x" was declared but never referenced
+          int x = a.*p;
+              ^
+
+"Test_name.c", line 320: error: reference to local variable of enclosing function is not allowed
+          a.x;
+          ^
+
+"Test_name.c", line 324: error: reference to local variable of enclosing function is not allowed
+          a.*&A::x;
+          ^
+
+"Test_name.c", line 328: error: reference to local variable of enclosing function is not allowed
+          true ? a.x : a.y; // #cwg2083-ternary
+                 ^
+
+"Test_name.c", line 328: error: reference to local variable of enclosing function is not allowed
+          true ? a.x : a.y; // #cwg2083-ternary
+                       ^
+
+"Test_name.c", line 334: error: reference to local variable of enclosing function is not allowed
+          (void)a.x;
+                ^
+
+"Test_name.c", line 337: error: reference to local variable of enclosing function is not allowed
+          a.x, discarded_lval();
+          ^
+
+"Test_name.c", line 343: error: reference to local variable of enclosing function is not allowed
+          a.z;
+          ^
+
+"Test_name.c", line 350: error: reference to local variable of enclosing function is not allowed
+          r;
+          ^
+
+"Test_name.c", line 363: error: reference to local variable of enclosing function is not allowed
+          const int *foo() { return &x; }
+                                     ^
+
+"Test_name.c", line 381: warning: variable "aq" was declared but never referenced
+        constexpr int aq = a.q;
+                      ^
+
+22 errors detected in the compilation of "Test_name.c".

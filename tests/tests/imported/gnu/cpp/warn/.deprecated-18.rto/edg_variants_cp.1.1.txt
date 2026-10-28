@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: warning: attribute does not apply to any entity
+    } __attribute__((deprecated)) ;
+                     ^
+
+"Test_name.c", line 16: warning: attribute does not apply to any entity
+    } __attribute__((deprecated));
+                     ^
+
+"Test_name.c", line 35: warning: variable "a1" was declared but never referenced
+    S<int>::B a1; // { dg-warning "is deprecated" }
+              ^
+
+"Test_name.c", line 36: warning: variable "a2" was declared but never referenced
+    S2::B a2; // { dg-warning "is deprecated" }
+          ^
+
+"Test_name.c", line 37: warning: variable "a3" was declared but never referenced
+    S3<int>::B a3; // { dg-warning "is deprecated" }
+               ^
+
+"Test_name.c", line 38: warning: variable "a4" was declared but never referenced
+    S4::B a4; // { dg-warning "is deprecated" }
+          ^
+

@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 14: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default"))) {
+                                ^
+
+"Test_name.c", line 106: warning: missing return statement at end of non-void function "__gnu_test::test_container<T, ItType>::end"
+    }
+    ^
+
+"Test_name.c", line 49: warning: missing return statement at end of non-void function "std::__equal<_BoolType>::equal(_II1, _II1, _II2)"
+     }
+     ^
+          detected during:
+            instantiation of "bool std::__equal_aux(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 58
+            instantiation of "bool std::equal(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 119
+
+"Test_name.c", line 81: warning: missing return statement at end of non-void function "__gnu_test::input_iterator_wrapper<T>::operator=="
+        }
+        ^
+          detected during:
+            instantiation of "bool __gnu_test::input_iterator_wrapper<T>::operator!=(const __gnu_test::input_iterator_wrapper<T> &) const [with T=int]" at line 47
+            instantiation of "bool std::__equal<_BoolType>::equal(_II1, _II1, _II2) [with _BoolType=false, _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 55
+            instantiation of "bool std::__equal_aux(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 58
+            instantiation of "bool std::equal(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 119
+
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "__gnu_test::input_iterator_wrapper<T>::operator++"
+        }
+        ^
+          detected during:
+            instantiation of "bool std::__equal<_BoolType>::equal(_II1, _II1, _II2) [with _BoolType=false, _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 55
+            instantiation of "bool std::__equal_aux(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 58
+            instantiation of "bool std::equal(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 119
+
+"Test_name.c", line 88: warning: missing return statement at end of non-void function "__gnu_test::input_iterator_wrapper<T>::operator*"
+        }
+        ^
+          detected during:
+            instantiation of "bool std::__equal<_BoolType>::equal(_II1, _II1, _II2) [with _BoolType=false, _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 55
+            instantiation of "bool std::__equal_aux(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 58
+            instantiation of "bool std::equal(_II1, _II1, _II2) [with _II1=__gnu_test::input_iterator_wrapper<int>, _II2=__gnu_test::input_iterator_wrapper<int>]" at line 119
+

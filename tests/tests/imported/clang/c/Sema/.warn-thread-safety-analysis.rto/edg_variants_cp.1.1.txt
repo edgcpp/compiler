@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 -DLATE_PARSING --c Test_name.c
+"Test_name.c", line 200: error: identifier "__UINTPTR_TYPE__" is undefined
+         *priv __attribute__((cleanup(unlock_scope_type_erased))) = (int *)(__UINTPTR_TYPE__)(foo_.mu_);
+                                                                            ^
+
+1 error detected in the compilation of "Test_name.c".

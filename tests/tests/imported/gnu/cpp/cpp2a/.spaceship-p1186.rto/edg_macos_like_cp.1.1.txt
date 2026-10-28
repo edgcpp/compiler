@@ -1,0 +1,63 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-p1186.C", line 91: error: function "A::operator<=>(const A &) const" (declared at line 17) cannot be referenced -- it is a deleted function
+    auto a = a1 < a2;
+                ^
+
+"./cpp2a/spaceship-p1186.C", line 93: error: function "D::operator<=>(const D &) const" (declared at line 35) cannot be referenced -- it is a deleted function
+    auto d = d1 < d2;
+                ^
+
+"./cpp2a/spaceship-p1186.C", line 94: error: no suitable user-defined conversion from "std::partial_ordering" to "std::strong_ordering" exists
+    auto f = f1 < f2;
+                    ^
+
+"./cpp2a/spaceship-p1186.C", line 98: error: function "J<T>::operator<=>(const J<T> &) const [with T=H]" (declared at line 63) cannot be referenced -- it is a deleted function
+    auto j2 = J<H>() < J<H>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 99: error: function "J<T>::operator<=>(const J<T> &) const [with T=C]" (declared at line 63) cannot be referenced -- it is a deleted function
+    auto j3 = J<C>() < J<C>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 102: error: function "J<T>::operator<=>(const J<T> &) const [with T=N]" (declared at line 63) cannot be referenced -- it is a deleted function
+    auto j6 = J<N>() < J<N>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 106: error: function "K<T>::operator<=>(const K<T> &) const [with T=C]" (declared at line 69) cannot be referenced -- it is a deleted function
+    auto k3 = K<C>() < K<C>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 109: error: function "K<T>::operator<=>(const K<T> &) const [with T=N]" (declared at line 69) cannot be referenced -- it is a deleted function
+    auto k6 = K<N>() < K<N>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 113: error: function "M<T>::operator<=>(const M<T> &) const [with T=C]" (declared at line 75) cannot be referenced -- it is a deleted function
+    auto m3 = M<C>() < M<C>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 114: error: no suitable user-defined conversion from "std::partial_ordering" to "std::strong_ordering" exists
+    auto m4 = M<E>() < M<E>();
+                             ^
+          detected during instantiation of class "M<T> [with T=E]" at line 114
+
+"./cpp2a/spaceship-p1186.C", line 116: error: function "M<T>::operator<=>(const M<T> &) const [with T=N]" (declared at line 75) cannot be referenced -- it is a deleted function
+    auto m6 = M<N>() < M<N>();
+                     ^
+
+"./cpp2a/spaceship-p1186.C", line 97: warning: variable "j1" was declared but never referenced
+    auto j1 = J<int>() < J<int>();
+         ^
+
+"./cpp2a/spaceship-p1186.C", line 104: warning: variable "k1" was declared but never referenced
+    auto k1 = K<int>() < K<int>();
+         ^
+
+"./cpp2a/spaceship-p1186.C", line 111: warning: variable "m1" was declared but never referenced
+    auto m1 = M<int>() < M<int>();
+         ^
+
+12 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef double v2df __attribute__((vector_size(2 * sizeof (double))));
+                                     ^
+
+"Test_name.c", line 11: error: identifier "__builtin_shufflevector" is undefined
+      (void)__builtin_shufflevector(t, u, N, M); // { dg-error "invalid" }
+            ^
+          detected during instantiation of "void Shuffle<T, U, N, M>::f(T, U, v2df, v2df) [with T=v2df, U=v2df, N=4, M=3]" at line 15
+
+1 error detected in the compilation of "Test_name.c".

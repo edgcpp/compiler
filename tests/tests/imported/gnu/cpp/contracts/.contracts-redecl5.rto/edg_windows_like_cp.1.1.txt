@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 9: error: expected a ","
+  int g0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 10: error: expected a ","
+  int g0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 12: error: expected a ","
+  int g1(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 17: error: expected a ","
+  int g2(int a) [[ pre: a > 0 ]]; // { dg-warning "adds contracts" }
+                      ^
+
+"Test_name.c", line 18: error: expected a ","
+  int g2(int a) [[ pre: a > 0 ]]; // { dg-bogus "adds contracts" }
+                      ^
+
+"Test_name.c", line 26: error: expected a ","
+  int G0::f(int a) [[ pre: a > 0 ]] // { dg-warning "adds contracts" }
+                         ^
+
+"Test_name.c", line 36: error: expected a ","
+  int G1::f(int a) [[ pre: a > 0 ]]; // { dg-warning "adds contracts" }
+                         ^
+
+"Test_name.c", line 36: error: member function "G1::f" may not be redeclared outside its class
+  int G1::f(int a) [[ pre: a > 0 ]]; // { dg-warning "adds contracts" }
+          ^
+
+"Test_name.c", line 39: error: member function "G1::f" may not be redeclared outside its class
+  int G1::f(int a);
+          ^
+
+"Test_name.c", line 42: error: expected a ","
+  int G1::f(int a) [[ pre: a > 0 ]];
+                         ^
+
+"Test_name.c", line 42: error: member function "G1::f" may not be redeclared outside its class
+  int G1::f(int a) [[ pre: a > 0 ]];
+          ^
+
+"Test_name.c", line 56: error: member function "G2::f" may not be redeclared outside its class
+  int G2::f(int a); // { dg-warning "outside of class is not definition" }
+          ^
+
+"Test_name.c", line 59: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 60: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]]; // { dg-error "different number of contracts" }
+                      ^
+
+"Test_name.c", line 60: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]]; // { dg-error "different number of contracts" }
+                                       ^
+
+"Test_name.c", line 62: error: expected a ","
+  int f1(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 63: error: expected a ","
+  int f1(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                      ^
+
+"Test_name.c", line 66: error: expected a ","
+  int f2(int a) [[ pre: a < 0 ]]; // { dg-error "cannot add contracts after definition" }
+                      ^
+
+"Test_name.c", line 70: error: expected a ","
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 70: error: expected a "]"
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 70: error: expected a ";"
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 75: error: expected a ","
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 75: error: expected a "]"
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 75: error: expected a ";"
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 84: error: class "F2" has no member "g"
+  int F2::g(int a) [[ pre: a > 0 ]]; // { dg-error "no declaration matches" }
+          ^
+
+"Test_name.c", line 84: error: expected a ","
+  int F2::g(int a) [[ pre: a > 0 ]]; // { dg-error "no declaration matches" }
+                         ^
+
+"Test_name.c", line 92: error: member function "F0::f" may not be redeclared outside its class
+  int F0::f(int a); // { dg-error "declaration.*is not definition" }
+          ^
+
+"Test_name.c", line 99: error: expected a ","
+  int F1::f(int a) [[ pre: a > 0 ]] // { dg-error "cannot add" }
+                         ^
+
+28 errors detected in the compilation of "Test_name.c".

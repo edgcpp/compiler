@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 -w Test_name.c
+"Test_name.c", line 10: error: identifier "__builtin_shufflevector" is undefined
+        -> decltype (__builtin_shufflevector (a, b, args...))
+                     ^
+          detected during instantiation of class "shufflevector<T1, T2, args...> [with T1=v4si, T2=v4si, args=<0, 1, 4, 5>]" at line 20
+
+"Test_name.c", line 12: error: identifier "__builtin_shufflevector" is undefined
+      return __builtin_shufflevector (a, b, args...);
+             ^
+          detected during instantiation of "auto shufflevector<T1, T2, args...>::shuffle(T1, T2)->decltype((<expression>)) [with T1=v4si, T2=v4si, args=<0, 1, 4, 5>]" at line 20
+
+2 errors detected in the compilation of "Test_name.c".

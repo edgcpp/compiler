@@ -1,0 +1,58 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: error: incorrect use of va_arg
+    (void)__builtin_va_arg(args2, int); // expected-error {{first argument to 'va_arg' is of type 'const __builtin_va_list' and not 'va_list'}}
+                           ^
+
+"Test_name.c", line 11: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 16: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 23: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 31: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 38: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 43: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 48: error: identifier "__builtin_ms_va_list" is undefined
+  bar(__builtin_ms_va_list authors, ...) {
+      ^
+
+"Test_name.c", line 55: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 64: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 71: error: identifier "__builtin_ms_va_list" is undefined
+  void __attribute__((ms_abi)) g9(__builtin_ms_va_list args) {
+                                  ^
+
+"Test_name.c", line 72: warning: "float" would have been promoted to "double" when passed through the ellipsis parameter; use the latter type instead
+    (void)__builtin_va_arg(args, float); // expected-warning {{second argument to 'va_arg' is of promotable type 'float'}}
+                                 ^
+
+"Test_name.c", line 74: warning: "short" would have been promoted to "int" when passed through the ellipsis parameter; use the latter type instead
+    (void)__builtin_va_arg(args, short); // expected-warning {{second argument to 'va_arg' is of promotable type 'short'}}
+                                 ^
+
+"Test_name.c", line 75: warning: "char" would have been promoted to "int" when passed through the ellipsis parameter; use the latter type instead
+    (void)__builtin_va_arg(args, char); // expected-warning {{second argument to 'va_arg' is of promotable type 'char'}}
+                                 ^
+
+11 errors detected in the compilation of "Test_name.c".

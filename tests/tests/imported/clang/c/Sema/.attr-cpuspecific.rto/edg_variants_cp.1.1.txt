@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 21: error: expression must have arithmetic type
+    (void)+addr_of;
+           ^
+
+"Test_name.c", line 23: error: expression must have arithmetic type
+    (void)+addr_of2;
+           ^
+
+"Test_name.c", line 37: warning: missing return statement at end of non-void function "redecl2"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                                                          ^
+
+"Test_name.c", line 40: error: function "redecl2" has already been defined (previous definition at line 37)
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                                          ^
+
+"Test_name.c", line 40: warning: missing return statement at end of non-void function "redecl2"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                                                          ^
+
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "allow_fwd_decl"
+  int __attribute__((cpu_dispatch(atom))) allow_fwd_decl(void) {}
+                                                                ^
+
+"Test_name.c", line 51: warning: missing return statement at end of non-void function "allow_fwd_decl2"
+  int __attribute__((cpu_dispatch(atom))) allow_fwd_decl2(void) {}
+                                                                 ^
+
+"Test_name.c", line 74: error: function "redef" has already been defined (previous definition at line 71)
+  int __attribute__((cpu_specific(atom))) redef(void) { return 2; }
+                                          ^
+
+"Test_name.c", line 76: warning: missing return statement at end of non-void function "mult_dispatch"
+  int __attribute((cpu_dispatch(atom))) mult_dispatch(void) {}
+                                                             ^
+
+"Test_name.c", line 79: error: function "mult_dispatch" has already been defined (previous definition at line 76)
+  int __attribute((cpu_dispatch(ivybridge))) mult_dispatch(void) {}
+                                             ^
+
+"Test_name.c", line 79: warning: missing return statement at end of non-void function "mult_dispatch"
+  int __attribute((cpu_dispatch(ivybridge))) mult_dispatch(void) {}
+                                                                  ^
+
+"Test_name.c", line 82: warning: missing return statement at end of non-void function "no_dispatch"
+  int __attribute((cpu_dispatch())) no_dispatch(void) {}
+                                                       ^
+
+"Test_name.c", line 84: warning: missing return statement at end of non-void function "no_specific"
+  int __attribute((cpu_specific())) no_specific(void) {}
+                                                       ^
+
+"Test_name.c", line 99: warning: missing return statement at end of non-void function "diff_cc"
+  int __attribute__((cpu_dispatch(ivybridge))) diff_cc(void){}
+                                                             ^
+
+"Test_name.c", line 101: warning: this declaration has no storage class or type specifier
+  __vectorcall int __attribute__((cpu_specific(sandybridge))) diff_cc(void);
+  ^
+
+"Test_name.c", line 101: error: expected a ";"
+  __vectorcall int __attribute__((cpu_specific(sandybridge))) diff_cc(void);
+               ^
+
+"Test_name.c", line 113: error: function "called_invalid_value" has already been defined (previous definition at line 109)
+  int __attribute__((cpu_specific(pentium_iii))) called_invalid_value(void){ return 2;}
+                                                 ^
+
+"Test_name.c", line 114: error: function "called_invalid_value" has already been defined (previous definition at line 109)
+  int __attribute__((cpu_specific(pentium_4))) called_invalid_value(void){ return 3;}
+                                               ^
+
+"Test_name.c", line 123: error: declaration is incompatible with "void addtl_attrs(void)" (declared at line 87)
+  void __attribute__((cpu_specific(atom), nothrow, nonnull(1))) addtl_attrs(int*);
+                                                                ^
+
+"Test_name.c", line 128: error: declaration is incompatible with "int bad_overload1(void)" (declared at line 125)
+  int bad_overload1(int);
+      ^
+
+"Test_name.c", line 133: error: declaration is incompatible with "int bad_overload2(int)" (declared at line 130)
+  int __attribute__((cpu_specific(atom))) bad_overload2(void);
+                                          ^
+
+"Test_name.c", line 139: error: declaration is incompatible with "int bad_overload3(void)" (declared at line 136)
+  int bad_overload3(int);
+      ^
+
+"Test_name.c", line 144: error: declaration is incompatible with "int bad_overload4(int)" (declared at line 141)
+  int __attribute__((cpu_dispatch(generic))) bad_overload4(void);
+                                             ^
+
+13 errors detected in the compilation of "Test_name.c".

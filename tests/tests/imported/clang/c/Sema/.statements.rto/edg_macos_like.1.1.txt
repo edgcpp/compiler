@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 18: warning: expression has no effect
+  int test3(void) { return ({ {5;} }); }         // expected-error {{returning 'void' from a function with incompatible result type 'int'}}\
+                               ^
+
+"Test_name.c", line 18: error: return value type does not match the function type
+  int test3(void) { return ({ {5;} }); }         // expected-error {{returning 'void' from a function with incompatible result type 'int'}}\
+                           ^
+
+"Test_name.c", line 21: warning: label "L1" was declared but never referenced
+  int test5(void) { return ({L1: L2: L3: 5;}); }
+                             ^
+
+"Test_name.c", line 21: warning: label "L2" was declared but never referenced
+  int test5(void) { return ({L1: L2: L3: 5;}); }
+                                 ^
+
+"Test_name.c", line 21: warning: label "L3" was declared but never referenced
+  int test5(void) { return ({L1: L2: L3: 5;}); }
+                                     ^
+
+"Test_name.c", line 26: error: statement expressions are only allowed in block scope
+  int test8[({10;})]; // expected-error {{statement expression not allowed at file scope}}
+             ^
+
+"Test_name.c", line 51: warning: statement is unreachable
+    switch (env->fpscr)  // expected-error {{use of undeclared identifier 'env'}}
+    ^
+
+"Test_name.c", line 51: error: identifier "env" is undefined
+    switch (env->fpscr)  // expected-error {{use of undeclared identifier 'env'}}
+            ^
+
+"Test_name.c", line 63: warning: missing return statement at end of non-void function "test12"
+  }
+  ^
+
+"Test_name.c", line 114: warning: variable "__ptr" was declared but never referenced
+      typeof(({ unsigned long __ptr; (int *)(0); })) __val;
+                              ^
+
+"Test_name.c", line 116: warning: variable "__ptr" was declared but never referenced
+        typeof(({ unsigned long __ptr; (int *)(0); })) __val;
+                                ^
+
+"Test_name.c", line 120: warning: variable "__ptr" is used before its value is set
+      SIZE = sizeof(({unsigned long __ptr; __ptr;}))
+                                           ^
+
+"Test_name.c", line 128: warning: expression has no effect
+    a = ({ 1; 2; }); // expected-warning {{expression result unused}}
+           ^
+
+"Test_name.c", line 131: error: a value of type "void" cannot be assigned to an entity of type "int"
+    a = ({int x = 1; (void)x; }); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+      ^
+
+"Test_name.c", line 132: warning: variable "x" was declared but never referenced
+    a = ({int x = 1;; }); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+              ^
+
+"Test_name.c", line 132: error: a value of type "void" cannot be assigned to an entity of type "int"
+    a = ({int x = 1;; }); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+      ^
+
+"Test_name.c", line 126: warning: variable "a" was set but never used
+    int a;
+        ^
+
+"Test_name.c", line 140: warning: label "test" was declared but never referenced
+    return ({test:;; });
+             ^
+
+5 errors detected in the compilation of "Test_name.c".

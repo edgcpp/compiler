@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 26: error: call to consteval function "bar" did not produce a valid constant expression
+    int a = bar (5);
+                ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 36: error: call to consteval function "bar" did not produce a valid constant expression
+  int a = bar (2);	// { dg-message "in 'constexpr' expansion of 'bar\\(2\\)'" }
+              ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 18: error: call to consteval function "bar" did not produce a valid constant expression
+    int a = bar (N);	// { dg-message "in 'constexpr' expansion of 'bar\\(2\\)'" }
+                ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void qux<N>() [with N=2]" at line 33
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,36 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 34: error: the size of an array must be greater than zero
+  int check_remove2[is_same<remove_pointer<int_2_ptr>::type, int>::value? -1 : 1];
+                    ^
+
+"Test_name.c", line 35: error: the size of an array must be greater than zero
+  int check_remove3[is_same<remove_pointer<int_2_ptr>::type, int_1>::value? -1 : 1];
+                    ^
+
+"Test_name.c", line 48: error: the size of an array must be greater than zero
+  int check_ptr_in_as2[is_pointer_in_address_space_1<int_2_ptr>::value? -1 : 1];
+                       ^
+
+"Test_name.c", line 49: error: the size of an array must be greater than zero
+  int check_ptr_in_as3[is_pointer_in_address_space_1<int*>::value? -1 : 1];
+                       ^
+
+"Test_name.c", line 55: error: a value of type "int" cannot be used to initialize an entity of type "T *"
+    T *x = 1; // expected-error{{cannot initialize a variable of type '__attribute__((address_space(1))) int *' with an rvalue of type 'int'}} \
+           ^
+
+"Test_name.c", line 86: error: more than one instance of overloaded function "order1" matches the argument list:
+            function template "int &order1(T &)" (declared at line 80)
+            function template "float &order1(T &)" (declared at line 81)
+            argument types are: (int)
+    int &ir = order1(i1);
+              ^
+
+"Test_name.c", line 87: error: more than one instance of overloaded function "order1" matches the argument list:
+            function template "int &order1(T &)" (declared at line 80)
+            function template "float &order1(T &)" (declared at line 81)
+            argument types are: (int)
+    float &fr = order1(i);
+                ^
+
+7 errors detected in the compilation of "Test_name.c".

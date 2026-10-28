@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 14: error: expression must have a constant value
+      S<s> check1; // ok, s is value-dependent
+        ^
+
+"Test_name.c", line 23: error: expression must have a constant value
+      typename S<i>::T check4; // cxx98-error {{not an integral constant expression}} cxx98-note {{read of variable 'i' of non-integral, non-enumeration type 'const int &'}}
+                 ^
+
+2 errors detected in the compilation of "Test_name.c".

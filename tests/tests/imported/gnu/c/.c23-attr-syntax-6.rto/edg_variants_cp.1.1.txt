@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c11 Test_name.c
+"Test_name.c", line 12: error: expected a ","
+  typedef int [[__extension__ gnu::vector_size (4)]] g1;
+                              ^
+
+"Test_name.c", line 13: error: expected a ","
+  typedef int [[__extension__ gnu :: vector_size (4)]] g2;
+                              ^
+
+"Test_name.c", line 14: error: expected a ","
+  typedef int [[__extension__ gnu FOO vector_size (4)]] g3;
+                              ^
+
+"Test_name.c", line 15: error: expected a ","
+  typedef int [[__extension__ gnu :: vector_size (sizeof (void (*)(...)))]] g4;
+                              ^
+
+"Test_name.c", line 19: error: expected a ","
+  [[__extension__ deprecated]] int g8 ();
+                  ^
+
+"Test_name.c", line 20: error: expected a ","
+  [[__extension__ nodiscard]] int g9 ();
+                  ^
+
+"Test_name.c", line 21: error: expected a ","
+  [[__extension__ noreturn]] void g10 ();
+                  ^
+
+"Test_name.c", line 32: error: expected a ","
+        [[__extension__ fallthrough]];
+                        ^
+
+"Test_name.c", line 45: error: expected a ","
+  typedef int [[__extension__ vector_size (4)]] b1; /* { dg-error {'vector_size' attribute ignored} } */
+                              ^
+
+"Test_name.c", line 46: error: expected a ","
+  typedef int [[__extension__ __extension__]] b2; /* { dg-error {'extension' attribute ignored} } */
+                              ^
+
+"Test_name.c", line 47: error: expected a ","
+  typedef int [[__extension__ unknown_attribute]] b3; /* { dg-error {'unknown_attribute' attribute ignored} } */
+                              ^
+
+"Test_name.c", line 48: error: expected a ","
+  typedef int [[__extension__ gnu:vector_size(4)]] b4; /* { dg-error {expected '\]' before ':'} } */
+                              ^
+
+"Test_name.c", line 50: error: expected a ","
+  typedef int [[__extension__ gnu JOIN2(:,:) vector_size (4)]] b5; /* { dg-error {pasting ":" and ":" does not give a valid preprocessing token} } */
+                              ^
+
+"Test_name.c", line 50: warning: concatenation with ":" in macro "JOIN2" does not create a valid token
+  typedef int [[__extension__ gnu JOIN2(:,:) vector_size (4)]] b5; /* { dg-error {pasting ":" and ":" does not give a valid preprocessing token} } */
+                                  ^
+
+"Test_name.c", line 53: error: expected a ","
+  typedef int [[__extension__ gnu : : vector_size (4)]] b6; /* { dg-error {expected '\]' before ':'} } */
+                              ^
+
+"Test_name.c", line 55: error: expected a ","
+  typedef int [[__extension__ gnu: :vector_size (4)]] b7; /* { dg-error {expected '\]' before ':'} } */
+                              ^
+
+"Test_name.c", line 57: error: expected a ","
+  typedef int [[__extension__ gnu BAR BAR vector_size (4)]] b8; /* { dg-error {expected '\]' before ':'} } */
+                              ^
+
+"Test_name.c", line 59: error: expected a ","
+  typedef int [[__extension__ gnu :/**/: vector_size (4)]] b9; /* { dg-error {expected '\]' before ':'} } */
+                              ^
+
+"Test_name.c", line 61: error: expected a ","
+  typedef int [[__extension__ gnu JOIN(:,:) vector_size (4)]] b10; /* { dg-error {expected '\]' before ':'} } */
+                              ^
+
+"Test_name.c", line 64: error: expected a ","
+  typedef int [[gnu : : vector_size(4)]] b12; /* { dg-error {expected '\]' before ':'} } */
+                    ^
+
+"Test_name.c", line 67: error: expected a ","
+  typedef int [[gnu : vector_size(4)]] b13; /* { dg-error {expected '\]' before ':'} } */
+                    ^
+
+"Test_name.c", line 70: error: expected a ","
+  typedef int [[gnu: :vector_size (4)]] b14; /* { dg-error {expected '\]' before ':'} } */
+                   ^
+
+"Test_name.c", line 73: error: expected a ","
+  typedef int [[gnu BAR BAR vector_size (4)]] b15; /* { dg-error {expected '\]' before ':'} } */
+                    ^
+
+"Test_name.c", line 76: error: expected a ","
+  typedef int [[gnu :/**/: vector_size (4)]] b16; /* { dg-error {expected '\]' before ':'} } */
+                    ^
+
+"Test_name.c", line 79: error: expected a ","
+  typedef int [[gnu JOIN(:,:) vector_size (4)]] b17; /* { dg-error {expected '\]' before ':'} } */
+                    ^
+
+"Test_name.c", line 83: error: expected a ","
+  typedef int [[gnu FOO vector_size (4)]] b19; /* { dg-error {attributes before C23} } */
+                    ^
+
+"Test_name.c", line 84: error: expected a type specifier
+  typedef int [[gnu :: vector_size (sizeof (void (*)(...)))]] b20; /* { dg-error {attributes before C23} } */
+                                                     ^
+
+"Test_name.c", line 86: warning: concatenation with ":" in macro "JOIN2" does not create a valid token
+  typedef int [[gnu JOIN2(:,:) vector_size (4)]] b21; /* { dg-error {pasting ":" and ":" does not give a valid preprocessing token} } */
+                    ^
+
+26 errors detected in the compilation of "Test_name.c".

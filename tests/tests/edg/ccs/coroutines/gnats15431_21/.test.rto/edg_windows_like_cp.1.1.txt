@@ -1,0 +1,15 @@
+./cpgenbe_demangle -DTEST_NUMBER=1 --microsoft_version 1900 -d-mangled_names --set_flag coroutines -tused Test_name.c
+ -> operator co_await(X)
+ -> operator co_await(X)
+std::nullptr_t -> std::nullptr_t
+ -> decltype((param#1.operator co_await())) f1<T1>(T1) [with T1=X]
+ -> decltype((operator co_await(param#1))) f2<T1>(T1) [with T1=X]
+X::operator co_await -> X::operator co_await()
+X::operator= -> X::operator =(const X &)
+X::operator= -> X::operator =(X &&)
+operator new -> operator new(unsigned long)
+operator delete -> operator delete(void *)
+operator delete -> operator delete(void *, unsigned long)
+operator co_await -> operator co_await(X)
+f1 -> decltype((param#1.operator co_await())) f1<T1>(T1) [with T1=X]
+f2 -> decltype((operator co_await(param#1))) f2<T1>(T1) [with T1=X]

@@ -1,0 +1,1624 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 66: warning: target attribute not recognized
+      __attribute__((__always_inline__, __nodebug__, __target__("mmx")))
+                                                                ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 82: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cvtsi32_si64(int __i) {
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 83: warning: excess initializers are ignored
+    return __extension__(__m64)(__v2si){__i, 0};
+                                             ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 97: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cvtsi64_si32(__m64 __m) {
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 98: error: expression must have pointer-to-object type but it has type "int"
+    return ((__v2si)__m)[0];
+                         ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 111: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cvtsi64_m64(long long __i) {
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 125: warning: target attribute not recognized
+  static __inline__ long long __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cvtm64_si64(__m64 __m) {
+                                                                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 126: error: expression must have pointer-to-object type but it has type "int"
+    return ((__v1di)__m)[0];
+                         ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 148: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_packs_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 150: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packsswb128( (__v8hi)__builtin_shufflevector(__m1, __m2, 0, 1), (__v8hi){})), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 150: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packsswb128( (__v8hi)__builtin_shufflevector(__m1, __m2, 0, 1), (__v8hi){})), __extension__(__v2di){}, 0);
+                                                                                ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 150: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packsswb128( (__v8hi)__builtin_shufflevector(__m1, __m2, 0, 1), (__v8hi){})), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 173: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_packs_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 175: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packssdw128( (__v4si)__builtin_shufflevector(__m1, __m2, 0, 1), (__v4si){})), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 175: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packssdw128( (__v4si)__builtin_shufflevector(__m1, __m2, 0, 1), (__v4si){})), __extension__(__v2di){}, 0);
+                                                                                ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 175: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packssdw128( (__v4si)__builtin_shufflevector(__m1, __m2, 0, 1), (__v4si){})), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 198: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_packs_pu16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 200: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packuswb128( (__v8hi)__builtin_shufflevector(__m1, __m2, 0, 1), (__v8hi){})), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 200: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packuswb128( (__v8hi)__builtin_shufflevector(__m1, __m2, 0, 1), (__v8hi){})), __extension__(__v2di){}, 0);
+                                                                                ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 200: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_packuswb128( (__v8hi)__builtin_shufflevector(__m1, __m2, 0, 1), (__v8hi){})), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 225: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_unpackhi_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 227: error: invalid type conversion
+    return (__m64)__builtin_shufflevector((__v8qi)__m1, (__v8qi)__m2, 4, 12, 5,
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 248: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_unpackhi_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 250: error: invalid type conversion
+    return (__m64)__builtin_shufflevector((__v4hi)__m1, (__v4hi)__m2, 2, 6, 3, 7);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 268: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_unpackhi_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 270: error: invalid type conversion
+    return (__m64)__builtin_shufflevector((__v2si)__m1, (__v2si)__m2, 1, 3);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 294: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_unpacklo_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 296: error: invalid type conversion
+    return (__m64)__builtin_shufflevector((__v8qi)__m1, (__v8qi)__m2, 0, 8, 1, 9,
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 317: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_unpacklo_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 319: error: invalid type conversion
+    return (__m64)__builtin_shufflevector((__v4hi)__m1, (__v4hi)__m2, 0, 4, 1, 5);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 337: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_unpacklo_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 339: error: invalid type conversion
+    return (__m64)__builtin_shufflevector((__v2si)__m1, (__v2si)__m2, 0, 2);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 357: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_add_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 377: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_add_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 397: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_add_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 420: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_adds_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 443: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_adds_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 465: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_adds_pu8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 487: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_adds_pu16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 507: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_sub_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 527: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_sub_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 547: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_sub_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 570: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_subs_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 593: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_subs_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 616: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_subs_pu8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 639: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_subs_pu16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 665: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_madd_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 667: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmaddwd128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 667: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmaddwd128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                      ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 667: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmaddwd128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                      ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 667: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmaddwd128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 686: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_mulhi_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 688: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 688: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 688: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 688: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m1), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m2), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 707: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_mullo_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 729: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 732: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 732: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 732: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 732: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 752: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_slli_pi16(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 754: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllwi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 754: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllwi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 754: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllwi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 774: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 777: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 777: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 777: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 777: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 797: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_slli_pi32(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 799: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslldi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 799: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslldi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 799: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pslldi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 816: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 819: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 819: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 819: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 819: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 837: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_slli_si64(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 839: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllqi128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 839: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllqi128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 839: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psllqi128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 860: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 863: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psraw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 863: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psraw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 863: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psraw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 863: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psraw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 884: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_srai_pi16(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 886: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrawi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 886: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrawi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 886: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrawi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 907: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 910: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrad128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 910: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrad128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 910: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrad128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 910: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrad128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 931: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_srai_pi32(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 933: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psradi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 933: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psradi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 933: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psradi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 953: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 956: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 956: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 956: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 956: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlw128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 976: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_srli_pi16(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 978: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlwi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 978: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlwi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 978: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlwi128((__v8hi)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 998: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1001: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1001: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1001: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1001: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrld128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v4si)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1021: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_srli_pi32(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1023: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrldi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1023: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrldi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1023: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrldi128((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1040: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1043: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1043: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1043: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1043: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlq128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), (__v2di)(__m128i) __builtin_shufflevector((__v2si)(__count), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1062: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_srli_si64(__m64 __m,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1064: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlqi128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1064: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlqi128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1064: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psrlqi128((__v2di)(__m128i) __builtin_shufflevector((__v2si)(__m), __extension__(__v2si){}, 0, 1, 2, 3), __count)), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1079: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_and_si64(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1099: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_andnot_si64(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1116: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_or_si64(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1133: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_xor_si64(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1154: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cmpeq_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1175: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cmpeq_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1196: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cmpeq_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1217: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cmpgt_pi8(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1240: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cmpgt_pi16(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1261: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_cmpgt_pi32(__m64 __m1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1273: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_setzero_si64(void) {
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1292: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_set_pi32(int __i1,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1294: warning: excess initializers are ignored
+    return __extension__(__m64)(__v2si){__i0, __i1};
+                                              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1314: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_set_pi16(short __s3,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1318: warning: excess initializers are ignored
+    return __extension__(__m64)(__v4hi){__s0, __s1, __s2, __s3};
+                                              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1346: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1349: warning: excess initializers are ignored
+    return __extension__(__m64)(__v8qi){__b0, __b1, __b2, __b3,
+                                              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1366: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_set1_pi32(int __i) {
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1383: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_set1_pi16(short __w) {
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1399: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_set1_pi8(char __b) {
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1418: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_setr_pi32(int __i0,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1440: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128))) _mm_setr_pi16(short __w0,
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/mmintrin.h", line 1472: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 78: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 80: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] += __b[0];
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 80: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] += __b[0];
+              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 97: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 118: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 120: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] -= __b[0];
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 120: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] -= __b[0];
+              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 138: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 159: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 161: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] *= __b[0];
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 161: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] *= __b[0];
+              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 178: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 199: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 201: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] /= __b[0];
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 201: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] /= __b[0];
+              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 217: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 234: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_sqrt_ss(__m128 __a) {
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 235: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] = __builtin_elementwise_sqrt(__a[0]);
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 235: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] = __builtin_elementwise_sqrt(__a[0]);
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 250: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_sqrt_ps(__m128 __a) {
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 266: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 269: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_rcpss((__v4sf)__a);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 283: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 286: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_rcpps((__v4sf)__a);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 302: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 305: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_rsqrtss((__v4sf)__a);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 319: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 322: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_rsqrtps((__v4sf)__a);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 344: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_min_ss(__m128 __a, __m128 __b) {
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 345: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_minss((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 363: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_min_ps(__m128 __a,
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 365: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_minps((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 387: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_max_ss(__m128 __a, __m128 __b) {
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 388: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_maxss((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 406: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_max_ps(__m128 __a,
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 408: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_maxps((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 423: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 444: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 461: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 479: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 503: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 506: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpeqss((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 524: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 527: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpeqps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 550: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 553: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpltss((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 572: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 575: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpltps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 598: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 601: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpless((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 620: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 623: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpleps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 646: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 650: warning: function "__builtin_ia32_cmpltss" declared implicitly
+                                           (__v4sf)__builtin_ia32_cmpltss((__v4sf)__b, (__v4sf)__a),
+                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 649: error: invalid type conversion
+    return (__m128)__builtin_shufflevector((__v4sf)__a,
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 670: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 673: warning: function "__builtin_ia32_cmpltps" declared implicitly
+    return (__m128)__builtin_ia32_cmpltps((__v4sf)__b, (__v4sf)__a);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 696: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 700: warning: function "__builtin_ia32_cmpless" declared implicitly
+                                           (__v4sf)__builtin_ia32_cmpless((__v4sf)__b, (__v4sf)__a),
+                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 699: error: invalid type conversion
+    return (__m128)__builtin_shufflevector((__v4sf)__a,
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 720: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 723: warning: function "__builtin_ia32_cmpleps" declared implicitly
+    return (__m128)__builtin_ia32_cmpleps((__v4sf)__b, (__v4sf)__a);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 746: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 749: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpneqss((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 768: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 771: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpneqps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 795: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 798: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpnltss((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 818: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 821: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpnltps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 845: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 848: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpnless((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 868: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 871: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpnleps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 895: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 899: warning: function "__builtin_ia32_cmpnltss" declared implicitly
+                                           (__v4sf)__builtin_ia32_cmpnltss((__v4sf)__b, (__v4sf)__a),
+                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 898: error: invalid type conversion
+    return (__m128)__builtin_shufflevector((__v4sf)__a,
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 920: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 923: warning: function "__builtin_ia32_cmpnltps" declared implicitly
+    return (__m128)__builtin_ia32_cmpnltps((__v4sf)__b, (__v4sf)__a);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 947: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 951: warning: function "__builtin_ia32_cmpnless" declared implicitly
+                                           (__v4sf)__builtin_ia32_cmpnless((__v4sf)__b, (__v4sf)__a),
+                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 950: error: invalid type conversion
+    return (__m128)__builtin_shufflevector((__v4sf)__a,
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 972: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 975: warning: function "__builtin_ia32_cmpnleps" declared implicitly
+    return (__m128)__builtin_ia32_cmpnleps((__v4sf)__b, (__v4sf)__a);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 999: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1002: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpordss((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1023: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1026: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpordps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1050: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1053: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpunordss((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1074: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1077: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_cmpunordps((__v4sf)__a, (__v4sf)__b);
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1098: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1101: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_comieq((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1123: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1126: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_comilt((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1147: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1150: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_comile((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1171: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1174: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_comigt((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1195: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1198: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_comige((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1219: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1222: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_comineq((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1242: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1245: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_ucomieq((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1266: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1269: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_ucomilt((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1290: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1293: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_ucomile((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1314: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1317: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_ucomigt((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1338: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1341: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_ucomige((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1361: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1364: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_ucomineq((__v4sf)__a, (__v4sf)__b);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1383: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1386: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cvtss2si((__v4sf)__a);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1405: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1429: warning: target attribute not recognized
+  static __inline__ long long __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1432: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cvtss2si64((__v4sf)__a);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1451: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1454: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_cvtps2dq((__v4sf)(__m128i) __builtin_shufflevector((__v4si)(__a), __extension__(__v4si){}, 0, 1, 4, 5))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1454: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_cvtps2dq((__v4sf)(__m128i) __builtin_shufflevector((__v4si)(__a), __extension__(__v4si){}, 0, 1, 4, 5))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1454: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_cvtps2dq((__v4sf)(__m128i) __builtin_shufflevector((__v4si)(__a), __extension__(__v4si){}, 0, 1, 4, 5))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1471: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1493: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1496: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cvttss2si((__v4sf)__a);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1515: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1538: warning: target attribute not recognized
+  static __inline__ long long __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1541: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cvttss2si64((__v4sf)__a);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1561: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1564: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_cvttps2dq((__v4sf)(__m128i) __builtin_shufflevector((__v4si)(__a), __extension__(__v4si){}, 0, 1, 4, 5))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1564: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_cvttps2dq((__v4sf)(__m128i) __builtin_shufflevector((__v4si)(__a), __extension__(__v4si){}, 0, 1, 4, 5))), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1564: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_cvttps2dq((__v4sf)(__m128i) __builtin_shufflevector((__v4si)(__a), __extension__(__v4si){}, 0, 1, 4, 5))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1582: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1604: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_cvtsi32_ss(__m128 __a,
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1606: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] = __b;
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1626: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128))) _mm_cvt_si2ss(__m128 __a,
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1649: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1651: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] = __b;
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1674: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1679: error: invalid type conversion
+        __builtin_convertvector((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3), __v4sf),
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1679: error: type name is not allowed
+        __builtin_convertvector((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3), __v4sf),
+                                                                                                                               ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1679: error: incomplete type "void" is not allowed
+        __builtin_convertvector((__v4si)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3), __v4sf),
+        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1677: error: invalid type conversion
+    return (__m128)__builtin_shufflevector(
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1700: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1717: warning: target attribute not recognized
+  static __inline__ float __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1719: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    return __a[0];
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1737: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1745: error: a value of type "void" cannot be used to initialize an entity of type "__m128" (aka "float")
+    __m128 __bb = __builtin_shufflevector(__b, __b, 0, 1, 0, 1);
+                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1746: error: return value type does not match the function type
+    return __builtin_shufflevector(__a, __bb, 0, 1, 4, 5);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1764: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1772: error: a value of type "void" cannot be used to initialize an entity of type "__m128" (aka "float")
+    __m128 __bb = __builtin_shufflevector(__b, __b, 0, 1, 0, 1);
+                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1773: error: return value type does not match the function type
+    return __builtin_shufflevector(__a, __bb, 4, 5, 2, 3);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1791: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1798: warning: excess initializers are ignored
+    return __extension__ (__m128){ __u, 0, 0, 0 };
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1813: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1820: warning: excess initializers are ignored
+    return __extension__ (__m128){ __u, __u, __u, __u };
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1836: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1853: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1875: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1879: error: return value type does not match the function type
+    return __builtin_shufflevector((__v4sf)__a, (__v4sf)__a, 3, 2, 1, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1889: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1892: error: builtin function is not available because vector types are not supported
+    return (__m128)__builtin_ia32_undef128();
+                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1909: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1911: warning: excess initializers are ignored
+    return __extension__ (__m128){ __w, 0.0f, 0.0f, 0.0f };
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1926: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1928: warning: excess initializers are ignored
+    return __extension__ (__m128){ __w, __w, __w, __w };
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1944: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1970: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1972: warning: excess initializers are ignored
+    return __extension__ (__m128){ __w, __x, __y, __z };
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1997: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 1999: warning: excess initializers are ignored
+    return __extension__ (__m128){ __z, __y, __x, __w };
+                                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2011: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2013: warning: excess initializers are ignored
+    return __extension__ (__m128){ 0.0f, 0.0f, 0.0f, 0.0f };
+                                         ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2027: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2034: error: a value of type "void" cannot be assigned to an entity of type "__mm_storeh_pi_v2f32" (aka "float")
+    ((struct __mm_storeh_pi_struct*)__p)->__u = __builtin_shufflevector(__a, __a, 2, 3);
+                                              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2048: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2055: error: a value of type "void" cannot be assigned to an entity of type "__mm_storeh_pi_v2f32" (aka "float")
+    ((struct __mm_storeh_pi_struct*)__p)->__u = __builtin_shufflevector(__a, __a, 0, 1);
+                                              ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2069: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2075: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    ((struct __mm_store_ss_struct*)__p)->__u = __a[0];
+                                               ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2090: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2111: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2130: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2133: error: a value of type "void" cannot be assigned to an entity of type "__m128" (aka "float")
+    __a = __builtin_shufflevector((__v4sf)__a, (__v4sf)__a, 0, 0, 0, 0);
+        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2150: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2169: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2172: error: a value of type "void" cannot be assigned to an entity of type "__m128" (aka "float")
+    __a = __builtin_shufflevector((__v4sf)__a, (__v4sf)__a, 3, 2, 1, 0);
+        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2228: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2247: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2339: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2357: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2375: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2393: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2410: warning: target attribute not recognized
+  static __inline__ int __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                  ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2412: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_pmovmskb128((__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3));
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2412: error: invalid type conversion
+    return __builtin_ia32_pmovmskb128((__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3));
+                                               ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2428: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2431: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhuw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2431: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhuw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                      ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2431: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhuw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2431: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pmulhuw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2497: warning: target attribute not recognized
+  static __inline__ void __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2504: error: invalid type conversion
+    __m128i __d128 = (__m128i) __builtin_shufflevector((__v2si)(__d), __extension__(__v2si){}, 0, 1, -1, -1);
+                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2505: error: invalid type conversion
+    __m128i __n128 = (__m128i) __builtin_shufflevector((__v2si)(__n), __extension__(__v2si){}, 0, 1, 2, 3);
+                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2511: error: builtin function is not available because vector types are not supported
+      __d128 = (__m128i)__builtin_ia32_pslldqi128_byteshift((__v16qi)__d128, 8);
+                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2512: warning: function "__builtin_ia32_pslldqi128_byteshift" declared implicitly
+      __n128 = (__m128i)__builtin_ia32_pslldqi128_byteshift((__v16qi)__n128, 8);
+                        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2515: error: builtin function is not available because vector types are not supported
+    __builtin_ia32_maskmovdqu((__v16qi)__d128, (__v16qi)__n128, __p);
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2531: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2533: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgb128((__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2533: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgb128((__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2533: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgb128((__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2533: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgb128((__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2550: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2552: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2552: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2552: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                   ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2552: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_pavgw128((__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v8hu)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2572: warning: target attribute not recognized
+  static __inline__ __m64 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2575: error: builtin function is not available because vector types are not supported
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psadbw128((__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2575: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psadbw128((__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                      ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2575: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psadbw128((__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+                                                                                                                                                                                      ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2575: error: invalid type conversion
+    return (__m64) __builtin_shufflevector((__v2di)(__builtin_ia32_psadbw128((__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__a), __extension__(__v2si){}, 0, 1, 2, 3), (__v16qi)(__m128i) __builtin_shufflevector((__v2si)(__b), __extension__(__v2si){}, 0, 1, 2, 3))), __extension__(__v2di){}, 0);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2752: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2754: error: return value type does not match the function type
+    return __builtin_shufflevector((__v4sf)__a, (__v4sf)__b, 2, 6, 3, 7);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2773: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2775: error: return value type does not match the function type
+    return __builtin_shufflevector((__v4sf)__a, (__v4sf)__b, 0, 4, 1, 5);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2794: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2796: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] = __b[0];
+    ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2796: error: expression must have pointer-to-object type but it has type "__m128" (aka "float")
+    __a[0] = __b[0];
+             ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2815: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2817: error: return value type does not match the function type
+    return __builtin_shufflevector((__v4sf)__a, (__v4sf)__b, 6, 7, 2, 3);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2835: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2837: error: return value type does not match the function type
+    return __builtin_shufflevector((__v4sf)__a, (__v4sf)__b, 0, 1, 4, 5);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2852: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2855: error: type name is not allowed
+    return __builtin_convertvector((__v4hi)__a, __v4sf);
+                                                ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2855: error: return value type does not match the function type
+    return __builtin_convertvector((__v4hi)__a, __v4sf);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2870: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2873: error: type name is not allowed
+    return __builtin_convertvector((__v4hu)__a, __v4sf);
+                                                ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2873: error: return value type does not match the function type
+    return __builtin_convertvector((__v4hu)__a, __v4sf);
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2888: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2893: error: type name is not allowed
+                                0, 1, 2, 3), __v4sf);
+                                             ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2892: error: incomplete type "void" is not allowed
+        __builtin_shufflevector((__v8qs)__a, __extension__ (__v8qs){},
+        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2891: error: return value type does not match the function type
+    return __builtin_convertvector(
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2909: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2914: error: type name is not allowed
+                                0, 1, 2, 3), __v4sf);
+                                             ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2913: error: incomplete type "void" is not allowed
+        __builtin_shufflevector((__v8qu)__a, __extension__ (__v8qu){},
+        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2912: error: return value type does not match the function type
+    return __builtin_convertvector(
+           ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2933: warning: target attribute not recognized
+  static __inline__ __m128 __attribute__((__always_inline__, __nodebug__, __target__("sse2"), __min_vector_width__(128)))
+                                                                                     ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2938: error: type name is not allowed
+                                0, 1, 2, 3), __v4sf);
+                                             ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2937: error: incomplete type "void" is not allowed
+        __builtin_shufflevector((__v2si)__a, (__v2si)__b,
+        ^
+
+"/mds/clang/clang-22.1.0/build/lib/clang/22/include/xmmintrin.h", line 2936: error: return value type does not match the function type
+    return __builtin_convertvector(
+           ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

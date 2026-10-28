@@ -1,0 +1,13 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "vector_size"
+  using global_vector_type  __attribute__((vector_size(16))) = float;
+                                           ^
+
+"Test_name.c", line 14: warning: unknown attribute "vector_size"
+      using vector_type __attribute__((vector_size(16))) =
+                                       ^
+
+"Test_name.c", line 16: warning: unknown attribute "vector_size"
+          typedef Val vector_type2 __attribute__((vector_size(16)));
+                                                  ^
+

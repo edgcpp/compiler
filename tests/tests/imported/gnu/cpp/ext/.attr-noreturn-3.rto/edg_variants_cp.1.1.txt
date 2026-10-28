@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 23: warning: missing return statement at end of non-void function "test_func<test>()"
+  }   // { dg-bogus "\\\[-Wreturn-type]" "bug 84621" { xfail *-*-* } }
+  ^
+
+"Test_name.c", line 50: warning: GNU attributes on a template redeclaration have no effect
+  void  __attribute__ ((noreturn)) templ_none_noreturn ();
+                        ^
+

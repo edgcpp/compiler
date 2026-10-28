@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./cpp0x/variadic-tuple.C", line 268: warning: variable "t0" was declared but never referenced
+    tuple<> t0;
+            ^
+
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type &, __gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `void std::__cxx11::basic_string<T1, T2, T3>::_M_check_length(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type, __gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type, const char *) const [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char, std::char_traits<char>, std::allocator<char>>(const T1 *, const T3 &) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_logic_error(const char *)'
+collect2: error: ld returned 1 exit status

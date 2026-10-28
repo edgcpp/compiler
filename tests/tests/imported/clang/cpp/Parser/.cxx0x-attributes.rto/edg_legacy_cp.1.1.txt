@@ -1,0 +1,259 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++11 Test_name.c
+"Test_name.c", line 42: error: attribute does not apply to any entity
+  const [[]] int between_attr_2 = 0; // expected-error {{an attribute list cannot appear here}}
+        ^
+
+"Test_name.c", line 47: error: attribute "noreturn" does not apply here
+  int & [[noreturn]] ref_attr_3 = after_attr; // expected-error {{'noreturn' attribute cannot be applied to types}}
+          ^
+
+"Test_name.c", line 51: warning: attribute namespace "test" is unrecognized
+  [[test::valid(for 42 [very] **** '+' symbols went on a trip and had a "good"_time; the end.)]] int garbage_attr; // expected-warning {{unknown attribute 'test::valid' ignored}}
+    ^
+
+"Test_name.c", line 52: error: expected an identifier
+  [[,,,static, class, namespace,, inline, constexpr, mutable,, bitand, bitor::compl(!.*_ Cx.!U^*R),,,]] int more_garbage_attr; // expected-warning {{unknown attribute 'static' ignored}} \
+                                                               ^
+
+"Test_name.c", line 60: error: expected an identifier
+  [[u8"invalid!"]] int invalid_string_attr; // expected-error {{expected ']'}}
+    ^
+
+"Test_name.c", line 64: warning: "final" applied to a pure virtual function
+    virtual void f() const volatile && noexcept [[]] final = 0;
+                                                           ^
+
+"Test_name.c", line 94: warning: variable "x" was declared but never referenced
+    __attribute__(()) alignas(int) int x; // expected-none
+                                       ^
+
+"Test_name.c", line 95: warning: variable "y" was declared but never referenced
+    __attribute__(()) alignas(int) [[]] int y; // expected-none
+                                            ^
+
+"Test_name.c", line 96: warning: variable "z" was declared but never referenced
+    [[]] __attribute__(()) alignas(int) int z; // expected-none
+                                            ^
+
+"Test_name.c", line 97: warning: variable "a" was declared but never referenced
+    alignas(int) [[]] __attribute__(()) int a; // expected-none
+                                            ^
+
+"Test_name.c", line 98: warning: variable "b" was declared but never referenced
+    [[]] alignas(int)  __attribute__(()) int b; // expected-none
+                                             ^
+
+"Test_name.c", line 99: warning: variable "c" was declared but never referenced
+    __attribute__(()) [[]] alignas(int) int c; // expected-none
+                                            ^
+
+"Test_name.c", line 102: error: attributes are not allowed here
+  class [[]] [[]]
+          ^
+
+"Test_name.c", line 105: error: attributes are not allowed here
+  class [[]] [[]]
+          ^
+
+"Test_name.c", line 106: error: expected an identifier
+   attr_after_class_name_definition [[]] [[]] [[]]{}; // expected-error {{an attribute list cannot appear here}}
+                                                  ^
+
+"Test_name.c", line 106: error: incomplete type "attr_after_class_name_definition" is not allowed
+   attr_after_class_name_definition [[]] [[]] [[]]{}; // expected-error {{an attribute list cannot appear here}}
+                                                  ^
+
+"Test_name.c", line 111: error: a compound literal is not allowed in an integral constant expression
+  class c final [(int){0}];
+                  ^
+
+"Test_name.c", line 114: error: attributes are not allowed here
+  class [[]] [[]] final_class
+          ^
+
+"Test_name.c", line 115: warning: alignas does not apply here
+    alignas(float) [[]] final // expected-error {{an attribute list cannot appear here}}
+    ^
+
+"Test_name.c", line 115: error: variable "final" has already been defined (previous definition at line 111)
+    alignas(float) [[]] final // expected-error {{an attribute list cannot appear here}}
+                        ^
+
+"Test_name.c", line 116: error: expected a ";"
+    alignas(float) [[]] [[]] alignas(float): base{}; // expected-error {{an attribute list cannot appear here}}
+                                           ^
+
+"Test_name.c", line 118: error: attributes are not allowed here
+  class [[]] [[]] final_class_another
+          ^
+
+"Test_name.c", line 119: warning: alignas does not apply here
+    [[]] [[]] alignas(16) final // expected-error {{an attribute list cannot appear here}}
+              ^
+
+"Test_name.c", line 119: error: variable "final" has already been defined (previous definition at line 111)
+    [[]] [[]] alignas(16) final // expected-error {{an attribute list cannot appear here}}
+                          ^
+
+"Test_name.c", line 119: error: incomplete type "final_class_another" is not allowed
+    [[]] [[]] alignas(16) final // expected-error {{an attribute list cannot appear here}}
+                          ^
+
+"Test_name.c", line 123: error: this attribute argument contains unmatched parentheses, brackets, or braces
+  class C final [[deprecated(l]] {}); //expected-error {{expected string literal as argument of 'deprecated' attribute}} expected-error {{an attribute list cannot appear here}} expected-error {{expected unqualified-id}}
+                             ^
+
+"Test_name.c", line 123: error: expected a ")"
+  class C final [[deprecated(l]] {}); //expected-error {{expected string literal as argument of 'deprecated' attribute}} expected-error {{an attribute list cannot appear here}} expected-error {{expected unqualified-id}}
+                              ^
+
+"Test_name.c", line 123: error: variable "final" has already been defined (previous definition at line 111)
+  class C final [[deprecated(l]] {}); //expected-error {{expected string literal as argument of 'deprecated' attribute}} expected-error {{an attribute list cannot appear here}} expected-error {{expected unqualified-id}}
+          ^
+
+"Test_name.c", line 123: error: incomplete type "C" is not allowed
+  class C final [[deprecated(l]] {}); //expected-error {{expected string literal as argument of 'deprecated' attribute}} expected-error {{an attribute list cannot appear here}} expected-error {{expected unqualified-id}}
+          ^
+
+"Test_name.c", line 123: error: expected a ";"
+  class C final [[deprecated(l]] {}); //expected-error {{expected string literal as argument of 'deprecated' attribute}} expected-error {{an attribute list cannot appear here}} expected-error {{expected unqualified-id}}
+                                   ^
+
+"Test_name.c", line 124: error: a lambda is not allowed in a constant expression
+  class D final alignas ([l) {}]{}); // expected-error {{expected ',' or ']' in lambda capture list}} expected-error {{an attribute list cannot appear here}}
+                         ^
+
+"Test_name.c", line 124: error: identifier "l" is undefined
+  class D final alignas ([l) {}]{}); // expected-error {{expected ',' or ']' in lambda capture list}} expected-error {{an attribute list cannot appear here}}
+                          ^
+
+"Test_name.c", line 124: error: expected a "]"
+  class D final alignas ([l) {}]{}); // expected-error {{expected ',' or ']' in lambda capture list}} expected-error {{an attribute list cannot appear here}}
+                           ^
+
+"Test_name.c", line 124: error: variable "final" has already been defined (previous definition at line 111)
+  class D final alignas ([l) {}]{}); // expected-error {{expected ',' or ']' in lambda capture list}} expected-error {{an attribute list cannot appear here}}
+          ^
+
+"Test_name.c", line 128: error: attributes are not allowed here
+  template<typename> [[]] struct no_init_declarators_template; // expected-error {{an attribute list cannot appear here}}
+                     ^
+
+"Test_name.c", line 130: warning: variable "init_declarator" was declared but never referenced
+    [[]] struct with_init_declarators {} init_declarator;
+                                         ^
+
+"Test_name.c", line 140: error: incomplete type "C" is not allowed
+  [[]] ctordtor::ctordtor (C) [[]] try {} catch (...) {}
+                           ^
+
+"Test_name.c", line 147: error: expected an identifier
+  int scope_attr [[foo::]]; // expected-error {{expected identifier}}
+                        ^
+
+"Test_name.c", line 148: error: two consecutive left square brackets always introduce an attribute list but an attribute list cannot appear here
+  int (paren_attr) [[]]; // expected-error {{an attribute list cannot appear here}}
+                   ^
+
+"Test_name.c", line 148: error: a lambda is not allowed in a constant expression
+  int (paren_attr) [[]]; // expected-error {{an attribute list cannot appear here}}
+                    ^
+
+"Test_name.c", line 148: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+  int (paren_attr) [[]]; // expected-error {{an attribute list cannot appear here}}
+                      ^
+
+"Test_name.c", line 148: error: expected a "{" introducing a lambda body
+  int (paren_attr) [[]]; // expected-error {{an attribute list cannot appear here}}
+                      ^
+
+"Test_name.c", line 149: error: expected an identifier
+  unsigned [[]] int attr_in_decl_spec; // expected-error {{an attribute list cannot appear here}}
+                ^
+
+"Test_name.c", line 150: error: expected an identifier
+  unsigned [[]] int [[]] const double_decl_spec = 0; // expected-error 2{{an attribute list cannot appear here}}
+                ^
+
+"Test_name.c", line 150: error: expected a ";"
+  unsigned [[]] int [[]] const double_decl_spec = 0; // expected-error 2{{an attribute list cannot appear here}}
+                         ^
+
+"Test_name.c", line 152: error: expected a ";"
+    void const_after_attr () [[]] const; // expected-error {{expected ';'}}
+                                  ^
+
+"Test_name.c", line 154: error: expected a declaration
+  extern "C++" [[]] { } // expected-error {{an attribute list cannot appear here}}
+                    ^
+
+"Test_name.c", line 155: error: attribute does not apply to any entity
+  [[]] extern "C++" { } // expected-error {{an attribute list cannot appear here}}
+  ^
+
+"Test_name.c", line 155: error: linkage specification is not allowed
+  [[]] extern "C++" { } // expected-error {{an attribute list cannot appear here}}
+       ^
+
+"Test_name.c", line 155: error: expected an identifier
+  [[]] extern "C++" { } // expected-error {{an attribute list cannot appear here}}
+                    ^
+
+"Test_name.c", line 156: error: expected a ";"
+  [[]] template <typename T> void before_template_attr (); // expected-error {{an attribute list cannot appear here}}
+  ^
+
+"Test_name.c", line 157: error: attributes are not allowed here
+  [[]] namespace ns { int i; } // expected-error {{an attribute list cannot appear here}} expected-note {{declared here}}
+  ^
+
+"Test_name.c", line 163: warning: attribute "noreturn" does not apply here
+  [[noreturn]] using namespace ns; // expected-error {{'noreturn' attribute only applies to functions}}
+    ^
+
+"Test_name.c", line 166: error: expected an identifier
+  using[[]] alignas(4)[[]] ns::i;          // expected-error {{an attribute list cannot appear here}} expected-error {{'alignas' attribute only applies to variables, data members and tag types}} expected-warning {{ISO C++}}
+       ^
+
+"Test_name.c", line 167: error: expected an identifier
+  using [[]] alignas(4) [[]] foobar = int; // expected-error {{an attribute list cannot appear here}} expected-error {{'alignas' attribute only applies to}}
+        ^
+
+"Test_name.c", line 171: error: expected an identifier
+        [[ns::i); // expected-error {{expected ']'}} \
+         ^
+
+"Test_name.c", line 189: warning: parsing restarts here after previous syntax error
+  using ns::i [[]], ns::i [[]]; // expected-warning {{use of multiple declarators in a single using declaration is a C++17 extension}}
+                  ^
+
+"Test_name.c", line 189: error: namespace "ns" is not a variable
+  using ns::i [[]], ns::i [[]]; // expected-warning {{use of multiple declarators in a single using declaration is a C++17 extension}}
+                    ^
+
+"Test_name.c", line 189: error: expected a "]"
+  using ns::i [[]], ns::i [[]]; // expected-warning {{use of multiple declarators in a single using declaration is a C++17 extension}}
+                      ^
+
+"Test_name.c", line 404: warning: empty pack alignment stack
+  #pragma pack(pop)
+               ^
+
+At end of source: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+
+At end of source: error: expected a "{" introducing a lambda body
+
+At end of source: error: expected a ")"
+
+At end of source: error: expected a ";"
+
+At end of source: error: expected a "}"
+"Test_name.c", line 169: note: to match this "{"
+  void bad_attributes_in_do_while() {
+                                    ^
+
+"Test_name.c", line 42: warning: variable "between_attr_2" was declared but never referenced
+  const [[]] int between_attr_2 = 0; // expected-error {{an attribute list cannot appear here}}
+                 ^
+
+49 errors detected in the compilation of "Test_name.c".

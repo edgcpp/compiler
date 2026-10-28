@@ -1,0 +1,273 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 78: warning: expression has no effect
+        x0;
+        ^
+
+"Test_name.c", line 79: warning: expression has no effect
+        B::x0;
+        ^
+
+"Test_name.c", line 80: warning: expression has no effect
+        A::x0;
+        ^
+
+"Test_name.c", line 81: warning: expression has no effect
+        B::A::x0;
+        ^
+
+"Test_name.c", line 82: warning: expression has no effect
+        y0;
+        ^
+
+"Test_name.c", line 83: warning: expression has no effect
+        B::y0;
+        ^
+
+"Test_name.c", line 84: warning: expression has no effect
+        A::y0;
+        ^
+
+"Test_name.c", line 85: warning: expression has no effect
+        B::A::y0;
+        ^
+
+"Test_name.c", line 86: warning: expression has no effect
+        x1;
+        ^
+
+"Test_name.c", line 87: warning: expression has no effect
+        B::x1;
+        ^
+
+"Test_name.c", line 88: warning: expression has no effect
+        A::x1;
+        ^
+
+"Test_name.c", line 89: warning: expression has no effect
+        B::A::x1;
+        ^
+
+"Test_name.c", line 90: warning: expression has no effect
+        y1;
+        ^
+
+"Test_name.c", line 91: warning: expression has no effect
+        B::y1;
+        ^
+
+"Test_name.c", line 92: warning: expression has no effect
+        A::y1;
+        ^
+
+"Test_name.c", line 93: warning: expression has no effect
+        B::A::y1;
+        ^
+
+"Test_name.c", line 94: warning: expression has no effect
+        x2;
+        ^
+
+"Test_name.c", line 95: warning: expression has no effect
+        B::x2;
+        ^
+
+"Test_name.c", line 96: warning: expression has no effect
+        y2;
+        ^
+
+"Test_name.c", line 97: warning: expression has no effect
+        B::y2;
+        ^
+
+"Test_name.c", line 330: error: expected a type specifier
+        new M4; // expected-error{{unknown type name 'M4'}}
+            ^
+
+"Test_name.c", line 331: warning: missing "typename" is nonstandard here
+        new B::M4; // expected-error{{no type named 'M4' in 'N0::B<T>'}}
+            ^
+
+"Test_name.c", line 332: error: expected a type specifier
+        new A::M4; // expected-error{{no type named 'M4' in 'N0::A'}}
+            ^
+
+"Test_name.c", line 333: error: expected a type specifier
+        new B::A::M4; // expected-error{{no type named 'M4' in 'N0::A'}}
+            ^
+
+"Test_name.c", line 335: error: identifier "x4" is undefined
+        x4; // expected-error{{use of undeclared identifier 'x4'}}
+        ^
+
+"Test_name.c", line 337: error: class "N0::A" has no member "x4"
+        A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+           ^
+
+"Test_name.c", line 338: error: class "N0::A" has no member "x4"
+        B::A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+              ^
+
+"Test_name.c", line 339: error: identifier "f4" is undefined
+        f4(); // expected-error{{use of undeclared identifier 'f4'}}
+        ^
+
+"Test_name.c", line 341: error: class "N0::A" has no member "f4"
+        A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+           ^
+
+"Test_name.c", line 342: error: class "N0::A" has no member "f4"
+        B::A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+              ^
+
+"Test_name.c", line 346: error: class "N0::A" has no member "x4"
+        this->A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+                 ^
+
+"Test_name.c", line 347: error: class "N0::A" has no member "x4"
+        this->B::A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+                    ^
+
+"Test_name.c", line 350: error: class "N0::A" has no member "f4"
+        this->A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+                 ^
+
+"Test_name.c", line 351: error: class "N0::A" has no member "f4"
+        this->B::A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+                    ^
+
+"Test_name.c", line 355: error: class "N0::A" has no member "x4"
+        a->A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+              ^
+
+"Test_name.c", line 356: error: class "N0::A" has no member "x4"
+        a->B::A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+                 ^
+
+"Test_name.c", line 359: error: class "N0::A" has no member "f4"
+        a->A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+              ^
+
+"Test_name.c", line 360: error: class "N0::A" has no member "f4"
+        a->B::A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+                 ^
+
+"Test_name.c", line 364: error: class "N0::A" has no member "x4"
+        (*this).A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+                   ^
+
+"Test_name.c", line 365: error: class "N0::A" has no member "x4"
+        (*this).B::A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+                      ^
+
+"Test_name.c", line 368: error: class "N0::A" has no member "f4"
+        (*this).A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+                   ^
+
+"Test_name.c", line 369: error: class "N0::A" has no member "f4"
+        (*this).B::A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+                      ^
+
+"Test_name.c", line 373: error: class "N0::A" has no member "x4"
+        b.A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+             ^
+
+"Test_name.c", line 374: error: class "N0::A" has no member "x4"
+        b.B::A::x4; // expected-error{{no member named 'x4' in 'N0::A'}}
+                ^
+
+"Test_name.c", line 377: error: class "N0::A" has no member "f4"
+        b.A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+             ^
+
+"Test_name.c", line 378: error: class "N0::A" has no member "f4"
+        b.B::A::f4(); // expected-error{{no member named 'f4' in 'N0::A'}}
+                ^
+
+"Test_name.c", line 405: error: expected an expression
+        this->x.f<0>();
+                     ^
+
+"Test_name.c", line 406: error: expected an expression
+        a->x.f<0>();
+                  ^
+
+"Test_name.c", line 407: error: expected an expression
+        (*this).x.f<0>();
+                       ^
+
+"Test_name.c", line 408: error: expected an expression
+        b.x.f<0>();
+                 ^
+
+"Test_name.c", line 411: error: expected an expression
+        g().f<0>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f'}}
+                 ^
+
+"Test_name.c", line 474: error: identifier "operator=" is undefined
+      auto not_instantiated() -> decltype(operator=(0)); // expected-error {{use of undeclared 'operator='}}
+                                          ^
+
+"Test_name.c", line 479: error: identifier "operator=" is undefined
+      auto instantiated(E& e) -> decltype(operator=(e)); // expected-error {{use of undeclared 'operator='}}
+                                          ^
+          detected during instantiation of class "N3::E<T> [with T=int]" at line 482
+
+"Test_name.c", line 588: warning: expression has no effect
+      y.x;
+      ^
+
+"Test_name.c", line 605: warning: expression has no effect
+      z.x;
+      ^
+
+"Test_name.c", line 495: error: operator -> or ->* applied to "N4::A<int>" instead of to a pointer type
+        a->x; // expected-error {{member reference type 'A<int>' is not a pointer; did you mean to use '.'?}}
+        ^
+          detected during instantiation of "void N4::A<T>::instantiated(N4::A<T>, N4::A<T>, T) [with T=int]" at line 503
+
+"Test_name.c", line 497: error: operator -> or ->* applied to "N4::A<int>" instead of to a pointer type
+        b->x; // expected-error {{member reference type 'A<int>' is not a pointer; did you mean to use '.'?}}
+        ^
+          detected during instantiation of "void N4::A<T>::instantiated(N4::A<T>, N4::A<T>, T) [with T=int]" at line 503
+
+"Test_name.c", line 499: error: operator -> or ->* applied to "int" instead of to a pointer type
+        c->x; // expected-error {{member reference type 'int' is not a pointer}}
+        ^
+          detected during instantiation of "void N4::A<T>::instantiated(N4::A<T>, N4::A<T>, T) [with T=int]" at line 503
+
+"Test_name.c", line 524: error: operator -> or ->* applied to "int" instead of to a pointer type
+        c->x; // expected-error {{member reference type 'int' is not a pointer}}
+        ^
+          detected during instantiation of "void N4::C<T>::instantiated(N4::C<T>, N4::C<T>, T) [with T=int]" at line 528
+
+"Test_name.c", line 554: error: class "N4::B" has no member "y"
+        a->y; // expected-error {{no member named 'y' in 'N4::B'}}
+           ^
+          detected during instantiation of "void N4::D<T>::instantiated(N4::D<T>) [with T=N4::B]" at line 565
+
+"Test_name.c", line 556: error: class "N4::B" has no member "g"
+        a->g(); // expected-error {{no member named 'g' in 'N4::B'}}
+           ^
+          detected during instantiation of "void N4::D<T>::instantiated(N4::D<T>) [with T=N4::B]" at line 565
+
+"Test_name.c", line 559: error: class "N4::B" has no member "y"
+        a->T::y; // expected-error {{no member named 'y' in 'N4::B'}}
+              ^
+          detected during instantiation of "void N4::D<T>::instantiated(N4::D<T>) [with T=N4::B]" at line 565
+
+"Test_name.c", line 561: error: class "N4::B" has no member "g"
+        a->T::g(); // expected-error {{no member named 'g' in 'N4::B'}}
+              ^
+          detected during instantiation of "void N4::D<T>::instantiated(N4::D<T>) [with T=N4::B]" at line 565
+
+"Test_name.c", line 587: error: name followed by "::" must be a class or namespace name
+      A y = T::x; // expected-error {{type 'int' cannot be used prior to '::' because it has no members}}
+            ^
+          detected during instantiation of "void N5::f<T>() [with T=int]" at line 591
+
+"Test_name.c", line 603: error: identifier "h" is undefined
+        h(&y); // expected-error {{use of undeclared identifier 'h'}}
+        ^
+          detected during instantiation of "void N5::g(T) [with T=int]" at line 608
+
+42 errors detected in the compilation of "Test_name.c".

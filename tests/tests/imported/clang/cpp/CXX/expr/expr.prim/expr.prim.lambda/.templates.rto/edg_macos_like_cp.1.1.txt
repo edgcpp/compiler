@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 74: error: a value of type "int" cannot be used to initialize an entity of type "T *"
+        T* x = 1; // expected-error{{cannot initialize a variable of type 'float *' with an rvalue of type 'int'}}
+               ^
+
+"Test_name.c", line 134: error: default argument of type "int *" is incompatible with parameter of type "int"
+    void defaults(int x = []{ return T(); }()) { }; // expected-error{{cannot initialize a parameter of type 'int' with an rvalue of type 'int *'}} \
+                          ^
+          detected during instantiation of "void NonLocalLambdaInstantiation::defaults<T>(int) [with T=int *]" at line 140
+
+"Test_name.c", line 145: error: a value of type "int *" cannot be used to initialize an entity of type "int"
+      int x = []{ return T(); }(); // expected-error{{cannot initialize a member subobject of type 'int' with an rvalue of type 'int *'}}
+              ^
+          detected during:
+            implicit generation of "NonLocalLambdaInstantiation::X2<T>::X2() [with T=int *]" at line 150
+            instantiation of class "NonLocalLambdaInstantiation::X2<T> [with T=int *]" at line 150
+
+"Test_name.c", line 8: warning: function declared with "noreturn" does return
+    auto nrl = []() [[gnu::noreturn]] {}; // expected-warning{{attribute 'gnu::noreturn' ignored}}
+                                       ^
+          detected during instantiation of "void test_attributes<T>() [with T=int]" at line 11
+
+"Test_name.c", line 43: error: no suitable conversion function from "X" to "int" exists
+    return lambda(true); // expected-error{{no viable conversion from returned value of type 'X' to function return type 'int'}}
+           ^
+          detected during instantiation of "int infer_result(T, T) [with T=X]" at line 47
+
+"Test_name.c", line 82: error: a lambda is not allowed in an unevaluated expression
+        = typeid([=,&r] () -> R& { // expected-error{{lambda expression in an unevaluated operand}}
+                 ^
+          detected during instantiation of "void p2::odr_used(R &, p2::Boom<T>) [with R=int, T=int]" at line 88
+
+"Test_name.c", line 127: error: a value of type "int *" cannot be used to initialize an entity of type "int"
+    int X<T>::value = []{ return T(); }(); // expected-error{{cannot initialize a variable of type 'int' with an rvalue of type 'int *'}}
+                      ^
+          detected during implicit definition of "int NonLocalLambdaInstantiation::X<T>::value [with T=int *]" at line 131
+
+6 errors detected in the compilation of "Test_name.c".

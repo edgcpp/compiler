@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 25: error: type name is not allowed
+    c.class_func<Y>(); // { dg-warning "keyword before dependent template name" }
+                 ^
+
+"Test_name.c", line 25: error: expected an expression
+    c.class_func<Y>(); // { dg-warning "keyword before dependent template name" }
+                    ^
+
+"Test_name.c", line 26: error: type name is not allowed
+    (&c)->class_func<Y>(); // { dg-warning "keyword before dependent template name" }
+                     ^
+
+"Test_name.c", line 26: error: expected an expression
+    (&c)->class_func<Y>(); // { dg-warning "keyword before dependent template name" }
+                        ^
+
+"Test_name.c", line 27: error: type name is not allowed
+    mytemplateclass<Y>::class_func_static<Y>(); // { dg-warning "keyword before dependent template name" }
+                                          ^
+
+"Test_name.c", line 27: error: expected an expression
+    mytemplateclass<Y>::class_func_static<Y>(); // { dg-warning "keyword before dependent template name" }
+                                             ^
+
+"Test_name.c", line 44: warning: variable "c2" is used before its value is set
+    tests_func<myclass>(c, c2);
+                           ^
+
+"Test_name.c", line 48: warning: variable "testbool" was set but never used
+    bool testbool = c2.testint < 999 > 7;
+         ^
+
+6 errors detected in the compilation of "Test_name.c".

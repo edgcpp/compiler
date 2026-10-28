@@ -1,0 +1,37 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: warning: excess initializers are ignored
+    volatile v4df x1 = { 4, 5, 6, -7 };
+                            ^
+
+"Test_name.c", line 13: warning: excess initializers are ignored
+    volatile v4df x2 = { 10, -11, 12, 13 };
+                             ^
+
+"Test_name.c", line 14: warning: excess initializers are ignored
+    volatile v4df x3 = { 20, 21, 22, 23 };
+                             ^
+
+"Test_name.c", line 16: warning: excess initializers are ignored
+    x1 *= (v4df) { 0, 1, 1, 0 };
+                      ^
+
+"Test_name.c", line 17: warning: excess initializers are ignored
+    x2 *= (v4df) { 1, 0, 0, 1 };
+                      ^
+
+"Test_name.c", line 18: warning: excess initializers are ignored
+    x3 *= (v4df) { 0.0, -0.0, 1.0, -0.0 };
+                        ^
+
+"Test_name.c", line 20: warning: excess initializers are ignored
+    if (__builtin_memcmp ((void *) &x1, &(v4df) { 0, 5, 6, -0.0 },
+                                                     ^
+
+"Test_name.c", line 22: warning: excess initializers are ignored
+        || __builtin_memcmp ((void *) &x2, &(v4df) { 10, -0.0, 0, 13 },
+                                                         ^
+
+"Test_name.c", line 24: warning: excess initializers are ignored
+        || __builtin_memcmp ((void *) &x3, &(v4df) { 0, -0.0, 22, -0.0 },
+                                                        ^
+

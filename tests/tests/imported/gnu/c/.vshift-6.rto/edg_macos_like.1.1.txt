@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef unsigned int v1qi_t __attribute__((mode(QI), vector_size(1)));
+                                                       ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef unsigned int v1hi_t __attribute__((mode(HI), vector_size(2)));
+                                                       ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef unsigned int v1si_t __attribute__((mode(SI), vector_size(4)));
+                                                       ^
+
+"Test_name.c", line 12: warning: shift count is negative
+  	case 0: return x << -1; /* { dg-warning "shift count is negative" } */
+  	                    ^
+
+"Test_name.c", line 15: warning: shift count is negative
+  	case ~0: return x >> -1; /* { dg-warning "shift count is negative" } */
+  	                     ^
+
+"Test_name.c", line 24: warning: shift count is negative
+  	case 0: return x << -1; /* { dg-warning "shift count is negative" } */
+  	                    ^
+
+"Test_name.c", line 27: warning: shift count is negative
+  	case ~0: return x >> -1; /* { dg-warning "shift count is negative" } */
+  	                     ^
+
+"Test_name.c", line 36: warning: shift count is negative
+  	case 0: return x << -1; /* { dg-warning "shift count is negative" } */
+  	                    ^
+
+"Test_name.c", line 38: warning: shift count is too large
+  	case 2: return x << 32; /* { dg-warning "shift count >= width" } */
+  	                    ^
+
+"Test_name.c", line 39: warning: shift count is negative
+  	case ~0: return x >> -1; /* { dg-warning "shift count is negative" } */
+  	                     ^
+
+"Test_name.c", line 41: warning: shift count is too large
+  	case ~2: return x >> 32; /* { dg-warning "shift count >= width" } */
+  	                     ^
+

@@ -1,0 +1,15 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"Test_name.c", line 24: error: parameter pack "args" was referenced but not expanded
+  return s[args]; 
+           ^
+
+"Test_name.c", line 24: error: expected a ";"
+  return s[args]; 
+               ^
+          detected during instantiation of "auto &foo(S &, Ts...) [with Ts=<>]" at line 38
+
+"Test_name.c", line 38: error: operand types are incompatible ("S *" and "int *")
+  if ((((((&foo(s) != &(s.a[0]) || &foo(s, 42) != &(s.a[42])) || &foo(s, 5, 4) != &(s.a[37])) || &bar(s) != &(s.a[0])) || &bar(s, 22) != &(s.a[22])) || &bar(s, 17, 3L) != &(s.a[41])) || &bar(buf, 5) != &(buf[5])) { 
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

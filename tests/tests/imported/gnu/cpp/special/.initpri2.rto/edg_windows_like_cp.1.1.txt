@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: error: attribute "constructor" does not take arguments
+       __attribute__((constructor (-1))); /* { dg-error "priorities" } */
+                                  ^
+
+"Test_name.c", line 9: error: attribute "constructor" does not take arguments
+       __attribute__((constructor (65536))); /* { dg-error "priorities" } */
+                                  ^
+
+"Test_name.c", line 11: error: attribute "destructor" does not take arguments
+       __attribute__((destructor (-1))); /* { dg-error "priorities" } */
+                                 ^
+
+"Test_name.c", line 13: error: attribute "destructor" does not take arguments
+       __attribute__((destructor (65536))); /* { dg-error "priorities" } */
+                                 ^
+
+"Test_name.c", line 17: error: attribute "constructor" does not take arguments
+       __attribute__((constructor (50))); /* { dg-warning "reserved" } */
+                                  ^
+
+"Test_name.c", line 19: error: attribute "constructor" does not take arguments
+       __attribute__((constructor (50))); /* { dg-warning "reserved" } */
+                                  ^
+
+"Test_name.c", line 25: error: attribute "constructor" does not take arguments
+       __attribute__((constructor ((void*) 500))); /* { dg-error "priorities" } */
+                                  ^
+
+"Test_name.c", line 27: error: attribute "destructor" does not take arguments
+       __attribute__((destructor ((void*) 500))); /* { dg-error "priorities" } */
+                                 ^
+
+"Test_name.c", line 32: error: attribute "constructor" does not take arguments
+       __attribute__((constructor ((i)))); /* { dg-error "priorities" } */
+                                  ^
+
+"Test_name.c", line 34: error: attribute "destructor" does not take arguments
+       __attribute__((destructor ((i)))); /* { dg-error "priorities" } */
+                                 ^
+
+"Test_name.c", line 39: error: attribute "constructor" does not take arguments
+       __attribute__((constructor ((e))));
+                                  ^
+
+"Test_name.c", line 41: error: attribute "destructor" does not take arguments
+       __attribute__((destructor ((e))));
+                                 ^
+
+12 errors detected in the compilation of "Test_name.c".

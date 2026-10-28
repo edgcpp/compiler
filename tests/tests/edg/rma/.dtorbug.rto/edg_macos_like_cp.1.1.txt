@@ -1,0 +1,11 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+/usr/sbin/ld: Test_name.o: in function `_ZN3SetC1Ev':
+Test_name.int.c:(.text+0xXX): undefined reference to `_ZTV10Collection'
+/usr/sbin/ld: Test_name.o: in function `_ZN3SetD1Ev':
+Test_name.int.c:(.text+0xXX): undefined reference to `_ZN10CollectionD2Ev'
+/usr/sbin/ld: Test_name.o: in function `_ZN8IdentSetC1Ev':
+Test_name.int.c:(.text+0xXX): undefined reference to `_ZTV8IdentSet'
+/usr/sbin/ld: Test_name.o:(.data+0x20): undefined reference to `_ZN10CollectionD2Ev'
+/usr/sbin/ld: Test_name.o:(.data+0x30): undefined reference to `_ZN10CollectionD2Ev'
+/usr/sbin/ld: Test_name.o:(.rodata+0x30): undefined reference to `_ZTI10Collection'
+collect2: error: ld returned 1 exit status

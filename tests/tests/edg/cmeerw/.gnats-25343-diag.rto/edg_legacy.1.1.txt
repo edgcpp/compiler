@@ -1,0 +1,83 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 24: error: no instance of constructor "over_match_class_deduct_examples::C" matches the argument list
+            argument types are: (int, int)
+    C c1 = {1, 2};                  // error: deduction fails
+      ^
+
+"Test_name.c", line 24: error: cannot deduce class template arguments
+    C c1 = {1, 2};                  // error: deduction fails
+    ^
+
+"Test_name.c", line 25: error: no instance of constructor "over_match_class_deduct_examples::C" matches the argument list
+            argument types are: (int, int, int)
+    C c2 = {1, 2, 3};               // error: deduction fails
+      ^
+
+"Test_name.c", line 25: error: cannot deduce class template arguments
+    C c2 = {1, 2, 3};               // error: deduction fails
+    ^
+
+"Test_name.c", line 28: error: no instance of constructor "over_match_class_deduct_examples::D" matches the argument list
+            argument types are: (int, int)
+    D d1 = {1, 2};                  // error: deduction fails
+      ^
+
+"Test_name.c", line 28: error: cannot deduce class template arguments
+    D d1 = {1, 2};                  // error: deduction fails
+    ^
+
+"Test_name.c", line 52: error: no instance of constructor "over_match_class_deduct_examples::F" matches the argument list
+            argument types are: (over_match_class_deduct_examples::Types<over_match_class_deduct_examples::X, over_match_class_deduct_examples::Y, over_match_class_deduct_examples::Z>, over_match_class_deduct_examples::X, over_match_class_deduct_examples::W)
+    F f3 = {Types<X, Y, Z>{}, X{}, W{}};    // error: conflicting types deduced; operator Y not considered
+      ^
+
+"Test_name.c", line 52: error: cannot deduce class template arguments
+    F f3 = {Types<X, Y, Z>{}, X{}, W{}};    // error: conflicting types deduced; operator Y not considered
+    ^
+
+"Test_name.c", line 69: error: no instance of constructor "explicit_guide_with_pack::NonAggr" matches the argument list
+            argument types are: (explicit_guide_with_pack::Types<int, int>, int)
+    NonAggr v{Types<int, int>{}, 1}; // error: deduction fails
+            ^
+
+"Test_name.c", line 69: error: cannot deduce class template arguments
+    NonAggr v{Types<int, int>{}, 1}; // error: deduction fails
+    ^
+
+"Test_name.c", line 90: error: no instance of constructor "implicit_guide_with_pack::NonAggr" matches the argument list
+            argument types are: (implicit_guide_with_pack::Types<implicit_guide_with_pack::C, implicit_guide_with_pack::D>, implicit_guide_with_pack::C)
+    NonAggr v{Types<C, D>{}, C{}}; // error: deduction fails
+            ^
+
+"Test_name.c", line 90: error: cannot deduce class template arguments
+    NonAggr v{Types<C, D>{}, C{}}; // error: deduction fails
+    ^
+
+"Test_name.c", line 105: error: no instance of constructor "empty_member::C" matches the argument list
+            argument types are: (int)
+    C c{ 1 };                     // error: deduction fails
+      ^
+
+"Test_name.c", line 105: error: cannot deduce class template arguments
+    C c{ 1 };                     // error: deduction fails
+    ^
+
+"Test_name.c", line 125: error: no instance of constructor "non_trailing_pack_alias::AC" matches the argument list
+            argument types are: (non_trailing_pack_alias::B<char>, int)
+    AC ac{ B<char>{}, 1 };        // deduction succeeds, but initialization fails
+       ^
+
+"Test_name.c", line 125: error: cannot deduce class template arguments
+    AC ac{ B<char>{}, 1 };        // deduction succeeds, but initialization fails
+    ^
+
+"Test_name.c", line 137: error: no instance of constructor "no_expr_init::C" matches the argument list
+            argument types are: (int)
+    C c = 1;                      // deduction fails
+      ^
+
+"Test_name.c", line 137: error: cannot deduce class template arguments
+    C c = 1;                      // deduction fails
+    ^
+
+18 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,16 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function '_Z3fooDv2_x':
+Test_name.c:14:124: error: used vector type where scalar is required
+Test_name.c:14:243: error: used vector type where scalar is required
+Test_name.c: In function '_Z3barPDv4_xS0_':
+Test_name.c:20:145: error: used vector type where scalar is required
+Test_name.c:20:165: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+Test_name.c:20:282: error: used vector type where scalar is required
+Test_name.c:20:16: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+Test_name.c:20:133: error: used vector type where scalar is required
+Test_name.c:20:153: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+Test_name.c:20:270: error: used vector type where scalar is required
+Test_name.c:20:290: error: invalid type argument of unary '*' (have 'W' {aka '__vector(4) long long int'})
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

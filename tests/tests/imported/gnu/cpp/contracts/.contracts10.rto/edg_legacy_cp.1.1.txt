@@ -1,0 +1,58 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 15: error: expected a ","
+      [[ assert: x < 0 ]];
+               ^
+
+"Test_name.c", line 14: warning: variable "x" was declared but never referenced
+      int x = 1;
+          ^
+
+"Test_name.c", line 26: error: expected a ","
+        [[ assert: x < 0 ]];
+                 ^
+
+"Test_name.c", line 25: warning: variable "x" was declared but never referenced
+        int x = 1;
+            ^
+
+"Test_name.c", line 35: error: expected a ","
+    [[ assert: x < 0 ]];
+             ^
+
+"Test_name.c", line 34: warning: variable "x" was declared but never referenced
+    int x = 1;
+        ^
+
+"Test_name.c", line 42: error: expected a ","
+    [[ assert: x < 0 ]];
+             ^
+
+"Test_name.c", line 41: warning: variable "x" was declared but never referenced
+    int x = 1;
+        ^
+
+"Test_name.c", line 49: error: expected a ","
+    [[assert: x < 0]];
+            ^
+
+"Test_name.c", line 50: error: expected a ","
+    [[assert default: x < 1]];
+             ^
+
+"Test_name.c", line 51: error: expected a ","
+    [[assert audit: x < 2]];
+             ^
+
+"Test_name.c", line 100: error: expected a ","
+    [[assert: x < 3]];
+            ^
+
+"Test_name.c", line 101: error: expected a ","
+    [[assert axiom: x < 4]];
+             ^
+
+"Test_name.c", line 48: warning: variable "x" was declared but never referenced
+    int x = 100;
+        ^
+
+9 errors detected in the compilation of "Test_name.c".

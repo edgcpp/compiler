@@ -1,0 +1,64 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 10: error: static assertion failed with ""
+  static_assert(sizeof(long double) == 12, "");
+  ^
+"Test_name.c", line 10: note: the final comparison was 16 == 12
+  static_assert(sizeof(long double) == 12, "");
+                                    ^
+
+"Test_name.c", line 11: error: static assertion failed with ""
+  static_assert(sizeof(fp80x2_v) == 32, "");
+  ^
+"Test_name.c", line 11: note: the final comparison was 16 == 32
+  static_assert(sizeof(fp80x2_v) == 32, "");
+                                 ^
+
+"Test_name.c", line 13: error: class is too large
+  struct fp80x2_s {
+         ^
+
+"Test_name.c", line 26: error: too many initializer values
+    constexpr static fp80x2_v test_vec_fp80 = { 1, 2 };
+                                                   ^
+
+"Test_name.c", line 35: error: the type of the second operand "const fp80x2_s" must have the same size as "fp80x2_v" (aka "long double")
+    static_assert(__builtin_bit_cast(fp80x2_s, __builtin_bit_cast(fp80x2_v, test_str_fp80)) == test_str_fp80, "");
+                                                                            ^
+
+"Test_name.c", line 51: error: the type of the second operand "const fp80x2_s" must have the same size as "fp80x2_v" (aka "long double")
+    constexpr static fp80x2_v struct2v = __builtin_bit_cast(fp80x2_v, test_str_fp80);
+                                                                      ^
+
+"Test_name.c", line 63: error: too many initializer values
+    constexpr static v12i16 b = (v12i16)(v2f80){1,2};
+                                                  ^
+
+"Test_name.c", line 67: error: too many initializer values
+    constexpr static v2f80 c = (v2f80)(v12i16){0,0,0,-32768,16383,0,0,0,0,-32768,16384,0};
+                                                 ^
+
+"Test_name.c", line 39: warning: variable "builtin_bit_cast::bad_str_fp80_0" was declared but never referenced
+    constexpr static char bad_str_fp80_0 = __builtin_bit_cast(fp80x2_s, test_vec_fp80)._pad[0];
+                          ^
+
+"Test_name.c", line 43: warning: variable "builtin_bit_cast::bad_str_fp80_1" was declared but never referenced
+    constexpr static char bad_str_fp80_1 = __builtin_bit_cast(fp80x2_s, test_vec_fp80)._pad[1];
+                          ^
+
+"Test_name.c", line 47: warning: variable "builtin_bit_cast::bad_str_fp80_11" was declared but never referenced
+    constexpr static char bad_str_fp80_11 = __builtin_bit_cast(fp80x2_s, test_vec_fp80)._pad[11];
+                          ^
+
+"Test_name.c", line 51: warning: variable "builtin_bit_cast::struct2v" was declared but never referenced
+    constexpr static fp80x2_v struct2v = __builtin_bit_cast(fp80x2_v, test_str_fp80);
+                              ^
+
+"Test_name.c", line 63: warning: variable "c_cast::b" was declared but never referenced
+    constexpr static v12i16 b = (v12i16)(v2f80){1,2};
+                            ^
+
+"Test_name.c", line 67: warning: variable "c_cast::c" was declared but never referenced
+    constexpr static v2f80 c = (v2f80)(v12i16){0,0,0,-32768,16383,0,0,0,0,-32768,16384,0};
+                           ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: error: explicit type is missing ("int" assumed)
+  extern __thread int i;
+         ^
+
+"Test_name.c", line 6: error: expected a ";"
+  extern __thread int i;
+                  ^
+
+"Test_name.c", line 7: error: this declaration has no storage class or type specifier
+  __thread int *p = &i;	/* { dg-error "dynamic initialization" } */
+  ^
+
+"Test_name.c", line 7: error: expected a ";"
+  __thread int *p = &i;	/* { dg-error "dynamic initialization" } */
+           ^
+
+"Test_name.c", line 10: error: this declaration has no storage class or type specifier
+  __thread int j = f();	/* { dg-error "dynamic initialization" } */
+  ^
+
+"Test_name.c", line 10: error: variable "__thread" has already been defined (previous definition at line 7)
+  __thread int j = f();	/* { dg-error "dynamic initialization" } */
+  ^
+
+"Test_name.c", line 10: error: expected a ";"
+  __thread int j = f();	/* { dg-error "dynamic initialization" } */
+           ^
+
+"Test_name.c", line 16: error: variable "__thread" is not a type name
+  __thread S s;		/* { dg-error "dynamic initialization" } */
+  ^
+
+"Test_name.c", line 16: error: expected a ";"
+  __thread S s;		/* { dg-error "dynamic initialization" } */
+             ^
+
+9 errors detected in the compilation of "Test_name.c".

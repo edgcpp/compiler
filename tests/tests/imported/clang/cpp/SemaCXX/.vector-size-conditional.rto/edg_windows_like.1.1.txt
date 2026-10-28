@@ -1,0 +1,76 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --set_flag=no_very_expensive_checking --exceptions --exceptions --c++17 Test_name.c
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using FourShorts = short __attribute__((__vector_size__(8)));
+                                          ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using TwoInts = int __attribute__((__vector_size__(8)));
+                                     ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using TwoUInts = unsigned __attribute__((__vector_size__(8)));
+                                           ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using FourInts = int __attribute__((__vector_size__(16)));
+                                      ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using FourUInts = unsigned __attribute__((__vector_size__(16)));
+                                            ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using TwoLongLong = long long __attribute__((__vector_size__(16)));
+                                               ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using FourLongLong = long long __attribute__((__vector_size__(32)));
+                                                ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using TwoFloats = float __attribute__((__vector_size__(8)));
+                                         ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using FourFloats = float __attribute__((__vector_size__(16)));
+                                          ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using TwoDoubles = double __attribute__((__vector_size__(16)));
+                                           ^
+
+"Test_name.c", line N: warning: unknown attribute "__vector_size__"
+  using FourDoubles = double __attribute__((__vector_size__(32)));
+                                            ^
+
+"Test_name.c", line N: warning: unknown attribute "ext_vector_type"
+  using EightBools = bool __attribute__((ext_vector_type(8)));
+                                         ^
+
+"Test_name.c", line N: error: operand types are incompatible ("void" and "FourInts" (aka "int"))
+    (void)(four_ints ? (void)1 : four_ints); // expected-error {{GNU vector conditional operand cannot be void}}
+                               ^
+
+"Test_name.c", line N: error: expression must have arithmetic or unscoped enum type
+    (void)(four_ints ?: (void)1);            // expected-error {{GNU vector conditional operand cannot be void}}
+                        ^
+
+"Test_name.c", line N: error: expression must have arithmetic or unscoped enum type
+    (void)(four_ints ? four_uints : se); // expected-error {{cannot convert between vector and non-scalar values ('FourUInts' (vector of 4 'unsigned int' values) and 'SE'}}
+                                    ^
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: error: static assertion failed
+
+"Test_name.c", line N: internal error: assertion failed
+
+
+7 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

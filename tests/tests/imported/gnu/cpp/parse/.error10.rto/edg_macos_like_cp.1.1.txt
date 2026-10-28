@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 16: error: expected either a definition or a tag name
+    enum typename A<T>::E    e4;
+         ^
+
+"Test_name.c", line 13: warning: variable "e1" was declared but never referenced
+    enum          A<void>::E e1;
+                             ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (8))) double V;
+                         ^
+
+"Test_name.c", line 10: error: invalid combination of type specifiers
+    a += *(_Complex short *) &v;
+           ^
+
+1 error detected in the compilation of "Test_name.c".

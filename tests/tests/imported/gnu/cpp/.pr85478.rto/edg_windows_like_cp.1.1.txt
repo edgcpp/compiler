@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 21: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex m() { return n; }
+    ^
+
+"Test_name.c", line 22: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex n;
+    ^
+
+"Test_name.c", line 38: warning: missing return statement at end of non-void function "p<ac, o>::operator=(const p<ac, q> &)"
+  }
+  ^
+
+"Test_name.c", line 46: warning: missing return statement at end of non-void function "s<ae>::operator=(const s<t> &)"
+  }
+  ^
+
+"Test_name.c", line 12: warning: variable "i" is used before its value is set
+      for (; i != g; ++h, ++i)
+             ^
+          detected during:
+            instantiation of "void c::f(d, e) [with d=ab<float> *, e=ab<long double> *]" at line 16
+            instantiation of "void j<<unnamed>,d,e>(d, e) [with <unnamed>=0, d=ab<float> *, e=ab<long double> *]" at line 17
+            instantiation of "void l<k,d,e>(d, e) [with k=0, d=ab<float> *, e=ab<long double> *]" at line 18
+            instantiation of "void aa(d, e) [with d=ab<float> *, e=ab<long double> *]" at line 37
+            instantiation of "p<ac, o> &p<ac, o>::operator=(const p<ac, q> &) [with ac=2, o=ab<long double>, q=ab<float>]" at line 45
+            instantiation of "s<ae> &s<ae>::operator=(const s<t> &) [with ae=ab<long double>, t=ab<float>]" at line 47
+
+2 errors detected in the compilation of "Test_name.c".
