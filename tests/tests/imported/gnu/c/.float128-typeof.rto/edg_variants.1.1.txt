@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./floatn-typeof.h", line 20: error: identifier "_Float128" is undefined
+  extern _Float128 test_type;
+         ^
+
+"./floatn-typeof.h", line 21: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  extern __typeof (1.0f128) test_type;
+                  ^
+
+"./floatn-typeof.h", line 22: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  extern __typeof (1.0F128) test_type;
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

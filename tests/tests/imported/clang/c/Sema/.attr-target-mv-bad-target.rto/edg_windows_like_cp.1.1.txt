@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: target attribute not recognized
+  int __attribute__((target("sse4.2"))) redecl1(void) { return 1; }
+                            ^
+
+"Test_name.c", line 8: error: function "redecl1" has already been defined (previous definition at line 5)
+  int __attribute__((target("avx")))  redecl1(void) { return 2; }
+                                      ^
+
+"Test_name.c", line 8: warning: target attribute not recognized
+  int __attribute__((target("avx")))  redecl1(void) { return 2; }
+                            ^
+
+"Test_name.c", line 11: warning: target attribute not recognized
+  int __attribute__((target("default"))) with_def(void) { return 1;}
+                            ^
+
+1 error detected in the compilation of "Test_name.c".

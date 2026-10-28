@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 37: warning: expression has no effect
+    &myclass::stat2; // { dg-bogus "deprecated-static2.*deprecated-static2" }
+    ^
+
+"Test_name.c", line 47: warning: expression has no effect
+    &myclass::non2; // { dg-bogus "deprecated-non2.*deprecated-non2" }
+    ^
+
+"Test_name.c", line 52: warning: expression has no effect
+    &fn2; // { dg-bogus "deprecated-global2.*deprecated-global2" }
+    ^
+
+"Test_name.c", line 61: warning: expression has no effect
+    &::fn5; // { dg-bogus "deprecated-global5.*deprecated-global5" }
+    ^
+
+"Test_name.c", line 70: warning: expression has no effect
+    &N::fn2; // { dg-bogus "deprecated-ns2.*deprecated-ns2" }
+    ^
+
+"Test_name.c", line 39: warning: variable "x" was declared but never referenced
+    auto x = myclass::stat3; // { dg-bogus "deprecated-static3.*deprecated-static3" }
+         ^
+
+"Test_name.c", line 54: warning: variable "xg" was declared but never referenced
+    auto xg = fn3; // { dg-bogus "deprecated-global2.*deprecated-global3" }
+         ^
+
+"Test_name.c", line 63: warning: variable "xgs" was declared but never referenced
+    auto xgs = ::fn6; // { dg-bogus "deprecated-global2.*deprecated-global6" }
+         ^
+
+"Test_name.c", line 72: warning: variable "xgn" was declared but never referenced
+    auto xgn = N::fn3; // { dg-bogus "deprecated-ns2.*deprecated-ns3" }
+         ^
+

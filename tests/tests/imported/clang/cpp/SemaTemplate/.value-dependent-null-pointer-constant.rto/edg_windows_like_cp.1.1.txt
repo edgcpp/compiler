@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 10: error: operand types are incompatible ("const char *" and "int")
+      return Cond? "honk" : N;
+                          ^
+
+"Test_name.c", line 19: error: operand types are incompatible ("int" and "const char *")
+      return Cond? N : "honk";
+                     ^
+
+"Test_name.c", line 26: error: operand types are incompatible ("const char *" and "int")
+      return str == N;
+                 ^
+
+3 errors detected in the compilation of "Test_name.c".

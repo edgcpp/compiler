@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 33: error: static assertion failed with "is_same< decltype( f<int*>(0) ), void >::value"
+  static_assert(is_same< __decltype((f< int *> (0))), void> ::value, "is_same< decltype( f<int*>(0) ), void >::value");
+  ^
+
+1 error detected in the compilation of "Test_name.c".

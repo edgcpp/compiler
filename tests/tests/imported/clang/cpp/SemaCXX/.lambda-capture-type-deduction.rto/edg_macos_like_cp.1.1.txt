@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 33: warning: variable "ref" was declared but never referenced
+    auto ref = [&x = y](
+         ^
+
+"Test_name.c", line 45: warning: variable "y" is used before its value is set
+    static_assert(noexcept([y] noexcept(is_same<const int &, decltype((y))>) {}()));
+                            ^
+
+"Test_name.c", line 58: error: a requires-clause is not allowed here (not a templated function)
+    [x = 1]() requires is_same<const int &, decltype((x))> {}
+              ^
+
+"Test_name.c", line 60: error: a requires-clause is not allowed here (not a templated function)
+    [x = 1]() mutable requires is_same<int &, decltype((x))> {}
+                      ^
+
+"Test_name.c", line 62: error: a requires-clause is not allowed here (not a templated function)
+    [x]() requires is_same<const int &, decltype((x))> {}
+          ^
+
+"Test_name.c", line 62: warning: variable "x" is used before its value is set
+    [x]() requires is_same<const int &, decltype((x))> {}
+     ^
+
+"Test_name.c", line 64: error: a requires-clause is not allowed here (not a templated function)
+    [x]() mutable requires is_same<int &, decltype((x))> {}
+                  ^
+
+"Test_name.c", line 66: error: a requires-clause is not allowed here (not a templated function)
+    [=]() requires is_same<const int &, decltype((x))> {}
+          ^
+
+"Test_name.c", line 68: error: a requires-clause is not allowed here (not a templated function)
+    [=]() mutable requires is_same<int &, decltype((x))> {}
+                  ^
+
+"Test_name.c", line 70: error: a requires-clause is not allowed here (not a templated function)
+    [&]() requires is_same<int &, decltype((x))> {}
+          ^
+
+"Test_name.c", line 72: error: a requires-clause is not allowed here (not a templated function)
+    [&]() mutable requires is_same<int &, decltype((x))> {}
+                  ^
+
+"Test_name.c", line 74: error: a requires-clause is not allowed here (not a templated function)
+    [&x]() requires is_same<int &, decltype((x))> {}
+           ^
+
+"Test_name.c", line 76: error: a requires-clause is not allowed here (not a templated function)
+    [&x]() mutable requires is_same<int &, decltype((x))> {}
+                   ^
+
+"Test_name.c", line 79: error: a requires-clause is not allowed here (not a templated function)
+    [x = 1]() requires is_same<const int &, decltype((x))> {} ();
+              ^
+
+"Test_name.c", line 80: error: a requires-clause is not allowed here (not a templated function)
+    [x = 1]() mutable requires is_same<int &, decltype((x))> {} ();
+                      ^
+
+"Test_name.c", line 96: warning: variable "z" is used before its value is set
+    (void)[z]<typename T = decltype((z))>{};
+           ^
+
+"Test_name.c", line 105: error: expected a "{" introducing a lambda body
+    (void)[=]() __attribute__((diagnose_if(!is_same<decltype((y)), int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                      ^
+
+"Test_name.c", line 105: error: expected a ";"
+    (void)[=]() __attribute__((diagnose_if(!is_same<decltype((y)), int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                      ^
+
+"Test_name.c", line 106: error: expected a "{" introducing a lambda body
+    (void)[=]() __attribute__((diagnose_if(!is_same<decltype((y)), const int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                            ^
+
+"Test_name.c", line 106: error: expected a ";"
+    (void)[=]() __attribute__((diagnose_if(!is_same<decltype((y)), const int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                            ^
+
+"Test_name.c", line 114: error: expected a "{" introducing a lambda body
+    (void)[x=1]() __attribute__((diagnose_if(!is_same<decltype((x)), int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                        ^
+
+"Test_name.c", line 114: error: expected a ";"
+    (void)[x=1]() __attribute__((diagnose_if(!is_same<decltype((x)), int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                        ^
+
+"Test_name.c", line 115: error: expected a "{" introducing a lambda body
+    (void)[x=1]() __attribute__((diagnose_if(!is_same<decltype((x)), const int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                              ^
+
+"Test_name.c", line 115: error: expected a ";"
+    (void)[x=1]() __attribute__((diagnose_if(!is_same<decltype((x)), const int &>, "wrong type", "warning"))) mutable {}();
+                                                                                                              ^
+
+"Test_name.c", line 142: error: a requires-clause is not allowed here (not a templated function)
+    [&]() requires is_same<decltype(u), T> {}();
+          ^
+
+"Test_name.c", line 148: error: a requires-clause is not allowed here (not a templated function)
+    requires(is_same<decltype((y)), int &>
+    ^
+
+"Test_name.c", line 154: error: a requires-clause is not allowed here (not a templated function)
+    requires(is_same<decltype((y)), const int &>
+    ^
+
+"Test_name.c", line 191: warning: variable "j" was set but never used
+    int &j = i;
+         ^
+
+"Test_name.c", line 258: warning: variable "i" is used before its value is set
+    [i]<C P>(P) {}(0);
+     ^
+
+"Test_name.c", line 312: error: reference to local variable of enclosing function is not allowed
+    [&] (auto) -> LengthPercentage<resultR> { 
+                                   ^
+
+24 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,1093 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions Test_name.c
+"Test_name.c", line 14: error: identifier "this1" is undefined
+    int this1 : this1; // expected-error {{undeclared}}
+                ^
+
+"Test_name.c", line 15: error: "this" may only be used inside a nonstatic member function
+    int this2 : this->this1; // expected-error {{invalid}}
+                ^
+
+"Test_name.c", line 28: error: expression must have a constant value
+    int n : f(); // expected-error {{constant expression}} expected-note {{non-constexpr function 'f' cannot be used in a constant expression}}
+            ^
+"Test_name.c", line 28: note: cannot call non-constexpr function "NonConstexpr1::f" (declared at line 27)
+    int n : f(); // expected-error {{constant expression}} expected-note {{non-constexpr function 'f' cannot be used in a constant expression}}
+            ^
+
+"Test_name.c", line 36: error: expression must have a constant value
+    int m : NonConstexpr2().n; // expected-error {{constant expression}} expected-note {{undefined constructor 'NonConstexpr2'}}
+            ^
+"Test_name.c", line 36: note: constexpr function "NonConstexpr2::NonConstexpr2()" (declared at line 31) is not defined
+    int m : NonConstexpr2().n; // expected-error {{constant expression}} expected-note {{undefined constructor 'NonConstexpr2'}}
+            ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+    int n : NonConstexpr4().n; // expected-error {{constant expression}} expected-note {{non-literal type 'NonConstexpr4' cannot be used in a constant expression}}
+            ^
+
+"Test_name.c", line 51: error: expression must have a constant value
+    int undefinedConstexpr2 : undefinedConstexpr1(); // expected-error {{constant expression}} expected-note {{undefined function 'undefinedConstexpr1' cannot be used in a constant expression}}
+                              ^
+"Test_name.c", line 51: note: constexpr function "UndefinedConstexpr::undefinedConstexpr1" (declared at line 50) is not defined
+    int undefinedConstexpr2 : undefinedConstexpr1(); // expected-error {{constant expression}} expected-note {{undefined function 'undefinedConstexpr1' cannot be used in a constant expression}}
+                              ^
+
+"Test_name.c", line 71: error: expression must have a constant value
+      int n : *return_param(0); // expected-error {{constant expression}} expected-note {{read of object outside its lifetime}}
+              ^
+"Test_name.c", line 71: note: attempt to access expired storage
+      int n : *return_param(0); // expected-error {{constant expression}} expected-note {{read of object outside its lifetime}}
+              ^
+
+"Test_name.c", line 88: error: expression must have a constant value
+    constexpr T t2(0); // expected-error {{must be initialized by a constant expression}} expected-note {{temporary created here}} expected-note {{reference to temporary is not a constant expression}}
+                   ^
+"Test_name.c", line 88: note: reference or pointer to temporary with limited lifetime
+    constexpr T t2(0); // expected-error {{must be initialized by a constant expression}} expected-note {{temporary created here}} expected-note {{reference to temporary is not a constant expression}}
+                   ^
+
+"Test_name.c", line 108: error: expression must have a constant value
+      int k : RecurseForever(0); // expected-error {{constant expression}} expected-note {{in call to}}
+              ^
+"Test_name.c", line 108: note: expression not folded to a constant due to excessive constexpr function call complexity
+      int k : RecurseForever(0); // expected-error {{constant expression}} expected-note {{in call to}}
+                            ^
+
+"Test_name.c", line 109: error: expression must have a constant value
+      int l : AlsoRecurseForever(0).n; // expected-error {{constant expression}} expected-note {{in call to}}
+              ^
+"Test_name.c", line 109: note: expression not folded to a constant due to excessive constexpr function call complexity
+      int l : AlsoRecurseForever(0).n; // expected-error {{constant expression}} expected-note {{in call to}}
+                                   ^
+
+"Test_name.c", line 137: error: floating-point value does not fit in required integral type
+      case (int)4.4e9: // expected-error {{constant expression}} expected-note {{value 4.4E+9 is outside the range of representable values of type 'int'}}
+           ^
+
+"Test_name.c", line 140: error: case label value has already appeared in this switch at line 139
+      case (unsigned int)10000000000ll: // expected-error {{duplicate case value}}
+           ^
+
+"Test_name.c", line 142: error: floating-point value does not fit in required integral type
+      case (int)(float)1e300: // expected-error {{constant expression}} expected-note {{value +Inf is outside the range of representable values of type 'int'}}
+           ^
+
+"Test_name.c", line 144: error: integral value does not fit in required floating-point type
+      case (int)(__fp16)65536: // expected-error {{constant expression}} expected-note {{value +Inf is outside the range of representable values of type 'int'}}
+                ^
+
+"Test_name.c", line 150: error: integer operation result is out of range
+    constexpr int minus_int_min = -int_min; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range}}
+                                  ^
+
+"Test_name.c", line 151: error: integer operation result is out of range
+    constexpr int minus_int_min_from_shift = -(1<<31); // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range}}
+                                             ^
+
+"Test_name.c", line 152: error: expression must have a constant value
+    constexpr int div0 = 3 / 0; // expected-error {{constant expression}} expected-note {{division by zero}}
+                         ^
+"Test_name.c", line 152: note: division by zero
+    constexpr int div0 = 3 / 0; // expected-error {{constant expression}} expected-note {{division by zero}}
+                           ^
+
+"Test_name.c", line 153: error: expression must have a constant value
+    constexpr int mod0 = 3 % 0; // expected-error {{constant expression}} expected-note {{division by zero}}
+                         ^
+"Test_name.c", line 153: note: division by zero
+    constexpr int mod0 = 3 % 0; // expected-error {{constant expression}} expected-note {{division by zero}}
+                           ^
+
+"Test_name.c", line 157: error: expression must have a constant value
+    constexpr int shl_m1 = 0 << -1; // expected-error {{constant expression}} expected-note {{negative shift count -1}}
+                           ^
+"Test_name.c", line 157: note: shift count is negative
+    constexpr int shl_m1 = 0 << -1; // expected-error {{constant expression}} expected-note {{negative shift count -1}}
+                                ^
+
+"Test_name.c", line 160: error: expression must have a constant value
+    constexpr int shl_32 = 0 << 32; // expected-error {{constant expression}} expected-note {{shift count 32 >= width of type 'int' (32}}
+                           ^
+"Test_name.c", line 160: note: shift count is too large
+    constexpr int shl_32 = 0 << 32; // expected-error {{constant expression}} expected-note {{shift count 32 >= width of type 'int' (32}}
+                                ^
+
+"Test_name.c", line 161: warning: integer conversion resulted in a change of sign
+    constexpr int shl_unsigned_negative = unsigned(-3) << 1; // ok
+                                          ^
+
+"Test_name.c", line 162: warning: integer conversion resulted in a change of sign
+    constexpr int shl_unsigned_into_sign = 1u << 31; // ok
+                                           ^
+
+"Test_name.c", line 164: error: expression must have a constant value
+    constexpr int shl_signed_negative = (-3) << 1; // cxx11-error {{constant expression}} cxx11-note {{left shift of negative value -3}}
+                                        ^
+"Test_name.c", line 164: note: left-shifting a negative value has undefined behavior
+    constexpr int shl_signed_negative = (-3) << 1; // cxx11-error {{constant expression}} cxx11-note {{left shift of negative value -3}}
+                                             ^
+
+"Test_name.c", line 168: error: expression must have a constant value
+    constexpr int shl_signed_off_end = 2 << 31; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{signed shift result (0x100000000) requires 34 bits to represent, but 'int' only has 32 bits}}
+                                       ^
+"Test_name.c", line 168: note: value exceeds range of "int"
+    constexpr int shl_signed_off_end = 2 << 31; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{signed shift result (0x100000000) requires 34 bits to represent, but 'int' only has 32 bits}}
+                                         ^
+
+"Test_name.c", line 169: error: expression must have a constant value
+    constexpr int shl_signed_off_end_2 = 0x7fffffff << 2; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{signed shift result (0x1FFFFFFFC) requires 34 bits to represent, but 'int' only has 32 bits}}
+                                         ^
+"Test_name.c", line 169: note: value exceeds range of "int"
+    constexpr int shl_signed_off_end_2 = 0x7fffffff << 2; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{signed shift result (0x1FFFFFFFC) requires 34 bits to represent, but 'int' only has 32 bits}}
+                                                    ^
+
+"Test_name.c", line 170: error: expression must have a constant value
+    constexpr int shl_signed_overflow = 1024 << 31; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{requires 43 bits to represent}}
+                                        ^
+"Test_name.c", line 170: note: value exceeds range of "int"
+    constexpr int shl_signed_overflow = 1024 << 31; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{requires 43 bits to represent}}
+                                             ^
+
+"Test_name.c", line 173: error: expression must have a constant value
+    constexpr int shr_m1 = 0 >> -1; // expected-error {{constant expression}} expected-note {{negative shift count -1}}
+                           ^
+"Test_name.c", line 173: note: shift count is negative
+    constexpr int shr_m1 = 0 >> -1; // expected-error {{constant expression}} expected-note {{negative shift count -1}}
+                                ^
+
+"Test_name.c", line 176: error: expression must have a constant value
+    constexpr int shr_32 = 0 >> 32; // expected-error {{constant expression}} expected-note {{shift count 32 >= width of type}}
+                           ^
+"Test_name.c", line 176: note: shift count is too large
+    constexpr int shr_32 = 0 >> 32; // expected-error {{constant expression}} expected-note {{shift count 32 >= width of type}}
+                                ^
+
+"Test_name.c", line 188: error: expression must have a constant value
+      int n : f(p); // expected-error {{not an integral constant expression}} expected-note {{read of dereferenced one-past-the-end pointer}}
+              ^
+"Test_name.c", line 188: note: attempt to access storage one position past an object treated as an array of one element
+      int n : f(p); // expected-error {{not an integral constant expression}} expected-note {{read of dereferenced one-past-the-end pointer}}
+               ^
+
+"Test_name.c", line 195: warning: pointer points outside of underlying object
+      constexpr B *p = a[0] + 4; // expected-error {{constant expression}} expected-note {{element 4 of array of 3 elements}}
+                            ^
+
+"Test_name.c", line 198: error: expression must have a constant value
+      constexpr B *pb = (B*)((A*)&b + 1); // expected-error {{constant expression}} expected-note {{derived class of pointer past the end}}
+                        ^
+"Test_name.c", line 198: note: attempt to access run-time storage
+      constexpr B *pb = (B*)((A*)&b + 1); // expected-error {{constant expression}} expected-note {{derived class of pointer past the end}}
+                        ^
+
+"Test_name.c", line 199: error: expression must have a constant value
+      constexpr const int *pn = &(&b + 1)->n; // expected-error {{constant expression}} expected-note {{field of pointer past the end}}
+                                ^
+"Test_name.c", line 199: note: attempt to access storage one position past an object treated as an array of one element
+      constexpr const int *pn = &(&b + 1)->n; // expected-error {{constant expression}} expected-note {{field of pointer past the end}}
+                                         ^
+
+"Test_name.c", line 204: warning: NULL reference is not allowed
+      constexpr A &ra = *nb; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                        ^
+
+"Test_name.c", line 205: error: expression must have a constant value
+      constexpr B &rb = (B&)*na; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                        ^
+"Test_name.c", line 205: note: attempt to access run-time storage
+      constexpr B &rb = (B&)*na; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                        ^
+
+"Test_name.c", line 208: warning: NULL reference is not allowed
+      constexpr const int &nf = nb->n; // expected-error {{constant expression}} expected-note {{cannot access field of null pointer}}
+                                ^
+
+"Test_name.c", line 212: error: expression must have a constant value
+      constexpr const int *np3 = &(*(int(*)[4])nullptr)[2]; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                                 ^
+"Test_name.c", line 212: note: cannot access position 2 in array of 0 elements
+      constexpr const int *np3 = &(*(int(*)[4])nullptr)[2]; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                                                       ^
+
+"Test_name.c", line 236: error: expression must have a constant value
+      constexpr int n2 = 65536 * 32768; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                         ^
+"Test_name.c", line 236: note: value exceeds range of "int"
+      constexpr int n2 = 65536 * 32768; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                               ^
+
+"Test_name.c", line 238: error: expression must have a constant value
+      constexpr int n4 = n3 + 1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                         ^
+"Test_name.c", line 238: note: value exceeds range of "int"
+      constexpr int n4 = n3 + 1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                            ^
+
+"Test_name.c", line 240: error: expression must have a constant value
+      constexpr int n6 = 3 * -715827883; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                         ^
+"Test_name.c", line 240: note: value exceeds range of "int"
+      constexpr int n6 = 3 * -715827883; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                           ^
+
+"Test_name.c", line 242: error: expression must have a constant value
+      constexpr int n8 = -1 + n7; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                         ^
+"Test_name.c", line 242: note: value exceeds range of "int"
+      constexpr int n8 = -1 + n7; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                            ^
+
+"Test_name.c", line 244: error: expression must have a constant value
+      constexpr int n10 = n3 - -1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                          ^
+"Test_name.c", line 244: note: value exceeds range of "int"
+      constexpr int n10 = n3 - -1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                             ^
+
+"Test_name.c", line 246: error: expression must have a constant value
+      constexpr int n12 = -2 - n3; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                          ^
+"Test_name.c", line 246: note: value exceeds range of "int"
+      constexpr int n12 = -2 - n3; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                             ^
+
+"Test_name.c", line 247: error: expression must have a constant value
+      constexpr int n13 = n5 + n5; // expected-error {{constant expression}} expected-note {{value -4294967296 is outside the range of }}
+                          ^
+"Test_name.c", line 247: note: value exceeds range of "int"
+      constexpr int n13 = n5 + n5; // expected-error {{constant expression}} expected-note {{value -4294967296 is outside the range of }}
+                             ^
+
+"Test_name.c", line 248: error: expression must have a constant value
+      constexpr int n14 = n3 - n5; // expected-error {{constant expression}} expected-note {{value 4294967295 is outside the range of }}
+                          ^
+"Test_name.c", line 248: note: value exceeds range of "int"
+      constexpr int n14 = n3 - n5; // expected-error {{constant expression}} expected-note {{value 4294967295 is outside the range of }}
+                             ^
+
+"Test_name.c", line 249: error: expression must have a constant value
+      constexpr int n15 = n5 * n5; // expected-error {{constant expression}} expected-note {{value 4611686018427387904 is outside the range of }}
+                          ^
+"Test_name.c", line 249: note: value exceeds range of "int"
+      constexpr int n15 = n5 * n5; // expected-error {{constant expression}} expected-note {{value 4611686018427387904 is outside the range of }}
+                             ^
+
+"Test_name.c", line 250: warning: integer conversion resulted in a change of sign
+      constexpr signed char c1 = 100 * 2; // ok expected-warning{{changes value}}
+                                 ^
+
+"Test_name.c", line 251: warning: integer conversion resulted in a change of sign
+      constexpr signed char c2 = '\x64' * '\2'; // also ok  expected-warning{{changes value}}
+                                 ^
+
+"Test_name.c", line 253: error: expression must have a constant value
+      constexpr long long ll2 = ll1 + 1; // expected-error {{constant}} expected-note {{ 9223372036854775808 }}
+                                ^
+"Test_name.c", line 253: note: value exceeds range of "long long"
+      constexpr long long ll2 = ll1 + 1; // expected-error {{constant}} expected-note {{ 9223372036854775808 }}
+                                    ^
+
+"Test_name.c", line 255: error: expression must have a constant value
+      constexpr long long ll4 = ll3 - 1; // expected-error {{constant}} expected-note {{ -9223372036854775809 }}
+                                ^
+"Test_name.c", line 255: note: value exceeds range of "long long"
+      constexpr long long ll4 = ll3 - 1; // expected-error {{constant}} expected-note {{ -9223372036854775809 }}
+                                    ^
+
+"Test_name.c", line 256: error: expression must have a constant value
+      constexpr long long ll5 = ll3 * ll3; // expected-error {{constant}} expected-note {{ 85070591730234615865843651857942052864 }}
+                                ^
+"Test_name.c", line 256: note: value exceeds range of "long long"
+      constexpr long long ll5 = ll3 * ll3; // expected-error {{constant}} expected-note {{ 85070591730234615865843651857942052864 }}
+                                    ^
+
+"Test_name.c", line 262: warning: integer conversion resulted in a change of sign
+      constexpr ptrdiff_t d2 = &melchizedek[0x80000000u] - &melchizedek[0]; // expected-error {{constant expression}} expected-note {{ 2147483648 }}
+                               ^
+
+"Test_name.c", line 264: warning: integer conversion resulted in truncation
+      constexpr ptrdiff_t d4 = &melchizedek[0] - &melchizedek[0x80000001u]; // expected-error {{constant expression}} expected-note {{ -2147483649 }}
+                               ^
+
+"Test_name.c", line 318: error: a lambda is not allowed in a constant expression
+    int n : []{ return 1; }(); // cxx11-error {{constant expression}} cxx11-error {{integral constant expression}} cxx11-note {{non-literal type}}
+            ^
+
+"Test_name.c", line 330: error: expression must have a constant value
+    static_assert(vi, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 330: note: attempt to read from volatile storage
+    static_assert(vi, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+
+"Test_name.c", line 331: error: expression must have a constant value
+    static_assert(const_cast<int&>(vi), ""); // expected-error {{constant expression}} expected-note {{read of volatile object 'vi'}}
+                  ^
+"Test_name.c", line 331: note: attempt to access run-time storage
+    static_assert(const_cast<int&>(vi), ""); // expected-error {{constant expression}} expected-note {{read of volatile object 'vi'}}
+                  ^
+
+"Test_name.c", line 332: error: expression must have a constant value
+    static_assert(vrci, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 332: note: attempt to read from volatile storage
+    static_assert(vrci, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+
+"Test_name.c", line 341: error: a constexpr variable must have a literal type or a reference type
+    constexpr V v; // expected-error {{non-literal type}}
+    ^
+
+"Test_name.c", line 352: error: expression must have a constant value
+    static_assert(s.v, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 352: note: attempt to access run-time storage
+    static_assert(s.v, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+
+"Test_name.c", line 353: error: expression must have a constant value
+    static_assert(const_cast<int&>(s.v), ""); // expected-error {{constant expression}} expected-note {{read of volatile object 'vi'}}
+                  ^
+"Test_name.c", line 353: note: attempt to access run-time storage
+    static_assert(const_cast<int&>(s.v), ""); // expected-error {{constant expression}} expected-note {{read of volatile object 'vi'}}
+                  ^
+
+"Test_name.c", line 354: error: expression must have a constant value
+    static_assert(vs.i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 354: note: attempt to read from volatile storage
+    static_assert(vs.i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                    ^
+
+"Test_name.c", line 356: error: expression must have a constant value
+    static_assert(vrs.i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 356: note: attempt to read from volatile storage
+    static_assert(vrs.i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                     ^
+
+"Test_name.c", line 363: error: expression must have a constant value
+    static_assert(((volatile const S&&)(S)0).i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 363: note: attempt to read from volatile storage
+    static_assert(((volatile const S&&)(S)0).i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                                            ^
+
+"Test_name.c", line 382: error: expression must have a constant value
+    constexpr int b = *bp; // expected-error {{constant expression}} expected-note {{read of member 'b' of union with active member 'a'}}
+                      ^
+"Test_name.c", line 382: note: invalid access to inactive member "LValueToRValueUnion::U::b" of union (member "LValueToRValueUnion::U::a" is active)
+    constexpr int b = *bp; // expected-error {{constant expression}} expected-note {{read of member 'b' of union with active member 'a'}}
+                      ^
+
+"Test_name.c", line 388: error: expression must have a constant value
+    constexpr const int a2 = *pua; // expected-error {{constant expression}} expected-note {{read of member 'a' of union with active member 'b'}}
+                             ^
+"Test_name.c", line 388: note: invalid access to inactive member "LValueToRValueUnion::U::a" of union (member "LValueToRValueUnion::U::b" is active)
+    constexpr const int a2 = *pua; // expected-error {{constant expression}} expected-note {{read of member 'a' of union with active member 'b'}}
+                             ^
+
+"Test_name.c", line 411: error: expression must have a constant value
+      int C : c; // expected-error {{constant expression}} expected-note {{read of non-const variable 'c'}}
+              ^
+"Test_name.c", line 411: note: the value of variable "References::c" (declared at line 398) cannot be used as a constant
+      int C : c; // expected-error {{constant expression}} expected-note {{read of non-const variable 'c'}}
+              ^
+
+"Test_name.c", line 412: error: expression must have a constant value
+      int D : d; // expected-error {{constant expression}} expected-note {{read of non-const variable 'c'}}
+              ^
+"Test_name.c", line 412: note: attempt to access run-time storage
+      int D : d; // expected-error {{constant expression}} expected-note {{read of non-const variable 'c'}}
+              ^
+
+"Test_name.c", line 413: warning: signed bit field of length 1
+      int D2 : &d - &c + 1;
+          ^
+
+"Test_name.c", line 416: error: expression must have a constant value
+      int G : g; // expected-error {{constant expression}} expected-note {{initializer of 'g' is unknown}}
+              ^
+"Test_name.c", line 416: note: attempt to access run-time storage
+      int G : g; // expected-error {{constant expression}} expected-note {{initializer of 'g' is unknown}}
+              ^
+
+"Test_name.c", line 417: error: expression must have a constant value
+      int H : h(); // expected-error {{constant expression}} expected-note {{undefined function 'h'}}
+              ^
+"Test_name.c", line 417: note: constexpr function "References::h" (declared at line 403) is not defined
+      int H : h(); // expected-error {{constant expression}} expected-note {{undefined function 'h'}}
+              ^
+
+"Test_name.c", line 418: error: expression must have a constant value
+      int I : i; // expected-error {{constant expression}} expected-note {{initializer of 'i' is not a constant expression}}
+              ^
+"Test_name.c", line 418: note: attempt to access run-time storage
+      int I : i; // expected-error {{constant expression}} expected-note {{initializer of 'i' is not a constant expression}}
+              ^
+
+"Test_name.c", line 429: error: this operator is not allowed in a constant expression
+      int n : dynamic_cast<const S*>(&s)->n; // cxx11-warning {{constant expression}} cxx11-note {{dynamic_cast}}
+              ^
+
+"Test_name.c", line 447: error: expression must have a constant value
+    constexpr int (&fp4)() = (int(&)())f; // expected-error {{constant expression}} expected-note {{reinterpret_cast}}
+                             ^
+"Test_name.c", line 447: note: conversion from "void ()" to "int ()" is invalid in constant-expression evaluation
+    constexpr int (&fp4)() = (int(&)())f; // expected-error {{constant expression}} expected-note {{reinterpret_cast}}
+                             ^
+
+"Test_name.c", line 455: warning: signed bit field of length 1
+      int n : (k.~I(), 1); // expected-error {{constant expression}} expected-note {{visible outside that expression}}
+          ^
+
+"Test_name.c", line 480: error: this operator is not allowed in a constant expression
+      int n : ++k; // expected-error {{constant expression}} cxx20-note {{visible outside}}
+              ^
+
+"Test_name.c", line 481: error: this operator is not allowed in a constant expression
+      int m : --k; // expected-error {{constant expression}} cxx20-note {{visible outside}}
+              ^
+
+"Test_name.c", line 495: error: this operator is not allowed in a constant expression
+    constexpr const std::type_info &ti1 = typeid(*p); // expected-error {{must be initialized by a constant expression}} cxx11-note {{typeid applied to expression of polymorphic type 'S'}} cxx20-note {{dereferencing a null pointer}}
+                                          ^
+
+"Test_name.c", line 506: error: this operator is not allowed in a constant expression
+      int n : *new int(4); // expected-warning {{constant expression}} cxx11-note {{until C++20}} cxx20-note {{was not deallocated}}
+               ^
+
+"Test_name.c", line 507: error: this operator is not allowed in a constant expression
+      int m : (delete p, 2); // cxx11-warning {{constant expression}} cxx11-note {{until C++20}}
+               ^
+
+"Test_name.c", line 520: error: expression must have a constant value
+    constexpr bool u1 = p < q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                        ^
+"Test_name.c", line 520: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u1 = p < q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                          ^
+
+"Test_name.c", line 521: error: expression must have a constant value
+    constexpr bool u2 = p > q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                        ^
+"Test_name.c", line 521: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u2 = p > q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                          ^
+
+"Test_name.c", line 522: error: expression must have a constant value
+    constexpr bool u3 = p <= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                        ^
+"Test_name.c", line 522: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u3 = p <= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                          ^
+
+"Test_name.c", line 523: error: expression must have a constant value
+    constexpr bool u4 = p >= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                        ^
+"Test_name.c", line 523: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u4 = p >= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                          ^
+
+"Test_name.c", line 524: error: expression must have a constant value
+    constexpr bool u5 = p < (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                        ^
+"Test_name.c", line 524: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u5 = p < (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                          ^
+
+"Test_name.c", line 525: error: expression must have a constant value
+    constexpr bool u6 = p <= (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                        ^
+"Test_name.c", line 525: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u6 = p <= (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                          ^
+
+"Test_name.c", line 526: error: expression must have a constant value
+    constexpr bool u7 = p > (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                        ^
+"Test_name.c", line 526: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u7 = p > (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                          ^
+
+"Test_name.c", line 527: error: expression must have a constant value
+    constexpr bool u8 = p >= (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                        ^
+"Test_name.c", line 527: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u8 = p >= (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                          ^
+
+"Test_name.c", line 528: error: expression must have a constant value
+    constexpr bool u9 = (int*)0 < q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                        ^
+"Test_name.c", line 528: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u9 = (int*)0 < q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                                ^
+
+"Test_name.c", line 529: error: expression must have a constant value
+    constexpr bool u10 = (int*)0 <= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                         ^
+"Test_name.c", line 529: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u10 = (int*)0 <= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                                 ^
+
+"Test_name.c", line 530: error: expression must have a constant value
+    constexpr bool u11 = (int*)0 > q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                         ^
+"Test_name.c", line 530: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u11 = (int*)0 > q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                                 ^
+
+"Test_name.c", line 531: error: expression must have a constant value
+    constexpr bool u12 = (int*)0 >= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                         ^
+"Test_name.c", line 531: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool u12 = (int*)0 >= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                                 ^
+
+"Test_name.c", line 549: error: expression must have a constant value
+    static_assert(A().cmp(), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 545: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+      constexpr bool cmp() const { return &a < &b; } // expected-note {{comparison of address of fields 'a' and 'b' of 'A' with differing access specifiers (public vs private) has unspecified value}}
+                                             ^
+
+"Test_name.c", line 557: error: expression must have a constant value
+    static_assert(B().cmp(), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 553: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+      constexpr bool cmp() const { return &a.a < &b.a; } // expected-note {{comparison of address of fields 'a' and 'b' of 'B' with differing access specifiers (public vs protected) has unspecified value}}
+                                               ^
+
+"Test_name.c", line 575: error: expression must have a constant value
+    constexpr bool base1 = &e.c[0] < &e.d; // expected-error {{constant expression}} expected-note {{comparison of addresses of subobjects of different base classes has unspecified value}}
+                           ^
+"Test_name.c", line 575: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool base1 = &e.c[0] < &e.d; // expected-error {{constant expression}} expected-note {{comparison of addresses of subobjects of different base classes has unspecified value}}
+                                   ^
+
+"Test_name.c", line 576: error: expression must have a constant value
+    constexpr bool base2 = &e.c[1] < &e.e.f; // expected-error {{constant expression}} expected-note {{comparison of address of base class subobject 'C' of class 'E' to field 'e' has unspecified value}}
+                           ^
+"Test_name.c", line 576: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool base2 = &e.c[1] < &e.e.f; // expected-error {{constant expression}} expected-note {{comparison of address of base class subobject 'C' of class 'E' to field 'e' has unspecified value}}
+                                   ^
+
+"Test_name.c", line 577: error: expression must have a constant value
+    constexpr bool base3 = &e.e.f < &e.d; // expected-error {{constant expression}} expected-note {{comparison of address of base class subobject 'D' of class 'E' to field 'e' has unspecified value}}
+                           ^
+"Test_name.c", line 577: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool base3 = &e.e.f < &e.d; // expected-error {{constant expression}} expected-note {{comparison of address of base class subobject 'D' of class 'E' to field 'e' has unspecified value}}
+                                  ^
+
+"Test_name.c", line 588: error: expression must have a constant value
+    constexpr bool v2 = null < pv; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&s.a' has unspecified value}}
+                        ^
+"Test_name.c", line 588: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool v2 = null < pv; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&s.a' has unspecified value}}
+                             ^
+
+"Test_name.c", line 592: error: expression must have a constant value
+    constexpr bool v6 = qv > null; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&s.b' and 'nullptr' has unspecified value}}
+                        ^
+"Test_name.c", line 592: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+    constexpr bool v6 = qv > null; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&s.b' and 'nullptr' has unspecified value}}
+                           ^
+
+"Test_name.c", line 601: error: this operator is not allowed in a constant expression
+      int n : (k = 9); // expected-error {{constant expression}} cxx20-note {{visible outside}}
+                 ^
+
+"Test_name.c", line 602: error: this operator is not allowed in a constant expression
+      int m : (k *= 2); // expected-error {{constant expression}} cxx20-note {{visible outside}}
+                 ^
+
+"Test_name.c", line 631: error: this operator is not allowed in a constant expression
+      int n : (throw "hello", 10); // expected-error {{constant expression}}
+               ^
+
+"Test_name.c", line 640: error: class "bitWidthHolding<0U>" has no member "width"
+    unsigned int width = (v == 0 ? 0 : bitWidthHolding<(v >> 1)>::width + 1);
+                                                                  ^
+          detected during:
+            instantiation of class "bitWidthHolding<v> [with v=0U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=1U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=3U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=7U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=15U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=31U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=63U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=127U]" at line 640
+            instantiation of class "bitWidthHolding<v> [with v=255U]" at line 643
+
+"Test_name.c", line 652: error: class "and_or<false>" has no member "and_value"
+    static const bool and_value = b && and_or<always_false<b>::value>::and_value;
+                                                                       ^
+          detected during:
+            instantiation of class "and_or<b> [with b=false]" at line 652
+            instantiation of class "and_or<b> [with b=true]" at line 656
+
+"Test_name.c", line 653: error: class "and_or<false>" has no member "or_value"
+    static const bool or_value = !b || and_or<always_false<b>::value>::or_value;
+                                                                       ^
+          detected during:
+            instantiation of class "and_or<b> [with b=false]" at line 652
+            instantiation of class "and_or<b> [with b=true]" at line 656
+
+"Test_name.c", line 663: error: identifier "__INTPTR_TYPE__" is undefined
+    typedef __INTPTR_TYPE__ intptr_t;
+            ^
+
+"Test_name.c", line 643: warning: variable "width" was declared but never referenced
+  static const int width=bitWidthHolding<255>::width;
+                   ^
+
+"Test_name.c", line 31: warning: function "NonConstexpr2::NonConstexpr2()" was referenced but not defined
+    constexpr NonConstexpr2(); // expected-note {{here}}
+              ^
+
+"Test_name.c", line 50: warning: function "UndefinedConstexpr::undefinedConstexpr1" was referenced but not defined
+    static constexpr int undefinedConstexpr1(); // expected-note {{here}}
+                         ^
+
+"Test_name.c", line 87: warning: variable "NonConstExprCtor::t1" was declared but never referenced
+    constexpr T t1(n); // ok
+                ^
+
+"Test_name.c", line 88: warning: variable "NonConstExprCtor::t2" was declared but never referenced
+    constexpr T t2(0); // expected-error {{must be initialized by a constant expression}} expected-note {{temporary created here}} expected-note {{reference to temporary is not a constant expression}}
+                ^
+
+"Test_name.c", line 121: warning: variable "IncompleteClassTypeAddr::p2" was declared but never referenced
+    constexpr S (*p2)[] = &sArr; // ok
+                  ^
+
+"Test_name.c", line 150: warning: variable "UndefinedBehavior::minus_int_min" was declared but never referenced
+    constexpr int minus_int_min = -int_min; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range}}
+                  ^
+
+"Test_name.c", line 151: warning: variable "UndefinedBehavior::minus_int_min_from_shift" was declared but never referenced
+    constexpr int minus_int_min_from_shift = -(1<<31); // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range}}
+                  ^
+
+"Test_name.c", line 152: warning: variable "UndefinedBehavior::div0" was declared but never referenced
+    constexpr int div0 = 3 / 0; // expected-error {{constant expression}} expected-note {{division by zero}}
+                  ^
+
+"Test_name.c", line 153: warning: variable "UndefinedBehavior::mod0" was declared but never referenced
+    constexpr int mod0 = 3 % 0; // expected-error {{constant expression}} expected-note {{division by zero}}
+                  ^
+
+"Test_name.c", line 154: warning: variable "UndefinedBehavior::int_min_div_minus_1" was declared but never referenced
+    constexpr int int_min_div_minus_1 = int_min / -1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range}}
+                  ^
+
+"Test_name.c", line 155: warning: variable "UndefinedBehavior::int_min_mod_minus_1" was declared but never referenced
+    constexpr int int_min_mod_minus_1 = int_min % -1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range}}
+                  ^
+
+"Test_name.c", line 157: warning: variable "UndefinedBehavior::shl_m1" was declared but never referenced
+    constexpr int shl_m1 = 0 << -1; // expected-error {{constant expression}} expected-note {{negative shift count -1}}
+                  ^
+
+"Test_name.c", line 158: warning: variable "UndefinedBehavior::shl_0" was declared but never referenced
+    constexpr int shl_0 = 0 << 0; // ok
+                  ^
+
+"Test_name.c", line 159: warning: variable "UndefinedBehavior::shl_31" was declared but never referenced
+    constexpr int shl_31 = 0 << 31; // ok
+                  ^
+
+"Test_name.c", line 160: warning: variable "UndefinedBehavior::shl_32" was declared but never referenced
+    constexpr int shl_32 = 0 << 32; // expected-error {{constant expression}} expected-note {{shift count 32 >= width of type 'int' (32}}
+                  ^
+
+"Test_name.c", line 161: warning: variable "UndefinedBehavior::shl_unsigned_negative" was declared but never referenced
+    constexpr int shl_unsigned_negative = unsigned(-3) << 1; // ok
+                  ^
+
+"Test_name.c", line 162: warning: variable "UndefinedBehavior::shl_unsigned_into_sign" was declared but never referenced
+    constexpr int shl_unsigned_into_sign = 1u << 31; // ok
+                  ^
+
+"Test_name.c", line 163: warning: variable "UndefinedBehavior::shl_unsigned_overflow" was declared but never referenced
+    constexpr int shl_unsigned_overflow = 1024u << 31; // ok
+                  ^
+
+"Test_name.c", line 164: warning: variable "UndefinedBehavior::shl_signed_negative" was declared but never referenced
+    constexpr int shl_signed_negative = (-3) << 1; // cxx11-error {{constant expression}} cxx11-note {{left shift of negative value -3}}
+                  ^
+
+"Test_name.c", line 165: warning: variable "UndefinedBehavior::shl_signed_ok" was declared but never referenced
+    constexpr int shl_signed_ok = 1 << 30; // ok
+                  ^
+
+"Test_name.c", line 166: warning: variable "UndefinedBehavior::shl_signed_into_sign" was declared but never referenced
+    constexpr int shl_signed_into_sign = 1 << 31; // ok (DR1457)
+                  ^
+
+"Test_name.c", line 167: warning: variable "UndefinedBehavior::shl_signed_into_sign_2" was declared but never referenced
+    constexpr int shl_signed_into_sign_2 = 0x7fffffff << 1; // ok (DR1457)
+                  ^
+
+"Test_name.c", line 168: warning: variable "UndefinedBehavior::shl_signed_off_end" was declared but never referenced
+    constexpr int shl_signed_off_end = 2 << 31; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{signed shift result (0x100000000) requires 34 bits to represent, but 'int' only has 32 bits}}
+                  ^
+
+"Test_name.c", line 169: warning: variable "UndefinedBehavior::shl_signed_off_end_2" was declared but never referenced
+    constexpr int shl_signed_off_end_2 = 0x7fffffff << 2; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{signed shift result (0x1FFFFFFFC) requires 34 bits to represent, but 'int' only has 32 bits}}
+                  ^
+
+"Test_name.c", line 170: warning: variable "UndefinedBehavior::shl_signed_overflow" was declared but never referenced
+    constexpr int shl_signed_overflow = 1024 << 31; // cxx11-error {{constant expression}} cxx11-note {{signed left shift discards bits}} cxx11-warning {{requires 43 bits to represent}}
+                  ^
+
+"Test_name.c", line 171: warning: variable "UndefinedBehavior::shl_signed_ok2" was declared but never referenced
+    constexpr int shl_signed_ok2 = 1024 << 20; // ok
+                  ^
+
+"Test_name.c", line 173: warning: variable "UndefinedBehavior::shr_m1" was declared but never referenced
+    constexpr int shr_m1 = 0 >> -1; // expected-error {{constant expression}} expected-note {{negative shift count -1}}
+                  ^
+
+"Test_name.c", line 174: warning: variable "UndefinedBehavior::shr_0" was declared but never referenced
+    constexpr int shr_0 = 0 >> 0; // ok
+                  ^
+
+"Test_name.c", line 175: warning: variable "UndefinedBehavior::shr_31" was declared but never referenced
+    constexpr int shr_31 = 0 >> 31; // ok
+                  ^
+
+"Test_name.c", line 176: warning: variable "UndefinedBehavior::shr_32" was declared but never referenced
+    constexpr int shr_32 = 0 >> 32; // expected-error {{constant expression}} expected-note {{shift count 32 >= width of type}}
+                  ^
+
+"Test_name.c", line 186: warning: variable "UndefinedBehavior::n" was declared but never referenced
+    constexpr int n = (f(p), 0); // ok
+                  ^
+
+"Test_name.c", line 195: warning: variable "UndefinedBehavior::Ptr::p" was declared but never referenced
+      constexpr B *p = a[0] + 4; // expected-error {{constant expression}} expected-note {{element 4 of array of 3 elements}}
+                   ^
+
+"Test_name.c", line 197: warning: variable "UndefinedBehavior::Ptr::pa" was declared but never referenced
+      constexpr A *pa = &b + 1; // expected-error {{constant expression}} expected-note {{base class of pointer past the end}}
+                   ^
+
+"Test_name.c", line 198: warning: variable "UndefinedBehavior::Ptr::pb" was declared but never referenced
+      constexpr B *pb = (B*)((A*)&b + 1); // expected-error {{constant expression}} expected-note {{derived class of pointer past the end}}
+                   ^
+
+"Test_name.c", line 199: warning: variable "UndefinedBehavior::Ptr::pn" was declared but never referenced
+      constexpr const int *pn = &(&b + 1)->n; // expected-error {{constant expression}} expected-note {{field of pointer past the end}}
+                           ^
+
+"Test_name.c", line 200: warning: variable "UndefinedBehavior::Ptr::parr" was declared but never referenced
+      constexpr B *parr = &a[3][0]; // expected-error {{constant expression}} expected-note {{array element of pointer past the end}}
+                   ^
+
+"Test_name.c", line 210: warning: variable "UndefinedBehavior::Ptr::np1" was declared but never referenced
+      constexpr const int *np1 = (int*)nullptr + 0; // ok
+                           ^
+
+"Test_name.c", line 211: warning: variable "UndefinedBehavior::Ptr::np2" was declared but never referenced
+      constexpr const int *np2 = &(*(int(*)[4])nullptr)[0]; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                           ^
+
+"Test_name.c", line 212: warning: variable "UndefinedBehavior::Ptr::np3" was declared but never referenced
+      constexpr const int *np3 = &(*(int(*)[4])nullptr)[2]; // expected-error {{constant expression}} expected-note {{dereferencing a null pointer}}
+                           ^
+
+"Test_name.c", line 217: warning: variable "UndefinedBehavior::Ptr::k1" was declared but never referenced
+      constexpr int k1 = c.f(); // ok
+                    ^
+
+"Test_name.c", line 218: warning: variable "UndefinedBehavior::Ptr::k2" was declared but never referenced
+      constexpr int k2 = ((C*)nullptr)->f(); // expected-error {{constant expression}} expected-note {{member call on dereferenced null pointer}}
+                    ^
+
+"Test_name.c", line 219: warning: variable "UndefinedBehavior::Ptr::k3" was declared but never referenced
+      constexpr int k3 = (&c)[1].f(); // expected-error {{constant expression}} expected-note {{member call on dereferenced one-past-the-end pointer}}
+                    ^
+
+"Test_name.c", line 221: warning: variable "UndefinedBehavior::Ptr::k4" was declared but never referenced
+      constexpr int k4 = c2.f(); // ok!
+                    ^
+
+"Test_name.c", line 223: warning: variable "UndefinedBehavior::Ptr::diff1" was declared but never referenced
+      constexpr int diff1 = &a[2] - &a[0];
+                    ^
+
+"Test_name.c", line 224: warning: variable "UndefinedBehavior::Ptr::diff2" was declared but never referenced
+      constexpr int diff2 = &a[1][3] - &a[1][0];
+                    ^
+
+"Test_name.c", line 225: warning: variable "UndefinedBehavior::Ptr::diff3" was declared but never referenced
+      constexpr int diff3 = &a[2][0] - &a[1][0]; // expected-error {{constant expression}} expected-note {{subtracted pointers are not elements of the same array}}
+                    ^
+
+"Test_name.c", line 227: warning: variable "UndefinedBehavior::Ptr::diff4" was declared but never referenced
+      constexpr int diff4 = (&b + 1) - &b;
+                    ^
+
+"Test_name.c", line 228: warning: variable "UndefinedBehavior::Ptr::diff5" was declared but never referenced
+      constexpr int diff5 = &a[1][2].n - &a[1][0].n; // expected-error {{constant expression}} expected-note {{subtracted pointers are not elements of the same array}}
+                    ^
+
+"Test_name.c", line 229: warning: variable "UndefinedBehavior::Ptr::diff6" was declared but never referenced
+      constexpr int diff6 = &a[1][2].n - &a[1][2].n;
+                    ^
+
+"Test_name.c", line 230: warning: variable "UndefinedBehavior::Ptr::diff7" was declared but never referenced
+      constexpr int diff7 = (A*)&a[0][1] - (A*)&a[0][0]; // expected-error {{constant expression}} expected-note {{subtracted pointers are not elements of the same array}}
+                    ^
+
+"Test_name.c", line 236: warning: variable "UndefinedBehavior::Overflow::n2" was declared but never referenced
+      constexpr int n2 = 65536 * 32768; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                    ^
+
+"Test_name.c", line 238: warning: variable "UndefinedBehavior::Overflow::n4" was declared but never referenced
+      constexpr int n4 = n3 + 1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                    ^
+
+"Test_name.c", line 240: warning: variable "UndefinedBehavior::Overflow::n6" was declared but never referenced
+      constexpr int n6 = 3 * -715827883; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                    ^
+
+"Test_name.c", line 242: warning: variable "UndefinedBehavior::Overflow::n8" was declared but never referenced
+      constexpr int n8 = -1 + n7; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                    ^
+
+"Test_name.c", line 243: warning: variable "UndefinedBehavior::Overflow::n9" was declared but never referenced
+      constexpr int n9 = n3 - 0; // ok
+                    ^
+
+"Test_name.c", line 244: warning: variable "UndefinedBehavior::Overflow::n10" was declared but never referenced
+      constexpr int n10 = n3 - -1; // expected-error {{constant expression}} expected-note {{value 2147483648 is outside the range of }}
+                    ^
+
+"Test_name.c", line 245: warning: variable "UndefinedBehavior::Overflow::n11" was declared but never referenced
+      constexpr int n11 = -1 - n3; // ok
+                    ^
+
+"Test_name.c", line 246: warning: variable "UndefinedBehavior::Overflow::n12" was declared but never referenced
+      constexpr int n12 = -2 - n3; // expected-error {{constant expression}} expected-note {{value -2147483649 is outside the range of }}
+                    ^
+
+"Test_name.c", line 247: warning: variable "UndefinedBehavior::Overflow::n13" was declared but never referenced
+      constexpr int n13 = n5 + n5; // expected-error {{constant expression}} expected-note {{value -4294967296 is outside the range of }}
+                    ^
+
+"Test_name.c", line 248: warning: variable "UndefinedBehavior::Overflow::n14" was declared but never referenced
+      constexpr int n14 = n3 - n5; // expected-error {{constant expression}} expected-note {{value 4294967295 is outside the range of }}
+                    ^
+
+"Test_name.c", line 249: warning: variable "UndefinedBehavior::Overflow::n15" was declared but never referenced
+      constexpr int n15 = n5 * n5; // expected-error {{constant expression}} expected-note {{value 4611686018427387904 is outside the range of }}
+                    ^
+
+"Test_name.c", line 250: warning: variable "UndefinedBehavior::Overflow::c1" was declared but never referenced
+      constexpr signed char c1 = 100 * 2; // ok expected-warning{{changes value}}
+                            ^
+
+"Test_name.c", line 251: warning: variable "UndefinedBehavior::Overflow::c2" was declared but never referenced
+      constexpr signed char c2 = '\x64' * '\2'; // also ok  expected-warning{{changes value}}
+                            ^
+
+"Test_name.c", line 253: warning: variable "UndefinedBehavior::Overflow::ll2" was declared but never referenced
+      constexpr long long ll2 = ll1 + 1; // expected-error {{constant}} expected-note {{ 9223372036854775808 }}
+                          ^
+
+"Test_name.c", line 255: warning: variable "UndefinedBehavior::Overflow::ll4" was declared but never referenced
+      constexpr long long ll4 = ll3 - 1; // expected-error {{constant}} expected-note {{ -9223372036854775809 }}
+                          ^
+
+"Test_name.c", line 256: warning: variable "UndefinedBehavior::Overflow::ll5" was declared but never referenced
+      constexpr long long ll5 = ll3 * ll3; // expected-error {{constant}} expected-note {{ 85070591730234615865843651857942052864 }}
+                          ^
+
+"Test_name.c", line 261: warning: variable "UndefinedBehavior::Overflow::d1" was declared but never referenced
+      constexpr ptrdiff_t d1 = &melchizedek[0x7fffffff] - &melchizedek[0]; // ok
+                          ^
+
+"Test_name.c", line 262: warning: variable "UndefinedBehavior::Overflow::d2" was declared but never referenced
+      constexpr ptrdiff_t d2 = &melchizedek[0x80000000u] - &melchizedek[0]; // expected-error {{constant expression}} expected-note {{ 2147483648 }}
+                          ^
+
+"Test_name.c", line 263: warning: variable "UndefinedBehavior::Overflow::d3" was declared but never referenced
+      constexpr ptrdiff_t d3 = &melchizedek[0] - &melchizedek[0x80000000u]; // ok
+                          ^
+
+"Test_name.c", line 264: warning: variable "UndefinedBehavior::Overflow::d4" was declared but never referenced
+      constexpr ptrdiff_t d4 = &melchizedek[0] - &melchizedek[0x80000001u]; // expected-error {{constant expression}} expected-note {{ -2147483649 }}
+                          ^
+
+"Test_name.c", line 281: warning: variable "UndefinedBehavior::Overflow::f7" was declared but never referenced
+      constexpr float f7 = 0.f / 0.f; // expected-error {{constant expression}} expected-note {{division by zero}}
+                      ^
+
+"Test_name.c", line 282: warning: variable "UndefinedBehavior::Overflow::f8" was declared but never referenced
+      constexpr float f8 = 1.f / 0.f; // expected-error {{constant expression}} expected-note {{division by zero}}
+                      ^
+
+"Test_name.c", line 284: warning: variable "UndefinedBehavior::Overflow::f10" was declared but never referenced
+      constexpr float f10 = f2 - f2; // expected-error {{constant expression}} expected-note {{produces a NaN}}
+                      ^
+
+"Test_name.c", line 285: warning: variable "UndefinedBehavior::Overflow::f11" was declared but never referenced
+      constexpr float f11 = f2 + f4; // expected-error {{constant expression}} expected-note {{produces a NaN}}
+                      ^
+
+"Test_name.c", line 286: warning: variable "UndefinedBehavior::Overflow::f12" was declared but never referenced
+      constexpr float f12 = f2 / f2; // expected-error {{constant expression}} expected-note {{produces a NaN}}
+                      ^
+
+"Test_name.c", line 291: warning: variable "UndefinedBehavior::Overflow::ce" was declared but never referenced
+  constexpr float ce = 1.0 / 3.0; // not-expected-error {{constant expression}} not-expected-note {{floating point arithmetic suppressed in strict evaluation modes}}
+                  ^
+
+"Test_name.c", line 292: warning: variable "UndefinedBehavior::Overflow::ci" was declared but never referenced
+  constexpr int ci = (int) pi;
+                ^
+
+"Test_name.c", line 293: warning: variable "UndefinedBehavior::Overflow::fbig" was declared but never referenced
+  constexpr float fbig = (float) ubig; // not-expected-error {{constant expression}} not-expected-note {{floating point arithmetic suppressed in strict evaluation modes}}
+                  ^
+
+"Test_name.c", line 294: warning: variable "UndefinedBehavior::Overflow::fabspi" was declared but never referenced
+  constexpr float fabspi = __builtin_fabs(pi); // no error expected
+                  ^
+
+"Test_name.c", line 295: warning: variable "UndefinedBehavior::Overflow::negpi" was declared but never referenced
+  constexpr float negpi = -pi; // expect no error on unary operator
+                  ^
+
+"Test_name.c", line 382: warning: variable "LValueToRValueUnion::b" was declared but never referenced
+    constexpr int b = *bp; // expected-error {{constant expression}} expected-note {{read of member 'b' of union with active member 'a'}}
+                  ^
+
+"Test_name.c", line 388: warning: variable "LValueToRValueUnion::a2" was declared but never referenced
+    constexpr const int a2 = *pua; // expected-error {{constant expression}} expected-note {{read of member 'a' of union with active member 'b'}}
+                        ^
+
+"Test_name.c", line 389: warning: variable "LValueToRValueUnion::b2" was declared but never referenced
+    constexpr const int b2 = *pub; // ok
+                        ^
+
+"Test_name.c", line 403: warning: extern inline function "References::h" was referenced but not defined
+    constexpr int &h(); // expected-note {{here}}
+                   ^
+
+"Test_name.c", line 444: warning: variable "ReinterpretCast::fp1" was declared but never referenced
+    constexpr void* fp1 = (void*)f; // expected-error {{constant expression}} expected-note {{reinterpret_cast}}
+                    ^
+
+"Test_name.c", line 445: warning: variable "ReinterpretCast::fp2" was declared but never referenced
+    constexpr int* fp2 = (int*)f; // expected-error {{constant expression}} expected-note {{reinterpret_cast}}
+                   ^
+
+"Test_name.c", line 446: warning: variable "ReinterpretCast::fp3" was declared but never referenced
+    constexpr int (*fp3)() = (int(*)())f; // expected-error {{constant expression}} expected-note {{reinterpret_cast}}
+                    ^
+
+"Test_name.c", line 520: warning: variable "UnspecifiedRelations::u1" was declared but never referenced
+    constexpr bool u1 = p < q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 521: warning: variable "UnspecifiedRelations::u2" was declared but never referenced
+    constexpr bool u2 = p > q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 522: warning: variable "UnspecifiedRelations::u3" was declared but never referenced
+    constexpr bool u3 = p <= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 523: warning: variable "UnspecifiedRelations::u4" was declared but never referenced
+    constexpr bool u4 = p >= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 524: warning: variable "UnspecifiedRelations::u5" was declared but never referenced
+    constexpr bool u5 = p < (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                   ^
+
+"Test_name.c", line 525: warning: variable "UnspecifiedRelations::u6" was declared but never referenced
+    constexpr bool u6 = p <= (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                   ^
+
+"Test_name.c", line 526: warning: variable "UnspecifiedRelations::u7" was declared but never referenced
+    constexpr bool u7 = p > (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                   ^
+
+"Test_name.c", line 527: warning: variable "UnspecifiedRelations::u8" was declared but never referenced
+    constexpr bool u8 = p >= (int*)0; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&a' and 'nullptr' has unspecified value}}
+                   ^
+
+"Test_name.c", line 528: warning: variable "UnspecifiedRelations::u9" was declared but never referenced
+    constexpr bool u9 = (int*)0 < q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 529: warning: variable "UnspecifiedRelations::u10" was declared but never referenced
+    constexpr bool u10 = (int*)0 <= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 530: warning: variable "UnspecifiedRelations::u11" was declared but never referenced
+    constexpr bool u11 = (int*)0 > q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 531: warning: variable "UnspecifiedRelations::u12" was declared but never referenced
+    constexpr bool u12 = (int*)0 >= q; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&b' has unspecified value}}
+                   ^
+
+"Test_name.c", line 535: warning: variable "UnspecifiedRelations::u13" was declared but never referenced
+    constexpr bool u13 = pf < pg; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&f' and '&g' has unspecified value}}
+                   ^
+
+"Test_name.c", line 537: warning: variable "UnspecifiedRelations::u14" was declared but never referenced
+    constexpr bool u14 = pf == pg;
+                   ^
+
+"Test_name.c", line 575: warning: variable "UnspecifiedRelations::base1" was declared but never referenced
+    constexpr bool base1 = &e.c[0] < &e.d; // expected-error {{constant expression}} expected-note {{comparison of addresses of subobjects of different base classes has unspecified value}}
+                   ^
+
+"Test_name.c", line 576: warning: variable "UnspecifiedRelations::base2" was declared but never referenced
+    constexpr bool base2 = &e.c[1] < &e.e.f; // expected-error {{constant expression}} expected-note {{comparison of address of base class subobject 'C' of class 'E' to field 'e' has unspecified value}}
+                   ^
+
+"Test_name.c", line 577: warning: variable "UnspecifiedRelations::base3" was declared but never referenced
+    constexpr bool base3 = &e.e.f < &e.d; // expected-error {{constant expression}} expected-note {{comparison of address of base class subobject 'D' of class 'E' to field 'e' has unspecified value}}
+                   ^
+
+"Test_name.c", line 587: warning: variable "UnspecifiedRelations::v1" was declared but never referenced
+    constexpr bool v1 = null < (int*)0;
+                   ^
+
+"Test_name.c", line 588: warning: variable "UnspecifiedRelations::v2" was declared but never referenced
+    constexpr bool v2 = null < pv; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects 'nullptr' and '&s.a' has unspecified value}}
+                   ^
+
+"Test_name.c", line 589: warning: variable "UnspecifiedRelations::v3" was declared but never referenced
+    constexpr bool v3 = null == pv;
+                   ^
+
+"Test_name.c", line 590: warning: variable "UnspecifiedRelations::v4" was declared but never referenced
+    constexpr bool v4 = qv == pv;
+                   ^
+
+"Test_name.c", line 591: warning: variable "UnspecifiedRelations::v5" was declared but never referenced
+    constexpr bool v5 = qv >= pv;
+                   ^
+
+"Test_name.c", line 592: warning: variable "UnspecifiedRelations::v6" was declared but never referenced
+    constexpr bool v6 = qv > null; // expected-error {{constant expression}} expected-note {{comparison between pointers to unrelated objects '&s.b' and 'nullptr' has unspecified value}}
+                   ^
+
+"Test_name.c", line 593: warning: variable "UnspecifiedRelations::v7" was declared but never referenced
+    constexpr bool v7 = qv <= (void*)&s.b;
+                   ^
+
+"Test_name.c", line 594: warning: variable "UnspecifiedRelations::v8" was declared but never referenced
+    constexpr bool v8 = qv > (void*)&s.a;
+                   ^
+
+93 errors detected in the compilation of "Test_name.c".

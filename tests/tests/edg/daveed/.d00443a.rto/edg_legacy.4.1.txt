@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=4 Test_name.c
+"Test_name.c", line 15: error: only static and extern variables can use thread-local storage
+  	__thread float field;
+  	               ^
+
+"Test_name.c", line 14: error: only static and extern variables can use thread-local storage
+  __thread struct S {
+  ^
+
+"Test_name.c", line 20: error: only static and extern variables can use thread-local storage
+  typedef __thread int I;
+  ^
+
+"Test_name.c", line 25: error: only static and extern variables can use thread-local storage
+  __thread void f() {
+                ^
+
+"Test_name.c", line 26: error: only static and extern variables can use thread-local storage
+  	__thread int a;
+  	             ^
+
+"Test_name.c", line 26: warning: variable "a" was declared but never referenced
+  	__thread int a;
+  	             ^
+
+5 errors detected in the compilation of "Test_name.c".

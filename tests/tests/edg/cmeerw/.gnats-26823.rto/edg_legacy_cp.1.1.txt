@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 -w -tused --c++26 Test_name.c
+"Test_name.c", line 83: error: pack index exceeds number of pack elements
+      return b...[N];;
+             ^
+          detected during instantiation of "int binding_pack::f<N,<auto-1>>(auto) [with N=0, <auto-1>=binding_pack::C]" at line 86
+
+"Test_name.c", line 83: error: pack index exceeds number of pack elements
+      return b...[N];;
+             ^
+          detected during instantiation of "int binding_pack::f<N,<auto-1>>(auto) [with N=1, <auto-1>=binding_pack::C]" at line 87
+
+"Test_name.c", line 83: error: pack index exceeds number of pack elements
+      return b...[N];;
+             ^
+          detected during instantiation of "int binding_pack::f<N,<auto-1>>(auto) [with N=2, <auto-1>=binding_pack::C]" at line 88
+
+3 errors detected in the compilation of "Test_name.c".

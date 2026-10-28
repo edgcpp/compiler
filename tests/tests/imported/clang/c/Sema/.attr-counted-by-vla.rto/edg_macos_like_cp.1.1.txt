@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 128: error: incomplete type "struct size_unknown []" is not allowed
+    struct size_unknown buf[] __counted_by(count);
+                        ^
+
+"Test_name.c", line 135: error: incomplete type "const struct size_unknown []" is not allowed
+    const struct size_unknown buf[] __counted_by(count);
+                              ^
+
+"Test_name.c", line 142: error: array of void is not allowed
+    void buf[] __counted_by(count);
+         ^
+
+"Test_name.c", line 158: error: array of functions is not allowed
+    fn_ty buf[] __counted_by(count);
+          ^
+
+"Test_name.c", line 182: warning: array of elements containing a flexible array member is nonstandard
+    struct has_unannotated_VLA Arr[] __counted_by(count);
+                               ^
+
+"Test_name.c", line 190: warning: array of elements containing a flexible array member is nonstandard
+    struct has_annotated_VLA Arr[] __counted_by(count);
+                             ^
+
+"Test_name.c", line 198: warning: array of elements containing a flexible array member is nonstandard
+    const struct has_annotated_VLA Arr[] __counted_by(count);
+                                   ^
+
+4 errors detected in the compilation of "Test_name.c".

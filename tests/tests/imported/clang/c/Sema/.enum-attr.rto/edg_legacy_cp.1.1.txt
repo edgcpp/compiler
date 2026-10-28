@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 46: warning: enumerated type mixed with another type
+    enum Enum t0 = 100; // expected-warning{{integer constant not in range of enumerated type}}
+                   ^
+
+"Test_name.c", line 47: warning: enumerated type mixed with another type
+    t0 = 1;
+       ^
+
+"Test_name.c", line 51: warning: enumerated type mixed with another type
+    case 16: break; // expected-warning{{case value not in enumerated type}}
+         ^
+
+"Test_name.c", line 60: warning: enumerated type mixed with another type
+    enum EnumClosed t1 = 100; // expected-warning{{integer constant not in range of enumerated type}}
+                         ^
+
+"Test_name.c", line 61: warning: enumerated type mixed with another type
+    t1 = 1;
+       ^
+
+"Test_name.c", line 65: warning: enumerated type mixed with another type
+    case 16: break; // expected-warning{{case value not in enumerated type}}
+         ^
+
+"Test_name.c", line 74: warning: enumerated type mixed with another type
+    enum EnumOpen t2 = 100;
+                       ^
+
+"Test_name.c", line 75: warning: enumerated type mixed with another type
+    t2 = 1;
+       ^
+
+"Test_name.c", line 79: warning: enumerated type mixed with another type
+    case 16: break;
+         ^
+
+"Test_name.c", line 88: warning: enumerated type mixed with another type
+    enum EnumFlag t3 = 5; // expected-warning{{integer constant not in range of enumerated type}}
+                       ^
+
+"Test_name.c", line 89: warning: enumerated type mixed with another type
+    t3 = 9;
+       ^
+
+"Test_name.c", line 93: warning: enumerated type mixed with another type
+    case 9: break;
+         ^
+
+"Test_name.c", line 94: warning: enumerated type mixed with another type
+    case 16: break; // expected-warning{{case value not in enumerated type}}
+         ^
+
+"Test_name.c", line 103: warning: enumerated type mixed with another type
+    enum EnumFlagClosed t4 = 5; // expected-warning{{integer constant not in range of enumerated type}}
+                             ^
+
+"Test_name.c", line 104: warning: enumerated type mixed with another type
+    t4 = 9;
+       ^
+
+"Test_name.c", line 108: warning: enumerated type mixed with another type
+    case 9: break;
+         ^
+
+"Test_name.c", line 109: warning: enumerated type mixed with another type
+    case 16: break; // expected-warning{{case value not in enumerated type}}
+         ^
+
+"Test_name.c", line 118: warning: enumerated type mixed with another type
+    enum EnumFlagOpen t5 = 5;
+                           ^
+
+"Test_name.c", line 119: warning: enumerated type mixed with another type
+    t5 = 9;
+       ^
+
+"Test_name.c", line 123: warning: enumerated type mixed with another type
+    case 9: break;
+         ^
+
+"Test_name.c", line 124: warning: enumerated type mixed with another type
+    case 16: break;
+         ^
+

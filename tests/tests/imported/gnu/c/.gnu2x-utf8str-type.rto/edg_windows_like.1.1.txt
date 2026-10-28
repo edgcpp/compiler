@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./c2x-utf8str-type.c", line 5: error: static assertion failed with "UTF-8 string literals have an unexpected type"
+  _Static_assert (_Generic (u8"text", unsigned char*: 1, default: 2) == 1, "UTF-8 string literals have an unexpected type");
+  ^
+
+"./c2x-utf8str-type.c", line 6: error: static assertion failed with "UTF-8 string literal elements have an unexpected type"
+  _Static_assert (_Generic (u8"x"[0], unsigned char: 1, default: 2) == 1, "UTF-8 string literal elements have an unexpected type");
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

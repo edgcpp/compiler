@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=2 -w --c++20 --target linux_aarch64 --gn 150100 Test_name.c
+"Test_name.c", line 5: error: identifier "__mfp8" is undefined
+  static_assert(sizeof(__mfp8) == 1);
+                       ^
+
+"Test_name.c", line 8: error: incomplete type "void" is not allowed
+  void f(__mfp8 v)
+       ^
+
+"Test_name.c", line 8: error: expected a ")"
+  void f(__mfp8 v)
+                ^
+
+"Test_name.c", line 9: error: expected a ";"
+  {
+  ^
+
+"Test_name.c", line 25: error: identifier "__SVMfloat8_t" is undefined
+  void f(__SVMfloat8_t v)
+         ^
+
+"Test_name.c", line 25: error: declaration is incompatible with "<error-type> f" (declared at line 8)
+  void f(__SVMfloat8_t v)
+       ^
+
+"Test_name.c", line 27: error: identifier "__SVMfloat8_t" is undefined
+    __SVMfloat8_t l;
+    ^
+
+"Test_name.c", line 29: error: identifier "__SVMfloat8_t" is undefined
+    l = __SVMfloat8_t();
+        ^
+
+"Test_name.c", line 32: error: "__mfp8" is not a type name
+    __edg_scalable_vector_type__(__mfp8, 1) lv;
+                                 ^
+
+"Test_name.c", line 84: error: identifier "__Mfloat8x8_t" is undefined
+  void f(__Mfloat8x8_t v8, __Mfloat8x16_t v16)
+         ^
+
+"Test_name.c", line 84: error: identifier "__Mfloat8x16_t" is undefined
+  void f(__Mfloat8x8_t v8, __Mfloat8x16_t v16)
+                           ^
+
+"Test_name.c", line 84: error: declaration is incompatible with previous "f" (declared at line 8)
+  void f(__Mfloat8x8_t v8, __Mfloat8x16_t v16)
+       ^
+
+12 errors detected in the compilation of "Test_name.c".

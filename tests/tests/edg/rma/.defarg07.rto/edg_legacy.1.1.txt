@@ -1,0 +1,17 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 6: remark: function "A::A(int, int, int)" cannot be inlined
+    A(int i, int j = TWO, int k = THREE) : ci(i), cj(j), ck(k) { };
+    ^
+
+"Test_name.c", line 7: remark: parameter "i" was never referenced
+    void f(int i, int j = TWO, int k = THREE) { };
+               ^
+
+"Test_name.c", line 7: remark: parameter "j" was never referenced
+    void f(int i, int j = TWO, int k = THREE) { };
+                      ^
+
+"Test_name.c", line 7: remark: parameter "k" was never referenced
+    void f(int i, int j = TWO, int k = THREE) { };
+                                   ^
+

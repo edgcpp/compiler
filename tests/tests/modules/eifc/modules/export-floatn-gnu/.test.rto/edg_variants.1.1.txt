@@ -1,0 +1,10 @@
+cpfe -DTEST_NUMBER=1 --module_import_diagnostics -d-module_report --c++20 --gnu_version=150100 --modules --module_interface foo.ixx
+"foo.ixx", line 5: error: identifier "_Float128" is undefined
+  export _Float128 sixteenth(_Float128 v) { return v / 16; }
+         ^
+
+"foo.ixx", line 5: error: identifier "_Float128" is undefined
+  export _Float128 sixteenth(_Float128 v) { return v / 16; }
+                             ^
+
+2 errors detected in the compilation of "foo.ixx".

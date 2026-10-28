@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --module_import_diagnostics -d-module_report --c++20 --header_unit test.h=test.h.rtmod Test_name.c
+header unit "test.h" ("test.h"), line 2 (col. 14): error: type name is not allowed
+          detected during instantiation of "auto has_nothrow_assign_proxy<T>()->bool [with T=X]" at line 8 of "Test_name.c"
+
+header unit "test.h" ("test.h"), line 2 (col. 14): error: identifier "__has_nothrow_assign" is undefined
+          detected during instantiation of "auto has_nothrow_assign_proxy<T>()->bool [with T=X]" at line 8 of "Test_name.c"
+
+header unit "test.h" ("test.h"), line 9 (col. 14): error: type name is not allowed
+          detected during instantiation of "auto has_nothrow_constructor_proxy<T>()->bool [with T=X]" at line 9 of "Test_name.c"
+
+header unit "test.h" ("test.h"), line 9 (col. 14): error: identifier "__has_nothrow_constructor" is undefined
+          detected during instantiation of "auto has_nothrow_constructor_proxy<T>()->bool [with T=X]" at line 9 of "Test_name.c"
+
+header unit "test.h" ("test.h"), line 15 (col. 14): error: type name is not allowed
+          detected during instantiation of "auto is_trivial_proxy<T>()->bool [with T=X]" at line 10 of "Test_name.c"
+
+header unit "test.h" ("test.h"), line 15 (col. 14): error: identifier "__is_trivial" is undefined
+          detected during instantiation of "auto is_trivial_proxy<T>()->bool [with T=X]" at line 10 of "Test_name.c"
+
+3 modules declarations processed (0 failed).
+6 errors detected in the compilation of "Test_name.c".

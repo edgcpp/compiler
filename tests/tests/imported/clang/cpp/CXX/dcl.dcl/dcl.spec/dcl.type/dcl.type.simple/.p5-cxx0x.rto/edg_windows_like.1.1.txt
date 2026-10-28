@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 48: error: "PD::~PD()" (declared at line 26) is inaccessible
+      pd()) pd1; // expected-error {{private destructor}}
+            ^
+
+"Test_name.c", line 50: error: function "DD::~DD()" (declared at line 31) cannot be referenced -- it is a deleted function
+           dd()) dd1;
+                 ^
+
+"Test_name.c", line 52: error: function "DD::~DD()" (declared at line 31) cannot be referenced -- it is a deleted function
+           dd()) dd2; // expected-error {{deleted function}}
+                 ^
+
+"Test_name.c", line 63: warning: "PD::~PD()" (declared at line 26), required to destroy temporary that was eliminated, is inaccessible
+  decltype(pd_ref) pd_ref2 = pd_ref; // expected-error {{private destructor}}
+                             ^
+
+"Test_name.c", line 63: error: "PD::~PD()" (declared at line 26) is inaccessible
+  decltype(pd_ref) pd_ref2 = pd_ref; // expected-error {{private destructor}}
+                             ^
+
+"Test_name.c", line 96: error: static assertion failed with "boom!"
+      static_assert(OK, "boom!"); // expected-error 2{{boom!}}
+      ^
+          detected during instantiation of class "RequireCompleteType::S<N, OK> [with N=2, OK=false]" at line 107
+
+"Test_name.c", line 96: error: static assertion failed with "boom!"
+      static_assert(OK, "boom!"); // expected-error 2{{boom!}}
+      ^
+          detected during instantiation of class "RequireCompleteType::S<N, OK> [with N=3, OK=false]" at line 109
+
+"Test_name.c", line 121: warning: "PD::~PD()" (declared at line 26), required to destroy temporary that was eliminated, is inaccessible
+    decltype(0, *pd_ptr) *dd_ptr2; // expected-error {{private destructor}}
+                ^
+
+"Test_name.c", line 121: error: "PD::~PD()" (declared at line 26) is inaccessible
+    decltype(0, *pd_ptr) *dd_ptr2; // expected-error {{private destructor}}
+                ^
+
+7 errors detected in the compilation of "Test_name.c".

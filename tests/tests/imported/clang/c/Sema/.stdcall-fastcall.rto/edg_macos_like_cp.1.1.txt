@@ -1,0 +1,89 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: attribute "stdcall" does not apply to non-function type "int"
+  int __attribute__((stdcall)) var1; // expected-warning{{'stdcall' only applies to function types; type here is 'int'}}
+                     ^
+
+"Test_name.c", line 6: warning: attribute is supported only in 32-bit x86 configurations
+  int __attribute__((stdcall)) var1; // expected-warning{{'stdcall' only applies to function types; type here is 'int'}}
+                     ^
+
+"Test_name.c", line 7: warning: attribute "fastcall" does not apply to non-function type "int"
+  int __attribute__((fastcall)) var2; // expected-warning{{'fastcall' only applies to function types; type here is 'int'}}
+                     ^
+
+"Test_name.c", line 7: warning: attribute is supported only in 32-bit x86 configurations
+  int __attribute__((fastcall)) var2; // expected-warning{{'fastcall' only applies to function types; type here is 'int'}}
+                     ^
+
+"Test_name.c", line 10: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((stdcall, fastcall)) foo3(void); // expected-error{{fastcall and stdcall attributes are not compatible}}
+                      ^
+
+"Test_name.c", line 10: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((stdcall, fastcall)) foo3(void); // expected-error{{fastcall and stdcall attributes are not compatible}}
+                               ^
+
+"Test_name.c", line 11: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((stdcall)) foo4(); // expected-note{{previous declaration is here}} expected-warning{{function with no prototype cannot use the stdcall calling convention}}
+                      ^
+
+"Test_name.c", line 12: warning: attribute is supported only in 32-bit x86 configurations
+  void __attribute__((fastcall)) foo4(void); // expected-error{{function declared 'fastcall' here was previously declared 'stdcall'}}
+                      ^
+
+"Test_name.c", line 14: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo1(int i, int j) __attribute__((fastcall, cdecl)); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 14: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo1(int i, int j) __attribute__((fastcall, cdecl)); // expected-error {{not compatible}}
+                                                              ^
+
+"Test_name.c", line 15: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo2(int i, int j) __attribute__((fastcall, stdcall)); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 15: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo2(int i, int j) __attribute__((fastcall, stdcall)); // expected-error {{not compatible}}
+                                                              ^
+
+"Test_name.c", line 16: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo3(int i, int j) __attribute__((fastcall, regparm(2))); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 17: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo4(int i, int j) __attribute__((stdcall, cdecl)); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 17: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo4(int i, int j) __attribute__((stdcall, cdecl)); // expected-error {{not compatible}}
+                                                             ^
+
+"Test_name.c", line 18: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo5(int i, int j) __attribute__((stdcall, fastcall)); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 18: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo5(int i, int j) __attribute__((stdcall, fastcall)); // expected-error {{not compatible}}
+                                                             ^
+
+"Test_name.c", line 19: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo6(int i, int j) __attribute__((cdecl, fastcall)); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 19: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo6(int i, int j) __attribute__((cdecl, fastcall)); // expected-error {{not compatible}}
+                                                           ^
+
+"Test_name.c", line 20: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo7(int i, int j) __attribute__((cdecl, stdcall)); // expected-error {{not compatible}}
+                                                    ^
+
+"Test_name.c", line 20: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo7(int i, int j) __attribute__((cdecl, stdcall)); // expected-error {{not compatible}}
+                                                           ^
+
+"Test_name.c", line 21: warning: attribute is supported only in 32-bit x86 configurations
+  void rdar8876096foo8(int i, int j) __attribute__((regparm(2), fastcall)); // expected-error {{not compatible}}
+                                                                ^
+

@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "__vector_size__"
+  typedef float V __attribute__((__vector_size__ (16)));
+                                 ^
+
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef int W __attribute__((__vector_size__ (16)));
+                               ^
+
+"Test_name.c", line 12: error: expression must have integral type
+    *y = *y << x;		/* { dg-error "invalid operands to binary <<" } */
+         ^
+
+"Test_name.c", line 13: error: expression must have integral type
+    *z = *z << *w;	/* { dg-error "invalid operands to binary <<" } */
+         ^
+
+"Test_name.c", line 19: error: expression must have integral type
+    *y = *y >> x;		/* { dg-error "invalid operands to binary >>" } */
+         ^
+
+"Test_name.c", line 20: error: expression must have integral type
+    *z = *z >> *w;	/* { dg-error "invalid operands to binary >>" } */
+         ^
+
+4 errors detected in the compilation of "Test_name.c".

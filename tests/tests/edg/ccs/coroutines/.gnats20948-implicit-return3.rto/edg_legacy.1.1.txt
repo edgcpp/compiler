@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --c++20 --set_flag coroutines -tused Test_name.c
+"/edg/workspace/bases/docker/dev-env/gcc/include/coroutine.stdh", line 50: error: name followed by "::" must be a class or namespace name
+      using promise_type = typename R::promise_type;
+                                    ^
+          detected during instantiation of class "std::coroutine_traits<R, ArgTypes...> [with R=int, ArgTypes=<>]" at line 8 of "Test_name.c"
+
+"/edg/workspace/bases/docker/dev-env/gcc/include/coroutine.stdh", line 50: error: expected a ";"
+      using promise_type = typename R::promise_type;
+                                    ^
+          detected during instantiation of class "std::coroutine_traits<R, ArgTypes...> [with R=int, ArgTypes=<>]" at line 8 of "Test_name.c"
+
+Segmentation fault
+eccp: front end returned an exit status of 139

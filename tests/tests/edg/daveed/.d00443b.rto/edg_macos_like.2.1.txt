@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=2 --gnu_version=30400 --gcc Test_name.c
+"Test_name.c", line 14: warning: this declaration has no storage class or type specifier
+  __thread static int x;
+  ^
+
+"Test_name.c", line 14: error: expected a ";"
+  __thread static int x;
+           ^
+
+"Test_name.c", line 16: warning: this declaration has no storage class or type specifier
+  __thread extern int y = 3;
+  ^
+
+"Test_name.c", line 16: error: expected a ";"
+  __thread extern int y = 3;
+           ^
+
+"Test_name.c", line 19: error: identifier "x" is undefined
+  	x = 3;
+  	^
+
+3 errors detected in the compilation of "Test_name.c".

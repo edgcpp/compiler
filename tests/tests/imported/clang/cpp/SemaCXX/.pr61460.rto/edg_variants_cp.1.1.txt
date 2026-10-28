@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 6: warning: expression has no effect
+    (void)[&](auto... p2s) { ([&] { p1s; p2s; }, ...); };
+                                    ^
+
+"Test_name.c", line 6: warning: expression has no effect
+    (void)[&](auto... p2s) { ([&] { p1s; p2s; }, ...); };
+                                         ^
+
+"Test_name.c", line 14: warning: expression has no effect
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{expression contains unexpanded parameter pack 'p2s'}}
+                                   ^
+
+"Test_name.c", line 14: warning: expression has no effect
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{expression contains unexpanded parameter pack 'p2s'}}
+                                        ^
+
+"Test_name.c", line 14: error: parameter pack "p1s" was referenced but not expanded
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{expression contains unexpanded parameter pack 'p2s'}}
+                                   ^
+
+"Test_name.c", line 14: error: parameter pack "p2s" was referenced but not expanded
+    (void)[&](auto... p2s) { [&] { p1s; p2s; }; }; // expected-error {{expression contains unexpanded parameter pack 'p2s'}}
+                                        ^
+
+2 errors detected in the compilation of "Test_name.c".

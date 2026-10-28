@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"Test_name.c", line 31: warning: variable "w" is used before its value is set
+      return w;
+             ^
+
+"Test_name.c", line 37: warning: returning reference to local variable
+      return (w); // { dg-warning "reference to local variable" }
+             ^
+
+"Test_name.c", line 39: error: static assertion failed
+  static_assert(same_type<decltype(fn3), Widget&& ()>::value);
+  ^
+
+"Test_name.c", line 43: warning: variable "w" is used before its value is set
+      return w.x;
+             ^
+
+"Test_name.c", line 49: warning: returning reference to local variable
+      return (w.x); // { dg-warning "reference to local variable" }
+             ^
+
+1 error detected in the compilation of "Test_name.c".

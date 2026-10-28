@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./ext/vector27.C", line 3: warning: unknown attribute "vector_size"
+  typedef int veci __attribute__ ((vector_size (4 * sizeof (int))));
+                                   ^
+
+"./ext/vector27.C", line 4: warning: unknown attribute "vector_size"
+  typedef float vecf __attribute__ ((vector_size (4 * sizeof (float))));
+                                     ^
+

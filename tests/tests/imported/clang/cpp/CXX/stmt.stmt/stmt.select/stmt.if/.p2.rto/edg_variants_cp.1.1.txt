@@ -1,0 +1,129 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 65: error: expression must have a constant value
+      if constexpr (bool(b)) {      // expected-error {{constexpr if condition is not a constant expression}} expected-note {{cannot be used in a constant expression}}
+                    ^
+"Test_name.c", line 65: note: the value of parameter "b" (declared at line 64) cannot be used as a constant
+      if constexpr (bool(b)) {      // expected-error {{constexpr if condition is not a constant expression}} expected-note {{cannot be used in a constant expression}}
+                         ^
+
+"Test_name.c", line 67: error: expression must have a constant value
+      if constexpr (b) { // expected-error {{constexpr if condition is not a constant expression}} expected-note {{cannot be used in a constant expression}}
+                    ^
+"Test_name.c", line 67: note: the value of parameter "b" (declared at line 64) cannot be used as a constant
+      if constexpr (b) { // expected-error {{constexpr if condition is not a constant expression}} expected-note {{cannot be used in a constant expression}}
+                    ^
+
+"Test_name.c", line 69: error: expression must have bool type (or be convertible to bool)
+      if constexpr (s) { // expected-error {{value of type 'S' is not contextually convertible to 'bool'}}
+                    ^
+
+"Test_name.c", line 73: error: expression must have bool type (or be convertible to bool)
+      if constexpr (constexprS) { // expected-error {{value of type 'const S' is not contextually convertible to 'bool'}}
+                    ^
+
+"Test_name.c", line 113: warning: statement is unreachable
+        if constexpr (sizeof(n) == 4) // expected-note 2{{constexpr if}}
+        ^
+
+"Test_name.c", line 112: error: transfer of control into a constexpr if block is not allowed
+      switch (n) {
+      ^
+
+"Test_name.c", line 112: error: transfer of control into a constexpr if block is not allowed
+      switch (n) {
+      ^
+
+"Test_name.c", line 123: warning: statement is unreachable
+        if constexpr (sizeof(T) == 4) // expected-note 2{{constexpr if}}
+        ^
+
+"Test_name.c", line 122: error: transfer of control into a constexpr if block is not allowed
+      switch (n) {
+      ^
+
+"Test_name.c", line 132: warning: statement is unreachable
+      if constexpr(sizeof(n) == 4) // expected-note {{constexpr if}}
+      ^
+
+"Test_name.c", line 131: error: transfer of control into a constexpr if block is not allowed
+      goto foo; // expected-error {{cannot jump}}
+      ^
+
+"Test_name.c", line 142: warning: statement is unreachable
+      if constexpr(sizeof(n) == 4) // expected-note {{constexpr if}}
+      ^
+
+"Test_name.c", line 141: error: transfer of control into a constexpr if block is not allowed
+      goto foo; // expected-error {{cannot jump}}
+      ^
+
+"Test_name.c", line 151: error: label "a" has already been defined (previous definition at line 150)
+        a: goto a; // expected-note 2{{previous}}
+        ^
+
+"Test_name.c", line 153: error: label "a" has already been defined (previous definition at line 150)
+        a: goto a; // expected-error {{redefinition}} expected-error {{cannot jump}}
+        ^
+
+"Test_name.c", line 158: warning: statement is unreachable
+      if constexpr (true || ({evil_label: false;})) {} // expected-note {{constexpr if}} \
+      ^
+
+"Test_name.c", line 157: error: transfer of control into a statement expression is not allowed
+      goto evil_label; // expected-error {{cannot jump}}
+      ^
+
+"Test_name.c", line 162: error: transfer of control into a constexpr if block is not allowed
+        goto surprise; // expected-error {{cannot jump}}
+        ^
+
+"Test_name.c", line 186: warning: variable "ptr" was declared but never referenced
+      T *ptr;
+         ^
+
+"Test_name.c", line 192: warning: variable "ptr" was declared but never referenced
+      T *ptr; // expected-error{{'ptr' declared as a pointer to a reference of type 'int &'}}
+         ^
+
+"Test_name.c", line 198: warning: variable "ptr" was declared but never referenced
+      T *ptr; // expected-error{{'ptr' declared as a pointer to a reference of type 'int &'}}
+         ^
+
+"Test_name.c", line 192: error: pointer to reference is not allowed
+      T *ptr; // expected-error{{'ptr' declared as a pointer to a reference of type 'int &'}}
+        ^
+          detected during instantiation of "int GH140449::g<T>() [with T=int &]" at line 205
+
+"Test_name.c", line 198: error: pointer to reference is not allowed
+      T *ptr; // expected-error{{'ptr' declared as a pointer to a reference of type 'int &'}}
+        ^
+          detected during instantiation of "auto GH140449::h<T>() [with T=int &]" at line 208
+
+"Test_name.c", line 205: warning: variable "y" was declared but never referenced
+          constexpr int y = g<int &>();
+                        ^
+
+"Test_name.c", line 217: warning: expression has no effect
+      1 | lam(); // expected-warning {{unused}}
+      ^
+
+"Test_name.c", line 231: warning: variable "a" was declared but never referenced
+      A<int> a;
+             ^
+
+"Test_name.c", line 252: error: deduced return type "const char *" conflicts with previously deduced type "double"
+      auto f = [](auto x) { if (x) return 1.5; else return "wat"; };
+                                                           ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 255
+
+"Test_name.c", line 84: error: name followed by "::" must be a class or namespace name
+          T::error(); // expected-error 2{{'::'}}
+          ^
+          detected during instantiation of "void generic_lambda::f<T>() [with T=int]" at line 99
+
+"Test_name.c", line 93: error: name followed by "::" must be a class or namespace name
+            T::error(); // expected-error {{'::'}}
+            ^
+          detected during instantiation of "void generic_lambda::g<T>() [with T=char]" at line 102
+
+18 errors detected in the compilation of "Test_name.c".

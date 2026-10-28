@@ -1,0 +1,61 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+    typedef int V __attribute__ ((vector_size (4 * sizeof (int))));
+                                  ^
+
+"Test_name.c", line 12: warning: function "__builtin_stdc_leading_zeros" declared implicitly
+    __builtin_stdc_leading_zeros (0.0f);	/* { dg-error "'__builtin_stdc_leading_zeros' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 22: warning: function "__builtin_stdc_leading_ones" declared implicitly
+    __builtin_stdc_leading_ones (0.0f);	/* { dg-error "'__builtin_stdc_leading_ones' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 32: warning: function "__builtin_stdc_trailing_zeros" declared implicitly
+    __builtin_stdc_trailing_zeros (0.0f);	/* { dg-error "'__builtin_stdc_trailing_zeros' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 42: warning: function "__builtin_stdc_trailing_ones" declared implicitly
+    __builtin_stdc_trailing_ones (0.0f);	/* { dg-error "'__builtin_stdc_trailing_ones' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 52: warning: function "__builtin_stdc_first_leading_zero" declared implicitly
+    __builtin_stdc_first_leading_zero (0.0f);	/* { dg-error "'__builtin_stdc_first_leading_zero' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 62: warning: function "__builtin_stdc_first_leading_one" declared implicitly
+    __builtin_stdc_first_leading_one (0.0f);	/* { dg-error "'__builtin_stdc_first_leading_one' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 72: warning: function "__builtin_stdc_first_trailing_zero" declared implicitly
+    __builtin_stdc_first_trailing_zero (0.0f);	/* { dg-error "'__builtin_stdc_first_trailing_zero' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 82: warning: function "__builtin_stdc_first_trailing_one" declared implicitly
+    __builtin_stdc_first_trailing_one (0.0f);	/* { dg-error "'__builtin_stdc_first_trailing_one' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 92: warning: function "__builtin_stdc_count_zeros" declared implicitly
+    __builtin_stdc_count_zeros (0.0f);	/* { dg-error "'__builtin_stdc_count_zeros' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 102: warning: function "__builtin_stdc_count_ones" declared implicitly
+    __builtin_stdc_count_ones (0.0f);	/* { dg-error "'__builtin_stdc_count_ones' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 112: warning: function "__builtin_stdc_has_single_bit" declared implicitly
+    __builtin_stdc_has_single_bit (0.0f);	/* { dg-error "'__builtin_stdc_has_single_bit' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 122: warning: function "__builtin_stdc_bit_width" declared implicitly
+    __builtin_stdc_bit_width (0.0f);	/* { dg-error "'__builtin_stdc_bit_width' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 132: warning: function "__builtin_stdc_bit_floor" declared implicitly
+    __builtin_stdc_bit_floor (0.0f);	/* { dg-error "'__builtin_stdc_bit_floor' operand not an integral type" } */
+    ^
+
+"Test_name.c", line 142: warning: function "__builtin_stdc_bit_ceil" declared implicitly
+    __builtin_stdc_bit_ceil (0.0f);	/* { dg-error "'__builtin_stdc_bit_ceil' operand not an integral type" } */
+    ^
+

@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 7: error: expected a ","
+    [[pre: n >= 0]]
+         ^
+
+"Test_name.c", line 8: error: expected a ","
+    [[post r: r >= 0]]
+           ^
+
+"Test_name.c", line 9: error: expected a ","
+    [[post r: !(r < 0)]]
+           ^
+
+"Test_name.c", line 15: error: expected a ","
+    [[post: true]]
+          ^
+
+"Test_name.c", line 21: error: expected a ","
+    [[post r: r >= n]]
+           ^
+
+"Test_name.c", line 27: error: expected a ","
+    [[post: x > 0]] // { dg-error "not declared" }
+          ^
+
+"Test_name.c", line 33: error: expected a ","
+    [[post: true]]
+          ^
+
+"Test_name.c", line 37: error: expected a ","
+    [[post r: true]] // { dg-error "function does not return a value" }
+           ^
+
+"Test_name.c", line 41: error: expected a ","
+    [[post: n > 0]]
+          ^
+
+"Test_name.c", line 43: error: identifier "x" is undefined
+    return x; // { dg-error "not declared" }
+           ^
+
+"Test_name.c", line 47: error: expected a ","
+    [[post: n > 0]]
+          ^
+
+"Test_name.c", line 53: error: expected a ","
+    [[post: n > 0]]
+          ^
+
+"Test_name.c", line 55: error: return value type does not match the function type
+    return n; // { dg-error "return-statement with a value" }
+           ^
+
+"Test_name.c", line 59: error: expected a ","
+    [[post: n > 0]]
+          ^
+
+"Test_name.c", line 61: warning: non-void function "f10" should return a value
+    return; // { dg-error "return-statement with no value" }
+          ^
+
+"Test_name.c", line 65: error: expected a ","
+    [[post: true]]
+          ^
+
+"Test_name.c", line 68: error: return value type does not match the function type
+    return n; // { dg-error "return-statement with a value" }
+           ^
+
+"Test_name.c", line 72: error: expected a ","
+    [[post: true]]
+          ^
+
+"Test_name.c", line 74: warning: non-void function "f12" should return a value
+    return; // { dg-error "return-statement with no value" }
+          ^
+
+17 errors detected in the compilation of "Test_name.c".

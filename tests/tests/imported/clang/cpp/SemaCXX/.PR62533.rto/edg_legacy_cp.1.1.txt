@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 17: warning: variable "a" was declared but never referenced
+    int a = test<T>::template fun_diff<int>;
+        ^
+
+"Test_name.c", line 11: error: type name is not allowed
+  decltype(T::template fun_diff<V>) foo1() {}
+           ^
+          detected during instantiation of "foo1" based on template arguments <test<int>, int> at line 32
+
+"Test_name.c", line 28: error: type name is not allowed
+    using type = decltype(T::template fun_diff<int>);
+                          ^
+          detected during instantiation of class "has_fun_diff<T, int> [with T=test<int>]" at line 34
+
+"Test_name.c", line 17: error: type name is not allowed
+    int a = test<T>::template fun_diff<int>;
+            ^
+          detected during instantiation of "void foo2<T>() [with T=int]" at line 33
+
+3 errors detected in the compilation of "Test_name.c".

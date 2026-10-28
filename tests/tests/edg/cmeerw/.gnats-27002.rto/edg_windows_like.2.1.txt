@@ -1,0 +1,182 @@
+fe_only -DTEST_NUMBER=2 --no_defer_parse_function_templates -tused --c++20 --gn 130200 Test_name.c
+"Test_name.c", line 19: error: identifier "co_await" is undefined
+      co_await std::suspend_always{};
+      ^
+
+"Test_name.c", line 19: error: qualified name is not allowed
+      co_await std::suspend_always{};
+               ^
+
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "lambda [](auto)->minimal::A"
+    };
+    ^
+
+"Test_name.c", line 39: error: identifier "co_await" is undefined
+      co_await std::suspend_always{};
+      ^
+
+"Test_name.c", line 39: error: qualified name is not allowed
+      co_await std::suspend_always{};
+               ^
+
+"Test_name.c", line 40: error: identifier "co_yield" is undefined
+      co_yield 1;
+      ^
+
+"Test_name.c", line 40: error: expected a ";"
+      co_yield 1;
+               ^
+
+"Test_name.c", line 41: warning: missing return statement at end of non-void function "instantiated::implicit_return(T)"
+    }
+    ^
+
+"Test_name.c", line 46: error: identifier "co_await" is undefined
+      co_await std::suspend_always{};
+      ^
+
+"Test_name.c", line 46: error: qualified name is not allowed
+      co_await std::suspend_always{};
+               ^
+
+"Test_name.c", line 47: error: identifier "co_yield" is undefined
+      co_yield 1;
+      ^
+
+"Test_name.c", line 47: error: expected a ";"
+      co_yield 1;
+               ^
+
+"Test_name.c", line 48: error: identifier "co_return" is undefined
+      co_return;
+      ^
+
+"Test_name.c", line 49: warning: missing return statement at end of non-void function "instantiated::explicit_return(T)"
+    }
+    ^
+
+"Test_name.c", line 63: error: identifier "co_await" is undefined
+      co_await U{};
+      ^
+
+"Test_name.c", line 63: error: template parameter "U" may not be redeclared in this scope
+      co_await U{};
+               ^
+
+"Test_name.c", line 64: error: identifier "co_yield" is undefined
+      co_yield 1;
+      ^
+
+"Test_name.c", line 64: error: expected a ";"
+      co_yield 1;
+               ^
+
+"Test_name.c", line 65: warning: missing return statement at end of non-void function "dependent_types_dependent_promise::implicit_return(T)"
+    }
+    ^
+
+"Test_name.c", line 70: error: identifier "co_await" is undefined
+      co_await U{};
+      ^
+
+"Test_name.c", line 70: error: template parameter "U" may not be redeclared in this scope
+      co_await U{};
+               ^
+
+"Test_name.c", line 71: error: identifier "co_yield" is undefined
+      co_yield 1;
+      ^
+
+"Test_name.c", line 71: error: expected a ";"
+      co_yield 1;
+               ^
+
+"Test_name.c", line 72: error: identifier "co_return" is undefined
+      co_return;
+      ^
+
+"Test_name.c", line 73: warning: missing return statement at end of non-void function "dependent_types_dependent_promise::explicit_return(T)"
+    }
+    ^
+
+"Test_name.c", line 87: error: identifier "co_await" is undefined
+      co_await U{};
+      ^
+
+"Test_name.c", line 87: error: template parameter "U" may not be redeclared in this scope
+      co_await U{};
+               ^
+
+"Test_name.c", line 88: error: identifier "co_yield" is undefined
+      co_yield 1;
+      ^
+
+"Test_name.c", line 88: error: expected a ";"
+      co_yield 1;
+               ^
+
+"Test_name.c", line 89: warning: missing return statement at end of non-void function "dependent_types_non_dependent_promise::implicit_return(int)"
+    }
+    ^
+
+"Test_name.c", line 94: error: identifier "co_await" is undefined
+      co_await U{};
+      ^
+
+"Test_name.c", line 94: error: template parameter "U" may not be redeclared in this scope
+      co_await U{};
+               ^
+
+"Test_name.c", line 95: error: identifier "co_yield" is undefined
+      co_yield 1;
+      ^
+
+"Test_name.c", line 95: error: expected a ";"
+      co_yield 1;
+               ^
+
+"Test_name.c", line 96: error: identifier "co_return" is undefined
+      co_return;
+      ^
+
+"Test_name.c", line 97: warning: missing return statement at end of non-void function "dependent_types_non_dependent_promise::explicit_return(int)"
+    }
+    ^
+
+"Test_name.c", line 113: error: identifier "co_await" is undefined
+      co_await f;
+      ^
+
+"Test_name.c", line 114: error: identifier "co_yield" is undefined
+      co_yield f;
+      ^
+
+"Test_name.c", line 114: error: "f" has already been declared in the current scope
+      co_yield f;
+               ^
+
+"Test_name.c", line 115: warning: missing return statement at end of non-void function "invalid_non_dependent_type::implicit_return(T)"
+    }
+    ^
+
+"Test_name.c", line 120: error: identifier "co_await" is undefined
+      co_await f;
+      ^
+
+"Test_name.c", line 121: error: identifier "co_yield" is undefined
+      co_yield f;
+      ^
+
+"Test_name.c", line 121: error: "f" has already been declared in the current scope
+      co_yield f;
+               ^
+
+"Test_name.c", line 122: error: identifier "co_return" is undefined
+      co_return;
+      ^
+
+"Test_name.c", line 123: warning: missing return statement at end of non-void function "invalid_non_dependent_type::explicit_return(T)"
+    }
+    ^
+
+36 errors detected in the compilation of "Test_name.c".

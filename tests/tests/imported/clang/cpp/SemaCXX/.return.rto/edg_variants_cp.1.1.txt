@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions --exceptions Test_name.c
+"Test_name.c", line 29: warning: type qualifier on return type is meaningless
+  const int scalar_c(); // expected-warning{{'const' type qualifier on return type has no effect}}
+  ^
+
+"Test_name.c", line 30: warning: type qualifier on return type is meaningless
+  int const scalar_c2(); // expected-warning{{'const' type qualifier on return type has no effect}}
+      ^
+
+"Test_name.c", line 34: warning: type qualifier on return type is meaningless
+  const // expected-warning{{'const' type qualifier on return type has no effect}}
+  ^
+
+"Test_name.c", line 39: warning: type qualifier on return type is meaningless
+  const // expected-warning{{'const' type qualifier on return type has no effect}}
+  ^
+
+"Test_name.c", line 42: warning: type qualifier on return type is meaningless
+  char* const h(); // expected-warning{{'const' type qualifier on return type has no effect}}
+        ^
+
+"Test_name.c", line 43: warning: type qualifier on return type is meaningless
+  char* volatile i(); // expected-warning{{'volatile' type qualifier on return type has no effect}}
+        ^
+
+"Test_name.c", line 46: warning: type qualifier on return type is meaningless
+  volatile // expected-warning{{'const volatile' type qualifiers on return type have no effect}}
+  ^
+
+"Test_name.c", line 50: warning: type qualifier on return type is meaningless
+  const volatile int scalar_cv(); // expected-warning{{'const volatile' type qualifiers on return type have no effect}}
+  ^
+
+"Test_name.c", line 55: warning: type qualifier on return type is meaningless
+  volatile
+  ^
+
+"Test_name.c", line 58: warning: type qualifier on return type is meaningless
+  const int volatile // expected-warning {{'const volatile' type qualifiers on return type have no effect}}
+  ^
+
+"Test_name.c", line 63: warning: type qualifier on return type is meaningless
+  _Atomic // expected-warning {{'_Atomic' type qualifier on return type has no effect}}
+  ^
+
+"Test_name.c", line 74: error: function returning array is not allowed
+  const int ret_array()[4]; // expected-error {{cannot return array}}
+                       ^
+
+"Test_name.c", line 81: warning: type qualifier on return type is meaningless
+      const PCHAR GetName() { return 0; } // expected-warning{{'const' type qualifier on return type has no effect}}
+      ^
+
+"Test_name.c", line 86: warning: type qualifier on return type is meaningless
+    operator const int ();
+             ^
+
+"Test_name.c", line 87: warning: type qualifier on return type is meaningless
+    operator int * const ();
+                   ^
+
+"Test_name.c", line 104: error: a constructor or destructor may not return a value
+        return 42; // expected-error {{constructor 'S' should not return a value}}
+               ^
+
+"Test_name.c", line 107: error: a constructor or destructor may not return a value
+        return 42; // expected-error {{destructor '~S' should not return a value}}
+               ^
+
+"Test_name.c", line 116: error: a constructor or destructor may not return a value
+      S() { return f(); } // expected-error {{constructor 'S' must not return void expression}}
+                   ^
+
+"Test_name.c", line 117: error: a constructor or destructor may not return a value
+      ~S() { return f(); } // expected-error {{destructor '~S' must not return void expression}}
+                    ^
+
+"Test_name.c", line 121: error: a constructor or destructor may not return a value
+      ST() { return f(); } // expected-error {{constructor 'ST<T>' must not return void expression}}
+                    ^
+
+"Test_name.c", line 123: error: a constructor or destructor may not return a value
+      ~ST() { return f(); } // expected-error {{destructor '~ST<T>' must not return void expression}}
+                     ^
+
+"Test_name.c", line 136: error: identifier "undeclared" is undefined
+    return int(undeclared, 4; // expected-error {{use of undeclared identifier 'undeclared'}}
+               ^
+
+"Test_name.c", line 136: error: expected a ")"
+    return int(undeclared, 4; // expected-error {{use of undeclared identifier 'undeclared'}}
+                         ^
+
+9 errors detected in the compilation of "Test_name.c".

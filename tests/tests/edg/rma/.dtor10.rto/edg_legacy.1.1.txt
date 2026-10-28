@@ -1,0 +1,18 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "A::A()" cannot be inlined
+  	A() {}
+  	^
+
+"Test_name.c", line 14: error: "B::~B()" (declared at line 10) is inaccessible
+  B b[] = {B()};
+           ^
+
+"Test_name.c", line 14: error: "B::~B()" (declared at line 10), required to destroy temporary that was eliminated, is inaccessible
+  B b[] = {B()};
+           ^
+
+"Test_name.c", line 14: error: "B::~B()" (declared at line 10) is inaccessible
+  B b[] = {B()};
+    ^
+
+3 errors detected in the compilation of "Test_name.c".

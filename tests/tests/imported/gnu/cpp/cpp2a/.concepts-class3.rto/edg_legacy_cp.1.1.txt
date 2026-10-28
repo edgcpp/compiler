@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 14: error: template constraint not satisfied
+  template struct B<A>; // { dg-error "constraint" }
+                     ^
+"Test_name.c", line 11: note: substitution of arguments "<A>" for requires-clause failed
+    requires (T::size() == 42) // { dg-error "without object" }
+             ^
+"Test_name.c", line 11: note: atomic constraint failed substitution
+    requires (T::size() == 42) // { dg-error "without object" }
+                        ^
+
+"Test_name.c", line 14: error: invalid explicit instantiation declaration
+  template struct B<A>; // { dg-error "constraint" }
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

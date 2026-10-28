@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --set_flag=no_checking_pragmas --c23 Test_name.c
+"Test_name.c", line 34: warning: argument is incompatible with corresponding format string conversion (expected type "void *" but argument has type "int [2]")
+    scanf("%p", &arr); // expected-warning {{format specifies type 'void **' but the argument has type 'int (*)[2]'}}
+                ^
+
+"Test_name.c", line 41: warning: argument is incompatible with corresponding format string conversion (expected type "void *" but argument has type "nullptr_t")
+    printf("%p", np);
+                 ^
+
+"Test_name.c", line 42: warning: argument is incompatible with corresponding format string conversion (expected type "void *" but argument has type "nullptr_t")
+    scanf("%p", &np); // expected-warning {{format specifies type 'void **' but the argument has type 'nullptr_t *'}}
+                ^
+
+"Test_name.c", line 38: error: identifier "__nullptr" is undefined
+  nullptr_t np = __nullptr; 
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

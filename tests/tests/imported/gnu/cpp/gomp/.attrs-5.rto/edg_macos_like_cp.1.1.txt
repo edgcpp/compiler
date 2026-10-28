@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 13: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (barrier)]];
+      ^
+
+"Test_name.c", line 17: warning: attribute namespace "omp" is unrecognized
+      [[omp::directive (cancellation point, parallel)]];
+        ^
+
+"Test_name.c", line 22: warning: attribute namespace "omp" is unrecognized
+      [[omp::directive (cancel parallel)]];
+        ^
+
+"Test_name.c", line 26: warning: attribute namespace "omp" is unrecognized
+      [[omp::directive (cancel, parallel)]];
+        ^
+
+"Test_name.c", line 31: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (depobj(depobj), destroy)]];
+      ^
+
+"Test_name.c", line 33: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (flush)]];
+      ^
+
+"Test_name.c", line 35: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (target exit data, map (from: x))]];
+      ^
+
+"Test_name.c", line 36: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (target enter data, map (to: x))]];
+      ^
+
+"Test_name.c", line 38: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (flush)]];
+      ^
+
+"Test_name.c", line 40: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (flush)]];
+      ^
+
+"Test_name.c", line 42: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (flush)]];
+      ^
+
+"Test_name.c", line 44: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (flush)]];
+      ^
+
+"Test_name.c", line 47: warning: attribute namespace "omp" is unrecognized
+    [[omp::directive (flush)]];
+      ^
+
+"Test_name.c", line 29: warning: variable "depobj" was declared but never referenced
+    omp_depend_t depobj;
+                 ^
+

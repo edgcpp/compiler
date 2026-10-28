@@ -1,0 +1,128 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 121: error: identifier "__builtin_ms_va_list" is undefined
+  template struct VaArg1<__builtin_ms_va_list, int>; // expected-note{{instantiation}}
+                         ^
+
+"Test_name.c", line 127: error: identifier "__builtin_ms_va_list" is undefined
+      __builtin_ms_va_list va;
+      ^
+
+"Test_name.c", line 148: error: identifier "__builtin_ms_va_list" is undefined
+  template struct VaArg3<__builtin_ms_va_list, int>;
+                         ^
+
+"Test_name.c", line 11: error: a value of type "double __complex__" cannot be assigned to an entity of type "int *"
+      x = 3.0I; // expected-error{{incompatible type}}
+        ^
+          detected during instantiation of "void ImaginaryLiteral0<T>::f(T &) [with T=int *]" at line 16
+
+"Test_name.c", line 33: error: more than one operator "+=" matches these operands:
+            function "N1::operator+=(N1::X &, int)" (declared at line 24)
+            function "N3::Y::operator+=(long)" (declared at line 40)
+            operand types are: N3::Y += int
+        Result r = t += u; // expected-error{{ambiguous}}
+                     ^
+"Test_name.c", line 33: note: built-in operator+=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+        Result r = t += u; // expected-error{{ambiguous}}
+                     ^
+"Test_name.c", line 33: note: built-in operator+=(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+        Result r = t += u; // expected-error{{ambiguous}}
+                     ^
+          detected during instantiation of "void N2::PlusEquals0<T, U, Result>::f(T, U) [with T=N3::Y, U=int, Result=short &]" at line 48
+
+"Test_name.c", line 69: error: expression must have bool type (or be convertible to bool)
+          if (t) // expected-error{{contextually convertible}}
+              ^
+          detected during instantiation of "void StatementExpr0<T>::f(T) [with T=N1::X]" at line 77
+
+"Test_name.c", line 70: error: no operator "+" matches these operands
+            operand types are: N1::X + int
+            t = t + 17; // expected-error {{invalid operands to binary expression ('N1::X' and 'int')}}
+                  ^
+"Test_name.c", line 70: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+            t = t + 17; // expected-error {{invalid operands to binary expression ('N1::X' and 'int')}}
+                  ^
+"Test_name.c", line 70: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+            t = t + 17; // expected-error {{invalid operands to binary expression ('N1::X' and 'int')}}
+                  ^
+"Test_name.c", line 70: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+            t = t + 17; // expected-error {{invalid operands to binary expression ('N1::X' and 'int')}}
+                  ^
+          detected during instantiation of "void StatementExpr0<T>::f(T) [with T=N1::X]" at line 77
+
+"Test_name.c", line 71: error: no operator "+" matches these operands
+            operand types are: N1::X + int
+          t + 12; // expected-error{{invalid operands}}
+            ^
+"Test_name.c", line 71: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+          t + 12; // expected-error{{invalid operands}}
+            ^
+"Test_name.c", line 71: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+          t + 12; // expected-error{{invalid operands}}
+            ^
+"Test_name.c", line 71: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+          t + 12; // expected-error{{invalid operands}}
+            ^
+          detected during instantiation of "void StatementExpr0<T>::f(T) [with T=N1::X]" at line 77
+
+"Test_name.c", line 85: error: identifier "__builtin_choose_expr" is undefined
+      Result r = __builtin_choose_expr(Cond, t, u); // expected-error{{lvalue}}
+                 ^
+          detected during instantiation of "void Choose0<Cond, T, U, Result>::f(T, U) [with Cond=true, T=int, U=float, Result=int &]" at line 89
+
+"Test_name.c", line 85: error: identifier "__builtin_choose_expr" is undefined
+      Result r = __builtin_choose_expr(Cond, t, u); // expected-error{{lvalue}}
+                 ^
+          detected during instantiation of "void Choose0<Cond, T, U, Result>::f(T, U) [with Cond=false, T=int, U=float, Result=float &]" at line 90
+
+"Test_name.c", line 85: error: identifier "__builtin_choose_expr" is undefined
+      Result r = __builtin_choose_expr(Cond, t, u); // expected-error{{lvalue}}
+                 ^
+          detected during instantiation of "void Choose0<Cond, T, U, Result>::f(T, U) [with Cond=true, T=int, U=float, Result=float &]" at line 91
+
+"Test_name.c", line 113: error: incorrect use of va_start
+      __builtin_va_start(va, n); // expected-error{{int}} expected-error{{char *}}
+                         ^
+          detected during instantiation of "void VaArg1<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 122
+
+"Test_name.c", line 113: warning: variable "va" is used before its value is set
+      __builtin_va_start(va, n); // expected-error{{int}} expected-error{{char *}}
+                         ^
+          detected during instantiation of "void VaArg1<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 122
+
+"Test_name.c", line 115: error: incorrect use of va_arg
+        (void)__builtin_va_arg(va, ArgType); // expected-error{{int}}
+                               ^
+          detected during instantiation of "void VaArg1<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 122
+
+"Test_name.c", line 116: error: incorrect use of va_end
+      __builtin_va_end(va); // expected-error{{int}} expected-error{{char *}}
+                       ^
+          detected during instantiation of "void VaArg1<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 122
+
+"Test_name.c", line 141: error: a reference of type "char *&" (not const-qualified) cannot be initialized with a value of type "__builtin_va_list" (aka "__va_list_tag [1]")
+      __builtin_ms_va_start(va, n); // expected-error{{int}} expected-error{{__va_list_tag}}
+                            ^
+          detected during instantiation of "void VaArg3<VaList, ArgType>::f(int, ...) [with VaList=__builtin_va_list, ArgType=int]" at line 149
+
+"Test_name.c", line 144: error: a reference of type "char *&" (not const-qualified) cannot be initialized with a value of type "__builtin_va_list" (aka "__va_list_tag [1]")
+      __builtin_ms_va_end(va); // expected-error{{int}} expected-error{{__va_list_tag}}
+                          ^
+          detected during instantiation of "void VaArg3<VaList, ArgType>::f(int, ...) [with VaList=__builtin_va_list, ArgType=int]" at line 149
+
+"Test_name.c", line 141: error: a reference of type "char *&" (not const-qualified) cannot be initialized with a value of type "int"
+      __builtin_ms_va_start(va, n); // expected-error{{int}} expected-error{{__va_list_tag}}
+                            ^
+          detected during instantiation of "void VaArg3<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 150
+
+"Test_name.c", line 143: error: incorrect use of va_arg
+        (void)__builtin_va_arg(va, ArgType); // expected-error{{int}}
+                               ^
+          detected during instantiation of "void VaArg3<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 150
+
+"Test_name.c", line 144: error: a reference of type "char *&" (not const-qualified) cannot be initialized with a value of type "int"
+      __builtin_ms_va_end(va); // expected-error{{int}} expected-error{{__va_list_tag}}
+                          ^
+          detected during instantiation of "void VaArg3<VaList, ArgType>::f(int, ...) [with VaList=int, ArgType=int]" at line 150
+
+19 errors detected in the compilation of "Test_name.c".

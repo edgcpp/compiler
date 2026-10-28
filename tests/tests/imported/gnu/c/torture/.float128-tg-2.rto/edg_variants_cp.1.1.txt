@@ -1,0 +1,38 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-tg-2.h", line 27: error: identifier "_Float128" is undefined
+  volatile _Float128 inf = __builtin_inf (), nanval = __builtin_nan ("");
+           ^
+
+"./torture/floatn-tg-2.h", line 28: error: identifier "_Float128" is undefined
+  volatile _Float128 neginf = -__builtin_inf (), negnanval = -__builtin_nan ("");
+           ^
+
+"./torture/floatn-tg-2.h", line 29: error: identifier "_Float128" is undefined
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+           ^
+
+"./torture/floatn-tg-2.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+                           ^
+
+"./torture/floatn-tg-2.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+                                               ^
+
+"./torture/floatn-tg-2.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+                                                              ^
+
+"./torture/floatn-tg-2.h", line 30: error: identifier "_Float128" is undefined
+  volatile _Float128 max = 1.18973149535723176508575932662800702e+4932F128
+           ^
+
+"./torture/floatn-tg-2.h", line 30: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 max = 1.18973149535723176508575932662800702e+4932F128
+                                                                  ^
+
+"./torture/floatn-tg-2.h", line 30: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+                        , negmax = -1.18973149535723176508575932662800702e+4932F128
+                                                                           ^
+
+4 errors detected in the compilation of "Test_name.c".

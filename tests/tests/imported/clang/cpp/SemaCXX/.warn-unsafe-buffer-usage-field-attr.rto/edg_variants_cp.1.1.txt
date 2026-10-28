@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 63: warning: variable "b" was declared but never referenced
+     int b = *(a.ptr); //expected-warning{{field 'ptr' prone to unsafe buffer manipulation}}
+         ^
+
+"Test_name.c", line 70: warning: variable "ptr" was declared but never referenced
+    int *ptr = b.a.ptr;//expected-warning{{field 'ptr' prone to unsafe buffer manipulation}}
+         ^
+
+"Test_name.c", line 75: warning: variable "a" was set but never used
+    A a;
+      ^
+
+"Test_name.c", line 94: warning: variable "p" was set but never used
+     int *p =d.ptr; //expected-warning{{field 'ptr' prone to unsafe buffer manipulation}}
+          ^
+
+"Test_name.c", line 99: warning: variable "v" was set but never used
+     int v = d.buf[0]; //expected-warning{{field 'buf' prone to unsafe buffer manipulation}}
+         ^
+
+"Test_name.c", line 115: warning: variable "p" was declared but never referenced
+    int *p = t.buf; //expected-warning{{field 'buf' prone to unsafe buffer manipulation}}
+         ^
+
+"Test_name.c", line 116: warning: variable "s" was declared but never referenced
+    size_t s = t.sz; //expected-warning{{field 'sz' prone to unsafe buffer manipulation}}
+           ^
+
+"Test_name.c", line 161: warning: variable "val" was declared but never referenced
+    int val = anon.a; //expected-warning{{field 'a' prone to unsafe buffer manipulation}}
+        ^
+
+"Test_name.c", line 176: warning: variable "p" was declared but never referenced
+    int *p = c.ptr.ptr1; //expected-warning{{field 'ptr1' prone to unsafe buffer manipulation}}
+         ^
+
+"Test_name.c", line 178: warning: variable "address" was declared but never referenced
+    int address = c.ptr.ptr2;
+        ^
+

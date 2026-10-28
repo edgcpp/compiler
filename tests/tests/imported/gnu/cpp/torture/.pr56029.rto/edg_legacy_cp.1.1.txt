@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 21: warning: missing return statement at end of non-void function "scoped_ptr_impl<T, D>::release"
+    T *release () { data_.ptr = __null; }
+                                        ^
+
+"Test_name.c", line 118: warning: missing return statement at end of non-void function "Bind(Functor)"
+  }
+  ^
+
+"Test_name.c", line 129: warning: missing return statement at end of non-void function "DnsSocketPool::CreateConnectedSocket"
+  }
+  ^
+
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "scoped_ptr_impl<T, D>::get_deleter [with T=DatagramClientSocket, D=DefaultDeleter<DatagramClientSocket>]"
+    D get_deleter () {}
+                      ^
+          detected during:
+            instantiation of "D scoped_ptr_impl<T, D>::get_deleter() [with T=DatagramClientSocket, D=DefaultDeleter<DatagramClientSocket>]" at line 17
+            instantiation of "scoped_ptr_impl<T, D>::scoped_ptr_impl(scoped_ptr_impl<U, V> *) [with T=DatagramClientSocket, D=DefaultDeleter<DatagramClientSocket>, U=DatagramClientSocket, V=DefaultDeleter<DatagramClientSocket>]" at line 43
+            instantiation of "scoped_ptr<T, D>::scoped_ptr(scoped_ptr<T, D>::RValue) [with T=DatagramClientSocket, D=DefaultDeleter<DatagramClientSocket>]" at line 39
+            instantiation of "scoped_ptr<T, D> scoped_ptr<T, D>::Pass() [with T=DatagramClientSocket, D=DefaultDeleter<DatagramClientSocket>]" at line 128
+
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "MakeRunnable(T) [with T=int (*)(int, int)]"
+  }
+  ^
+          detected during:
+            instantiation of "FunctorTraits<T>::RunnableType MakeRunnable(T) [with T=int (*)(int, int)]" at line 117
+            instantiation of "Callback<BindState<FunctorTraits<Functor>::RunnableType, FunctorTraits<Functor>::RunType, void ()>::UnboundRunType> Bind(Functor) [with Functor=int (*)(int, int)]" at line 127
+

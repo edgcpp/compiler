@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_compatibility --ms_compatibility Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+    auto P = new int * __attribute__((vector_size(8))); // expected-error {{an attribute list cannot appear here}} \
+                                      ^
+
+"Test_name.c", line 16: error: expected an expression
+  void g(int a[static [[]] 5]); // expected-error {{static array size is a C99 feature, not permitted in C++}}
+               ^
+
+"Test_name.c", line 19: warning: unknown attribute "vector_size"
+    int x[sizeof(T)] __attribute((vector_size(8))); // expected-error {{invalid vector element type 'int[sizeof(T)]'}}
+                                  ^
+
+"Test_name.c", line 22: warning: unknown attribute "vector_size"
+  typedef int myvect[4] __attribute__((vector_size(16))); // expected-error {{invalid vector element type 'int[4]'}}
+                                       ^
+
+"Test_name.c", line 37: warning: unknown attribute "cf_unknown_transfer"
+    void test3() __attribute__((cf_unknown_transfer)) override {} // Ok, not known to GCC.
+                                ^
+
+"Test_name.c", line 42: warning: unknown attribute "transparent_union"
+  union Tu { T b; } __attribute__((transparent_union)); // expected-warning {{'transparent_union' attribute ignored}}
+                                   ^
+
+"Test_name.c", line 45: warning: unknown attribute "transparent_union"
+  union Tu2 { int x; T b; } __attribute__((transparent_union)); // expected-warning {{'transparent_union' attribute ignored}}
+                                           ^
+
+"Test_name.c", line 47: warning: unknown attribute "transparent_union"
+  union Tu3 { int x; } __attribute((transparent_union)); // expected-warning {{'transparent_union' attribute ignored}}
+                                    ^
+
+"Test_name.c", line 53: error: no suitable constructor exists to convert from "int" to "Tu<int>"
+    tuTest1(x); // expected-error {{no matching function for call to 'tuTest1'}}
+            ^
+
+"Test_name.c", line 54: error: no suitable constructor exists to convert from "int" to "Tu3"
+    tuTest2(x); // expected-error {{no matching function for call to 'tuTest2'}}
+            ^
+
+"Test_name.c", line 57: warning: unknown attribute "gnu::const"
+  [[gnu::__const__]] int f2() { return 12; }
+    ^
+
+"Test_name.c", line 58: warning: unknown attribute "__gnu__::const"
+  [[__gnu__::__const__]] int f3() { return 12; }
+    ^
+
+"Test_name.c", line 59: warning: unknown attribute "__gnu__::const"
+  [[using __gnu__ : __const__]] int f4() { return 12; }
+                    ^
+
+"Test_name.c", line 61: error: static assertion failed
+  static_assert(__has_cpp_attribute(gnu::__const__));
+  ^
+
+"Test_name.c", line 62: error: static assertion failed
+  static_assert(__has_cpp_attribute(__gnu__::__const__));
+  ^
+
+5 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 --no_strict_gnu --c++11 Test_name.c
+"Test_name.c", line 10: warning: a user-provided literal suffix must begin with "_"
+    auto qfp = 1.0q; // { dg-error "unable to find numeric literal operator" }
+               ^
+
+"Test_name.c", line 10: error: user-defined literal operator not found
+    auto qfp = 1.0q; // { dg-error "unable to find numeric literal operator" }
+               ^
+
+"Test_name.c", line 11: warning: a user-provided literal suffix must begin with "_"
+    auto Qfp = 1.0Q; // { dg-error "unable to find numeric literal operator" }
+               ^
+
+"Test_name.c", line 11: error: user-defined literal operator not found
+    auto Qfp = 1.0Q; // { dg-error "unable to find numeric literal operator" }
+               ^
+
+2 errors detected in the compilation of "Test_name.c".

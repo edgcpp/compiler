@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 49: warning: ambiguous class member reference -- function template "Value::set" (declared at line 34) used in preference to class template "set" (declared at line 28)
+      v.set<double>(3.2);
+        ^
+
+"Test_name.c", line 55: warning: variable "set" was declared but never referenced
+      int set;  // Non-template.
+          ^
+
+"Test_name.c", line 99: error: expected a ">"
+      if (x->end < 7) {  // expected-error{{no member named 'end' in 'PR11856::X'}}
+                    ^
+
+"Test_name.c", line 99: warning: variable "x" is used before its value is set
+      if (x->end < 7) {  // expected-error{{no member named 'end' in 'PR11856::X'}}
+          ^
+
+"Test_name.c", line 111: error: class "GH139226::Foo" has no member "LookupWithId"
+    f.LookupWithId<int>();
+      ^
+
+"Test_name.c", line 111: error: type name is not allowed
+    f.LookupWithId<int>();
+                   ^
+
+"Test_name.c", line 111: error: expected an expression
+    f.LookupWithId<int>();
+                        ^
+
+4 errors detected in the compilation of "Test_name.c".

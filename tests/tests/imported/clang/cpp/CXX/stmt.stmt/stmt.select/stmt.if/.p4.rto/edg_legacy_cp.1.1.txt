@@ -1,0 +1,157 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 6: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if consteval ({(void)1;});  // expected-error {{expected { after consteval}}
+       ^
+
+"Test_name.c", line 6: error: "if consteval" and "if not consteval" require braced dependent statements
+    if consteval ({(void)1;});  // expected-error {{expected { after consteval}}
+                 ^
+
+"Test_name.c", line 7: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if consteval (void) 0; // expected-error {{expected { after consteval}}
+       ^
+
+"Test_name.c", line 7: error: "if consteval" and "if not consteval" require braced dependent statements
+    if consteval (void) 0; // expected-error {{expected { after consteval}}
+                 ^
+
+"Test_name.c", line 8: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if consteval {
+       ^
+
+"Test_name.c", line 10: error: "if consteval" and "if not consteval" require braced dependent statements
+    } else (void)0; // expected-error {{expected { after else}}
+           ^
+
+"Test_name.c", line 42: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if consteval [[likely]] { // expected-warning {{attribute 'likely' has no effect when annotating an 'if consteval' statement}}\
+       ^
+
+"Test_name.c", line 42: error: "if consteval" and "if not consteval" require braced dependent statements
+    if consteval [[likely]] { // expected-warning {{attribute 'likely' has no effect when annotating an 'if consteval' statement}}\
+                 ^
+
+"Test_name.c", line 47: error: "if consteval" and "if not consteval" require braced dependent statements
+    else [[unlikely]] { // expected-warning {{attribute 'unlikely' has no effect when annotating an 'if consteval' statement}}
+         ^
+
+"Test_name.c", line 54: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if consteval { // expected-note 4{{jump enters controlled statement of consteval if}}
+       ^
+
+"Test_name.c", line 56: warning: statement is unreachable
+      goto b; // expected-error {{cannot jump from this goto statement to its label}}
+      ^
+
+"Test_name.c", line 60: warning: statement is unreachable
+      goto a; // expected-error {{cannot jump from this goto statement to its label}}
+      ^
+
+"Test_name.c", line 60: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+      goto a; // expected-error {{cannot jump from this goto statement to its label}}
+      ^
+
+"Test_name.c", line 56: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+      goto b; // expected-error {{cannot jump from this goto statement to its label}}
+      ^
+
+"Test_name.c", line 63: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+    goto a; // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 64: warning: statement is unreachable
+    goto b; // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 64: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+    goto b; // expected-error {{cannot jump from this goto statement to its label}}
+    ^
+
+"Test_name.c", line 70: warning: statement is unreachable
+      if consteval { // expected-note 2{{jump enters controlled statement of consteval if}}
+      ^
+
+"Test_name.c", line 70: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+      if consteval { // expected-note 2{{jump enters controlled statement of consteval if}}
+         ^
+
+"Test_name.c", line 69: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+    switch (x) {
+    ^
+
+"Test_name.c", line 69: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+    switch (x) {
+    ^
+
+"Test_name.c", line 77: warning: statement is unreachable
+      if consteval { // expected-note 2{{jump enters controlled statement of consteval if}}
+      ^
+
+"Test_name.c", line 77: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+      if consteval { // expected-note 2{{jump enters controlled statement of consteval if}}
+         ^
+
+"Test_name.c", line 76: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+    switch (x) {
+    ^
+
+"Test_name.c", line 76: error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
+    switch (x) {
+    ^
+
+"Test_name.c", line 97: error: call to consteval function "f" did not produce a valid constant expression
+      return f(i); // expected-error {{call to consteval function 'f' is not a constant expression}}\
+              ^
+"Test_name.c", line 97: note: the value of parameter "i" (declared at line 95) cannot be used as a constant
+      return f(i); // expected-error {{call to consteval function 'f' is not a constant expression}}\
+               ^
+
+"Test_name.c", line 104: warning: already in consteval context
+    if consteval { // expected-warning {{consteval if is always true in an immediate context}}
+       ^
+
+"Test_name.c", line 105: warning: already in consteval context
+      if consteval {} // expected-warning {{consteval if is always true in an immediate context}}
+         ^
+
+"Test_name.c", line 111: warning: already in consteval context
+      if consteval {} // expected-warning {{consteval if is always true in an immediate context}}
+         ^
+
+"Test_name.c", line 116: warning: already in consteval context
+    if consteval { // expected-warning {{consteval if is always true in an immediate context}}
+       ^
+
+"Test_name.c", line 117: warning: already in consteval context
+      if consteval {} // expected-warning {{consteval if is always true in an immediate context}}
+         ^
+
+"Test_name.c", line 123: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if consteval {
+       ^
+
+"Test_name.c", line 129: warning: "if consteval" and "if not consteval" are meaningless in a non-constexpr function
+    if !consteval {
+       ^
+
+"Test_name.c", line 142: error: class "test_transform::S" has no member "foo"
+      n.foo; //expected-error {{no member named}}
+        ^
+          detected during instantiation of "int test_transform::g(auto) [with <auto-1>=test_transform::S]" at line 157
+
+"Test_name.c", line 148: error: class "test_transform::S" has no member "foo"
+       n.foo; //expected-error {{no member named}}
+         ^
+          detected during instantiation of "int test_transform::g(auto) [with <auto-1>=test_transform::S]" at line 157
+
+"Test_name.c", line 124: error: class "test_transform::S" has no member "foo"
+      n.foo; //expected-error {{no member named}}
+        ^
+          detected during instantiation of "int test_transform::f(auto) [with <auto-1>=test_transform::S]" at line 156
+
+"Test_name.c", line 130: error: class "test_transform::S" has no member "foo"
+      n.foo; //expected-error {{no member named}}
+        ^
+          detected during instantiation of "int test_transform::f(auto) [with <auto-1>=test_transform::S]" at line 156
+
+18 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 9: error: expected an expression
+    _Static_assert (__builtin_classify_type (enum E { E1, E2 }) == 3, "");
+                                             ^
+
+"Test_name.c", line 9: error: static assertion failed with ""
+    _Static_assert (__builtin_classify_type (enum E { E1, E2 }) == 3, "");
+    ^
+
+"Test_name.c", line 10: error: expected an expression
+    _Static_assert (__builtin_classify_type (struct S { int s; }) == 12, "");
+                                             ^
+
+"Test_name.c", line 10: error: static assertion failed with ""
+    _Static_assert (__builtin_classify_type (struct S { int s; }) == 12, "");
+    ^
+
+"Test_name.c", line 11: error: expected an expression
+    _Static_assert (__builtin_classify_type (union U { int u; }) == 13, "");
+                                             ^
+
+"Test_name.c", line 11: error: static assertion failed with ""
+    _Static_assert (__builtin_classify_type (union U { int u; }) == 13, "");
+    ^
+
+"Test_name.c", line 12: error: expected an expression
+    _Static_assert (__builtin_classify_type (int [2 * n + 36]) == 14, "");
+                                             ^
+
+"Test_name.c", line 12: error: static assertion failed with ""
+    _Static_assert (__builtin_classify_type (int [2 * n + 36]) == 14, "");
+    ^
+
+8 errors detected in the compilation of "Test_name.c".

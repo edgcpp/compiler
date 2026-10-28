@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: error: static assertion failed
+      static_assert(__is_same(decltype(this), C *__restrict));
+      ^
+
+"Test_name.c", line 10: error: static assertion failed
+        static_assert(__is_same(decltype(this), C *__restrict));
+        ^
+
+"Test_name.c", line 11: error: static assertion failed
+        (void) [this]() { static_assert(__is_same(decltype(this), C *__restrict)); };
+                          ^
+
+"Test_name.c", line 15: error: static assertion failed
+        (void) [*this]() { static_assert(__is_same(decltype(this), const C *)); };
+                           ^
+
+"Test_name.c", line 15: error: class "C" has no suitable copy constructor
+        (void) [*this]() { static_assert(__is_same(decltype(this), const C *)); };
+                ^
+
+"Test_name.c", line 16: error: class "C" has no suitable copy constructor
+        (void) [*this]() mutable { static_assert(__is_same(decltype(this), C *)); };
+                ^
+
+"Test_name.c", line 30: error: class "TC<T>" has no suitable copy constructor
+        (void) [*this]() { static_assert(__is_same(decltype(this), const TC<int> *)); };
+                ^
+
+"Test_name.c", line 31: error: class "TC<T>" has no suitable copy constructor
+        (void) [*this]() mutable { static_assert(__is_same(decltype(this), TC<int> *)); };
+                ^
+
+"Test_name.c", line 43: warning: variable "This" was declared but never referenced
+      Foo *__restrict This = this;
+                      ^
+
+"Test_name.c", line 53: error: static assertion failed
+          (void) [this]() { static_assert(__is_same(decltype((v)), const int&)); };
+                            ^
+
+"Test_name.c", line 23: error: static assertion failed
+      static_assert(__is_same(decltype(this), TC<int> *__restrict));
+      ^
+          detected during instantiation of "void TC<T>::f() __restrict__ [with T=int]" at line 37
+
+"Test_name.c", line 25: error: static assertion failed
+        static_assert(__is_same(decltype(this), TC<int> *__restrict));
+        ^
+          detected during instantiation of "void TC<T>::f() __restrict__ [with T=int]" at line 37
+
+"Test_name.c", line 26: error: static assertion failed
+        (void) [this]() { static_assert(__is_same(decltype(this), TC<int> *__restrict)); };
+                          ^
+          detected during instantiation of "void TC<T>::f() __restrict__ [with T=int]" at line 37
+
+"Test_name.c", line 30: error: static assertion failed
+        (void) [*this]() { static_assert(__is_same(decltype(this), const TC<int> *)); };
+                           ^
+          detected during instantiation of "void TC<T>::f() __restrict__ [with T=int]" at line 37
+
+13 errors detected in the compilation of "Test_name.c".

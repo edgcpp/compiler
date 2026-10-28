@@ -1,0 +1,68 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: error: identifier "__block" is undefined
+      __block T1 byref_block_arg;
+      ^
+
+"Test_name.c", line 8: error: template parameter "T1" may not be redeclared in this scope
+      __block T1 byref_block_arg;
+              ^
+
+"Test_name.c", line 8: error: expected a ";"
+      __block T1 byref_block_arg;
+                 ^
+
+"Test_name.c", line 10: error: expected an expression
+      T1 (^block)(T)  =  ^ T1 (T arg) { 
+          ^
+
+"Test_name.c", line 10: error: type name is not allowed
+      T1 (^block)(T)  =  ^ T1 (T arg) { 
+                  ^
+
+"Test_name.c", line 10: error: expected an expression
+      T1 (^block)(T)  =  ^ T1 (T arg) { 
+                         ^
+
+"Test_name.c", line 13: warning: parsing restarts here after previous syntax error
+           return block_arg+arg; };
+                                  ^
+
+"Test_name.c", line 18: error: expected an expression
+      (void) ^{
+             ^
+
+"Test_name.c", line 23: warning: parsing restarts here after previous syntax error
+    };
+     ^
+
+"Test_name.c", line 36: error: expected an identifier
+    int (^p)() = ^{ return 0; };
+         ^
+
+"Test_name.c", line 36: error: badly-formed pure specifier (only "= 0" is allowed)
+    int (^p)() = ^{ return 0; };
+                 ^
+
+"Test_name.c", line 37: error: expected an identifier
+    T (^t)() = ^{ return T{}; };
+       ^
+
+"Test_name.c", line 37: error: badly-formed pure specifier (only "= 0" is allowed)
+    T (^t)() = ^{ return T{}; };
+               ^
+
+"Test_name.c", line 38: error: expected an expression
+    T s = ^{ return T{}; }();
+          ^
+
+"Test_name.c", line 36: error: pure specifier ("= 0") allowed only on virtual functions
+    int (^p)() = ^{ return 0; };
+               ^
+          detected during instantiation of class "rdar41200624::S<T> [with T=int]" at line 40
+
+"Test_name.c", line 37: error: pure specifier ("= 0") allowed only on virtual functions
+    T (^t)() = ^{ return T{}; };
+             ^
+          detected during instantiation of class "rdar41200624::S<T> [with T=int]" at line 40
+
+14 errors detected in the compilation of "Test_name.c".

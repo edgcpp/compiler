@@ -12,8 +12,12 @@
 # tests, and uninstrumented, for the test cache key) and then runs one test
 # leg per configuration; a test leg waits only on its own toolchain's builds:
 #
-#   prepare ─┬─► linux-gcc-debug:      build, hash ─► Test ×2 ─┬─► publish (on failure)
-#            └─► linux-i686-gcc-debug: build, hash ─► Test ×2 ─┴─► coverage
+#   prepare ─┬─► linux-gcc-debug:              build, hash ─► Test ×2 ─┬─► publish
+#            ├─► linux-i686-gcc-debug:         build, hash ─► Test ×2 ─┤   (on failure)
+#            ├─► linux-gcc-macos-like-debug:   build, hash ─► Test ×2 ─┤
+#            ├─► linux-gcc-windows-like-debug: build, hash ─► Test ×2 ─┤
+#            ├─► linux-gcc-variants-debug:     build, hash ─► Test ×2 ─┤
+#            └─► linux-gcc-legacy-debug:       build, hash ─► Test ×2 ─┴─► coverage
 #   bench (pull requests only; independent)
 #
 # The prepare job computes the shared run timestamp and test-input hash that
@@ -135,6 +139,22 @@ jobs:
             build_dir: build/gcc-i686
             base: gcc-i686
             configs: '["edg_x86_32", "edg_x86_32_cp"]'
+          - preset: linux-gcc-macos-like-debug
+            build_dir: build/gcc-macos-like
+            base: gcc
+            configs: '["edg_macos_like", "edg_macos_like_cp"]'
+          - preset: linux-gcc-windows-like-debug
+            build_dir: build/gcc-windows-like
+            base: gcc
+            configs: '["edg_windows_like", "edg_windows_like_cp"]'
+          - preset: linux-gcc-variants-debug
+            build_dir: build/gcc-variants
+            base: gcc
+            configs: '["edg_variants", "edg_variants_cp"]'
+          - preset: linux-gcc-legacy-debug
+            build_dir: build/gcc-legacy
+            base: gcc
+            configs: '["edg_legacy", "edg_legacy_cp"]'
     uses: ./.github/workflows/ci-toolchain.yml
     with:
       preset: ${{ matrix.preset }}

@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 18: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    if constexpr (std::is_constant_evaluated ()) // { dg-warning ".std::is_constant_evaluated. always evaluates to true in .if constexpr." }
+                                             ^
+
+"Test_name.c", line 28: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    if constexpr (__builtin_is_constant_evaluated ()) // { dg-warning ".std::is_constant_evaluated. always evaluates to true in .if constexpr." }
+                                                  ^
+

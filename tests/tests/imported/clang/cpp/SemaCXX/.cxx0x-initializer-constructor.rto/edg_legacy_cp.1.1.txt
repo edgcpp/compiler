@@ -1,0 +1,217 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions Test_name.c
+"Test_name.c", line 80: error: invalid narrowing conversion from "double" to "int"
+      { F<3> f{1, 1.0}; } // expected-error {{type 'double' cannot be narrowed to 'int' in initializer list}} expected-note {{silence}}
+                  ^
+
+"Test_name.c", line 81: error: invalid narrowing conversion from "double" to "int"
+      { F<3> f = {1, 1.0}; } // expected-error {{type 'double' cannot be narrowed to 'int' in initializer list}} expected-note {{silence}}
+                     ^
+
+"Test_name.c", line 89: error: more than one instance of constructor "objects::D<N>::D [with N=-1]" matches the argument list:
+            function "objects::D<N>::D(std::initializer_list<int>) [with N=-1]" (declared at line 60)
+            function "objects::D<N>::D(std::initializer_list<double>) [with N=-1]" (declared at line 61)
+            argument types are: (int, double)
+      { D<-1> d{1, 2.0}; } // expected-error {{ambiguous}}
+               ^
+
+"Test_name.c", line 98: error: copy-list-initialization cannot use a constructor marked "explicit"
+      { X2 x = {0}; } // expected-error {{constructor is explicit}}
+               ^
+
+"Test_name.c", line 132: error: no instance of constructor "objects::B::B" matches the argument list
+            argument types are: ({...}, int, {...})
+      B b2{{1, 1.0, 4}, 2, {3, 4}}; // expected-error {{no matching constructor for initialization of 'B'}}
+          ^
+"Test_name.c", line 126: note: number of parameters of function "objects::B::B(const objects::B &)" does not match the call
+    struct B { // expected-note 2 {{candidate constructor}}
+           ^
+"Test_name.c", line 126: note: number of parameters of function "objects::B::B(objects::B &&)" does not match the call
+    struct B { // expected-note 2 {{candidate constructor}}
+           ^
+"Test_name.c", line 127: note: function "objects::B::B(objects::C, int, objects::C)" does not match because argument #1 does not match parameter
+      B(C, int, C); // expected-note {{candidate constructor not viable: cannot convert initializer list argument to 'C'}}
+      ^
+
+"Test_name.c", line 143: error: no instance of overloaded function "ov1" matches the argument list
+            argument types are: ({...})
+      ov1({1}); // expected-error {{no matching function}}
+      ^
+"Test_name.c", line 137: note: function "ov1(objects::C)" does not match because argument #1 does not match parameter
+      two ov1(C); // expected-note {{not viable: cannot convert initializer list}}
+          ^
+"Test_name.c", line 136: note: function "ov1(objects::B)" does not match because argument #1 does not match parameter
+      one ov1(B); // expected-note {{not viable: cannot convert initializer list}}
+          ^
+
+"Test_name.c", line 166: error: no instance of constructor "objects::G::G" matches the argument list
+            argument types are: (int, int, int)
+      G g1{1, 2, 3}; // expected-error {{no matching constructor}}
+          ^
+"Test_name.c", line 152: note: number of parameters of function "objects::G::G(const objects::G &)" does not match the call
+    struct G { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 152: note: number of parameters of function "objects::G::G(objects::G &&)" does not match the call
+    struct G { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 155: note: function template "objects::G::G(std::initializer_list<int>, T...)" does not match because argument #1 does not match parameter
+      G(std::initializer_list<int>, T ...);  // expected-note 3 {{not viable}}
+      ^
+
+"Test_name.c", line 167: error: no instance of constructor "objects::G::G" matches the argument list
+            argument types are: (int, int, int)
+      (void) new G{1, 2, 3}; // expected-error {{no matching constructor}}
+                  ^
+"Test_name.c", line 152: note: number of parameters of function "objects::G::G(const objects::G &)" does not match the call
+    struct G { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 152: note: number of parameters of function "objects::G::G(objects::G &&)" does not match the call
+    struct G { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 155: note: function template "objects::G::G(std::initializer_list<int>, T...)" does not match because argument #1 does not match parameter
+      G(std::initializer_list<int>, T ...);  // expected-note 3 {{not viable}}
+      ^
+
+"Test_name.c", line 168: error: no instance of constructor "objects::G::G" matches the argument list
+            argument types are: (int, int, int)
+      (void) G{1, 2, 3}; // expected-error {{no matching constructor}}
+              ^
+"Test_name.c", line 152: note: number of parameters of function "objects::G::G(const objects::G &)" does not match the call
+    struct G { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 152: note: number of parameters of function "objects::G::G(objects::G &&)" does not match the call
+    struct G { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 155: note: function template "objects::G::G(std::initializer_list<int>, T...)" does not match because argument #1 does not match parameter
+      G(std::initializer_list<int>, T ...);  // expected-note 3 {{not viable}}
+      ^
+
+"Test_name.c", line 176: error: no instance of constructor "objects::H::H" matches the argument list
+            argument types are: ({...})
+      H h1({1, 2}); // expected-error {{no matching constructor}}
+           ^
+"Test_name.c", line 158: note: function "objects::H::H(const objects::H &)" does not match because argument #1 does not match parameter
+    struct H { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 158: note: function "objects::H::H(objects::H &&)" does not match because argument #1 does not match parameter
+    struct H { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 160: note: number of parameters of function "objects::H::H(int, void *)" does not match the call
+      H(int, void*); // expected-note 3 {{not viable}}
+      ^
+"Test_name.c", line 159: note: number of parameters of function "objects::H::H(int, int)" does not match the call
+      explicit H(int, int); // expected-note 3 {{not viable}} expected-note {{declared here}}
+               ^
+
+"Test_name.c", line 177: error: no instance of constructor "objects::H::H" matches the argument list
+            argument types are: ({...})
+      (void) new H({1, 2}); // expected-error {{no matching constructor}}
+                  ^
+"Test_name.c", line 158: note: function "objects::H::H(const objects::H &)" does not match because argument #1 does not match parameter
+    struct H { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 158: note: function "objects::H::H(objects::H &&)" does not match because argument #1 does not match parameter
+    struct H { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 160: note: number of parameters of function "objects::H::H(int, void *)" does not match the call
+      H(int, void*); // expected-note 3 {{not viable}}
+      ^
+"Test_name.c", line 159: note: number of parameters of function "objects::H::H(int, int)" does not match the call
+      explicit H(int, int); // expected-note 3 {{not viable}} expected-note {{declared here}}
+               ^
+
+"Test_name.c", line 178: error: no instance of constructor "objects::H::H" matches the argument list
+            argument types are: ({...})
+      (void) H({1, 2}); // expected-error {{no matching constructor}}
+             ^
+"Test_name.c", line 158: note: function "objects::H::H(const objects::H &)" does not match because argument #1 does not match parameter
+    struct H { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 158: note: function "objects::H::H(objects::H &&)" does not match because argument #1 does not match parameter
+    struct H { // expected-note 6 {{not viable}}
+           ^
+"Test_name.c", line 160: note: number of parameters of function "objects::H::H(int, void *)" does not match the call
+      H(int, void*); // expected-note 3 {{not viable}}
+      ^
+"Test_name.c", line 159: note: number of parameters of function "objects::H::H(int, int)" does not match the call
+      explicit H(int, int); // expected-note 3 {{not viable}} expected-note {{declared here}}
+               ^
+
+"Test_name.c", line 195: error: copy-list-initialization cannot use a constructor marked "explicit"
+      H h4 = {1, 1}; // expected-error {{constructor is explicit}}
+             ^
+
+"Test_name.c", line 269: error: copy-list-initialization cannot use a constructor marked "explicit"
+    A a = { 0 }; // expected-error {{constructor is explicit}}
+          ^
+
+"Test_name.c", line 272: error: more than one instance of constructor "PR12120::B::B" matches the argument list:
+            function "PR12120::B::B(short)" (declared at line 271)
+            function "PR12120::B::B(long)" (declared at line 271)
+            argument types are: (int)
+    B b = { 0 }; // expected-error {{ambiguous}}
+          ^
+
+"Test_name.c", line 275: error: more than one instance of constructor "PR12120::C::C" matches the argument list:
+            function "PR12120::C::C(short)" (declared at line 274)
+            function "PR12120::C::C(long)" (declared at line 274)
+            argument types are: ({...})
+    C c = {{ 0 }}; // expected-error {{ambiguous}}
+          ^
+"Test_name.c", line 274: note: function "PR12120::C::C(const PR12120::C &)" does not match because argument #1 does not match parameter
+    struct C { explicit C(short); C(long); }; // expected-note 2{{candidate}}
+           ^
+"Test_name.c", line 274: note: function "PR12120::C::C(PR12120::C &&)" does not match because argument #1 does not match parameter
+    struct C { explicit C(short); C(long); }; // expected-note 2{{candidate}}
+           ^
+
+"Test_name.c", line 287: error: list-initialization of an object type "const PR12498::ArrayRef" is not allowed because the type is incomplete
+      c->foo({ nullptr, 1 }); // expected-error{{initialization of incomplete type 'const ArrayRef'}}
+             ^
+
+"Test_name.c", line 299: error: no default constructor exists for class "explicit_default::A"
+    A b = {}; // expected-error{{chosen constructor is explicit}}
+          ^
+
+"Test_name.c", line 333: error: copy-list-initialization cannot use a constructor marked "explicit"
+      ref_w({1}); // expected-error {{no matching function}}
+            ^
+
+"Test_name.c", line 348: error: function "PR13470::X::X(const PR13470::X &)" (declared at line 322) cannot be referenced -- it is a deleted function
+      val_x(X{1}); // expected-error {{call to deleted constructor}}
+            ^
+
+"Test_name.c", line 355: warning: variable "x" was declared but never referenced
+      void f() { X x{1}; }
+                   ^
+
+"Test_name.c", line 357: error: copy-list-initialization cannot use a constructor marked "explicit"
+        ref_w({1}); // expected-error {{no matching function}}
+              ^
+
+"Test_name.c", line 362: error: function "PR13470::X::X(const PR13470::X &)" (declared at line 322) cannot be referenced -- it is a deleted function
+        val_x(X{1}); // expected-error {{call to deleted constructor}}
+              ^
+
+"Test_name.c", line 395: error: the default constructor of "PR11410::A" cannot be referenced -- it is a deleted function
+    }; // expected-error {{call to deleted constructor}} \
+    ^
+
+"Test_name.c", line 409: error: class "PR11410::C" has more than one default constructor
+    }; // expected-error {{ambiguous}} expected-note {{in implicit initialization of array element 2}}
+    ^
+
+"Test_name.c", line 327: error: copy-list-initialization cannot use a constructor marked "explicit"
+      f({1}); // expected-error {{constructor is explicit}}
+        ^
+          detected during instantiation of "void PR13470::call<T,Fn>(Fn) [with T=PR13470::W, Fn=void (*)(const PR13470::W &)]" at line 335
+
+"Test_name.c", line 328: error: function "PR13470::X::X(const PR13470::X &)" (declared at line 322) cannot be referenced -- it is a deleted function
+      f(T{1}); // expected-error {{call to deleted constructor}}
+        ^
+          detected during instantiation of "void PR13470::call<T,Fn>(Fn) [with T=PR13470::X, Fn=void (*)(PR13470::X)]" at line 349
+
+"Test_name.c", line 285: warning: function "PR12498::bar" was declared but never referenced
+    static void bar(C* c)
+                ^
+
+26 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 27: error: a value of type "void" cannot be assigned to an entity of type "sx5x10_t" (aka "float")
+    a = __builtin_matrix_transpose(b);
+      ^
+
+"Test_name.c", line 29: error: a value of type "void" cannot be assigned to an entity of type "ix3x2_t" (aka "int")
+    b = __builtin_matrix_transpose(b);
+      ^
+
+"Test_name.c", line 38: error: a value of type "void" cannot be used to initialize an entity of type "ix3x3" (aka "unsigned int")
+    ix3x3 m = __builtin_matrix_transpose(c);
+              ^
+
+"Test_name.c", line 26: warning: parameter "a" was set but never used
+  void transpose(sx5x10_t a, ix3x2_t b, dx3x3 c, int *d, int e) {
+                          ^
+
+"Test_name.c", line 47: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a1 = __builtin_matrix_column_major_load(p1, 5, 11, 5);
+                  ^
+
+"Test_name.c", line 49: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a2 = __builtin_matrix_column_major_load(p1, 5, 9, 5);
+                  ^
+
+"Test_name.c", line 51: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a3 = __builtin_matrix_column_major_load(p1, 6, 10, 6);
+                  ^
+
+"Test_name.c", line 53: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a4 = __builtin_matrix_column_major_load(p1, 4, 10, 4);
+                  ^
+
+"Test_name.c", line 55: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a5 = __builtin_matrix_column_major_load(p1, 6, 9, 6);
+                  ^
+
+"Test_name.c", line 57: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a6 = __builtin_matrix_column_major_load(p2, 5, 10, 6);
+                  ^
+
+"Test_name.c", line 60: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a7 = __builtin_matrix_column_major_load(p1, 5, 10, 3);
+                  ^
+
+"Test_name.c", line 63: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a8 = __builtin_matrix_column_major_load(p3, 5, 10, 6);
+                  ^
+
+"Test_name.c", line 66: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a9 = __builtin_matrix_column_major_load(p4, 5, 10, 6);
+                  ^
+
+"Test_name.c", line 69: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a10 = __builtin_matrix_column_major_load(p1, 1ull << 21, 10, 6);
+                   ^
+
+"Test_name.c", line 71: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a11 = __builtin_matrix_column_major_load(p1, 10, 1ull << 21, 10);
+                   ^
+
+"Test_name.c", line 74: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a12 = __builtin_matrix_column_major_load(
+                   ^
+
+"Test_name.c", line 80: error: a value of type "void" cannot be used to initialize an entity of type "sx5x10_t" (aka "float")
+    sx5x10_t a13 = __builtin_matrix_column_major_load(
+                   ^
+
+"Test_name.c", line 108: error: a value of type "void" cannot be assigned to an entity of type "sx5x10_t" (aka "float")
+    *m1 = __builtin_matrix_column_major_store(*m1, p1, 10);
+        ^
+
+"Test_name.c", line 111: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int x = __builtin_matrix_column_major_store(*m1, p1, 10);
+            ^
+
+18 errors detected in the compilation of "Test_name.c".

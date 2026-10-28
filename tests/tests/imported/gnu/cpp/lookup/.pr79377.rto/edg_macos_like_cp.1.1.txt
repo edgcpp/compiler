@@ -1,0 +1,30 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 21: error: no operator "++" matches these operands
+            operand types are: A ++
+    a++;		// { dg-warning "trying prefix operator instead" }
+     ^
+"Test_name.c", line 10: note: number of parameters of function "A::operator++" does not match the call
+    A& operator++ () { ++a; ++c; return *this; }
+       ^
+"Test_name.c", line 21: note: built-in operator++(<non-bool arithmetic>, <integral>) does not match because argument #1 does not match parameter
+    a++;		// { dg-warning "trying prefix operator instead" }
+     ^
+"Test_name.c", line 21: note: built-in operator++(<pointer to object>, <integral>) does not match because argument #1 does not match parameter
+    a++;		// { dg-warning "trying prefix operator instead" }
+     ^
+
+"Test_name.c", line 34: error: no operator "++" matches these operands
+            operand types are: A ++
+    a++;		// { dg-warning "trying prefix operator instead" }
+     ^
+"Test_name.c", line 10: note: number of parameters of function "A::operator++" does not match the call
+    A& operator++ () { ++a; ++c; return *this; }
+       ^
+"Test_name.c", line 34: note: built-in operator++(<non-bool arithmetic>, <integral>) does not match because argument #1 does not match parameter
+    a++;		// { dg-warning "trying prefix operator instead" }
+     ^
+"Test_name.c", line 34: note: built-in operator++(<pointer to object>, <integral>) does not match because argument #1 does not match parameter
+    a++;		// { dg-warning "trying prefix operator instead" }
+     ^
+
+2 errors detected in the compilation of "Test_name.c".

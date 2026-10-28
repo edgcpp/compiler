@@ -1,0 +1,49 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 68: warning: structured bindings are a C++17 feature
+    const auto &[x, y, z, w] = foo (B {}, B {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 72: warning: structured bindings are a C++17 feature
+    const auto &[s, t, u] = foo (C {}, C {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 81: warning: structured bindings are a C++17 feature
+    const auto &[x, y, z, w] = foo (B {}, B {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 85: warning: structured bindings are a C++17 feature
+    const auto &[s, t, u] = foo (C {}, C {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 94: warning: structured bindings are a C++17 feature
+    const auto &[x, y, z, w] = foo (T {}, T {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 98: warning: structured bindings are a C++17 feature
+    const auto &[s, t, u] = foo (U {}, U {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 106: warning: structured bindings are a C++17 feature
+    auto [x, y, z, w] = foo (B {}, B {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 110: warning: structured bindings are a C++17 feature
+    auto [s, t, u] = foo (C {}, C {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 119: warning: structured bindings are a C++17 feature
+    auto [x, y, z, w] = foo (B {}, B {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 123: warning: structured bindings are a C++17 feature
+    auto [s, t, u] = foo (C {}, C {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 132: warning: structured bindings are a C++17 feature
+    auto [x, y, z, w] = foo (T {}, T {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 136: warning: structured bindings are a C++17 feature
+    auto [s, t, u] = foo (U {}, U {});	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+

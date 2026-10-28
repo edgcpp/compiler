@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 9: warning: returning pointer to local variable
+    return &x; // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 14: warning: returning pointer to local variable
+    return x; // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 19: warning: returning pointer to local variable
+    return &x[i]; // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 24: warning: returning pointer to local variable
+    return &i[x]; // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 29: warning: returning pointer to local variable
+    return &x[2];  // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 34: warning: returning reference to local variable
+    return x; // cxx11_20-warning {{reference to stack memory}}
+           ^
+
+"Test_name.c", line 40: warning: returning pointer to local variable
+    return &*&x; // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 45: warning: returning pointer to local variable
+    return (&(*(&x))); // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 50: warning: returning pointer to local variable
+    return &*(&x+1); // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 55: warning: returning pointer to local variable
+    return &*(&x+1); // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 60: warning: returning pointer to local variable
+    return &a.x; // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 65: warning: returning reference to local variable
+    return a.x; // expected-warning {{reference to stack memory}}
+           ^
+
+"Test_name.c", line 82: warning: returning pointer to local variable
+    return (void*) &x;  // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 97: warning: returning pointer to local variable
+    return &x;  // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 102: warning: returning pointer to local variable
+    return static_cast<void*>(&x); // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 106: warning: returning pointer to local variable
+    return reinterpret_cast<int*>(&x); // expected-warning {{address of stack me}}
+           ^
+
+"Test_name.c", line 114: warning: returning pointer to local variable
+    return const_cast<int*>(&x);  // expected-warning {{address of stack memory}}
+           ^
+
+"Test_name.c", line 160: warning: returning reference to local variable
+    (void) [&]() -> int& { int a; return a; }; // cxx11_20-warning {{reference to stack}}
+                                         ^
+
+"Test_name.c", line 162: warning: returning reference to local variable
+    (void) [=]() -> int& { int a; return a; }; // cxx11_20-warning {{reference to stack}}
+                                         ^
+
+"Test_name.c", line 180: warning: variable "a" is used before its value is set
+        return a;
+               ^
+
+"Test_name.c", line 185: warning: variable "a" is used before its value is set
+      return [a] {};
+              ^
+

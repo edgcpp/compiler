@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 14: error: a class or namespace qualified name is required
+      this->foo<typename T>(t); } // { dg-error "expected|parse error|no matching" }
+                         ^
+
+"Test_name.c", line 16: error: a class or namespace qualified name is required
+      foo<typename T>(t); } // { dg-error "expected|parse error|no matching" }
+                   ^
+
+"Test_name.c", line 23: error: a class or namespace qualified name is required
+      A().bar<typename T>(t); } // { dg-error "expected|parse error|no matching" }
+                       ^
+
+"Test_name.c", line 25: error: a class or namespace qualified name is required
+      B<typename T>::bar(t); } // { dg-error "invalid|qualified-id|not a template" }
+                 ^
+
+4 errors detected in the compilation of "Test_name.c".

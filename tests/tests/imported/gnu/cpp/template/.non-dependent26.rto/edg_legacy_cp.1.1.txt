@@ -1,0 +1,51 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 13: error: result of decltype qualifier "int &" is not a class or enumeration
+  template<class T> void f2(decltype(n = n)::t1); // { dg-error "not a class" }
+                            ^
+
+"Test_name.c", line 13: warning: variable templates are a C++14 feature
+  template<class T> void f2(decltype(n = n)::t1); // { dg-error "not a class" }
+                            ^
+
+"Test_name.c", line 13: error: incomplete type "void" is not allowed
+  template<class T> void f2(decltype(n = n)::t1); // { dg-error "not a class" }
+                         ^
+
+"Test_name.c", line 14: error: result of decltype qualifier "int &" is not a class or enumeration
+  template<class T> void f3(decltype(n += n)::t1); // { dg-error "not a class" }
+                            ^
+
+"Test_name.c", line 14: warning: variable templates are a C++14 feature
+  template<class T> void f3(decltype(n += n)::t1); // { dg-error "not a class" }
+                            ^
+
+"Test_name.c", line 14: error: incomplete type "void" is not allowed
+  template<class T> void f3(decltype(n += n)::t1); // { dg-error "not a class" }
+                         ^
+
+"Test_name.c", line 18: warning: const variable "n" requires an initializer
+    const int n;
+               ^
+
+"Test_name.c", line 19: error: expression must be a modifiable lvalue
+    n = 42; // { dg-error "read-only" }
+    ^
+
+"Test_name.c", line 22: error: expression must be a modifiable lvalue
+    x = {}; // { dg-error "no match" }
+    ^
+
+"Test_name.c", line 25: error: no operator "=" matches these operands
+            operand types are: const Y = {...}
+    y = {}; // { dg-error "no match" }
+      ^
+
+"Test_name.c", line 26: error: no operator "=" matches these operands
+            operand types are: Y = X
+    Y{} = X{}; // { dg-error "no match" }
+        ^
+"Test_name.c", line 9: note: function "Y::operator=" does not match because argument #1 does not match parameter
+  struct Y { X operator=(const Y&); } y;
+               ^
+
+8 errors detected in the compilation of "Test_name.c".

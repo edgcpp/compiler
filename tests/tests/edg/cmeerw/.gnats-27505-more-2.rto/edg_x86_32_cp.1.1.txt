@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 16: error: expected an expression
+  int g() requires (requires (int i) {this->dep(1).f< 0> (); }); 
+                                                          ^
+
+"Test_name.c", line 17: error: expected an expression
+  int g() requires (requires (int i) {this->dep(i).f< 0> (); }); 
+                                                          ^
+
+"Test_name.c", line 20: error: no instance of overloaded function "member_fn_constraints::B<T>::g [with T=int &]" matches the argument list
+            object type is: member_fn_constraints::B<int &>
+  int i = B< int &> ().g(); 
+                       ^
+"Test_name.c", line 17: note: constraint on candidate function "member_fn_constraints::B<T>::g() [with T=int &]" not satisfied
+  int g() requires (requires (int i) {this->dep(i).f< 0> (); }); 
+      ^
+"Test_name.c", line 16: note: constraint on candidate function "member_fn_constraints::B<T>::g() [with T=int &]" not satisfied
+  int g() requires (requires (int i) {this->dep(1).f< 0> (); }); 
+      ^
+
+"Test_name.c", line 35: error: expected an expression
+  int g() requires (requires (char c) {this->dep(1).f< 0> (); }); 
+                                                           ^
+
+"Test_name.c", line 36: error: expected an expression
+  int g() requires (requires (char c) {this->dep(c).f< 0> (); }); 
+                                                           ^
+
+"Test_name.c", line 39: error: no instance of overloaded function "member_fn_constraints_char::B<T>::g [with T=char &]" matches the argument list
+            object type is: member_fn_constraints_char::B<char &>
+  int i = B< char &> ().g(); 
+                        ^
+"Test_name.c", line 36: note: constraint on candidate function "member_fn_constraints_char::B<T>::g() [with T=char &]" not satisfied
+  int g() requires (requires (char c) {this->dep(c).f< 0> (); }); 
+      ^
+"Test_name.c", line 35: note: constraint on candidate function "member_fn_constraints_char::B<T>::g() [with T=char &]" not satisfied
+  int g() requires (requires (char c) {this->dep(1).f< 0> (); }); 
+      ^
+
+"Test_name.c", line 56: error: expected an expression
+  int g1() requires (requires (T i) {this->nondep(i).f< 0> (); }); 
+                                                            ^
+
+"Test_name.c", line 57: error: expected an expression
+  int g1() requires (requires (T i) {this->nondep(+i).f< 0> (); }); 
+                                                             ^
+
+"Test_name.c", line 59: error: expected an expression
+  int g2() requires (requires (T i) {this->dep(i).f< 0> (); }); 
+                                                         ^
+
+"Test_name.c", line 60: error: expected an expression
+  int g2() requires (requires (T i) {this->dep(+i).f< 0> (); }); 
+                                                          ^
+
+"Test_name.c", line 63: error: no instance of overloaded function "member_fn_constraints_ref::B<T>::g1 [with T=int]" matches the argument list
+            object type is: member_fn_constraints_ref::B<int>
+  int i = B< int> ().g1() + B< int> ().g2(); 
+                     ^
+"Test_name.c", line 57: note: constraint on candidate function "member_fn_constraints_ref::B<T>::g1() [with T=int]" not satisfied
+  int g1() requires (requires (T i) {this->nondep(+i).f< 0> (); }); 
+      ^
+"Test_name.c", line 56: note: constraint on candidate function "member_fn_constraints_ref::B<T>::g1() [with T=int]" not satisfied
+  int g1() requires (requires (T i) {this->nondep(i).f< 0> (); }); 
+      ^
+
+"Test_name.c", line 63: error: no instance of overloaded function "member_fn_constraints_ref::B<T>::g2 [with T=int]" matches the argument list
+            object type is: member_fn_constraints_ref::B<int>
+  int i = B< int> ().g1() + B< int> ().g2(); 
+                                       ^
+"Test_name.c", line 60: note: constraint on candidate function "member_fn_constraints_ref::B<T>::g2() [with T=int]" not satisfied
+  int g2() requires (requires (T i) {this->dep(+i).f< 0> (); }); 
+      ^
+"Test_name.c", line 59: note: constraint on candidate function "member_fn_constraints_ref::B<T>::g2() [with T=int]" not satisfied
+  int g2() requires (requires (T i) {this->dep(i).f< 0> (); }); 
+      ^
+
+12 errors detected in the compilation of "Test_name.c".

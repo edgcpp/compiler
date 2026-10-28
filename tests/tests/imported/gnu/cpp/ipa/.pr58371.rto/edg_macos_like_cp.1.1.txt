@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef int size_t;
+              ^
+
+"Test_name.c", line 55: warning: missing return statement at end of non-void function "std::vector<_Tp, _Alloc>::size"
+    } const_reference operator[] (size_type) {
+    ^
+
+"Test_name.c", line 72: warning: missing return statement at end of non-void function "std::basic_ostream<_CharT, _Traits>::operator<<"
+    }
+    ^
+
+"Test_name.c", line 84: warning: missing return statement at end of non-void function "logging::LogMessage::stream"
+    }
+    ^
+
+"Test_name.c", line 109: warning: missing return statement at end of non-void function "base::WeakPtr<T>::operator->"
+    } T *ptr_;
+    ^
+
+"Test_name.c", line 103: warning: label "logging" was declared but never referenced
+      logging:0 &&
+      ^
+
+"Test_name.c", line 127: warning: missing return statement at end of non-void function "ObserverListBase<ObserverType>::Iterator::GetNext"
+      }
+      ^
+
+"Test_name.c", line 193: warning: variable "obs" is used before its value is set
+    obs->OnProxyConfigChanged (new_config, availability);
+    ^
+
+"Test_name.c", line 191: warning: label "net" was declared but never referenced
+  net:
+  ^
+
+"Test_name.c", line 205: warning: variable "obs" is used before its value is set
+      obs->OnProxyConfigChanged (actual_config, availability);
+      ^
+
+"Test_name.c", line 202: warning: label "net" was declared but never referenced
+  net:
+  ^
+
+"Test_name.c", line 38: warning: missing return statement at end of non-void function "std::numeric_limits<_Tp>::max [with _Tp=size_t]"
+    }
+    ^
+          detected during:
+            instantiation of "_Tp std::numeric_limits<_Tp>::max() [with _Tp=size_t]" at line 119
+            instantiation of "ObserverListBase<ObserverType>::Iterator::Iterator(ObserverListBase<ObserverType> &) [with ObserverType=net::ProxyConfigService::Observer]" at line 201
+
+"Test_name.c", line 56: warning: missing return statement at end of non-void function "std::vector<_Tp, _Alloc>::operator[] [with _Tp=net::ProxyConfigService::Observer *, _Alloc=std::allocator<net::ProxyConfigService::Observer *>]"
+    }
+    ^
+          detected during:
+            instantiation of "std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) [with _Tp=net::ProxyConfigService::Observer *, _Alloc=std::allocator<net::ProxyConfigService::Observer *>]" at line 125
+            instantiation of "ObserverType *ObserverListBase<ObserverType>::Iterator::GetNext() [with ObserverType=net::ProxyConfigService::Observer]" at line 204
+

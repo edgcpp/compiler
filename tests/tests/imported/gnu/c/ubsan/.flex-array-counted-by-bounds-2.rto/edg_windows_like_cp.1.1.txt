@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./ubsan/flex-array-counted-by-bounds-2.c", line 17: error: a field declaration cannot have a type involving a variable length array
+         int p[][n] __attribute__((counted_by(n)));
+             ^
+
+"./ubsan/flex-array-counted-by-bounds-2.c", line 30: error: a field declaration cannot have a type involving a variable length array
+      int p[][n2][n1] __attribute__((counted_by(n)));
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

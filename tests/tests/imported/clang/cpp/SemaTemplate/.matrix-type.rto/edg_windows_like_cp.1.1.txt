@@ -1,0 +1,154 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 43: error: function template "use_matrix" has already been defined (previous definition at line 38)
+  void use_matrix(matrix<T, 10, C> &m) {}
+       ^
+
+"Test_name.c", line 48: error: no instance of function template "use_matrix" matches the argument list
+            argument types are: (float)
+    use_matrix(m);
+    ^
+"Test_name.c", line 39: note: candidate function template "use_matrix" failed deduction
+  void use_matrix(matrix<T, R, 10> &m) {}
+       ^
+
+"Test_name.c", line 58: error: no instance of function template "type_conflict" matches the argument list
+            argument types are: (float, char *)
+    type_conflict(m, p);
+    ^
+"Test_name.c", line 53: note: candidate function template "type_conflict" failed deduction
+  void type_conflict(matrix<T, R, 10> &m, T x) {}
+       ^
+
+"Test_name.c", line 63: warning: missing return statement at end of non-void function "use_matrix_2<R,C>(matrix<int, R, C> &)"
+  matrix<float, R + 1, C + 2> use_matrix_2(matrix<int, R, C> &m) {}
+                                                                  ^
+
+"Test_name.c", line 83: error: no instance of overloaded function "use_matrix_2" matches the argument list
+            argument types are: (int)
+    matrix<float, 5, 8> r1 = use_matrix_2(m1);
+                             ^
+"Test_name.c", line 73: note: number of parameters of function template "use_matrix_2<T,R,C>(matrix<T, <expression>, C> &, matrix<T, R, <expression>> &)" does not match the call
+  void use_matrix_2(matrix<T, R + C, C> &m1, matrix<T, R, C - R> &m2) {}
+       ^
+"Test_name.c", line 68: note: number of parameters of function template "use_matrix_2<R,C>(matrix<int, <expression>, <expression>> &, matrix<float, R, C> &)" does not match the call
+  void use_matrix_2(matrix<int, R + 2, C / 2> &m1, matrix<float, R, C> &m2) {}
+       ^
+"Test_name.c", line 63: note: candidate function template "use_matrix_2<R,C>(matrix<int, R, C> &)" failed deduction
+  matrix<float, R + 1, C + 2> use_matrix_2(matrix<int, R, C> &m) {}
+                              ^
+
+"Test_name.c", line 87: error: no instance of overloaded function "use_matrix_2" matches the argument list
+            argument types are: (int)
+    matrix<float, 5, 8> r2 = use_matrix_2(m2);
+                             ^
+"Test_name.c", line 73: note: number of parameters of function template "use_matrix_2<T,R,C>(matrix<T, <expression>, C> &, matrix<T, R, <expression>> &)" does not match the call
+  void use_matrix_2(matrix<T, R + C, C> &m1, matrix<T, R, C - R> &m2) {}
+       ^
+"Test_name.c", line 68: note: number of parameters of function template "use_matrix_2<R,C>(matrix<int, <expression>, <expression>> &, matrix<float, R, C> &)" does not match the call
+  void use_matrix_2(matrix<int, R + 2, C / 2> &m1, matrix<float, R, C> &m2) {}
+       ^
+"Test_name.c", line 63: note: candidate function template "use_matrix_2<R,C>(matrix<int, R, C> &)" failed deduction
+  matrix<float, R + 1, C + 2> use_matrix_2(matrix<int, R, C> &m) {}
+                              ^
+
+"Test_name.c", line 91: error: no instance of overloaded function "use_matrix_2" matches the argument list
+            argument types are: (int, float)
+    use_matrix_2(m1, m3);
+    ^
+"Test_name.c", line 73: note: candidate function template "use_matrix_2<T,R,C>(matrix<T, <expression>, C> &, matrix<T, R, <expression>> &)" failed deduction
+  void use_matrix_2(matrix<T, R + C, C> &m1, matrix<T, R, C - R> &m2) {}
+       ^
+"Test_name.c", line 68: note: candidate function template "use_matrix_2<R,C>(matrix<int, <expression>, <expression>> &, matrix<float, R, C> &)" failed deduction
+  void use_matrix_2(matrix<int, R + 2, C / 2> &m1, matrix<float, R, C> &m2) {}
+       ^
+"Test_name.c", line 63: note: number of parameters of function template "use_matrix_2<R,C>(matrix<int, R, C> &)" does not match the call
+  matrix<float, R + 1, C + 2> use_matrix_2(matrix<int, R, C> &m) {}
+                              ^
+
+"Test_name.c", line 95: error: no instance of overloaded function "use_matrix_2" matches the argument list
+            argument types are: (int, int)
+    use_matrix_2(m4, m4);
+    ^
+"Test_name.c", line 73: note: candidate function template "use_matrix_2<T,R,C>(matrix<T, <expression>, C> &, matrix<T, R, <expression>> &)" failed deduction
+  void use_matrix_2(matrix<T, R + C, C> &m1, matrix<T, R, C - R> &m2) {}
+       ^
+"Test_name.c", line 68: note: function template "use_matrix_2<R,C>(matrix<int, <expression>, <expression>> &, matrix<float, R, C> &)" does not match because argument #2 does not match parameter
+  void use_matrix_2(matrix<int, R + 2, C / 2> &m1, matrix<float, R, C> &m2) {}
+       ^
+"Test_name.c", line 63: note: number of parameters of function template "use_matrix_2<R,C>(matrix<int, R, C> &)" does not match the call
+  matrix<float, R + 1, C + 2> use_matrix_2(matrix<int, R, C> &m) {}
+                              ^
+
+"Test_name.c", line 99: error: no instance of function template "use_matrix_3" matches the argument list
+            argument types are: (unsigned int)
+    use_matrix_3(m5);
+    ^
+"Test_name.c", line 78: note: candidate function template "use_matrix_3" failed deduction
+  void use_matrix_3(matrix<T, R - 2, R> &m) {}
+       ^
+
+"Test_name.c", line 108: warning: variable "x" was declared but never referenced
+    make1<int, 5, 4>::type x;
+                           ^
+
+"Test_name.c", line 118: warning: missing return statement at end of non-void function "test_make2"
+  }
+  ^
+
+"Test_name.c", line 117: warning: variable "x" was declared but never referenced
+    make2<int, 0, 1> x; // expected-note{{in instantiation of}}
+                     ^
+
+"Test_name.c", line 129: warning: missing return statement at end of non-void function "test_make3"
+  }
+  ^
+
+"Test_name.c", line 128: warning: variable "x" was declared but never referenced
+    make3<s, 3, 3> x; // expected-note{{in instantiation of}}
+                   ^
+
+"Test_name.c", line 138: warning: missing return statement at end of non-void function "test_make4"
+  }
+  ^
+
+"Test_name.c", line 137: warning: variable "x" was declared but never referenced
+    make4<int, 4, 5>::type x;
+                           ^
+
+"Test_name.c", line 155: warning: missing return statement at end of non-void function "test_make6"
+  }
+  ^
+
+"Test_name.c", line 152: warning: variable "x" was declared but never referenced
+    make6<4, 4>::type x;
+                      ^
+
+"Test_name.c", line 154: warning: variable "y" was declared but never referenced
+    make6<2, 2>::type y;
+                      ^
+
+"Test_name.c", line 162: error: a template argument list is not allowed in a declaration of a primary template
+  struct X0<T __attribute__((matrix_type(N, 3)))> {
+         ^
+
+"Test_name.c", line 167: error: a template argument list is not allowed in a declaration of a primary template
+  struct X0<T __attribute__((matrix_type(4, 3)))> {
+         ^
+
+"Test_name.c", line 172: error: invalid partial specialization -- class "Deduction::X0<float>" is already fully specialized
+  struct X0<float __attribute__((matrix_type(N, 3)))> {
+         ^
+
+"Test_name.c", line 186: error: incomplete type "Deduction::X0<Deduction::int2>" (aka "Deduction::X0<int>") is not allowed
+  int array0[X0<int2>::value == 0 ? 1 : -1];
+             ^
+
+"Test_name.c", line 187: error: incomplete type "Deduction::X0<Deduction::int2>" (aka "Deduction::X0<int>") is not allowed
+  int array1[X0<int4>::value == 1 ? 1 : -1];
+             ^
+
+"Test_name.c", line 188: error: the size of an array must be greater than zero
+  int array2[X0<float2>::value == 2 ? 1 : -1];
+             ^
+
+14 errors detected in the compilation of "Test_name.c".

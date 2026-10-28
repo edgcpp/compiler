@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 16: error: a class-qualified name is required
+    using Type = int;
+          ^
+          detected during instantiation of class "EnableIf<true>" at line 15
+
+"Test_name.c", line 16: error: expected a ";"
+    using Type = int;
+               ^
+          detected during instantiation of class "EnableIf<true>" at line 15
+
+"Test_name.c", line 19: error: this declaration has no storage class or type specifier
+  constexpr bool check_conv() {
+  ^
+
+"Test_name.c", line 19: error: "constexpr" is not a function or static data member
+  constexpr bool check_conv() {
+  ^
+
+"Test_name.c", line 28: warning: parsing restarts here after previous syntax error
+  long r = conv<long>(1.2);  // Previously an error.  Now okay.
+                          ^
+
+4 errors detected in the compilation of "Test_name.c".

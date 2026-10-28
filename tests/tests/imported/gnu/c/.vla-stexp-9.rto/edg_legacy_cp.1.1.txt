@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 11: error: the result of a statement expression cannot have a type involving a variable-length array
+  	if (2 * sizeof(int) != sizeof((*({ int N = 2; int (*x)[9][N] = 0; x; })[1])))
+  	                                 ^
+
+"Test_name.c", line 17: error: the result of a statement expression cannot have a type involving a variable-length array
+  	if (2 * sizeof(int) != sizeof((*({ int N = 2; int (*x)[9][N] = 0; x; })[0])))
+  	                                 ^
+
+"Test_name.c", line 23: error: the result of a statement expression cannot have a type involving a variable-length array
+  	if (2 * 9 *  sizeof(int) != sizeof((*({ int N = 2; int (*x)[9][N] = 0; x; }))))
+  	                                      ^
+
+"Test_name.c", line 29: error: the result of a statement expression cannot have a type involving a variable-length array
+  	sizeof(*((*({ int N = 2; int (*x)[9][N] = 0; x; }) + 0)));
+  	            ^
+
+"Test_name.c", line 34: error: the result of a statement expression cannot have a type involving a variable-length array
+  	if (2 * sizeof(int) != sizeof(*((*({ int N = 2; int (*x)[9][N] = 0; x; })    ))))
+  	                                   ^
+
+"Test_name.c", line 40: error: the result of a statement expression cannot have a type involving a variable-length array
+  	if (2 * sizeof(int) != sizeof(*((*({ int N = 2; int (*x)[9][N] = 0; x; }) + 0))))
+  	                                   ^
+
+6 errors detected in the compilation of "Test_name.c".

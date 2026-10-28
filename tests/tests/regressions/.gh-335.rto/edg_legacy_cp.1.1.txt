@@ -1,0 +1,492 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 22: error: "__add_lvalue_reference" not allowed in current mode
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+                          ^
+
+"Test_name.c", line 24: error: "__add_rvalue_reference" not allowed in current mode
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+                          ^
+
+"Test_name.c", line 26: error: "__add_pointer" not allowed in current mode
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+                          ^
+
+"Test_name.c", line 27: error: "__decay" not allowed in current mode
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+                          ^
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 36
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 36
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 36
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 36
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 36
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 36
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 36
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 36
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 37
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 37
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 37
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 37
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 37
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 37
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 37
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 37
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 38
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 38
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 38
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (), LVALUE_REF=void (), RVALUE_REF=void (), POINTER=void (), DECAY=void ()]" at line 38
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 38
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 38
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 38
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...), LVALUE_REF=void (int, ...), RVALUE_REF=void (int, ...), POINTER=void (int, ...), DECAY=void (int, ...)]" at line 38
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 39
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 39
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 39
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 39
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 39
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 39
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 39
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 39
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 40
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 40
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 40
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 40
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 40
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 40
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 40
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 40
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 41
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 41
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 41
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 41
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 41
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 41
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 41
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 41
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 42
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 42
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 42
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &, LVALUE_REF=void () &, RVALUE_REF=void () &, POINTER=void () &, DECAY=void () &]" at line 42
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 42
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 42
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 42
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &, LVALUE_REF=void (int, ...) &, RVALUE_REF=void (int, ...) &, POINTER=void (int, ...) &, DECAY=void (int, ...) &]" at line 42
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 43
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 43
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 43
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 43
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 43
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 43
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 43
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 43
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 44
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 44
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 44
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 44
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 44
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 44
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 44
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 44
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 45
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 45
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 45
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 45
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 45
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 45
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 45
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 45
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 46
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 46
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 46
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void () &&, LVALUE_REF=void () &&, RVALUE_REF=void () &&, POINTER=void () &&, DECAY=void () &&]" at line 46
+
+"Test_name.c", line 22: error: static assertion failed with "lvalue reference"
+    static_assert(is_same<__add_lvalue_reference(T), LVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 46
+
+"Test_name.c", line 24: error: static assertion failed with "rvalue reference"
+    static_assert(is_same<__add_rvalue_reference(T), RVALUE_REF>::value,
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 46
+
+"Test_name.c", line 26: error: static assertion failed with "pointer"
+    static_assert(is_same<__add_pointer(T), POINTER>::value, "pointer");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 46
+
+"Test_name.c", line 27: error: static assertion failed with "decay"
+    static_assert(is_same<__decay(T), DECAY>::value, "decay");
+    ^
+          detected during instantiation of class "Tester<T, LVALUE_REF, RVALUE_REF, POINTER, DECAY> [with T=void (int, ...) &&, LVALUE_REF=void (int, ...) &&, RVALUE_REF=void (int, ...) &&, POINTER=void (int, ...) &&, DECAY=void (int, ...) &&]" at line 46
+
+"Test_name.c", line 72: error: "__add_lvalue_reference" not allowed in current mode
+    static_assert(is_same<__add_lvalue_reference(F), F>::value, "");
+                          ^
+
+"Test_name.c", line 72: error: static assertion failed with ""
+    static_assert(is_same<__add_lvalue_reference(F), F>::value, "");
+    ^
+
+"Test_name.c", line 73: error: "__add_rvalue_reference" not allowed in current mode
+    static_assert(is_same<__add_rvalue_reference(G), G>::value, "");
+                          ^
+
+"Test_name.c", line 73: error: static assertion failed with ""
+    static_assert(is_same<__add_rvalue_reference(G), G>::value, "");
+    ^
+
+"Test_name.c", line 74: error: "__add_pointer" not allowed in current mode
+    static_assert(is_same<__add_pointer(F), F>::value, "");
+                          ^
+
+"Test_name.c", line 74: error: static assertion failed with ""
+    static_assert(is_same<__add_pointer(F), F>::value, "");
+    ^
+
+"Test_name.c", line 75: error: "__decay" not allowed in current mode
+    static_assert(is_same<__decay(G), G>::value, "");
+                          ^
+
+"Test_name.c", line 75: error: static assertion failed with ""
+    static_assert(is_same<__decay(G), G>::value, "");
+    ^
+
+Error limit reached.
+100 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

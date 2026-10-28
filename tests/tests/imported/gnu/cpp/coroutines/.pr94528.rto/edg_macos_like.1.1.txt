@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 -w Test_name.c
+"Test_name.c", line 37: error: expected an operator
+    auto operator co_await() const &noexcept {
+                  ^
+
+"Test_name.c", line 71: error: identifier "co_return" is undefined
+    co_return co_await static_cast<cppcoro::task &&>(awaitable);
+    ^
+
+"Test_name.c", line 71: error: expected a ";"
+    co_return co_await static_cast<cppcoro::task &&>(awaitable);
+                       ^
+
+3 errors detected in the compilation of "Test_name.c".

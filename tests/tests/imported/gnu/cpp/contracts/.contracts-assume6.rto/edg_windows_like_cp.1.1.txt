@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 11: error: expected a ","
+    [[ pre assume: id2(n) > 0 ]]
+           ^
+
+"Test_name.c", line 12: error: expected a ","
+    [[ pre: n > 0 ]]
+          ^
+
+"Test_name.c", line 19: error: expected a ","
+    [[ pre assume: id2(n) > 0 ]]
+           ^
+
+"Test_name.c", line 19: error: expected a "]"
+    [[ pre assume: id2(n) > 0 ]]
+                 ^
+
+"Test_name.c", line 19: error: expected a ";"
+    [[ pre assume: id2(n) > 0 ]]
+                 ^
+
+"Test_name.c", line 26: warning: parsing restarts here after previous syntax error
+  constexpr T id(T n); // { dg-warning "used but never defined" }
+                     ^
+
+"Test_name.c", line 30: error: expected a ","
+    [[ pre assume: id(n) > 0 ]]
+           ^
+
+"Test_name.c", line 30: error: expected a "]"
+    [[ pre assume: id(n) > 0 ]]
+                 ^
+
+"Test_name.c", line 30: error: expected a ";"
+    [[ pre assume: id(n) > 0 ]]
+                 ^
+
+8 errors detected in the compilation of "Test_name.c".

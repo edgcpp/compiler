@@ -1,0 +1,371 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --target linux_aarch64 Test_name.c
+"Test_name.c", line 13: error: invalid combination of type specifiers
+    short _BitInt(43) a; // expected-error {{'short _BitInt' is invalid}}
+    ^
+
+"Test_name.c", line 14: error: invalid combination of type specifiers
+    _BitInt(43) long b;  // expected-error {{'long _BitInt' is invalid}}
+    ^
+
+"Test_name.c", line 18: error: const variable "d" requires an initializer
+    const unsigned _BitInt(5) d; // expected-error {{default initialization of an object of const type 'const unsigned _BitInt(5)'}}
+                               ^
+
+"Test_name.c", line 22: error: _BitInt(-3) is invalid; the minimum signed _BitInt width is 2
+    _BitInt(-3) g; // expected-error{{signed _BitInt of bit sizes greater than 128 not supported}}
+            ^
+
+"Test_name.c", line 23: error: _BitInt(0) is invalid; the minimum signed _BitInt width is 2
+    _BitInt(0) h; // expected-error{{signed _BitInt must have a bit size of at least 2}}
+            ^
+
+"Test_name.c", line 24: error: _BitInt(1) is invalid; the minimum signed _BitInt width is 2
+    _BitInt(1) i; // expected-error{{signed _BitInt must have a bit size of at least 2}}
+            ^
+
+"Test_name.c", line 26: error: unsigned _BitInt(0) is invalid; the minimum unsigned _BitInt width is 1
+    unsigned _BitInt(0) k;// expected-error{{unsigned _BitInt must have a bit size of at least 1}}
+                     ^
+
+"Test_name.c", line 28: error: _BitInt(1) is invalid; the minimum signed _BitInt width is 2
+    signed _BitInt(1) m; // expected-error{{signed _BitInt must have a bit size of at least 2}}
+                   ^
+
+"Test_name.c", line 30: warning: integer conversion resulted in a change of sign
+    constexpr _BitInt(6) n = 33; // expected-warning{{implicit conversion from 'int' to 'const _BitInt(6)' changes value from 33 to -31}}
+                             ^
+
+"Test_name.c", line 35: error: _BitInt(-1) is invalid; the maximum integer width is 65535
+    unsigned _BitInt(0xFFFFFFFFFF) q; // expected-error {{unsigned _BitInt of bit sizes greater than 128 not supported}}
+                     ^
+
+"Test_name.c", line 7: error: _BitInt(-1) is invalid; the minimum signed _BitInt width is 2
+    _BitInt(Bounds) b;
+            ^
+          detected during instantiation of class "HasExtInt<Bounds> [with Bounds=-1]" at line 41
+
+"Test_name.c", line 8: error: unsigned _BitInt(-1) is invalid; the minimum unsigned _BitInt width is 1
+    unsigned _BitInt(Bounds) b2;
+                     ^
+          detected during instantiation of class "HasExtInt<Bounds> [with Bounds=-1]" at line 41
+
+"Test_name.c", line 51: error: this constant expression has type "double" instead of the required integral or enum type
+    _BitInt(-3.0) v; // expected-error {{integral constant expression must have integral or unscoped enumeration type, not 'double'}}
+            ^
+
+"Test_name.c", line 52: error: this constant expression has type "double" instead of the required integral or enum type
+    _BitInt(3.0) x; // expected-error {{integral constant expression must have integral or unscoped enumeration type, not 'double'}}
+            ^
+
+"Test_name.c", line 17: warning: variable "c" was declared but never referenced
+    const _BitInt(5) c = 3;
+                     ^
+
+"Test_name.c", line 18: warning: variable "d" was declared but never referenced
+    const unsigned _BitInt(5) d; // expected-error {{default initialization of an object of const type 'const unsigned _BitInt(5)'}}
+                              ^
+
+"Test_name.c", line 19: warning: variable "e" was declared but never referenced
+    unsigned _BitInt(5) e = 5;
+                        ^
+
+"Test_name.c", line 20: warning: variable "f" was declared but never referenced
+    _BitInt(5) unsigned f;
+                        ^
+
+"Test_name.c", line 25: warning: variable "j" was declared but never referenced
+    _BitInt(2) j;;
+               ^
+
+"Test_name.c", line 27: warning: variable "l" was declared but never referenced
+    unsigned _BitInt(1) l;
+                        ^
+
+"Test_name.c", line 30: warning: variable "n" was declared but never referenced
+    constexpr _BitInt(6) n = 33; // expected-warning{{implicit conversion from 'int' to 'const _BitInt(6)' changes value from 33 to -31}}
+                         ^
+
+"Test_name.c", line 31: warning: variable "o" was declared but never referenced
+    constexpr _BitInt(7) o = 33;
+                         ^
+
+"Test_name.c", line 34: warning: variable "p" was declared but never referenced
+    _BitInt(129) p;               // expected-error {{signed _BitInt of bit sizes greater than 128 not supported}}
+                 ^
+
+"Test_name.c", line 41: warning: variable "r" was declared but never referenced
+    HasExtInt<-1> r;
+                  ^
+
+"Test_name.c", line 45: warning: variable "s" was declared but never referenced
+    HasExtInt<0> s;
+                 ^
+
+"Test_name.c", line 48: warning: variable "t" was declared but never referenced
+    HasExtInt<1> t;
+                 ^
+
+"Test_name.c", line 49: warning: variable "u" was declared but never referenced
+    HasExtInt<2> u;
+                 ^
+
+"Test_name.c", line 76: error: no instance of function template "deduced_bound" matches the argument list
+            argument types are: (_BitInt(3))
+    deduced_bound(b);
+    ^
+"Test_name.c", line 65: note: candidate function template "deduced_bound" failed deduction
+  void deduced_bound(_BitInt(I)){}
+       ^
+
+"Test_name.c", line 69: warning: variable "a" was declared but never referenced
+    ExtIntTemplParam<13> a;
+                         ^
+
+"Test_name.c", line 71: warning: variable "c" was declared but never referenced
+    ExtIntTemplParam<b> c;
+                        ^
+
+"Test_name.c", line 72: warning: variable "d" was declared but never referenced
+    constexpr _BitInt(9) d = 1;
+                         ^
+
+"Test_name.c", line 73: warning: variable "e" was declared but never referenced
+    ExtIntTemplParam<b> e;
+                        ^
+
+"Test_name.c", line 99: error: _Complex can only be used with floating-point types
+  _Complex _BitInt(3) Cmplx;
+  ^
+
+"Test_name.c", line 101: error: _Complex can only be used with floating-point types
+  typedef _Complex _BitInt(3) Cmp;
+  ^
+
+"Test_name.c", line 124: warning: expression has no effect
+    x43_u + y43_s;
+    ^
+
+"Test_name.c", line 125: warning: expression has no effect
+    x4_s - y4_u;
+    ^
+
+"Test_name.c", line 126: warning: expression has no effect
+    x43_s * y43_u;
+    ^
+
+"Test_name.c", line 127: warning: expression has no effect
+    x4_u / y4_s;
+    ^
+
+"Test_name.c", line 130: warning: expression has no effect
+    x43_s + y4_s;
+    ^
+
+"Test_name.c", line 131: warning: expression has no effect
+    x43_s - y4_u;
+    ^
+
+"Test_name.c", line 132: warning: expression has no effect
+    x43_u * y4_u;
+    ^
+
+"Test_name.c", line 133: warning: expression has no effect
+    x4_u / y43_u;
+    ^
+
+"Test_name.c", line 136: warning: expression has no effect
+    x43_s + x_int;
+    ^
+
+"Test_name.c", line 137: warning: expression has no effect
+    x43_u - x_int;
+    ^
+
+"Test_name.c", line 138: warning: expression has no effect
+    x32_s * x_int;
+    ^
+
+"Test_name.c", line 139: warning: expression has no effect
+    x32_u / x_int;
+    ^
+
+"Test_name.c", line 140: warning: expression has no effect
+    x32_s * x_uint;
+    ^
+
+"Test_name.c", line 141: warning: expression has no effect
+    x32_u / x_uint;
+    ^
+
+"Test_name.c", line 142: warning: expression has no effect
+    x4_s + x_int;
+    ^
+
+"Test_name.c", line 143: warning: expression has no effect
+    x4_u - x_int;
+    ^
+
+"Test_name.c", line 144: warning: variable "b" is used before its value is set
+    x4_s + b;
+           ^
+
+"Test_name.c", line 144: warning: expression has no effect
+    x4_s + b;
+    ^
+
+"Test_name.c", line 145: warning: expression has no effect
+    x4_u - b;
+    ^
+
+"Test_name.c", line 146: warning: expression has no effect
+    x43_s + b;
+    ^
+
+"Test_name.c", line 147: warning: expression has no effect
+    x43_u - b;
+    ^
+
+"Test_name.c", line 150: error: static assertion failed with ""
+    static_assert(is_same<decltype(x32_s + x_int), int>::value, "");
+    ^
+
+"Test_name.c", line 151: error: static assertion failed with ""
+    static_assert(is_same<decltype(x32_u + x_int), unsigned int>::value, "");
+    ^
+
+"Test_name.c", line 152: error: static assertion failed with ""
+    static_assert(is_same<decltype(x32_s + x_uint), unsigned int>::value, "");
+    ^
+
+"Test_name.c", line 153: error: static assertion failed with ""
+    static_assert(is_same<decltype(x32_u + x_uint), unsigned int>::value, "");
+    ^
+
+"Test_name.c", line 154: error: static assertion failed with ""
+    static_assert(is_same<decltype(x4_s + x_int), int>::value, "");
+    ^
+
+"Test_name.c", line 155: error: static assertion failed with ""
+    static_assert(is_same<decltype(x4_u + x_int), int>::value, "");
+    ^
+
+"Test_name.c", line 156: error: static assertion failed with ""
+    static_assert(is_same<decltype(x4_s + x_uint), unsigned int>::value, "");
+    ^
+
+"Test_name.c", line 157: error: static assertion failed with ""
+    static_assert(is_same<decltype(x4_u + x_uint), unsigned int>::value, "");
+    ^
+
+"Test_name.c", line 160: warning: expression has no effect
+    x43_s % y4_u;
+    ^
+
+"Test_name.c", line 161: warning: expression has no effect
+    x43_u % y4_s;
+    ^
+
+"Test_name.c", line 162: warning: expression has no effect
+    x4_s | y43_u;
+    ^
+
+"Test_name.c", line 163: warning: expression has no effect
+    x4_u | y43_s;
+    ^
+
+"Test_name.c", line 169: warning: expression has no effect
+    x43_s > 33;
+    ^
+
+"Test_name.c", line 170: warning: expression has no effect
+    x4_s > 33; // expected-warning {{result of comparison of constant 33 with expression of type '_BitInt(4)' is always false}}
+    ^
+
+"Test_name.c", line 196: error: static assertion failed with ""
+    static_assert(sizeof(x43_s) == 8, "");
+    ^
+"Test_name.c", line 196: note: the final comparison was 6 == 8
+    static_assert(sizeof(x43_s) == 8, "");
+                                ^
+
+"Test_name.c", line 114: warning: variable "y32_s" was declared but never referenced
+    _BitInt(sizeof(int) * 8) x32_s = 1, y32_s = 1;
+                                        ^
+
+"Test_name.c", line 115: warning: variable "y32_u" was declared but never referenced
+    unsigned _BitInt(sizeof(unsigned) * 8) x32_u = 1, y32_u = 1;
+                                                      ^
+
+"Test_name.c", line 119: warning: variable "y_int" was declared but never referenced
+    int x_int = 1, y_int = 1;
+                   ^
+
+"Test_name.c", line 120: warning: variable "y_uint" was declared but never referenced
+    unsigned x_uint = 1, y_uint = 1;
+                         ^
+
+"Test_name.c", line 211: error: _BitInt types cannot be the underlying type of an enumeration type
+  enum AsEnumUnderlyingType : _BitInt(33) { // expected-error{{'_BitInt(33)' is an invalid underlying type}}
+                              ^
+
+"Test_name.c", line 232: warning: variable "i" is used before its value is set
+    overloaded(i);
+               ^
+
+"Test_name.c", line 233: warning: variable "i32" is used before its value is set
+    overloaded(i32);
+               ^
+
+"Test_name.c", line 234: warning: variable "i33" is used before its value is set
+    overloaded(i33);
+               ^
+
+"Test_name.c", line 235: warning: variable "s" is used before its value is set
+    overloaded(s);
+               ^
+
+"Test_name.c", line 237: error: more than one instance of overloaded function "overloaded2" matches the argument list:
+            function "overloaded2(_BitInt(32))" (declared at line 219)
+            function "overloaded2(_BitInt(33))" (declared at line 221)
+            function "overloaded2(short)" (declared at line 223)
+            argument types are: (int)
+    overloaded2(i); // expected-error{{call to 'overloaded2' is ambiguous}}
+    ^
+
+"Test_name.c", line 272: warning: expression has no effect
+    b ? s30 : s31a;
+    ^
+
+"Test_name.c", line 273: warning: expression has no effect
+    b ? s31a : s30;
+    ^
+
+"Test_name.c", line 274: warning: expression has no effect
+    b ? s32 : (int)0;
+    ^
+
+"Test_name.c", line 280: error: static assertion failed with ""
+    static_assert(is_same<decltype(b ? s30 : 0), int>::value, "");
+    ^
+
+"Test_name.c", line 291: error: static assertion failed with ""
+    static_assert(is_same<decltype(a2 * c), int>::value, "");
+    ^
+
+"Test_name.c", line 285: warning: variable "a2" was set but never used
+    _BitInt(2) a2 = 1;
+               ^
+
+"Test_name.c", line 286: warning: variable "a3" was set but never used
+    _BitInt(3) a3 = 2;
+               ^
+
+"Test_name.c", line 287: warning: variable "a33" was set but never used
+    _BitInt(33) a33 = 1;
+                ^
+
+"Test_name.c", line 288: warning: variable "c" was set but never used
+    char c = 3;
+         ^
+
+29 errors detected in the compilation of "Test_name.c".

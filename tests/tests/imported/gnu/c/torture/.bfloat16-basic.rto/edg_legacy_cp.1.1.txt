@@ -1,0 +1,19 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-basic.h", line 44: warning: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  krfn (arg)
+        ^
+
+"./torture/floatn-basic.h", line 52: warning: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  krprofn (arg)
+           ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+./torture/floatn-basic.h:37:12: error: expected identifier or '(' before '__builtin_c23_va_start'
+./torture/floatn-basic.h: In function 'krfn':
+./torture/floatn-basic.h:46:1: error: number of arguments doesn't match prototype
+./torture/floatn-basic.h:44:15: error: prototype declaration
+./torture/floatn-basic.h: In function 'main':
+./torture/floatn-basic.h:95:14: error: too many arguments to function 'krfn'; expected 0, have 1
+./torture/floatn-basic.h:44:8: note: declared here
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 14: warning: expression has no effect
+    return i <= (v4si){(0, 0)};
+                        ^
+
+"Test_name.c", line 21: warning: expression has no effect
+    r = i <= (v4si){(0, 0)};
+                     ^
+
+"Test_name.c", line 28: warning: expression has no effect
+    return foo (i <= (v4si){(0, 0)});
+                             ^
+
+"Test_name.c", line 35: warning: expression has no effect
+    struct S s = { .v = i <= (v4si){(0, 0)} };
+                                     ^
+
+"Test_name.c", line 42: warning: expression has no effect
+    return (v4si){(1, i++)} == (v4si){(0, 0)};
+                   ^
+
+"Test_name.c", line 42: warning: expression has no effect
+    return (v4si){(1, i++)} == (v4si){(0, 0)};
+                                       ^
+
+"Test_name.c", line 49: warning: expression has no effect
+    r = (v4si){(1, i++)} == (v4si){(0, 0)};
+                ^
+
+"Test_name.c", line 49: warning: expression has no effect
+    r = (v4si){(1, i++)} == (v4si){(0, 0)};
+                                    ^
+
+"Test_name.c", line 56: warning: expression has no effect
+    return foo ((v4si){(1, i++)} == (v4si){(0, 0)});
+                        ^
+
+"Test_name.c", line 56: warning: expression has no effect
+    return foo ((v4si){(1, i++)} == (v4si){(0, 0)});
+                                            ^
+
+"Test_name.c", line 63: warning: expression has no effect
+    struct S s = { .v = (v4si){(1, i++)} == (v4si){(0, 0)} };
+                                ^
+
+"Test_name.c", line 63: warning: expression has no effect
+    struct S s = { .v = (v4si){(1, i++)} == (v4si){(0, 0)} };
+                                                    ^
+

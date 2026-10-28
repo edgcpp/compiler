@@ -1,0 +1,49 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"Test_name.c", line 21: warning: expression has no effect
+    int z = (internal, 0);
+             ^
+
+"Test_name.c", line 23: warning: expression has no effect
+    value;
+    ^
+
+"Test_name.c", line 19: warning: variable "x" was declared but never referenced
+    int x = value;
+        ^
+
+"Test_name.c", line 20: warning: variable "y" was declared but never referenced
+    int y = ref;
+        ^
+
+"Test_name.c", line 21: warning: variable "z" was declared but never referenced
+    int z = (internal, 0);
+        ^
+
+"Test_name.c", line 24: warning: variable "b" was declared but never referenced
+    bool b = value < value;
+         ^
+
+"Test_name.c", line 32: warning: expression has no effect
+    int z = (internal, 0);
+             ^
+
+"Test_name.c", line 34: warning: expression has no effect
+    value;
+    ^
+
+"Test_name.c", line 30: warning: variable "x" was declared but never referenced
+    int x = value;
+        ^
+
+"Test_name.c", line 31: warning: variable "y" was declared but never referenced
+    int y = ref;
+        ^
+
+"Test_name.c", line 32: warning: variable "z" was declared but never referenced
+    int z = (internal, 0);
+        ^
+
+"Test_name.c", line 35: warning: variable "b" was declared but never referenced
+    bool b = value < value;
+         ^
+

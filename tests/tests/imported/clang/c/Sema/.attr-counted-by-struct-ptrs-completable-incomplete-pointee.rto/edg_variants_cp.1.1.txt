@@ -1,0 +1,382 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 112: error: expression must be a pointer to a complete object type
+    uninit.buf++; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 113: error: expression must be a pointer to a complete object type
+    ++uninit.buf; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+      ^
+
+"Test_name.c", line 114: error: expression must be a pointer to a complete object type
+    uninit.buf += 1; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 115: error: expression must be a pointer to a complete object type
+    uninit.buf_typedef++; // // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 116: error: expression must be a pointer to a complete object type
+    ++uninit.buf_typedef; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+      ^
+
+"Test_name.c", line 117: error: expression must be a pointer to a complete object type
+    uninit.buf_typedef -= 1; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 119: error: expression must be a pointer to a complete object type
+    uninit.buf--; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 120: error: expression must be a pointer to a complete object type
+    --uninit.buf; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+      ^
+
+"Test_name.c", line 121: error: expression must be a pointer to a complete object type
+    uninit.buf -= 1; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 122: error: expression must be a pointer to a complete object type
+    uninit.buf_typedef--; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 123: error: expression must be a pointer to a complete object type
+    --uninit.buf_typedef; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+      ^
+
+"Test_name.c", line 124: error: expression must be a pointer to a complete object type
+    uninit.buf_typedef -= 1; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 126: error: expression must be a pointer to a complete object type
+    ptr->buf++; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 127: error: expression must be a pointer to a complete object type
+    ++ptr->buf; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+      ^
+
+"Test_name.c", line 128: error: expression must be a pointer to a complete object type
+    ptr->buf += 1; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 129: error: expression must be a pointer to a complete object type
+    ptr->buf--; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 130: error: expression must be a pointer to a complete object type
+    --ptr->buf; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+      ^
+
+"Test_name.c", line 131: error: expression must be a pointer to a complete object type
+    ptr->buf -= 1; // expected-error{{arithmetic on a pointer to an incomplete type 'struct IncompleteTy'}}
+    ^
+
+"Test_name.c", line 133: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef++; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 134: error: expression must be a pointer to a complete object type
+    ++ptr->buf_typedef; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+      ^
+
+"Test_name.c", line 135: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef += 1; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 136: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef--; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 137: error: expression must be a pointer to a complete object type
+    --ptr->buf_typedef; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+      ^
+
+"Test_name.c", line 138: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef -= 1; // expected-error{{arithmetic on a pointer to an incomplete type 'Incomplete_t' (aka 'struct IncompleteTy')}}
+    ^
+
+"Test_name.c", line 178: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_zero = &uninit.buf[0];
+                                          ^
+
+"Test_name.c", line 180: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_idx = &uninit.buf[idx()];
+                                         ^
+
+"Test_name.c", line 183: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_zero_typedef = &uninit.buf_typedef[0];
+                                                  ^
+
+"Test_name.c", line 185: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_idx_typedef = &uninit.buf_typedef[idx()];
+                                                 ^
+
+"Test_name.c", line 188: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_zero_ptr = &ptr->buf[0];
+                                              ^
+
+"Test_name.c", line 190: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_idx_ptr = &ptr->buf[idx()];
+                                             ^
+
+"Test_name.c", line 192: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_zero_ptr_typedef = &ptr->buf_typedef[0];
+                                                      ^
+
+"Test_name.c", line 194: error: expression must be a pointer to a complete object type
+    struct IncompleteTy* addr_elt_idx_ptr_typedef = &ptr->buf_typedef[idx()];
+                                                     ^
+
+"Test_name.c", line 213: error: expression must be a pointer to a complete object type
+    uninit.buf[0] = uninit.buf[1];
+    ^
+
+"Test_name.c", line 213: error: expression must be a pointer to a complete object type
+    uninit.buf[0] = uninit.buf[1];
+                    ^
+
+"Test_name.c", line 215: error: expression must be a pointer to a complete object type
+    uninit.buf_typedef[0] = uninit.buf_typedef[1];
+    ^
+
+"Test_name.c", line 215: error: expression must be a pointer to a complete object type
+    uninit.buf_typedef[0] = uninit.buf_typedef[1];
+                            ^
+
+"Test_name.c", line 217: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+    ^
+
+"Test_name.c", line 217: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+                  ^
+
+"Test_name.c", line 219: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+    ^
+
+"Test_name.c", line 219: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+                          ^
+
+"Test_name.c", line 54: warning: variable "tmp" was declared but never referenced
+    void *tmp = explicit_desig_init.buf;
+          ^
+
+"Test_name.c", line 56: warning: variable "tmp2" was declared but never referenced
+    void *tmp2 = explicit_desig_init.buf_typedef;
+          ^
+
+"Test_name.c", line 58: warning: variable "partial_explicit_desig_init" was declared but never referenced
+    struct CBBufDeclPos partial_explicit_desig_init = {
+                        ^
+
+"Test_name.c", line 77: warning: variable "tmp3" was declared but never referenced
+    void* tmp3 = implicit_full_init.buf;
+          ^
+
+"Test_name.c", line 79: warning: variable "tmp4" was declared but never referenced
+    void* tmp4 = implicit_full_init.buf_typedef;
+          ^
+
+"Test_name.c", line 81: warning: variable "explicit_non_desig_init" was declared but never referenced
+    struct CBBufDeclPos explicit_non_desig_init = {
+                        ^
+
+"Test_name.c", line 144: warning: variable "addr" was declared but never referenced
+    void* addr = 
+          ^
+
+"Test_name.c", line 147: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = 
+          ^
+
+"Test_name.c", line 150: warning: variable "addr_ptr" was declared but never referenced
+    void* addr_ptr = 
+          ^
+
+"Test_name.c", line 153: warning: variable "addr_ptr_typedef" was declared but never referenced
+    void* addr_ptr_typedef = 
+          ^
+
+"Test_name.c", line 172: warning: variable "take_addr" was declared but never referenced
+    void* take_addr = &uninit.buf;
+          ^
+
+"Test_name.c", line 173: warning: variable "take_addr_typedef" was declared but never referenced
+    void* take_addr_typedef = &uninit.buf_typedef;
+          ^
+
+"Test_name.c", line 174: warning: variable "take_addr_ptr" was declared but never referenced
+    void* take_addr_ptr = &ptr->buf;
+          ^
+
+"Test_name.c", line 175: warning: variable "take_addr_ptr_typedef" was declared but never referenced
+    void* take_addr_ptr_typedef = &ptr->buf_typedef;
+          ^
+
+"Test_name.c", line 282: warning: variable "explicit_desig_init" was declared but never referenced
+    struct CBBufDeclPos explicit_desig_init = {
+                        ^
+
+"Test_name.c", line 288: warning: variable "partial_explicit_desig_init" was declared but never referenced
+    struct CBBufDeclPos partial_explicit_desig_init = {
+                        ^
+
+"Test_name.c", line 293: warning: variable "implicit_full_init" was declared but never referenced
+    struct CBBufDeclPos implicit_full_init = {0};
+                        ^
+
+"Test_name.c", line 295: warning: variable "explicit_non_desig_init" was declared but never referenced
+    struct CBBufDeclPos explicit_non_desig_init = {
+                        ^
+
+"Test_name.c", line 306: warning: variable "tmp" was declared but never referenced
+    void* tmp = ptr->buf;
+          ^
+
+"Test_name.c", line 307: warning: variable "tmp2" was declared but never referenced
+    void* tmp2 = ptr->buf_typedef;
+          ^
+
+"Test_name.c", line 310: warning: variable "take_addr_ptr" was declared but never referenced
+    void* take_addr_ptr = &ptr->buf;
+          ^
+
+"Test_name.c", line 311: warning: variable "take_addr_ptr_typedef" was declared but never referenced
+    void* take_addr_ptr_typedef = &ptr->buf_typedef;
+          ^
+
+"Test_name.c", line 313: warning: variable "addr_elt_zero_ptr" was declared but never referenced
+    struct IncompleteTy* addr_elt_zero_ptr = &ptr->buf[0];
+                         ^
+
+"Test_name.c", line 315: warning: variable "addr_elt_zero_ptr_typedef" was declared but never referenced
+    struct IncompleteTy* addr_elt_zero_ptr_typedef = &ptr->buf_typedef[0];
+                         ^
+
+"Test_name.c", line 401: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+    ^
+
+"Test_name.c", line 401: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+                  ^
+
+"Test_name.c", line 403: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+    ^
+
+"Test_name.c", line 403: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+                          ^
+
+"Test_name.c", line 369: warning: variable "explicit_desig_init" was set but never used
+    struct CBBufTyPos explicit_desig_init = {
+                      ^
+
+"Test_name.c", line 389: warning: variable "addr" was declared but never referenced
+    void* addr = 
+          ^
+
+"Test_name.c", line 392: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = 
+          ^
+
+"Test_name.c", line 422: warning: variable "addr" was declared but never referenced
+    void* addr = ((char*) ptr->buf) + 1;
+          ^
+
+"Test_name.c", line 423: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = ((char*) ptr->buf_typedef) + 1;
+          ^
+
+"Test_name.c", line 475: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+    ^
+
+"Test_name.c", line 475: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+                  ^
+
+"Test_name.c", line 477: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+    ^
+
+"Test_name.c", line 477: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+                          ^
+
+"Test_name.c", line 443: warning: variable "explicit_desig_init" was set but never used
+    struct CBBufUnionTyPos explicit_desig_init = {
+                           ^
+
+"Test_name.c", line 463: warning: variable "addr" was declared but never referenced
+    void* addr = 
+          ^
+
+"Test_name.c", line 466: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = 
+          ^
+
+"Test_name.c", line 496: warning: variable "addr" was declared but never referenced
+    void* addr = ((char*) ptr->buf) + 1;
+          ^
+
+"Test_name.c", line 497: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = ((char*) ptr->buf_typedef) + 1;
+          ^
+
+"Test_name.c", line 549: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+    ^
+
+"Test_name.c", line 549: error: expression must be a pointer to a complete object type
+    ptr->buf[0] = ptr->buf[1];
+                  ^
+
+"Test_name.c", line 551: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+    ^
+
+"Test_name.c", line 551: error: expression must be a pointer to a complete object type
+    ptr->buf_typedef[0] = ptr->buf_typedef[1];
+                          ^
+
+"Test_name.c", line 517: warning: variable "explicit_desig_init" was set but never used
+    struct CBBufEnumTyPos explicit_desig_init = {
+                          ^
+
+"Test_name.c", line 537: warning: variable "addr" was declared but never referenced
+    void* addr = 
+          ^
+
+"Test_name.c", line 540: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = 
+          ^
+
+"Test_name.c", line 571: warning: variable "addr" was declared but never referenced
+    void* addr = ((char*) ptr->buf) + 1;
+          ^
+
+"Test_name.c", line 572: warning: variable "addr_typedef" was declared but never referenced
+    void* addr_typedef = ((char*) ptr->buf_typedef) + 1;
+          ^
+
+"Test_name.c", line 585: warning: variable "explicit_desig_init" was declared but never referenced
+    struct CBBufEnumTyPos2 explicit_desig_init = {
+                           ^
+
+"Test_name.c", line 605: warning: variable "explicit_desig_init" was declared but never referenced
+    struct CBBufEnumTyPos3 explicit_desig_init = {
+                           ^
+
+"Test_name.c", line 631: warning: variable "addr" was declared but never referenced
+    void* addr = ((char*) ptr->arr[0]) + 1;
+          ^
+
+"Test_name.c", line 271: warning: variable "global_tentative_defn2" was declared but never referenced
+  static struct CBBufDeclPos global_tentative_defn2;
+                             ^
+
+52 errors detected in the compilation of "Test_name.c".

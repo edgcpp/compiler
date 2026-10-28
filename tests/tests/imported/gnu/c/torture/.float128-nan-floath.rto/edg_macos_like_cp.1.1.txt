@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"./torture/floatn-nan-floath.h", line 26: error: identifier "_Float128" is undefined
+  volatile _Float128 nans_cst = 
+           ^
+
+"./torture/floatn-nan-floath.h", line 26: error: builtin function is not available because 128-bit floating-point types are not supported
+                          (__builtin_nansf128 (""))
+                           ^
+
+"./torture/floatn-nan-floath.h", line 26: error: function call is not allowed in a constant expression
+                          (__builtin_nansf128 (""))
+                           ^
+
+"./torture/floatn-nan-floath.h", line 31: error: identifier "_Float128" is undefined
+    volatile _Float128 r;
+             ^
+
+4 errors detected in the compilation of "Test_name.c".

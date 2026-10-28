@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./strict-flex-array-2.c", line 49: warning: integer conversion resulted in a change of sign
+      do { size_t v = -1; if (__builtin_object_size(normal->c, 1) == v) printf("ok:  %s == %zd\n", "__builtin_object_size(normal->c, 1)", __builtin_object_size(normal->c, 1)); else { printf("WAT: %s == %zd (expected %zd)\n", "__builtin_object_size(normal->c, 1)", __builtin_object_size(normal->c, 1), v); __builtin_abort (); } } while (0);;
+                      ^
+
+"./strict-flex-array-2.c", line 50: warning: integer conversion resulted in a change of sign
+      do { size_t v = -1; if (__builtin_object_size(trailing_1->c, 1) == v) printf("ok:  %s == %zd\n", "__builtin_object_size(trailing_1->c, 1)", __builtin_object_size(trailing_1->c, 1)); else { printf("WAT: %s == %zd (expected %zd)\n", "__builtin_object_size(trailing_1->c, 1)", __builtin_object_size(trailing_1->c, 1), v); __builtin_abort (); } } while (0);;
+                      ^
+
+"./strict-flex-array-2.c", line 51: warning: integer conversion resulted in a change of sign
+      do { size_t v = -1; if (__builtin_object_size(trailing_0->c, 1) == v) printf("ok:  %s == %zd\n", "__builtin_object_size(trailing_0->c, 1)", __builtin_object_size(trailing_0->c, 1)); else { printf("WAT: %s == %zd (expected %zd)\n", "__builtin_object_size(trailing_0->c, 1)", __builtin_object_size(trailing_0->c, 1), v); __builtin_abort (); } } while (0);;
+                      ^
+
+"./strict-flex-array-2.c", line 52: warning: integer conversion resulted in a change of sign
+      do { size_t v = -1; if (__builtin_object_size(trailing_flex->c, 1) == v) printf("ok:  %s == %zd\n", "__builtin_object_size(trailing_flex->c, 1)", __builtin_object_size(trailing_flex->c, 1)); else { printf("WAT: %s == %zd (expected %zd)\n", "__builtin_object_size(trailing_flex->c, 1)", __builtin_object_size(trailing_flex->c, 1), v); __builtin_abort (); } } while (0);;
+                      ^
+

@@ -1,0 +1,15 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics interface2b.cc Test_name.c
+interface2b.cc:
+Test_name.c:
+"./ext/interface2.C", line 6: warning: unrecognized #pragma
+  #pragma implementation "interface2-imaginary.h"
+          ^
+
+"./ext/interface2a.h", line 2: warning: unrecognized #pragma
+  #pragma interface "interface2-imaginary.h"
+          ^
+
+/usr/sbin/ld: interface2b.o: in function `main':
+interface2b.int.c:(.text+0xXX): undefined reference to `foo1()'
+/usr/sbin/ld: interface2b.int.c:(.text+0xXX): undefined reference to `foo2()'
+collect2: error: ld returned 1 exit status

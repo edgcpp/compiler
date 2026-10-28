@@ -1,0 +1,118 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 30: error: no instance of constructor "NonAggr1::NonAggr1" matches the argument list
+            argument types are: (int)
+  NonAggr1 na1 = { 17 }; // expected-error{{no matching constructor for initialization of 'NonAggr1'}}
+                 ^
+"Test_name.c", line 10: note: function "NonAggr1::NonAggr1(const NonAggr1 &)" does not match because argument #1 does not match parameter
+  struct NonAggr1 { // expected-note 2 {{candidate constructor}}
+         ^
+"Test_name.c", line 10: note: function "NonAggr1::NonAggr1(NonAggr1 &&)" does not match because argument #1 does not match parameter
+  struct NonAggr1 { // expected-note 2 {{candidate constructor}}
+         ^
+"Test_name.c", line 11: note: number of parameters of function "NonAggr1::NonAggr1(int, int)" does not match the call
+    NonAggr1(int, int) { } // expected-note {{candidate constructor}}
+    ^
+
+"Test_name.c", line 31: error: no suitable constructor exists to convert from "int" to "NonAggr2"
+  NonAggr2 na2 = { 17 };
+                   ^
+
+"Test_name.c", line 32: error: no suitable constructor exists to convert from "int" to "NonAggr3"
+  NonAggr3 na3 = { 17 }; // expected-error{{no matching constructor for initialization of 'NonAggr3'}}
+                   ^
+
+"Test_name.c", line 33: error: no instance of constructor "NonAggr4::NonAggr4" matches the argument list
+            argument types are: (int)
+  NonAggr4 na4 = { 17 }; // expected-error{{no matching constructor for initialization of 'NonAggr4'}}
+                 ^
+"Test_name.c", line 25: note: function "NonAggr4::NonAggr4(const NonAggr4 &)" does not match because argument #1 does not match parameter
+  struct NonAggr4 { // expected-note 3 {{candidate constructor}}
+         ^
+"Test_name.c", line 25: note: function "NonAggr4::NonAggr4(NonAggr4 &&)" does not match because argument #1 does not match parameter
+  struct NonAggr4 { // expected-note 3 {{candidate constructor}}
+         ^
+"Test_name.c", line 25: note: number of parameters of function "NonAggr4::NonAggr4()" does not match the call
+  struct NonAggr4 { // expected-note 3 {{candidate constructor}}
+         ^
+
+"Test_name.c", line 47: error: a value of type "void *" cannot be used to initialize an entity of type "short"
+  __v4hi v1 = { (void *)1, 2, 3 }; // expected-error {{cannot initialize a vector element of type 'short' with an rvalue of type 'void *'}}
+                ^
+
+"Test_name.c", line 50: error: a value of type "void *" cannot be used to initialize an entity of type "int"
+  int a[] = { (void *)1 }; // expected-error {{cannot initialize an array element of type 'int' with an rvalue of type 'void *'}}
+              ^
+
+"Test_name.c", line 53: error: a value of type "void *" cannot be used to initialize an entity of type "int"
+  struct S { int a; } s = { (void *)1 }; // expected-error {{cannot initialize a member subobject of type 'int' with an rvalue of type 'void *'}}
+                            ^
+
+"Test_name.c", line 74: error: "A::A(const A &)" (declared at line 61), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+    A as2[1] = { 1 };
+                 ^
+
+"Test_name.c", line 80: error: "A::A(const A &)" (declared at line 61), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+    B b2 = { 1 };
+             ^
+
+"Test_name.c", line 139: error: no instance of constructor "ProtectedBaseCtor::B::B" matches the argument list
+            argument types are: ({...})
+    B g() { return {{}}; }
+                   ^
+"Test_name.c", line 127: note: function "ProtectedBaseCtor::B::B(const ProtectedBaseCtor::B &)" does not match because argument #1 does not match parameter
+    struct B : public A {
+           ^
+"Test_name.c", line 127: note: function "ProtectedBaseCtor::B::B(ProtectedBaseCtor::B &&)" does not match because argument #1 does not match parameter
+    struct B : public A {
+           ^
+"Test_name.c", line 127: note: number of parameters of function "ProtectedBaseCtor::B::B()" does not match the call
+    struct B : public A {
+           ^
+
+"Test_name.c", line 148: error: protected function "ProtectedBaseCtor::A::A()" (declared at line 124) is not accessible through a "ProtectedBaseCtor::A" pointer or object
+    B h() { return {A{}}; }
+                     ^
+
+"Test_name.c", line 148: error: no instance of constructor "ProtectedBaseCtor::B::B" matches the argument list
+            argument types are: (ProtectedBaseCtor::A)
+    B h() { return {A{}}; }
+                   ^
+"Test_name.c", line 127: note: function "ProtectedBaseCtor::B::B(const ProtectedBaseCtor::B &)" does not match because argument #1 does not match parameter
+    struct B : public A {
+           ^
+"Test_name.c", line 127: note: function "ProtectedBaseCtor::B::B(ProtectedBaseCtor::B &&)" does not match because argument #1 does not match parameter
+    struct B : public A {
+           ^
+"Test_name.c", line 127: note: number of parameters of function "ProtectedBaseCtor::B::B()" does not match the call
+    struct B : public A {
+           ^
+
+"Test_name.c", line 211: error: "ElementDestructor::X::~X()" (declared at line 207) is inaccessible
+      auto *y = new Y {}; // expected-error {{temporary of type 'X' has private destructor}}
+                       ^
+
+"Test_name.c", line 219: error: function "ElementDestructor::S0::~S0()" (declared at line 214) cannot be referenced -- it is a deleted function
+      return {2}; // expected-error {{attempt to use a deleted function}}
+               ^
+
+"Test_name.c", line 226: error: function "ElementDestructor::S0::~S0()" (declared at line 214) cannot be referenced -- it is a deleted function
+      auto *t = new S2 {1,2,3,4}; // expected-error {{attempt to use a deleted function}}
+                               ^
+
+"Test_name.c", line 226: error: function "ElementDestructor::S0::~S0()" (declared at line 214) cannot be referenced -- it is a deleted function
+      auto *t = new S2 {1,2,3,4}; // expected-error {{attempt to use a deleted function}}
+                               ^
+
+"Test_name.c", line 226: error: function "ElementDestructor::S0::~S0()" (declared at line 214) cannot be referenced -- it is a deleted function
+      auto *t = new S2 {1,2,3,4}; // expected-error {{attempt to use a deleted function}}
+                               ^
+
+"Test_name.c", line 226: error: function "ElementDestructor::S0::~S0()" (declared at line 214) cannot be referenced -- it is a deleted function
+      auto *t = new S2 {1,2,3,4}; // expected-error {{attempt to use a deleted function}}
+                               ^
+
+"Test_name.c", line 43: warning: variable "foo" was declared but never referenced
+  const type foo = {0};
+             ^
+
+18 errors detected in the compilation of "Test_name.c".

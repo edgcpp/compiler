@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics interface2b.cc Test_name.c
+interface2b.cc:
+Test_name.c:
+/usr/sbin/ld: interface2b.o: in function `main':
+interface2b.int.c:(.text+0xXX): undefined reference to `_Z4foo1v'
+/usr/sbin/ld: interface2b.int.c:(.text+0xXX): undefined reference to `_Z4foo2v'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 -tused --c++20 Test_name.c
+"Test_name.c", line 6: warning: "int operator==(const double &, const Derived &)" declares a non-template function -- add <> to refer to a template instance
+       friend inline int operator==(const double&, const Derived&);
+                         ^
+
+"Test_name.c", line 11: error: function "operator==" (declared at line 6) selected for operator rewrite does not return type bool
+     bool b = X{} == 0.;
+                  ^
+
+"Test_name.c", line 6: warning: extern inline function "operator==" was referenced but not defined
+       friend inline int operator==(const double&, const Derived&);
+                         ^
+
+1 error detected in the compilation of "Test_name.c".

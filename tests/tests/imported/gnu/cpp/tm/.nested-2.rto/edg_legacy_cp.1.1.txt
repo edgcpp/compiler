@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 34: error: identifier "__transaction_atomic" is undefined
+    __transaction_atomic {
+    ^
+
+"Test_name.c", line 34: error: expected a ";"
+    __transaction_atomic {
+                         ^
+
+"Test_name.c", line 37: warning: parsing restarts here after previous syntax error
+   }
+   ^
+
+"Test_name.c", line 38: error: identifier "__transaction_atomic" is undefined
+   __transaction_atomic {
+   ^
+
+"Test_name.c", line 38: error: expected a ";"
+   __transaction_atomic {
+                        ^
+
+"Test_name.c", line 42: warning: parsing restarts here after previous syntax error
+   return tt;
+            ^
+
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "HashTree::add_element"
+  }
+  ^
+
+"Test_name.c", line 29: warning: variable "enter_exit_times_inside" was declared but never referenced
+   ent_ex_times enter_exit_times_inside;
+                ^
+
+"Test_name.c", line 31: warning: variable "tt" was declared but never referenced
+   int tt;
+       ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 11: warning: variable "arr" was declared but never referenced
+    int arr[size];
+        ^
+
+"Test_name.c", line 26: warning: variable "arr" was declared but never referenced
+    int arr[size];
+        ^
+
+"Test_name.c", line 11: error: the size of an array must be greater than zero
+    int arr[size];
+            ^
+          detected during instantiation of "void <unnamed>::Foo<size>() [with size=-1]" at line 17
+
+"Test_name.c", line 26: error: the size of an array must be greater than zero
+    int arr[size];
+            ^
+          detected during instantiation of "void Bar<size>() [with size=-1]" at line 31
+
+2 errors detected in the compilation of "Test_name.c".

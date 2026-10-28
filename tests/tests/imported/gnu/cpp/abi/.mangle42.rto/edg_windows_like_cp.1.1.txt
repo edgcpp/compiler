@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 14: error: too many initializer values
+  			     0x00000000,
+  			     ^
+
+"Test_name.c", line 17: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_andnps ((__v4sf) g_Mask, x);
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

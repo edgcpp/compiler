@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --c++11 Test_name.c
+"Test_name.c", line 11: warning: a parenthesized initializer for a non-class entity must be an expression, not a brace-enclosed list
+    ca(const T (&s)[1],int): elem({{s}}) { } // { dg-error "paren|invalid|too many" }
+                                       ^
+
+"Test_name.c", line 18: warning: a parenthesized initializer for a non-class entity must be an expression, not a brace-enclosed list
+    ca(const T &v,double): elem({v}) { } // { dg-error "paren" "" { target { ! c++20 } } }
+                                   ^
+
+"Test_name.c", line 10: warning: extra braces are nonstandard
+    ca(const T (&s)[1]): elem{{s}} { }	   // { dg-error "invalid" }
+                              ^
+          detected during instantiation of "ca<T>::ca(const T (&)[1]) [with T=int]" at line 23
+
+"Test_name.c", line 10: error: a value of type "const int *" cannot be used to initialize an entity of type "int"
+    ca(const T (&s)[1]): elem{{s}} { }	   // { dg-error "invalid" }
+                               ^
+          detected during instantiation of "ca<T>::ca(const T (&)[1]) [with T=int]" at line 23
+
+"Test_name.c", line 11: warning: extra braces are nonstandard
+    ca(const T (&s)[1],int): elem({{s}}) { } // { dg-error "paren|invalid|too many" }
+                                   ^
+          detected during instantiation of "ca<T>::ca(const T (&)[1], int) [with T=int]" at line 24
+
+"Test_name.c", line 11: error: a value of type "const int *" cannot be used to initialize an entity of type "int"
+    ca(const T (&s)[1],int): elem({{s}}) { } // { dg-error "paren|invalid|too many" }
+                                    ^
+          detected during instantiation of "ca<T>::ca(const T (&)[1], int) [with T=int]" at line 24
+
+"Test_name.c", line 12: error: invalid initializer for array member "ca<T>::elem [with T=int]"
+    ca(const T (&s)[1],char): elem(s) { }	   // { dg-error "array" }
+                                   ^
+          detected during instantiation of "ca<T>::ca(const T (&)[1], char) [with T=int]" at line 25
+
+"Test_name.c", line 13: error: a value of type "const int *" cannot be used to initialize an entity of type "int"
+    ca(const T (&s)[1],double): elem{s} { }  // { dg-error "invalid" }
+                                     ^
+          detected during instantiation of "ca<T>::ca(const T (&)[1], double) [with T=int]" at line 26
+
+"Test_name.c", line 15: warning: extra braces are nonstandard
+    ca(const T &v): elem{{v}} { }	      // OK
+                         ^
+          detected during instantiation of "ca<T>::ca(const T &) [with T=int]" at line 27
+
+"Test_name.c", line 16: error: extra braces are nonstandard
+    ca(const T &v,int): elem{{{v}}} { } // { dg-error "braces" }
+                             ^
+          detected during instantiation of "ca<T>::ca(const T &, int) [with T=int]" at line 28
+
+5 errors detected in the compilation of "Test_name.c".

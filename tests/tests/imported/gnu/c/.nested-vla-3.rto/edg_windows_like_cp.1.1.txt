@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 --strict_gnu Test_name.c
+"Test_name.c", line 13: error: an entity with linkage cannot have a type involving a variable length array
+  	char (*bar(void))[++n] { return &tmp; }
+  	       ^
+
+"Test_name.c", line 13: error: expected a ";"
+  	char (*bar(void))[++n] { return &tmp; }
+  	                       ^
+
+"Test_name.c", line 16: warning: parsing restarts here after previous syntax error
+  		__builtin_abort();
+  		                 ^
+
+"Test_name.c", line 12: warning: variable "tmp" was declared but never referenced
+  	char tmp[2] = { 0 };
+  	     ^
+
+2 errors detected in the compilation of "Test_name.c".

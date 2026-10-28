@@ -1,0 +1,1000 @@
+fe_only -DTEST_NUMBER=11 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -DPS Test_name.c
+"Test_name.c", line 29: error: this declaration has no storage class or type specifier
+  __declspec(dllimport) typedef int typedef1;
+  ^
+
+"Test_name.c", line 29: error: identifier "dllimport" is undefined
+  __declspec(dllimport) typedef int typedef1;
+             ^
+
+"Test_name.c", line 29: error: expected a ";"
+  __declspec(dllimport) typedef int typedef1;
+                        ^
+
+"Test_name.c", line 31: error: "dllimport" is not a type name
+  typedef __declspec(dllimport) int typedef2;
+                     ^
+
+"Test_name.c", line 31: error: explicit type is missing ("int" assumed)
+  typedef __declspec(dllimport) int typedef2;
+          ^
+
+"Test_name.c", line 31: error: "__declspec" has already been declared in the current scope
+  typedef __declspec(dllimport) int typedef2;
+          ^
+
+"Test_name.c", line 31: error: expected a ";"
+  typedef __declspec(dllimport) int typedef2;
+                                ^
+
+"Test_name.c", line 33: error: "dllimport" is not a type name
+  typedef int __declspec(dllimport) typedef3;
+                         ^
+
+"Test_name.c", line 33: error: expected a ";"
+  typedef int __declspec(dllimport) typedef3;
+                                    ^
+
+"Test_name.c", line 35: error: expected a ";"
+  typedef __declspec(dllimport) void (*FunTy)();
+                                ^
+
+"Test_name.c", line 37: error: typedef "__declspec" may not be used in an elaborated type specifier
+  enum __declspec(dllimport) Enum {};
+       ^
+
+"Test_name.c", line 37: error: "dllimport" has already been declared in the current scope
+  enum __declspec(dllimport) Enum {};
+                  ^
+
+"Test_name.c", line 37: error: expected a ";"
+  enum __declspec(dllimport) Enum {};
+                             ^
+
+"Test_name.c", line 40: error: typedef "__declspec" may not be used in an elaborated type specifier
+  enum class __declspec(dllimport) EnumClass {};
+             ^
+
+"Test_name.c", line 40: error: variable "dllimport" has already been defined (previous definition at line 37)
+  enum class __declspec(dllimport) EnumClass {};
+                        ^
+
+"Test_name.c", line 40: error: expected a ";"
+  enum class __declspec(dllimport) EnumClass {};
+                                   ^
+
+"Test_name.c", line 51: error: function type may not come from a typedef
+  __declspec(dllimport) extern int ExternGlobalDecl;
+             ^
+
+"Test_name.c", line 51: error: declaration is incompatible with "<error-type> dllimport" (declared at line 37)
+  __declspec(dllimport) extern int ExternGlobalDecl;
+             ^
+
+"Test_name.c", line 51: error: expected a "{"
+  __declspec(dllimport) extern int ExternGlobalDecl;
+                        ^
+
+"Test_name.c", line 127: warning: parsing restarts here after previous syntax error
+  extern "C" {
+             ^
+
+"Test_name.c", line 129: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  __declspec(dllimport) extern int GlobalRedecl5; // expected-warning{{redeclaration of 'GlobalRedecl5' should not add 'dllimport' attribute}}
+  ^
+
+"Test_name.c", line 129: error: expected a ";"
+  __declspec(dllimport) extern int GlobalRedecl5; // expected-warning{{redeclaration of 'GlobalRedecl5' should not add 'dllimport' attribute}}
+                        ^
+
+"Test_name.c", line 130: warning: missing return statement at end of non-void function "dllimport"
+  }
+  ^
+
+"Test_name.c", line 133: error: function type may not come from a typedef
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+             ^
+
+"Test_name.c", line 133: error: function "dllimport" has already been defined (previous definition at line 51)
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+             ^
+
+"Test_name.c", line 133: error: expected a "{"
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+                        ^
+
+"Test_name.c", line 136: warning: parsing restarts here after previous syntax error
+  namespace    { __declspec(dllimport) int InternalGlobal; } // expected-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllimport'}}
+               ^
+
+"Test_name.c", line 136: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  namespace    { __declspec(dllimport) int InternalGlobal; } // expected-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllimport'}}
+                 ^
+
+"Test_name.c", line 136: error: expected a ";"
+  namespace    { __declspec(dllimport) int InternalGlobal; } // expected-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllimport'}}
+                                       ^
+
+"Test_name.c", line 136: warning: missing return statement at end of non-void function "dllimport"
+  namespace    { __declspec(dllimport) int InternalGlobal; } // expected-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllimport'}}
+                                                           ^
+
+"Test_name.c", line 138: error: function type may not come from a typedef
+  namespace ns { __declspec(dllimport) int ExternalGlobal; }
+                            ^
+
+"Test_name.c", line 138: error: expected a "{"
+  namespace ns { __declspec(dllimport) int ExternalGlobal; }
+                                       ^
+
+"Test_name.c", line 138: warning: missing return statement at end of non-void function "ns::dllimport"
+  namespace ns { __declspec(dllimport) int ExternalGlobal; }
+                                                           ^
+
+"Test_name.c", line 140: error: function type may not come from a typedef
+  __declspec(dllimport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllimport'}}
+             ^
+
+"Test_name.c", line 140: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllimport'}}
+             ^
+
+"Test_name.c", line 140: error: expected a "{"
+  __declspec(dllimport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllimport'}}
+                        ^
+
+"Test_name.c", line 147: warning: parsing restarts here after previous syntax error
+  inline void __declspec(dllimport) ImportedInlineWithThreadLocal() {
+                                                                    ^
+
+"Test_name.c", line 149: warning: missing return statement at end of non-void function "ns::dllimport"
+  }
+  ^
+
+"Test_name.c", line 148: warning: variable "OK" was declared but never referenced
+    static __thread int OK; // no-error
+                        ^
+
+"Test_name.c", line 153: error: function type may not come from a typedef
+  __declspec(dllimport) float LocalRedecl1; // expected-note{{previous declaration is here}}
+             ^
+
+"Test_name.c", line 153: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) float LocalRedecl1; // expected-note{{previous declaration is here}}
+             ^
+
+"Test_name.c", line 153: error: expected a "{"
+  __declspec(dllimport) float LocalRedecl1; // expected-note{{previous declaration is here}}
+                        ^
+
+"Test_name.c", line 156: warning: parsing restarts here after previous syntax error
+  void functionScope() {
+                       ^
+
+"Test_name.c", line 157: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllimport) int LocalRedecl1; // expected-error{{redeclaration of 'LocalRedecl1' with a different type: 'int' vs 'float'}}
+    ^
+
+"Test_name.c", line 157: error: expected a ";"
+    __declspec(dllimport) int LocalRedecl1; // expected-error{{redeclaration of 'LocalRedecl1' with a different type: 'int' vs 'float'}}
+                          ^
+
+"Test_name.c", line 161: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllimport)        int LocalVarDecl;
+    ^
+
+"Test_name.c", line 161: error: expected a ";"
+    __declspec(dllimport)        int LocalVarDecl;
+                                 ^
+
+"Test_name.c", line 162: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllimport)        int LocalVarDef = 1; // expected-error{{definition of dllimport data}}
+    ^
+
+"Test_name.c", line 162: error: expected a ";"
+    __declspec(dllimport)        int LocalVarDef = 1; // expected-error{{definition of dllimport data}}
+                                 ^
+
+"Test_name.c", line 163: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllimport) extern int ExternLocalVarDecl;
+    ^
+
+"Test_name.c", line 163: error: expected a ";"
+    __declspec(dllimport) extern int ExternLocalVarDecl;
+                          ^
+
+"Test_name.c", line 164: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllimport) extern int ExternLocalVarDef = 1; // expected-error{{definition of dllimport data}}
+    ^
+
+"Test_name.c", line 164: error: expected a ";"
+    __declspec(dllimport) extern int ExternLocalVarDef = 1; // expected-error{{definition of dllimport data}}
+                          ^
+
+"Test_name.c", line 165: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+    __declspec(dllimport) static int StaticLocalVar; // expected-error{{'StaticLocalVar' must have external linkage when declared 'dllimport'}}
+    ^
+
+"Test_name.c", line 165: error: expected a ";"
+    __declspec(dllimport) static int StaticLocalVar; // expected-error{{'StaticLocalVar' must have external linkage when declared 'dllimport'}}
+                          ^
+
+"Test_name.c", line 166: warning: missing return statement at end of non-void function "ns::dllimport"
+  }
+  ^
+
+"Test_name.c", line 158: warning: variable "LocalRedecl2" was declared but never referenced
+    int *__attribute__((dllimport)) LocalRedecl2; // expected-error{{redeclaration of 'LocalRedecl2' with a different type: 'int *' vs 'float'}}
+                                    ^
+
+"Test_name.c", line 159: warning: variable "LocalRedecl3" was declared but never referenced
+    int LocalRedecl3 __attribute__((dllimport)); // expected-error{{redeclaration of 'LocalRedecl3' with a different type: 'int' vs 'float'}}
+        ^
+
+"Test_name.c", line 277: error: function type may not come from a typedef
+  __declspec(dllimport)      void decl1B();
+             ^
+
+"Test_name.c", line 277: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport)      void decl1B();
+             ^
+
+"Test_name.c", line 277: error: expected a "{"
+  __declspec(dllimport)      void decl1B();
+                             ^
+
+"Test_name.c", line 283: warning: parsing restarts here after previous syntax error
+  __declspec(dllimport) void def() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                   ^
+
+"Test_name.c", line 283: warning: missing return statement at end of non-void function "ns::dllimport"
+  __declspec(dllimport) void def() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                    ^
+
+"Test_name.c", line 286: error: function type may not come from a typedef
+  extern "C" __declspec(dllimport) void externC();
+                        ^
+
+"Test_name.c", line 286: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  extern "C" __declspec(dllimport) void externC();
+                        ^
+
+"Test_name.c", line 286: error: expected a "{"
+  extern "C" __declspec(dllimport) void externC();
+                                   ^
+
+"Test_name.c", line 293: warning: parsing restarts here after previous syntax error
+  __declspec(dllimport) inline void inlineFunc1() {}
+                                                  ^
+
+"Test_name.c", line 293: warning: missing return statement at end of non-void function "ns::dllimport"
+  __declspec(dllimport) inline void inlineFunc1() {}
+                                                   ^
+
+"Test_name.c", line 299: error: function type may not come from a typedef
+  __declspec(dllimport) inline void inlineDecl();
+             ^
+
+"Test_name.c", line 299: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) inline void inlineDecl();
+             ^
+
+"Test_name.c", line 299: error: expected a "{"
+  __declspec(dllimport) inline void inlineDecl();
+                        ^
+
+"Test_name.c", line 300: warning: missing return statement at end of non-void function "ns::dllimport"
+                               void inlineDecl() {}
+                                                  ^
+
+"Test_name.c", line 302: error: function type may not come from a typedef
+  __declspec(dllimport) void inlineDef();
+             ^
+
+"Test_name.c", line 302: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) void inlineDef();
+             ^
+
+"Test_name.c", line 302: error: expected a "{"
+  __declspec(dllimport) void inlineDef();
+                        ^
+
+"Test_name.c", line 306: warning: parsing restarts here after previous syntax error
+                 inline void inlineDef() {}
+                                         ^
+
+"Test_name.c", line 306: warning: missing return statement at end of non-void function "ns::dllimport"
+                 inline void inlineDef() {}
+                                          ^
+
+"Test_name.c", line 309: error: function type may not come from a typedef
+  __declspec(dllimport) void redecl1();
+             ^
+
+"Test_name.c", line 309: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) void redecl1();
+             ^
+
+"Test_name.c", line 309: error: expected a "{"
+  __declspec(dllimport) void redecl1();
+                        ^
+
+"Test_name.c", line 325: warning: parsing restarts here after previous syntax error
+                        void redecl3() {}
+                                       ^
+
+"Test_name.c", line 325: warning: missing return statement at end of non-void function "ns::dllimport"
+                        void redecl3() {}
+                                        ^
+
+"Test_name.c", line 328: error: function type may not come from a typedef
+  __declspec(dllimport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllimport' attribute}}
+             ^
+
+"Test_name.c", line 328: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllimport' attribute}}
+             ^
+
+"Test_name.c", line 328: error: expected a "{"
+  __declspec(dllimport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllimport' attribute}}
+                        ^
+
+"Test_name.c", line 332: error: cast to type "__declspec" (aka "int (<error-type>)") is not allowed
+  __declspec(dllimport) void redecl5(); // expected-warning{{redeclaration of 'redecl5' should not add 'dllimport' attribute}}
+  ^
+
+"Test_name.c", line 332: error: expected a ";"
+  __declspec(dllimport) void redecl5(); // expected-warning{{redeclaration of 'redecl5' should not add 'dllimport' attribute}}
+                        ^
+
+"Test_name.c", line 333: warning: missing return statement at end of non-void function "ns::dllimport"
+  }
+  ^
+
+"Test_name.c", line 337: error: function type may not come from a typedef
+  __declspec(dllimport) inline void redecl6() {} // expected-warning{{redeclaration of 'redecl6' should not add 'dllimport' attribute}}
+             ^
+
+"Test_name.c", line 337: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) inline void redecl6() {} // expected-warning{{redeclaration of 'redecl6' should not add 'dllimport' attribute}}
+             ^
+
+"Test_name.c", line 337: error: expected a "{"
+  __declspec(dllimport) inline void redecl6() {} // expected-warning{{redeclaration of 'redecl6' should not add 'dllimport' attribute}}
+                        ^
+
+"Test_name.c", line 337: warning: missing return statement at end of non-void function "ns::dllimport"
+  __declspec(dllimport) inline void redecl6() {} // expected-warning{{redeclaration of 'redecl6' should not add 'dllimport' attribute}}
+                                               ^
+
+"Test_name.c", line 345: error: expected a ";"
+    friend __declspec(dllimport) void friend1();
+                                 ^
+
+"Test_name.c", line 346: error: expected a ";"
+    friend __declspec(dllimport) void friend2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                 ^
+
+"Test_name.c", line 350: error: expected a ";"
+    friend __declspec(dllimport) void friend3(); // expected-note{{previous declaration is here}}
+                                 ^
+
+"Test_name.c", line 357: error: function type may not come from a typedef
+  __declspec(dllimport) void friend1();
+             ^
+
+"Test_name.c", line 357: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) void friend1();
+             ^
+
+"Test_name.c", line 357: error: expected a "{"
+  __declspec(dllimport) void friend1();
+                        ^
+
+"Test_name.c", line 364: warning: parsing restarts here after previous syntax error
+                        void friend3() {}
+                                       ^
+
+"Test_name.c", line 364: warning: missing return statement at end of non-void function "ns::dllimport"
+                        void friend3() {}
+                                        ^
+
+"Test_name.c", line 365: error: function type may not come from a typedef
+  __declspec(dllimport) void friend4(); // expected-warning{{redeclaration of 'friend4' should not add 'dllimport' attribute}}
+             ^
+
+"Test_name.c", line 365: error: function "ns::dllimport" has already been defined (previous definition at line 138)
+  __declspec(dllimport) void friend4(); // expected-warning{{redeclaration of 'friend4' should not add 'dllimport' attribute}}
+             ^
+
+"Test_name.c", line 365: error: expected a "{"
+  __declspec(dllimport) void friend4(); // expected-warning{{redeclaration of 'friend4' should not add 'dllimport' attribute}}
+                        ^
+
+"Test_name.c", line 367: warning: missing return statement at end of non-void function "ns::dllimport"
+  __declspec(dllimport) inline void friend5() {} // expected-warning{{redeclaration of 'friend5' should not add 'dllimport' attribute}}
+                                               ^
+
+"Test_name.c", line 373: error: incomplete type "void" is not allowed
+  void __declspec(dllimport) friend6(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+       ^
+
+"Test_name.c", line 373: error: expected a ";"
+  void __declspec(dllimport) friend6(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                             ^
+
+"Test_name.c", line 374: error: variable "ns::__declspec" has already been defined (previous definition at line 373)
+  void __declspec(dllimport) friend7();
+       ^
+
+"Test_name.c", line 374: error: incomplete type "void" is not allowed
+  void __declspec(dllimport) friend7();
+       ^
+
+"Test_name.c", line 374: error: expected a ";"
+  void __declspec(dllimport) friend7();
+                             ^
+
+"Test_name.c", line 377: error: the global scope has no "friend7"
+    friend void ::friend7();
+                  ^
+
+"Test_name.c", line 381: error: this declaration has no storage class or type specifier
+  __declspec(dllimport) void* operator new(__SIZE_TYPE__ n);
+  ^
+
+"Test_name.c", line 381: error: variable "ns::__declspec" has already been defined (previous definition at line 373)
+  __declspec(dllimport) void* operator new(__SIZE_TYPE__ n);
+  ^
+
+"Test_name.c", line 381: error: expected a ";"
+  __declspec(dllimport) void* operator new(__SIZE_TYPE__ n);
+                        ^
+
+"Test_name.c", line 384: error: this declaration has no storage class or type specifier
+  __declspec(dllimport) static int staticFunc(); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+  ^
+
+"Test_name.c", line 384: error: variable "ns::__declspec" has already been defined (previous definition at line 373)
+  __declspec(dllimport) static int staticFunc(); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+  ^
+
+"Test_name.c", line 384: error: expected a ";"
+  __declspec(dllimport) static int staticFunc(); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+                        ^
+
+"Test_name.c", line 385: error: this declaration has no storage class or type specifier
+  __declspec(dllimport) Internal internalRetFunc(); // expected-error{{'internalRetFunc' must have external linkage when declared 'dllimport'}}
+  ^
+
+"Test_name.c", line 385: error: variable "ns::__declspec" has already been defined (previous definition at line 373)
+  __declspec(dllimport) Internal internalRetFunc(); // expected-error{{'internalRetFunc' must have external linkage when declared 'dllimport'}}
+  ^
+
+"Test_name.c", line 385: error: expected a ";"
+  __declspec(dllimport) Internal internalRetFunc(); // expected-error{{'internalRetFunc' must have external linkage when declared 'dllimport'}}
+                        ^
+
+"Test_name.c", line 386: error: this declaration has no storage class or type specifier
+  namespace    { __declspec(dllimport) void internalFunc(); } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllimport'}}
+                 ^
+
+"Test_name.c", line 386: error: expected a ";"
+  namespace    { __declspec(dllimport) void internalFunc(); } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllimport'}}
+                                       ^
+
+"Test_name.c", line 387: error: this declaration has no storage class or type specifier
+  namespace ns { __declspec(dllimport) void externalFunc(); }
+                 ^
+
+"Test_name.c", line 387: error: expected a ";"
+  namespace ns { __declspec(dllimport) void externalFunc(); }
+                                       ^
+
+"Test_name.c", line 393: error: this declaration has no storage class or type specifier
+  __declspec(dllimport) void deletedFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}} expected-error{{dllimport cannot be applied to non-inline function definition}}
+  ^
+
+"Test_name.c", line 393: error: variable "ns::__declspec" has already been defined (previous definition at line 373)
+  __declspec(dllimport) void deletedFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}} expected-error{{dllimport cannot be applied to non-inline function definition}}
+  ^
+
+"Test_name.c", line 393: error: expected a ";"
+  __declspec(dllimport) void deletedFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}} expected-error{{dllimport cannot be applied to non-inline function definition}}
+                        ^
+
+"Test_name.c", line 395: error: this declaration has no storage class or type specifier
+  __declspec(dllimport) inline void deletedInlineFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}}
+  ^
+
+"Test_name.c", line 395: error: variable "ns::__declspec" has already been defined (previous definition at line 373)
+  __declspec(dllimport) inline void deletedInlineFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}}
+  ^
+
+"Test_name.c", line 395: error: expected a ";"
+  __declspec(dllimport) inline void deletedInlineFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}}
+                        ^
+
+"Test_name.c", line 407: error: this declaration has no storage class or type specifier
+  template<typename T> __declspec(dllimport) void funcTmplDecl1();
+                       ^
+
+"Test_name.c", line 407: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplDecl1();
+                                  ^
+
+"Test_name.c", line 407: error: "__declspec" has already been declared in the current scope
+  template<typename T> __declspec(dllimport) void funcTmplDecl1();
+                       ^
+
+"Test_name.c", line 407: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplDecl1();
+                                             ^
+
+"Test_name.c", line 408: warning: variable templates are a C++14 feature
+  template<typename T> void __declspec(dllimport) funcTmplDecl2();
+                                       ^
+
+"Test_name.c", line 408: error: declaration is incompatible with variable template "ns::__declspec" (declared at line 407)
+  template<typename T> void __declspec(dllimport) funcTmplDecl2();
+                            ^
+
+"Test_name.c", line 411: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                       ^
+
+"Test_name.c", line 411: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                             ^
+
+"Test_name.c", line 411: error: "dllimport" has already been declared in the current scope
+  template<typename T> __declspec(dllimport) void funcTmplDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                  ^
+
+"Test_name.c", line 411: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                             ^
+
+"Test_name.c", line 430: warning: parsing restarts here after previous syntax error
+  template<typename T> __declspec(dllimport) inline void inlineFuncTmplDecl(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                                                             ^
+
+"Test_name.c", line 433: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void inlineFuncTmplDef(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                       ^
+
+"Test_name.c", line 433: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void inlineFuncTmplDef(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                             ^
+
+"Test_name.c", line 433: error: variable template "ns::dllimport" has already been defined (previous definition at line 411)
+  template<typename T> __declspec(dllimport) void inlineFuncTmplDef(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                  ^
+
+"Test_name.c", line 433: error: expected a ";"
+  template<typename T> __declspec(dllimport) void inlineFuncTmplDef(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                             ^
+
+"Test_name.c", line 438: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                       ^
+
+"Test_name.c", line 438: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                                             ^
+
+"Test_name.c", line 438: error: variable template "ns::dllimport" has already been defined (previous definition at line 411)
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                                  ^
+
+"Test_name.c", line 438: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                                             ^
+
+"Test_name.c", line 439: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                       ^
+
+"Test_name.c", line 439: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                                             ^
+
+"Test_name.c", line 439: error: variable template "ns::dllimport" has already been defined (previous definition at line 411)
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                                  ^
+
+"Test_name.c", line 439: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplRedecl1();
+                                             ^
+
+"Test_name.c", line 441: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplRedecl2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                       ^
+
+"Test_name.c", line 441: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplRedecl2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                             ^
+
+"Test_name.c", line 441: error: variable template "ns::dllimport" has already been defined (previous definition at line 411)
+  template<typename T> __declspec(dllimport) void funcTmplRedecl2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                  ^
+
+"Test_name.c", line 441: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplRedecl2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                             ^
+
+"Test_name.c", line 444: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplRedecl3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                       ^
+
+"Test_name.c", line 444: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplRedecl3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                             ^
+
+"Test_name.c", line 444: error: variable template "ns::dllimport" has already been defined (previous definition at line 411)
+  template<typename T> __declspec(dllimport) void funcTmplRedecl3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                  ^
+
+"Test_name.c", line 444: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplRedecl3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                             ^
+
+"Test_name.c", line 448: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplRedecl4(); // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllimport' attribute}}
+                       ^
+
+"Test_name.c", line 448: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplRedecl4(); // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllimport' attribute}}
+                                             ^
+
+"Test_name.c", line 448: error: variable template "ns::dllimport" has already been defined (previous definition at line 411)
+  template<typename T> __declspec(dllimport) void funcTmplRedecl4(); // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllimport' attribute}}
+                                  ^
+
+"Test_name.c", line 448: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplRedecl4(); // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllimport' attribute}}
+                                             ^
+
+"Test_name.c", line 457: error: argument list for variable template "ns::__declspec" is missing
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend1();
+                                ^
+
+"Test_name.c", line 457: warning: variable templates are a C++14 feature
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend1();
+                                                      ^
+
+"Test_name.c", line 457: error: "dllimport" has already been declared in the current scope
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend1();
+                                           ^
+
+"Test_name.c", line 457: error: invalid friend declaration
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend1();
+                                           ^
+
+"Test_name.c", line 457: error: expected a ";"
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend1();
+                                                      ^
+
+"Test_name.c", line 458: error: argument list for variable template "ns::__declspec" is missing
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                ^
+
+"Test_name.c", line 458: warning: variable templates are a C++14 feature
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                                      ^
+
+"Test_name.c", line 458: error: "dllimport" has already been declared in the current scope
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                           ^
+
+"Test_name.c", line 458: error: invalid friend declaration
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                           ^
+
+"Test_name.c", line 458: error: expected a ";"
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend2(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                                      ^
+
+"Test_name.c", line 459: error: argument list for variable template "ns::__declspec" is missing
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                ^
+
+"Test_name.c", line 459: warning: variable templates are a C++14 feature
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                                      ^
+
+"Test_name.c", line 459: error: "dllimport" has already been declared in the current scope
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                           ^
+
+"Test_name.c", line 459: error: invalid friend declaration
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                           ^
+
+"Test_name.c", line 459: error: expected a ";"
+    template<typename T> friend __declspec(dllimport) void funcTmplFriend3(); // expected-note{{previous declaration is here}} expected-note{{previous attribute is here}}
+                                                      ^
+
+"Test_name.c", line 466: error: argument list for variable template "ns::__declspec" is missing
+    template<typename T> friend __declspec(dllimport) inline void funcTmplFriend5();
+                                ^
+
+"Test_name.c", line 466: warning: variable templates are a C++14 feature
+    template<typename T> friend __declspec(dllimport) inline void funcTmplFriend5();
+                                                      ^
+
+"Test_name.c", line 466: error: "dllimport" has already been declared in the current scope
+    template<typename T> friend __declspec(dllimport) inline void funcTmplFriend5();
+                                           ^
+
+"Test_name.c", line 466: error: invalid friend declaration
+    template<typename T> friend __declspec(dllimport) inline void funcTmplFriend5();
+                                           ^
+
+"Test_name.c", line 466: error: expected a ";"
+    template<typename T> friend __declspec(dllimport) inline void funcTmplFriend5();
+                                                      ^
+
+"Test_name.c", line 468: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplFriend1();
+                       ^
+
+"Test_name.c", line 468: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplFriend1();
+                                             ^
+
+"Test_name.c", line 468: error: variable template "ns::dllimport" has already been defined
+  template<typename T> __declspec(dllimport) void funcTmplFriend1();
+                                  ^
+
+"Test_name.c", line 468: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplFriend1();
+                                             ^
+
+"Test_name.c", line 471: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void funcTmplFriend4(); // expected-error{{redeclaration of 'funcTmplFriend4' cannot add 'dllimport' attribute}}
+                       ^
+
+"Test_name.c", line 471: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void funcTmplFriend4(); // expected-error{{redeclaration of 'funcTmplFriend4' cannot add 'dllimport' attribute}}
+                                             ^
+
+"Test_name.c", line 471: error: variable template "ns::dllimport" has already been defined
+  template<typename T> __declspec(dllimport) void funcTmplFriend4(); // expected-error{{redeclaration of 'funcTmplFriend4' cannot add 'dllimport' attribute}}
+                                  ^
+
+"Test_name.c", line 471: error: expected a ";"
+  template<typename T> __declspec(dllimport) void funcTmplFriend4(); // expected-error{{redeclaration of 'funcTmplFriend4' cannot add 'dllimport' attribute}}
+                                             ^
+
+"Test_name.c", line 478: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllimport'}}
+                       ^
+
+"Test_name.c", line 478: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                             ^
+
+"Test_name.c", line 478: error: variable template "ns::dllimport" has already been defined
+  template<typename T> __declspec(dllimport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                  ^
+
+"Test_name.c", line 478: error: expected a ";"
+  template<typename T> __declspec(dllimport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                             ^
+
+"Test_name.c", line 479: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) Internal internalRetFuncTmpl(); // expected-error{{'internalRetFuncTmpl' must have external linkage when declared 'dllimport'}}
+                       ^
+
+"Test_name.c", line 479: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) Internal internalRetFuncTmpl(); // expected-error{{'internalRetFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                             ^
+
+"Test_name.c", line 479: error: variable template "ns::dllimport" has already been defined
+  template<typename T> __declspec(dllimport) Internal internalRetFuncTmpl(); // expected-error{{'internalRetFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                  ^
+
+"Test_name.c", line 479: error: expected a ";"
+  template<typename T> __declspec(dllimport) Internal internalRetFuncTmpl(); // expected-error{{'internalRetFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                             ^
+
+"Test_name.c", line 480: error: argument list for variable template "ns::dllimport" is missing
+  namespace    { template<typename T> __declspec(dllimport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                                 ^
+
+"Test_name.c", line 480: error: explicit type is missing ("int" assumed)
+  namespace    { template<typename T> __declspec(dllimport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                      ^
+
+"Test_name.c", line 480: error: declaration is incompatible with "int ns::<unnamed>::__declspec" (declared at line 386)
+  namespace    { template<typename T> __declspec(dllimport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                      ^
+
+"Test_name.c", line 480: error: expected a ";"
+  namespace    { template<typename T> __declspec(dllimport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                                            ^
+
+"Test_name.c", line 481: error: argument list for variable template "ns::dllimport" is missing
+  namespace ns { template<typename T> __declspec(dllimport) void externalFuncTmpl(); }
+                                                 ^
+
+"Test_name.c", line 481: error: explicit type is missing ("int" assumed)
+  namespace ns { template<typename T> __declspec(dllimport) void externalFuncTmpl(); }
+                                      ^
+
+"Test_name.c", line 481: error: declaration is incompatible with "int ns::ns::__declspec" (declared at line 387)
+  namespace ns { template<typename T> __declspec(dllimport) void externalFuncTmpl(); }
+                                      ^
+
+"Test_name.c", line 481: error: expected a ";"
+  namespace ns { template<typename T> __declspec(dllimport) void externalFuncTmpl(); }
+                                                            ^
+
+"Test_name.c", line 486: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) void importedFuncTmplDecl();
+                       ^
+
+"Test_name.c", line 486: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) void importedFuncTmplDecl();
+                                             ^
+
+"Test_name.c", line 486: error: variable template "ns::dllimport" has already been defined
+  template<typename T> __declspec(dllimport) void importedFuncTmplDecl();
+                                  ^
+
+"Test_name.c", line 486: error: expected a ";"
+  template<typename T> __declspec(dllimport) void importedFuncTmplDecl();
+                                             ^
+
+"Test_name.c", line 490: error: argument list for variable template "ns::__declspec" is missing
+  template<typename T> __declspec(dllimport) inline void importedFuncTmpl() {}
+                       ^
+
+"Test_name.c", line 490: warning: variable templates are a C++14 feature
+  template<typename T> __declspec(dllimport) inline void importedFuncTmpl() {}
+                                             ^
+
+"Test_name.c", line 490: error: variable template "ns::dllimport" has already been defined
+  template<typename T> __declspec(dllimport) inline void importedFuncTmpl() {}
+                                  ^
+
+"Test_name.c", line 490: error: expected a ";"
+  template<typename T> __declspec(dllimport) inline void importedFuncTmpl() {}
+                                             ^
+
+"Test_name.c", line 497: warning: parsing restarts here after previous syntax error
+  extern template void importedFuncTmpl<ExplicitDecl_Imported>();
+                                                                ^
+
+"Test_name.c", line 502: error: importedFuncTmpl is not a template
+  template void importedFuncTmpl<ExplicitInst_Imported>();
+                ^
+
+"Test_name.c", line 502: error: invalid explicit instantiation declaration
+  template void importedFuncTmpl<ExplicitInst_Imported>();
+           ^
+
+"Test_name.c", line 506: error: argument list for variable template "ns::__declspec" is missing
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Imported>();
+             ^
+
+"Test_name.c", line 506: error: variable template "ns::dllimport" is not an entity that can be explicitly specialized
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Imported>();
+                        ^
+
+"Test_name.c", line 506: error: expected a ";"
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Imported>();
+                                   ^
+
+"Test_name.c", line 507: error: argument list for variable template "ns::__declspec" is missing
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+             ^
+
+"Test_name.c", line 507: error: variable template "ns::dllimport" is not an entity that can be explicitly specialized
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                        ^
+
+"Test_name.c", line 507: error: expected a ";"
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                   ^
+
+"Test_name.c", line 518: warning: parsing restarts here after previous syntax error
+  extern template __declspec(dllimport) void funcTmpl<ExplicitDecl_Imported>();
+                                                                              ^
+
+"Test_name.c", line 522: error: argument list for variable template "ns::__declspec" is missing
+  extern template __declspec(dllimport) void inlineFuncTmpl<ExplicitDecl_Imported>();
+                  ^
+
+"Test_name.c", line 522: error: invalid explicit instantiation declaration
+  extern template __declspec(dllimport) void inlineFuncTmpl<ExplicitDecl_Imported>();
+                  ^
+
+"Test_name.c", line 522: error: expected a ";"
+  extern template __declspec(dllimport) void inlineFuncTmpl<ExplicitDecl_Imported>();
+                                        ^
+
+"Test_name.c", line 525: error: argument list for variable template "ns::__declspec" is missing
+  template __declspec(dllimport) void funcTmpl<ExplicitInst_Imported>();
+           ^
+
+"Test_name.c", line 525: error: invalid explicit instantiation declaration
+  template __declspec(dllimport) void funcTmpl<ExplicitInst_Imported>();
+           ^
+
+"Test_name.c", line 525: error: expected a ";"
+  template __declspec(dllimport) void funcTmpl<ExplicitInst_Imported>();
+                                 ^
+
+"Test_name.c", line 529: error: argument list for variable template "ns::__declspec" is missing
+  template __declspec(dllimport) void inlineFuncTmpl<ExplicitInst_Imported>();
+           ^
+
+"Test_name.c", line 529: error: invalid explicit instantiation declaration
+  template __declspec(dllimport) void inlineFuncTmpl<ExplicitInst_Imported>();
+           ^
+
+"Test_name.c", line 529: error: expected a ";"
+  template __declspec(dllimport) void inlineFuncTmpl<ExplicitInst_Imported>();
+                                 ^
+
+"Test_name.c", line 533: error: argument list for variable template "ns::__declspec" is missing
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Imported>();
+             ^
+
+"Test_name.c", line 533: error: variable template "ns::dllimport" is not an entity that can be explicitly specialized
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Imported>();
+                        ^
+
+"Test_name.c", line 533: error: expected a ";"
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Imported>();
+                                   ^
+
+"Test_name.c", line 534: error: argument list for variable template "ns::__declspec" is missing
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+             ^
+
+"Test_name.c", line 534: error: variable template "ns::dllimport" is not an entity that can be explicitly specialized
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                        ^
+
+"Test_name.c", line 534: error: expected a ";"
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                   ^
+
+"Test_name.c", line 570: warning: parsing restarts here after previous syntax error
+    __declspec(dllimport) virtual        void virtualDecl();
+                                                           ^
+
+"Test_name.c", line 571: error: argument list for variable template "ns::__declspec" is missing
+    __declspec(dllimport) virtual void virtualDef(); // expected-note{{previous declaration is here}}
+    ^
+
+"Test_name.c", line 571: error: declaration is incompatible with previous "ns::dllimport" (declared at line 138)
+    __declspec(dllimport) virtual void virtualDef(); // expected-note{{previous declaration is here}}
+               ^
+
+"Test_name.c", line 571: error: "dllimport" has already been declared in the current scope
+    __declspec(dllimport) virtual void virtualDef(); // expected-note{{previous declaration is here}}
+               ^
+
+"Test_name.c", line 571: error: expected a ";"
+    __declspec(dllimport) virtual void virtualDef(); // expected-note{{previous declaration is here}}
+                          ^
+
+"Test_name.c", line 572: error: argument list for variable template "ns::__declspec" is missing
+    __declspec(dllimport) virtual        void virtualInclass() {}
+    ^
+
+"Test_name.c", line 572: error: variable "ns::dllimport" has already been defined (previous definition at line 571)
+    __declspec(dllimport) virtual        void virtualInclass() {}
+               ^
+
+"Test_name.c", line 572: error: expected a ";"
+    __declspec(dllimport) virtual        void virtualInclass() {}
+                          ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

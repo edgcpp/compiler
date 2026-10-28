@@ -1,0 +1,36 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 25: warning: expression has no effect
+  	      b;
+  	      ^
+
+"Test_name.c", line 29: error: declaration is incompatible with "const std::min_shift_initializer<<unnamed>>::B std::min_shift_initializer<<unnamed>>::b" (declared at line 21)
+        const typename min_shift_initializer<T>::B min_shift_initializer<T>::b;
+                                                                             ^
+
+"Test_name.c", line 52: warning: missing return statement at end of non-void function "std::float_next(const T &, Policy &)"
+  	}
+  	^
+
+"Test_name.c", line 60: warning: missing return statement at end of non-void function "std::float_prior(T, Policy)"
+      }
+      ^
+
+"Test_name.c", line 36: warning: expression has no effect
+  	  min_shift_initializer<T>::m_fn1;
+  	  ^
+          detected during:
+            instantiation of "T std::get_min_shift_value<T>() [with T=long double]" at line 55
+            instantiation of "void std::float_prior_imp(T, Policy) [with T=long double, Policy=int]" at line 59
+            instantiation of "int std::float_prior(T, Policy) [with T=long double, Policy=int]" at line 65
+            instantiation of "void std::nextafter(T, U, Policy) [with T=long double, U=int, Policy=std::A]" at line 72
+
+"Test_name.c", line 37: warning: missing return statement at end of non-void function "std::get_min_shift_value<T>() [with T=long double]"
+  	}
+  	^
+          detected during:
+            instantiation of "T std::get_min_shift_value<T>() [with T=long double]" at line 55
+            instantiation of "void std::float_prior_imp(T, Policy) [with T=long double, Policy=int]" at line 59
+            instantiation of "int std::float_prior(T, Policy) [with T=long double, Policy=int]" at line 65
+            instantiation of "void std::nextafter(T, U, Policy) [with T=long double, U=int, Policy=std::A]" at line 72
+
+1 error detected in the compilation of "Test_name.c".

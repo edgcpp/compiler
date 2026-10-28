@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --c++14 --g++ --gnu_version=100100 --multi_trans_unit Test_name.c source2.C
+"Test_name.c", line 8: warning: C++17-style "using" attribute prefix is nonstandard in this mode
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"Test_name.c", line 8: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"Test_name.c", line 9: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int w = 1; // already diagnosed
+           ^
+
+"Test_name.c", line 15: warning: C++17-style initializer is nonstandard in this mode
+    if (++v; v > 0) // warning: C++17-style initializer is nonstandard in this mode
+           ^
+
+"Test_name.c", line 21: warning: C++20-style initializer statement in a range-based "for" statement is nonstandard in this mode
+    for (++w; int j : arr) // warning: C++20-style initializer statement in a range-based "for" statement is nonstandard in this mode
+         ^
+
+"Test_name.c", line 31: warning: fold expressions are nonstandard in this mode
+    auto x = v + (0 + ... + I); // warning: fold expressions are nonstandard in this mode
+                          ^
+
+"source2.C", line 1: warning: C++17-style "using" attribute prefix is nonstandard in this mode
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"source2.C", line 1: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"source2.C", line 2: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int w = 1; // already diagnosed
+           ^
+
+"source2.C", line 8: warning: C++17-style initializer is nonstandard in this mode
+    if (++v; v > 0) // warning: C++17-style initializer is nonstandard in this mode
+           ^
+
+"source2.C", line 14: warning: C++20-style initializer statement in a range-based "for" statement is nonstandard in this mode
+    for (++w; int j : arr) // warning: C++20-style initializer statement in a range-based "for" statement is nonstandard in this mode
+         ^
+
+"source2.C", line 24: warning: fold expressions are nonstandard in this mode
+    auto x = v + (0 + ... + I); // warning: fold expressions are nonstandard in this mode
+                          ^
+
+Catastrophic error: cannot open source file "Test_name.c"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

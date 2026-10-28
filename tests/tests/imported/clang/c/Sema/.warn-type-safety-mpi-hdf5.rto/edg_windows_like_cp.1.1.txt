@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 -DOPEN_MPI Test_name.c
+"Test_name.c", line 297: error: identifier "__SCHAR_MAX__" is undefined
+    H5Dwrite(H5T_NATIVE_CHAR,  char_buf);  // no-warning
+             ^
+
+1 error detected in the compilation of "Test_name.c".

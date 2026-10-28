@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=3 --c++17 --clang Test_name.c other.C
+Test_name.c:
+other.C:
+/usr/sbin/ld: other.o: in function `twice(int)':
+other.int.c:(.text+0xXX): multiple definition of `twice(int)'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: other.o: in function `T1 &&move_it<T1>(T1 &) [with T1=int]':
+other.int.c:(.text+0xXX): multiple definition of `T1 &&move_it<T1>(T1 &) [with T1=int]'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+collect2: error: ld returned 1 exit status

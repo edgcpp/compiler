@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 32: warning: NULL reference is not allowed
+      typename _Pointer_adapter<pointer>::reference __r = *(int*)0;
+                                                          ^
+          detected during instantiation of "__allocated_ptr<_Alloc>::__allocated_ptr() [with _Alloc=CustomPointerAlloc<int>]" at line 45
+
+"Test_name.c", line 26: warning: extern inline function "addressof(_Tp &) [with _Tp=int]" was referenced but not defined
+  inline _Tp* addressof(_Tp& __r); // { dg-warning "used but never defined" }
+              ^
+

@@ -1,0 +1,112 @@
+fe_only -DTEST_NUMBER=7 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 22: error: fallthrough statement must precede switch case label or default
+        [[fallthrough]];
+        ^
+
+"Test_name.c", line 27: error: fallthrough statement must precede switch case label or default
+        [[fallthrough]];
+        ^
+
+"Test_name.c", line 32: error: fallthrough statement must precede switch case label or default
+        [[fallthrough]];
+        ^
+
+"Test_name.c", line 39: error: fallthrough statement must precede switch case label or default
+      [[fallthrough]];
+      ^
+
+"Test_name.c", line 52: error: expected an identifier
+  [[deprecated]] concept C2 = true;
+                 ^
+
+"Test_name.c", line 56: warning: concept "cwg2428::C" was declared deprecated
+  concept C3 = C<T>;
+               ^
+"Test_name.c", line 49: note: because of a "deprecated" attribute
+  concept C [[deprecated]] = true; // #cwg2428-C
+              ^
+
+"Test_name.c", line 63: warning: concept "cwg2428::C" was declared deprecated
+  requires C<T>
+           ^
+"Test_name.c", line 49: note: because of a "deprecated" attribute
+  concept C [[deprecated]] = true; // #cwg2428-C
+              ^
+
+"Test_name.c", line 67: warning: concept "cwg2428::C" was declared deprecated
+    bool b = C<int>;
+             ^
+"Test_name.c", line 49: note: because of a "deprecated" attribute
+  concept C [[deprecated]] = true; // #cwg2428-C
+              ^
+
+"Test_name.c", line 67: warning: variable "b" was declared but never referenced
+    bool b = C<int>;
+         ^
+
+"Test_name.c", line 83: warning: variable "bar" was declared but never referenced
+    C auto *bar = T();
+            ^
+
+"Test_name.c", line 89: warning: variable "quux" was declared but never referenced
+    C auto &&quux = T();
+             ^
+
+"Test_name.c", line 171: error: a value of type "void" cannot be used to initialize an entity of type "int"
+      int x2 = C{} - iptr;
+               ^
+
+"Test_name.c", line 183: error: return value type does not match the function type
+      return d + 1;
+             ^
+
+"Test_name.c", line 190: warning: the "throw()" specification is not part of C++20 and later
+    void fn() throw();
+              ^
+
+"Test_name.c", line 197: warning: the "throw()" specification is not part of C++20 and later
+  static void callNE(C& c, void (C::*f)() throw()) {
+                                          ^
+
+"Test_name.c", line 209: warning: the "throw()" specification is not part of C++20 and later
+  void (*pp)() throw() = p;
+               ^
+
+"Test_name.c", line 209: error: a value of type "void (*)()" cannot be used to initialize an entity of type "void (*)() throw()"
+  void (*pp)() throw() = p;
+                         ^
+
+"Test_name.c", line 216: warning: the "throw()" specification is not part of C++20 and later
+  void (*q)() throw() = S();
+              ^
+
+"Test_name.c", line 216: error: no suitable conversion function from "cwg2486::S" to "void (*)() throw()" exists
+  void (*q)() throw() = S();
+                        ^
+
+"Test_name.c", line 235: warning: function "cwg2496::S::f()" is hidden by "cwg2496::T::f" -- virtual function override intended?
+      virtual void f() &;
+                   ^
+
+"Test_name.c", line 238: warning: function "cwg2496::S::g() &" is hidden by "cwg2496::T::g" -- virtual function override intended?
+      virtual void g();
+                   ^
+
+"Test_name.c", line 241: warning: function "cwg2496::S::h()" is hidden by "cwg2496::T::h" -- virtual function override intended?
+      virtual void h() &&;
+                   ^
+
+"Test_name.c", line 246: warning: function "cwg2496::S::k() &&" is hidden by "cwg2496::T::k" -- virtual function override intended?
+      virtual void k() &;
+                   ^
+
+"Test_name.c", line 247: warning: function "cwg2496::S::l() &" is hidden by "cwg2496::T::l" -- virtual function override intended?
+      virtual void l() &&;
+                   ^
+
+"Test_name.c", line 152: error: static assertion failed with "Isn't this less specialized?"
+     static_assert(F<int>, "Isn't this less specialized?");
+     ^
+          detected during instantiation of "bool cwg2445::operator==(const cwg2445::B<int> &, const cwg2445::B<U> &) [with U=int *]" at line 156
+
+10 errors detected in the compilation of "Test_name.c".

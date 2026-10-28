@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++20 --clang_version 180100 --target linux_aarch64 Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "neon_vector_type"
+    __attribute__((neon_vector_type(4))) unsigned short v = { };
+                   ^
+
+"Test_name.c", line 9: warning: unknown attribute "neon_polyvector_type"
+    __attribute__((neon_polyvector_type(4))) unsigned short p = { };
+                   ^
+

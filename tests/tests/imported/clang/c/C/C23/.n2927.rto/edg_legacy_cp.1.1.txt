@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 26: error: declaration is incompatible with "const _Atomic(int) plain_purr" (declared at line 25)
+  extern int plain_purr; 
+             ^
+
+"Test_name.c", line 35: error: declaration is incompatible with "const char *const mew2_array[3]" (declared at line 34)
+  extern const char *mew2_array[3]; 
+                     ^
+
+"Test_name.c", line 72: error: expected an identifier
+  extern __typeof__(const char *) [4] y; 
+                                  ^
+
+"Test_name.c", line 72: error: expected a ";"
+  extern __typeof__(const char *) [4] y; 
+                                      ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,53 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 8: remark: declaration hides variable "x" (declared at line 4)
+    char x[3] = "ab";
+         ^
+
+"Test_name.c", line 9: remark: declaration hides variable "y" (declared at line 5)
+    char y[2][3] = { "ab", "ab" };
+         ^
+
+"Test_name.c", line 10: remark: declaration hides variable "z" (declared at line 6)
+    char z[3]("ab");
+         ^
+
+"Test_name.c", line 8: warning: variable "x" was declared but never referenced
+    char x[3] = "ab";
+         ^
+
+"Test_name.c", line 9: warning: variable "y" was declared but never referenced
+    char y[2][3] = { "ab", "ab" };
+         ^
+
+"Test_name.c", line 10: warning: variable "z" was declared but never referenced
+    char z[3]("ab");
+         ^
+
+"Test_name.c", line 13: remark: declaration hides variable "x" (declared at line 4)
+    static char x[3] = "ab";
+                ^
+
+"Test_name.c", line 14: remark: declaration hides variable "y" (declared at line 5)
+    static char y[2][3] = { "ab", "ab" };
+                ^
+
+"Test_name.c", line 15: remark: declaration hides variable "z" (declared at line 6)
+    static char z[3]("ab");
+                ^
+
+"Test_name.c", line 13: warning: variable "x" was declared but never referenced
+    static char x[3] = "ab";
+                ^
+
+"Test_name.c", line 14: warning: variable "y" was declared but never referenced
+    static char y[2][3] = { "ab", "ab" };
+                ^
+
+"Test_name.c", line 15: warning: variable "z" was declared but never referenced
+    static char z[3]("ab");
+                ^
+
+"Test_name.c", line 20: remark: function "A::A()" cannot be inlined
+    A() : t("ab") {} 
+    ^
+

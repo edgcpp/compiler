@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-scalar1-neg.C", line 13: error: invalid types ("void (*)()" and "void (*)()") for built-in operator<=>
+      const auto v = &f <=> &g;
+                        ^
+
+"./cpp2a/spaceship-scalar1-neg.C", line 18: error: invalid types ("int A::*" and "int A::*") for built-in operator<=>
+      constexpr auto v = &A::i <=> &A::j;
+                               ^
+
+"./cpp2a/spaceship-scalar1-neg.C", line 23: error: invalid types ("void (A::*)()" and "void (A::*)()") for built-in operator<=>
+      constexpr auto v = &A::f <=> &A::f;
+                               ^
+
+"./cpp2a/spaceship-scalar1-neg.C", line 22: warning: local class member function "A::f" requires a definition
+      struct A { void f(); };
+                      ^
+
+4 errors detected in the compilation of "Test_name.c".

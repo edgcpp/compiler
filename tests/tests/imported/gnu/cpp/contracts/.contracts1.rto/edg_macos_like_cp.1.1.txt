@@ -1,0 +1,102 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 15: error: identifier "__cpp_contracts" is undefined
+  static_assert (__cpp_contracts >= 201906);
+                 ^
+
+"Test_name.c", line 16: error: identifier "__cpp_contracts_literal_semantics" is undefined
+  static_assert (__cpp_contracts_literal_semantics >= 201906);
+                 ^
+
+"Test_name.c", line 17: error: identifier "__cpp_contracts_roles" is undefined
+  static_assert (__cpp_contracts_roles >= 201906);
+                 ^
+
+"Test_name.c", line 23: error: expected a ","
+    [[assert: x >= 0]];
+            ^
+
+"Test_name.c", line 24: error: expected a ","
+    [[assert default: x < 0]];
+             ^
+
+"Test_name.c", line 25: error: expected a ","
+    [[assert audit: x == 0]];
+             ^
+
+"Test_name.c", line 26: error: expected a ","
+    [[assert axiom: x == 1]];
+             ^
+
+"Test_name.c", line 28: error: expected a ","
+    [[assert: x > 0 ? true : false]];
+            ^
+
+"Test_name.c", line 29: error: expected a ","
+    [[assert: x < 0 ? true : false]];
+            ^
+
+"Test_name.c", line 31: error: expected a ","
+    [[assert: x = 0]]; // { dg-error "expected .]. before .=. token" }
+            ^
+
+"Test_name.c", line 33: error: expected a ","
+    [[assert ignore: x >= 0]];
+             ^
+
+"Test_name.c", line 34: error: expected a ","
+    [[assert assume: x >= 0]];
+             ^
+
+"Test_name.c", line 35: error: expected a ","
+    [[assert check_never_continue: x >= 0]];
+             ^
+
+"Test_name.c", line 36: error: expected a ","
+    [[assert check_maybe_continue: x >= 0]];
+             ^
+
+"Test_name.c", line 38: error: expected a ","
+    [[assert %default: x >= 0]];
+             ^
+
+"Test_name.c", line 39: error: expected a ","
+    [[assert default %default: x < 0]];
+             ^
+
+"Test_name.c", line 40: error: expected a ","
+    [[assert audit %default: x == 0]];
+             ^
+
+"Test_name.c", line 41: error: expected a ","
+    [[assert axiom %default: x == 1]];
+             ^
+
+"Test_name.c", line 43: error: expected a ","
+    [[assert check_always_continue: x >= 0]]; // { dg-error "expected contract level" }
+             ^
+
+"Test_name.c", line 44: error: expected a ","
+    [[assert invalid: x == 0]]; // { dg-error "expected contract level" }
+             ^
+
+"Test_name.c", line 45: error: expected a ","
+    [[assert: y == 0]]; // { dg-error ".y. was not declared in this scope" }
+            ^
+
+"Test_name.c", line 46: error: expected a ","
+    [[assert default x == 0]]; // { dg-error "expected .:. before .x." }
+             ^
+
+"Test_name.c", line 47: error: expected a ","
+    [[assert %default x >= 0]]; // { dg-error "expected .:. before .x." }
+             ^
+
+"Test_name.c", line 49: error: expected a ","
+    [[assert %invalid: x >= 0]]; // TODO: optional warning?
+             ^
+
+"Test_name.c", line 21: warning: variable "x" was declared but never referenced
+    int x;
+        ^
+
+24 errors detected in the compilation of "Test_name.c".

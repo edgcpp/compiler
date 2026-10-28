@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 13: error: the second subscript must not be smaller than the first
+    [ 8 ... 7 ] = 4, // expected-error{{array designator range [8, 7] is empty}}
+            ^
+
+"Test_name.c", line 15: error: subscript out of range
+    [-1] = 6 // expected-error{{array designator value '-1' is negative}}
+     ^
+
+"Test_name.c", line 14: error: subscript out of range
+    [10] = 5,
+    ^
+
+"Test_name.c", line 19: error: subscript out of range
+    [10] = 1, // expected-error{{array designator index (10) exceeds array bounds (10)}}
+    ^
+
+"Test_name.c", line 24: error: subscript out of range
+    [5 ... 12] = 2 // expected-error{{array designator index (12) exceeds array bounds (10)}}
+    ^
+
+"Test_name.c", line 34: warning: out-of-order initializers are nonstandard in C++
+    x: 2.0, // expected-warning{{}}
+    ^
+
+"Test_name.c", line 35: error: struct "point" has no field "a"
+    .a = 4.0, // expected-error{{field designator 'a' does not refer to any field in type 'struct point'}}
+     ^
+
+"Test_name.c", line 39: error: invalid designator kind
+    [1] = 1.0 // expected-error{{array designator cannot initialize non-array type}}
+    ^
+
+"Test_name.c", line 45: error: struct "point" has no field "z"
+    [2].z = 3.0, // expected-error{{field designator 'z' does not refer to any field in type 'struct point'}}
+        ^
+
+"Test_name.c", line 49: error: subscript out of range
+    [10].x = 2.0, // expected-error{{array designator index (10) exceeds array bounds (10)}}
+    ^
+
+"Test_name.c", line 55: error: invalid designator kind
+    .x = 5 // expected-error{{field designator cannot initialize a non-struct, non-union type}}
+     ^
+
+"Test_name.c", line 68: warning: out-of-order initializers are nonstandard in C++
+    { { .y = 7.0, .x = 8.0 }, { .x = 5.0 } },
+                   ^
+
+"Test_name.c", line 75: warning: extra braces are nonstandard
+    [2].top_left = { { .x = 1.1 } }, // expected-error{{initialization of non-aggregate type 'double' with a designated initializer list}}
+                     ^
+
+"Test_name.c", line 75: error: a designator cannot be used with a non-aggregate type "double"
+    [2].top_left = { { .x = 1.1 } }, // expected-error{{initialization of non-aggregate type 'double' with a designated initializer list}}
+                        ^
+
+"Test_name.c", line 84: warning: extra braces are nonstandard
+    [5].windows[3].top_left.x = { 7.0 } // expected-warning{{braces around scalar initializer}}
+                                ^
+
+"Test_name.c", line 94: warning: out-of-order initializers are nonstandard in C++
+    .wonky = { 0 }
+     ^
+
+"Test_name.c", line 103: warning: out-of-order initializers are nonstandard in C++
+    [3].in = { .y = &anint, .x = 17 },
+                             ^
+
+"Test_name.c", line 190: warning: excess initializers are ignored
+  const union wibble wobble2 = { .arr2 = {4, 5, 6}, 7 }; // expected-warning{{excess elements in union initializer}}
+                                                    ^
+
+"Test_name.c", line 328: error: struct "<unnamed>" has no field "b"
+      .b = 1 // expected-error{{field designator 'b' does not refer to any field}}
+       ^
+
+"Test_name.c", line 365: error: struct "<unnamed>" has no field "x"
+      .x = 0, // expected-error{{field designator}}
+       ^
+
+"Test_name.c", line 365: warning: out-of-order initializers are nonstandard in C++
+      .x = 0, // expected-error{{field designator}}
+       ^
+
+"Test_name.c", line 376: warning: a value of type "char *" cannot be used to initialize an entity of type "const char"
+      [0] = "", // expected-error {{incompatible pointer to integer conversion initializing 'const char' with an expression of type 'char[1]'}}
+            ^
+
+"Test_name.c", line 377: warning: a value of type "char *" cannot be used to initialize an entity of type "const char"
+      [1] = ""  // expected-error {{incompatible pointer to integer conversion initializing 'const char' with an expression of type 'char[1]'}}
+            ^
+
+13 errors detected in the compilation of "Test_name.c".

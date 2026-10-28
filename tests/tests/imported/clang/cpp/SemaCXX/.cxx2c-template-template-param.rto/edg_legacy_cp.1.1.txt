@@ -1,0 +1,814 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 7: error: expected "class" or "typename"
+  template <template<typename T> auto>
+                                 ^
+
+"Test_name.c", line 7: error: expected a "," or ">"
+  template <template<typename T> auto>
+                                 ^
+
+"Test_name.c", line 9: error: expected "class" or "typename"
+  template <template<auto T> auto>
+                             ^
+
+"Test_name.c", line 9: error: expected a "," or ">"
+  template <template<auto T> auto>
+                             ^
+
+"Test_name.c", line 11: error: expected "class" or "typename"
+  template <template<typename T> concept>
+                                 ^
+
+"Test_name.c", line 11: error: expected a "," or ">"
+  template <template<typename T> concept>
+                                 ^
+
+"Test_name.c", line 13: error: expected "class" or "typename"
+  template <template<auto T> concept>
+                             ^
+
+"Test_name.c", line 13: error: expected a "," or ">"
+  template <template<auto T> concept>
+                             ^
+
+"Test_name.c", line 22: error: expected an identifier
+  S1<1> t1; // expected-error {{template argument for template template parameter must be a variable template}}
+     ^
+
+"Test_name.c", line 22: error: incomplete type "Errors::S1<<error>>" is not allowed
+  S1<1> t1; // expected-error {{template argument for template template parameter must be a variable template}}
+        ^
+
+"Test_name.c", line 23: error: variable "Errors::a" is not a class template
+  S1<a> t2; // expected-error {{template argument for template template parameter must be a variable template}}
+     ^
+
+"Test_name.c", line 23: error: incomplete type "Errors::S1<<error>>" is not allowed
+  S1<a> t2; // expected-error {{template argument for template template parameter must be a variable template}}
+        ^
+
+"Test_name.c", line 24: error: expected an identifier
+  S1<int> t3; // expected-error {{template argument for template template parameter must be a variable template}}
+     ^
+
+"Test_name.c", line 24: error: incomplete type "Errors::S1<<error>>" is not allowed
+  S1<int> t3; // expected-error {{template argument for template template parameter must be a variable template}}
+          ^
+
+"Test_name.c", line 25: error: concept "Errors::C" is not a class template
+  S1<C> t4; // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+     ^
+
+"Test_name.c", line 25: error: incomplete type "Errors::S1<<error>>" is not allowed
+  S1<C> t4; // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+        ^
+
+"Test_name.c", line 26: error: expected an identifier
+  S2<1> t5; // expected-error {{template argument for template template parameter must be a variable template}}
+     ^
+
+"Test_name.c", line 26: error: incomplete type "Errors::S2<<error>>" is not allowed
+  S2<1> t5; // expected-error {{template argument for template template parameter must be a variable template}}
+        ^
+
+"Test_name.c", line 27: error: variable "Errors::a" is not a class template
+  S2<a> t6; // expected-error {{template argument for template template parameter must be a variable template}}
+     ^
+
+"Test_name.c", line 27: error: incomplete type "Errors::S2<<error>>" is not allowed
+  S2<a> t6; // expected-error {{template argument for template template parameter must be a variable template}}
+        ^
+
+"Test_name.c", line 28: error: expected an identifier
+  S2<int> t7; // expected-error {{template argument for template template parameter must be a variable template}}
+     ^
+
+"Test_name.c", line 28: error: incomplete type "Errors::S2<<error>>" is not allowed
+  S2<int> t7; // expected-error {{template argument for template template parameter must be a variable template}}
+          ^
+
+"Test_name.c", line 29: error: concept "Errors::C" is not a class template
+  S2<C> t8; // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+     ^
+
+"Test_name.c", line 29: error: incomplete type "Errors::S2<<error>>" is not allowed
+  S2<C> t8; // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+        ^
+
+"Test_name.c", line 30: error: expected an identifier
+  S3<1> t9; // expected-error {{template argument for template template parameter must be a concept}}
+     ^
+
+"Test_name.c", line 30: error: incomplete type "Errors::S3<<error>>" is not allowed
+  S3<1> t9; // expected-error {{template argument for template template parameter must be a concept}}
+        ^
+
+"Test_name.c", line 31: error: variable "Errors::a" is not a class template
+  S3<a> t10; // expected-error {{template argument for template template parameter must be a concept}}
+     ^
+
+"Test_name.c", line 31: error: incomplete type "Errors::S3<<error>>" is not allowed
+  S3<a> t10; // expected-error {{template argument for template template parameter must be a concept}}
+        ^
+
+"Test_name.c", line 32: error: expected an identifier
+  S3<int> t11; // expected-error {{template argument for template template parameter must be a concept}}
+     ^
+
+"Test_name.c", line 32: error: incomplete type "Errors::S3<<error>>" is not allowed
+  S3<int> t11; // expected-error {{template argument for template template parameter must be a concept}}
+          ^
+
+"Test_name.c", line 33: error: variable template "Errors::Var" is not a class template
+  S3<Var> t12; // expected-error {{template argument does not refer to a concept, or template template parameter}}
+     ^
+
+"Test_name.c", line 33: error: incomplete type "Errors::S3<<error>>" is not allowed
+  S3<Var> t12; // expected-error {{template argument does not refer to a concept, or template template parameter}}
+          ^
+
+"Test_name.c", line 34: error: expected an identifier
+  S4<1> t13; // expected-error {{template argument for template template parameter must be a concept}}
+     ^
+
+"Test_name.c", line 34: error: incomplete type "Errors::S4<<error>>" is not allowed
+  S4<1> t13; // expected-error {{template argument for template template parameter must be a concept}}
+        ^
+
+"Test_name.c", line 35: error: variable "Errors::a" is not a class template
+  S4<a> t14; // expected-error {{template argument for template template parameter must be a concept}}
+     ^
+
+"Test_name.c", line 35: error: incomplete type "Errors::S4<<error>>" is not allowed
+  S4<a> t14; // expected-error {{template argument for template template parameter must be a concept}}
+        ^
+
+"Test_name.c", line 36: error: expected an identifier
+  S4<int> t15; // expected-error {{template argument for template template parameter must be a concept}}
+     ^
+
+"Test_name.c", line 36: error: incomplete type "Errors::S4<<error>>" is not allowed
+  S4<int> t15; // expected-error {{template argument for template template parameter must be a concept}}
+          ^
+
+"Test_name.c", line 37: error: variable template "Errors::Var" is not a class template
+  S4<Var> t16; // expected-error {{template argument does not refer to a concept, or template template parameter}}
+     ^
+
+"Test_name.c", line 37: error: incomplete type "Errors::S4<<error>>" is not allowed
+  S4<Var> t16; // expected-error {{template argument does not refer to a concept, or template template parameter}}
+          ^
+
+"Test_name.c", line 41: error: expected "class" or "typename"
+  template <template<typename T> auto V> // expected-note {{previous template template parameter is here}} \
+                                 ^
+
+"Test_name.c", line 41: error: expected a "," or ">"
+  template <template<typename T> auto V> // expected-note {{previous template template parameter is here}} \
+                                 ^
+
+"Test_name.c", line 44: error: identifier "V" is undefined
+      static_assert(V<int> == 42);
+                    ^
+
+"Test_name.c", line 45: error: expected an expression
+      static_assert(V<const int> == 84);
+                      ^
+
+"Test_name.c", line 46: error: type name is not allowed
+      static_assert(V<double> == 0);
+                      ^
+
+"Test_name.c", line 46: error: expected an expression
+      static_assert(V<double> == 0);
+                              ^
+
+"Test_name.c", line 48: error: expected "class" or "typename"
+  template <template<auto T> auto V>  // expected-error {{template argument for template type parameter must be a type}} \
+                             ^
+
+"Test_name.c", line 48: error: expected a "," or ">"
+  template <template<auto T> auto V>  // expected-error {{template argument for template type parameter must be a type}} \
+                             ^
+
+"Test_name.c", line 51: error: identifier "V" is undefined
+      static_assert(V<0> == 1);
+                    ^
+
+"Test_name.c", line 52: error: expected an expression
+      static_assert(V<1> == 0);
+                         ^
+
+"Test_name.c", line 54: error: expected "class" or "typename"
+  template <template<typename T> concept C > // expected-error {{template argument for non-type template parameter must be an expression}} \
+                                 ^
+
+"Test_name.c", line 54: error: expected a "," or ">"
+  template <template<typename T> concept C > // expected-error {{template argument for non-type template parameter must be an expression}} \
+                                 ^
+
+"Test_name.c", line 57: error: identifier "C" is undefined
+      static_assert(C<int>);
+                    ^
+
+"Test_name.c", line 59: error: expected "class" or "typename"
+  template <template<auto> concept C> // expected-error {{template argument for template type parameter must be a type}} \
+                           ^
+
+"Test_name.c", line 59: error: expected a "," or ">"
+  template <template<auto> concept C> // expected-error {{template argument for template type parameter must be a type}} \
+                           ^
+
+"Test_name.c", line 62: error: identifier "C" is undefined
+      static_assert(C<0>);
+                    ^
+
+"Test_name.c", line 85: error: variable template "Var2" is not a class template
+      S1<Var2> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+         ^
+
+"Test_name.c", line 86: error: variable template "Var" is not a class template
+      S2<Var>  sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+         ^
+
+"Test_name.c", line 86: error: "sE" has already been declared in the current scope
+      S2<Var>  sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+               ^
+
+"Test_name.c", line 87: error: variable template "Var" is not a class template
+      S1<Var> s1;
+         ^
+
+"Test_name.c", line 88: error: variable template "Var2" is not a class template
+      S2<Var2> s2;
+         ^
+
+"Test_name.c", line 89: error: concept "C" is not a class template
+      S3<C> s3;
+         ^
+
+"Test_name.c", line 90: error: concept "C" is not a class template
+      S4<C> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+         ^
+
+"Test_name.c", line 62: error: expected a type specifier
+      static_assert(C<0>);
+                      ^
+          detected during instantiation of class "S4<<unnamed>> [with <unnamed>=<error>]" at line 90
+
+"Test_name.c", line 62: error: static assertion failed
+      static_assert(C<0>);
+      ^
+          detected during instantiation of class "S4<<unnamed>> [with <unnamed>=<error>]" at line 90
+
+"Test_name.c", line 90: error: "sE" has already been declared in the current scope
+      S4<C> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+            ^
+
+"Test_name.c", line 91: error: concept "CI" is not a class template
+      S4<CI> s4;
+         ^
+
+"Test_name.c", line 92: error: concept "CI" is not a class template
+      S3<CI> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+         ^
+
+"Test_name.c", line 92: error: "sE" has already been declared in the current scope
+      S3<CI> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+             ^
+
+"Test_name.c", line 85: warning: variable "sE" was declared but never referenced
+      S1<Var2> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+               ^
+
+"Test_name.c", line 86: warning: variable "sE" was declared but never referenced
+      S2<Var>  sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+               ^
+
+"Test_name.c", line 87: warning: variable "s1" was declared but never referenced
+      S1<Var> s1;
+              ^
+
+"Test_name.c", line 88: warning: variable "s2" was declared but never referenced
+      S2<Var2> s2;
+               ^
+
+"Test_name.c", line 89: warning: variable "s3" was declared but never referenced
+      S3<C> s3;
+            ^
+
+"Test_name.c", line 90: warning: variable "sE" was declared but never referenced
+      S4<C> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+            ^
+
+"Test_name.c", line 91: warning: variable "s4" was declared but never referenced
+      S4<CI> s4;
+             ^
+
+"Test_name.c", line 92: warning: variable "sE" was declared but never referenced
+      S3<CI> sE; // expected-note {{template template argument has different template parameters than its corresponding template template parameter}}
+             ^
+
+"Test_name.c", line 109: error: expected "class" or "typename"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 109: error: expected a "," or ">"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 121: warning: variable "a" was declared but never referenced
+          C auto a = 0;
+                 ^
+
+"Test_name.c", line 125: error: expected "class" or "typename"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 125: error: expected a "," or ">"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 127: error: too many arguments for concept "C"
+      template <C<int> TT>
+                  ^
+
+"Test_name.c", line 129: error: too many arguments for concept "C"
+      void g(C<int> auto);
+               ^
+
+"Test_name.c", line 131: error: too many arguments for concept "C"
+      auto h() -> C<int> auto {
+                    ^
+
+"Test_name.c", line 135: error: too many arguments for concept "C"
+          C<int> auto a = 0;
+            ^
+
+"Test_name.c", line 135: warning: variable "a" was declared but never referenced
+          C<int> auto a = 0;
+                      ^
+
+"Test_name.c", line 140: error: concept "template_type_constraints::Unary" is not a class template
+      S<Unary, int> s;
+        ^
+
+"Test_name.c", line 144: error: concept "template_type_constraints::BinaryDefaulted" is not a class template
+      S<BinaryDefaulted, int> s2;
+        ^
+
+"Test_name.c", line 149: error: concept "template_type_constraints::BinaryDefaulted" is not a class template
+      SArg<BinaryDefaulted, int> s3;
+           ^
+
+"Test_name.c", line 156: error: concept "template_type_constraints::UnaryFalse" is not a class template
+      S<UnaryFalse, int> s;
+        ^
+
+"Test_name.c", line 174: error: expected "class" or "typename"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 174: error: expected a "," or ">"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 186: warning: variable "a" was declared but never referenced
+          C auto a = 0;
+                 ^
+
+"Test_name.c", line 190: error: expected "class" or "typename"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 190: error: expected a "," or ">"
+  template <template <typename...> concept C, typename T>
+                                   ^
+
+"Test_name.c", line 192: error: too many arguments for concept "C"
+      template <C<int> TT>
+                  ^
+
+"Test_name.c", line 194: error: too many arguments for concept "C"
+      void g(C<int> auto);
+               ^
+
+"Test_name.c", line 196: error: too many arguments for concept "C"
+      auto h() -> C<int> auto {
+                    ^
+
+"Test_name.c", line 200: error: too many arguments for concept "C"
+          C<int> auto a = 0;
+            ^
+
+"Test_name.c", line 200: warning: variable "a" was declared but never referenced
+          C<int> auto a = 0;
+                      ^
+
+"Test_name.c", line 205: error: concept "Unary" is not a class template
+      S<Unary, int> s;
+        ^
+
+"Test_name.c", line 209: error: concept "BinaryDefaulted" is not a class template
+      S<BinaryDefaulted, int> s2;
+        ^
+
+"Test_name.c", line 214: error: concept "BinaryDefaulted" is not a class template
+      SArg<BinaryDefaulted, int> s3;
+           ^
+
+"Test_name.c", line 221: error: concept "UnaryFalse" is not a class template
+      S<UnaryFalse, int> s;
+        ^
+
+"Test_name.c", line 232: error: expected "class" or "typename"
+  template <template <auto> concept C>
+                            ^
+
+"Test_name.c", line 232: error: expected a "," or ">"
+  template <template <auto> concept C>
+                            ^
+
+"Test_name.c", line 241: warning: variable "a" was declared but never referenced
+          C auto a = 0;  // expected-error{{concept named in type constraint is not a type concept}}
+                 ^
+
+"Test_name.c", line 260: error: expected "class" or "typename"
+  template <template <typename> auto = Concept> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                ^
+
+"Test_name.c", line 260: error: expected a "," or ">"
+  template <template <typename> auto = Concept> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                ^
+
+"Test_name.c", line 263: error: expected "class" or "typename"
+  template <template <typename> auto  = Type> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                ^
+
+"Test_name.c", line 263: error: expected a "," or ">"
+  template <template <typename> auto  = Type> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                ^
+
+"Test_name.c", line 266: error: concept "default_args::Concept" is not a class template
+  template <template <typename> typename = Concept> // expected-error {{template argument does not refer to a class or alias template, or template template parameter}}
+                                           ^
+
+"Test_name.c", line 269: error: variable template "default_args::Var" is not a class template
+  template <template <typename> typename  = Var> // expected-error {{template argument does not refer to a class or alias template, or template template parameter}}
+                                            ^
+
+"Test_name.c", line 272: error: expected "class" or "typename"
+  template <template <typename> concept  = Var> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                ^
+
+"Test_name.c", line 272: error: expected a "," or ">"
+  template <template <typename> concept  = Var> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                ^
+
+"Test_name.c", line 275: error: expected "class" or "typename"
+  template <template <typename> concept  = Type> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                ^
+
+"Test_name.c", line 275: error: expected a "," or ">"
+  template <template <typename> concept  = Type> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                ^
+
+"Test_name.c", line 279: error: expected "class" or "typename"
+      template <typename> concept TConcept, // expected-note 2{{template argument refers to a concept 'TConcept', here}}
+                          ^
+
+"Test_name.c", line 279: error: expected a "," or ">"
+      template <typename> concept TConcept, // expected-note 2{{template argument refers to a concept 'TConcept', here}}
+                          ^
+
+"Test_name.c", line 280: error: expected "class" or "typename"
+      template <typename> auto TVar, // expected-note 2{{template argument refers to a variable template 'TVar', here}}
+                          ^
+
+"Test_name.c", line 280: error: expected a "," or ">"
+      template <typename> auto TVar, // expected-note 2{{template argument refers to a variable template 'TVar', here}}
+                          ^
+
+"Test_name.c", line 284: error: expected "class" or "typename"
+      template <template <typename> auto = TConcept> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 284: error: expected a "," or ">"
+      template <template <typename> auto = TConcept> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 287: error: expected "class" or "typename"
+      template <template <typename> auto  = TType> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 287: error: expected a "," or ">"
+      template <template <typename> auto  = TType> // expected-error {{template argument does not refer to a variable template, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 290: error: identifier "TConcept" is undefined
+      template <template <typename> typename = TConcept> // expected-error {{template argument does not refer to a class or alias template, or template template parameter}}
+                                               ^
+
+"Test_name.c", line 293: error: identifier "TVar" is undefined
+      template <template <typename> typename  = TVar> // expected-error {{template argument does not refer to a class or alias template, or template template parameter}}
+                                                ^
+
+"Test_name.c", line 296: error: expected "class" or "typename"
+      template <template <typename> concept  = TVar> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 296: error: expected a "," or ">"
+      template <template <typename> concept  = TVar> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 299: error: expected "class" or "typename"
+      template <template <typename> concept  = TType> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 299: error: expected a "," or ">"
+      template <template <typename> concept  = TType> // expected-error {{template argument does not refer to a concept, or template template parameter}}
+                                    ^
+
+"Test_name.c", line 304: error: expected "class" or "typename"
+  template <template <typename> concept C = Concept>
+                                ^
+
+"Test_name.c", line 304: error: expected a "," or ">"
+  template <template <typename> concept C = Concept>
+                                ^
+
+"Test_name.c", line 306: error: expected "class" or "typename"
+      template <template <typename> concept CC = C>
+                                    ^
+
+"Test_name.c", line 306: error: expected a "," or ">"
+      template <template <typename> concept CC = C>
+                                    ^
+
+"Test_name.c", line 310: error: identifier "CC" is undefined
+          static_assert(CC<int>);  // expected-error {{static assertion failed}} \
+                        ^
+
+"Test_name.c", line 315: error: too few arguments for class template "default_args::TestDefaultConcept"
+      TestDefaultConcept<>{}.f(); // expected-note {{in instantiation}}
+                         ^
+
+"Test_name.c", line 315: error: expected an identifier
+      TestDefaultConcept<>{}.f(); // expected-note {{in instantiation}}
+                          ^
+
+"Test_name.c", line 318: error: expected "class" or "typename"
+  template <template <typename> auto V = Var>
+                                ^
+
+"Test_name.c", line 318: error: expected a "," or ">"
+  template <template <typename> auto V = Var>
+                                ^
+
+"Test_name.c", line 320: error: expected "class" or "typename"
+      template <template <typename> auto VV = V>
+                                    ^
+
+"Test_name.c", line 320: error: expected a "," or ">"
+      template <template <typename> auto VV = V>
+                                    ^
+
+"Test_name.c", line 322: error: identifier "V" is undefined
+          static_assert(V<int>); // expected-error {{static assertion failed}}
+                        ^
+
+"Test_name.c", line 323: error: identifier "VV" is undefined
+          static_assert(VV<int>); // expected-error {{static assertion failed}}
+                        ^
+
+"Test_name.c", line 327: error: too few arguments for class template "default_args::TestDefaultVar"
+      TestDefaultVar<>{}.f(); // expected-note {{in instantiation}}
+                     ^
+
+"Test_name.c", line 327: error: expected an identifier
+      TestDefaultVar<>{}.f(); // expected-note {{in instantiation}}
+                      ^
+
+"Test_name.c", line 333: error: expected "class" or "typename"
+  template <template <typename... > concept C>
+                                    ^
+
+"Test_name.c", line 333: error: expected a "," or ">"
+  template <template <typename... > concept C>
+                                    ^
+
+"Test_name.c", line 334: error: too few arguments for concept "C"
+  concept A = C<>;
+                ^
+
+"Test_name.c", line 334: error: expected an expression
+  concept A = C<>;
+                 ^
+
+"Test_name.c", line 335: error: expected "class" or "typename"
+  template <template <typename... > concept C>
+                                    ^
+
+"Test_name.c", line 335: error: expected a "," or ">"
+  template <template <typename... > concept C>
+                                    ^
+
+"Test_name.c", line 338: error: expected "class" or "typename"
+  template <template <typename... > auto Var>
+                                    ^
+
+"Test_name.c", line 338: error: expected a "," or ">"
+  template <template <typename... > auto Var>
+                                    ^
+
+"Test_name.c", line 339: error: too few arguments for variable template "Var"
+  concept C = Var<>;
+                  ^
+
+"Test_name.c", line 340: error: expected "class" or "typename"
+  template <template <typename... > auto Var>
+                                    ^
+
+"Test_name.c", line 340: error: expected a "," or ">"
+  template <template <typename... > auto Var>
+                                    ^
+
+"Test_name.c", line 341: error: atomic constraint must have type bool
+  concept D = Var<int>;
+              ^
+
+"Test_name.c", line 346: error: expected "class" or "typename"
+  template <typename T, template <typename> concept C>
+                                            ^
+
+"Test_name.c", line 346: error: expected a "," or ">"
+  template <typename T, template <typename> concept C>
+                                            ^
+
+"Test_name.c", line 349: error: expected an expression
+  template <A<concept missing<int>> T> // expected-error {{expected expression}} \
+              ^
+
+"Test_name.c", line 349: error: expected an identifier
+  template <A<concept missing<int>> T> // expected-error {{expected expression}} \
+              ^
+
+"Test_name.c", line 353: error: expected a "," or ">"
+  auto f();
+          ^
+
+"Test_name.c", line 353: error: expected a declaration
+  auto f();
+          ^
+
+"Test_name.c", line 359: error: expected "class" or "typename"
+            template <typename...> concept C1>
+                                   ^
+
+"Test_name.c", line 359: error: expected a "," or ">"
+            template <typename...> concept C1>
+                                   ^
+
+"Test_name.c", line 360: error: identifier "C1" is undefined
+  concept one = (C1<T>); // #concept-arg-one
+                 ^
+
+"Test_name.c", line 375: error: concept "concept_arg_normalization::A" is not a class template
+  requires one<T, A>
+                  ^
+
+"Test_name.c", line 379: error: concept "concept_arg_normalization::B" is not a class template
+  requires one<T, B>
+                  ^
+
+"Test_name.c", line 380: error: function template "concept_arg_normalization::f1" has already been defined (previous definition at line 374)
+  void f1(T){} // #concept-arg-f1-2
+       ^
+
+"Test_name.c", line 383: error: concept "concept_arg_normalization::A" is not a class template
+  requires one<T, A>
+                  ^
+
+"Test_name.c", line 387: error: concept "concept_arg_normalization::BetterA" is not a class template
+  requires one<T, BetterA>
+                  ^
+
+"Test_name.c", line 388: error: function template "concept_arg_normalization::f2" has already been defined (previous definition at line 382)
+  void f2(T){}
+       ^
+
+"Test_name.c", line 391: error: expected "class" or "typename"
+  template <template <typename> concept CT>
+                                ^
+
+"Test_name.c", line 391: error: expected a "," or ">"
+  template <template <typename> concept CT>
+                                ^
+
+"Test_name.c", line 392: error: concept "concept_arg_normalization::A" is not a class template
+  requires one<int, A>
+                    ^
+
+"Test_name.c", line 395: error: expected "class" or "typename"
+  template <template <typename> concept CT>
+                                ^
+
+"Test_name.c", line 395: error: expected a "," or ">"
+  template <template <typename> concept CT>
+                                ^
+
+"Test_name.c", line 396: error: identifier "CT" is undefined
+  requires one<int, CT>
+                    ^
+
+"Test_name.c", line 397: error: function template "concept_arg_normalization::f3" has already been defined (previous definition at line 391)
+  void f3(){} // #concept-arg-f3-2
+       ^
+
+"Test_name.c", line 400: error: concept "concept_arg_normalization::False" is not a class template
+  requires one<T, False> void f4(T){} // #concept-arg-f4
+                  ^
+
+"Test_name.c", line 404: error: no instance of function template "concept_arg_normalization::f1" matches the argument list
+            argument types are: (int)
+      f1(0);
+      ^
+"Test_name.c", line 376: note: substituting "<int>" for function template "concept_arg_normalization::f1" failed constraints
+  void f1(T){} // #concept-arg-f1-1
+       ^
+"Test_name.c", line 375: note: concept "concept_arg_normalization::one" not satisfied for "<int, <error>>"
+  requires one<T, A>
+           ^
+"Test_name.c", line 360: note: atomic constraint failed substitution
+  concept one = (C1<T>); // #concept-arg-one
+                ^
+
+"Test_name.c", line 410: error: no instance of function template "concept_arg_normalization::f2" matches the argument list
+            argument types are: (int)
+      f2(0);
+      ^
+"Test_name.c", line 384: note: substituting "<int>" for function template "concept_arg_normalization::f2" failed constraints
+  void f2(T){}
+       ^
+"Test_name.c", line 383: note: concept "concept_arg_normalization::one" not satisfied for "<int, <error>>"
+  requires one<T, A>
+           ^
+"Test_name.c", line 360: note: atomic constraint failed substitution
+  concept one = (C1<T>); // #concept-arg-one
+                ^
+
+"Test_name.c", line 412: error: expected a "<"
+      f3<BetterA>();
+                ^
+
+"Test_name.c", line 417: error: concept "concept_arg_normalization::A" is not a class template
+  static_assert(one<int, A>);
+                         ^
+
+"Test_name.c", line 417: error: static assertion failed
+  static_assert(one<int, A>);
+  ^
+
+"Test_name.c", line 418: error: concept "concept_arg_normalization::False" is not a class template
+  static_assert(one<int, False>);
+                         ^
+
+"Test_name.c", line 418: error: static assertion failed
+  static_assert(one<int, False>);
+  ^
+
+"Test_name.c", line 424: error: no instance of function template "concept_arg_normalization::f4" matches the argument list
+            argument types are: (int)
+  f4(0);
+  ^
+"Test_name.c", line 400: note: substituting "<int>" for function template "concept_arg_normalization::f4" failed constraints
+  requires one<T, False> void f4(T){} // #concept-arg-f4
+                              ^
+"Test_name.c", line 400: note: concept "concept_arg_normalization::one" not satisfied for "<int, <error>>"
+  requires one<T, False> void f4(T){} // #concept-arg-f4
+           ^
+"Test_name.c", line 360: note: atomic constraint failed substitution
+  concept one = (C1<T>); // #concept-arg-one
+                ^
+
+"Test_name.c", line 433: error: expected "class" or "typename"
+  template <typename T, template <typename...> concept C1>
+                                               ^
+
+"Test_name.c", line 433: error: expected a "," or ">"
+  template <typename T, template <typename...> concept C1>
+                                               ^
+
+"Test_name.c", line 434: error: identifier "C1" is undefined
+  concept TestBinary = T::a || C1<T>;
+                               ^
+
+"Test_name.c", line 435: error: concept "concept_arg_normalization::A" is not a class template
+  static_assert(TestBinary<int, A>);
+                                ^
+
+"Test_name.c", line 435: error: static assertion failed
+  static_assert(TestBinary<int, A>);
+  ^
+
+182 errors detected in the compilation of "Test_name.c".

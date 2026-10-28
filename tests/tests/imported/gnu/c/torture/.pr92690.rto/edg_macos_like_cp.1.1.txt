@@ -1,0 +1,70 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/pr92690.c", line 14: error: expression must have pointer-to-object type but it has type "v4sf" (aka "float")
+    *dstp = (v4si) { src[0], src[1], 3, 4 };
+                     ^
+
+"./torture/pr92690.c", line 14: error: expression must have pointer-to-object type but it has type "v4sf" (aka "float")
+    *dstp = (v4si) { src[0], src[1], 3, 4 };
+                             ^
+
+"./torture/pr92690.c", line 14: warning: excess initializers are ignored
+    *dstp = (v4si) { src[0], src[1], 3, 4 };
+                             ^
+
+"./torture/pr92690.c", line 21: error: expression must have pointer-to-object type but it has type "int"
+    *dstp = (v4sf) { src[0], src[1], 3.5, 4.5 };
+                         ^
+
+"./torture/pr92690.c", line 21: error: expression must have pointer-to-object type but it has type "int"
+    *dstp = (v4sf) { src[0], src[1], 3.5, 4.5 };
+                                 ^
+
+"./torture/pr92690.c", line 21: warning: excess initializers are ignored
+    *dstp = (v4sf) { src[0], src[1], 3.5, 4.5 };
+                             ^
+
+"./torture/pr92690.c", line 27: warning: function "feenableexcept" declared implicitly
+    feenableexcept (
+    ^
+
+"./torture/pr92690.c", line 28: warning: excess initializers are ignored
+    v4sf x = (v4sf) { 1, 2, __builtin_nanf (""), 3.5 };
+                         ^
+
+"./torture/pr92690.c", line 31: error: expression must have pointer-to-object type but it has type "int"
+    if (y[0] != 1 || y[1] != 2 || y[2] != 3 || y[3] != 4)
+          ^
+
+"./torture/pr92690.c", line 31: error: expression must have pointer-to-object type but it has type "int"
+    if (y[0] != 1 || y[1] != 2 || y[2] != 3 || y[3] != 4)
+                       ^
+
+"./torture/pr92690.c", line 31: error: expression must have pointer-to-object type but it has type "int"
+    if (y[0] != 1 || y[1] != 2 || y[2] != 3 || y[3] != 4)
+                                    ^
+
+"./torture/pr92690.c", line 31: error: expression must have pointer-to-object type but it has type "int"
+    if (y[0] != 1 || y[1] != 2 || y[2] != 3 || y[3] != 4)
+                                                 ^
+
+"./torture/pr92690.c", line 33: warning: excess initializers are ignored
+    y = (v4si) { 0, 1, 0x7fffffff, -0x7fffffff };
+                    ^
+
+"./torture/pr92690.c", line 35: error: expression must have pointer-to-object type but it has type "v4sf" (aka "float")
+    if (x[0] != 0 || x[1] != 1 || x[2] != 3.5 || x[3] != 4.5)
+        ^
+
+"./torture/pr92690.c", line 35: error: expression must have pointer-to-object type but it has type "v4sf" (aka "float")
+    if (x[0] != 0 || x[1] != 1 || x[2] != 3.5 || x[3] != 4.5)
+                     ^
+
+"./torture/pr92690.c", line 35: error: expression must have pointer-to-object type but it has type "v4sf" (aka "float")
+    if (x[0] != 0 || x[1] != 1 || x[2] != 3.5 || x[3] != 4.5)
+                                  ^
+
+"./torture/pr92690.c", line 35: error: expression must have pointer-to-object type but it has type "v4sf" (aka "float")
+    if (x[0] != 0 || x[1] != 1 || x[2] != 3.5 || x[3] != 4.5)
+                                                 ^
+
+12 errors detected in the compilation of "Test_name.c".

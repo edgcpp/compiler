@@ -1,0 +1,6 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+/usr/sbin/ld: /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o: in function `_start':
+(.text+0xXX): undefined reference to `main'
+/usr/sbin/ld: Test_name.o: in function `foo':
+Test_name.int.c:(.text+0xXX): undefined reference to `bar0'
+collect2: error: ld returned 1 exit status

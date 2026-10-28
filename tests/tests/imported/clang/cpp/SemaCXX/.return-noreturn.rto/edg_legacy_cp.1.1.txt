@@ -1,0 +1,209 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++11 Test_name.c
+"Test_name.c", line 31: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f2_positive"
+    } // expected-warning {{non-void function does not return a value}}
+    ^
+
+"Test_name.c", line 36: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: pr6884_abort_struct();
+                          ^
+
+"Test_name.c", line 36: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: pr6884_abort_struct();
+                              ^
+
+"Test_name.c", line 39: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
+                          ^
+
+"Test_name.c", line 39: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
+                                ^
+
+"Test_name.c", line 42: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: { pr6884_abort_struct(); }
+                          ^
+
+"Test_name.c", line 42: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: { pr6884_abort_struct(); }
+                              ^
+
+"Test_name.c", line 51: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f7"
+    } // expected-warning {{non-void function does not return a value}}
+    ^
+
+"Test_name.c", line 47: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: {
+                          ^
+
+"Test_name.c", line 47: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: {
+                              ^
+
+"Test_name.c", line 66: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g2_positive"
+    } // expected-warning {{non-void function does not return a value}}
+    ^
+
+"Test_name.c", line 73: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: pr6884_abort_struct();
+                          ^
+
+"Test_name.c", line 73: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: pr6884_abort_struct();
+                              ^
+
+"Test_name.c", line 77: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
+                          ^
+
+"Test_name.c", line 77: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
+                                ^
+
+"Test_name.c", line 81: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: { pr6884_abort_struct(); }
+                          ^
+
+"Test_name.c", line 81: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: { pr6884_abort_struct(); }
+                              ^
+
+"Test_name.c", line 89: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::h1"
+    }
+    ^
+
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::h2"
+    }
+    ^
+
+"Test_name.c", line 97: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::h3"
+    }
+    ^
+
+"Test_name.c", line 101: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::h4"
+    }
+    ^
+
+"Test_name.c", line 100: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: pr6884_abort_struct a;
+                          ^
+
+"Test_name.c", line 100: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: pr6884_abort_struct a;
+                              ^
+
+"Test_name.c", line 105: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::h5"
+    }
+    ^
+
+"Test_name.c", line 104: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: { L2: case 4: pr6884_abort_struct a; }
+                          ^
+
+"Test_name.c", line 104: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: { L2: case 4: pr6884_abort_struct a; }
+                                ^
+
+"Test_name.c", line 109: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::h6"
+    }
+    ^
+
+"Test_name.c", line 108: warning: label "L1" was declared but never referenced
+      switch (x) default: L1: L2: case 4: { pr6884_abort_struct a; }
+                          ^
+
+"Test_name.c", line 108: warning: label "L2" was declared but never referenced
+      switch (x) default: L1: L2: case 4: { pr6884_abort_struct a; }
+                              ^
+
+"Test_name.c", line 145: warning: missing return statement at end of non-void function "PR9412_t<type>()"
+  } // expected-warning {{non-void function does not return a value}}
+  ^
+
+"Test_name.c", line 166: warning: missing return statement at end of non-void function "testTernaryStaticallyConditionalNoretrunOnTrue"
+  }
+  ^
+
+"Test_name.c", line 170: warning: missing return statement at end of non-void function "testTernaryStaticallyConditionalRetrunOnTrue"
+  } // expected-warning {{non-void function does not return a value}}
+  ^
+
+"Test_name.c", line 174: warning: missing return statement at end of non-void function "testTernaryStaticallyConditionalNoretrunOnFalse"
+  }
+  ^
+
+"Test_name.c", line 178: warning: missing return statement at end of non-void function "testTernaryStaticallyConditionalRetrunOnFalse"
+  } // expected-warning {{non-void function does not return a value}}
+  ^
+
+"Test_name.c", line 182: warning: missing return statement at end of non-void function "testTernaryConditionalNoreturnTrueBranch"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 186: warning: missing return statement at end of non-void function "testTernaryConditionalNoreturnFalseBranch"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 190: warning: missing return statement at end of non-void function "testConditionallyExecutedComplexTernaryTrueBranch"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 194: warning: missing return statement at end of non-void function "testConditionallyExecutedComplexTernaryFalseBranch"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 198: warning: missing return statement at end of non-void function "testStaticallyExecutedLogicalOrBranch"
+  }
+  ^
+
+"Test_name.c", line 202: warning: missing return statement at end of non-void function "testStaticallyExecutedLogicalAndBranch"
+  }
+  ^
+
+"Test_name.c", line 205: warning: expression has no effect
+    true || NoReturn();
+    ^
+
+"Test_name.c", line 206: warning: missing return statement at end of non-void function "testStaticallySkippedLogicalOrBranch"
+  } // expected-warning {{non-void function does not return a value}}
+  ^
+
+"Test_name.c", line 209: warning: expression has no effect
+    false && NoReturn();
+    ^
+
+"Test_name.c", line 210: warning: missing return statement at end of non-void function "testStaticallySkppedLogicalAndBranch"
+  } // expected-warning {{non-void function does not return a value}}
+  ^
+
+"Test_name.c", line 214: warning: missing return statement at end of non-void function "testConditionallyExecutedComplexLogicalBranch"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 218: warning: missing return statement at end of non-void function "testConditionallyExecutedComplexLogicalBranch2"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 222: warning: missing return statement at end of non-void function "testConditionallyExecutedComplexLogicalBranch3"
+  }
+  ^
+
+"Test_name.c", line 226: warning: missing return statement at end of non-void function "testConditionallyExecutedComplexLogicalBranch4"
+  }
+  ^
+
+"Test_name.c", line 241: warning: missing return statement at end of non-void function "LambdaVsTemporaryDtor::bar"
+    } // expected-warning {{non-void function does not return a value}}
+    ^
+
+"Test_name.c", line 247: warning: missing return statement at end of non-void function "LambdaVsTemporaryDtor::baz"
+    } // ok, initialization of lambda does not return
+    ^
+
+"Test_name.c", line 255: warning: missing return statement at end of non-void function "functionTryBlock1"
+  } // expected-warning {{non-void function does not return a value in all control paths}}
+  ^
+
+"Test_name.c", line 258: warning: missing return statement at end of non-void function "functionTryBlock2"
+  } catch (...) {
+  ^
+

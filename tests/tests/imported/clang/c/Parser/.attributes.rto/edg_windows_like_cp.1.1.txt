@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 12: warning: explicit type is missing ("int" assumed)
+  __attribute__(()) y;   // expected-error {{type specifier missing, defaults to 'int'}}
+                    ^
+
+"Test_name.c", line 20: error: expected an identifier
+  int f2(y, __attribute__(()) x);     // expected-error {{expected identifier}}
+            ^
+
+"Test_name.c", line 20: warning: identifier-list parameters may only be used in a function definition
+  int f2(y, __attribute__(()) x);     // expected-error {{expected identifier}}
+      ^
+
+"Test_name.c", line 24: error: variable "x" is not a type name
+  void f3(__attribute__(()) x,  // expected-error {{type specifier missing, defaults to 'int'}}
+                            ^
+
+"Test_name.c", line 25: error: variable "y" is not a type name
+          y);               // expected-error {{type specifier missing, defaults to 'int'}}
+          ^
+
+"Test_name.c", line 27: error: expected a type specifier
+  void f4(__attribute__(()));   // expected-error {{expected parameter declarator}}
+                           ^
+
+"Test_name.c", line 34: error: identifier-list parameters may only be used in a function definition
+  void g2(int (*f2)(y, __attribute__(()) x));    // expected-error {{expected identifier}}
+                    ^
+
+"Test_name.c", line 34: error: expected an identifier
+  void g2(int (*f2)(y, __attribute__(()) x));    // expected-error {{expected identifier}}
+                       ^
+
+"Test_name.c", line 35: error: variable "x" is not a type name
+  void g3(void (*f3)(__attribute__(()) x, int y));  // expected-error {{type specifier missing, defaults to 'int'}}
+                                       ^
+
+"Test_name.c", line 36: error: expected a type specifier
+  void g4(void (*f4)(__attribute__(())));  // expected-error {{expected parameter declarator}}
+                                      ^
+
+"Test_name.c", line 40: error: identifier-list parameters may only be used in a function definition
+  void (*h2)(int (*f2)(y, __attribute__(()) x));    // expected-error {{expected identifier}}
+                       ^
+
+"Test_name.c", line 40: error: expected an identifier
+  void (*h2)(int (*f2)(y, __attribute__(()) x));    // expected-error {{expected identifier}}
+                          ^
+
+"Test_name.c", line 42: error: variable "x" is not a type name
+  void (*h3)(void (*f3)(__attribute__(()) x));   // expected-error {{type specifier missing, defaults to 'int'}}
+                                          ^
+
+"Test_name.c", line 43: error: expected a type specifier
+  void (*h4)(void (*f4)(__attribute__(())));  // expected-error {{expected parameter declarator}}
+                                         ^
+
+"Test_name.c", line 46: warning: variable "x" was declared but never referenced
+    int x, __attribute__((unused)) y, z;
+        ^
+
+"Test_name.c", line 46: warning: variable "z" was declared but never referenced
+    int x, __attribute__((unused)) y, z;
+                                      ^
+
+"Test_name.c", line 59: error: expected a ")"
+  int __attribute__((vec_type_hint(char, aligned(16) )) missing_rparen_1; // expected-error 2{{expected ')'}} expected-note {{to match}} expected-warning {{does not declare anything}}
+                                                        ^
+
+"Test_name.c", line 59: warning: declaration does not declare anything
+  int __attribute__((vec_type_hint(char, aligned(16) )) missing_rparen_1; // expected-error 2{{expected ')'}} expected-note {{to match}} expected-warning {{does not declare anything}}
+  ^
+
+"Test_name.c", line 60: error: expected a ")"
+  int __attribute__((mode(x aligned(16) )) missing_rparen_2; // expected-error 2{{expected ')'}}
+                            ^
+
+"Test_name.c", line 60: error: expected a ")"
+  int __attribute__((mode(x aligned(16) )) missing_rparen_2; // expected-error 2{{expected ')'}}
+                                           ^
+
+"Test_name.c", line 60: error: invalid argument to attribute "mode"
+  int __attribute__((mode(x aligned(16) )) missing_rparen_2; // expected-error 2{{expected ')'}}
+                          ^
+
+"Test_name.c", line 60: warning: declaration does not declare anything
+  int __attribute__((mode(x aligned(16) )) missing_rparen_2; // expected-error 2{{expected ')'}}
+  ^
+
+"Test_name.c", line 61: error: missing arguments for attribute "format"
+  int __attribute__((format(printf, 0 aligned(16) )) missing_rparen_3; // expected-error 2{{expected ')'}}
+                                      ^
+
+"Test_name.c", line 61: error: expected a ")"
+  int __attribute__((format(printf, 0 aligned(16) )) missing_rparen_3; // expected-error 2{{expected ')'}}
+                                      ^
+
+"Test_name.c", line 61: error: expected a ")"
+  int __attribute__((format(printf, 0 aligned(16) )) missing_rparen_3; // expected-error 2{{expected ')'}}
+                                                     ^
+
+"Test_name.c", line 61: warning: declaration does not declare anything
+  int __attribute__((format(printf, 0 aligned(16) )) missing_rparen_3; // expected-error 2{{expected ')'}}
+  ^
+
+"Test_name.c", line 95: error: expected a string literal
+  void deprecatedTestFun(void) __attribute__((deprecated()));
+                                                         ^
+
+"Test_name.c", line 108: error: expected a ","
+  __attribute__((const const)) int PR38352(void); // expected-error {{expected ')'}}
+                       ^
+
+21 errors detected in the compilation of "Test_name.c".

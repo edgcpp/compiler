@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -w --ms_extensions --ms_extensions --c++03 --ms_extensions Test_name.c
+"Test_name.c", line 27: error: unknown attribute "thread"
+  int __declspec(thread) x = f(); // expected-error {{initializer for thread-local variable must be a constant expression}}
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

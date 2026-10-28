@@ -1,0 +1,55 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 12: warning: unknown attribute "__visibility__"
+  namespace std __attribute__((__visibility__("default"))) {
+                               ^
+
+"Test_name.c", line 34: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__((__visibility__("default"))) {
+                                     ^
+
+"Test_name.c", line 51: warning: unknown attribute "__visibility__"
+  namespace std __attribute__((__visibility__("default"))) {
+                               ^
+
+"Test_name.c", line 164: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__((__visibility__("default"))) {
+                                     ^
+
+"Test_name.c", line 204: warning: unknown attribute "__visibility__"
+  namespace std __attribute__((__visibility__("default"))) {
+                               ^
+
+"Test_name.c", line 237: warning: unknown attribute "__visibility__"
+  namespace std __attribute__((__visibility__("default"))) {
+                               ^
+
+"Test_name.c", line 330: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__((__visibility__("default"))) {
+                                     ^
+
+"Test_name.c", line 341: warning: unknown attribute "__visibility__"
+  namespace std __attribute__((__visibility__("default"))) {
+                               ^
+
+"Test_name.c", line 605: error: the definition of std::initializer_list does not contain the expected constructor
+      std::vector<signed char> distCandVec = {0, 1, 10, 100, 5, 6};
+                                             ^
+
+"Test_name.c", line 605: error: no instance of constructor "std::vector<_Tp, _Alloc>::vector [with _Tp=signed char, _Alloc=std::allocator<signed char>]" matches the argument list
+            argument types are: (int, int, int, int, int, int)
+      std::vector<signed char> distCandVec = {0, 1, 10, 100, 5, 6};
+                                             ^
+"Test_name.c", line 464: note: function "std::vector<_Tp, _Alloc>::vector(std::initializer_list<std::vector<_Tp, _Alloc>::value_type>, const std::vector<_Tp, _Alloc>::allocator_type &) [with _Tp=signed char, _Alloc=std::allocator<signed char>]" does not match because argument #1 does not match parameter
+      vector(initializer_list<value_type> __l,
+      ^
+"Test_name.c", line 443: note: number of parameters of function "std::vector<_Tp, _Alloc>::vector(const std::vector<signed char, std::allocator<signed char>> &) [with _Tp=signed char, _Alloc=std::allocator<signed char>]" does not match the call
+    class vector : protected _Vector_base<_Tp, _Alloc> {
+          ^
+"Test_name.c", line 443: note: number of parameters of function "std::vector<_Tp, _Alloc>::vector(std::vector<signed char, std::allocator<signed char>> &&) [with _Tp=signed char, _Alloc=std::allocator<signed char>]" does not match the call
+    class vector : protected _Vector_base<_Tp, _Alloc> {
+          ^
+"Test_name.c", line 463: note: number of parameters of function "std::vector<_Tp, _Alloc>::vector() [with _Tp=signed char, _Alloc=std::allocator<signed char>]" does not match the call
+      vector() = default;
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

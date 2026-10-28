@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef long long v2tw __attribute__ ((vector_size (2 * sizeof (long long))));
+                                         ^
+
+"Test_name.c", line 11: warning: excess initializers are ignored
+    v2tw i1 = { in1, in1 };
+                     ^
+

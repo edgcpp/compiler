@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./attr-ifunc-5.c", line 15: warning: return value type does not match the function type
+    return (void *)implementation;
+           ^
+
+"./attr-ifunc-5.c", line 18: warning: unknown attribute "visibility"
+  extern int magic (void) __attribute__ ((ifunc ("resolver"),visibility ("hidden")));
+                                                             ^
+

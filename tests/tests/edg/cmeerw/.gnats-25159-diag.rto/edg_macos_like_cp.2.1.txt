@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=2 -tused --c++11 --g++ Test_name.c
+"Test_name.c", line 16: error: no suitable conversion function from "lookup::S<int>" to "int" exists
+      foo(s);
+          ^
+
+"Test_name.c", line 26: warning: "void foo(lookup::S<T> &)" declares a non-template function -- add <> to refer to a template instance
+      friend void foo(S &s);
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

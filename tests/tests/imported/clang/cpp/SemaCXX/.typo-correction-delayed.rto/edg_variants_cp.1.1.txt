@@ -1,0 +1,218 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 21: error: class "D" has no member "fixbin"
+    something(obj.fixbin,   // expected-error {{did you mean 'fizbin'?}}
+                  ^
+
+"Test_name.c", line 22: error: class "D" has no member "toobat"
+              obj.toobat);  // expected-error {{did you mean 'toobad'?}}
+                  ^
+
+"Test_name.c", line 23: error: class "D" has no member "toobat"
+    something(obj.toobat,   // expected-error {{did you mean 'foobar'?}}
+                  ^
+
+"Test_name.c", line 24: error: class "D" has no member "fixbin"
+              obj.fixbin);  // expected-error {{did you mean 'roxbin'?}}
+                  ^
+
+"Test_name.c", line 25: error: class "D" has no member "fixbin"
+    something(obj.fixbin,   // expected-error {{did you mean 'fizbin'?}}
+                  ^
+
+"Test_name.c", line 26: error: class "D" has no member "fixbin"
+              obj.fixbin);  // expected-error {{did you mean 'roxbin'?}}
+                  ^
+
+"Test_name.c", line 27: error: class "D" has no member "toobat"
+    something(obj.toobat,   // expected-error {{did you mean 'foobar'?}}
+                  ^
+
+"Test_name.c", line 28: error: class "D" has no member "toobat"
+              obj.toobat);  // expected-error {{did you mean 'toobad'?}}
+                  ^
+
+"Test_name.c", line 30: error: class "D" has no member "boohoo"
+    something(obj.boohoo,   // expected-error-re {{no member named 'boohoo' in 'D'{{$}}}}
+                  ^
+
+"Test_name.c", line 31: error: class "D" has no member "foxbox"
+              obj.foxbox);  // expected-error-re {{no member named 'foxbox' in 'D'{{$}}}}
+                  ^
+
+"Test_name.c", line 33: error: class "D" has no member "boobar"
+    something(obj.boobar,   // expected-error-re {{no member named 'boobar' in 'D'{{$}}}}
+                  ^
+
+"Test_name.c", line 34: error: class "D" has no member "foxbox"
+              obj.foxbox);  // expected-error-re {{no member named 'foxbox' in 'D'{{$}}}}
+                  ^
+
+"Test_name.c", line 43: error: "testIt" is not a class or function template name in the current scope
+    template <> void testIt();  // expected-error {{no function template matches}}
+                     ^
+
+"Test_name.c", line 47: error: class "Foo" has no member "TestIt"
+    f->TestIt();  // expected-error {{no member named 'TestIt' in 'Foo'; did you mean 'textIt'?}}
+       ^
+
+"Test_name.c", line 52: error: identifier "xxxxxx" is undefined
+    callee(xxxxxx,   // expected-error-re {{use of undeclared identifier 'xxxxxx'{{$}}}}
+           ^
+
+"Test_name.c", line 53: error: identifier "zzzzzz" is undefined
+           zzzzzz);  // expected-error-re {{use of undeclared identifier 'zzzzzz'{{$}}}}
+           ^
+
+"Test_name.c", line 64: error: class "Item" has no member "Next"
+    j = i->Next();  // expected-error {{no member named 'Next' in 'Item'; did you mean 'next'?}}
+           ^
+
+"Test_name.c", line 63: warning: variable "j" was set but never used
+    Item *j;
+          ^
+
+"Test_name.c", line 77: error: class "initializerCorrections::Node" has no member "Next"
+    Node *next = node->Next();  // expected-error-re {{no member named 'Next' in 'initializerCorrections::Node'{{$}}}}
+                       ^
+
+"Test_name.c", line 87: error: class "initializerCorrections::LinkedNode" has no member "Next"
+    LinkedNode *next = node->Next();  // expected-error {{no member named 'Next' in 'initializerCorrections::LinkedNode'; did you mean 'next'?}}
+                             ^
+
+"Test_name.c", line 97: error: class "initializerCorrections::NestedNode" has no member "Next"
+    NestedNode *next = node->Next();  // expected-error-re {{no member named 'Next' in 'initializerCorrections::NestedNode'{{$}}}}
+                             ^
+
+"Test_name.c", line 106: error: identifier "something_something" is undefined
+    __atomic_load(i, i, something_something);  // expected-error-re {{use of undeclared identifier 'something_something'{{$}}}}
+                        ^
+
+"Test_name.c", line 111: error: identifier "defaultArg" is undefined
+  template <int I = defaultArg> struct S {};  // expected-error {{use of undeclared identifier 'defaultArg'; did you mean 'DefaultArg'?}}
+                    ^
+
+"Test_name.c", line 116: error: namespace "foo" has no member "bar"
+    foo::bar({5, 6});  // expected-error-re {{no member named 'bar' in namespace 'foo'{{$}}}}
+         ^
+
+"Test_name.c", line 116: error: expected an expression
+    foo::bar({5, 6});  // expected-error-re {{no member named 'bar' in namespace 'foo'{{$}}}}
+             ^
+
+"Test_name.c", line 126: error: identifier "kSum" is undefined
+    explicit SomeClass() : Kind(kSum) {}  // expected-error {{use of undeclared identifier 'kSum'; did you mean 'kNum'?}}
+                                ^
+
+"Test_name.c", line 137: error: identifier "resulta" is undefined
+    Overload(resulta);
+             ^
+
+"Test_name.c", line 135: warning: variable "result" was declared but never referenced
+    const char *result;
+                ^
+
+"Test_name.c", line 149: error: identifier "variableX" is undefined
+    int x = variableX.getX();
+            ^
+
+"Test_name.c", line 145: warning: variable "variable" was declared but never referenced
+    X variable;  // expected-note {{'variable' declared here}}
+      ^
+
+"Test_name.c", line 154: error: identifier "Z" is undefined
+  int (*a)() = (void)Z; // expected-error-re {{use of undeclared identifier 'Z'{{$}}}} \
+                     ^
+
+"Test_name.c", line 154: error: a value of type "void" cannot be used to initialize an entity of type "int (*)()"
+  int (*a)() = (void)Z; // expected-error-re {{use of undeclared identifier 'Z'{{$}}}} \
+               ^
+
+"Test_name.c", line 160: error: identifier "blur" is undefined
+  __typeof blur y;  // expected-error {{use of undeclared identifier 'blur'; did you mean 'blue'?}}
+           ^
+
+"Test_name.c", line 164: error: this declaration has no storage class or type specifier
+  a = b ? : 0;  // expected-error {{a type specifier is required for all declarations}} \
+  ^
+
+"Test_name.c", line 164: error: identifier "b" is undefined
+  a = b ? : 0;  // expected-error {{a type specifier is required for all declarations}} \
+      ^
+
+"Test_name.c", line 174: error: identifier "click" is undefined
+    click.set_xpos(x);  // expected-error {{use of undeclared identifier 'click'; did you mean 'Click'?}}
+    ^
+
+"Test_name.c", line 183: error: identifier "size_t" is undefined
+  int getenv_s(size_t *y, char(&z)) {}
+               ^
+
+"Test_name.c", line 183: error: identifier "y" is undefined
+  int getenv_s(size_t *y, char(&z)) {}
+                       ^
+
+"Test_name.c", line 183: error: identifier "z" is undefined
+  int getenv_s(size_t *y, char(&z)) {}
+                                ^
+
+"Test_name.c", line 183: error: too many initializer values
+  int getenv_s(size_t *y, char(&z)) {}
+                          ^
+
+"Test_name.c", line 183: error: expected a ";"
+  int getenv_s(size_t *y, char(&z)) {}
+                                    ^
+
+"Test_name.c", line 190: error: identifier "prio_op_array" is undefined
+    __atomic_store_n(prio_op_array + I, false, __ATOMIC_RELAXED);
+                     ^
+
+"Test_name.c", line 190: error: identifier "__ATOMIC_RELAXED" is undefined
+    __atomic_store_n(prio_op_array + I, false, __ATOMIC_RELAXED);
+                                               ^
+
+"Test_name.c", line 188: warning: variable "prio_bits_array" was declared but never referenced
+    unsigned *prio_bits_array;  // expected-note {{'prio_bits_array' declared here}}
+              ^
+
+"Test_name.c", line 200: error: class "PR22297::TimeTicks" has no member "now"
+    TimeTicks::now();  // expected-error {{no member named 'now' in 'PR22297::TimeTicks'; did you mean 'Now'?}}
+               ^
+
+"Test_name.c", line 205: error: name followed by "::" must be a class or namespace name
+  void f() { int a = Unknown::b(c); }  // expected-error {{use of undeclared identifier 'Unknown'}}
+                     ^
+
+"Test_name.c", line 205: error: identifier "c" is undefined
+  void f() { int a = Unknown::b(c); }  // expected-error {{use of undeclared identifier 'Unknown'}}
+                                ^
+
+"Test_name.c", line 210: error: identifier "N" is undefined
+  int z = 1 ? N : ;  // expected-error {{expected expression}}
+              ^
+
+"Test_name.c", line 210: error: expected an expression
+  int z = 1 ? N : ;  // expected-error {{expected expression}}
+                  ^
+
+"Test_name.c", line 218: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+  unsigned int a = 0(uintmax_t
+                   ^
+
+"Test_name.c", line 218: error: identifier "uintmax_t" is undefined
+  unsigned int a = 0(uintmax_t
+                     ^
+
+At end of source: error: expected a ")"
+
+At end of source: error: expected a ";"
+
+"Test_name.c", line 110: warning: variable "DefaultArg" was declared but never referenced
+  const int DefaultArg = 9;  // expected-note {{'DefaultArg' declared here}}
+            ^
+
+"Test_name.c", line 122: warning: variable "kNum" was declared but never referenced
+  const int kNum = 10;  // expected-note {{'kNum' declared here}}
+            ^
+
+49 errors detected in the compilation of "Test_name.c".

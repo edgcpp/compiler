@@ -274,15 +274,15 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     typedef const b &c; // #cwg540-typedef-b-c
                      ^
 
-"Test_name.c", line 561: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof(<expression>)]" as a type in a dependent context
+"Test_name.c", line 561: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof((<expression>))]" as a type in a dependent context
         X<sizeof(f(0))>::type a;
         ^
 
-"Test_name.c", line 564: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof(<expression>)]" as a type in a dependent context
+"Test_name.c", line 564: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof((<expression>))]" as a type in a dependent context
         X<sizeof(g(0))>::type b;
         ^
 
-"Test_name.c", line 567: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof(<expression>)]" as a type in a dependent context
+"Test_name.c", line 567: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof((<expression>))]" as a type in a dependent context
         X<sizeof(h(0))>::type b;
         ^
 

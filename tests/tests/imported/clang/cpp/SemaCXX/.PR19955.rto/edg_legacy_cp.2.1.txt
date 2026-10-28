@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: warning: variable "varp" was declared but never referenced
+  constexpr int *varp = &var; // expected-error {{must be initialized by a constant expression}}
+                 ^
+
+"Test_name.c", line 10: warning: variable "funp" was declared but never referenced
+  constexpr void (*funp)(void) = &fun; // expected-error {{must be initialized by a constant expression}}
+                   ^
+

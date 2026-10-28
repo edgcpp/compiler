@@ -1,0 +1,68 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 --c++03 --ms_compatibility Test_name.c
+"SemaCXX/deprecated.cpp", line 34: warning: use of the "register" storage class specifier is deprecated
+  void stuff(register int q) {
+             ^
+
+"SemaCXX/deprecated.cpp", line 49: warning: variable "n" is used before its value is set
+    int k = ({ register int n = (n); n; });
+                                 ^
+
+"SemaCXX/deprecated.cpp", line 51: warning: incrementing a bool value is deprecated
+    ++b;
+      ^
+
+"SemaCXX/deprecated.cpp", line 51: warning: variable "b" is used before its value is set
+    ++b;
+      ^
+
+"SemaCXX/deprecated.cpp", line 58: warning: incrementing a bool value is deprecated
+    b++;
+    ^
+
+"SemaCXX/deprecated.cpp", line 65: warning: conversion from a string literal to "char *" is deprecated
+    char *p = "foo";
+              ^
+
+"SemaCXX/deprecated.cpp", line 40: warning: variable "n" was declared but never referenced
+    register int n;
+                 ^
+
+"SemaCXX/deprecated.cpp", line 47: warning: variable "m" was declared but never referenced
+    register int m asm("rbx");
+                 ^
+
+"SemaCXX/deprecated.cpp", line 65: warning: variable "p" was declared but never referenced
+    char *p = "foo";
+          ^
+
+"SemaCXX/deprecated.cpp", line 176: warning: use of "=" where "==" may have been intended
+      if (b = true) {}
+          ^
+
+"SemaCXX/deprecated.cpp", line 178: warning: use of "=" where "==" may have been intended
+           b = true;
+           ^
+
+"SemaCXX/deprecated.cpp", line 209: warning: type qualifier on return type is meaningless
+        volatile int (*p)(
+        ^
+
+"SemaCXX/deprecated.cpp", line 207: warning: type qualifier on return type is meaningless
+    volatile int g(
+    ^
+
+"SemaCXX/deprecated.cpp", line 273: warning: standard attribute syntax is a C++11 feature
+  [[deprecated]] int f1() {
+  ^
+
+"SemaCXX/deprecated.cpp", line 280: warning: parameter "x" was set but never used
+  [[deprecated]] void f2([[deprecated]] int x) {
+                                            ^
+
+"SemaCXX/deprecated.cpp", line 22 (col. 6): internal error: assertion failed at: "cp_gen_be.c", line <suppressed> in gen_exception_specification
+
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

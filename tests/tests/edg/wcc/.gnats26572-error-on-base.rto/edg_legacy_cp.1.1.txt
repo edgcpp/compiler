@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 9: error: explicit type is missing ("int" assumed)
+  using A_alias = typename A<AT>::X; // there should be an error here
+                  ^
+          detected during instantiation of type "A_alias<int>" at line 11
+
+"Test_name.c", line 9: error: expected a ";"
+  using A_alias = typename A<AT>::X; // there should be an error here
+                           ^
+          detected during instantiation of type "A_alias<int>" at line 11
+
+"Test_name.c", line 11: error: not a class or struct name
+  struct B : A_alias<int> { // there should not be an error on this base
+             ^
+
+3 errors detected in the compilation of "Test_name.c".

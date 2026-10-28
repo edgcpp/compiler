@@ -1,0 +1,126 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__((ext_vector_type(8))) _Bool BoolVector;
+                         ^
+
+"Test_name.c", line 7: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(2) )) float float2;
+                          ^
+
+"Test_name.c", line 8: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(3) )) float float3;
+                          ^
+
+"Test_name.c", line 9: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(4) )) int int4;
+                          ^
+
+"Test_name.c", line 10: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(8) )) short short8;
+                          ^
+
+"Test_name.c", line 11: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(4) )) float float4;
+                          ^
+
+"Test_name.c", line 12: warning: unknown attribute "vector_size"
+  typedef float t3 __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 14: warning: unknown attribute "ext_vector_type"
+  typedef unsigned long ulong2 __attribute__ ((ext_vector_type(2)));
+                                               ^
+
+"Test_name.c", line 15: warning: unknown attribute "ext_vector_type"
+  typedef size_t stride4 __attribute__((ext_vector_type(4)));
+                                        ^
+
+"Test_name.c", line 16: warning: unknown attribute "ext_vector_type"
+  typedef _Bool bool4 __attribute__(( ext_vector_type(4) ));
+                                      ^
+
+"Test_name.c", line 29: warning: variable "vec3" is used before its value is set
+      vec3 += vec2; // expected-error {{cannot convert between vector values of different size}}
+      ^
+
+"Test_name.c", line 29: warning: variable "vec2" is used before its value is set
+      vec3 += vec2; // expected-error {{cannot convert between vector values of different size}}
+              ^
+
+"Test_name.c", line 30: warning: variable "vec4" is used before its value is set
+      vec4 += vec3; // expected-error {{cannot convert between vector values of different size}}
+      ^
+
+"Test_name.c", line 35: warning: variable "vec4_3" is used before its value is set
+      vec4 = (float4)vec4_3;
+                     ^
+
+"Test_name.c", line 44: warning: conversion from pointer to smaller integer
+      ivec4 = (int4)ptr; // expected-error {{invalid conversion between vector type 'int4' (vector of 4 'int' values) and scalar type 'int *'}}
+              ^
+
+"Test_name.c", line 44: warning: variable "ptr" is used before its value is set
+      ivec4 = (int4)ptr; // expected-error {{invalid conversion between vector type 'int4' (vector of 4 'int' values) and scalar type 'int *'}}
+                    ^
+
+"Test_name.c", line 48: warning: variable "ish8" is used before its value is set
+      ish8 += 5;
+      ^
+
+"Test_name.c", line 51: error: expression must have integral type
+       vec4 %= 4; // expected-error {{invalid operands to binary expression ('float4' (vector of 4 'float' values) and 'int')}}
+       ^
+
+"Test_name.c", line 57: error: expression must have arithmetic type
+      ivec4 += ptr; // expected-error {{cannot convert between vector and non-scalar values ('int4' (vector of 4 'int' values) and 'int *')}}
+               ^
+
+"Test_name.c", line 59: warning: expression has no effect
+      bvec4 != 0; // expected-warning {{inequality comparison result unused}} \
+      ^
+
+"Test_name.c", line 21: warning: variable "vec4_2" was declared but never referenced
+      float4 vec4, vec4_2;
+                   ^
+
+"Test_name.c", line 27: warning: variable "i" was set but never used
+      int i;
+          ^
+
+"Test_name.c", line 63: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(2) )) float2 vecfloat2; // expected-error{{invalid vector element type 'float2' (vector of 2 'float' values)}}
+                          ^
+
+"Test_name.c", line 67: warning: __real/__imag applied to real value
+    __real f2; // expected-error{{invalid type 'float2' (vector of 2 'float' values) to __real operator}}
+    ^
+
+"Test_name.c", line 67: warning: expression has no effect
+    __real f2; // expected-error{{invalid type 'float2' (vector of 2 'float' values) to __real operator}}
+    ^
+
+"Test_name.c", line 86: error: expression must have struct or union type but it has type "stride4" (aka "unsigned long")
+      stride.lo = ((ulong2) x) * pixelByteStride; // no-warning
+      ^
+
+"Test_name.c", line 90: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__((ext_vector_type(4))) float float32x4_t;
+                         ^
+
+"Test_name.c", line 92: warning: unknown attribute "ext_vector_type"
+  typedef float C3DVector3 __attribute__((ext_vector_type(3)));
+                                          ^
+
+"Test_name.c", line 100: warning: unknown attribute "ext_vector_type"
+  typedef double double2 __attribute__ ((ext_vector_type(2)));
+                                         ^
+
+"Test_name.c", line 18: warning: function "test" was declared but never referenced
+  static void test(void) {
+              ^
+
+"Test_name.c", line 102: warning: function "splats" was declared but never referenced
+  static void splats(int i, long l, __uint128_t t, float f, double d) {
+              ^
+
+3 errors detected in the compilation of "Test_name.c".

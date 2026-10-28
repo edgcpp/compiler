@@ -1,0 +1,108 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 19: error: expected a ";"
+    T::tclass Empty2; // expected-error{{missing 'typename'}}
+              ^
+
+"Test_name.c", line 38: error: expected a ";"
+    T::type Invalid; // expected-error{{missing 'typename'}}
+            ^
+
+"Test_name.c", line 28: warning: variable "ConstCast" was declared but never referenced
+    const auto *ConstCast = const_cast<const T::type *>(Ptr);
+                ^
+
+"Test_name.c", line 65: error: incomplete type "void" is not allowed
+  void FuncParam(T::type); // ok, but variable template
+       ^
+
+"Test_name.c", line 69: error: explicit type is missing ("int" assumed)
+  void FuncParam2(const T::type, int); // expected-error{{missing 'typename'}}
+                        ^
+
+"Test_name.c", line 69: error: qualified name is not allowed
+  void FuncParam2(const T::type, int); // expected-error{{missing 'typename'}}
+                        ^
+
+"Test_name.c", line 116: error: "f" has already been declared in the current scope
+  void f(T::type) {} // expected-error {{missing 'typename'}}
+       ^
+
+"Test_name.c", line 116: error: incomplete type "void" is not allowed
+  void f(T::type) {} // expected-error {{missing 'typename'}}
+       ^
+
+"Test_name.c", line 116: error: expected a ";"
+  void f(T::type) {} // expected-error {{missing 'typename'}}
+                  ^
+
+"Test_name.c", line 128: error: name followed by "::" must be a class or namespace name
+  int N::Var(T::value); // ok, variable
+      ^
+
+"Test_name.c", line 128: error: expected a ";"
+  int N::Var(T::value); // ok, variable
+       ^
+
+"Test_name.c", line 131: error: name followed by "::" must be a class or namespace name
+    return N::f<X>(10) + N::Var<X>;
+           ^
+
+"Test_name.c", line 131: error: name followed by "::" must be a class or namespace name
+    return N::f<X>(10) + N::Var<X>;
+                         ^
+
+"Test_name.c", line 131: error: expected an expression
+    return N::f<X>(10) + N::Var<X>;
+                                  ^
+
+"Test_name.c", line 140: error: "NN::f" is ambiguous
+  int NN::f(T::type); // expected-error{{redefinition of 'f' as different kind of symbol}}
+          ^
+
+"Test_name.c", line 151: error: "f" has already been declared in the current scope
+  void f(int = T::value) {}
+       ^
+
+"Test_name.c", line 161: error: either a bit field with an incomplete enum type or an opaque enumeration with an invalid base type
+    enum E : T::type {}; // expected-error{{missing 'typename'}}
+         ^
+
+"Test_name.c", line 161: error: expected a ";"
+    enum E : T::type {}; // expected-error{{missing 'typename'}}
+                     ^
+
+"Test_name.c", line 184: warning: conversion from pointer to smaller integer
+    friend X::X(T::type = (int)(void(*)(typename T::type))(nullptr)); // expected-error {{friend declaration specifying a default argument must be a definition}}
+                          ^
+
+"Test_name.c", line 185: error: nontype "T::type" is not a type name
+    friend X::X(T::type = (int)(void(*)(T::type))(nullptr)); // expected-error {{friend declaration specifying a default argument must be a definition}} \
+                                        ^
+
+"Test_name.c", line 185: warning: conversion from pointer to smaller integer
+    friend X::X(T::type = (int)(void(*)(T::type))(nullptr)); // expected-error {{friend declaration specifying a default argument must be a definition}} \
+                          ^
+
+"Test_name.c", line 193: warning: "void f1(GH113324::S1<<unnamed>>, int)" declares a non-template function -- add <> to refer to a template instance
+    friend void f1(S1, int = 0); // expected-error {{friend declaration specifying a default argument must be a definition}}
+                ^
+
+"Test_name.c", line 194: warning: "void f2(GH113324::S1<<unnamed>>, GH113324::S1<<unnamed>>)" declares a non-template function -- add <> to refer to a template instance
+    friend void f2(S1 a, S1 = decltype(a){}); // expected-error {{friend declaration specifying a default argument must be a definition}}
+                ^
+
+"Test_name.c", line 201: warning: "void f3(GH113324::S2<T>, int)" declares a non-template function -- add <> to refer to a template instance
+    friend void f3(S2, int a = alias<T &>(1)); // expected-error {{friend declaration specifying a default argument must be a definition}}
+                ^
+
+"Test_name.c", line 194: error: identifier "a" is undefined
+    friend void f2(S1 a, S1 = decltype(a){}); // expected-error {{friend declaration specifying a default argument must be a definition}}
+                                       ^
+          detected during instantiation of class "GH113324::S1<<unnamed>> [with <unnamed>=int]" at line 205
+
+"Test_name.c", line 201: error: reference to void is not allowed
+    friend void f3(S2, int a = alias<T &>(1)); // expected-error {{friend declaration specifying a default argument must be a definition}}
+                                       ^
+          detected during instantiation of class "GH113324::S2<T> [with T=void]" at line 207
+
+20 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 17: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+    void{t...};
+        ^
+
+"Test_name.c", line 31: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+    void{t...};	// { dg-error "compound literal of non-object type" }
+        ^
+
+"Test_name.c", line 44: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+    void{t..., t..., t...};
+        ^
+
+"Test_name.c", line 52: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+    void{t..., 1};	// { dg-error "compound literal of non-object type" }
+        ^
+
+4 errors detected in the compilation of "Test_name.c".

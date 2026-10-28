@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 31: warning: integer conversion resulted in a change of sign
+      bool b1 = !truthy(2, -1);
+                           ^
+
+"Test_name.c", line 15: warning: function "truthy()" was declared but never referenced
+  static bool truthy(void) __attribute__((noipa));
+              ^
+

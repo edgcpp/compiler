@@ -1,0 +1,18 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "LEFT1::LEFT1()" cannot be inlined
+  struct LEFT1 : virtual public TOP1 { LEFT1 () { } };
+                                       ^
+
+"Test_name.c", line 6: remark: function "RIGHT1::RIGHT1()" cannot be inlined
+  struct RIGHT1 : virtual public TOP1 { RIGHT1 () { } };
+                                        ^
+
+"Test_name.c", line 10: error: base class "TOP1" is ambiguous
+      BOTTOM1 () : LEFT1::TOP1() {	/* OK */
+                   ^
+
+"Test_name.c", line 20: error: base class "TOP2" is ambiguous
+      BOTTOM2 () : RIGHT2::TOP2() {	/* OK */
+                   ^
+
+2 errors detected in the compilation of "Test_name.c".

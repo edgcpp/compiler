@@ -1,0 +1,83 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 7: warning: type qualifier on return type is meaningless
+  int const f0();
+      ^
+
+"Test_name.c", line 9: warning: variable "i" was set but never used
+    decltype(0, f0()) i = 0;
+                      ^
+
+"Test_name.c", line 57: error: identifier "undeclared" is undefined
+    B(decltype(undeclared)); // expected-error {{undeclared identifier}}
+               ^
+
+"Test_name.c", line 60: error: identifier "undeclared" is undefined
+    C(decltype(undeclared; // expected-error {{undeclared identifier}} \
+               ^
+
+"Test_name.c", line 60: error: expected a ")"
+    C(decltype(undeclared; // expected-error {{undeclared identifier}} \
+                         ^
+
+"Test_name.c", line 62: error: expected a ")"
+  };
+  ^
+
+"Test_name.c", line 62: error: expected a ";"
+  };
+  ^
+
+"Test_name.c", line 76: error: function "PR18876::A::~A() noexcept" (declared at line 73) cannot be referenced -- it is a deleted function
+    decltype(A()) *b; // expected-error {{attempt to use a deleted function}}
+             ^
+
+"Test_name.c", line 78: error: function "PR18876::A::~A() noexcept" (declared at line 73) cannot be referenced -- it is a deleted function
+    decltype(0, A()) *d; // expected-error {{attempt to use a deleted function}}
+                ^
+
+"Test_name.c", line 79: error: function "PR18876::A::~A() noexcept" (declared at line 73) cannot be referenced -- it is a deleted function
+    decltype(f(), 0) *e; // expected-error {{attempt to use a deleted function}}
+             ^
+
+"Test_name.c", line 95: error: function template "D5789::foo<T>(decltype((<expression>)))" has already been defined (previous definition at line 86)
+    template<class T> void foo(decltype(T(LP1{ .p1 = g1, .p1.x[1] = 'x' }))) {}
+                           ^
+
+"Test_name.c", line 140: warning: expression has no effect
+      !x;
+      ^
+
+"Test_name.c", line 167: error: static assertion failed with ""
+  static_assert(A<int>().f<int>() != 0, ""); // expected-error {{static assertion failed due to requirement 'GH99873::A<int>().f<int>() != 0'}}
+  ^
+"Test_name.c", line 167: note: the final comparison was 0 != 0
+  static_assert(A<int>().f<int>() != 0, ""); // expected-error {{static assertion failed due to requirement 'GH99873::A<int>().f<int>() != 0'}}
+                                  ^
+
+"Test_name.c", line 178: error: static assertion failed
+      [] { static_assert(false); // expected-error {{static assertion failed}} \
+           ^
+          detected during instantiation of "auto GH160497::S<<unnamed>>::mem [with <unnamed>=void, <unnamed>=void]" at line 177
+
+"Test_name.c", line 191: error: static assertion failed
+      [] { static_assert(false); // expected-error {{static assertion failed}} \
+           ^
+          detected during instantiation of "auto *GH160497::S2<<unnamed>>::mem [with <unnamed>=void, <unnamed>=void]" at line 190
+
+"Test_name.c", line 251: error: type name is not allowed
+  void foo(conditional<decltype((1),int>) {  // expected-note 2 {{to match this '('}} expected-error {{expected ')'}} expected-note 2{{to match this '<'}}
+                                    ^
+
+"Test_name.c", line 251: error: expected an expression
+  void foo(conditional<decltype((1),int>) {  // expected-note 2 {{to match this '('}} expected-error {{expected ')'}} expected-note 2{{to match this '<'}}
+                                        ^
+
+"Test_name.c", line 251: error: expected a ">"
+  void foo(conditional<decltype((1),int>) {  // expected-note 2 {{to match this '('}} expected-error {{expected ')'}} expected-note 2{{to match this '<'}}
+                                          ^
+
+"Test_name.c", line 251: error: expected a ")"
+  void foo(conditional<decltype((1),int>) {  // expected-note 2 {{to match this '('}} expected-error {{expected ')'}} expected-note 2{{to match this '<'}}
+                                          ^
+
+16 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 10: error: expected a ";"
+    int bar (void) { return i; }
+                   ^
+
+"Test_name.c", line 13: warning: parsing restarts here after previous syntax error
+      y[i] = x[i];
+                 ^
+
+"Test_name.c", line 9: warning: variable "i" was declared but never referenced
+    int i;
+        ^
+
+"Test_name.c", line 21: error: expected a ";"
+    int qux (void) {
+                   ^
+
+"Test_name.c", line 26: warning: parsing restarts here after previous syntax error
+    return qux ();
+                 ^
+
+"Test_name.c", line 27: warning: missing return statement at end of non-void function "baz"
+  }
+  ^
+
+"Test_name.c", line 20: warning: variable "i" was declared but never referenced
+    int i;
+        ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 96: error: a parameter may not have void type
+          template<typename> void f(T x) { // expected-error {{void}}
+                                    ^
+
+"Test_name.c", line 106: error: a parameter may not have void type
+          template<typename> void g(U x) { // expected-error {{void}}
+                                    ^
+
+"Test_name.c", line 97: error: incomplete type "SearchClassBetweenTemplateParameterLists::BaseT::T" (aka "void") is not allowed
+            T t; // expected-error {{incomplete}}
+              ^
+
+"Test_name.c", line 107: error: incomplete type "SearchClassBetweenTemplateParameterLists::BaseU::U" (aka "void") is not allowed
+            U u; // expected-error {{incomplete}}
+              ^
+
+"Test_name.c", line 124: error: a parameter may not have void type
+    void A<T>::B<AA>::f(AA) {
+                        ^
+
+"Test_name.c", line 124: error: declaration is incompatible with "void SearchClassBetweenTemplateParameterLists::A<T>::B<U>::f(U)" (declared at line 76)
+    void A<T>::B<AA>::f(AA) {
+                      ^
+
+"Test_name.c", line 130: error: a parameter may not have void type
+    void A<T>::B<BB>::g(BB) { // expected-error {{does not match}}
+                        ^
+
+"Test_name.c", line 130: error: declaration is incompatible with "void SearchClassBetweenTemplateParameterLists::A<T>::B<U>::g(U)" (declared at line 77)
+    void A<T>::B<BB>::g(BB) { // expected-error {{does not match}}
+                      ^
+
+"Test_name.c", line 136: error: a parameter may not have void type
+    void A<AA>::B<U>::h(AA) { // expected-error {{does not match}}
+                        ^
+
+"Test_name.c", line 136: error: declaration is incompatible with "void SearchClassBetweenTemplateParameterLists::A<T>::B<U>::h(T)" (declared at line 78)
+    void A<AA>::B<U>::h(AA) { // expected-error {{does not match}}
+                      ^
+
+"Test_name.c", line 142: error: a parameter may not have void type
+    void A<BB>::B<U>::i(BB) { // expected-error {{does not match}}
+                        ^
+
+"Test_name.c", line 142: error: declaration is incompatible with "void SearchClassBetweenTemplateParameterLists::A<T>::B<U>::i(T)" (declared at line 79)
+    void A<BB>::B<U>::i(BB) { // expected-error {{does not match}}
+                      ^
+
+"Test_name.c", line 148: error: a parameter may not have void type
+    void A<T>::B<U>::j(BB) {
+                       ^
+
+"Test_name.c", line 148: error: declaration is incompatible with function template "void SearchClassBetweenTemplateParameterLists::A<T>::B<U>::j(V)" (declared at line 80)
+    void A<T>::B<U>::j(BB) {
+                     ^
+
+"Test_name.c", line 154: error: declaration is incompatible with function template "void SearchClassBetweenTemplateParameterLists::A<T>::B<U>::k<V>(U)" (declared at line 81)
+    void A<T>::B<BB>::k(V) { // expected-error {{does not match}}
+                      ^
+
+15 errors detected in the compilation of "Test_name.c".

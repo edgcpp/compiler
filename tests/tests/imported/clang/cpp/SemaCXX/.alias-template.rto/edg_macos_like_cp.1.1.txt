@@ -1,0 +1,210 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions Test_name.c
+"Test_name.c", line 12: error: default argument is not allowed
+    template<typename U> using A = void(int n = 0); // expected-error {{default arguments can only be specified for parameters in a function declaration}}
+                                              ^
+
+"Test_name.c", line 13: warning: "inline" is not allowed
+    template<typename U> using B = inline void(int n); // expected-error {{type name does not allow function specifier}}
+                                   ^
+
+"Test_name.c", line 14: error: invalid specifier outside a class declaration
+    template<typename U> using C = virtual void(int n); // expected-error {{type name does not allow function specifier}}
+                                   ^
+
+"Test_name.c", line 15: error: "explicit" is not allowed
+    template<typename U> using D = explicit void(int n); // expected-error {{type name does not allow function specifier}}
+                                   ^
+
+"Test_name.c", line 18: error: identifier "__thread" is undefined
+    template<typename U> using G = __thread void(int n); // expected-error {{type name does not allow storage class to be specified}}
+                                   ^
+
+"Test_name.c", line 18: error: invalid combination of type specifiers
+    template<typename U> using G = __thread void(int n); // expected-error {{type name does not allow storage class to be specified}}
+                                            ^
+
+"Test_name.c", line 19: error: "constexpr" is not valid here
+    template<typename U> using H = constexpr int; // expected-error {{type name does not allow constexpr specifier}}
+                                   ^
+
+"Test_name.c", line 26: error: qualified name is not allowed
+    template<typename Z> using ::T = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 27: error: operator name is not allowed
+    template<typename Z> using operator int = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 28: error: expected an identifier
+    template<typename Z> using typename U = void; // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 28: error: expected an "="
+    template<typename Z> using typename U = void; // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 28: error: a class or namespace qualified name is required
+    template<typename Z> using typename U = void; // expected-error {{name defined in alias declaration must be an identifier}}
+                                        ^
+
+"Test_name.c", line 28: error: expected a ";"
+    template<typename Z> using typename U = void; // expected-error {{name defined in alias declaration must be an identifier}}
+                                          ^
+
+"Test_name.c", line 29: error: expected an identifier
+    template<typename Z> using typename ::V = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 29: error: expected an "="
+    template<typename Z> using typename ::V = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 29: error: the global scope has no "V"
+    template<typename Z> using typename ::V = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                                          ^
+
+"Test_name.c", line 29: error: expected a ";"
+    template<typename Z> using typename ::V = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                                            ^
+
+"Test_name.c", line 30: error: expected an identifier
+    template<typename Z> using typename ::operator bool = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 30: error: expected an "="
+    template<typename Z> using typename ::operator bool = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                               ^
+
+"Test_name.c", line 30: error: the global scope has no "operator bool"
+    template<typename Z> using typename ::operator bool = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                                          ^
+
+"Test_name.c", line 30: error: expected a ";"
+    template<typename Z> using typename ::operator bool = void(int n); // expected-error {{name defined in alias declaration must be an identifier}}
+                                                        ^
+
+"Test_name.c", line 37: error: expression must have a constant value
+    template<typename Z> using T = int[n]; // expected-error {{variable length array declaration not allowed at file scope}} \
+                                       ^
+"Test_name.c", line 37: note: the value of variable "VariableLengthArrays::n" (declared at line 36) cannot be used as a constant
+    template<typename Z> using T = int[n]; // expected-error {{variable length array declaration not allowed at file scope}} \
+                                       ^
+
+"Test_name.c", line 37: error: alias template type "<error-type>" is incompatible with the previous type of "int [42]" in the redeclaration of alias template "VariableLengthArrays::T" (declared at line 34)
+    template<typename Z> using T = int[n]; // expected-error {{variable length array declaration not allowed at file scope}} \
+                               ^
+
+"Test_name.c", line 44: error: alias template type "int" is incompatible with the previous type of "int [42]" in the redeclaration of alias template "VariableLengthArrays::U" (declared at line 42)
+    template<typename Z> using U = int; // expected-error {{type alias template redefinition with different types ('int' vs 'int[42]')}}
+                               ^
+
+"Test_name.c", line 61: error: parameter pack "T" was referenced but not expanded
+      template<typename Z> using U = T*; // expected-error {{declaration type contains unexpanded parameter pack 'T'}}
+                                     ^
+
+"Test_name.c", line 68: error: the size of an array must be greater than zero
+    template<typename Z> using T2 = int[-1]; // expected-error {{array size is negative}}
+                                        ^
+
+"Test_name.c", line 73: warning: declaration of "T" hides template parameter
+      template<typename Z> using T = int; // expected-error {{declaration of 'T' shadows template parameter}}
+                                 ^
+
+"Test_name.c", line 76: warning: declaration of "Z" hides template parameter
+    using Z = Z; // expected-error {{declaration of 'Z' shadows template parameter}}
+          ^
+
+"Test_name.c", line 81: error: declaration of a member with the same name as its class
+      template<typename U> using C0 = int; // expected-error {{member 'C0' has the same name as its class}}
+                                 ^
+
+"Test_name.c", line 84: error: declaration of a member with the same name as its class
+      template<typename U> using C1 = C1; // expected-error {{member 'C1' has the same name as its class}}
+                                 ^
+
+"Test_name.c", line 90: error: parameter pack "T" was referenced but not expanded
+      template<typename U> using f = T; // expected-error {{declaration type contains unexpanded parameter pack 'T'}}
+                                     ^
+
+"Test_name.c", line 93: warning: declaration of "T" hides template parameter
+      template<typename U> using T = int; // expected-error {{declaration of 'T' shadows template parameter}}
+                                 ^
+
+"Test_name.c", line 97: error: "c" has already been declared in the current scope
+      template<typename U> using c = int; // expected-error {{redefinition of 'c' as different kind of symbol}}
+                                 ^
+
+"Test_name.c", line 99: error: "d" has already been declared in the current scope
+      template<typename U> using d = d; // expected-error {{redefinition of 'd' as different kind of symbol}}
+                                 ^
+
+"Test_name.c", line 108: error: expected an identifier
+    X<int>(); // expected-error {{expected member name}}
+           ^
+
+"Test_name.c", line 109: error: invalid destructor declaration
+    ~X<int>(); // expected-error {{destructor cannot be declared using a type alias}}
+    ^
+
+"Test_name.c", line 113: error: type definition is not allowed
+    template<typename Z> using S = struct { int n; }; // expected-error {{cannot be defined}}
+                                   ^
+
+"Test_name.c", line 114: error: type definition is not allowed
+    template<typename Z> using T = class { int n; }; // expected-error {{cannot be defined}}
+                                   ^
+
+"Test_name.c", line 115: error: type definition is not allowed
+    template<typename Z> using U = enum { a, b, c }; // expected-error {{cannot be defined}}
+                                   ^
+
+"Test_name.c", line 116: error: type definition is not allowed
+    template<typename Z> using V = struct V { int n; }; // expected-error {{'TagName::V' cannot be defined in a type alias template}}
+                                   ^
+
+"Test_name.c", line 126: error: cell is not a template
+    template<typename T> using cell = pair<T*, cell<T>*>; // expected-error {{use of undeclared identifier 'cell'}} expected-error {{expected expression}}
+                                               ^
+
+"Test_name.c", line 133: error: alias template "Access::C0::U" (declared at line 131) is inaccessible
+    C0::U<int> v; // expected-error {{'U' is a private member}}
+        ^
+
+"Test_name.c", line 149: error: identifier "T" is undefined
+    template<typename T> template<typename U> using SS = S<T, U>; // expected-error {{extraneous template parameter list in alias template declaration}}
+                                                           ^
+
+"Test_name.c", line 170: warning: missing return statement at end of non-void function "SFINAE::main"
+    }
+    ^
+
+"Test_name.c", line 159: error: incomplete type "SFINAE::enable_if<false>" is not allowed
+    template<typename T> using EnableIf = typename enable_if<T::value>::type; // expected-error {{undefined template}}
+                                                   ^
+          detected during:
+            instantiation of type "SFINAE::EnableIf<SFINAE::is_enum<int>>" at line 172
+            processing of template argument list for "SFINAE::fail1" based on template argument <int> at line 175
+
+"Test_name.c", line 160: error: incomplete type "SFINAE::enable_if<false>" is not allowed
+    template<typename T> using DisableIf = typename enable_if<!T::value>::type; // expected-error {{undefined template}}
+                                                    ^
+          detected during:
+            instantiation of type "SFINAE::DisableIf<SFINAE::is_enum<SFINAE::E>>" at line 173
+            instantiation of class "SFINAE::fail2<T> [with T=SFINAE::E]" at line 176
+
+"Test_name.c", line 187: error: static assertion failed with ""
+  static_assert(__is_same(S<3>::U, X[2]), ""); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 197: error: no instance of function template "PR39623::sfinae_me" matches the argument list
+  int g = sfinae_me<int>(); // expected-error{{no matching function for call to 'sfinae_me'}}
+          ^
+"Test_name.c", line 195: note: candidate function template "PR39623::sfinae_me" failed deduction
+  int sfinae_me() { return 0; } // expected-note{{candidate template ignored: substitution failure}}
+      ^
+
+"Test_name.c", line 201: error: parameter pack "I" was referenced but not expanded
+  template<int... I> auto get = []() { try { } catch(...) {}; return I; }; // expected-error{{initializer contains unexpanded parameter pack 'I'}}
+                                                                     ^
+
+44 errors detected in the compilation of "Test_name.c".

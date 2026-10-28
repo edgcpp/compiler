@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 8: warning: this declaration has no storage class or type specifier
+  __thread struct T { int c; } e;
+  ^
+
+"Test_name.c", line 8: error: expected a ";"
+  __thread struct T { int c; } e;
+           ^
+
+"Test_name.c", line 15: error: identifier "e" is undefined
+    struct S *h = (struct S *) &e.c;
+                                ^
+
+2 errors detected in the compilation of "Test_name.c".

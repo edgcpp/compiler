@@ -1,0 +1,84 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++11 Test_name.c
+"Test_name.c", line 5: error: invalid alignment value specified by attribute
+  int align_illegal alignas(3); //expected-error {{requested alignment is not a power of 2}}
+                            ^
+
+"Test_name.c", line 7: error: alignment cannot be set to less than the default alignment
+  int align_small alignas(1); // expected-error {{requested alignment is less than minimum}}
+                  ^
+
+"Test_name.c", line 13: warning: signed bit field of length 1
+    int bitfield alignas(1) : 1; // expected-error {{}}
+        ^
+
+"Test_name.c", line 13: error: attribute "alignas" does not apply to bit fields
+    int bitfield alignas(1) : 1; // expected-error {{}}
+                 ^
+
+"Test_name.c", line 16: error: alignas does not apply here
+  void f(alignas(1) char c) { // expected-error {{'alignas' attribute cannot be applied to a function parameter}}
+         ^
+
+"Test_name.c", line 17: warning: use of the "register" storage class specifier is deprecated
+    alignas(1) register char k; // expected-error {{'alignas' attribute cannot be applied to a variable with 'register' storage class}} expected-warning {{deprecated}}
+               ^
+
+"Test_name.c", line 17: error: attribute "alignas" does not apply to register variables
+    alignas(1) register char k; // expected-error {{'alignas' attribute cannot be applied to a variable with 'register' storage class}} expected-warning {{deprecated}}
+    ^
+
+"Test_name.c", line 19: error: attribute "alignas" does not apply to handler parameters
+    } catch (alignas(4) int n) { // expected-error {{'alignas' attribute cannot be applied to a 'catch' variable}}
+             ^
+
+"Test_name.c", line 17: warning: variable "k" was declared but never referenced
+    alignas(1) register char k; // expected-error {{'alignas' attribute cannot be applied to a variable with 'register' storage class}} expected-warning {{deprecated}}
+                             ^
+
+"Test_name.c", line 28: error: expected a ")"
+  struct alignas(int...) alignas_expansion_no_packs {}; // expected-error {{pack expansion does not contain any unexpanded parameter packs}}
+                    ^
+
+"Test_name.c", line 35: error: alignas does not apply here
+  typedef char align_typedef alignas(8); // expected-error {{'alignas' attribute only applies to variables, data members and tag types}}
+                             ^
+
+"Test_name.c", line 36: warning: alignas does not apply here
+  template<typename T> using align_alias_template = align_typedef alignas(8); // expected-error {{'alignas' attribute cannot be applied to types}}
+                                                                  ^
+
+"Test_name.c", line 38: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  static_assert(alignof(align_big) == alignof(int), "k's alignment is wrong"); // expected-warning{{'alignof' applied to an expression is a GNU extension}}
+                       ^
+
+"Test_name.c", line 39: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  static_assert(alignof(align_small) == 1, "j's alignment is wrong"); // expected-warning{{'alignof' applied to an expression is a GNU extension}}
+                       ^
+
+"Test_name.c", line 39: error: static assertion failed with "j's alignment is wrong"
+  static_assert(alignof(align_small) == 1, "j's alignment is wrong"); // expected-warning{{'alignof' applied to an expression is a GNU extension}}
+  ^
+"Test_name.c", line 39: note: the final comparison was 4 == 1
+  static_assert(alignof(align_small) == 1, "j's alignment is wrong"); // expected-warning{{'alignof' applied to an expression is a GNU extension}}
+                                     ^
+
+"Test_name.c", line 40: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  static_assert(alignof(align_multiple) == 8, "l's alignment is wrong"); // expected-warning{{'alignof' applied to an expression is a GNU extension}}
+                       ^
+
+"Test_name.c", line 47: error: static assertion failed with "template's alignment is wrong"
+  static_assert(alignof(outer<int,char>::inner<double,short>) == alignof(int) * alignof(double), "template's alignment is wrong");
+  ^
+"Test_name.c", line 47: note: the final comparison was 1 == 32
+  static_assert(alignof(outer<int,char>::inner<double,short>) == alignof(int) * alignof(double), "template's alignment is wrong");
+                                                              ^
+
+"Test_name.c", line 49: error: the alignment of a function type ("int (int)") is nonstandard
+  static_assert(alignof(int(int)) >= 1, "alignof(function) not positive"); // expected-error{{invalid application of 'alignof' to a function type}}
+                        ^
+
+"Test_name.c", line 57: error: incomplete type "void" is not allowed
+  class alignas(void) AlignasVoid {}; // expected-error {{invalid application of 'alignas' to an incomplete type 'void'}}
+                ^
+
+12 errors detected in the compilation of "Test_name.c".

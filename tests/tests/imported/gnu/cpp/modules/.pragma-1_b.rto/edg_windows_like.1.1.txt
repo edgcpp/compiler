@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"Test_name.c", line 5: warning: unrecognized GCC pragma
+  #pragma GCC visibility push (default)
+              ^
+
+"Test_name.c", line 6: warning: unrecognized GCC pragma
+  #pragma GCC visibility pop
+              ^
+
+"Test_name.c", line 8: catastrophic error: cannot find header "pragma-1_a.H" to import
+  import "pragma-1_a.H";
+         ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

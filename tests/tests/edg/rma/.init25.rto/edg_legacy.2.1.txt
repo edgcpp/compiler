@@ -1,0 +1,21 @@
+eccp -DTEST_NUMBER=2 -r -x -tused --set_flag=no_checking_pragmas Test_name.c
+"Test_name.c", line 10: remark: function "M::M()" cannot be inlined
+  	M() { m = ++counter; }
+  	^
+
+"Test_name.c", line 11: remark: function "M::M(int)" cannot be inlined
+  	M(int i) : m(-i) { }
+  	^
+
+"Test_name.c", line 12: remark: function "M::M(const M &)" cannot be inlined
+  	M(const M& t) { m = t.m; }
+  	^
+
+"Test_name.c", line 26: remark: return type "int" omitted in declaration of function "main"
+  main() {
+  ^
+
+"Test_name.c", line 29: remark: variable "s" was declared but never referenced
+  	S s = { m0, m1, m2 };
+  	  ^
+

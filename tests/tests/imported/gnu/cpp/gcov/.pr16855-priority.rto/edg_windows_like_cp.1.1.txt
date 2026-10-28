@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./gcov/pr16855-priority.C", line 46: error: attribute "constructor" does not take arguments
+  static void __attribute__ ((constructor ((101)))) ctor_100 ()
+                                          ^
+
+"./gcov/pr16855-priority.C", line 51: error: attribute "constructor" does not take arguments
+  static void __attribute__ ((constructor ((500)))) ctor_500 ()
+                                          ^
+
+"./gcov/pr16855-priority.C", line 56: error: attribute "constructor" does not take arguments
+  static void __attribute__ ((constructor ((65535)))) ctor_65535 ()
+                                          ^
+
+"./gcov/pr16855-priority.C", line 66: error: attribute "destructor" does not take arguments
+  static void __attribute__ ((destructor ((101)))) dtor_100 ()
+                                         ^
+
+"./gcov/pr16855-priority.C", line 71: error: attribute "destructor" does not take arguments
+  static void __attribute__ ((destructor ((500)))) dtor_500 ()
+                                         ^
+
+"./gcov/pr16855-priority.C", line 76: error: attribute "destructor" does not take arguments
+  static void __attribute__ ((destructor ((65535)))) dtor_65535 ()
+                                         ^
+
+6 errors detected in the compilation of "Test_name.c".

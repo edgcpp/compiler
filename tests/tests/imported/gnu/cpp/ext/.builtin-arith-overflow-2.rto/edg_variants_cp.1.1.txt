@@ -1,0 +1,27 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: warning: signed bit field of length 1
+  struct A { int i : 1; };
+                 ^
+
+"Test_name.c", line 39: error: static assertion failed with ""
+  static_assert (t1 == 0, "");
+  ^
+"Test_name.c", line 39: note: the final comparison was 1 == 0
+  static_assert (t1 == 0, "");
+                    ^
+
+"Test_name.c", line 40: error: static assertion failed with ""
+  static_assert (t2 == 0, "");
+  ^
+"Test_name.c", line 40: note: the final comparison was 1 == 0
+  static_assert (t2 == 0, "");
+                    ^
+
+"Test_name.c", line 42: error: static assertion failed with ""
+  static_assert (t4 == 2, "");
+  ^
+"Test_name.c", line 42: note: the final comparison was 3 == 2
+  static_assert (t4 == 2, "");
+                    ^
+
+3 errors detected in the compilation of "Test_name.c".

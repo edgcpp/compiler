@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef float __attribute__ ((vector_size (4 * sizeof (float)))) V4;
+                                ^
+
+"Test_name.c", line 17: error: too many initializer values
+      Rot3((Vec) { xx, xy, xz, 0 },
+                       ^
+
+"Test_name.c", line 18: error: too many initializer values
+  	 (Vec) { yx, yy, yz, 0 },
+  	             ^
+
+"Test_name.c", line 19: error: too many initializer values
+  	 (Vec) { zx, zy, zz, 0 }) {}
+  	             ^
+
+"Test_name.c", line 23: warning: variable "r1" was declared but never referenced
+  constexpr Rot3 r1( 0, 1 ,0, 0, 0, 1,  1, 0, 0);
+                 ^
+
+3 errors detected in the compilation of "Test_name.c".

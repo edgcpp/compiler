@@ -1,0 +1,106 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 --exceptions Test_name.c
+"SemaCXX/type-aware-coroutines.cpp", line 18: error: first parameter of allocation function must be of type "size_t"
+      void *operator new(std::type_identity<promise_type>, std::size_t sz, std::align_val_t, int);
+            ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 19: error: first parameter of allocation function must be of type "size_t"
+      void *operator new(std::type_identity<promise_type>, std::size_t sz, std::align_val_t, float);
+            ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 20: error: first parameter of deallocation function must be of type "void *"
+      void operator delete(std::type_identity<promise_type>, void *, std::size_t sz, std::align_val_t);
+           ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 21: error: first parameter of deallocation function must be of type "void *"
+      template <typename T> void operator delete(std::type_identity<T>, void *, std::size_t sz, std::align_val_t) = delete;
+                                 ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 34: error: first parameter of allocation function must be of type "size_t"
+      template <typename... Args> void *operator new(std::type_identity<promise_type>, std::size_t sz, std::align_val_t, Args...);
+                                        ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 35: error: first parameter of deallocation function must be of type "void *"
+      void operator delete(std::type_identity<promise_type>, void *, std::size_t sz, std::align_val_t);
+           ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 52: error: first parameter of allocation function must be of type "size_t"
+      void *operator new(std::type_identity<promise_type>, std::size_t sz, std::align_val_t, float);
+            ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 68: error: first parameter of deallocation function must be of type "void *"
+      template <typename T> void operator delete(std::type_identity<T>, void *, std::size_t, std::align_val_t);
+                                 ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 84: error: first parameter of deallocation function must be of type "void *"
+      template <typename T> void operator delete(std::type_identity<T>, void *, std::size_t, std::align_val_t);
+                                 ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 100: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 101: warning: missing return statement at end of non-void function "f1"
+  }
+  ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 108: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 109: warning: missing return statement at end of non-void function "f2"
+  }
+  ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 115: error: identifier "co_yield" is undefined
+    co_yield 1;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 115: error: expected a ";"
+    co_yield 1;
+             ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 116: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 117: warning: missing return statement at end of non-void function "f3"
+  }
+  ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 125: error: identifier "co_yield" is undefined
+      co_yield i;
+      ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 125: error: "i", declared in for-loop initialization, may not be redeclared in this scope
+      co_yield i;
+               ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 126: warning: missing return statement at end of non-void function "f4"
+  }
+  ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 130: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 131: warning: missing return statement at end of non-void function "f5"
+  }
+  ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 138: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 139: warning: missing return statement at end of non-void function "f6"
+  }
+  ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 144: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"SemaCXX/type-aware-coroutines.cpp", line 145: warning: missing return statement at end of non-void function "f7"
+  }
+  ^
+
+19 errors detected in the compilation of "Test_name.c".

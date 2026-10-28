@@ -1,0 +1,102 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-tg.h", line 27: error: identifier "_Float128x" is undefined
+  volatile _Float128x inf = __builtin_inf (), nanval = __builtin_nan ("");
+           ^
+
+"./torture/floatn-tg.h", line 28: error: identifier "_Float128x" is undefined
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+           ^
+
+"./torture/floatn-tg.h", line 28: error: extra text after expected end of number
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                    ^
+
+"./torture/floatn-tg.h", line 28: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                            ^
+
+"./torture/floatn-tg.h", line 28: error: extra text after expected end of number
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                         ^
+
+"./torture/floatn-tg.h", line 28: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                 ^
+
+"./torture/floatn-tg.h", line 28: error: extra text after expected end of number
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                                         ^
+
+"./torture/floatn-tg.h", line 28: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                                 ^
+
+"./torture/floatn-tg.h", line 29: error: identifier "_Float128x" is undefined
+  volatile _Float128x true_min = FLT128X_TRUE_MIN;
+           ^
+
+"./torture/floatn-tg.h", line 29: error: identifier "FLT128X_TRUE_MIN" is undefined
+  volatile _Float128x true_min = FLT128X_TRUE_MIN;
+                                 ^
+
+"./torture/floatn-tg.h", line 34: error: function call requires a real floating-point argument
+    if (__builtin_signbit (inf) != 0)
+                          ^
+
+"./torture/floatn-tg.h", line 36: error: function call requires a real floating-point argument
+    if (__builtin_signbit (zero) != 0)
+                          ^
+
+"./torture/floatn-tg.h", line 38: error: function call requires a real floating-point argument
+    if (__builtin_signbit (negzero) == 0)
+                          ^
+
+"./torture/floatn-tg.h", line 40: error: function call requires a real floating-point argument
+    if (__builtin_isfinite (nanval) != 0)
+                           ^
+
+"./torture/floatn-tg.h", line 42: error: function call requires a real floating-point argument
+    if (__builtin_isfinite (inf) != 0)
+                           ^
+
+"./torture/floatn-tg.h", line 44: error: function call requires a real floating-point argument
+    if (__builtin_isfinite (one) == 0)
+                           ^
+
+"./torture/floatn-tg.h", line 46: error: function call requires a real floating-point argument
+    if (__builtin_isinf (nanval) != 0)
+                        ^
+
+"./torture/floatn-tg.h", line 48: error: function call requires a real floating-point argument
+    if (__builtin_isinf (inf) == 0)
+                        ^
+
+"./torture/floatn-tg.h", line 50: error: function call requires a real floating-point argument
+    if (__builtin_isnan (nanval) == 0)
+                        ^
+
+"./torture/floatn-tg.h", line 52: error: function call requires a real floating-point argument
+    if (__builtin_isnan (inf) != 0)
+                        ^
+
+"./torture/floatn-tg.h", line 54: error: function call requires a real floating-point argument
+    if (__builtin_isnormal (inf) != 0)
+                           ^
+
+"./torture/floatn-tg.h", line 56: error: function call requires a real floating-point argument
+    if (__builtin_isnormal (one) == 0)
+                           ^
+
+"./torture/floatn-tg.h", line 58: error: function call requires a real floating-point argument
+    if (__builtin_isnormal (nanval) != 0)
+                           ^
+
+"./torture/floatn-tg.h", line 60: error: function call requires a real floating-point argument
+    if (__builtin_isnormal (zero) != 0)
+                           ^
+
+"./torture/floatn-tg.h", line 62: error: function call requires a real floating-point argument
+    if (__builtin_isnormal (true_min) != 0)
+                           ^
+
+22 errors detected in the compilation of "Test_name.c".

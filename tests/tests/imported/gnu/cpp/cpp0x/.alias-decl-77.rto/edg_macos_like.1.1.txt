@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 15: warning: unknown attribute "gnu::vector_size"
+  using A [[gnu::vector_size(16)]] = T;
+            ^
+
+"Test_name.c", line 21: warning: unknown attribute "gnu::vector_size"
+  using C [[gnu::vector_size(16)]] = B<T>;
+            ^
+
+"Test_name.c", line 25: error: static assertion failed with ""
+    static_assert(!is_same<T, A<T>>::value, "");
+    ^
+          detected during instantiation of "void f<T>() [with T=float]" at line 34
+
+1 error detected in the compilation of "Test_name.c".

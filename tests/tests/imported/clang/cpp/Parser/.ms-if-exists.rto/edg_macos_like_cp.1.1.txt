@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --ms_extensions Test_name.c
+"Test_name.c", line 33: warning: variable "x" is used before its value is set
+      x++;
+      ^
+
+"Test_name.c", line 56: warning: variable "array1" was declared but never referenced
+    int array1[] = {
+        ^
+
+"Test_name.c", line 62: warning: variable "array2" was declared but never referenced
+    int array2[] = {
+        ^
+
+"Test_name.c", line 68: warning: variable "array3" was declared but never referenced
+    int array3[] = {
+        ^
+
+"Test_name.c", line 74: warning: variable "array4" was declared but never referenced
+    int array4[] = {
+        ^
+
+"Test_name.c", line 117: warning: variable "x" was declared but never referenced
+      int x;
+          ^
+

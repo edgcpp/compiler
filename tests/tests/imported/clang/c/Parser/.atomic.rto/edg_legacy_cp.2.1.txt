@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 7: warning: typedef name has already been declared (with same type)
+  typedef _Atomic int atomic_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                      ^
+
+"Test_name.c", line 8: warning: type qualifier specified more than once
+  typedef _Atomic _Atomic _Atomic(int) atomic_int; // expected-warning {{duplicate '_Atomic' declaration specifier}} \
+                  ^
+
+"Test_name.c", line 8: warning: typedef name has already been declared (with same type)
+  typedef _Atomic _Atomic _Atomic(int) atomic_int; // expected-warning {{duplicate '_Atomic' declaration specifier}} \
+                                       ^
+
+"Test_name.c", line 14: warning: typedef name has already been declared (with same type)
+  typedef _Atomic const int const_atomic_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                            ^
+
+"Test_name.c", line 15: warning: typedef name has already been declared (with same type)
+  typedef const _Atomic int const_atomic_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                            ^
+
+"Test_name.c", line 16: warning: typedef name has already been declared (with same type)
+  typedef const _Atomic(int) const_atomic_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                             ^
+
+"Test_name.c", line 17: error: the _Atomic(...) specifier cannot be applied to qualified type "_Atomic(int)"
+  typedef const _Atomic(_Atomic int) const_atomic_int; // expected-error {{_Atomic cannot be applied to atomic type '_Atomic(int)'}} \
+                        ^
+
+"Test_name.c", line 17: error: invalid redeclaration of type name "const_atomic_int" (declared at line 13)
+  typedef const _Atomic(_Atomic int) const_atomic_int; // expected-error {{_Atomic cannot be applied to atomic type '_Atomic(int)'}} \
+                                     ^
+
+"Test_name.c", line 19: warning: typedef name has already been declared (with similar type)
+  typedef _Atomic const_int const_atomic_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                            ^
+
+"Test_name.c", line 20: error: the _Atomic(...) specifier cannot be applied to qualified type "const_int" (aka "const int")
+  typedef _Atomic(const_int) const_atomic_int; // expected-error {{_Atomic cannot be applied to qualified type 'const_int' (aka 'const int')}} \
+                  ^
+
+"Test_name.c", line 20: warning: typedef name has already been declared (with similar type)
+  typedef _Atomic(const_int) const_atomic_int; // expected-error {{_Atomic cannot be applied to qualified type 'const_int' (aka 'const int')}} \
+                             ^
+
+"Test_name.c", line 24: warning: typedef name has already been declared (with same type)
+  typedef _Atomic(int *) atomic_int_ptr; // ext-warning {{'_Atomic' is a C11 extension}}
+                         ^
+
+"Test_name.c", line 25: warning: typedef name has already been declared (with same type)
+  typedef int (*_Atomic atomic_int_ptr); // ext-warning {{'_Atomic' is a C11 extension}}
+                        ^
+
+"Test_name.c", line 28: warning: typedef name has already been declared (with same type)
+  typedef _Atomic(int) *int_atomic_ptr; // ext-warning {{'_Atomic' is a C11 extension}}
+                        ^
+
+"Test_name.c", line 31: warning: type qualifiers on function types are ignored
+  typedef _Atomic int_fn atomic_int_fn; // expected-error {{_Atomic cannot be applied to function type 'int_fn' (aka 'int (void)')}} \
+          ^
+
+"Test_name.c", line 34: error: type "atomic_int_array" (aka "_Atomic(int) [3]") cannot be _Atomic because it is an array or function type
+  typedef _Atomic atomic_int_array atomic_int_atomic_array; // expected-error {{_Atomic cannot be applied to array type 'atomic_int_array' (aka '_Atomic(int)[3]')}} \
+          ^
+
+"Test_name.c", line 37: warning: type qualifiers are meaningless in this declaration
+  _Atomic struct S { int n; }; // expected-warning {{'_Atomic' ignored on this declaration}} \
+  ^
+
+"Test_name.c", line 41: warning: typedef name has already been declared (with same type)
+  typedef _Atomic(int) __attribute__((address_space(1))) atomic_addr_space_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                                                         ^
+
+"Test_name.c", line 44: error: invalid redeclaration of type name "atomic_vector_int" (declared at line 43)
+  typedef _Atomic(int __attribute__((vector_size(16)))) atomic_vector_int; // ext-warning {{'_Atomic' is a C11 extension}}
+                                                        ^
+
+"Test_name.c", line 49: warning: type qualifier on return type is meaningless
+  int *const _Atomic atomic_return_type(void); // ext-warning {{'_Atomic' is a C11 extension}}
+       ^
+
+5 errors detected in the compilation of "Test_name.c".

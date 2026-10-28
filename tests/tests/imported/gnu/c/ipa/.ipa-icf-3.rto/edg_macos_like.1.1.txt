@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 11: warning: excess initializers are ignored
+    v4si a = {1,2,3,4};
+                ^
+
+"Test_name.c", line 12: warning: excess initializers are ignored
+    v4si b = {3,2,1,4};
+                ^
+
+"Test_name.c", line 11: warning: variable "a" was declared but never referenced
+    v4si a = {1,2,3,4};
+         ^
+
+"Test_name.c", line 12: warning: variable "b" was declared but never referenced
+    v4si b = {3,2,1,4};
+         ^
+
+"Test_name.c", line 13: warning: variable "c" was declared but never referenced
+    v4si c;
+         ^
+
+"Test_name.c", line 21: warning: excess initializers are ignored
+    v4si a = {1,2,3,4};
+                ^
+
+"Test_name.c", line 22: warning: excess initializers are ignored
+    v4si b = {3,2,1,4};
+                ^
+
+"Test_name.c", line 21: warning: variable "a" was declared but never referenced
+    v4si a = {1,2,3,4};
+         ^
+
+"Test_name.c", line 22: warning: variable "b" was declared but never referenced
+    v4si b = {3,2,1,4};
+         ^
+
+"Test_name.c", line 23: warning: variable "c" was declared but never referenced
+    v4si c;
+         ^
+

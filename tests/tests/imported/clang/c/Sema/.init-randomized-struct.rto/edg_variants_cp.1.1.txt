@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 42: warning: out-of-order initializers are nonstandard in C++
+  struct test t3 = { .f = baz, .b = bar, .g = gaz, .a = foo }; // Okay
+                                ^
+
+"Test_name.c", line 42: warning: out-of-order initializers are nonstandard in C++
+  struct test t3 = { .f = baz, .b = bar, .g = gaz, .a = foo }; // Okay
+                                                    ^
+

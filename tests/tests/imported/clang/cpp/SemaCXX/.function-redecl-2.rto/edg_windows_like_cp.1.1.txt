@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: cannot overload functions distinguished by return type alone
+    extern int  func_1();  // expected-error {{functions that differ only in their return type cannot be overloaded}}
+                ^
+
+"Test_name.c", line 19: warning: variable "n" was declared but never referenced
+    X<&g == p>::type n;
+                     ^
+
+1 error detected in the compilation of "Test_name.c".

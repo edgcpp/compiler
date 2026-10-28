@@ -1,0 +1,50 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 25: remark: return type "int" omitted in declaration of function "main"
+     main(){
+     ^
+
+"Test_name.c", line 6: remark: function "A::A()" cannot be inlined
+     class A{
+           ^
+          detected during:
+            implicit generation of "A::A()" at line 26
+            implicit generation of "D::D()" at line 26
+
+"Test_name.c", line 11: remark: function "AA::AA()" cannot be inlined
+     class AA : virtual protected A {
+           ^
+          detected during:
+            implicit generation of "AA::AA()" at line 26
+            implicit generation of "D::D()" at line 26
+
+"Test_name.c", line 14: remark: function "AAA::AAA()" cannot be inlined
+     class AAA : virtual public AA {
+           ^
+          detected during:
+            implicit generation of "AAA::AAA()" at line 26
+            implicit generation of "D::D()" at line 26
+
+"Test_name.c", line 17: remark: function "B::B()" cannot be inlined
+     class B : virtual private A {};
+           ^
+          detected during:
+            implicit generation of "B::B()" at line 26
+            implicit generation of "D::D()" at line 26
+
+"Test_name.c", line 19: remark: function "C::C()" cannot be inlined
+     class C : virtual private A {};
+           ^
+          detected during:
+            implicit generation of "C::C()" at line 26
+            implicit generation of "D::D()" at line 26
+
+"Test_name.c", line 21: remark: function "D::D()" cannot be inlined
+     class D : public B, public C, virtual public AAA {};
+           ^
+          detected during implicit generation of "D::D()" at line 26
+
+"Test_name.c", line 27: error: function "A::f" (declared at line 23) is inaccessible
+             d->f();
+                ^
+
+1 error detected in the compilation of "Test_name.c".

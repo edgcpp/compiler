@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 45: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+      Auto<{0}> a; // expected-error {{cannot deduce type of initializer list}}
+           ^
+
+"Test_name.c", line 45: error: cannot deduce "auto" template parameter type "auto" from "<unknown-type>"
+      Auto<{0}> a; // expected-error {{cannot deduce type of initializer list}}
+           ^
+
+"Test_name.c", line 48: error: expression must have a constant value
+      A<{notconst}> _; // expected-error {{non-type template argument is not a constant expression}} \
+        ^
+"Test_name.c", line 48: note: the value of variable "notconst" (declared at line 47) cannot be used as a constant
+      A<{notconst}> _; // expected-error {{non-type template argument is not a constant expression}} \
+         ^
+
+"Test_name.c", line 52: error: expression must have a constant value
+      Explicit<Constructor, {L{}}> err; // expected-error {{non-type template argument is not a constant expression}} \
+                            ^
+Note: cannot call non-constexpr function "Constructor::Constructor(L)" (declared at line 26)
+
+"Test_name.c", line 45: warning: variable "a" was declared but never referenced
+      Auto<{0}> a; // expected-error {{cannot deduce type of initializer list}}
+                ^
+
+"Test_name.c", line 48: warning: variable "_" was declared but never referenced
+      A<{notconst}> _; // expected-error {{non-type template argument is not a constant expression}} \
+                    ^
+
+"Test_name.c", line 52: warning: variable "err" was declared but never referenced
+      Explicit<Constructor, {L{}}> err; // expected-error {{non-type template argument is not a constant expression}} \
+                                   ^
+
+"Test_name.c", line 54: warning: variable "ok" was declared but never referenced
+      Explicit<Constructor, {M{}}> ok;
+                                   ^
+
+"Test_name.c", line 57: warning: variable "d1" was declared but never referenced
+      DefaultParam1<> d1;
+                      ^
+
+"Test_name.c", line 58: warning: variable "d2" was declared but never referenced
+      DefaultParam2<> d2;
+                      ^
+
+"Test_name.c", line 59: warning: variable "d3" was declared but never referenced
+      DefaultParam3<> d3;
+                      ^
+
+"Test_name.c", line 69: error: expression must have a constant value
+  B<J1{}> j1;  // expected-error {{pointer to temporary object is not allowed in a template argument}}
+    ^
+"Test_name.c", line 69: note: reference or pointer to temporary with limited lifetime
+  B<J1{}> j1;  // expected-error {{pointer to temporary object is not allowed in a template argument}}
+    ^
+
+"Test_name.c", line 76: error: expression must have a constant value
+  B<J2{}> j2;  // expected-error {{pointer to temporary object is not allowed in a template argument}}
+    ^
+"Test_name.c", line 76: note: reference or pointer to temporary with limited lifetime
+  B<J2{}> j2;  // expected-error {{pointer to temporary object is not allowed in a template argument}}
+    ^
+
+"Test_name.c", line 118: error: template constraint not satisfied
+    Set<T> unrelated;
+         ^
+"Test_name.c", line 111: note: atomic constraint not constant
+  concept C = sizeof(T...[1]) == 1; // #C
+                              ^
+"Test_name.c", line 111: note: invalid constant kind for constant-expression
+  concept C = sizeof(T...[1]) == 1; // #C
+                              ^
+
+"Test_name.c", line 115: error: the deduced placeholder type "GH84052::A" failed the type constraint
+  template <class T, C<T> auto = A{}> struct Set {}; // #Set
+                     ^
+
+"Test_name.c", line 132: error: function "error_on_type_instantiation::f(int)" (declared at line 130) cannot be referenced -- it is a deleted function
+    template<class T, decltype(f(T()))> struct X {};
+                               ^
+          detected during:
+            processing of template argument list for "error_on_type_instantiation::X" based on template argument <int> at line 134
+            instantiation of "void error_on_type_instantiation::g<T>() [with T=int]" at line 136
+
+9 errors detected in the compilation of "Test_name.c".

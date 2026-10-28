@@ -1,0 +1,41 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 15: remark: function "X::N::N(const X::N &)" cannot be inlined
+    struct N {
+           ^
+          detected during implicit generation of "X::N::N(const X::N &)" at line 18
+
+"Test_name.c", line 16: remark: parameter "i" was never referenced
+      N(int i = 0) { }
+            ^
+
+"Test_name.c", line 16: remark: function "X::N::N(int)" cannot be inlined
+      N(int i = 0) { }
+      ^
+
+"Test_name.c", line 18: remark: parameter "n" was never referenced
+    X (N n = N()) { }
+         ^
+
+"Test_name.c", line 18: remark: function "X::X(X::N)" cannot be inlined
+    X (N n = N()) { }
+    ^
+
+"Test_name.c", line 23: error: no instance of constructor "Y::Y" matches the argument list
+      N(Y y = Y()) { }
+              ^
+"Test_name.c", line 21: note: number of parameters of function "Y::Y(const Y &)" does not match the call
+  struct Y {
+         ^
+"Test_name.c", line 25: note: number of parameters of function "Y::Y(int)" does not match the call
+    Y (int i = 0) { }
+    ^
+
+"Test_name.c", line 23: remark: parameter "y" was never referenced
+      N(Y y = Y()) { }
+          ^
+
+"Test_name.c", line 25: remark: parameter "i" was never referenced
+    Y (int i = 0) { }
+           ^
+
+1 error detected in the compilation of "Test_name.c".

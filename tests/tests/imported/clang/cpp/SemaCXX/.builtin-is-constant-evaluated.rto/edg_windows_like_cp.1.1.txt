@@ -1,0 +1,167 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions Test_name.c
+"Test_name.c", line 17: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+  static_assert(__builtin_is_constant_evaluated());
+                                               ^
+
+"Test_name.c", line 28: error: expression must have a constant value
+  constexpr int bn = __builtin_is_constant_evaluated() ? dummy : 42; // expected-note {{non-const variable 'dummy' is not allowed}}
+                     ^
+"Test_name.c", line 28: note: the value of variable "dummy" (declared at line 15) cannot be used as a constant
+  constexpr int bn = __builtin_is_constant_evaluated() ? dummy : 42; // expected-note {{non-const variable 'dummy' is not allowed}}
+                                                         ^
+
+"Test_name.c", line 31: error: expression must have a constant value
+  static_assert(n2 == 42);                                       // expected-error {{static assertion expression is not an integral constant}}
+                ^
+"Test_name.c", line 31: note: the value of variable "n2" (declared at line 30) cannot be used as a constant
+  static_assert(n2 == 42);                                       // expected-error {{static assertion expression is not an integral constant}}
+                ^
+
+"Test_name.c", line 36: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+  Templ<__builtin_is_constant_evaluated()> x; // type X<true>
+                                       ^
+
+"Test_name.c", line 34: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+  template <bool V, bool Default = std::is_constant_evaluated()>
+                                                             ^
+          detected during processing of template argument list for "Templ" based on template argument <true> at line 36
+
+"Test_name.c", line 40: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    if constexpr (__builtin_is_constant_evaluated()) {
+                                                 ^
+
+"Test_name.c", line 49: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    char x[__builtin_is_constant_evaluated() + std::is_constant_evaluated()];
+                                          ^
+
+"Test_name.c", line 49: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    char x[__builtin_is_constant_evaluated() + std::is_constant_evaluated()];
+                                                                         ^
+
+"Test_name.c", line 56: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    case __builtin_is_constant_evaluated():                                // expected-note {{previous case}}
+                                        ^
+
+"Test_name.c", line 57: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    case std::is_constant_evaluated() + __builtin_is_constant_evaluated(): // expected-note {{previous case}}
+                                   ^
+
+"Test_name.c", line 57: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    case std::is_constant_evaluated() + __builtin_is_constant_evaluated(): // expected-note {{previous case}}
+                                                                       ^
+
+"Test_name.c", line 58: error: case label value has already appeared in this switch at line 56
+    case 1:                                                                // expected-error {{duplicate case value '1'}}
+         ^
+
+"Test_name.c", line 59: error: case label value has already appeared in this switch at line 57
+    case 2:                                                                // expected-error {{duplicate case value '2'}}
+         ^
+
+"Test_name.c", line 80: warning: integer conversion resulted in a change of sign
+    constexpr size_t TooLarge = -1;
+                                ^
+
+"Test_name.c", line 81: warning: call to is_constant_evaluated appearing in a non-constexpr function always produces "false"
+    auto *x = new int[std::is_constant_evaluated() ? 1 : TooLarge];      // expected-error {{array is too large}}
+                                                ^
+
+"Test_name.c", line 82: warning: call to is_constant_evaluated appearing in a non-constexpr function always produces "false"
+    auto *x2 = new int[std::is_constant_evaluated() ? TooLarge : 1];     // OK
+                                                 ^
+
+"Test_name.c", line 83: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    auto *y = new int[1][std::is_constant_evaluated() ? TooLarge : 1]{}; // expected-error {{array is too large}}
+                                                   ^
+
+"Test_name.c", line 83: error: array is too large
+    auto *y = new int[1][std::is_constant_evaluated() ? TooLarge : 1]{}; // expected-error {{array is too large}}
+                        ^
+
+"Test_name.c", line 88: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    alignas(std::is_constant_evaluated() ? 8 : 2) char dummy;
+                                      ^
+
+"Test_name.c", line 93: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    static_assert(std::is_constant_evaluated(), "");
+                                            ^
+
+"Test_name.c", line 99: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+      ONE = std::is_constant_evaluated()
+                                      ^
+
+"Test_name.c", line 105: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+    unsigned Bits : std::is_constant_evaluated();
+                                              ^
+
+"Test_name.c", line 108: warning: call to is_constant_evaluated appearing in a constant expression always produces "true"
+  void test_operand_of_noexcept_fn() noexcept(std::is_constant_evaluated());
+                                                                        ^
+
+"Test_name.c", line 115: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+  int &r = __builtin_is_constant_evaluated() ? x : y;
+                                          ^
+
+"Test_name.c", line 122: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    explicit(!__builtin_is_constant_evaluated()) TestConditionalExplicit(int) {}
+                                             ^
+
+"Test_name.c", line 134: warning: call to __builtin_is_constant_evaluated appearing in a non-constexpr function always produces "false"
+      static const float sf = __builtin_is_constant_evaluated();
+                                                             ^
+
+"Test_name.c", line 138: warning: call to __builtin_is_constant_evaluated appearing in a non-constexpr function always produces "false"
+      const float f = __builtin_is_constant_evaluated();
+                                                     ^
+
+"Test_name.c", line 139: error: static assertion failed
+      static_assert(fold(f == 0.0f));
+      ^
+
+"Test_name.c", line 153: error: invalid narrowing conversion from "long long" to "unsigned int"
+      static_assert(f({0xFFFFFFFFLL + __builtin_is_constant_evaluated()}) == 0);
+                       ^
+
+"Test_name.c", line 154: warning: call to __builtin_is_constant_evaluated appearing in a non-constexpr function always produces "false"
+      f({0x100000000LL - __builtin_is_constant_evaluated()}); // expected-error {{constant expression evaluates to 4294967296}} \
+                                                        ^
+
+"Test_name.c", line 154: error: invalid narrowing conversion from "long long" to "unsigned int"
+      f({0x100000000LL - __builtin_is_constant_evaluated()}); // expected-error {{constant expression evaluates to 4294967296}} \
+         ^
+
+"Test_name.c", line 161: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    static const int x1 = 1/(1-__builtin_is_constant_evaluated()); // expected-error {{in-class initializer for static data member is not a constant expression}} \
+                                                              ^
+
+"Test_name.c", line 161: error: expression must have a constant value
+    static const int x1 = 1/(1-__builtin_is_constant_evaluated()); // expected-error {{in-class initializer for static data member is not a constant expression}} \
+                          ^
+"Test_name.c", line 161: note: division by zero
+    static const int x1 = 1/(1-__builtin_is_constant_evaluated()); // expected-error {{in-class initializer for static data member is not a constant expression}} \
+                           ^
+
+"Test_name.c", line 163: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    static const int x2 = __builtin_is_constant_evaluated();
+                                                         ^
+
+"Test_name.c", line 165: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    static const float x3 = 1/(1-__builtin_is_constant_evaluated());  // expected-error {{in-class initializer for static data member of type 'const float' requires 'constexpr' specifier}} \
+                                                                ^
+
+"Test_name.c", line 165: error: expression must have a constant value
+    static const float x3 = 1/(1-__builtin_is_constant_evaluated());  // expected-error {{in-class initializer for static data member of type 'const float' requires 'constexpr' specifier}} \
+                            ^
+"Test_name.c", line 165: note: division by zero
+    static const float x3 = 1/(1-__builtin_is_constant_evaluated());  // expected-error {{in-class initializer for static data member of type 'const float' requires 'constexpr' specifier}} \
+                             ^
+
+"Test_name.c", line 169: warning: call to __builtin_is_constant_evaluated appearing in a constant expression always produces "true"
+    static const float x4 = __builtin_is_constant_evaluated(); // expected-error {{in-class initializer for static data member of type 'const float' requires 'constexpr' specifier}} \
+                                                           ^
+
+"Test_name.c", line 28: warning: variable "bn" was declared but never referenced
+  constexpr int bn = __builtin_is_constant_evaluated() ? dummy : 42; // expected-note {{non-const variable 'dummy' is not allowed}}
+                ^
+
+10 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,134 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 -Dstatic_assert=_Static_assert Test_name.c
+"Test_name.c", line 10: warning: variable templates are a C++14 feature
+  inline const bool is_same = false;
+                            ^
+
+"Test_name.c", line 13: warning: inline variables are a C++17 feature
+  inline const bool is_same<T, T> = true;
+  ^
+
+"Test_name.c", line 19: warning: "auto" as a type specifier is nonstandard in this mode
+    auto L0 = []<typename T>(T arg) {
+    ^
+
+"Test_name.c", line 19: warning: lambda expressions are a C++11 feature
+    auto L0 = []<typename T>(T arg) {
+              ^
+
+"Test_name.c", line 19: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+    auto L0 = []<typename T>(T arg) {
+                ^
+
+"Test_name.c", line 19: error: expected a "{" introducing a lambda body
+    auto L0 = []<typename T>(T arg) {
+                ^
+
+"Test_name.c", line 19: error: a class or namespace qualified name is required
+    auto L0 = []<typename T>(T arg) {
+                          ^
+
+"Test_name.c", line 19: error: type name is not allowed
+    auto L0 = []<typename T>(T arg) {
+                 ^
+
+"Test_name.c", line 19: error: identifier "T" is undefined
+    auto L0 = []<typename T>(T arg) {
+                             ^
+
+"Test_name.c", line 19: error: expected a ")"
+    auto L0 = []<typename T>(T arg) {
+                               ^
+
+"Test_name.c", line 19: error: expected a ";"
+    auto L0 = []<typename T>(T arg) {
+                                    ^
+
+"Test_name.c", line 25: warning: "auto" as a type specifier is nonstandard in this mode
+    auto L1 = []<int I> {
+    ^
+
+"Test_name.c", line 25: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+    auto L1 = []<int I> {
+                ^
+
+"Test_name.c", line 25: error: expected a "{" introducing a lambda body
+    auto L1 = []<int I> {
+                ^
+
+"Test_name.c", line 25: error: type name is not allowed
+    auto L1 = []<int I> {
+                 ^
+
+"Test_name.c", line 25: error: expected a ";"
+    auto L1 = []<int I> {
+                     ^
+
+"Test_name.c", line 28: error: expected an expression
+    L1.operator()<5>();
+                     ^
+
+"Test_name.c", line 29: error: expected an expression
+    L1.operator()<6>(); // expected-note {{in instantiation}}
+                     ^
+
+"Test_name.c", line 31: warning: "auto" as a type specifier is nonstandard in this mode
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+    ^
+
+"Test_name.c", line 31: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                ^
+
+"Test_name.c", line 31: error: expected a "{" introducing a lambda body
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                ^
+
+"Test_name.c", line 31: error: expected an expression
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                 ^
+
+"Test_name.c", line 31: error: expected an identifier
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                                             ^
+
+"Test_name.c", line 31: error: identifier "U" is undefined
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                                                        ^
+
+"Test_name.c", line 31: warning: rvalue references are a C++11 feature
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                                                           ^
+
+"Test_name.c", line 31: error: "auto" type cannot appear in top-level function type
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+    ^
+
+"Test_name.c", line 31: error: expected a ";"
+    auto L2 = []<template<typename> class T, class U>(T<U> &&arg) {
+                                                                  ^
+
+"Test_name.c", line 41: warning: "auto" as a type specifier is nonstandard in this mode
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+      ^
+
+"Test_name.c", line 41: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 41: error: expected a "{" introducing a lambda body
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 41: error: a class or namespace qualified name is required
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                           ^
+
+"Test_name.c", line 41: error: type name is not allowed
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                  ^
+
+"Test_name.c", line 41: error: expected an expression
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                              ^
+
+21 errors detected in the compilation of "Test_name.c".

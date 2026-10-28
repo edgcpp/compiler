@@ -1,0 +1,222 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 15: warning: result of call is not used
+    f(); // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 16: warning: result of call is not used
+    g1(); // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 17: warning: result of call is not used
+    g2(); // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 20: warning: result of call is not used
+    (void)f();
+          ^
+
+"Test_name.c", line 20: warning: result of call is not used
+    (void)f();
+    ^
+
+"Test_name.c", line 21: warning: result of call is not used
+    (void)g1();
+          ^
+
+"Test_name.c", line 21: warning: result of call is not used
+    (void)g1();
+    ^
+
+"Test_name.c", line 22: warning: result of call is not used
+    (void)g2();
+          ^
+
+"Test_name.c", line 22: warning: result of call is not used
+    (void)g2();
+    ^
+
+"Test_name.c", line 41: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 43: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 47: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 49: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 52: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 55: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 58: warning: result of call is not used
+    for (f(); // expected-warning {{ignoring return value}}
+         ^
+
+"Test_name.c", line 60: warning: result of call is not used
+         f() // expected-warning {{ignoring return value}}
+         ^
+
+"Test_name.c", line 62: warning: result of call is not used
+      f(); // expected-warning {{ignoring return value}}
+      ^
+
+"Test_name.c", line 64: warning: statement is unreachable
+    f(),  // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 65: warning: result of call is not used
+    (void)f();
+          ^
+
+"Test_name.c", line 64: warning: result of call is not used
+    f(),  // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 74: warning: result of call is not used
+    x.foo(); // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 75: warning: variable "x2" is used before its value is set
+    x2->foo(); // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 75: warning: result of call is not used
+    x2->foo(); // expected-warning {{ignoring return value}}
+    ^
+
+"Test_name.c", line 85: warning: attribute "clang::warn_unused_result" does not apply here
+  struct [[clang::warn_unused_result]] Status {
+           ^
+
+"Test_name.c", line 120: warning: attribute "clang::warn_unused_result" does not apply here
+  class [[clang::warn_unused_result]] StatusOr {
+          ^
+
+"Test_name.c", line 134: warning: attribute "clang::warn_unused_result" does not apply here
+  struct [[clang::warn_unused_result]] Status;
+           ^
+
+"Test_name.c", line 152: warning: result of call is not used
+  auto foo(T) -> decltype(f(), bool()) { // Should not warn.
+                          ^
+
+"Test_name.c", line 185: warning: result of call is not used
+    (void)typeid(f(), c); // Should not warn.
+                 ^
+
+"Test_name.c", line 186: warning: result of call is not used
+    (void)typeid(f(), d); // expected-warning {{ignoring return value}} expected-warning {{expression with side effects will be evaluated despite being used as an operand to 'typeid'}}
+                 ^
+
+"Test_name.c", line 189: warning: result of call is not used
+    (void)sizeof(f(), c); // Should not warn.
+                 ^
+
+"Test_name.c", line 192: warning: result of call is not used
+    (void)noexcept(f(), false); // Should not warn.
+                   ^
+
+"Test_name.c", line 183: warning: variable "d" was set but never used
+    D d;
+      ^
+
+"Test_name.c", line 198: warning: attribute "clang::warn_unused_result" does not apply here
+  struct [[clang::warn_unused_result]] S {
+           ^
+
+"Test_name.c", line 207: warning: attribute "clang::warn_unused_result" does not apply here
+  struct [[clang::warn_unused_result]] P {
+           ^
+
+"Test_name.c", line 248: warning: result of call is not used
+      f(b); // expected-warning {{ignoring return value of function declared with 'clang::warn_unused_result'}}
+      ^
+
+"Test_name.c", line 261: warning: attribute "clang::warn_unused_result" does not apply to non-function type "void *"
+  [[clang::warn_unused_result]] typedef void *a;
+    ^
+
+"Test_name.c", line 268: warning: variable "a1" is used before its value is set
+    a1(); // no warning
+    ^
+
+"Test_name.c", line 270: warning: variable "a2" is used before its value is set
+    a2(); // expected-warning {{ignoring return value of type 'a' declared with 'clang::warn_unused_result'}}
+    ^
+
+"Test_name.c", line 274: warning: attribute "gnu::warn_unused_result" does not apply to non-function type "void *"
+  [[gnu::warn_unused_result]] typedef void *b2; // expected-warning {{'[[gnu::warn_unused_result]]' attribute ignored when applied to a typedef; consider using '__attribute__((warn_unused_result))' or '[[clang::warn_unused_result]]' instead}}
+    ^
+
+"Test_name.c", line 281: warning: attribute "warn_unused_result" does not apply to non-function type "void *"
+  __attribute__((warn_unused_result)) typedef void *c;
+                 ^
+
+"Test_name.c", line 286: warning: variable "c1" is used before its value is set
+    c1();
+    ^
+
+"Test_name.c", line 288: warning: variable "c2" is used before its value is set
+    c2(); // expected-warning {{ignoring return value of type 'c' declared with 'warn_unused_result'}}
+    ^
+
+"Test_name.c", line 296: warning: attribute "clang::warn_unused_result" does not apply here
+  template<typename T> struct [[clang::warn_unused_result]] S<const T> { S(int) {} };
+                                ^
+
+"Test_name.c", line 320: warning: result of call is not used
+    obtain3(1.0);             // expected-warning {{ignoring return value of function declared with 'warn_unused_result'}}
+    ^
+
+"Test_name.c", line 321: warning: result of call is not used
+    obtain3(1);               // expected-warning {{ignoring return value of function declared with 'warn_unused_result'}}
+    ^
+
+"Test_name.c", line 322: warning: result of call is not used
+    obtain3<const double>(1); // expected-warning {{ignoring return value of function declared with 'warn_unused_result'}}
+    ^
+
+"Test_name.c", line 329: warning: attribute "warn_unused_result" is ignored for void return type
+    __attribute__((warn_unused_result)) H(const char*) {}
+                   ^
+
+"Test_name.c", line 335: warning: attribute "warn_unused_result" is ignored for void return type
+    [[clang::warn_unused_result]] G(const char*) {}
+      ^
+
+"Test_name.c", line 397: error: attribute "clang::warn_unused_result" does not take arguments
+  [[clang::warn_unused_result("Discarded result")]]
+                             ^
+
+"Test_name.c", line 400: error: attribute "gnu::warn_unused_result" does not take arguments
+  [[gnu::warn_unused_result("Discarded result")]]
+                           ^
+
+"Test_name.c", line 425: warning: attribute "gnu::warn_unused_result" does not apply here
+  struct [[gnu::warn_unused_result]] WarnUnusedResult {
+           ^
+
+"Test_name.c", line 426: warning: attribute "warn_unused_result" is ignored for void return type
+    [[gnu::warn_unused_result]] WarnUnusedResult(int);
+      ^
+
+"Test_name.c", line 179: warning: function "<unnamed>::g" was declared but never referenced
+  void g() {
+       ^
+
+"Test_name.c", line 217: warning: function "<unnamed>::f" was declared but never referenced
+  void f() {
+       ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,152 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 56: warning: variable "a" was declared but never referenced
+    BadX() { int a[-N]; } // expected-error {{array with a negative size}}
+                 ^
+
+"Test_name.c", line 57: warning: variable "a" was declared but never referenced
+    ~BadX() { int a[-N]; } // expected-error {{array with a negative size}}
+                  ^
+
+"Test_name.c", line 150: error: a value of type "int" cannot be used to initialize an entity of type "T *"
+        T *ptr = 1; // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}}
+                 ^
+
+"Test_name.c", line 169: warning: statement is unreachable
+      throw t; // expected-error{{incomplete type}}
+      ^
+
+"Test_name.c", line 56: error: the size of an array must be greater than zero
+    BadX() { int a[-N]; } // expected-error {{array with a negative size}}
+                   ^
+          detected during:
+            instantiation of "BadX<N>::BadX() [with N=1]" at line 62
+            instantiation of "void PR6671<N>::f() [with N=1]" at line 64
+
+"Test_name.c", line 57: error: the size of an array must be greater than zero
+    ~BadX() { int a[-N]; } // expected-error {{array with a negative size}}
+                    ^
+          detected during:
+            instantiation of "BadX<N>::~BadX() [with N=1]" at line 62
+            instantiation of "void PR6671<N>::f() [with N=1]" at line 64
+
+"Test_name.c", line 75: error: no default constructor exists for class "X"
+        return new T; // expected-error{{no matching}}
+                   ^
+          detected during instantiation of "T *New0<T>::f(bool) [with T=X]" at line 83
+
+"Test_name.c", line 77: error: no instance of constructor "X::X" matches the argument list
+        return new T();
+                    ^
+"Test_name.c", line 28: note: number of parameters of function "X::X(const X &)" does not match the call
+  struct X { // expected-note 3 {{candidate constructor (the implicit copy constructor)}}
+         ^
+"Test_name.c", line 28: note: number of parameters of function "X::X(X &&)" does not match the call
+  struct X { // expected-note 3 {{candidate constructor (the implicit copy constructor)}}
+         ^
+"Test_name.c", line 32: note: number of parameters of function "X::X(int, int)" does not match the call
+    X(int, int); // expected-note 3 {{candidate constructor}}
+    ^
+          detected during instantiation of "T *New0<T>::f(bool) [with T=X]" at line 83
+
+"Test_name.c", line 88: error: no instance of constructor "X::X" matches the argument list
+            argument types are: (Y)
+      return new T(a1); // expected-error{{no matching}}
+                  ^
+"Test_name.c", line 28: note: function "X::X(const X &)" does not match because argument #1 does not match parameter
+  struct X { // expected-note 3 {{candidate constructor (the implicit copy constructor)}}
+         ^
+"Test_name.c", line 28: note: function "X::X(X &&)" does not match because argument #1 does not match parameter
+  struct X { // expected-note 3 {{candidate constructor (the implicit copy constructor)}}
+         ^
+"Test_name.c", line 32: note: number of parameters of function "X::X(int, int)" does not match the call
+    X(int, int); // expected-note 3 {{candidate constructor}}
+    ^
+          detected during instantiation of "T *New1<T, Arg1>::f(bool, Arg1) [with T=X, Arg1=Y]" at line 94
+
+"Test_name.c", line 99: error: no instance of constructor "X::X" matches the argument list
+            argument types are: (int, int *)
+      return new T(a1, a2); // expected-error{{no matching}}
+                  ^
+"Test_name.c", line 28: note: number of parameters of function "X::X(const X &)" does not match the call
+  struct X { // expected-note 3 {{candidate constructor (the implicit copy constructor)}}
+         ^
+"Test_name.c", line 28: note: number of parameters of function "X::X(X &&)" does not match the call
+  struct X { // expected-note 3 {{candidate constructor (the implicit copy constructor)}}
+         ^
+"Test_name.c", line 32: note: function "X::X(int, int)" does not match because argument #2 does not match parameter
+    X(int, int); // expected-note 3 {{candidate constructor}}
+    ^
+          detected during instantiation of "T *New2<T, Arg1, Arg2>::f(bool, Arg1, Arg2) [with T=X, Arg1=int, Arg2=int *]" at line 104
+
+"Test_name.c", line 116: error: function "New3::operator new[]" was declared declared unavailable
+    return new C(); // expected-error{{'operator new[]' is unavailable}}
+           ^
+"Test_name.c", line 111: note: because of an "unavailable" attribute
+    void *operator new[](__SIZE_TYPE__) __attribute__((unavailable)); // expected-note{{explicitly marked unavailable here}}
+                                                       ^
+          detected during instantiation of "void *object_creator<C>() [with C=New3 [4]]" at line 119
+
+"Test_name.c", line 124: error: expression must be a pointer to a complete object type
+      delete t; // expected-error{{cannot delete}}
+             ^
+          detected during instantiation of "void Delete0<T>::f(T) [with T=int]" at line 131
+
+"Test_name.c", line 125: error: expression must be a pointer to a complete object type
+      ::delete [] t; // expected-error{{cannot delete}}
+                  ^
+          detected during instantiation of "void Delete0<T>::f(T) [with T=int]" at line 131
+
+"Test_name.c", line 169: error: a throw expression may not have pointer-to-incomplete type
+      throw t; // expected-error{{incomplete type}}
+            ^
+          detected during instantiation of "void Throw1<T>::f(T) [with T=Incomplete *]" at line 177
+
+"Test_name.c", line 193: error: incomplete type "Incomplete" is not allowed
+        return typeid(T); // expected-error{{'typeid' of incomplete type 'Incomplete'}}
+                      ^
+          detected during instantiation of "const std::type_info &TypeId0<T>::f(T *) [with T=Incomplete]" at line 209
+
+"Test_name.c", line 231: warning: invalid narrowing conversion from "float" to "int"
+      T x = { val1 };
+              ^
+          detected during instantiation of "void InitList1<T, Val1>::f(Val1) [with T=int [1], Val1=float]" at line 244
+
+"Test_name.c", line 253: error: a value of type "double *" cannot be used to initialize an entity of type "const float *"
+      T x = { val1, val2 }; // expected-error{{cannot initialize}}
+                    ^
+          detected during instantiation of "void InitList2<T, Val1, Val2>::f(Val1, Val2) [with T=APair, Val1=int *, Val2=double *]" at line 258
+
+"Test_name.c", line 266: error: a reference of type "float &" (not const-qualified) cannot be initialized with a value of type "int"
+      Result result = t.m; // expected-error{{non-const lvalue reference to type}}
+                      ^
+          detected during instantiation of "void DotMemRef0<T, Result>::f(T) [with T=MemInt, Result=float &]" at line 283
+
+"Test_name.c", line 288: error: a reference of type "float &" (not const-qualified) cannot be initialized with a value of type "int"
+      Result result = t->m; // expected-error 2{{non-const lvalue reference}}
+                      ^
+          detected during instantiation of "void ArrowMemRef0<T, Result>::f(T) [with T=MemInt *, Result=float &]" at line 300
+
+"Test_name.c", line 288: error: a reference of type "float &" (not const-qualified) cannot be initialized with a value of type "int"
+      Result result = t->m; // expected-error 2{{non-const lvalue reference}}
+                      ^
+          detected during instantiation of "void ArrowMemRef0<T, Result>::f(T) [with T=ArrowWrapper<MemInt *>, Result=float &]" at line 305
+
+"Test_name.c", line 360: error: a reference of type "float &" (not const-qualified) cannot be initialized with a value of type "int"
+      T result = x.f(); // expected-error{{non-const lvalue reference}}
+                 ^
+          detected during instantiation of "void NonDepMemberCall0<T>::foo(HasMemFunc0<int &>) [with T=float &]" at line 366
+
+"Test_name.c", line 372: error: a reference of type "int &" (not const-qualified) cannot be initialized with a value of type "const bool"
+      return is_pod<X>::value; // expected-error{{non-const lvalue reference to type 'int' cannot bind to a value of unrelated type 'const bool'}}
+             ^
+          detected during instantiation of "T QualifiedDeclRef0<T>::f() [with T=int &]" at line 377
+
+"Test_name.c", line 222: warning: variable "is_pod0" was declared but never referenced
+  static int is_pod0[is_pod<X>::value? -1 : 1];
+             ^
+
+"Test_name.c", line 223: warning: variable "is_pod1" was declared but never referenced
+  static int is_pod1[is_pod<Y>::value? 1 : -1];
+             ^
+
+18 errors detected in the compilation of "Test_name.c".

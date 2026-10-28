@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: warning: structured bindings are a C++17 feature
+    auto[a, b] = Foo();			// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+        ^
+
+"Test_name.c", line 12: warning: capturing structured bindings is a C++20 feature
+    auto f1 = [&] { return a; };		// { dg-error "cannot bind bit-field" }
+                           ^
+
+"Test_name.c", line 12: error: taking the address of a bit field is not allowed
+    auto f1 = [&] { return a; };		// { dg-error "cannot bind bit-field" }
+                           ^
+
+"Test_name.c", line 13: error: taking the address of a bit field is not allowed
+    auto f2 = [&a = a] { return a; };	// { dg-error "cannot bind bit-field" }
+                    ^
+
+"Test_name.c", line 15: warning: capturing structured bindings is a C++20 feature
+    auto f3 = [&a] { return a; };		// { dg-error "cannot bind bit-field" }
+                ^
+
+"Test_name.c", line 15: error: taking the address of a bit field is not allowed
+    auto f3 = [&a] { return a; };		// { dg-error "cannot bind bit-field" }
+                ^
+
+"Test_name.c", line 17: warning: capturing structured bindings is a C++20 feature
+    auto g1 = [&] { return b; };
+                           ^
+
+"Test_name.c", line 19: warning: capturing structured bindings is a C++20 feature
+    auto g3 = [&b] { return b; };
+                ^
+
+"Test_name.c", line 21: warning: capturing structured bindings is a C++20 feature
+    auto h1 = [=] { return a; };
+                           ^
+
+"Test_name.c", line 23: warning: capturing structured bindings is a C++20 feature
+    auto h3 = [a] { return a; };
+               ^
+
+"Test_name.c", line 25: warning: capturing structured bindings is a C++20 feature
+    auto i1 = [=] { return b; };
+                           ^
+
+"Test_name.c", line 27: warning: capturing structured bindings is a C++20 feature
+    auto i3 = [b] { return b; };
+               ^
+
+"Test_name.c", line 13: warning: variable "f2" was declared but never referenced
+    auto f2 = [&a = a] { return a; };	// { dg-error "cannot bind bit-field" }
+         ^
+
+"Test_name.c", line 17: warning: variable "g1" was declared but never referenced
+    auto g1 = [&] { return b; };
+         ^
+
+"Test_name.c", line 18: warning: variable "g2" was declared but never referenced
+    auto g2 = [&b = b] { return b; };	// { dg-warning "lambda capture initializers only available with" "" { target c++11_only } }
+         ^
+
+"Test_name.c", line 19: warning: variable "g3" was declared but never referenced
+    auto g3 = [&b] { return b; };
+         ^
+
+"Test_name.c", line 21: warning: variable "h1" was declared but never referenced
+    auto h1 = [=] { return a; };
+         ^
+
+"Test_name.c", line 22: warning: variable "h2" was declared but never referenced
+    auto h2 = [a = a] { return a; };	// { dg-warning "lambda capture initializers only available with" "" { target c++11_only } }
+         ^
+
+"Test_name.c", line 23: warning: variable "h3" was declared but never referenced
+    auto h3 = [a] { return a; };
+         ^
+
+"Test_name.c", line 25: warning: variable "i1" was declared but never referenced
+    auto i1 = [=] { return b; };
+         ^
+
+"Test_name.c", line 26: warning: variable "i2" was declared but never referenced
+    auto i2 = [b = b] { return b; };	// { dg-warning "lambda capture initializers only available with" "" { target c++11_only } }
+         ^
+
+"Test_name.c", line 27: warning: variable "i3" was declared but never referenced
+    auto i3 = [b] { return b; };
+         ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 41: warning: label "foo" was declared but never referenced
+   foo:
+   ^
+
+"Test_name.c", line 70: warning: label "foo" was declared but never referenced
+    foo:
+    ^
+
+/usr/sbin/ld: Test_name.o: in function `i4()':
+Test_name.int.c:(.text+0xXX): undefined reference to `X::X(const X &)'
+/usr/sbin/ld: Test_name.o: in function `i4a()':
+Test_name.int.c:(.text+0xXX): undefined reference to `X::X(const X &)'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,350 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_extensions --ms_extensions Test_name.c
+"Test_name.c", line 13: error: initialization with "{...}" expected for aggregate object
+   const char d[] = __func__; // expected-warning{{initializing an array from a '__func__' predefined identifier is a Microsoft extension}}
+                    ^
+
+"Test_name.c", line 15: error: identifier "L__FUNCTION__" is undefined
+   const wchar_t f[] = L__FUNCTION__; // expected-warning{{initializing an array from a 'L__FUNCTION__' predefined identifier is a Microsoft extension}}
+                       ^
+
+"Test_name.c", line 16: error: identifier "L__FUNCSIG__" is undefined
+   const wchar_t g[] = L__FUNCSIG__; // expected-warning{{initializing an array from a 'L__FUNCSIG__' predefined identifier is a Microsoft extension}}
+                       ^
+
+"Test_name.c", line 10: warning: variable "a" was declared but never referenced
+   const char a[] = __FUNCTION__; // expected-warning{{initializing an array from a '__FUNCTION__' predefined identifier is a Microsoft extension}}
+              ^
+
+"Test_name.c", line 11: warning: variable "b" was declared but never referenced
+   const char b[] = __FUNCDNAME__; // expected-warning{{initializing an array from a '__FUNCDNAME__' predefined identifier is a Microsoft extension}}
+              ^
+
+"Test_name.c", line 12: warning: variable "c" was declared but never referenced
+   const char c[] = __FUNCSIG__; // expected-warning{{initializing an array from a '__FUNCSIG__' predefined identifier is a Microsoft extension}}
+              ^
+
+"Test_name.c", line 14: warning: variable "e" was declared but never referenced
+   const char e[] = __PRETTY_FUNCTION__; // expected-warning{{initializing an array from a '__PRETTY_FUNCTION__' predefined identifier is a Microsoft extension}}
+              ^
+
+"Test_name.c", line 66: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [18], const char [30])
+    ASSERT_EQ(__FUNCSIG__, "void __cdecl test_value(void)");
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 68: warning: concatenation with "_LPREFIX(__FUNCTION__)" in macro "_WIDE" does not create a valid token
+    ASSERT_EQ(WIDE(__FUNCTION__), L"test_value");
+    ^
+
+"Test_name.c", line 69: warning: concatenation with "_LPREFIX(__FUNCSIG__)" in macro "_WIDE" does not create a valid token
+    ASSERT_EQ(WIDE(__FUNCSIG__), L"void __cdecl test_value(void)");
+    ^
+
+"Test_name.c", line 69: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [18], const __wchar_t [30])
+    ASSERT_EQ(WIDE(__FUNCSIG__), L"void __cdecl test_value(void)");
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 76: error: identifier "L__FUNCTION__" is undefined
+          ASSERT_EQ(L__FUNCTION__, L"method");
+          ^
+
+"Test_name.c", line 76: error: no instance of function template "equal" matches the argument list
+            argument types are: (<error-type>, const __wchar_t [7])
+          ASSERT_EQ(L__FUNCTION__, L"method");
+          ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 90: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [24], const char [36])
+    ASSERT_EQ("left " __FUNCSIG__, "left void __cdecl test_concat(void)"); // expected-warning{{expansion of predefined identifier '__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 94: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [25], const char [37])
+    ASSERT_EQ(__FUNCSIG__ " right", "void __cdecl test_concat(void) right"); // expected-warning{{expansion of predefined identifier '__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 98: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [30], const char [42])
+    ASSERT_EQ("left " __FUNCSIG__ " right", "left void __cdecl test_concat(void) right"); // expected-warning{{expansion of predefined identifier '__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 100: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [31], const char [43])
+    ASSERT_EQ(__FUNCTION__ "/" __FUNCSIG__, "test_concat/void __cdecl test_concat(void)"); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}} \
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 106: error: identifier "L__FUNCTION__" is undefined
+    ASSERT_EQ(L"" __FUNCTION__, L__FUNCTION__); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 106: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [17], <error-type>)
+    ASSERT_EQ(L"" __FUNCTION__, L__FUNCTION__); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 107: error: identifier "L__FUNCSIG__" is undefined
+    ASSERT_EQ(L"" __FUNCSIG__, L__FUNCSIG__);   // expected-warning{{expansion of predefined identifier '__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 107: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [24], <error-type>)
+    ASSERT_EQ(L"" __FUNCSIG__, L__FUNCSIG__);   // expected-warning{{expansion of predefined identifier '__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 110: error: expected a ")"
+    ASSERT_EQ(L__FUNCTION__, L__FUNCTION__ ""); // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 110: error: no instance of function template "equal" matches the argument list
+            argument types are: (<error-type>, <error-type>)
+    ASSERT_EQ(L__FUNCTION__, L__FUNCTION__ ""); // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 111: error: expected a ")"
+    ASSERT_EQ(L__FUNCSIG__, L__FUNCSIG__ "");   // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 111: error: no instance of function template "equal" matches the argument list
+            argument types are: (<error-type>, <error-type>)
+    ASSERT_EQ(L__FUNCSIG__, L__FUNCSIG__ "");   // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 113: error: expected a ")"
+    ASSERT_EQ(L"left_" L__FUNCTION__, L"left_test_wide_concat");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 113: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [6])
+    ASSERT_EQ(L"left_" L__FUNCTION__, L"left_test_wide_concat");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 113: error: expected a ";"
+    ASSERT_EQ(L"left_" L__FUNCTION__, L"left_test_wide_concat");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 114: error: expected a ")"
+    ASSERT_EQ(L"left " L__FUNCSIG__, L"left void __cdecl test_wide_concat(void)"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 114: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [6])
+    ASSERT_EQ(L"left " L__FUNCSIG__, L"left void __cdecl test_wide_concat(void)"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 114: error: expected a ";"
+    ASSERT_EQ(L"left " L__FUNCSIG__, L"left void __cdecl test_wide_concat(void)"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 116: error: expected a ")"
+    ASSERT_EQ(L__FUNCTION__ L"_right", L"test_wide_concat_right");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 116: error: no instance of function template "equal" matches the argument list
+            argument types are: (<error-type>)
+    ASSERT_EQ(L__FUNCTION__ L"_right", L"test_wide_concat_right");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 116: error: expected a ";"
+    ASSERT_EQ(L__FUNCTION__ L"_right", L"test_wide_concat_right");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 117: error: expected a ")"
+    ASSERT_EQ(L__FUNCSIG__ L" right", L"void __cdecl test_wide_concat(void) right"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 117: error: no instance of function template "equal" matches the argument list
+            argument types are: (<error-type>)
+    ASSERT_EQ(L__FUNCSIG__ L" right", L"void __cdecl test_wide_concat(void) right"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 117: error: expected a ";"
+    ASSERT_EQ(L__FUNCSIG__ L" right", L"void __cdecl test_wide_concat(void) right"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 119: error: expected a ")"
+    ASSERT_EQ(L"left_" L__FUNCTION__ L"_right", L"left_test_wide_concat_right");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 119: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [6])
+    ASSERT_EQ(L"left_" L__FUNCTION__ L"_right", L"left_test_wide_concat_right");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 119: error: expected a ";"
+    ASSERT_EQ(L"left_" L__FUNCTION__ L"_right", L"left_test_wide_concat_right");                   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 120: error: expected a ")"
+    ASSERT_EQ(L"left " L__FUNCSIG__ L" right", L"left void __cdecl test_wide_concat(void) right"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 120: error: no instance of function template "equal" matches the argument list
+            argument types are: (const __wchar_t [6])
+    ASSERT_EQ(L"left " L__FUNCSIG__ L" right", L"left void __cdecl test_wide_concat(void) right"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 120: error: expected a ";"
+    ASSERT_EQ(L"left " L__FUNCSIG__ L" right", L"left void __cdecl test_wide_concat(void) right"); // expected-warning{{expansion of predefined identifier 'L__FUNCSIG__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 122: error: expected a ")"
+    ASSERT_EQ(L__FUNCTION__ L"/" L__FUNCSIG__, L"test_wide_concat/void __cdecl test_wide_concat(void)"); // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}} \
+    ^
+
+"Test_name.c", line 122: error: no instance of function template "equal" matches the argument list
+            argument types are: (<error-type>)
+    ASSERT_EQ(L__FUNCTION__ L"/" L__FUNCSIG__, L"test_wide_concat/void __cdecl test_wide_concat(void)"); // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}} \
+    ^
+"Test_name.c", line 50: note: number of parameters of function template "equal" does not match the call
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 122: error: expected a ";"
+    ASSERT_EQ(L__FUNCTION__ L"/" L__FUNCSIG__, L"test_wide_concat/void __cdecl test_wide_concat(void)"); // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}} \
+    ^
+
+"Test_name.c", line 129: error: expected a ")"
+    ASSERT_EQ_TY(L"" L__FUNCTION__, L"");  // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 130: error: expected a ")"
+    ASSERT_EQ_TY("" L__FUNCTION__, L"");   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 130: error: static assertion failed with ""
+    ASSERT_EQ_TY("" L__FUNCTION__, L"");   // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+
+"Test_name.c", line 151: error: expected a ")"
+    unused(u8"" L__FUNCTION__); // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}} \
+                ^
+
+"Test_name.c", line 153: error: expected a ")"
+    unused(u"" L__FUNCTION__);  // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}} \
+               ^
+
+"Test_name.c", line 155: error: expected a ")"
+    unused(U"" L__FUNCTION__);  // expected-warning{{expansion of predefined identifier 'L__FUNCTION__' to a string literal is a Microsoft extension}} \
+               ^
+
+"Test_name.c", line 164: error: expected a ","
+    static_assert(__FUNCTION__ ""_len == 14, ""); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+                                 ^
+
+"Test_name.c", line 168: error: expected a string literal
+    static_assert(true, __FUNCTION__); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+                        ^
+
+"Test_name.c", line 178: error: a value of type "const char [20]" cannot be used to initialize an entity of type "char [1]"
+    } s1 = { __FUNCTION__ }; // expected-warning{{initializing an array from a '__FUNCTION__' predefined identifier is a Microsoft extension}}
+             ^
+
+"Test_name.c", line 182: error: a value of type "const char [22]" cannot be used to initialize an entity of type "char [3]"
+    } s2 = { "F:" __FUNCTION__ }; // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+             ^
+
+"Test_name.c", line 189: error: a value of type "const char [20]" cannot be used to initialize an entity of type "char [1]"
+    } c1 = { { __FUNCTION__ } }; // expected-warning{{initializing an array from a '__FUNCTION__' predefined identifier is a Microsoft extension}}
+               ^
+
+"Test_name.c", line 178: warning: variable "s1" was declared but never referenced
+    } s1 = { __FUNCTION__ }; // expected-warning{{initializing an array from a '__FUNCTION__' predefined identifier is a Microsoft extension}}
+      ^
+
+"Test_name.c", line 182: warning: variable "s2" was declared but never referenced
+    } s2 = { "F:" __FUNCTION__ }; // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+      ^
+
+"Test_name.c", line 189: warning: variable "c1" was declared but never referenced
+    } c1 = { { __FUNCTION__ } }; // expected-warning{{initializing an array from a '__FUNCTION__' predefined identifier is a Microsoft extension}}
+      ^
+
+"Test_name.c", line 195: error: a value of type "const char [30]" cannot be used to initialize an entity of type "char [1]"
+    } constexpr s1 = { __FUNCTION__ }; // expected-warning{{initializing an array from a '__FUNCTION__' predefined identifier is a Microsoft extension}}
+                       ^
+
+"Test_name.c", line 196: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [30], const char [1])
+    ASSERT_EQ(__FUNCTION__, s1.F);
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 200: error: a value of type "const char [32]" cannot be used to initialize an entity of type "char [3]"
+    } constexpr s2 = { "F:" __FUNCTION__ }; // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+                       ^
+
+"Test_name.c", line 201: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [32], const char [3])
+    ASSERT_EQ("F:" __FUNCTION__, s2.F); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+"Test_name.c", line 208: error: a value of type "const char [32]" cannot be used to initialize an entity of type "char [3]"
+    } constexpr c1 = { { "F:" __FUNCTION__ } }; // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+                         ^
+
+"Test_name.c", line 209: error: no instance of function template "equal" matches the argument list
+            argument types are: (const char [32], const char [3])
+    ASSERT_EQ("F:" __FUNCTION__, c1.s.F); // expected-warning{{expansion of predefined identifier '__FUNCTION__' to a string literal is a Microsoft extension}}
+    ^
+"Test_name.c", line 50: note: candidate function template "equal" failed deduction
+  constexpr bool equal(const T (&a)[N], const T (&b)[N]) {
+                 ^
+
+57 errors detected in the compilation of "Test_name.c".

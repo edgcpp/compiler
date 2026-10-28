@@ -1,0 +1,264 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 27: error: class "X" has no member "g"
+    X::g(); // expected-error{{no member named 'g' in 'X'; did you mean simply 'g'?}}
+       ^
+
+"Test_name.c", line 28: error: class "X" has no member "S"
+    X::S x_s; // expected-error{{no type named 'S' in 'X'; did you mean simply 'S'?}}
+       ^
+
+"Test_name.c", line 28: error: expected a ";"
+    X::S x_s; // expected-error{{no type named 'S' in 'X'; did you mean simply 'S'?}}
+         ^
+
+"Test_name.c", line 30: error: class "X" has no member "g"
+    x.g(); // expected-error{{no member named 'g' in 'X'}}
+      ^
+
+"Test_name.c", line 24: warning: variable "s" was declared but never referenced
+    S s;
+      ^
+
+"Test_name.c", line 51: error: class "N::X" has no member "g"
+      X::g(); // expected-error{{no member named 'g' in 'N::X'; did you mean simply 'g'?}}
+         ^
+
+"Test_name.c", line 52: error: class "N::X" has no member "S"
+      X::S x_s; // expected-error{{no type named 'S' in 'N::X'; did you mean simply 'S'?}}
+         ^
+
+"Test_name.c", line 52: error: expected a ";"
+      X::S x_s; // expected-error{{no type named 'S' in 'N::X'; did you mean simply 'S'?}}
+           ^
+
+"Test_name.c", line 54: error: class "N::X" has no member "g"
+      x.g(); // expected-error{{no member named 'g' in 'N::X'}}
+        ^
+
+"Test_name.c", line 58: error: the global scope has no "g2"
+      ::g2(); // expected-error{{no member named 'g2' in the global namespace; did you mean simply 'g2'?}}
+        ^
+
+"Test_name.c", line 59: error: the global scope has no "S2"
+      ::S2 g_s2; // expected-error{{no type named 'S2' in the global namespace; did you mean simply 'S2'?}}
+        ^
+
+"Test_name.c", line 59: error: expected a ";"
+      ::S2 g_s2; // expected-error{{no type named 'S2' in the global namespace; did you mean simply 'S2'?}}
+           ^
+
+"Test_name.c", line 60: error: class "N::X" has no member "g2"
+      X::g2(); // expected-error{{no member named 'g2' in 'N::X'; did you mean simply 'g2'?}}
+         ^
+
+"Test_name.c", line 61: error: class "N::X" has no member "S2"
+      X::S2 x_s2; // expected-error{{no type named 'S2' in 'N::X'; did you mean simply 'S2'?}}
+         ^
+
+"Test_name.c", line 61: error: expected a ";"
+      X::S2 x_s2; // expected-error{{no type named 'S2' in 'N::X'; did you mean simply 'S2'?}}
+            ^
+
+"Test_name.c", line 62: error: class "N::X" has no member "g2"
+      x.g2(); // expected-error{{no member named 'g2' in 'N::X'}}
+        ^
+
+"Test_name.c", line 49: warning: variable "s" was declared but never referenced
+      S s;
+        ^
+
+"Test_name.c", line 57: warning: variable "s2" was declared but never referenced
+      S2 s2;
+         ^
+
+"Test_name.c", line 98: error: function "test0::Class::member" (declared at line 79) is inaccessible
+      Class::member(); // expected-error {{'member' is a private member of 'test0::Class'}}
+             ^
+
+"Test_name.c", line 117: error: function "test0::Class::member" (declared at line 79) is inaccessible
+        Class::member(); // expected-error {{'member' is a private member of 'test0::Class'}}
+               ^
+
+"Test_name.c", line 147: error: function "test2::ilist_half_node::getPrev" (declared at line 130) is inaccessible
+      static X *getPrev(X *N) { return N->getPrev(); } // \
+                                          ^
+
+"Test_name.c", line 150: error: function "test2::ilist_node::getNext" (declared at line 136) is inaccessible
+      static X *getNext(X *N) { return N->getNext(); } // \
+                                          ^
+
+"Test_name.c", line 167: error: member "test3::A::x" (declared at line 156) is inaccessible
+      return p->x; // expected-error {{'x' is a protected member of 'test3::A'}}
+                ^
+
+"Test_name.c", line 187: error: no operator "==" matches these operands
+            operand types are: test4::Inequal == test4::Inequal
+        return a.object == b.object; // expected-error {{invalid operands to binary expression}}
+                        ^
+"Test_name.c", line 187: note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+        return a.object == b.object; // expected-error {{invalid operands to binary expression}}
+                        ^
+"Test_name.c", line 187: note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+        return a.object == b.object; // expected-error {{invalid operands to binary expression}}
+                        ^
+          detected during instantiation of class "test4::Holder<T> [with T=test4::Inequal]" at line 194
+
+"Test_name.c", line 274: error: "test7::A::A()" (declared at line 266) is inaccessible
+      A a; // expected-error {{calling a private constructor}}
+        ^
+
+"Test_name.c", line 282: error: "test7::A::A()" (declared at line 266) is inaccessible
+      A a; // expected-error {{calling a private constructor}}
+        ^
+
+"Test_name.c", line 296: warning: missing return statement at end of non-void function "test8::f"
+    A::I f(A::I i = A::x) {}
+                           ^
+
+"Test_name.c", line 299: warning: missing return statement at end of non-void function "test8::g<T>(test8::A::I)"
+    }
+    ^
+
+"Test_name.c", line 302: error: type "test8::A::I" (declared at line 289) is inaccessible
+    A::I f2(A::I i = A::x) {} // expected-error 3 {{is a private member of}}
+       ^
+
+"Test_name.c", line 302: error: type "test8::A::I" (declared at line 289) is inaccessible
+    A::I f2(A::I i = A::x) {} // expected-error 3 {{is a private member of}}
+               ^
+
+"Test_name.c", line 302: error: member "test8::A::x" (declared at line 290) is inaccessible
+    A::I f2(A::I i = A::x) {} // expected-error 3 {{is a private member of}}
+                        ^
+
+"Test_name.c", line 302: warning: missing return statement at end of non-void function "test8::f2"
+    A::I f2(A::I i = A::x) {} // expected-error 3 {{is a private member of}}
+                            ^
+
+"Test_name.c", line 305: warning: missing return statement at end of non-void function "test8::g2<T>(test8::A::I)"
+    }
+    ^
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                            ^
+          detected during instantiation of "test8::g2" based on template argument <char> at line 306
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                                    ^
+          detected during instantiation of "test8::g2" based on template argument <char> at line 306
+
+"Test_name.c", line 306: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<char>(A::I i) { return 0; } // OK
+                   ^
+
+"Test_name.c", line 306: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<char>(A::I i) { return 0; } // OK
+                                 ^
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                            ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I> at line 307
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                                    ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I> at line 307
+
+"Test_name.c", line 308: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<char>(A::I i);              // OK
+                   ^
+
+"Test_name.c", line 308: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<char>(A::I i);              // OK
+                                 ^
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                            ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I *> at line 309
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                                    ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I *> at line 309
+
+"Test_name.c", line 309: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<A::I *>(A::I i);            // OK
+                   ^
+
+"Test_name.c", line 309: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<A::I *>(A::I i);            // OK
+                           ^
+
+"Test_name.c", line 309: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> A::I g2<A::I *>(A::I i);            // OK
+                                   ^
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                            ^
+          detected during instantiation of "test8::g2" based on template argument <unsigned int> at line 310
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                                    ^
+          detected during instantiation of "test8::g2" based on template argument <unsigned int> at line 310
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                            ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I **> at line 311
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                                    ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I **> at line 311
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                            ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I ***> at line 312
+
+"Test_name.c", line 303: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template<typename T> A::I g2(A::I i) { // expected-error 2 {{is a private member of}}
+                                    ^
+          detected during instantiation of "test8::g2" based on template argument <test8::A::I ***> at line 312
+
+"Test_name.c", line 314: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <typename T> A::I g3(A::I i) { return 0; } // expected-error 2 {{is a private member of}}
+                             ^
+          detected during instantiation of "test8::g3" based on template argument <test8::A::I> at line 315
+
+"Test_name.c", line 314: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <typename T> A::I g3(A::I i) { return 0; } // expected-error 2 {{is a private member of}}
+                                     ^
+          detected during instantiation of "test8::g3" based on template argument <test8::A::I> at line 315
+
+"Test_name.c", line 315: error: type "test8::A::I" (declared at line 289) is inaccessible
+    template <> int g3<A::I>(int i);                    // OK
+                          ^
+
+"Test_name.c", line 343: error: function "test10::NS::C::foo" (declared at line 332) is inaccessible
+      NS::bar->foo(); // expected-error {{private member}}
+               ^
+
+"Test_name.c", line 365: error: type "test11::B::private_type" (declared at line 358) is inaccessible
+    void A::test2(B::private_type x) {} // expected-error {{'private_type' is a private member of 'test11::B'}}
+                     ^
+
+"Test_name.c", line 366: error: type "test11::B::private_type" (declared at line 358) is inaccessible
+    void A::test3(int x = B::private_type()) {} // expected-error {{'private_type' is a private member of 'test11::B'}}
+                             ^
+
+"Test_name.c", line 380: warning: variable "var" was declared but never referenced
+      void *var = static_cast<B*>(this)->mem;
+            ^
+
+"Test_name.c", line 409: error: class "test14::A::B" (declared at line 402) is inaccessible
+      A::B::i = 5; // expected-error {{'B' is a private member of 'test14::A'}}
+         ^
+
+52 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+    typedef float __attribute__ ((__vector_size__ (4 * sizeof (float)), __may_alias__)) V;
+                                  ^
+
+"Test_name.c", line 10: error: too many initializer values
+    const V a = { x, x, x, x }, b = { y, y, y, y };
+                     ^
+
+"Test_name.c", line 10: error: too many initializer values
+    const V a = { x, x, x, x }, b = { y, y, y, y };
+                                         ^
+
+"Test_name.c", line 19: warning: unknown attribute "__vector_size__"
+    typedef float __attribute__ ((__vector_size__ (4 * sizeof (float)), __may_alias__)) V;
+                                  ^
+
+"Test_name.c", line 20: error: too many initializer values
+    const V a = { 7.0f, 8.0f, 9.0f, 10.0f }, b = { 1.0f, 2.0f, 3.0f, y };
+                        ^
+
+"Test_name.c", line 20: error: too many initializer values
+    const V a = { 7.0f, 8.0f, 9.0f, 10.0f }, b = { 1.0f, 2.0f, 3.0f, y };
+                                                         ^
+
+4 errors detected in the compilation of "Test_name.c".

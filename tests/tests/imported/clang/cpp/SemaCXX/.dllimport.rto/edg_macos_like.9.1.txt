@@ -1,0 +1,462 @@
+fe_only -DTEST_NUMBER=9 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -DWI -w --ms_extensions Test_name.c
+"Test_name.c", line 59: error: variable "ExternGlobalInit" may not be initialized
+  __declspec(dllimport) extern int ExternGlobalInit = 1; // expected-error{{definition of dllimport data}}
+                                   ^
+
+"Test_name.c", line 60: error: variable "GlobalInit1" may not be initialized
+  __declspec(dllimport) int GlobalInit1 = 1; // expected-error{{definition of dllimport data}}
+                            ^
+
+"Test_name.c", line 61: error: variable "GlobalInit2" may not be initialized
+  int __declspec(dllimport) GlobalInit2 = 1; // expected-error{{definition of dllimport data}}
+                            ^
+
+"Test_name.c", line 95: error: variable "GlobalDeclChunkAttrInit" has already been defined (previous definition at line 89)
+  int *GlobalDeclChunkAttrInit = 0;
+       ^
+
+"Test_name.c", line 106: error: variable "GlobalDeclAttrInit" has already been defined (previous definition at line 100)
+  int GlobalDeclAttrInit = 1;
+      ^
+
+"Test_name.c", line 116: error: variable "GlobalRedecl2b" has already been defined (previous definition at line 115)
+  int *__attribute__((dllimport)) GlobalRedecl2b;
+                                  ^
+
+"Test_name.c", line 119: error: variable "GlobalRedecl2c" has already been defined (previous definition at line 118)
+  int GlobalRedecl2c __attribute__((dllimport));
+      ^
+
+"Test_name.c", line 125: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl4" (declared at line 124)
+  __declspec(dllimport) extern int GlobalRedecl4; // expected-warning{{redeclaration of 'GlobalRedecl4' should not add 'dllimport' attribute}}
+                                   ^
+
+"Test_name.c", line 129: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl5" (declared at line 128)
+  __declspec(dllimport) extern int GlobalRedecl5; // expected-warning{{redeclaration of 'GlobalRedecl5' should not add 'dllimport' attribute}}
+                                   ^
+
+"Test_name.c", line 133: error: dllexport/dllimport requires external linkage
+  __declspec(dllimport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllimport'}}
+                                   ^
+
+"Test_name.c", line 136: error: dllexport/dllimport requires external linkage
+  namespace    { __declspec(dllimport) int InternalGlobal; } // expected-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllimport'}}
+                                           ^
+
+"Test_name.c", line 140: error: variable "InternalAutoTypeGlobal" may not be initialized
+  __declspec(dllimport) auto InternalAutoTypeGlobal = Internal(); // expected-error{{'InternalAutoTypeGlobal' must have external linkage when declared 'dllimport'}}
+                             ^
+
+"Test_name.c", line 144: error: explicit type is missing ("int" assumed)
+  __declspec(dllimport) __thread int ThreadLocalGlobal; // expected-error{{'ThreadLocalGlobal' cannot be thread local when declared 'dllimport'}}
+                        ^
+
+"Test_name.c", line 144: error: expected a ";"
+  __declspec(dllimport) __thread int ThreadLocalGlobal; // expected-error{{'ThreadLocalGlobal' cannot be thread local when declared 'dllimport'}}
+                                 ^
+
+"Test_name.c", line 148: error: explicit type is missing ("int" assumed)
+    static __thread int OK; // no-error
+           ^
+
+"Test_name.c", line 148: error: expected a ";"
+    static __thread int OK; // no-error
+                    ^
+
+"Test_name.c", line 157: error: declaration is incompatible with previous "LocalRedecl1" (declared at line 153)
+    __declspec(dllimport) int LocalRedecl1; // expected-error{{redeclaration of 'LocalRedecl1' with a different type: 'int' vs 'float'}}
+                              ^
+
+"Test_name.c", line 157: error: redeclaration cannot add dllexport/dllimport to "LocalRedecl1" (declared at line 157)
+    __declspec(dllimport) int LocalRedecl1; // expected-error{{redeclaration of 'LocalRedecl1' with a different type: 'int' vs 'float'}}
+                              ^
+
+"Test_name.c", line 162: error: an initializer is not allowed on a local declaration of an extern variable
+    __declspec(dllimport)        int LocalVarDef = 1; // expected-error{{definition of dllimport data}}
+                                                 ^
+
+"Test_name.c", line 164: error: an initializer is not allowed on a local declaration of an extern variable
+    __declspec(dllimport) extern int ExternLocalVarDef = 1; // expected-error{{definition of dllimport data}}
+                                                       ^
+
+"Test_name.c", line 283: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport) void def() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                             ^
+
+"Test_name.c", line 328: error: redeclaration cannot add dllexport/dllimport to "redecl4" (declared at line 327)
+  __declspec(dllimport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllimport' attribute}}
+                             ^
+
+"Test_name.c", line 332: error: redeclaration cannot add dllexport/dllimport to "redecl5" (declared at line 331)
+  __declspec(dllimport) void redecl5(); // expected-warning{{redeclaration of 'redecl5' should not add 'dllimport' attribute}}
+                             ^
+
+"Test_name.c", line 337: error: redeclaration cannot add dllexport/dllimport to "redecl6" (declared at line 336)
+  __declspec(dllimport) inline void redecl6() {} // expected-warning{{redeclaration of 'redecl6' should not add 'dllimport' attribute}}
+                                    ^
+
+"Test_name.c", line 365: error: redeclaration cannot add dllexport/dllimport to "friend4" (declared at line 351)
+  __declspec(dllimport) void friend4(); // expected-warning{{redeclaration of 'friend4' should not add 'dllimport' attribute}}
+                             ^
+
+"Test_name.c", line 367: error: redeclaration cannot add dllexport/dllimport to "friend5" (declared at line 355)
+  __declspec(dllimport) inline void friend5() {} // expected-warning{{redeclaration of 'friend5' should not add 'dllimport' attribute}}
+                                    ^
+
+"Test_name.c", line 381: error: redeclaration cannot add dllexport/dllimport to "operator new" (declared implicitly)
+  __declspec(dllimport) void* operator new(__SIZE_TYPE__ n);
+                              ^
+
+"Test_name.c", line 384: error: dllexport/dllimport requires external linkage
+  __declspec(dllimport) static int staticFunc(); // expected-error{{'staticFunc' must have external linkage when declared 'dllimport'}}
+                                   ^
+
+"Test_name.c", line 386: error: dllexport/dllimport requires external linkage
+  namespace    { __declspec(dllimport) void internalFunc(); } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllimport'}}
+                                            ^
+
+"Test_name.c", line 393: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport) void deletedFunc() = delete; // expected-error{{attribute 'dllimport' cannot be applied to a deleted function}} expected-error{{dllimport cannot be applied to non-inline function definition}}
+                             ^
+
+"Test_name.c", line 411: error: a function declared "dllimport" may not be defined
+  template<typename T> __declspec(dllimport) void funcTmplDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                                  ^
+
+"Test_name.c", line 448: error: redeclaration cannot add dllexport/dllimport to "funcTmplRedecl4" (declared at line 447)
+  template<typename T> __declspec(dllimport) void funcTmplRedecl4(); // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 471: error: redeclaration cannot add dllexport/dllimport to "funcTmplFriend4" (declared at line 460)
+  template<typename T> __declspec(dllimport) void funcTmplFriend4(); // expected-error{{redeclaration of 'funcTmplFriend4' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 478: error: dllexport/dllimport requires external linkage
+  template<typename T> __declspec(dllimport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                                        ^
+
+"Test_name.c", line 480: error: dllexport/dllimport requires external linkage
+  namespace    { template<typename T> __declspec(dllimport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllimport'}}
+                                                                 ^
+
+"Test_name.c", line 507: error: a function declared "dllimport" may not be defined
+  template<> __declspec(dllimport) void importedFuncTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                        ^
+
+"Test_name.c", line 534: error: a function declared "dllimport" may not be defined
+  template<> __declspec(dllimport) void funcTmpl<ExplicitSpec_Def_Imported>() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                        ^
+
+"Test_name.c", line 646: error: cannot define dllimport entity
+         int  ImportMembers::StaticFieldDef; // expected-error{{definition of dllimport static field not allowed}}
+                             ^
+
+"Test_name.c", line 647: error: cannot define dllimport entity
+  const  int  ImportMembers::StaticConstFieldDef = 1; // expected-error{{definition of dllimport static field not allowed}}
+                             ^
+
+"Test_name.c", line 647: error: member "ImportMembers::StaticConstFieldDef" may not be initialized
+  const  int  ImportMembers::StaticConstFieldDef = 1; // expected-error{{definition of dllimport static field not allowed}}
+                             ^
+
+"Test_name.c", line 651: error: cannot define dllimport entity
+  constexpr int ImportMembers::ConstexprFieldDef;
+                               ^
+
+"Test_name.c", line 673: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport)        void ImportMemberDefs::normalDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                                      ^
+
+"Test_name.c", line 674: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport)        void ImportMemberDefs::virtualDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                                      ^
+
+"Test_name.c", line 675: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport)        void ImportMemberDefs::staticDef() {} // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                                      ^
+
+"Test_name.c", line 685: error: cannot define dllimport entity
+  __declspec(dllimport)        int  ImportMemberDefs::StaticField; // expected-error{{definition of dllimport static field not allowed}} expected-note{{attribute is here}}
+                                                      ^
+
+"Test_name.c", line 686: error: cannot define dllimport entity
+  __declspec(dllimport) const  int  ImportMemberDefs::StaticConstField = 1; // expected-error{{definition of dllimport static field not allowed}} expected-note{{attribute is here}}
+                                                      ^
+
+"Test_name.c", line 686: error: member "ImportMemberDefs::StaticConstField" may not be initialized
+  __declspec(dllimport) const  int  ImportMemberDefs::StaticConstField = 1; // expected-error{{definition of dllimport static field not allowed}} expected-note{{attribute is here}}
+                                                      ^
+
+"Test_name.c", line 691: error: cannot define dllimport entity
+  __declspec(dllimport) constexpr int ImportMemberDefs::ConstexprField;
+                                                        ^
+
+"Test_name.c", line 778: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport) ImportDefaultedDefs::ImportDefaultedDefs() = default; // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                             ^
+
+"Test_name.c", line 796: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport) ImportDefaultedDefs::ImportDefaultedDefs(ImportDefaultedDefs&&) = default; // expected-error{{dllimport cannot be applied to non-inline function definition}}
+                                             ^
+
+"Test_name.c", line 827: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::normalDef" (declared at line 806)
+  __declspec(dllimport)        void MemberRedecl::normalDef() {}         // expected-error{{redeclaration of 'MemberRedecl::normalDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 827: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport)        void MemberRedecl::normalDef() {}         // expected-error{{redeclaration of 'MemberRedecl::normalDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 829: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::normalInlineDecl" (declared at line 807)
+  __declspec(dllimport)        void MemberRedecl::normalInlineDecl() {}  // expected-error{{redeclaration of 'MemberRedecl::normalInlineDecl' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 830: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::virtualDef" (declared at line 808)
+  __declspec(dllimport)        void MemberRedecl::virtualDef() {}        // expected-error{{redeclaration of 'MemberRedecl::virtualDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 830: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport)        void MemberRedecl::virtualDef() {}        // expected-error{{redeclaration of 'MemberRedecl::virtualDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 832: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::virtualInlineDecl" (declared at line 809)
+  __declspec(dllimport)        void MemberRedecl::virtualInlineDecl() {} // expected-error{{redeclaration of 'MemberRedecl::virtualInlineDecl' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 833: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::staticDef" (declared at line 810)
+  __declspec(dllimport)        void MemberRedecl::staticDef() {}         // expected-error{{redeclaration of 'MemberRedecl::staticDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 833: error: a function declared "dllimport" may not be defined
+  __declspec(dllimport)        void MemberRedecl::staticDef() {}         // expected-error{{redeclaration of 'MemberRedecl::staticDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 835: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::staticInlineDecl" (declared at line 811)
+  __declspec(dllimport)        void MemberRedecl::staticInlineDecl() {}  // expected-error{{redeclaration of 'MemberRedecl::staticInlineDecl' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 838: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::normalInlineDef" (declared at line 818)
+  __declspec(dllimport) inline void MemberRedecl::normalInlineDef() {}   // expected-error{{redeclaration of 'MemberRedecl::normalInlineDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 839: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::virtualInlineDef" (declared at line 819)
+  __declspec(dllimport) inline void MemberRedecl::virtualInlineDef() {}  // expected-error{{redeclaration of 'MemberRedecl::virtualInlineDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 840: error: redeclaration cannot add dllexport/dllimport to "MemberRedecl::staticInlineDef" (declared at line 820)
+  __declspec(dllimport) inline void MemberRedecl::staticInlineDef() {}   // expected-error{{redeclaration of 'MemberRedecl::staticInlineDef' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 849: error: cannot define dllimport entity
+  __declspec(dllimport)        int  MemberRedecl::StaticField = 1;       // expected-error{{redeclaration of 'MemberRedecl::StaticField' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 852: error: cannot define dllimport entity
+  __declspec(dllimport) const  int  MemberRedecl::StaticConstField = 1;  // expected-error{{redeclaration of 'MemberRedecl::StaticConstField' cannot add 'dllimport' attribute}}
+                                                  ^
+
+"Test_name.c", line 863: error: cannot define dllimport entity
+  __declspec(dllimport) constexpr int MemberRedecl::ConstexprField;
+                                                    ^
+
+"Test_name.c", line 909: error: a function declared "dllimport" may not be defined
+  template<typename T>        void ImportMemberTmpl::normalDef() {} // expected-warning{{'ImportMemberTmpl::normalDef' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                                                     ^
+
+"Test_name.c", line 910: error: a function declared "dllimport" may not be defined
+  template<typename T>        void ImportMemberTmpl::staticDef() {} // expected-warning{{'ImportMemberTmpl::staticDef' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                                                     ^
+
+"Test_name.c", line 959: error: redeclaration cannot add dllexport/dllimport to "MemTmplRedecl::normalDef" (declared at line 938)
+  template<typename T> __declspec(dllimport)        void MemTmplRedecl::normalDef() {}        // expected-error{{redeclaration of 'MemTmplRedecl::normalDef' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 959: error: a function declared "dllimport" may not be defined
+  template<typename T> __declspec(dllimport)        void MemTmplRedecl::normalDef() {}        // expected-error{{redeclaration of 'MemTmplRedecl::normalDef' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 962: error: redeclaration cannot add dllexport/dllimport to "MemTmplRedecl::normalInlineDef" (declared at line 947)
+  template<typename T> __declspec(dllimport) inline void MemTmplRedecl::normalInlineDef() {}  // expected-error{{redeclaration of 'MemTmplRedecl::normalInlineDef' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 966: error: redeclaration cannot add dllexport/dllimport to "MemTmplRedecl::normalInlineDecl" (declared at line 939)
+  template<typename T> __declspec(dllimport)        void MemTmplRedecl::normalInlineDecl() {} // expected-error{{redeclaration of 'MemTmplRedecl::normalInlineDecl' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 967: error: redeclaration cannot add dllexport/dllimport to "MemTmplRedecl::staticDef" (declared at line 940)
+  template<typename T> __declspec(dllimport)        void MemTmplRedecl::staticDef() {}        // expected-error{{redeclaration of 'MemTmplRedecl::staticDef' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 967: error: a function declared "dllimport" may not be defined
+  template<typename T> __declspec(dllimport)        void MemTmplRedecl::staticDef() {}        // expected-error{{redeclaration of 'MemTmplRedecl::staticDef' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 970: error: redeclaration cannot add dllexport/dllimport to "MemTmplRedecl::staticInlineDef" (declared at line 948)
+  template<typename T> __declspec(dllimport) inline void MemTmplRedecl::staticInlineDef() {}  // expected-error{{redeclaration of 'MemTmplRedecl::staticInlineDef' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 974: error: redeclaration cannot add dllexport/dllimport to "MemTmplRedecl::staticInlineDecl" (declared at line 941)
+  template<typename T> __declspec(dllimport)        void MemTmplRedecl::staticInlineDecl() {} // expected-error{{redeclaration of 'MemTmplRedecl::staticInlineDecl' cannot add 'dllimport' attribute}}
+                                                                        ^
+
+"Test_name.c", line 1023: error: a function declared "dllimport" may not be defined
+  template<> __declspec(dllimport) void MemFunTmpl::importedNormal<ExplicitSpec_Def_Imported>() {} // error on mingw
+                                                    ^
+
+"Test_name.c", line 1034: error: a function declared "dllimport" may not be defined
+  template<> __declspec(dllimport) void MemFunTmpl::importedStatic<ExplicitSpec_Def_Imported>() {} // error on mingw
+                                                    ^
+
+"Test_name.c", line 1070: error: a function declared "dllimport" may not be defined
+  template<> __declspec(dllimport) void MemFunTmpl::normalDef<ExplicitSpec_Def_Imported>() {} // error on mingw
+                                                    ^
+
+"Test_name.c", line 1081: error: a function declared "dllimport" may not be defined
+  template<> __declspec(dllimport) void MemFunTmpl::staticDef<ExplicitSpec_Def_Imported>() {} // error on mingw
+                                                    ^
+
+"Test_name.c", line 1211: error: a function declared "dllimport" may not be defined
+  void ImportClassTmplMembers<T>::normalDef() {}
+                                  ^
+
+"Test_name.c", line 1223: error: a function declared "dllimport" may not be defined
+  void ImportClassTmplMembers<T>::virtualDef() {}
+                                  ^
+
+"Test_name.c", line 1235: error: a function declared "dllimport" may not be defined
+  void ImportClassTmplMembers<T>::staticDef() {}
+                                  ^
+
+"Test_name.c", line 1274: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::normalDef" (declared at line 1253)
+  template<typename T> __declspec(dllimport)        void CTMR<T>::normalDef() {}         // expected-error{{redeclaration of 'CTMR::normalDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1274: error: a function declared "dllimport" may not be defined
+  template<typename T> __declspec(dllimport)        void CTMR<T>::normalDef() {}         // expected-error{{redeclaration of 'CTMR::normalDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1276: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::normalInlineDecl" (declared at line 1254)
+  template<typename T> __declspec(dllimport)        void CTMR<T>::normalInlineDecl() {}  // expected-error{{redeclaration of 'CTMR::normalInlineDecl' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1277: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::virtualDef" (declared at line 1255)
+  template<typename T> __declspec(dllimport)        void CTMR<T>::virtualDef() {}        // expected-error{{redeclaration of 'CTMR::virtualDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1277: error: a function declared "dllimport" may not be defined
+  template<typename T> __declspec(dllimport)        void CTMR<T>::virtualDef() {}        // expected-error{{redeclaration of 'CTMR::virtualDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1279: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::virtualInlineDecl" (declared at line 1256)
+  template<typename T> __declspec(dllimport)        void CTMR<T>::virtualInlineDecl() {} // expected-error{{redeclaration of 'CTMR::virtualInlineDecl' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1280: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::staticDef" (declared at line 1257)
+  template<typename T> __declspec(dllimport)        void CTMR<T>::staticDef() {}         // expected-error{{redeclaration of 'CTMR::staticDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1280: error: a function declared "dllimport" may not be defined
+  template<typename T> __declspec(dllimport)        void CTMR<T>::staticDef() {}         // expected-error{{redeclaration of 'CTMR::staticDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1282: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::staticInlineDecl" (declared at line 1258)
+  template<typename T> __declspec(dllimport)        void CTMR<T>::staticInlineDecl() {}  // expected-error{{redeclaration of 'CTMR::staticInlineDecl' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1285: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::normalInlineDef" (declared at line 1265)
+  template<typename T> __declspec(dllimport) inline void CTMR<T>::normalInlineDef() {}   // expected-error{{redeclaration of 'CTMR::normalInlineDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1286: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::virtualInlineDef" (declared at line 1266)
+  template<typename T> __declspec(dllimport) inline void CTMR<T>::virtualInlineDef() {}  // expected-error{{redeclaration of 'CTMR::virtualInlineDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1287: error: redeclaration cannot add dllexport/dllimport to "CTMR<T>::staticInlineDef" (declared at line 1267)
+  template<typename T> __declspec(dllimport) inline void CTMR<T>::staticInlineDef() {}   // expected-error{{redeclaration of 'CTMR::staticInlineDef' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1294: error: a storage class may not be specified here
+  template<typename T> __declspec(dllimport)        int  CTMR<T>::StaticField = 1;       // expected-error{{redeclaration of 'CTMR::StaticField' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1297: error: a storage class may not be specified here
+  template<typename T> __declspec(dllimport) const  int  CTMR<T>::StaticConstField = 1;  // expected-error{{redeclaration of 'CTMR::StaticConstField' cannot add 'dllimport' attribute}}
+                                                                  ^
+
+"Test_name.c", line 1308: error: a storage class may not be specified here
+  template<typename T> __declspec(dllimport) constexpr int CTMR<T>::ConstexprField;
+                                                                    ^
+
+"Test_name.c", line 1390: error: a function declared "dllimport" may not be defined
+  template<typename T> template<typename U>        void ImportClsTmplMemTmpl<T>::normalDef() {} // expected-warning{{'ImportClsTmplMemTmpl::normalDef' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                                                                                 ^
+
+"Test_name.c", line 1391: error: a function declared "dllimport" may not be defined
+  template<typename T> template<typename U>        void ImportClsTmplMemTmpl<T>::staticDef() {} // expected-warning{{'ImportClsTmplMemTmpl::staticDef' redeclared without 'dllimport' attribute: previous 'dllimport' ignored}}
+                                                                                 ^
+
+"Test_name.c", line 1441: error: redeclaration cannot add dllexport/dllimport to "CTMTR<T>::normalDef" (declared at line 1420)
+  template<typename T> template<typename U> __declspec(dllimport)        void CTMTR<T>::normalDef() {}         // expected-error{{redeclaration of 'CTMTR::normalDef' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1441: error: a function declared "dllimport" may not be defined
+  template<typename T> template<typename U> __declspec(dllimport)        void CTMTR<T>::normalDef() {}         // expected-error{{redeclaration of 'CTMTR::normalDef' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1443: error: redeclaration cannot add dllexport/dllimport to "CTMTR<T>::normalInlineDecl" (declared at line 1421)
+  template<typename T> template<typename U> __declspec(dllimport)        void CTMTR<T>::normalInlineDecl() {}  // expected-error{{redeclaration of 'CTMTR::normalInlineDecl' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1444: error: redeclaration cannot add dllexport/dllimport to "CTMTR<T>::staticDef" (declared at line 1422)
+  template<typename T> template<typename U> __declspec(dllimport)        void CTMTR<T>::staticDef() {}         // expected-error{{redeclaration of 'CTMTR::staticDef' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1444: error: a function declared "dllimport" may not be defined
+  template<typename T> template<typename U> __declspec(dllimport)        void CTMTR<T>::staticDef() {}         // expected-error{{redeclaration of 'CTMTR::staticDef' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1446: error: redeclaration cannot add dllexport/dllimport to "CTMTR<T>::staticInlineDecl" (declared at line 1423)
+  template<typename T> template<typename U> __declspec(dllimport)        void CTMTR<T>::staticInlineDecl() {}  // expected-error{{redeclaration of 'CTMTR::staticInlineDecl' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1449: error: redeclaration cannot add dllexport/dllimport to "CTMTR<T>::normalInlineDef" (declared at line 1429)
+  template<typename T> template<typename U> __declspec(dllimport) inline void CTMTR<T>::normalInlineDef() {}   // expected-error{{redeclaration of 'CTMTR::normalInlineDef' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1450: error: redeclaration cannot add dllexport/dllimport to "CTMTR<T>::staticInlineDef" (declared at line 1430)
+  template<typename T> template<typename U> __declspec(dllimport) inline void CTMTR<T>::staticInlineDef() {}   // expected-error{{redeclaration of 'CTMTR::staticInlineDef' cannot add 'dllimport' attribute}}
+                                                                                        ^
+
+"Test_name.c", line 1476: error: dllexport/dllimport requires external linkage
+    struct __declspec(dllimport) AnonymousClass {}; // expected-error{{(anonymous namespace)::AnonymousClass' must have external linkage when declared 'dllimport'}}
+                                 ^
+
+"Test_name.c", line 1476: error: dllexport/dllimport requires external linkage
+    struct __declspec(dllimport) AnonymousClass {}; // expected-error{{(anonymous namespace)::AnonymousClass' must have external linkage when declared 'dllimport'}}
+                                 ^
+
+"Test_name.c", line 1492: error: a member of a class declared with dllexport/dllimport cannot itself be declared with such a specifier
+    void __declspec(dllexport) foo();
+    ^
+
+"Test_name.c", line 1493: error: a member of a class declared with dllexport/dllimport cannot itself be declared with such a specifier
+    void __declspec(dllimport) bar();
+    ^
+
+"Test_name.c", line 1503: error: a member of a class declared with dllexport/dllimport cannot itself be declared with such a specifier
+    void __declspec(dllimport) foo();
+    ^
+
+"Test_name.c", line 1504: error: a member of a class declared with dllexport/dllimport cannot itself be declared with such a specifier
+    void __declspec(dllexport) bar();
+    ^
+
+"Test_name.c", line 1511: error: cannot define dllimport entity
+  int S<int>::x = -1; // expected-error{{definition of dllimport static field not allowed}}
+              ^
+
+"Test_name.c", line 1511: error: member "ImportedExplicitSpecialization::S<int>::x" may not be initialized
+  int S<int>::x = -1; // expected-error{{definition of dllimport static field not allowed}}
+              ^
+
+115 errors detected in the compilation of "Test_name.c".

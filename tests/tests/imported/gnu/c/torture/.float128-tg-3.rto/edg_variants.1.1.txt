@@ -1,0 +1,58 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-tg-3.h", line 41: error: identifier "_Float128" is undefined
+  volatile _Float128 inf = __builtin_inf (), nanval = __builtin_nan ("");
+           ^
+
+"./torture/floatn-tg-3.h", line 42: error: identifier "_Float128" is undefined
+  volatile _Float128 neginf = -__builtin_inf (), negnanval = -__builtin_nan ("");
+           ^
+
+"./torture/floatn-tg-3.h", line 43: error: identifier "_Float128" is undefined
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+           ^
+
+"./torture/floatn-tg-3.h", line 43: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+                           ^
+
+"./torture/floatn-tg-3.h", line 43: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+                                               ^
+
+"./torture/floatn-tg-3.h", line 43: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 zero = 0.0f128, negzero = -0.0f128, one = 1.0f128;
+                                                              ^
+
+"./torture/floatn-tg-3.h", line 44: error: identifier "_Float128" is undefined
+  volatile _Float128 max = 1.18973149535723176508575932662800702e+4932F128
+           ^
+
+"./torture/floatn-tg-3.h", line 44: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 max = 1.18973149535723176508575932662800702e+4932F128
+                                                                  ^
+
+"./torture/floatn-tg-3.h", line 44: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+                        , negmax = -1.18973149535723176508575932662800702e+4932F128
+                                                                           ^
+
+"./torture/floatn-tg-3.h", line 44: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+                                       , min = 3.36210314311209350626267781732175260e-4932F128
+                                                                                      ^
+
+"./torture/floatn-tg-3.h", line 44: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+                                                  , negmin = -3.36210314311209350626267781732175260e-4932F128
+                                                                                                     ^
+
+"./torture/floatn-tg-3.h", line 45: error: identifier "_Float128" is undefined
+  volatile _Float128 true_min = 6.47517511943802511092443895822764655e-4966F128
+           ^
+
+"./torture/floatn-tg-3.h", line 45: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 true_min = 6.47517511943802511092443895822764655e-4966F128
+                                                                       ^
+
+"./torture/floatn-tg-3.h", line 45: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+                                  , negtrue_min = -6.47517511943802511092443895822764655e-4966F128
+                                                                                          ^
+
+5 errors detected in the compilation of "Test_name.c".

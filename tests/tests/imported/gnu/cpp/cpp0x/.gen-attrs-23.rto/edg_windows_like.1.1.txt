@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "gnu::init_priority"
+  int i       [[gnu::init_priority(;)]];  // { dg-error "before" }
+                ^
+
+"Test_name.c", line 7: warning: unknown attribute "gnu::vector_size"
+  int j       [[gnu::vector_size(;)]];    // { dg-error "before" }
+                ^
+
+"Test_name.c", line 8: warning: unknown attribute "gnu::visibility"
+  int k       [[gnu::visibility(;)]];     // { dg-error "before" }
+                ^
+
+"Test_name.c", line 9: error: expected an expression
+  struct A {} [[gnu::aligned(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 9: error: expected a ")"
+  struct A {} [[gnu::aligned(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 9: error: expected a ","
+  struct A {} [[gnu::aligned(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 9: error: expected a "]"
+  struct A {} [[gnu::aligned(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 9: error: expected a "]"
+  struct A {} [[gnu::aligned(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 9: error: expected a declaration
+  struct A {} [[gnu::aligned(;)]];        // { dg-error "before" }
+                              ^
+
+"Test_name.c", line 10: error: expected an identifier
+  struct B {} [[gnu::mode(;)]];           // { dg-error "before" }
+                          ^
+
+"Test_name.c", line 10: error: expected a ")"
+  struct B {} [[gnu::mode(;)]];           // { dg-error "before" }
+                          ^
+
+"Test_name.c", line 10: error: expected a ","
+  struct B {} [[gnu::mode(;)]];           // { dg-error "before" }
+                          ^
+
+"Test_name.c", line 10: error: expected a "]"
+  struct B {} [[gnu::mode(;)]];           // { dg-error "before" }
+                          ^
+
+"Test_name.c", line 10: error: expected a "]"
+  struct B {} [[gnu::mode(;)]];           // { dg-error "before" }
+                          ^
+
+"Test_name.c", line 10: error: expected a declaration
+  struct B {} [[gnu::mode(;)]];           // { dg-error "before" }
+                           ^
+
+"Test_name.c", line 11: error: expected a string literal
+  void foo()  [[gnu::alias(;)]];          // { dg-error "before" }
+                           ^
+
+"Test_name.c", line 11: error: expected a ")"
+  void foo()  [[gnu::alias(;)]];          // { dg-error "before" }
+                           ^
+
+"Test_name.c", line 11: error: expected a ","
+  void foo()  [[gnu::alias(;)]];          // { dg-error "before" }
+                           ^
+
+"Test_name.c", line 11: error: expected a "]"
+  void foo()  [[gnu::alias(;)]];          // { dg-error "before" }
+                           ^
+
+"Test_name.c", line 11: error: expected a declaration
+  void foo()  [[gnu::alias(;)]];          // { dg-error "before" }
+                            ^
+
+"Test_name.c", line 12: error: expected an expression
+  void bar()  [[gnu::nonnull(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 12: error: expected a ")"
+  void bar()  [[gnu::nonnull(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 12: error: expected a ","
+  void bar()  [[gnu::nonnull(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 12: error: expected a "]"
+  void bar()  [[gnu::nonnull(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 12: error: expected a declaration
+  void bar()  [[gnu::nonnull(;)]];        // { dg-error "before" }
+                              ^
+
+"Test_name.c", line 13: error: expected a string literal
+  void baz()  [[gnu::section(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 13: error: expected a ")"
+  void baz()  [[gnu::section(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 13: error: expected a ","
+  void baz()  [[gnu::section(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 13: error: expected a "]"
+  void baz()  [[gnu::section(;)]];        // { dg-error "before" }
+                             ^
+
+"Test_name.c", line 13: error: expected a declaration
+  void baz()  [[gnu::section(;)]];        // { dg-error "before" }
+                              ^
+
+27 errors detected in the compilation of "Test_name.c".

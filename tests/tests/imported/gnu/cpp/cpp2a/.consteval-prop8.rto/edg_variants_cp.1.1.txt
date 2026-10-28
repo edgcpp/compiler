@@ -1,0 +1,61 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 36: error: call to consteval function "A::A(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    A a{i}; // { dg-error "not a constant expression" }
+       ^
+"Test_name.c", line 36: note: the value of parameter "i" (declared at line 34) cannot be used as a constant
+    A a{i}; // { dg-error "not a constant expression" }
+        ^
+
+"Test_name.c", line 42: error: call to consteval function "A::A(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    A a{i}; // { dg-error "not a constant expression" }
+       ^
+"Test_name.c", line 42: note: the value of parameter "i" (declared at line 40) cannot be used as a constant
+    A a{i}; // { dg-error "not a constant expression" }
+        ^
+
+"Test_name.c", line 48: error: call to consteval function "A::A(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    A a{i}; // { dg-error "not a constant expression" }
+       ^
+"Test_name.c", line 48: note: the value of parameter "i" (declared at line 46) cannot be used as a constant
+    A a{i}; // { dg-error "not a constant expression" }
+        ^
+
+"Test_name.c", line 57: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval {
+    ^
+
+"Test_name.c", line 65: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if not consteval {
+    ^
+
+"Test_name.c", line 22: error: expression must have a constant value
+    A a{i};
+       ^
+"Test_name.c", line 22: note: the value of parameter "i" (declared at line 20) cannot be used as a constant
+    A a{i};
+        ^
+          detected during instantiation of "void f1(auto) [with <auto-1>=int]" at line 75
+
+"Test_name.c", line 76: error: call to consteval function "f1(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    f1 (x); // { dg-error "not a constant expression" }
+       ^
+"Test_name.c", line 76: note: the value of parameter "x" (declared at line 73) cannot be used as a constant
+    f1 (x); // { dg-error "not a constant expression" }
+        ^
+
+"Test_name.c", line 30: error: expression must have a constant value
+    A a{i};
+       ^
+"Test_name.c", line 30: note: the value of parameter "i" (declared at line 28) cannot be used as a constant
+    A a{i};
+        ^
+          detected during instantiation of "void f2(auto) [with <auto-1>=int]" at line 77
+
+"Test_name.c", line 78: error: call to consteval function "f2(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    f2 (x); // { dg-error "not a constant expression" }
+       ^
+"Test_name.c", line 78: note: the value of parameter "x" (declared at line 73) cannot be used as a constant
+    f2 (x); // { dg-error "not a constant expression" }
+        ^
+
+7 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,298 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 9: error: identifier "_Decimal32" is undefined
+  tests192 (_Decimal32 d)
+            ^
+
+"Test_name.c", line 15: error: identifier "_Decimal32" is undefined
+  testu192 (_Decimal32 d)
+            ^
+
+"Test_name.c", line 23: error: identifier "_Decimal32" is undefined
+  tests575 (_Decimal32 d)
+            ^
+
+"Test_name.c", line 29: error: identifier "_Decimal32" is undefined
+  testu575 (_Decimal32 d)
+            ^
+
+"Test_name.c", line 39: error: extra text after expected end of number
+    if (tests192 (0.DF) != 0wb
+                    ^
+
+"Test_name.c", line 40: error: extra text after expected end of number
+        || tests192 (0.9999999DF) != 0wb
+                              ^
+
+"Test_name.c", line 41: error: extra text after expected end of number
+        || tests192 (7.999999DF) != 7wb
+                             ^
+
+"Test_name.c", line 42: error: extra text after expected end of number
+        || tests192 (-0.000DF) != 0wb
+                           ^
+
+"Test_name.c", line 43: error: extra text after expected end of number
+        || tests192 (-0.9999999DF) != 0wb
+                               ^
+
+"Test_name.c", line 44: error: extra text after expected end of number
+        || tests192 (-1.DF) != -1wb
+                        ^
+
+"Test_name.c", line 45: error: extra text after expected end of number
+        || tests192 (-42.5DF) != -42wb
+                          ^
+
+"Test_name.c", line 46: error: extra text after expected end of number
+        || tests192 (-3424.231e+27DF) != -3424231000000000000000000000000wb
+                                  ^
+
+"Test_name.c", line 47: error: extra text after expected end of number
+        || tests192 (-213855.9e+43DF) != -2138559000000000000000000000000000000000000000000wb
+                                  ^
+
+"Test_name.c", line 47: error: integer constant is too large
+        || tests192 (-213855.9e+43DF) != -2138559000000000000000000000000000000000000000000wb
+                                          ^
+
+"Test_name.c", line 48: error: extra text after expected end of number
+        || tests192 (313855.0e+52DF) != 3138550000000000000000000000000000000000000000000000000000wb
+                                 ^
+
+"Test_name.c", line 48: error: integer constant is too large
+        || tests192 (313855.0e+52DF) != 3138550000000000000000000000000000000000000000000000000000wb
+                                        ^
+
+"Test_name.c", line 49: error: extra text after expected end of number
+        || tests192 (-3138550.e+51DF) != -3138550000000000000000000000000000000000000000000000000000wb)
+                                  ^
+
+"Test_name.c", line 49: error: integer constant is too large
+        || tests192 (-3138550.e+51DF) != -3138550000000000000000000000000000000000000000000000000000wb)
+                                          ^
+
+"Test_name.c", line 51: error: extra text after expected end of number
+    if (tests192 (313855.1e+52DF) != 3138550867693340381917894711603833208051177722232017256447wb
+                              ^
+
+"Test_name.c", line 51: error: integer constant is too large
+    if (tests192 (313855.1e+52DF) != 3138550867693340381917894711603833208051177722232017256447wb
+                                     ^
+
+"Test_name.c", line 52: error: extra text after expected end of number
+        || tests192 (9999999e+90DF) != 3138550867693340381917894711603833208051177722232017256447wb
+                                ^
+
+"Test_name.c", line 52: error: integer constant is too large
+        || tests192 (9999999e+90DF) != 3138550867693340381917894711603833208051177722232017256447wb
+                                       ^
+
+"Test_name.c", line 53: error: extra text after expected end of number
+        || tests192 (-3138551e+51DF) != -3138550867693340381917894711603833208051177722232017256447wb - 1wb
+                                 ^
+
+"Test_name.c", line 53: error: integer constant is too large
+        || tests192 (-3138551e+51DF) != -3138550867693340381917894711603833208051177722232017256447wb - 1wb
+                                         ^
+
+"Test_name.c", line 54: error: extra text after expected end of number
+        || tests192 (-9999999e+90DF) != -3138550867693340381917894711603833208051177722232017256447wb - 1wb)
+                                 ^
+
+"Test_name.c", line 54: error: integer constant is too large
+        || tests192 (-9999999e+90DF) != -3138550867693340381917894711603833208051177722232017256447wb - 1wb)
+                                         ^
+
+"Test_name.c", line 56: error: extra text after expected end of number
+    if (testu192 (0.DF) != 0uwb
+                    ^
+
+"Test_name.c", line 57: error: extra text after expected end of number
+        || testu192 (0.9999999DF) != 0uwb
+                              ^
+
+"Test_name.c", line 58: error: extra text after expected end of number
+        || testu192 (-0.9999999DF) != 0uwb
+                               ^
+
+"Test_name.c", line 59: error: extra text after expected end of number
+        || testu192 (-0.5DF) != 0uwb
+                         ^
+
+"Test_name.c", line 60: error: extra text after expected end of number
+        || testu192 (-0.0000DF) != 0uwb
+                            ^
+
+"Test_name.c", line 61: error: extra text after expected end of number
+        || testu192 (-0.99999DF) != 0uwb
+                             ^
+
+"Test_name.c", line 62: error: extra text after expected end of number
+        || testu192 (42.99999DF) != 42uwb
+                             ^
+
+"Test_name.c", line 63: error: extra text after expected end of number
+        || testu192 (42.e+21DF) != 42000000000000000000000uwb
+                            ^
+
+"Test_name.c", line 64: error: extra text after expected end of number
+        || testu192 (3427.231e+29DF) != 342723100000000000000000000000000uwb
+                                 ^
+
+"Test_name.c", line 65: error: extra text after expected end of number
+        || testu192 (6277101.0e+51DF) != 6277101000000000000000000000000000000000000000000000000000uwb)
+                                  ^
+
+"Test_name.c", line 65: error: integer constant is too large
+        || testu192 (6277101.0e+51DF) != 6277101000000000000000000000000000000000000000000000000000uwb)
+                                         ^
+
+"Test_name.c", line 67: error: extra text after expected end of number
+    if (testu192 (-1.DF) != 0uwb
+                     ^
+
+"Test_name.c", line 68: error: extra text after expected end of number
+        || testu192 (-42.5e+15DF) != 0uwb
+                              ^
+
+"Test_name.c", line 69: error: extra text after expected end of number
+        || testu192 (-9999999e+90DF) != 0uwb
+                                 ^
+
+"Test_name.c", line 70: error: extra text after expected end of number
+        || testu192 (6277102.0e+51DF) != 6277101735386680763835789423207666416102355444464034512895uwb
+                                  ^
+
+"Test_name.c", line 70: error: integer constant is too large
+        || testu192 (6277102.0e+51DF) != 6277101735386680763835789423207666416102355444464034512895uwb
+                                         ^
+
+"Test_name.c", line 71: error: extra text after expected end of number
+        || testu192 (9999999e+90DF) != 6277101735386680763835789423207666416102355444464034512895uwb)
+                                ^
+
+"Test_name.c", line 71: error: integer constant is too large
+        || testu192 (9999999e+90DF) != 6277101735386680763835789423207666416102355444464034512895uwb)
+                                       ^
+
+"Test_name.c", line 75: error: extra text after expected end of number
+    if (tests575 (0.DF) != 0wb
+                    ^
+
+"Test_name.c", line 76: error: extra text after expected end of number
+        || tests575 (0.999999DF) != 0wb
+                             ^
+
+"Test_name.c", line 77: error: extra text after expected end of number
+        || tests575 (12.9999DF) != 12wb
+                            ^
+
+"Test_name.c", line 78: error: extra text after expected end of number
+        || tests575 (-0.DF) != 0wb
+                        ^
+
+"Test_name.c", line 79: error: extra text after expected end of number
+        || tests575 (-0.999DF) != 0wb
+                           ^
+
+"Test_name.c", line 80: error: extra text after expected end of number
+        || tests575 (-1.0000DF) != -1wb
+                            ^
+
+"Test_name.c", line 81: error: extra text after expected end of number
+        || tests575 (-89.5DF) != -89wb
+                          ^
+
+"Test_name.c", line 82: error: extra text after expected end of number
+        || tests575 (-34242.31e+37DF) != -342423100000000000000000000000000000000000wb
+                                  ^
+
+"Test_name.c", line 82: error: integer constant is too large
+        || tests575 (-34242.31e+37DF) != -342423100000000000000000000000000000000000wb
+                                          ^
+
+"Test_name.c", line 83: error: extra text after expected end of number
+        || tests575 (-518326.2e+88DF) != -5183262000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wb
+                                  ^
+
+"Test_name.c", line 83: error: integer constant is too large
+        || tests575 (-518326.2e+88DF) != -5183262000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wb
+                                          ^
+
+"Test_name.c", line 84: error: extra text after expected end of number
+        || tests575 (9999999e+90DF) != 9999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wb
+                                ^
+
+"Test_name.c", line 84: error: integer constant is too large
+        || tests575 (9999999e+90DF) != 9999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wb
+                                       ^
+
+"Test_name.c", line 85: error: extra text after expected end of number
+        || tests575 (-9999999e+90DF) != -9999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wb)
+                                 ^
+
+"Test_name.c", line 85: error: integer constant is too large
+        || tests575 (-9999999e+90DF) != -9999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wb)
+                                         ^
+
+"Test_name.c", line 87: error: extra text after expected end of number
+    if (testu575 (0.DF) != 0uwb
+                    ^
+
+"Test_name.c", line 88: error: extra text after expected end of number
+        || testu575 (0.5555555DF) != 0uwb
+                              ^
+
+"Test_name.c", line 89: error: extra text after expected end of number
+        || testu575 (-0.7777777DF) != 0uwb
+                               ^
+
+"Test_name.c", line 90: error: extra text after expected end of number
+        || testu575 (-0.99DF) != 0uwb
+                          ^
+
+"Test_name.c", line 91: error: extra text after expected end of number
+        || testu575 (-0.DF) != 0uwb
+                        ^
+
+"Test_name.c", line 92: error: extra text after expected end of number
+        || testu575 (-0.7777777DF) != 0uwb
+                               ^
+
+"Test_name.c", line 93: error: extra text after expected end of number
+        || testu575 (-0.9999999DF) != 0uwb
+                               ^
+
+"Test_name.c", line 94: error: extra text after expected end of number
+        || testu575 (42.99999DF) != 42uwb
+                             ^
+
+"Test_name.c", line 95: error: extra text after expected end of number
+        || testu575 (42.e+21DF) != 42000000000000000000000uwb
+                            ^
+
+"Test_name.c", line 96: error: extra text after expected end of number
+        || testu575 (9427.231e+27DF) != 9427231000000000000000000000000uwb
+                                 ^
+
+"Test_name.c", line 97: error: extra text after expected end of number
+        || testu575 (9999999e+90DF) != 9999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000uwb)
+                                ^
+
+"Test_name.c", line 97: error: integer constant is too large
+        || testu575 (9999999e+90DF) != 9999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000uwb)
+                                       ^
+
+"Test_name.c", line 99: error: extra text after expected end of number
+    if (testu575 (-1.DF) != 0uwb
+                     ^
+
+"Test_name.c", line 100: error: extra text after expected end of number
+        || testu575 (-42.5e+15DF) != 0uwb
+                              ^
+
+"Test_name.c", line 101: error: extra text after expected end of number
+        || testu575 (-9999999e+90DF) != 0uwb)
+                                 ^
+
+74 errors detected in the compilation of "Test_name.c".

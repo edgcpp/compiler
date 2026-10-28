@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 19: warning: expression has no effect
+      box->i; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 49: warning: variable "x" is used before its value is set
+           &x[0];  // expected-warning {{expression result unused}}
+            ^
+
+"Test_name.c", line 96: warning: variable "i" was set but never used
+    int i = 0;
+        ^
+
+"Test_name.c", line 157: warning: expression has no effect
+  int v[(5, 6)]; // expected-warning {{left operand of comma operator has no effect}}
+         ^
+
+"Test_name.c", line 159: warning: expression has no effect
+    new double[false ? (1, 2) : 3]
+                        ^
+
+"Test_name.c", line 162: warning: expression has no effect
+              [false ? (1, 2) : 3]; // expected-warning {{left operand of comma operator has no effect}}
+                        ^
+
+"Test_name.c", line 177: warning: expression has no effect
+      return (1,0);
+              ^
+
+"Test_name.c", line 179: warning: expression has no effect
+      return (1.0,0.0); // expected-warning {{left operand of comma operator has no effect}}
+              ^
+
+"Test_name.c", line 49: warning: expression has no effect
+           &x[0];  // expected-warning {{expression result unused}}
+           ^
+          detected during instantiation of "void test2::std::basic_string<T>::method() const [with T=char]" at line 54
+

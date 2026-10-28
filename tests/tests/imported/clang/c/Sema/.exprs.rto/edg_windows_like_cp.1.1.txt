@@ -1,0 +1,274 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 21: warning: division by zero
+      0 / (0 ? 1 : 0); // no-warning
+        ^
+
+"Test_name.c", line 21: warning: expression has no effect
+      0 / (0 ? 1 : 0); // no-warning
+      ^
+
+"Test_name.c", line 35: warning: controlling expression is constant
+    (void)((((void*)0)) && (*((unsigned long long*)(((void*)0))) = ((unsigned long long)((test)) % (unsigned long long)((1000000000)))));  // no-warning
+           ^
+
+"Test_name.c", line 49: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"Test_name.c", line 54: warning: variable "var" was set but never used
+        static int var;
+                   ^
+
+"Test_name.c", line 69: error: expression must be a modifiable lvalue
+    (float*)X = P;   // expected-error {{assignment to cast is illegal, lvalue casts are not supported}}
+    ^
+
+"Test_name.c", line 71: error: expression must be a modifiable lvalue
+    FOO = P;   // expected-error {{assignment to cast is illegal, lvalue casts are not supported}}
+    ^
+
+"Test_name.c", line 76: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    X();  // expected-error {{called object type 'int' is not a function or function pointer}}
+    ^
+
+"Test_name.c", line 76: warning: variable "X" is used before its value is set
+    X();  // expected-error {{called object type 'int' is not a function or function pointer}}
+    ^
+
+"Test_name.c", line 80: error: expression must have integral type
+     P = (P-42) + Gamma*4;  // expected-error {{invalid operands to binary expression ('int *' and '_Complex float')}}
+                  ^
+
+"Test_name.c", line 86: warning: variable "i" is used before its value is set
+    return i;
+           ^
+
+"Test_name.c", line 96: error: operand of sizeof may not be a bit field
+    R = sizeof(P->x); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 104: warning: variable-length array field type will be treated as zero-length array field type
+      double          a[n];  // expected-error {{fields must have a constant size}}
+                        ^
+
+"Test_name.c", line 106: warning: variable "s" is used before its value is set
+    double x = s.a[0];  // should not get another error here.
+               ^
+
+"Test_name.c", line 106: warning: variable "x" was declared but never referenced
+    double x = s.a[0];  // should not get another error here.
+           ^
+
+"Test_name.c", line 114: error: expression must have arithmetic or pointer type but has type "struct mystruct"
+    MYMAX(P, F);  // expected-error {{invalid operands to binary expression ('typeof (P)' (aka 'struct mystruct') and 'typeof (F)' (aka 'float'))}}
+    ^
+
+"Test_name.c", line 114: error: expression must have arithmetic type
+    MYMAX(P, F);  // expected-error {{invalid operands to binary expression ('typeof (P)' (aka 'struct mystruct') and 'typeof (F)' (aka 'float'))}}
+    ^
+
+"Test_name.c", line 127: error: expected a ")"
+              void (^P)(void)) { // expected-error {{blocks support disabled - compile with -fblocks}}
+                    ^
+
+"Test_name.c", line 126: warning: unnamed prototyped parameters not allowed when body is present
+  void test13(
+       ^
+
+"Test_name.c", line 128: warning: function "P" declared implicitly
+    P();
+    ^
+
+"Test_name.c", line 129: error: expected an expression
+    P = ^(void){}; // expected-error {{blocks support disabled - compile with -fblocks}}
+        ^
+
+"Test_name.c", line 129: error: expression must be a modifiable lvalue
+    P = ^(void){}; // expected-error {{blocks support disabled - compile with -fblocks}}
+    ^
+
+"Test_name.c", line 138: warning: variable "a" is used before its value is set
+    __m64 mask = (__m64)((__v4hi)a > (__v4hi)a);
+                                             ^
+
+"Test_name.c", line 138: warning: variable "mask" was declared but never referenced
+    __m64 mask = (__m64)((__v4hi)a > (__v4hi)a);
+          ^
+
+"Test_name.c", line 146: error: expression must have integral type
+    return (test15_t)0 + (test15_t)0;  // expected-error {{invalid operands to binary expression ('test15_t' (aka 'unsigned long *') and 'test15_t')}}
+                         ^
+
+"Test_name.c", line 149: error: operand types are incompatible ("float" and "void *")
+  void test16(float x) { x == ((void*) 0); }  // expected-error {{invalid operands to binary expression}}
+                           ^
+
+"Test_name.c", line 153: warning: division by zero
+    x = x / 0;  // expected-warning {{division by zero is undefined}}
+            ^
+
+"Test_name.c", line 154: warning: right operand of "%" is zero
+    x = x % 0;  // expected-warning {{remainder by zero is undefined}}
+            ^
+
+"Test_name.c", line 155: warning: division by zero
+    x /= 0;  // expected-warning {{division by zero is undefined}}
+         ^
+
+"Test_name.c", line 156: warning: right operand of "%" is zero
+    x %= 0;  // expected-warning {{remainder by zero is undefined}}
+         ^
+
+"Test_name.c", line 171: error: too many arguments in function call
+    test18_a(b, b); // expected-error {{too many arguments to function call, expected single argument 'a', have 2}}
+                ^
+
+"Test_name.c", line 172: error: too few arguments in function call
+    test18_a(); // expected-error {{too few arguments to function call, single argument 'a' was not specified}}
+             ^
+
+"Test_name.c", line 173: error: too few arguments in function call
+    test18_b(); // expected-error {{too few arguments to function call, expected 1, have 0}}
+             ^
+
+"Test_name.c", line 174: error: too few arguments in function call
+    test18_c(b); // expected-error {{too few arguments to function call, expected 2, have 1}}
+              ^
+
+"Test_name.c", line 175: error: too many arguments in function call
+    test18_c(b, b, b); // expected-error {{too many arguments to function call, expected 2, have 3}}
+                   ^
+
+"Test_name.c", line 176: error: too few arguments in function call
+    test18_d(); // expected-error {{too few arguments to function call, at least argument 'a' must be specified}}
+             ^
+
+"Test_name.c", line 177: error: too few arguments in function call
+    test18_e(); // expected-error {{too few arguments to function call, expected at least 2, have 0}}
+             ^
+
+"Test_name.c", line 178: error: too few arguments in function call
+    test18_f(b); // expected-error {{too few arguments to function call, expected 2, have 1}}
+              ^
+
+"Test_name.c", line 179: error: too many arguments in function call
+    test18_f(b, b, b); // expected-error {{too many arguments to function call, expected 2, have 3}}
+                   ^
+
+"Test_name.c", line 193: warning: variable "x" was declared but never referenced
+    int x = *(int *)0;                                                                          // expected-warning {{indirection of non-volatile null pointer}} \
+        ^
+
+"Test_name.c", line 196: warning: variable "x3" was declared but never referenced
+    int x3 = *(int __attribute__((address_space(0))) *)0;                                       // expected-warning {{indirection of non-volatile null pointer}} \
+        ^
+
+"Test_name.c", line 198: warning: variable "x4" was declared but never referenced
+    int x4 = *(int_AS256 *)0;                                                                   // Ok.
+        ^
+
+"Test_name.c", line 199: warning: variable "p" was declared but never referenced
+    int *p = &(*(int *)0);                                                                      // Ok.
+         ^
+
+"Test_name.c", line 200: warning: variable "p1" was declared but never referenced
+    int_AS256 *p1 = &(*(int __attribute__((address_space(256))) *)0);                           // Ok.
+               ^
+
+"Test_name.c", line 201: warning: variable "p2" was declared but never referenced
+    int __attribute__((address_space(0))) *p2 = &(*(int __attribute__((address_space(0))) *)0); // Ok.
+                                           ^
+
+"Test_name.c", line 209: warning: statement is unreachable
+    return x && sizeof(int) == 4;  // no warning, RHS is logical op.
+    ^
+
+"Test_name.c", line 212: warning: statement is unreachable
+    return x && (signed char)1;
+    ^
+
+"Test_name.c", line 214: warning: statement is unreachable
+    return x || 0;
+    ^
+
+"Test_name.c", line 215: warning: statement is unreachable
+    return x || 1;
+    ^
+
+"Test_name.c", line 216: warning: statement is unreachable
+    return x || -1; // expected-warning {{use of logical '||' with constant operand}} \
+    ^
+
+"Test_name.c", line 218: warning: statement is unreachable
+    return x || 5; // expected-warning {{use of logical '||' with constant operand}} \
+    ^
+
+"Test_name.c", line 220: warning: statement is unreachable
+    return x && 0;
+    ^
+
+"Test_name.c", line 221: warning: statement is unreachable
+    return x && 1;
+    ^
+
+"Test_name.c", line 222: warning: statement is unreachable
+    return x && -1; // expected-warning {{use of logical '&&' with constant operand}} \
+    ^
+
+"Test_name.c", line 225: warning: statement is unreachable
+    return x && 5; // expected-warning {{use of logical '&&' with constant operand}} \
+    ^
+
+"Test_name.c", line 228: warning: statement is unreachable
+    return x || (0);
+    ^
+
+"Test_name.c", line 229: warning: statement is unreachable
+    return x || (1);
+    ^
+
+"Test_name.c", line 230: warning: statement is unreachable
+    return x || (-1); // expected-warning {{use of logical '||' with constant operand}} \
+    ^
+
+"Test_name.c", line 232: warning: statement is unreachable
+    return x || (5); // expected-warning {{use of logical '||' with constant operand}} \
+    ^
+
+"Test_name.c", line 234: warning: statement is unreachable
+    return x && (0);
+    ^
+
+"Test_name.c", line 235: warning: statement is unreachable
+    return x && (1);
+    ^
+
+"Test_name.c", line 236: warning: statement is unreachable
+    return x && (-1); // expected-warning {{use of logical '&&' with constant operand}} \
+    ^
+
+"Test_name.c", line 239: warning: statement is unreachable
+    return x && (5); // expected-warning {{use of logical '&&' with constant operand}} \
+    ^
+
+"Test_name.c", line 248: error: incomplete type "struct Test21" is not allowed
+    (test21_help(), *ptr); // expected-error {{incomplete type 'struct Test21' where a complete type is required}}
+                    ^
+
+"Test_name.c", line 249: error: incomplete type "struct Test21" is not allowed
+    (*ptr, test21_help()); // expected-error {{incomplete type 'struct Test21' where a complete type is required}}
+     ^
+
+"Test_name.c", line 254: warning: controlling expression is constant
+    if ("help")
+        ^
+
+"Test_name.c", line 257: warning: controlling expression is constant
+    if (test22) // expected-warning {{address of function 'test22' will always evaluate to 'true'}} \
+        ^
+
+"Test_name.c", line 261: warning: controlling expression is constant
+    if (&test22)
+        ^
+
+23 errors detected in the compilation of "Test_name.c".

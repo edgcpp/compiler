@@ -1,0 +1,9 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --microsoft Test_name.c
+"Test_name.c", line 11: remark: parameter "p" was never referenced
+      template<> explicit S(S*const&p) { }
+                                    ^
+
+"Test_name.c", line 11: remark: function "S::S(const U &) [with U=S *]" cannot be inlined
+      template<> explicit S(S*const&p) { }
+                          ^
+

@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 29: error: function "foo2" was declared unavailable ("not available - replaced")
+    foo2(); // expected-error {{'foo2' is unavailable: not available - replaced}}
+    ^
+"Test_name.c", line 27: note: because of an "unavailable" attribute
+  [[clang::unavailable("not available - replaced")]] void foo2(void); // expected-note {{'foo2' has been explicitly marked unavailable here}}
+    ^
+
+"Test_name.c", line 44: warning: the abi_tag attribute is ignored (it has no meaning in C mode)
+  [[gnu::abi_tag("")]] void abi_func(void); // expected-warning {{unknown attribute 'gnu::abi_tag' ignored}}
+    ^
+
+1 error detected in the compilation of "Test_name.c".

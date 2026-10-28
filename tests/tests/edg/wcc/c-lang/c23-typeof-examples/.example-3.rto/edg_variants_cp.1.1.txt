@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --c23 Test_name.c
+"Test_name.c", line 7: error: static assertion failed
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof(char)));
+  ^
+"Test_name.c", line 7: note: the final comparison was 4 == 1
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof(char)));
+                                                ^
+
+"Test_name.c", line 8: error: static assertion failed
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof ((char)112)));
+  ^
+"Test_name.c", line 8: note: the final comparison was 4 == 1
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof ((char)112)));
+                                                ^
+
+"Test_name.c", line 9: error: static assertion failed
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof(char [5])));
+  ^
+"Test_name.c", line 9: note: the final comparison was 4 == 5
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof(char [5])));
+                                             ^
+
+"Test_name.c", line 10: error: static assertion failed
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof "meow"));
+  ^
+"Test_name.c", line 10: note: the final comparison was 4 == 5
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof "meow"));
+                                             ^
+
+"Test_name.c", line 13: error: static assertion failed
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof(char **)));
+  ^
+"Test_name.c", line 13: note: the final comparison was 4 == 8
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof(char **)));
+                                           ^
+
+"Test_name.c", line 14: error: static assertion failed
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof argv));
+  ^
+"Test_name.c", line 14: note: the final comparison was 4 == 8
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof argv));
+                                           ^
+
+"Test_name.c", line 18: error: static assertion failed
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof(char)));
+  ^
+"Test_name.c", line 18: note: the final comparison was 4 == 1
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof(char)));
+                                                ^
+
+"Test_name.c", line 19: error: static assertion failed
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof ((char)112)));
+  ^
+"Test_name.c", line 19: note: the final comparison was 4 == 1
+  _Static_assert((sizeof(__typeof__((char)112)) == sizeof ((char)112)));
+                                                ^
+
+"Test_name.c", line 20: error: static assertion failed
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof(char [5])));
+  ^
+"Test_name.c", line 20: note: the final comparison was 4 == 5
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof(char [5])));
+                                             ^
+
+"Test_name.c", line 21: error: static assertion failed
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof "meow"));
+  ^
+"Test_name.c", line 21: note: the final comparison was 4 == 5
+  _Static_assert((sizeof(__typeof__("meow")) == sizeof "meow"));
+                                             ^
+
+"Test_name.c", line 24: error: static assertion failed
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof(char **)));
+  ^
+"Test_name.c", line 24: note: the final comparison was 4 == 8
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof(char **)));
+                                           ^
+
+"Test_name.c", line 25: error: static assertion failed
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof argv));
+  ^
+"Test_name.c", line 25: note: the final comparison was 4 == 8
+  _Static_assert((sizeof(__typeof__(argv)) == sizeof argv));
+                                           ^
+
+12 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,27 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "ModelItem::ModelItem()" cannot be inlined
+  struct ModelItem 
+         ^
+          detected during:
+            implicit generation of "ModelItem::ModelItem()" at line 24
+            implicit generation of "ParamItem_tk::ParamItem_tk()" at line 24
+
+"Test_name.c", line 10: remark: function "Parameter::Parameter()" cannot be inlined
+  struct Parameter 
+         ^
+          detected during:
+            implicit generation of "Parameter::Parameter()" at line 24
+            implicit generation of "ParamItem_tk::ParamItem_tk()" at line 24
+
+"Test_name.c", line 15: remark: function "ParamItem::ParamItem()" cannot be inlined
+  struct ParamItem : public virtual ModelItem, public virtual Parameter 
+         ^
+          detected during:
+            implicit generation of "ParamItem::ParamItem()" at line 24
+            implicit generation of "ParamItem_tk::ParamItem_tk()" at line 24
+
+"Test_name.c", line 20: remark: function "ParamItem_tk::ParamItem_tk()" cannot be inlined
+  struct ParamItem_tk : public virtual ParamItem, public virtual ModelItem , public virtual Parameter {};
+         ^
+          detected during implicit generation of "ParamItem_tk::ParamItem_tk()" at line 24
+

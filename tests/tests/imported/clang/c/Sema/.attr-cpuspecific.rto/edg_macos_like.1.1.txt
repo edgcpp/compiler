@@ -1,0 +1,354 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "cpu_specific"
+  void __attribute__((cpu_specific(ivybridge))) no_default(void);
+                      ^
+
+"Test_name.c", line 6: warning: unknown attribute "cpu_specific"
+  void __attribute__((cpu_specific(sandybridge)))  no_default(void);
+                      ^
+
+"Test_name.c", line 13: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) addr_of(void);
+                     ^
+
+"Test_name.c", line 14: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge)))  addr_of(void);
+                     ^
+
+"Test_name.c", line 15: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge)))  addr_of2(void);
+                     ^
+
+"Test_name.c", line 21: error: expression must have arithmetic type
+    (void)+addr_of;
+           ^
+
+"Test_name.c", line 23: error: expression must have arithmetic type
+    (void)+addr_of2;
+           ^
+
+"Test_name.c", line 31: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) no_proto();
+                     ^
+
+"Test_name.c", line 33: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) redecl1(void);
+                     ^
+
+"Test_name.c", line 34: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) redecl1(void) { return 1; }
+                     ^
+
+"Test_name.c", line 36: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void);
+                     ^
+
+"Test_name.c", line 37: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                     ^
+
+"Test_name.c", line 37: warning: missing return statement at end of non-void function "redecl2"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                                                          ^
+
+"Test_name.c", line 40: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                     ^
+
+"Test_name.c", line 40: error: function "redecl2" has already been defined (previous definition at line 37)
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                                          ^
+
+"Test_name.c", line 40: warning: missing return statement at end of non-void function "redecl2"
+  int __attribute__((cpu_dispatch(atom))) redecl2(void) { }
+                                                          ^
+
+"Test_name.c", line 43: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(atom))) allow_fwd_decl(void) {}
+                     ^
+
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "allow_fwd_decl"
+  int __attribute__((cpu_dispatch(atom))) allow_fwd_decl(void) {}
+                                                                ^
+
+"Test_name.c", line 51: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(atom))) allow_fwd_decl2(void) {}
+                     ^
+
+"Test_name.c", line 51: warning: missing return statement at end of non-void function "allow_fwd_decl2"
+  int __attribute__((cpu_dispatch(atom))) allow_fwd_decl2(void) {}
+                                                                 ^
+
+"Test_name.c", line 54: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) redecl4(void);
+                     ^
+
+"Test_name.c", line 59: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom, atom))) dup_procs(void);
+                     ^
+
+"Test_name.c", line 61: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge, atom))) dup_procs2(void);
+                     ^
+
+"Test_name.c", line 64: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) dup_procs2(void);
+                     ^
+
+"Test_name.c", line 66: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge, atom))) dup_procs3(void);
+                     ^
+
+"Test_name.c", line 69: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom, ivybridge))) dup_procs3(void);
+                     ^
+
+"Test_name.c", line 71: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) redef(void) { return 1; }
+                     ^
+
+"Test_name.c", line 74: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) redef(void) { return 2; }
+                     ^
+
+"Test_name.c", line 74: error: function "redef" has already been defined (previous definition at line 71)
+  int __attribute__((cpu_specific(atom))) redef(void) { return 2; }
+                                          ^
+
+"Test_name.c", line 76: warning: unknown attribute "cpu_dispatch"
+  int __attribute((cpu_dispatch(atom))) mult_dispatch(void) {}
+                   ^
+
+"Test_name.c", line 76: warning: missing return statement at end of non-void function "mult_dispatch"
+  int __attribute((cpu_dispatch(atom))) mult_dispatch(void) {}
+                                                             ^
+
+"Test_name.c", line 79: warning: unknown attribute "cpu_dispatch"
+  int __attribute((cpu_dispatch(ivybridge))) mult_dispatch(void) {}
+                   ^
+
+"Test_name.c", line 79: error: function "mult_dispatch" has already been defined (previous definition at line 76)
+  int __attribute((cpu_dispatch(ivybridge))) mult_dispatch(void) {}
+                                             ^
+
+"Test_name.c", line 79: warning: missing return statement at end of non-void function "mult_dispatch"
+  int __attribute((cpu_dispatch(ivybridge))) mult_dispatch(void) {}
+                                                                  ^
+
+"Test_name.c", line 82: warning: unknown attribute "cpu_dispatch"
+  int __attribute((cpu_dispatch())) no_dispatch(void) {}
+                   ^
+
+"Test_name.c", line 82: warning: missing return statement at end of non-void function "no_dispatch"
+  int __attribute((cpu_dispatch())) no_dispatch(void) {}
+                                                       ^
+
+"Test_name.c", line 84: warning: unknown attribute "cpu_specific"
+  int __attribute((cpu_specific())) no_specific(void) {}
+                   ^
+
+"Test_name.c", line 84: warning: missing return statement at end of non-void function "no_specific"
+  int __attribute((cpu_specific())) no_specific(void) {}
+                                                       ^
+
+"Test_name.c", line 87: warning: unknown attribute "cpu_specific"
+  void __attribute__((used,cpu_specific(sandybridge)))  addtl_attrs(void);
+                           ^
+
+"Test_name.c", line 89: warning: target attribute not recognized
+  void __attribute__((target("default"))) addtl_attrs2(void);
+                             ^
+
+"Test_name.c", line 92: warning: unknown attribute "cpu_specific"
+  void __attribute__((cpu_specific(sandybridge))) addtl_attrs2(void);
+                      ^
+
+"Test_name.c", line 96: warning: unknown attribute "cpu_specific"
+  void __attribute((cpu_specific(sandybridge), cpu_dispatch(atom, sandybridge)))
+                    ^
+
+"Test_name.c", line 96: warning: unknown attribute "cpu_dispatch"
+  void __attribute((cpu_specific(sandybridge), cpu_dispatch(atom, sandybridge)))
+                                               ^
+
+"Test_name.c", line 99: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(ivybridge))) diff_cc(void){}
+                     ^
+
+"Test_name.c", line 99: warning: missing return statement at end of non-void function "diff_cc"
+  int __attribute__((cpu_dispatch(ivybridge))) diff_cc(void){}
+                                                             ^
+
+"Test_name.c", line 101: warning: this declaration has no storage class or type specifier
+  __vectorcall int __attribute__((cpu_specific(sandybridge))) diff_cc(void);
+  ^
+
+"Test_name.c", line 101: error: expected a ";"
+  __vectorcall int __attribute__((cpu_specific(sandybridge))) diff_cc(void);
+               ^
+
+"Test_name.c", line 104: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(atom))) disp_with_body(void) {
+                     ^
+
+"Test_name.c", line 109: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(INVALID))) called_invalid_value(void){ return 1;}
+                     ^
+
+"Test_name.c", line 113: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(pentium_iii))) called_invalid_value(void){ return 2;}
+                     ^
+
+"Test_name.c", line 113: error: function "called_invalid_value" has already been defined (previous definition at line 109)
+  int __attribute__((cpu_specific(pentium_iii))) called_invalid_value(void){ return 2;}
+                                                 ^
+
+"Test_name.c", line 114: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(pentium_4))) called_invalid_value(void){ return 3;}
+                     ^
+
+"Test_name.c", line 114: error: function "called_invalid_value" has already been defined (previous definition at line 109)
+  int __attribute__((cpu_specific(pentium_4))) called_invalid_value(void){ return 3;}
+                                               ^
+
+"Test_name.c", line 121: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(pentium_iii, pentium_iii_no_xmm_regs))) dupe_p3(void);
+                     ^
+
+"Test_name.c", line 123: warning: unknown attribute "cpu_specific"
+  void __attribute__((cpu_specific(atom), nothrow, nonnull(1))) addtl_attrs(int*);
+                      ^
+
+"Test_name.c", line 123: error: declaration is incompatible with "void addtl_attrs(void)" (declared at line 87)
+  void __attribute__((cpu_specific(atom), nothrow, nonnull(1))) addtl_attrs(int*);
+                                                                ^
+
+"Test_name.c", line 125: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) bad_overload1(void);
+                     ^
+
+"Test_name.c", line 126: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) bad_overload1(void);
+                     ^
+
+"Test_name.c", line 128: error: declaration is incompatible with "int bad_overload1(void)" (declared at line 125)
+  int bad_overload1(int);
+      ^
+
+"Test_name.c", line 133: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) bad_overload2(void);
+                     ^
+
+"Test_name.c", line 133: error: declaration is incompatible with "int bad_overload2(int)" (declared at line 130)
+  int __attribute__((cpu_specific(atom))) bad_overload2(void);
+                                          ^
+
+"Test_name.c", line 134: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) bad_overload2(void);
+                     ^
+
+"Test_name.c", line 136: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(generic))) bad_overload3(void);
+                     ^
+
+"Test_name.c", line 137: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) bad_overload3(void);
+                     ^
+
+"Test_name.c", line 139: error: declaration is incompatible with "int bad_overload3(void)" (declared at line 136)
+  int bad_overload3(int);
+      ^
+
+"Test_name.c", line 144: warning: unknown attribute "cpu_dispatch"
+  int __attribute__((cpu_dispatch(generic))) bad_overload4(void);
+                     ^
+
+"Test_name.c", line 144: error: declaration is incompatible with "int bad_overload4(int)" (declared at line 141)
+  int __attribute__((cpu_dispatch(generic))) bad_overload4(void);
+                                             ^
+
+"Test_name.c", line 145: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) bad_overload4(void);
+                     ^
+
+"Test_name.c", line 148: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(generic))) bad_overload5(void);
+                                                       ^
+
+"Test_name.c", line 149: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) bad_overload5(void);
+                     ^
+
+"Test_name.c", line 151: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(generic))) bad_overload6(void);
+                     ^
+
+"Test_name.c", line 153: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(ivybridge))) bad_overload6(void);
+                                                       ^
+
+"Test_name.c", line 155: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) good_overload1(void);
+                     ^
+
+"Test_name.c", line 156: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) good_overload1(void);
+                     ^
+
+"Test_name.c", line 160: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) good_overload2(void);
+                     ^
+
+"Test_name.c", line 161: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) good_overload2(void);
+                     ^
+
+"Test_name.c", line 164: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(atom))) good_overload3(void);
+                                                       ^
+
+"Test_name.c", line 166: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(ivybridge))) good_overload3(void);
+                                                       ^
+
+"Test_name.c", line 171: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(atom))) good_overload4(void);
+                                                       ^
+
+"Test_name.c", line 173: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(ivybridge))) good_overload4(void);
+                                                       ^
+
+"Test_name.c", line 176: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(atom))) good_overload5(void);
+                                                       ^
+
+"Test_name.c", line 178: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(ivybridge))) good_overload5(int);
+                                                       ^
+
+"Test_name.c", line 180: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(atom))) good_overload6(void);
+                     ^
+
+"Test_name.c", line 182: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(ivybridge))) good_overload6(int);
+                                                       ^
+
+"Test_name.c", line 185: warning: unknown attribute "cpu_specific"
+  int __attribute__((__overloadable__)) __attribute__((cpu_specific(atom))) good_overload7(void);
+                                                       ^
+
+"Test_name.c", line 186: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(ivybridge))) good_overload7(int);
+                     ^
+
+"Test_name.c", line 189: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(x86_64))) baseline(void);
+                     ^
+
+"Test_name.c", line 191: warning: unknown attribute "cpu_specific"
+  int __attribute__((cpu_specific(x86_64_v2))) baseline(void);
+                     ^
+
+13 errors detected in the compilation of "Test_name.c".

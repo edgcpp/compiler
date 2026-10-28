@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions Test_name.c
+"Test_name.c", line 27: error: identifier "__INT_MAX__" is undefined
+    constexpr D d5 = { __INT_MAX__ }; // expected-error {{must be initialized by a constant expression}}
+                       ^
+
+"Test_name.c", line 192: warning: expression has no effect
+      &c; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 27: warning: variable "BaseClassAggregateInit::d5" was declared but never referenced
+    constexpr D d5 = { __INT_MAX__ }; // expected-error {{must be initialized by a constant expression}}
+                ^
+
+"Test_name.c", line 49: warning: variable "Cxx17CD_NB_GB19::n" was declared but never referenced
+    constexpr int n = r;
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

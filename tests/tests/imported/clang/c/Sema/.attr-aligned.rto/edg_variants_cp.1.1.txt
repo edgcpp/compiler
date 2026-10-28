@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: error: invalid alignment value specified by attribute
+  int x __attribute__((aligned(3))); // expected-error {{requested alignment is not a power of 2}}
+                               ^
+
+"Test_name.c", line 7: error: invalid alignment value specified by attribute
+  int y __attribute__((aligned(1ull << 33))); // expected-error {{requested alignment must be 4294967296 bytes or smaller}}
+                               ^
+
+"Test_name.c", line 8: error: invalid alignment value specified by attribute
+  int y __attribute__((aligned(1ull << 32)));
+                               ^
+
+"Test_name.c", line 11: error: invalid alignment value specified by attribute
+  int y __attribute__((aligned(1 << 29)));
+                               ^
+
+"Test_name.c", line 12: error: invalid alignment value specified by attribute
+  int y __attribute__((aligned(1 << 28)));
+                               ^
+
+"Test_name.c", line 22: error: invalid alignment value specified by attribute
+  int z __attribute__((aligned((__int128_t)0x1234567890abcde0ULL << 64))); // expected-error {{requested alignment must be 4294967296 bytes or smaller}}
+                               ^
+
+"Test_name.c", line 47: warning: a reduction in alignment without the "packed" attribute is ignored
+  struct C { int member __attribute__((aligned(2))); } c;
+                 ^
+
+6 errors detected in the compilation of "Test_name.c".

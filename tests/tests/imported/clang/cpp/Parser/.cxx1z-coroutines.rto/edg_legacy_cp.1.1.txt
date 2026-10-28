@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: error: identifier "co_await" is undefined
+    co_await t;
+    ^
+
+"Test_name.c", line 7: error: "t" has already been declared in the current scope
+    co_await t;
+             ^
+
+"Test_name.c", line 8: error: identifier "co_yield" is undefined
+    co_yield t;
+    ^
+
+"Test_name.c", line 8: error: "t" has already been declared in the current scope
+    co_yield t;
+             ^
+
+"Test_name.c", line 10: error: identifier "co_await" is undefined
+    1 + co_await t;
+        ^
+
+"Test_name.c", line 10: error: expected a ";"
+    1 + co_await t;
+                 ^
+
+"Test_name.c", line 11: error: identifier "co_yield" is undefined
+    1 + co_yield t; // expected-error {{expected expression}}
+        ^
+
+"Test_name.c", line 11: error: expected a ";"
+    1 + co_yield t; // expected-error {{expected expression}}
+                 ^
+
+"Test_name.c", line 13: error: expected a ";"
+    auto x = co_await t;
+                      ^
+
+"Test_name.c", line 14: error: expected a ";"
+    auto y = co_yield t;
+                      ^
+
+"Test_name.c", line 16: error: expected a "("
+    for co_await (int x : t) {}
+        ^
+
+"Test_name.c", line 17: error: expected a "("
+    for co_await (int x = 0; x != 10; ++x) {} // expected-error {{'co_await' modifier can only be applied to range-based for loop}}
+        ^
+
+"Test_name.c", line 20: error: identifier "co_return" is undefined
+      co_return t;
+      ^
+
+"Test_name.c", line 22: error: identifier "co_return" is undefined
+      co_return {t};
+      ^
+
+"Test_name.c", line 22: error: expected a ";"
+      co_return {t};
+                ^
+
+"Test_name.c", line 26: error: expected an operator
+  struct X { Y operator co_await(); };
+                        ^
+
+"Test_name.c", line 28: error: expected an operator
+  Y operator co_await(Z);
+             ^
+
+"Test_name.c", line 31: error: expected an operator
+    x.operator co_await();
+               ^
+
+"Test_name.c", line 32: error: expected an operator
+    operator co_await(z);
+             ^
+
+"Test_name.c", line 35: error: expected an operator
+  void operator co_await(); // expected-error {{must have at least one parameter}}
+                ^
+
+"Test_name.c", line 36: error: expected an operator
+  void operator co_await(X, Y, Z); // expected-error {{must be a unary operator}}
+                ^
+
+"Test_name.c", line 37: error: expected an operator
+  void operator co_await(int); // expected-error {{parameter of class or enumeration type}}
+                ^
+
+22 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,92 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"./cpp23/ext-floating3.C", line 80: error: more than one instance of overloaded function "foo" matches the argument list:
+            function "foo(std::float32_t)" (declared at line 51)
+            function "foo(std::float64_t)" (declared at line 52)
+            argument types are: (std::float16_t)
+    foo (float16_t (1.0));
+    ^
+
+"./cpp23/ext-floating3.C", line 87: error: more than one instance of overloaded function "bar" matches the argument list:
+            function "bar(float)" (declared at line 53)
+            function "bar(double)" (declared at line 54)
+            function "bar(long double)" (declared at line 55)
+            argument types are: (const std::float16_t)
+    bar (f16x);
+    ^
+
+"./cpp23/ext-floating3.C", line 90: error: more than one instance of overloaded function "bar" matches the argument list:
+            function "bar(double)" (declared at line 54)
+            function "bar(long double)" (declared at line 55)
+            argument types are: (const std::float64_t)
+    static_assert (bar (f64x) == 4);
+                   ^
+
+"./cpp23/ext-floating3.C", line 91: error: more than one instance of overloaded function "bar" matches the argument list:
+            function "bar(float)" (declared at line 53)
+            function "bar(double)" (declared at line 54)
+            function "bar(long double)" (declared at line 55)
+            argument types are: (const std::float128_t)
+    bar (f128x);
+    ^
+
+"./cpp23/ext-floating3.C", line 99: error: more than one instance of overloaded function "baz" matches the argument list:
+            function "baz(std::float32_t)" (declared at line 56)
+            function "baz(std::float64_t)" (declared at line 57)
+            function "baz(std::float128_t)" (declared at line 58)
+            argument types are: (const std::float16_t)
+    baz (f16x);
+    ^
+
+"./cpp23/ext-floating3.C", line 106: error: static assertion failed
+    static_assert (baz (ldx) == 8);
+    ^
+"./cpp23/ext-floating3.C", line 106: note: the final comparison was 7 == 8
+    static_assert (baz (ldx) == 8);
+                             ^
+
+"./cpp23/ext-floating3.C", line 108: error: more than one instance of overloaded function "qux" matches the argument list:
+            function "qux(std::float64_t)" (declared at line 59)
+            function "qux(std::float32_t)" (declared at line 60)
+            argument types are: (std::float16_t)
+    qux (float16_t (1.0));
+    ^
+
+"./cpp23/ext-floating3.C", line 115: error: more than one instance of overloaded function "fred" matches the argument list:
+            function "fred(long double)" (declared at line 61)
+            function "fred(double)" (declared at line 62)
+            function "fred(float)" (declared at line 63)
+            argument types are: (const std::float16_t)
+    fred (f16x);
+    ^
+
+"./cpp23/ext-floating3.C", line 118: error: more than one instance of overloaded function "fred" matches the argument list:
+            function "fred(long double)" (declared at line 61)
+            function "fred(double)" (declared at line 62)
+            argument types are: (const std::float64_t)
+    static_assert (fred (f64x) == 12);
+                   ^
+
+"./cpp23/ext-floating3.C", line 119: error: more than one instance of overloaded function "fred" matches the argument list:
+            function "fred(long double)" (declared at line 61)
+            function "fred(double)" (declared at line 62)
+            function "fred(float)" (declared at line 63)
+            argument types are: (const std::float128_t)
+    fred (f128x);
+    ^
+
+"./cpp23/ext-floating3.C", line 127: error: more than one instance of overloaded function "thud" matches the argument list:
+            function "thud(std::float128_t)" (declared at line 64)
+            function "thud(std::float64_t)" (declared at line 65)
+            function "thud(std::float32_t)" (declared at line 66)
+            argument types are: (const std::float16_t)
+    thud (f16x);
+    ^
+
+"./cpp23/ext-floating3.C", line 134: error: static assertion failed
+    static_assert (thud (ldx) == 14);
+    ^
+"./cpp23/ext-floating3.C", line 134: note: the final comparison was 15 == 14
+    static_assert (thud (ldx) == 14);
+                              ^
+
+12 errors detected in the compilation of "Test_name.c".

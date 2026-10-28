@@ -1,0 +1,25 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 5: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef unsigned int size_t;
+                       ^
+
+"Test_name.c", line 161: warning: enumerated type mixed with another type
+    return ret_val;
+           ^
+
+"Test_name.c", line 174: warning: enumerated type mixed with another type
+      user_resp = get_user_info_from_header(req->internal_realm,
+                                            ^
+
+"Test_name.c", line 178: warning: enumerated type mixed with another type
+        resp = has_auth_user(authent, 0, req->internal_realm, "", 1);
+                                         ^
+
+"Test_name.c", line 187: warning: enumerated type mixed with another type
+      resp = has_www_auth("", 1, req->internal_realm, resp);
+                                 ^
+
+"Test_name.c", line 188: warning: enumerated type mixed with another type
+    return ret_val;
+           ^
+

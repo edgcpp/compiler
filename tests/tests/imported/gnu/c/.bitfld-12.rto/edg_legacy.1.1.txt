@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./bitfld-12.c", line 10: error: second operand of offsetof may not be a bit field
+         a
+         ^
+
+"./bitfld-12.c", line 11: error: taking the address of a bit field is not allowed
+  void *b = &x.a;
+            ^
+
+"./bitfld-12.c", line 12: error: expression must have a constant value
+  void *c = &y->a;
+             ^
+"./bitfld-12.c", line 12: note: the value of variable "y" (declared at line 8) cannot be used as a constant
+  void *c = &y->a;
+             ^
+
+3 errors detected in the compilation of "Test_name.c".

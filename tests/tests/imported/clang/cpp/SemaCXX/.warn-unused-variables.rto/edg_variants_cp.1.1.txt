@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"SemaCXX/warn-unused-variables.cpp", line 54: warning: variable "x" was declared but never referenced
+    static int x = 0;
+               ^
+
+"SemaCXX/warn-unused-variables.cpp", line 55: warning: variable "y" was declared but never referenced
+    static int y = 0;
+               ^
+
+"SemaCXX/warn-unused-variables.cpp", line 69: warning: variable "a" was declared but never referenced
+        int a;
+            ^
+
+"SemaCXX/warn-unused-variables.cpp", line 76: warning: variable "a" was declared but never referenced
+      int a;
+          ^
+
+"SemaCXX/warn-unused-variables.cpp", line 101: warning: variable "z" was declared but never referenced
+      S1 z = a;
+         ^
+
+"SemaCXX/warn-unused-variables.cpp", line 115: warning: variable "z" was declared but never referenced
+      S2 z = a;
+         ^
+
+"SemaCXX/warn-unused-variables.cpp", line 126: warning: variable "z" was declared but never referenced
+      S3 z = a;
+         ^
+
+"SemaCXX/warn-unused-variables.cpp", line 187: warning: variable "elidableDynArray" was declared but never referenced
+    Elidable elidableDynArray[size];
+             ^
+
+"SemaCXX/warn-unused-variables.cpp", line 235: warning: variable "l1" was declared but never referenced
+    Literal<int> l1;
+                 ^
+
+"SemaCXX/warn-unused-variables.cpp", line 274: warning: variable "b" was declared but never referenced
+    const auto &b = a;
+                ^
+
+"SemaCXX/warn-unused-variables.cpp", line 277: warning: variable "d" was declared but never referenced
+    auto &&d = c;
+           ^
+

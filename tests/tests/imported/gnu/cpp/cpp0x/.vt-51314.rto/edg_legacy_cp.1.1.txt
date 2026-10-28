@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: error: expected a "("
+      A<sizeof...U> x; // { dg-error "surrounded by parentheses" }
+                 ^
+
+"Test_name.c", line 8: error: expected an identifier
+      A<sizeof...U> x; // { dg-error "surrounded by parentheses" }
+                  ^
+
+"Test_name.c", line 8: error: expected a ")"
+      A<sizeof...U> x; // { dg-error "surrounded by parentheses" }
+                  ^
+
+"Test_name.c", line 8: error: pack expansion does not make use of any argument packs
+      A<sizeof...U> x; // { dg-error "surrounded by parentheses" }
+              ^
+
+"Test_name.c", line 15: error: expected a "("
+      typedef Indices<I...,sizeof...I> type; // { dg-error "surrounded by parentheses" }
+                                    ^
+
+"Test_name.c", line 15: error: expected an identifier
+      typedef Indices<I...,sizeof...I> type; // { dg-error "surrounded by parentheses" }
+                                     ^
+
+"Test_name.c", line 15: error: expected a ")"
+      typedef Indices<I...,sizeof...I> type; // { dg-error "surrounded by parentheses" }
+                                     ^
+
+"Test_name.c", line 15: error: pack expansion does not make use of any argument packs
+      typedef Indices<I...,sizeof...I> type; // { dg-error "surrounded by parentheses" }
+                                 ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: error: identifier "__cpp_contracts" is undefined
+  static_assert (__cpp_contracts >= 201906, "__cpp_contracts");
+                 ^
+
+"Test_name.c", line 9: error: identifier "__cpp_contracts_literal_semantics" is undefined
+  static_assert (__cpp_contracts_literal_semantics >= 201906, "__cpp_contracts_literal_semantics");
+                 ^
+
+"Test_name.c", line 10: error: identifier "__cpp_contracts_roles" is undefined
+  static_assert (__cpp_contracts_roles >= 201906, "__cpp_contracts_roles");
+                 ^
+
+"Test_name.c", line 16: error: expected a ","
+    [[assert: x >= 0]];
+            ^
+
+"Test_name.c", line 17: error: expected a ","
+    [[assert default: x < 0]];
+             ^
+
+"Test_name.c", line 18: error: expected a ","
+    [[assert audit: x == 0]];
+             ^
+
+"Test_name.c", line 19: error: expected a ","
+    [[assert axiom: x == 1]];
+             ^
+
+"Test_name.c", line 21: error: expected a ","
+    [[assert: x > 0 ? true : false]];
+            ^
+
+"Test_name.c", line 22: error: expected a ","
+    [[assert: x < 0 ? true : false]];
+            ^
+
+"Test_name.c", line 24: error: expected a ","
+    [[assert ignore: x >= 0]];
+             ^
+
+"Test_name.c", line 25: error: expected a ","
+    [[assert assume: x >= 0]];
+             ^
+
+"Test_name.c", line 26: error: expected a ","
+    [[assert check_never_continue: x >= 0]];
+             ^
+
+"Test_name.c", line 27: error: expected a ","
+    [[assert check_maybe_continue: x >= 0]];
+             ^
+
+"Test_name.c", line 29: error: expected a ","
+    [[assert %default: x >= 0]];
+             ^
+
+"Test_name.c", line 30: error: expected a ","
+    [[assert default %default: x < 0]];
+             ^
+
+"Test_name.c", line 31: error: expected a ","
+    [[assert audit %default: x == 0]];
+             ^
+
+"Test_name.c", line 32: error: expected a ","
+    [[assert axiom %default: x == 1]];
+             ^
+
+"Test_name.c", line 14: warning: variable "x" was declared but never referenced
+    int x;
+        ^
+
+17 errors detected in the compilation of "Test_name.c".

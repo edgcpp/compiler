@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 14: error: identifier "__builtin_shufflevector" is undefined
+    return __builtin_convertvector (__builtin_shufflevector ((V){}, (W){},
+                                    ^
+
+"Test_name.c", line 16: error: type name is not allowed
+  							   5, 5, 0, 2), U);
+  							                ^
+
+"Test_name.c", line 14: error: identifier "__builtin_convertvector" is undefined
+    return __builtin_convertvector (__builtin_shufflevector ((V){}, (W){},
+           ^
+
+3 errors detected in the compilation of "Test_name.c".

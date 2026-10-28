@@ -1,0 +1,21 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 11: remark: parameter "p" was never referenced
+  void operator delete(void* p, int i, ...)
+                             ^
+
+"Test_name.c", line 11: remark: parameter "i" was never referenced
+  void operator delete(void* p, int i, ...)
+                                    ^
+
+"Test_name.c", line 16: remark: parameter "i" was never referenced
+  void* operator new(size_t s, int i)
+                                   ^
+
+"Test_name.c", line 22: remark: function "A::A()" cannot be inlined
+          A() {throw -37;}
+          ^
+
+"Test_name.c", line 28: warning: function "operator new(size_t, int)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+                  new (1234) A;
+                  ^
+

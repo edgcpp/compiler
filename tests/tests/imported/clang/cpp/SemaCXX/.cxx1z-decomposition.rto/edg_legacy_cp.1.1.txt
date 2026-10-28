@@ -1,0 +1,271 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 8: error: a variable declared with an auto type specifier cannot appear in its own initializer
+    auto [a] = a; // expected-error {{binding 'a' cannot appear in the initializer of its own structured binding declaration}}
+               ^
+
+"Test_name.c", line 15: error: expected an identifier
+    auto [] = a0; // expected-warning {{does not allow a structured binding group to be empty}}
+          ^
+
+"Test_name.c", line 15: error: expected a "]"
+    auto [] = a0; // expected-warning {{does not allow a structured binding group to be empty}}
+            ^
+
+"Test_name.c", line 16: error: type "A0" has no components to bind to
+    auto [v1] = a0; // expected-error {{type 'struct A0' binds to 0 elements, but 1 name was provided}}
+          ^
+
+"Test_name.c", line 17: error: expected an identifier
+    auto [] = a1; // expected-error {{type 'int[1]' binds to 1 element, but no names were provided}} expected-warning {{empty}}
+          ^
+
+"Test_name.c", line 17: error: expected a "]"
+    auto [] = a1; // expected-error {{type 'int[1]' binds to 1 element, but no names were provided}} expected-warning {{empty}}
+            ^
+
+"Test_name.c", line 17: warning: variable "a1" is used before its value is set
+    auto [] = a1; // expected-error {{type 'int[1]' binds to 1 element, but no names were provided}} expected-warning {{empty}}
+              ^
+
+"Test_name.c", line 17: error: there are more elements than there are binding names
+    auto [] = a1; // expected-error {{type 'int[1]' binds to 1 element, but no names were provided}} expected-warning {{empty}}
+         ^
+
+"Test_name.c", line 19: error: too many identifiers
+    auto [v3, v4] = a1; // expected-error {{type 'int[1]' binds to 1 element, but 2 names were provided}}
+              ^
+
+"Test_name.c", line 20: error: expected an identifier
+    auto [] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but no names were provided}} expected-warning {{empty}}
+          ^
+
+"Test_name.c", line 20: error: expected a "]"
+    auto [] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but no names were provided}} expected-warning {{empty}}
+            ^
+
+"Test_name.c", line 20: warning: variable "a2" is used before its value is set
+    auto [] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but no names were provided}} expected-warning {{empty}}
+              ^
+
+"Test_name.c", line 20: error: there are more elements than there are binding names
+    auto [] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but no names were provided}} expected-warning {{empty}}
+         ^
+
+"Test_name.c", line 21: error: there are more elements than there are binding names
+    auto [v5] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but only 1 name was provided}}
+         ^
+
+"Test_name.c", line 23: error: too many identifiers
+    auto [v8, v9, v10] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but 3 names were provided}}
+                  ^
+
+"Test_name.c", line 15: warning: variable "<unnamed>" was declared but never referenced
+    auto [] = a0; // expected-warning {{does not allow a structured binding group to be empty}}
+         ^
+
+"Test_name.c", line 17: warning: variable "<unnamed>" was declared but never referenced
+    auto [] = a1; // expected-error {{type 'int[1]' binds to 1 element, but no names were provided}} expected-warning {{empty}}
+         ^
+
+"Test_name.c", line 18: warning: structured binding "v2" was declared but never referenced
+    auto [v2] = a1;
+          ^
+
+"Test_name.c", line 19: warning: structured binding "v3" was declared but never referenced
+    auto [v3, v4] = a1; // expected-error {{type 'int[1]' binds to 1 element, but 2 names were provided}}
+          ^
+
+"Test_name.c", line 20: warning: variable "<unnamed>" was declared but never referenced
+    auto [] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but no names were provided}} expected-warning {{empty}}
+         ^
+
+"Test_name.c", line 21: warning: structured binding "v5" was declared but never referenced
+    auto [v5] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but only 1 name was provided}}
+          ^
+
+"Test_name.c", line 22: warning: structured binding "v6" was declared but never referenced
+    auto [v6, v7] = a2;
+          ^
+
+"Test_name.c", line 23: warning: structured binding "v8" was declared but never referenced
+    auto [v8, v9, v10] = a2; // expected-error {{type 'int[2]' binds to 2 elements, but 3 names were provided}}
+          ^
+
+"Test_name.c", line 29: error: type "float __complex__" has no components to bind to
+    auto &[sre, sim] = scf;
+          ^
+
+"Test_name.c", line 34: error: type "float __complex__" has no components to bind to
+    auto [re, im] = cf;
+         ^
+
+"Test_name.c", line 41: error: type "__attribute((ext_vector_type(3))) float" has no components to bind to
+    auto [x, y, z] = v;
+         ^
+
+"Test_name.c", line 42: error: cannot deduce "auto" type
+    auto *p = &x; // expected-error {{address of vector element requested}}
+    ^
+
+"Test_name.c", line 75: error: reference to local variable of enclosing function is not allowed
+      int f() { return n; } // expected-error {{reference to local binding 'n' declared in enclosing function 'enclosing'}}
+                       ^
+
+"Test_name.c", line 78: warning: capturing structured bindings is a C++20 feature
+    (void)[&] { return n; }; // expected-warning {{C++20}}
+                       ^
+
+"Test_name.c", line 79: warning: capturing structured bindings is a C++20 feature
+    (void)[n] { return n; }; // expected-warning {{C++20}}
+           ^
+
+"Test_name.c", line 81: error: a structured binding cannot declare an explicit storage class
+    static auto [m] = S(); // expected-note {{'m' declared here}} \
+    ^
+
+"Test_name.c", line 84: error: reference to local variable of enclosing function is not allowed
+    struct R { int f() { return m; } };
+                                ^
+
+"Test_name.c", line 85: warning: capturing structured bindings is a C++20 feature
+    (void) [&] { return m; };
+                        ^
+
+"Test_name.c", line 86: warning: capturing structured bindings is a C++20 feature
+    (void)[m]{}; // expected-error {{'m' cannot be captured because it does not have automatic storage duration}}
+           ^
+
+"Test_name.c", line 88: error: a variable with static storage duration cannot be captured in a lambda
+    (void)[outerbit1]{}; // expected-error {{'outerbit1' cannot be captured because it does not have automatic storage duration}}
+           ^
+
+"Test_name.c", line 92: warning: capturing structured bindings is a C++20 feature
+    (void)[&bit] { // expected-error {{non-const reference cannot bind to bit-field 'a'}} \
+            ^
+
+"Test_name.c", line 92: error: taking the address of a bit field is not allowed
+    (void)[&bit] { // expected-error {{non-const reference cannot bind to bit-field 'a'}} \
+            ^
+
+"Test_name.c", line 101: warning: capturing structured bindings is a C++20 feature
+    (void)[&] { return bit + u; } // expected-error {{unnamed variable cannot be implicitly captured in a lambda expression}} \
+                       ^
+
+"Test_name.c", line 101: error: a member of an outer-scope anonymous union cannot be referenced inside the body of a lambda
+    (void)[&] { return bit + u; } // expected-error {{unnamed variable cannot be implicitly captured in a lambda expression}} \
+                             ^
+
+"Test_name.c", line 101: error: taking the address of a bit field is not allowed
+    (void)[&] { return bit + u; } // expected-error {{unnamed variable cannot be implicitly captured in a lambda expression}} \
+                       ^
+
+"Test_name.c", line 110: error: too many identifiers
+    auto &[p, q, r] = a; // expected-error-re {{type 'struct (unnamed at {{.*}})' binds to 2 elements, but 3 names were provided}}
+                 ^
+
+"Test_name.c", line 109: warning: structured binding "x" was declared but never referenced
+    auto &[x, y] = a;
+           ^
+
+"Test_name.c", line 110: warning: structured binding "p" was declared but never referenced
+    auto &[p, q, r] = a; // expected-error-re {{type 'struct (unnamed at {{.*}})' binds to 2 elements, but 3 names were provided}}
+           ^
+
+"Test_name.c", line 115: error: this range-based "for" statement requires a suitable "begin" function and none was found
+    for (auto[a, b] : x) { // expected-error {{invalid range expression of type 'int'; no viable 'begin' function available}}
+                      ^
+
+"Test_name.c", line 115: error: this range-based "for" statement requires a suitable "end" function and none was found
+    for (auto[a, b] : x) { // expected-error {{invalid range expression of type 'int'; no viable 'begin' function available}}
+                      ^
+
+"Test_name.c", line 120: error: type "int" has no components to bind to
+    for (auto[c] : y) { // expected-error {{cannot bind non-class, non-array type 'int'}}
+             ^
+
+"Test_name.c", line 126: error: missing initializer
+    auto [foobar]; // expected-error {{requires an initializer}} \
+                 ^
+
+"Test_name.c", line 126: error: cannot deduce "auto" type (initializer required)
+    auto [foobar]; // expected-error {{requires an initializer}} \
+         ^
+
+"Test_name.c", line 128: error: identifier "foobar_" is undefined
+    return foobar_; // expected-error {{undeclared identifier 'foobar_'}}
+           ^
+
+"Test_name.c", line 139: error: a structured binding cannot declare an explicit storage class
+    void f() { static auto [a] = *this; } // expected-warning {{C++20}}
+               ^
+
+"Test_name.c", line 139: warning: structured binding "a" was declared but never referenced
+    void f() { static auto [a] = *this; } // expected-warning {{C++20}}
+                            ^
+
+"Test_name.c", line 163: warning: variable "n" is used before its value is set
+          [n] {}; // expected-note {{lambda expression}}
+           ^
+
+"Test_name.c", line 162: error: structured binding cannot bind to closure type
+      auto [a] =  // expected-error {{cannot bind lambda closure type}}
+           ^
+
+"Test_name.c", line 166: error: expected an identifier
+    auto [] = []{}; // expected-warning {{ISO C++17 does not allow a structured binding group to be empty}}
+          ^
+
+"Test_name.c", line 166: error: expected a "]"
+    auto [] = []{}; // expected-warning {{ISO C++17 does not allow a structured binding group to be empty}}
+            ^
+
+"Test_name.c", line 166: error: structured binding cannot bind to closure type
+    auto [] = []{}; // expected-warning {{ISO C++17 does not allow a structured binding group to be empty}}
+         ^
+
+"Test_name.c", line 171: error: structured binding cannot bind to closure type
+        auto &[capture] = self; // expected-error {{cannot bind lambda closure type}}
+              ^
+          detected during instantiation of function "lambda [](auto &)->auto [with <auto-1>=lambda [](auto &)->auto]" at line 175
+
+"Test_name.c", line 189: warning: variable "n" is used before its value is set
+      auto x = [n] {};
+                ^
+
+"Test_name.c", line 193: error: type "A" has no components to bind to
+      auto &&[r] = A{x, 0}; // expected-error-re {{cannot bind class type 'A': both it and its base class 'decltype(x)' (aka '(lambda {{.*}})') have non-static data members}}
+             ^
+
+"Test_name.c", line 200: error: expected an identifier
+      auto &&[] = A{x}; // expected-warning {{ISO C++17 does not allow a structured binding group to be empty}}
+              ^
+
+"Test_name.c", line 200: error: expected a "]"
+      auto &&[] = A{x}; // expected-warning {{ISO C++17 does not allow a structured binding group to be empty}}
+                ^
+
+"Test_name.c", line 200: warning: variable "<unnamed>" was declared but never referenced
+      auto &&[] = A{x}; // expected-warning {{ISO C++17 does not allow a structured binding group to be empty}}
+             ^
+
+"Test_name.c", line 225: warning: structured binding "a" was declared but never referenced
+      auto [a] = ec_arr; // expected-error {{no matching constructor for initialization of 'explicit_copy[1]'}}
+            ^
+
+"Test_name.c", line 226: warning: structured binding "b" was declared but never referenced
+      auto [b](ec_arr);
+            ^
+
+"Test_name.c", line 227: warning: structured binding "c" was declared but never referenced
+      auto [c]{ec_arr};
+            ^
+
+"Test_name.c", line 231: warning: structured binding "d" was declared but never referenced
+      auto [d] = T{};
+            ^
+
+"Test_name.c", line 68: warning: structured binding "outerbit1" was declared but never referenced
+  auto [outerbit1, outerbit2] = S1{1, 2}; // expected-note {{declared here}}
+        ^
+
+40 errors detected in the compilation of "Test_name.c".

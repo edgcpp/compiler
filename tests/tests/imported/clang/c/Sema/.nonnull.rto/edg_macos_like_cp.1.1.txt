@@ -1,0 +1,102 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 17: error: attribute "nonnull" references nonpointer parameter
+  __attribute__((nonnull(1))) void Class_init(Instance this, char *str) {
+                 ^
+
+"Test_name.c", line 24: warning: variable "obj" is used before its value is set
+  	Class_init(obj, "Hello World");
+  	           ^
+
+"Test_name.c", line 27: error: expression must be an integral constant expression
+  void foo(const char *str) __attribute__((nonnull("foo"))); // expected-error{{'nonnull' attribute requires parameter 1 to be an integer constant}}
+                                                   ^
+
+"Test_name.c", line 28: error: attribute "nonnull" references nonpointer parameter
+  void bar(int i) __attribute__((nonnull(1))); // expected-warning {{'nonnull' attribute only applies to pointer arguments}} expected-warning {{'nonnull' attribute applied to function with no pointer arguments}}
+                                 ^
+
+"Test_name.c", line 30: warning: attribute "nonnull" does not apply to non-function type "const char *"
+  void baz(__attribute__((nonnull)) const char *str);
+                          ^
+
+"Test_name.c", line 31: warning: attribute "nonnull" does not apply to non-function type "const char *"
+  void baz2(__attribute__((nonnull(1))) const char *str); // expected-warning {{'nonnull' attribute when used on parameters takes no arguments}}
+                           ^
+
+"Test_name.c", line 32: warning: attribute "nonnull" does not apply to non-function type "int"
+  void baz3(__attribute__((nonnull)) int x); // expected-warning {{'nonnull' attribute only applies to pointer arguments}}
+                           ^
+
+"Test_name.c", line 44: warning: attribute "nonnull" does not apply to non-function type "int"
+  int i __attribute__((nonnull)); // expected-warning {{'nonnull' attribute only applies to functions, methods, and parameters}}
+                       ^
+
+"Test_name.c", line 55: warning: null argument provided for parameter marked with attribute "nonnull"
+    g(0); // expected-warning{{null passed to a callee that requires a non-null argument}}
+      ^
+
+"Test_name.c", line 61: error: argument for attribute "nonnull" is larger than number of parameters
+  void vararg1(int n, ...) __attribute__((nonnull(2)));
+                                          ^
+
+"Test_name.c", line 69: warning: no parameter has pointer type
+  void vararg2(int n, ...) __attribute__((nonnull, nonnull, nonnull));
+                                          ^
+
+"Test_name.c", line 69: warning: no parameter has pointer type
+  void vararg2(int n, ...) __attribute__((nonnull, nonnull, nonnull));
+                                                   ^
+
+"Test_name.c", line 69: warning: no parameter has pointer type
+  void vararg2(int n, ...) __attribute__((nonnull, nonnull, nonnull));
+                                                            ^
+
+"Test_name.c", line 76: warning: no parameter has pointer type
+  void vararg3(int n, ...) __attribute__((nonnull, nonnull(2), nonnull(3)));
+                                          ^
+
+"Test_name.c", line 76: error: argument for attribute "nonnull" is larger than number of parameters
+  void vararg3(int n, ...) __attribute__((nonnull, nonnull(2), nonnull(3)));
+                                                   ^
+
+"Test_name.c", line 76: error: argument for attribute "nonnull" is larger than number of parameters
+  void vararg3(int n, ...) __attribute__((nonnull, nonnull(2), nonnull(3)));
+                                                               ^
+
+"Test_name.c", line 88: warning: null argument provided for parameter marked with attribute "nonnull"
+    redecl(p, 0); // expected-warning{{null passed}}
+              ^
+
+"Test_name.c", line 89: warning: null argument provided for parameter marked with attribute "nonnull"
+    redecl(0, p); // expected-warning{{null passed}}
+           ^
+
+"Test_name.c", line 102: warning: statement is unreachable
+     pointer = pv;
+     ^
+
+"Test_name.c", line 108: warning: statement is unreachable
+     if (pv == NULL) {} // expected-warning {{comparison of nonnull parameter 'pv' equal to a null pointer is 'false' on first encounter}}
+     ^
+
+"Test_name.c", line 120: warning: statement is unreachable
+     set_param_to_null(&pointer);
+     ^
+
+"Test_name.c", line 126: warning: statement is unreachable
+     if (pv == NULL) {} // expected-warning {{comparison of nonnull parameter 'pv' equal to a null pointer is 'false' on first encounter}}
+     ^
+
+"Test_name.c", line 148: warning: attribute "nonnull" does not apply to non-function type "const char *"
+  void pr21668_1(__attribute__((nonnull)) const char *p, const char *s) { // expected-note {{declared 'nonnull' here}}
+                                ^
+
+"Test_name.c", line 155: warning: attribute "nonnull" does not apply to non-function type "const char *"
+  void pr21668_2(__attribute__((nonnull)) const char *p) {
+                                ^
+
+"Test_name.c", line 175: warning: attribute "nonnull" does not apply to non-function type "char *"
+  void pr30828(char *p __attribute__((nonnull)));
+                                      ^
+
+6 errors detected in the compilation of "Test_name.c".

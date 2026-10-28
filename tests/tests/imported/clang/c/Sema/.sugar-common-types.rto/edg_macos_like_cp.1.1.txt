@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 --target linux_aarch64 Test_name.c
+"Test_name.c", line 27: error: identifier "__SVInt8_t" is undefined
+  typedef __SVInt8_t B6;
+          ^
+
+"Test_name.c", line 31: error: a value of type "Y1" (aka "int") cannot be used to initialize an entity of type "N" (aka "struct N")
+  N t1 = 0 ? (X1)0 : (Y1)0;   // expected-error {{incompatible type 'B1'}}
+         ^
+
+"Test_name.c", line 32: error: a value of type "void" cannot be used to initialize an entity of type "N" (aka "struct N")
+  N t2 = 0 ? (X2)0 : 0;       // expected-error {{incompatible type 'X2'}}
+         ^
+
+"Test_name.c", line 33: error: type of cast must be arithmetic or pointer
+  N t3 = 0 ? 0 : (Y2)0;       // expected-error {{incompatible type 'Y2'}}
+                  ^
+
+"Test_name.c", line 34: error: type of cast must be arithmetic or pointer
+  N t4 = 0 ? (X2)0 : (Y2)0;   // expected-error {{incompatible type 'B2'}}
+                      ^
+
+"Test_name.c", line 34: error: a value of type "void" cannot be used to initialize an entity of type "N" (aka "struct N")
+  N t4 = 0 ? (X2)0 : (Y2)0;   // expected-error {{incompatible type 'B2'}}
+         ^
+
+"Test_name.c", line 35: error: a value of type "Y3" (aka "struct B3") cannot be used to initialize an entity of type "N" (aka "struct N")
+  N t5 = 0 ? (X3){} : (Y3){}; // expected-error {{incompatible type 'B3'}}
+         ^
+
+"Test_name.c", line 36: error: a value of type "Y4" (aka "struct B4 *") cannot be used to initialize an entity of type "N" (aka "struct N")
+  N t6 = 0 ? (X4)0 : (Y4)0;   // expected-error {{incompatible type 'B4'}}
+         ^
+
+"Test_name.c", line 40: error: expression must have a constant value
+  N t7 = 0 ? x5 : y5; // expected-error {{incompatible type 'B5'}}
+                  ^
+"Test_name.c", line 40: note: the value of variable "y5" (declared at line 39) cannot be used as a constant
+  N t7 = 0 ? x5 : y5; // expected-error {{incompatible type 'B5'}}
+                  ^
+
+9 errors detected in the compilation of "Test_name.c".

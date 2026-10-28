@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=2 --ms_c++20 Test_name.c
+"Test_name.c", line 191: warning: expression has no effect
+        promise_type() { T(); }   // expect: expression has no effect
+                         ^
+          detected during instantiation of "default_ctor::tmpl_task<T>::promise_type::promise_type() [with T=int]" at line 204
+
+"Test_name.c", line 194: warning: expression has no effect
+        ~promise_type() { T(); }  // expect: expression has no effect
+                          ^
+          detected during instantiation of "default_ctor::tmpl_task<T>::promise_type::~promise_type() [with T=int]" at line 204
+
+"Test_name.c", line 218: warning: expression has no effect
+        promise_type(int, int) { T(); } // expect: expression has no effect
+                                 ^
+          detected during instantiation of "non_default_ctor::tmpl_task<T>::promise_type::promise_type(int, int) [with T=int]" 
+
+"Test_name.c", line 219: warning: expression has no effect
+        ~promise_type() { T(); }  // expect: expression has no effect
+                          ^
+          detected during instantiation of "non_default_ctor::tmpl_task<T>::promise_type::~promise_type() [with T=int]" at line 229
+
+"Test_name.c", line 206: error: identifier "co_await" is undefined
+  co_await awaitable{};  
+  ^
+
+"Test_name.c", line 231: error: identifier "co_await" is undefined
+  co_await awaitable{};  
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

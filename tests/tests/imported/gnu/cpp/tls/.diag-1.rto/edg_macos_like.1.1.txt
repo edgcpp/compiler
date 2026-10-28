@@ -1,0 +1,106 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: error: this declaration has no storage class or type specifier
+  __thread int g1;
+  ^
+
+"Test_name.c", line 6: error: expected a ";"
+  __thread int g1;
+           ^
+
+"Test_name.c", line 7: error: explicit type is missing ("int" assumed)
+  extern __thread int g2;
+         ^
+
+"Test_name.c", line 7: error: expected a ";"
+  extern __thread int g2;
+                  ^
+
+"Test_name.c", line 8: error: explicit type is missing ("int" assumed)
+  static __thread int g3;
+         ^
+
+"Test_name.c", line 8: error: variable "__thread" has already been defined (previous definition at line 6)
+  static __thread int g3;
+         ^
+
+"Test_name.c", line 8: error: expected a ";"
+  static __thread int g3;
+                  ^
+
+"Test_name.c", line 12: error: explicit type is missing ("int" assumed)
+    extern __thread int l1;
+           ^
+
+"Test_name.c", line 12: error: expected a ";"
+    extern __thread int l1;
+                    ^
+
+"Test_name.c", line 13: error: explicit type is missing ("int" assumed)
+    static __thread int l2;
+           ^
+
+"Test_name.c", line 13: error: "__thread" has already been declared in the current scope
+    static __thread int l2;
+           ^
+
+"Test_name.c", line 13: error: expected a ";"
+    static __thread int l2;
+                    ^
+
+"Test_name.c", line 13: warning: variable "__thread" was declared but never referenced
+    static __thread int l2;
+           ^
+
+"Test_name.c", line 17: error: explicit type is missing ("int" assumed)
+    static __thread int i;
+           ^
+
+"Test_name.c", line 17: error: expected a ";"
+    static __thread int i;
+                    ^
+
+"Test_name.c", line 20: error: this declaration has no storage class or type specifier
+  __thread int A::i = 42;
+  ^
+
+"Test_name.c", line 20: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread int A::i = 42;
+  ^
+
+"Test_name.c", line 20: error: expected a ";"
+  __thread int A::i = 42;
+           ^
+
+"Test_name.c", line 23: error: variable "__thread" is not a type name
+    static __thread T t;
+           ^
+
+"Test_name.c", line 23: error: template parameter "T" may not be redeclared in this scope
+    static __thread T t;
+                    ^
+
+"Test_name.c", line 23: error: expected a ";"
+    static __thread T t;
+                      ^
+
+"Test_name.c", line 27: error: variable "__thread" is not a type name
+  __thread T B<T>::t = 42;
+  ^
+
+"Test_name.c", line 27: error: template parameter "T" may not be redeclared in this scope
+  __thread T B<T>::t = 42;
+           ^
+
+"Test_name.c", line 27: error: expected a ";"
+  __thread T B<T>::t = 42;
+             ^
+
+"Test_name.c", line 31: error: class "B<int>" has no member "t"
+    int j = B<int>::t;
+                    ^
+
+"Test_name.c", line 32: error: class "B<const int>" has no member "t"
+    int k = B<const int>::t;
+                          ^
+
+25 errors detected in the compilation of "Test_name.c".

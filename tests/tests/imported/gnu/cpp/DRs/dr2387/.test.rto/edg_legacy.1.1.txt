@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 dr2387-aux.cc Test_name.c
+dr2387-aux.cc:
+Test_name.c:
+/usr/sbin/ld: dr2387-aux.o: in function `main':
+dr2387-aux.int.c:(.text+0xXX): undefined reference to `a<(int)42>'
+/usr/sbin/ld: dr2387-aux.int.c:(.text+0xXX): undefined reference to `e<(int)43>'
+collect2: error: ld returned 1 exit status

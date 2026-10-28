@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 74: error: expected an identifier
+  void (^nl_block1)() [[clang::nonblocking]] = ^() [[clang::nonblocking]] {};
+        ^
+
+"Test_name.c", line 74: error: function "square_brackets::<error>" may not be initialized
+  void (^nl_block1)() [[clang::nonblocking]] = ^() [[clang::nonblocking]] {};
+                                             ^
+
+"Test_name.c", line 74: error: expected an expression
+  void (^nl_block1)() [[clang::nonblocking]] = ^() [[clang::nonblocking]] {};
+                                               ^
+
+"Test_name.c", line 77: error: expected an identifier
+  int (^nl_block2)() [[clang::nonblocking]] = ^() [[clang::nonblocking]] { return 0; };
+       ^
+
+"Test_name.c", line 77: error: function "square_brackets::<error>" may not be initialized
+  int (^nl_block2)() [[clang::nonblocking]] = ^() [[clang::nonblocking]] { return 0; };
+                                            ^
+
+"Test_name.c", line 77: error: expected an expression
+  int (^nl_block2)() [[clang::nonblocking]] = ^() [[clang::nonblocking]] { return 0; };
+                                              ^
+
+"Test_name.c", line 81: error: identifier "nl_block1" is undefined
+  static void blockCaller() { nl_block1(); }
+                              ^
+
+"Test_name.c", line 24: warning: function "square_brackets::nlReceiver" was declared but never referenced
+  static void nlReceiver(void (*nl_func)() [[clang::nonblocking]]);
+              ^
+
+"Test_name.c", line 81: warning: function "square_brackets::blockCaller" was declared but never referenced
+  static void blockCaller() { nl_block1(); }
+              ^
+
+"Test_name.c", line 123: warning: function "gnu_style::nlReceiver" was declared but never referenced
+  static void nlReceiver(void (*nl_func)() __attribute__((nonblocking)));
+              ^
+
+7 errors detected in the compilation of "Test_name.c".

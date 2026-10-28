@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 24: error: a requires-clause is not allowed here (not a templated function)
+  template void S< X> ::f() requires (C< T> );
+                            ^
+
+"Test_name.c", line 24: error: identifier "T" is undefined
+  template void S< X> ::f() requires (C< T> );
+                                         ^
+
+"Test_name.c", line 24: error: "T" is not a type name
+  template void S< X> ::f() requires (C< T> );
+                                         ^
+
+"Test_name.c", line 26: error: a requires-clause is not allowed here (not a templated function)
+  template void S< X> ::g() requires (D< T> );
+                            ^
+
+"Test_name.c", line 26: error: identifier "T" is undefined
+  template void S< X> ::g() requires (D< T> );
+                                         ^
+
+"Test_name.c", line 26: error: "T" is not a type name
+  template void S< X> ::g() requires (D< T> );
+                                         ^
+
+"Test_name.c", line 27: error: a requires-clause is not allowed here (not a templated function)
+  template void S< Y> ::g() requires (C< T> );
+                            ^
+
+"Test_name.c", line 27: error: identifier "T" is undefined
+  template void S< Y> ::g() requires (C< T> );
+                                         ^
+
+"Test_name.c", line 27: error: "T" is not a type name
+  template void S< Y> ::g() requires (C< T> );
+                                         ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c11 Test_name.c
+"Test_name.c", line 8: error: identifier "_Float128" is undefined
+  _Float128 a		/* { dg-error "ISO C does not support the '_Float128' type before C23" } */
+  ^
+
+"Test_name.c", line 9: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    = 1.0F128;		/* { dg-error "non-standard suffix on floating constant before C23" } */
+     ^
+
+"Test_name.c", line 10: error: identifier "_Float128" is undefined
+  __extension__ _Float128 b
+                ^
+
+"Test_name.c", line 11: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    = 2.0F128;
+     ^
+
+2 errors detected in the compilation of "Test_name.c".

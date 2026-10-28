@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/type_traits", line 519: error: identifier "__float128" is undefined
+      struct __is_floating_point_helper<__float128>
+                                        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/stl_algobase.h", line 1073: error: identifier "__float128" is undefined
+    __size_to_integer(__float128 __n) { return (long long)__n; }
+                      ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 142: error: identifier "__float128" is undefined
+    __float128
+    ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 143: error: identifier "__float128" is undefined
+    abs(__float128 __x)
+        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 151: error: function call requires a real floating-point argument
+      return __builtin_signbit(__x) ? -__x : __x;
+                              ^
+
+"./tree-ssa/pr14703.C", line 9: error: excessive recursion at instantiation of member "<unnamed>::fib<L>::value [with L=26ULL]"
+     static const unsigned long long value = fib<L - 1>::value + fib<L - 2>::value;
+                                             ^
+          detected during:
+            instantiation of class "<unnamed>::fib<L> [with L=27ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=28ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=29ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=30ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=31ULL]" at line 9
+            [ 54 instantiation contexts not shown ]
+            instantiation of class "<unnamed>::fib<L> [with L=86ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=87ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=88ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=89ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=90ULL]" at line 46
+
+"./tree-ssa/pr14703.C", line 9: error: excessive recursion at instantiation of member "<unnamed>::fib<L>::value [with L=25ULL]"
+     static const unsigned long long value = fib<L - 1>::value + fib<L - 2>::value;
+                                                                 ^
+          detected during:
+            instantiation of class "<unnamed>::fib<L> [with L=27ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=28ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=29ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=30ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=31ULL]" at line 9
+            [ 54 instantiation contexts not shown ]
+            instantiation of class "<unnamed>::fib<L> [with L=86ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=87ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=88ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=89ULL]" at line 9
+            instantiation of class "<unnamed>::fib<L> [with L=90ULL]" at line 46
+
+"./tree-ssa/pr14703.C", line 24: error: excessive recursion at instantiation of function "<unnamed>::fibconst<L>() [with L=26ULL]"
+     return fibconst<L - 1>() + fibconst<L - 2>();
+            ^
+          detected during:
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=27ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=28ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=29ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=30ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=31ULL]" at line 24
+            [ 54 instantiation contexts not shown ]
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=86ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=87ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=88ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=89ULL]" at line 24
+            instantiation of "unsigned long long <unnamed>::fibconst<L>() [with L=90ULL]" at line 47
+
+8 errors detected in the compilation of "Test_name.c".

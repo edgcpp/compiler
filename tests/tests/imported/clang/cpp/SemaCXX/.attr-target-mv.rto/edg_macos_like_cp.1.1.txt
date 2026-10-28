@@ -1,0 +1,161 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++14 Test_name.c
+"Test_name.c", line 21: error: function "foo" has already been defined (previous definition at line 18)
+  int __attribute__((target("arch=ivybridge"))) foo(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 21: error: function "foo" (declared at line 18) was previously declared constexpr
+  int __attribute__((target("arch=ivybridge"))) foo(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 22: error: function "foo" has already been defined (previous definition at line 18)
+  constexpr int __attribute__((target("default"))) foo(void) { return 2; }
+                                                   ^
+
+"Test_name.c", line 26: error: function "foo2" (declared at line 24) was previously not declared constexpr
+  constexpr int __attribute__((target("arch=sandybridge"))) foo2(void);
+  ^
+
+"Test_name.c", line 27: error: function "foo2" has already been defined (previous definition at line 24)
+  int __attribute__((target("arch=ivybridge"))) foo2(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 28: error: function "foo2" has already been defined (previous definition at line 24)
+  int __attribute__((target("default"))) foo2(void) { return 2; }
+                                         ^
+
+"Test_name.c", line 33: error: function "bar" has already been defined (previous definition at line 30)
+  int __attribute__((target("arch=ivybridge"))) bar(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 34: error: function "bar" has already been defined (previous definition at line 30)
+  static int __attribute__((target("default"))) bar(void) { return 2; }
+                                                ^
+
+"Test_name.c", line 38: error: external/internal linkage conflict with previous declaration at line 36
+  static int __attribute__((target("arch=sandybridge"))) bar2(void);
+                                                         ^
+
+"Test_name.c", line 39: error: function "bar2" has already been defined (previous definition at line 36)
+  int __attribute__((target("arch=ivybridge"))) bar2(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 40: error: function "bar2" has already been defined (previous definition at line 36)
+  int __attribute__((target("default"))) bar2(void) { return 2; }
+                                         ^
+
+"Test_name.c", line 55: error: function "baz" has already been defined (previous definition at line 52)
+  int __attribute__((target("arch=ivybridge"))) baz(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 56: error: function "baz" has already been defined (previous definition at line 52)
+  inline int __attribute__((target("default"))) baz(void) { return 2; }
+                                                ^
+
+"Test_name.c", line 61: error: function "baz2" has already been defined (previous definition at line 58)
+  int __attribute__((target("arch=ivybridge"))) baz2(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 62: error: function "baz2" has already been defined (previous definition at line 58)
+  int __attribute__((target("default"))) baz2(void) { return 2; }
+                                         ^
+
+"Test_name.c", line 66: error: cannot overload functions distinguished by return type alone
+  int __attribute__((target("arch=sandybridge"))) bock(void);
+                                                  ^
+
+"Test_name.c", line 68: error: cannot overload functions distinguished by return type alone
+  int __attribute__((target("arch=ivybridge"))) bock(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 70: error: cannot overload functions distinguished by return type alone
+  int __attribute__((target("default"))) bock(void) { return 2; }
+                                         ^
+
+"Test_name.c", line 74: error: cannot overload functions distinguished by return type alone
+  float __attribute__((target("arch=sandybridge"))) bock2(void);
+                                                    ^
+
+"Test_name.c", line 75: error: function "bock2" has already been defined (previous definition at line 72)
+  int __attribute__((target("arch=ivybridge"))) bock2(void) {return 1;}
+                                                ^
+
+"Test_name.c", line 76: error: function "bock2" has already been defined (previous definition at line 72)
+  int __attribute__((target("default"))) bock2(void) { return 2; }
+                                         ^
+
+"Test_name.c", line 80: error: cannot overload functions distinguished by return type alone
+  auto __attribute__((target("arch=sandybridge"))) bock3(void) -> short { return (short)0;}
+                                                   ^
+
+"Test_name.c", line 85: error: function "bock4" has already been defined (previous definition at line 82)
+  int __attribute__((target("arch=sandybridge"))) bock4(void) noexcept(true) { return 1;}
+                                                  ^
+
+"Test_name.c", line 96: error: function template "foo(T)" has already been defined (previous definition at line 88)
+  int __attribute__((target("default"))) foo(T) { return 2; }
+                                         ^
+
+"Test_name.c", line 103: error: invalid redeclaration of member function template "int S::foo(T)" (declared at line 100)
+    int __attribute__((target("arch=sandybridge"))) foo(T);
+                                                    ^
+
+"Test_name.c", line 107: error: invalid redeclaration of member function template "int S::foo(T)" (declared at line 100)
+    int __attribute__((target("default"))) foo(T) { return 2; }
+                                           ^
+
+"Test_name.c", line 117: error: function "diff_mangle" has already been defined (previous definition at line 114)
+  int __attribute__((target("arch=sandybridge"))) diff_mangle(void) { return 0; }
+                                                  ^
+
+"Test_name.c", line 130: error: function "N::DiffDecl()" conflicts with using-declaration of function "DiffDecl()"
+  __attribute__((target("arch=sandybridge"))) void DiffDecl();
+                                                   ^
+
+"Test_name.c", line 159: error: function "SecretAccessor" has already been defined (previous definition at line 154)
+  int SecretAccessor(Secret &s) {
+      ^
+
+"Test_name.c", line 160: error: member "Secret::i" (declared at line 146) is inaccessible
+    return s.i + 2;
+             ^
+
+"Test_name.c", line 164: error: function "SecretAccessor" has already been defined (previous definition at line 154)
+  int SecretAccessor(Secret &s) {
+      ^
+
+"Test_name.c", line 167: error: member "Secret::i" (declared at line 146) is inaccessible
+    return s.i + 3;
+             ^
+
+"Test_name.c", line 174: error: function "constexpr_foo" has already been defined (previous definition at line 170)
+  constexpr int __attribute__((target("arch=ivybridge"))) constexpr_foo(void) {
+                                                          ^
+
+"Test_name.c", line 177: error: function "constexpr_foo" has already been defined (previous definition at line 170)
+  constexpr int __attribute__((target("default"))) constexpr_foo(void) {
+                                                   ^
+
+"Test_name.c", line 182: error: static assertion failed with "Should call 'default' in a constexpr context"
+    static_assert(foo() == 2, "Should call 'default' in a constexpr context");
+    ^
+"Test_name.c", line 182: note: the final comparison was 0 == 2
+    static_assert(foo() == 2, "Should call 'default' in a constexpr context");
+                        ^
+
+"Test_name.c", line 187: error: invalid redeclaration of member function "BadOutOfLine::foo(int)" (declared at line 186)
+    int __attribute__((target("default"))) foo(int);
+                                           ^
+
+"Test_name.c", line 191: error: function "BadOutOfLine::foo" has already been defined (previous definition at line 190)
+  int __attribute__((target("default"))) BadOutOfLine::foo(int) { return 1; }
+                                                       ^
+
+"Test_name.c", line 196: error: function "BadOutOfLine::foo" has already been defined (previous definition at line 190)
+  int __attribute__((target("arch=atom"))) BadOutOfLine::foo(int) { return 1; }
+                                                         ^
+
+"Test_name.c", line 48: warning: function "<unnamed>::bar4" was declared but never referenced
+  int __attribute__((target("sse4.2"))) bar4(void) { return 0; }
+                                        ^
+
+38 errors detected in the compilation of "Test_name.c".

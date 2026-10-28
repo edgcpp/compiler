@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 13: warning: declaration does not declare anything
+      struct {
+      ^
+
+"Test_name.c", line 18: error: class "A" has no member "m"
+  int i = sizeof(A::m);  // Previously aborted
+                    ^
+
+1 error detected in the compilation of "Test_name.c".

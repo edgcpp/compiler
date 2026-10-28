@@ -1,0 +1,607 @@
+fe_only -DTEST_NUMBER=6 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 --exceptions --exceptions Test_name.c
+"Test_name.c", line 27: error: function "cwg600::S::f(double)" (declared at line 21) is inaccessible
+    sp->f(2.2);
+        ^
+
+"Test_name.c", line 86: error: invalid narrowing conversion from "unsigned long" to "unsigned char": constant value does not fit in destination type
+    typedef S<(1ul << __CHAR_BIT__) + 1> S1;
+              ^
+
+"Test_name.c", line 86: error: invalid redeclaration of type name "cwg603::S1" (declared at line 85)
+    typedef S<(1ul << __CHAR_BIT__) + 1> S1;
+                                         ^
+
+"Test_name.c", line 101: error: no instance of function template "cwg606::f" matches the argument list
+            argument types are: (cwg606::S<int>)
+      f(s);
+      ^
+"Test_name.c", line 96: note: function template "cwg606::f" does not match because argument #1 does not match parameter
+    template<typename T> void f(S<T> &&); // #cwg606-f
+                              ^
+
+"Test_name.c", line 105: error: no instance of function template "cwg606::h" matches the argument list
+            argument types are: (cwg606::S<int>)
+      h(s);
+      ^
+"Test_name.c", line 98: note: function template "cwg606::h" does not match because argument #1 does not match parameter
+    template<typename T> void h(const T &&); // #cwg606-h
+                              ^
+
+"Test_name.c", line 184: error: a nonstatic member reference must be relative to a specific object
+    const std::type_info &an9 = typeid(g(A::n));
+                                            ^
+
+"Test_name.c", line 192: error: a nonstatic member reference must be relative to a specific object
+      const std::type_info &an3 = typeid(g(n));
+                                           ^
+
+"Test_name.c", line 188: warning: variable "an1" was declared but never referenced
+      int an1 = sizeof n;
+          ^
+
+"Test_name.c", line 190: warning: variable "an2" was declared but never referenced
+      const std::type_info &an2 = typeid(n + 1);
+                            ^
+
+"Test_name.c", line 213: error: invalid redeclaration of type name "cwg616::T" (declared at line 212)
+    using T = decltype((static_cast<S&&>(s).n));
+          ^
+
+"Test_name.c", line 214: error: invalid redeclaration of type name "cwg616::T" (declared at line 213)
+    using T = decltype((f().n));
+          ^
+
+"Test_name.c", line 215: error: invalid redeclaration of type name "cwg616::T" (declared at line 214)
+    using T = decltype(S().*&S::n);
+          ^
+
+"Test_name.c", line 246: error: incomplete type "int []" is not allowed
+      sizeof(x);
+            ^
+
+"Test_name.c", line 255: warning: missing return statement at end of non-void function "cwg621::f<T>() [with T=int]"
+    template<> int f() {} // #cwg621-f
+                        ^
+
+"Test_name.c", line 256: error: function "cwg621::f<T>() [with T=int]" has already been defined (previous definition at line 255)
+    template<> int f<int>() {}
+                   ^
+
+"Test_name.c", line 268: error: "auto" is not allowed here
+    A<auto> x = A<int>();
+      ^
+
+"Test_name.c", line 268: error: class "cwg625::A<<error-type>>" has no suitable copy constructor
+    A<auto> x = A<int>();
+                ^
+
+"Test_name.c", line 272: error: "auto" is not allowed here
+    void (*p)(auto) = f;
+              ^
+
+"Test_name.c", line 280: error: a value of type "const char [2]" cannot be used to initialize an entity of type "wchar_t [2]"
+    wchar_t w[2] = STR(w);
+                   ^
+
+"Test_name.c", line 287: warning: expression has no effect
+      true a = 0;
+      ^
+
+"Test_name.c", line 287: error: expected a ";"
+      true a = 0;
+           ^
+
+"Test_name.c", line 303: error: "T" has already been declared in the current scope
+      auto T(n);
+           ^
+
+"Test_name.c", line 300: warning: variable "T" was declared but never referenced
+      auto T = 2; // #cwg629-T
+           ^
+
+"Test_name.c", line 303: warning: variable "T" was declared but never referenced
+      auto T(n);
+           ^
+
+"Test_name.c", line 346: warning: extra braces are nonstandard
+    struct S { int n; } s = {{5}};
+                             ^
+
+"Test_name.c", line 360: warning: a class type that is not trivially copyable passed through ellipsis
+    int k = f(S());
+              ^
+
+"Test_name.c", line 367: error: function "cwg635::A<T>::A" is not a template
+    template<typename T> A<T>::A<T>() {}
+                               ^
+
+"Test_name.c", line 375: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg635::C::C"
+    struct C { template<typename T> C(); C(); };
+                                 ^
+
+"Test_name.c", line 376: warning: template parameter "T" is not used in declaring the parameter types of function template "cwg635::C::C<T>()"
+    template<typename T> C::C() {}
+                      ^
+
+"Test_name.c", line 383: warning: template parameter "U" is not used in declaring the parameter types of function template "cwg635::D<T>::D"
+    template<typename T> struct D { template<typename U> D(); D(); };
+                                                      ^
+
+"Test_name.c", line 385: warning: template parameter "U" is not used in declaring the parameter types of function template "cwg635::D<T>::D<U>()"
+    template<typename T> template<typename U> D<T>::D() {}
+                                           ^
+
+"Test_name.c", line 386: error: expected a declaration
+    template<typename T> D<T>::D<T>() {} // #cwg635-D-T
+                         ^
+
+"Test_name.c", line 386: error: expected a ";"
+    template<typename T> D<T>::D<T>() {} // #cwg635-D-T
+                         ^
+
+"Test_name.c", line 390: warning: parsing restarts here after previous syntax error
+  } // namespace cwg635
+  ^
+
+"Test_name.c", line 423: error: type "cwg638::X::type" (declared at line 411) is inaccessible
+      X::type a; // FIXME: private
+         ^
+
+"Test_name.c", line 425: error: type "cwg638::X::type" (declared at line 411) is inaccessible
+        X::type b; // ok
+           ^
+
+"Test_name.c", line 427: error: type "cwg638::X::type" (declared at line 411) is inaccessible
+      int f() { X::type c; } // FIXME: private
+                   ^
+
+"Test_name.c", line 427: warning: missing return statement at end of non-void function "cwg638::A<int>::f"
+      int f() { X::type c; } // FIXME: private
+                           ^
+
+"Test_name.c", line 427: warning: variable "c" was declared but never referenced
+      int f() { X::type c; } // FIXME: private
+                        ^
+
+"Test_name.c", line 428: error: type "cwg638::X::type" (declared at line 411) is inaccessible
+      void g() { X::type d; } // ok
+                    ^
+
+"Test_name.c", line 428: warning: variable "d" was declared but never referenced
+      void g() { X::type d; } // ok
+                         ^
+
+"Test_name.c", line 430: error: type "cwg638::X::type" (declared at line 411) is inaccessible
+        void h() { X::type e; } // FIXME: private
+                      ^
+
+"Test_name.c", line 430: warning: variable "e" was declared but never referenced
+        void h() { X::type e; } // FIXME: private
+                           ^
+
+"Test_name.c", line 436: warning: parameter "i" was set but never used
+    void f(int i) {
+               ^
+
+"Test_name.c", line 450: warning: "cwg641::std_example::xyz::operator cwg641::std_example::xyz &()" will not be called for implicit or explicit conversions
+        operator xyz &() = delete;
+        ^
+
+"Test_name.c", line 462: error: no instance of function template "cwg641::std_example::use" matches the argument list
+            argument types are: (cwg641::std_example::xyz)
+        use<xyz>(xyz());
+        ^
+"Test_name.c", line 460: note: function template "cwg641::std_example::use" does not match because argument #1 does not match parameter
+      void use(T &); // #cwg641-use
+           ^
+
+"Test_name.c", line 481: error: initial value of reference to non-const must be an lvalue
+      f(A());
+        ^
+
+"Test_name.c", line 472: error: class "cwg641::A" has no member "error"
+    template<typename T> struct error { typedef typename T::error type; };
+                                                            ^
+          detected during instantiation of class "cwg641::error<T> [with T=cwg641::A]" at line 484
+
+"Test_name.c", line 484: error: qualifiers dropped in binding reference of type "cwg641::A &" to initializer of type "const cwg641::A"
+      f(ca);
+        ^
+
+"Test_name.c", line 515: error: class "cwg643::A" has no member "y"
+      auto h() -> decltype(this->y);
+                                 ^
+
+"Test_name.c", line 517: error: class "cwg643::A" has no member "y"
+      auto h(A &a) -> decltype(a.y);
+                                 ^
+
+"Test_name.c", line 519: error: identifier "y" is undefined
+      auto i() -> decltype(y);
+                           ^
+
+"Test_name.c", line 547: error: a constructor for a class with virtual bases cannot be constexpr
+      constexpr E() = default;
+      ^
+          detected during instantiation of class "cwg644::E<T> [with T=cwg644::C]" at line 549
+
+"Test_name.c", line 644: error: invalid alignment value specified by attribute
+  alignas(0x200000000) int n;
+          ^
+
+"Test_name.c", line 646: error: invalid alignment value specified by attribute
+  struct alignas(0x200000000) X {};
+                 ^
+
+"Test_name.c", line 649: error: invalid alignment value specified by attribute
+    int n alignas(0x200000000);
+                  ^
+
+"Test_name.c", line 687: error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "bool"
+      bool b = nullptr;
+               ^
+
+"Test_name.c", line 693: error: operand types are incompatible ("std::nullptr_t" and "int")
+      if (nullptr == 1) {}
+                  ^
+
+"Test_name.c", line 698: error: invalid type conversion
+      static_cast<int>(nullptr);
+      ^
+
+"Test_name.c", line 701: error: invalid type conversion
+      static_cast<decltype(nullptr)>(1);
+      ^
+
+"Test_name.c", line 697: warning: variable "n" was declared but never referenced
+      decltype(nullptr) n = 0;
+                        ^
+
+"Test_name.c", line 716: error: no instance of constructor "cwg655::A::A" matches the argument list
+      B(int*) : A() {} // #cwg655-delegating-to-A
+                 ^
+"Test_name.c", line 710: note: number of parameters of function "cwg655::A::A(const cwg655::A &)" does not match the call
+    struct A { A(int); }; // #cwg655-A
+           ^
+"Test_name.c", line 710: note: number of parameters of function "cwg655::A::A(cwg655::A &&)" does not match the call
+    struct A { A(int); }; // #cwg655-A
+           ^
+"Test_name.c", line 710: note: number of parameters of function "cwg655::A::A(int)" does not match the call
+    struct A { A(int); }; // #cwg655-A
+               ^
+
+"Test_name.c", line 716: error: no default constructor exists for class "cwg655::A"
+      B(int*) : A() {} // #cwg655-delegating-to-A
+                    ^
+
+"Test_name.c", line 739: error: conversion to inaccessible base class "cwg656::A" is not allowed
+    const A &s = y;
+                 ^
+
+"Test_name.c", line 742: error: qualifiers dropped in binding reference of type "const cwg656::A &" to initializer of type "volatile cwg656::Y"
+    const A &t = vy;
+                 ^
+
+"Test_name.c", line 754: error: conversion to inaccessible base class "cwg656::A" is not allowed
+      accept<const A&>(y);
+                       ^
+
+"Test_name.c", line 785: error: parameter of abstract class type "cwg657::Abs" is not allowed:
+            function "cwg657::Abs::x" is a pure virtual function
+    struct C { C(Abs) {} };
+                 ^
+
+"Test_name.c", line 792: error: parameter of abstract class type "cwg657::Abs" is not allowed:
+            function "cwg657::Abs::x" is a pure virtual function
+    C c = Q().operator Abs();
+          ^
+
+"Test_name.c", line 795: error: parameter of abstract class type "cwg657::Abs" is not allowed:
+            function "cwg657::Abs::x" is a pure virtual function
+    template<typename F> struct Cnvt2 { Cnvt2(F); typedef int type; };
+                                              ^
+          detected during instantiation of class "cwg657::Cnvt2<F> [with F=cwg657::Abs]" at line 800
+
+"Test_name.c", line 812: error: the alignment of a function type ("int ()") is nonstandard
+    int n = alignof(int(&)());
+                    ^
+
+"Test_name.c", line 815: error: alignment-of operator applied to incomplete type
+    int m = alignof(A&);
+            ^
+
+"Test_name.c", line 824: error: a scoped enum type must have a name
+    enum class { b };
+               ^
+
+"Test_name.c", line 824: warning: declaration does not declare anything
+    enum class { b };
+    ^
+
+"Test_name.c", line 830: error: a scoped enum type must have a name
+      enum class { b };
+                 ^
+
+"Test_name.c", line 830: warning: declaration does not declare anything
+      enum class { b };
+      ^
+
+"Test_name.c", line 841: warning: variable "tr" was declared but never referenced
+      T &tr = t;
+         ^
+
+"Test_name.c", line 879: error: conversion to inaccessible base class "cwg665::A" is not allowed
+      (void)dynamic_cast<A*>(c);
+                             ^
+
+"Test_name.c", line 882: error: base class "cwg665::A" is ambiguous
+      (void)dynamic_cast<A*>(d);
+                             ^
+
+"Test_name.c", line 887: error: conversion to inaccessible base class "cwg665::A" is not allowed
+      (void)dynamic_cast<A*>(vc); // emitting diagnostic, even though it could be valid at runtime
+                             ^
+
+"Test_name.c", line 902: warning: variable "a" was declared but never referenced
+      int a(T::type);
+          ^
+
+"Test_name.c", line 995: error: identifier "FF" is undefined
+    FF *ff;
+    ^
+
+"Test_name.c", line 1021: error: member "cwg674::X::n" (declared at line 1012) is inaccessible
+    int h(int) { return X().n; }
+                            ^
+
+"Test_name.c", line 1054: error: member "cwg674::Z::n" (declared at line 1045) is inaccessible
+    int Y::h(int) { return Z().n; }
+                               ^
+
+"Test_name.c", line 1066: warning: signed bit field of length 1
+    template<typename T> struct A { T n : 1; };
+                                      ^
+          detected during instantiation of class "cwg675::A<T> [with T=char]" at line 1068
+
+"Test_name.c", line 1066: warning: signed bit field of length 1
+    template<typename T> struct A { T n : 1; };
+                                      ^
+          detected during instantiation of class "cwg675::A<T> [with T=int]" at line 1070
+
+"Test_name.c", line 1066: warning: signed bit field of length 1
+    template<typename T> struct A { T n : 1; };
+                                      ^
+          detected during instantiation of class "cwg675::A<T> [with T=long long]" at line 1072
+
+"Test_name.c", line 1091: error: function "cwg677::A::operator delete(void *) noexcept" (declared at line 1082) cannot be referenced -- it is a deleted function
+    void f(A *p) { delete p; }
+                   ^
+
+"Test_name.c", line 1095: error: function "cwg677::B::operator delete(void *) noexcept" (declared at line 1087) cannot be referenced -- it is a deleted function
+    void f(B *p) { delete p; }
+                   ^
+
+"Test_name.c", line 1098: error: function "cwg677::B::operator delete(void *) noexcept" (declared at line 1087) cannot be referenced -- it is a deleted function
+    B::~B() {}
+       ^
+
+"Test_name.c", line 1109: error: function "cwg679::operator+<<unnamed>>(cwg679::X, cwg679::X) [with <unnamed>=0]" has already been defined (previous definition at line 1108)
+    template<> void operator+<0>(X, X) {}
+                    ^
+
+"Test_name.c", line 1118: error: a function declarator with a trailing return type must be preceded by a simple "auto" type specifier
+    auto *a() -> int;
+         ^
+
+"Test_name.c", line 1122: error: expected a "{"
+    auto (*c()) -> int;
+                ^
+
+"Test_name.c", line 1137: warning: parsing restarts here after previous syntax error
+  } // namespace cwg681
+  ^
+
+"Test_name.c", line 1137: error: cannot deduce "auto" type
+  } // namespace cwg681
+  ^
+
+"Test_name.c", line 1151: error: static assertion failed with ""
+    static_assert(__is_trivially_constructible(B, const B&), "");
+    ^
+
+"Test_name.c", line 1152: error: static assertion failed with ""
+    static_assert(__is_trivially_constructible(B, B&), "");
+    ^
+
+"Test_name.c", line 1153: error: static assertion failed with ""
+    static_assert(__is_trivial(B), "");
+    ^
+
+"Test_name.c", line 1161: error: expression must have a constant value
+      constexpr int *p = &a;
+                         ^
+"Test_name.c", line 1161: note: a pointer or reference to variable "a" (declared at line 1160) cannot be used as a constant
+      constexpr int *p = &a;
+                         ^
+
+"Test_name.c", line 1161: warning: variable "p" was declared but never referenced
+      constexpr int *p = &a;
+                     ^
+
+"Test_name.c", line 1188: error: more than one instance of overloaded function "cwg681::cwg685::j" matches the argument list:
+            function "cwg681::cwg685::j(unsigned int)" (declared at line 1186)
+            function "cwg681::cwg685::j(long)" (declared at line 1187)
+            argument types are: (cwg681::cwg685::G)
+    int d = j(g);
+            ^
+
+"Test_name.c", line 1201: error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+      (void)dynamic_cast<struct A*>(0);
+                         ^
+
+"Test_name.c", line 1204: error: type definition is not allowed
+      (void)dynamic_cast<struct A{}*>(0);
+                         ^
+
+"Test_name.c", line 1207: error: type definition is not allowed
+      (void)typeid(struct B{}*);
+                   ^
+
+"Test_name.c", line 1210: error: type definition is not allowed
+      (void)static_cast<struct C{}*>(0);
+                        ^
+
+"Test_name.c", line 1213: error: type definition is not allowed
+      (void)reinterpret_cast<struct D{}*>(0);
+                             ^
+
+"Test_name.c", line 1215: error: a const_cast can only adjust type qualifiers; it cannot change the underlying type
+      (void)const_cast<struct E*>(0);
+                                  ^
+
+"Test_name.c", line 1217: error: type definition is not allowed
+      (void)const_cast<struct E{}*>(0);
+                       ^
+
+"Test_name.c", line 1220: error: type definition is not allowed
+      (void)sizeof(struct F{}*);
+                   ^
+
+"Test_name.c", line 1223: error: type definition is not allowed
+      (void)new struct G{}*; // #cwg686-G-def
+                ^
+
+"Test_name.c", line 1229: error: type definition is not allowed
+      (void)alignof(struct H{}*);
+                    ^
+
+"Test_name.c", line 1233: error: type definition is not allowed
+      (void)(struct I{}*)0;
+             ^
+
+"Test_name.c", line 1236: error: type definition is not allowed
+      if (struct J {} *p = 0) {}
+          ^
+
+"Test_name.c", line 1238: warning: variable "p" was declared but never referenced
+      for (struct K *p = 0; struct L *q = 0; ) {}
+                     ^
+
+"Test_name.c", line 1239: error: type definition is not allowed
+      for (struct K {} *p = 0; struct L {} *q = 0; ) {}
+                               ^
+
+"Test_name.c", line 1239: warning: variable "p" was declared but never referenced
+      for (struct K {} *p = 0; struct L {} *q = 0; ) {}
+                        ^
+
+"Test_name.c", line 1245: error: an operator name must be declared as a function
+        operator struct O{}(){};
+        ^
+
+"Test_name.c", line 1245: error: expected a ";"
+        operator struct O{}(){};
+                         ^
+
+"Test_name.c", line 1249: error: pointer or reference to incomplete type "P" is not allowed
+      catch (struct P *) {}
+             ^
+
+"Test_name.c", line 1252: error: type definition is not allowed
+      catch (struct P {} *) {}
+             ^
+
+"Test_name.c", line 1263: error: type definition is not allowed
+    template<struct R {} *> struct Y;
+             ^
+
+"Test_name.c", line 1274: error: explicit instantiation is not allowed in the current scope
+      template g<int>(a);
+      ^
+
+"Test_name.c", line 1308: error: more than one instance of overloaded function "cwg681::cwg692::temp_func_order_example2::f" matches the argument list:
+            function template "void cwg681::cwg692::temp_func_order_example2::f(U, cwg681::cwg692::temp_func_order_example2::A1<U, T> *)" (declared at line 1295)
+            function template "int &cwg681::cwg692::temp_func_order_example2::f(U, cwg681::cwg692::temp_func_order_example2::A1<U, U> *)" (declared at line 1297)
+            argument types are: (int)
+        f<int>(42);
+        ^
+
+"Test_name.c", line 1359: error: incomplete type "cwg681::cwg692::temp_deduct_type_example1::A<int, int *>" is not allowed
+      template struct A<int, int*>;
+               ^
+
+"Test_name.c", line 1377: error: expression must be an lvalue or a function designator
+          f(&N);
+             ^
+
+"Test_name.c", line 1384: error: expression must be an lvalue or a function designator
+      (void)[] { f(&N); };
+                    ^
+
+At end of source: error: expected a "}"
+"Test_name.c", line 1116: note: to match this "{"
+  namespace cwg681 { // cwg681: partial
+                   ^
+
+"Test_name.c", line 842: error: pointer to reference is not allowed
+      T *tp = &t;
+        ^
+          detected during instantiation of "void cwg662::f(T) [with T=int &]" at line 849
+
+"Test_name.c", line 902: warning: declaration is incompatible with previous "cwg666::a" (declared at line 909)
+      int a(T::type);
+          ^
+          detected during instantiation of "int cwg666::f<T>() [with T=cwg666::Y]" at line 910
+
+"Test_name.c", line 899: error: name followed by "::" must be a class or namespace name
+      T::type *p = 0;
+      ^
+          detected during:
+            instantiation of "int cwg666::f<T>() [with T=cwg666::Y::type]" at line 904
+            instantiation of "int cwg666::f<T>() [with T=cwg666::Y]" at line 910
+
+"Test_name.c", line 902: error: name followed by "::" must be a class or namespace name
+      int a(T::type);
+            ^
+          detected during:
+            instantiation of "int cwg666::f<T>() [with T=cwg666::Y::type]" at line 904
+            instantiation of "int cwg666::f<T>() [with T=cwg666::Y]" at line 910
+
+"Test_name.c", line 904: error: name followed by "::" must be a class or namespace name
+      return f<T::type>();
+               ^
+          detected during:
+            instantiation of "int cwg666::f<T>() [with T=cwg666::Y::type]" at line 904
+            instantiation of "int cwg666::f<T>() [with T=cwg666::Y]" at line 910
+
+"Test_name.c", line 1017: error: member "cwg674::X::n" (declared at line 1012) is inaccessible
+    template<typename T> int g(T) { return X().n; }
+                                               ^
+          detected during instantiation of "int cwg674::g(T) [with T=int]" at line 1027
+
+"Test_name.c", line 1050: error: member "cwg674::Z::n" (declared at line 1045) is inaccessible
+    template<typename T> int Y::g(T) { return Z().n; }
+                                                  ^
+          detected during instantiation of "int cwg674::Y::g(T) [with T=int]" at line 1061
+
+"Test_name.c", line 567: warning: variable "cwg646::b" was declared but never referenced
+    constexpr B b = {}; // ok
+                ^
+
+"Test_name.c", line 604: warning: extern inline function "cwg647::get" was referenced but not defined
+    constexpr int get();
+                  ^
+
+"Test_name.c", line 635: warning: variable "cwg648::a" was declared but never referenced
+    constexpr int a = (true ? 1 : f());
+                  ^
+
+"Test_name.c", line 636: warning: variable "cwg648::b" was declared but never referenced
+    constexpr int b = false && f();
+                  ^
+
+"Test_name.c", line 637: warning: variable "cwg648::c" was declared but never referenced
+    constexpr int c = true || f();
+                  ^
+
+101 errors detected in the compilation of "Test_name.c".

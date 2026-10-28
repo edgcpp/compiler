@@ -1,0 +1,361 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions --exceptions Test_name.c
+"Test_name.c", line 85: error: more than one instance of overloaded function "cwg1512::composite_pointer_type_is_unord" matches the argument list:
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int)" (declared at line 61)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 65)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 67)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 69)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 71)
+      composite_pointer_type_is_unord<nullptr_t, nullptr_t, nullptr_t>();
+      ^
+
+"Test_name.c", line 88: error: more than one instance of overloaded function "cwg1512::composite_pointer_type_is_unord" matches the argument list:
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int)" (declared at line 61)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 65)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 67)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 69)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 71)
+      composite_pointer_type_is_unord<nullptr_t, const char**, const char**>();
+      ^
+
+"Test_name.c", line 89: error: more than one instance of overloaded function "cwg1512::composite_pointer_type_is_unord" matches the argument list:
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int)" (declared at line 61)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 65)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 67)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 69)
+            function template "void cwg1512::composite_pointer_type_is_unord<A,B,C>(__typeof__((<expression>)) *)" (declared at line 71)
+      composite_pointer_type_is_unord<const char**, nullptr_t, const char**>();
+      ^
+
+"Test_name.c", line 101: warning: type qualifier on return type is meaningless
+      no_composite_pointer_type<const int (A::*)(), volatile int (C::*)()>();
+                                ^
+
+"Test_name.c", line 101: warning: type qualifier on return type is meaningless
+      no_composite_pointer_type<const int (A::*)(), volatile int (C::*)()>();
+                                                    ^
+
+"Test_name.c", line 181: error: enum "cwg1514::S::E" has already been defined (previous definition at line 180)
+      enum E : int {};
+           ^
+
+"Test_name.c", line 204: error: the default constructor for "cwg1518::Z0" is explicit
+  Z0 c = {};
+         ^
+
+"Test_name.c", line 207: error: no instance of function template "cwg1518::Eat" matches the argument list
+            argument types are: ({...})
+  int i = Eat<Z0>({});
+          ^
+"Test_name.c", line 201: note: function template "cwg1518::Eat" does not match because argument #1 does not match parameter
+  template <class T> int Eat(T); // #cwg1518-Eat
+                         ^
+
+"Test_name.c", line 211: error: no default constructor exists for class "cwg1518::Z"
+  Z c2 = {};
+         ^
+
+"Test_name.c", line 214: error: no instance of function template "cwg1518::Eat" matches the argument list
+            argument types are: ({...})
+  int i2 = Eat<Z>({});
+           ^
+"Test_name.c", line 201: note: function template "cwg1518::Eat" does not match because argument #1 does not match parameter
+  template <class T> int Eat(T); // #cwg1518-Eat
+                         ^
+
+"Test_name.c", line 217: error: no suitable constructor exists to convert from "int" to "cwg1518::Z"
+  Z a1 = 1;
+         ^
+
+"Test_name.c", line 227: error: copy-list-initialization cannot use a constructor marked "explicit"
+  Z a6 = {4, 3};
+         ^
+
+"Test_name.c", line 237: error: no instance of constructor "cwg1518::DoesntInheritCtor::DoesntInheritCtor" matches the argument list
+            argument types are: ({...}, int)
+  DoesntInheritCtor I{{}, 42};
+                     ^
+"Test_name.c", line 234: note: number of parameters of function "cwg1518::DoesntInheritCtor::DoesntInheritCtor(const cwg1518::DoesntInheritCtor &)" does not match the call
+  struct DoesntInheritCtor : UserProvidedBaseCtor { // #cwg1518-D-U
+         ^
+"Test_name.c", line 234: note: number of parameters of function "cwg1518::DoesntInheritCtor::DoesntInheritCtor(cwg1518::DoesntInheritCtor &&)" does not match the call
+  struct DoesntInheritCtor : UserProvidedBaseCtor { // #cwg1518-D-U
+         ^
+"Test_name.c", line 234: note: number of parameters of function "cwg1518::DoesntInheritCtor::DoesntInheritCtor()" does not match the call
+  struct DoesntInheritCtor : UserProvidedBaseCtor { // #cwg1518-D-U
+         ^
+
+"Test_name.c", line 248: error: no instance of constructor "cwg1518::InheritsCtor::InheritsCtor" matches the argument list
+            argument types are: ({...}, int)
+  InheritsCtor II = {{}, 42};
+                    ^
+"Test_name.c", line 244: note: number of parameters of function "cwg1518::InheritsCtor::InheritsCtor(const cwg1518::InheritsCtor &)" does not match the call
+  struct InheritsCtor : BaseCtor { // #cwg1518-I
+         ^
+"Test_name.c", line 244: note: number of parameters of function "cwg1518::InheritsCtor::InheritsCtor(cwg1518::InheritsCtor &&)" does not match the call
+  struct InheritsCtor : BaseCtor { // #cwg1518-I
+         ^
+"Test_name.c", line 244: note: number of parameters of function "cwg1518::InheritsCtor::InheritsCtor()" does not match the call
+  struct InheritsCtor : BaseCtor { // #cwg1518-I
+         ^
+
+"Test_name.c", line 343: error: function "cwg1558::f<T>(...) [with T=int]" (declared at line 338) cannot be referenced -- it is a deleted function
+      f<int>(0);
+      ^
+
+"Test_name.c", line 352: warning: parameter "n" was set but never used
+    void f(bool b, int n) {
+                       ^
+
+"Test_name.c", line 392: error: no instance of constructor "cwg1567::B::B" matches the argument list
+            argument types are: (cwg1567::A)
+  B b4{a};
+      ^
+"Test_name.c", line 382: note: function "cwg1567::B::A(int)" does not match because argument #1 does not match parameter
+    using A::A; // #cwg1567-using-A
+    ^
+"Test_name.c", line 381: note: function "cwg1567::B::B(const cwg1567::B &)" does not match because argument #1 does not match parameter
+  struct B: A { // #cwg1567-B
+         ^
+"Test_name.c", line 381: note: function "cwg1567::B::B(cwg1567::B &&)" does not match because argument #1 does not match parameter
+  struct B: A { // #cwg1567-B
+         ^
+"Test_name.c", line 383: note: function "cwg1567::B::B(double)" does not match because argument #1 does not match parameter
+    B(double); // #cwg1567-B-double
+    ^
+
+"Test_name.c", line 399: error: no instance of constructor "cwg1567::B::B" matches the argument list
+            argument types are: (cwg1567::A)
+  B b5{A{0}};
+      ^
+"Test_name.c", line 382: note: function "cwg1567::B::A(int)" does not match because argument #1 does not match parameter
+    using A::A; // #cwg1567-using-A
+    ^
+"Test_name.c", line 381: note: function "cwg1567::B::B(const cwg1567::B &)" does not match because argument #1 does not match parameter
+  struct B: A { // #cwg1567-B
+         ^
+"Test_name.c", line 381: note: function "cwg1567::B::B(cwg1567::B &&)" does not match because argument #1 does not match parameter
+  struct B: A { // #cwg1567-B
+         ^
+"Test_name.c", line 383: note: function "cwg1567::B::B(double)" does not match because argument #1 does not match parameter
+    B(double); // #cwg1567-B-double
+    ^
+
+"Test_name.c", line 421: error: expression must have a constant value
+    constexpr E e = E(0);
+                    ^
+
+"Test_name.c", line 421: error: a constexpr variable must have a literal type or a reference type
+    constexpr E e = E(0);
+    ^
+
+"Test_name.c", line 428: error: expression must have a constant value
+    constexpr F f = F(0);
+                    ^
+"Test_name.c", line 428: note: cannot call non-constexpr function "cwg1573::F::C(int)" (declared implicitly)
+    constexpr F f = F(0);
+                    ^
+
+"Test_name.c", line 439: error: the sub-object construction of "cwg1573::H" for inheriting constructors cannot be performed -- the associated constructor is deleted
+    H h(0);
+        ^
+
+"Test_name.c", line 446: error: the sub-object construction of "cwg1573::J" for inheriting constructors cannot be performed -- the associated constructor is deleted
+    J j(0);
+        ^
+
+"Test_name.c", line 526: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const int &) [with T=float]" (declared at line 499) cannot be referenced -- it is a deleted function
+      return AnInt;
+             ^
+
+"Test_name.c", line 530: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const cwg1579::GenericMoveOnly<U> &) [with T=float, U=char]" (declared at line 498) cannot be referenced -- it is a deleted function
+      return GlobalMO;
+             ^
+
+"Test_name.c", line 534: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const cwg1579::GenericMoveOnly<U> &) [with T=float, U=char]" (declared at line 498) cannot be referenced -- it is a deleted function
+      return StaticMove;
+             ^
+
+"Test_name.c", line 538: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const cwg1579::GenericMoveOnly<U> &) [with T=float, U=char]" (declared at line 498) cannot be referenced -- it is a deleted function
+      return ExternMove;
+             ^
+
+"Test_name.c", line 542: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const int &) [with T=float]" (declared at line 499) cannot be referenced -- it is a deleted function
+      return AnInt;
+             ^
+
+"Test_name.c", line 546: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const cwg1579::GenericMoveOnly<U> &) [with T=float, U=char]" (declared at line 498) cannot be referenced -- it is a deleted function
+      return CharMO;
+             ^
+
+"Test_name.c", line 558: error: function "cwg1579::GenericMoveOnly<T>::GenericMoveOnly(const cwg1579::GenericMoveOnly<U> &) [with T=char, U=float]" (declared at line 498) cannot be referenced -- it is a deleted function
+    return mo;
+           ^
+
+"Test_name.c", line 574: error: no instance of function template "cwg1584::f" matches the argument list
+            argument types are: (void (*)())
+    f(&i);
+    ^
+"Test_name.c", line 567: note: candidate function template "cwg1584::f" failed deduction
+  template<typename T> void f(const T *); // #cwg1584-f
+                            ^
+
+"Test_name.c", line 616: error: more than one instance of overloaded function "cwg1589::with_error::f0" matches the argument list:
+            function "cwg1589::with_error::f0(std::initializer_list<int>)" (declared at line 614)
+            function "cwg1589::with_error::f0(std::initializer_list<int>, int)" (declared at line 615)
+            argument types are: ({...})
+      void g0() { f0({1L}); }
+                  ^
+
+"Test_name.c", line 624: error: more than one instance of overloaded function "cwg1589::with_error::f1" matches the argument list:
+            function "cwg1589::with_error::f1(std::initializer_list<long>)" (declared at line 622)
+            function "cwg1589::with_error::f1(std::initializer_list<long>, int)" (declared at line 623)
+            argument types are: ({...})
+      void g1() { f1({42}); }
+                  ^
+
+"Test_name.c", line 632: error: more than one instance of overloaded function "cwg1589::with_error::f2" matches the argument list:
+            function "cwg1589::with_error::f2(std::initializer_list<std::string>)" (declared at line 630)
+            function "cwg1589::with_error::f2(std::initializer_list<std::string>, int)" (declared at line 631)
+            argument types are: ({...})
+      void g2() { f2({"foo","bar"}); }
+                  ^
+"Test_name.c", line 629: note: function "cwg1589::with_error::f2(std::pair<const char *, const char *>)" does not match because argument #1 does not match parameter
+      void f2(std::pair<const char*, const char*>);
+           ^
+
+"Test_name.c", line 650: error: no instance of function template "cwg1591::k" matches the argument list
+            argument types are: ({...})
+    int Y0 = k({1,2,3});
+             ^
+"Test_name.c", line 649: note: candidate function template "cwg1591::k" failed deduction
+    template<int N> int k(Aggr const(&)[N]); // #cwg1591-k
+                        ^
+
+"Test_name.c", line 668: error: no instance of overloaded function "cwg1591::check_multi_dim_arrays::f" matches the argument list
+            argument types are: ({...})
+      int ***p33 = f({  {  {1,2}, {3, 4}  }, {  {5,6}, {7, 8}  }, {  {9,10}, {11, 12, 13}  } });
+                   ^
+"Test_name.c", line 666: note: candidate function template "cwg1591::check_multi_dim_arrays::f(const T (&)[N])" failed deduction
+     template<class T, int N> int *f(const T (&a)[N]); // #cwg1591-f-1
+                                   ^
+"Test_name.c", line 664: note: candidate function template "cwg1591::check_multi_dim_arrays::f(const T (&)[N][M])" failed deduction
+      template<class T, int N, int M> int **f(const T (&a)[N][M]); // #cwg1591-f-2
+                                            ^
+"Test_name.c", line 663: note: candidate function template "cwg1591::check_multi_dim_arrays::f(const T (&)[N][M][O])" failed deduction
+      template<class T, int N, int M, int O> int ***f(const T (&a)[N][M][O]); // #cwg1591-f-3
+                                                    ^
+
+"Test_name.c", line 683: error: no instance of overloaded function "cwg1591::check_multi_dim_arrays_rref::g" matches the argument list
+            argument types are: ({...})
+      int ***p33 = g({  {  {1,2}, {3, 4}  }, {  {5,6}, {7, 8}  }, {  {9,10}, {11, 12, 13}  } });
+                   ^
+"Test_name.c", line 681: note: candidate function template "cwg1591::check_multi_dim_arrays_rref::g(T (&&)[N])" failed deduction
+      template<class T, int N> int *g(T (&&a)[N]); // #cwg1591-g-1
+                                    ^
+"Test_name.c", line 679: note: candidate function template "cwg1591::check_multi_dim_arrays_rref::g(T (&&)[N][M])" failed deduction
+      template<class T, int N, int M> int **g(T (&&a)[N][M]); // #cwg1591-g-2
+                                            ^
+"Test_name.c", line 678: note: candidate function template "cwg1591::check_multi_dim_arrays_rref::g(T (&&)[N][M][O])" failed deduction
+      template<class T, int N, int M, int O> int ***g(T (&&a)[N][M][O]); // #cwg1591-g-3
+                                                    ^
+
+"Test_name.c", line 32: error: operand types are incompatible ("const int *cwg1512::A::*" and "volatile int *cwg1512::B::*")
+      typedef __typeof(true ? val<A>() : val<B>()) type;
+                                       ^
+          detected during:
+            instantiation of "void cwg1512::composite_pointer_type_is_base<A,B,C>() [with A=const int *cwg1512::A::*, B=volatile int *cwg1512::B::*, C=const volatile int *const cwg1512::B::*]" at line 62
+            instantiation of "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int) [with A=const int *cwg1512::A::*, B=volatile int *cwg1512::B::*, C=const volatile int *const cwg1512::B::*]" at line 98
+
+"Test_name.c", line 35: error: operand types are incompatible ("const int *cwg1512::A::*" and "volatile int *cwg1512::B::*")
+      typedef __typeof(val<A>() == val<B>()) cmp;
+                                ^
+          detected during:
+            instantiation of "void cwg1512::composite_pointer_type_is_base<A,B,C>() [with A=const int *cwg1512::A::*, B=volatile int *cwg1512::B::*, C=const volatile int *const cwg1512::B::*]" at line 62
+            instantiation of "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int) [with A=const int *cwg1512::A::*, B=volatile int *cwg1512::B::*, C=const volatile int *const cwg1512::B::*]" at line 98
+
+"Test_name.c", line 36: error: operand types are incompatible ("const int *cwg1512::A::*" and "volatile int *cwg1512::B::*")
+      typedef __typeof(val<A>() != val<B>()) cmp;
+                                ^
+          detected during:
+            instantiation of "void cwg1512::composite_pointer_type_is_base<A,B,C>() [with A=const int *cwg1512::A::*, B=volatile int *cwg1512::B::*, C=const volatile int *const cwg1512::B::*]" at line 62
+            instantiation of "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int) [with A=const int *cwg1512::A::*, B=volatile int *cwg1512::B::*, C=const volatile int *const cwg1512::B::*]" at line 98
+
+"Test_name.c", line 32: error: operand types are incompatible ("const int *cwg1512::B::*" and "volatile int *cwg1512::A::*")
+      typedef __typeof(true ? val<A>() : val<B>()) type;
+                                       ^
+          detected during:
+            instantiation of "void cwg1512::composite_pointer_type_is_base<A,B,C>() [with A=const int *cwg1512::B::*, B=volatile int *cwg1512::A::*, C=const volatile int *const cwg1512::B::*]" at line 62
+            instantiation of "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int) [with A=const int *cwg1512::B::*, B=volatile int *cwg1512::A::*, C=const volatile int *const cwg1512::B::*]" at line 99
+
+"Test_name.c", line 35: error: operand types are incompatible ("const int *cwg1512::B::*" and "volatile int *cwg1512::A::*")
+      typedef __typeof(val<A>() == val<B>()) cmp;
+                                ^
+          detected during:
+            instantiation of "void cwg1512::composite_pointer_type_is_base<A,B,C>() [with A=const int *cwg1512::B::*, B=volatile int *cwg1512::A::*, C=const volatile int *const cwg1512::B::*]" at line 62
+            instantiation of "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int) [with A=const int *cwg1512::B::*, B=volatile int *cwg1512::A::*, C=const volatile int *const cwg1512::B::*]" at line 99
+
+"Test_name.c", line 36: error: operand types are incompatible ("const int *cwg1512::B::*" and "volatile int *cwg1512::A::*")
+      typedef __typeof(val<A>() != val<B>()) cmp;
+                                ^
+          detected during:
+            instantiation of "void cwg1512::composite_pointer_type_is_base<A,B,C>() [with A=const int *cwg1512::B::*, B=volatile int *cwg1512::A::*, C=const volatile int *const cwg1512::B::*]" at line 62
+            instantiation of "void cwg1512::composite_pointer_type_is_unord<A,B,C>(int) [with A=const int *cwg1512::B::*, B=volatile int *cwg1512::A::*, C=const volatile int *const cwg1512::B::*]" at line 99
+
+"Test_name.c", line 279: error: the default constructor for "cwg1518::std_example::A" is explicit
+      T v = {}; // #cwg1518-v
+            ^
+          detected during instantiation of "void cwg1518::std_example::f<T>() [with T=cwg1518::std_example::A]" at line 315
+
+"Test_name.c", line 279: error: the default constructor for "cwg1518::std_example::B" is explicit
+      T v = {}; // #cwg1518-v
+            ^
+          detected during instantiation of "void cwg1518::std_example::f<T>() [with T=cwg1518::std_example::B]" at line 316
+
+"Test_name.c", line 279: error: no default constructor exists for class "cwg1518::std_example::C"
+      T v = {}; // #cwg1518-v
+            ^
+          detected during instantiation of "void cwg1518::std_example::f<T>() [with T=cwg1518::std_example::C]" at line 317
+
+"Test_name.c", line 279: error: no default constructor exists for class "cwg1518::std_example::D"
+      T v = {}; // #cwg1518-v
+            ^
+          detected during instantiation of "void cwg1518::std_example::f<T>() [with T=cwg1518::std_example::D]" at line 318
+
+"Test_name.c", line 295: error: the default constructor for "cwg1518::std_example::A" is explicit
+      x({}); // #cwg1518-x-call
+        ^
+          detected during instantiation of "void cwg1518::std_example::g<T>() [with T=cwg1518::std_example::A]" at line 319
+
+"Test_name.c", line 295: error: the default constructor for "cwg1518::std_example::B" is explicit
+      x({}); // #cwg1518-x-call
+        ^
+          detected during instantiation of "void cwg1518::std_example::g<T>() [with T=cwg1518::std_example::B]" at line 320
+
+"Test_name.c", line 295: error: no default constructor exists for class "cwg1518::std_example::C"
+      x({}); // #cwg1518-x-call
+        ^
+          detected during instantiation of "void cwg1518::std_example::g<T>() [with T=cwg1518::std_example::C]" at line 321
+
+"Test_name.c", line 295: error: no default constructor exists for class "cwg1518::std_example::D"
+      x({}); // #cwg1518-x-call
+        ^
+          detected during instantiation of "void cwg1518::std_example::g<T>() [with T=cwg1518::std_example::D]" at line 322
+
+"Test_name.c", line 569: error: name followed by "::" must be a class or namespace name
+  template<typename T> void h(T *) { T::error; }
+                                     ^
+          detected during instantiation of "void cwg1584::h(T *) [with T=void ()]" at line 578
+
+"Test_name.c", line 419: warning: variable "cwg1573::d" was declared but never referenced
+    constexpr D d = D(0); // ok
+                ^
+
+"Test_name.c", line 421: warning: variable "cwg1573::e" was declared but never referenced
+    constexpr E e = E(0);
+                ^
+
+"Test_name.c", line 428: warning: variable "cwg1573::f" was declared but never referenced
+    constexpr F f = F(0);
+                ^
+
+49 errors detected in the compilation of "Test_name.c".

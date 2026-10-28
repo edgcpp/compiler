@@ -1,0 +1,73 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 16: warning: unknown attribute "vector_size"
+  typedef V (1) char VC1;
+          ^
+
+"Test_name.c", line 17: warning: unknown attribute "vector_size"
+  typedef V (2) char VC2;
+          ^
+
+"Test_name.c", line 18: warning: unknown attribute "vector_size"
+  typedef V (4) char VC4;
+          ^
+
+"Test_name.c", line 19: warning: unknown attribute "vector_size"
+  typedef V (8) char VC8;
+          ^
+
+"Test_name.c", line 20: warning: unknown attribute "vector_size"
+  typedef V (16) char VC16;
+          ^
+
+"Test_name.c", line 39: warning: excess initializers are ignored
+    *(VC2*)a2 = C2;
+                ^
+
+"Test_name.c", line 40: warning: excess initializers are ignored
+    *(VC4*)a4 = C4;
+                ^
+
+"Test_name.c", line 41: warning: excess initializers are ignored
+    *(VC4*)a5 = C4;
+                ^
+
+"Test_name.c", line 42: warning: excess initializers are ignored
+    *(VC4*)a6 = C4;
+                ^
+
+"Test_name.c", line 43: warning: excess initializers are ignored
+    *(VC4*)a7 = C4;
+                ^
+
+"Test_name.c", line 44: warning: excess initializers are ignored
+    *(VC8*)a8 = C8;
+                ^
+
+"Test_name.c", line 45: warning: excess initializers are ignored
+    *(VC8*)a15 = C8;
+                 ^
+
+"Test_name.c", line 50: warning: excess initializers are ignored
+    *(VC2*)a1 = C2;       // { dg-warning "writing 2 bytes into a region of size 1" }
+                ^
+
+"Test_name.c", line 51: warning: excess initializers are ignored
+    *(VC4*)a2 = C4;       // { dg-warning "writing 4 bytes into a region of size 2" }
+                ^
+
+"Test_name.c", line 52: warning: excess initializers are ignored
+    *(VC4*)a3 = C4;       // { dg-warning "writing 4 bytes into a region of size 3" }
+                ^
+
+"Test_name.c", line 53: warning: excess initializers are ignored
+    *(VC8*)a4 = C8;       // { dg-warning "writing 8 bytes into a region of size 4" }
+                ^
+
+"Test_name.c", line 54: warning: excess initializers are ignored
+    *(VC8*)a7 = C8;       // { dg-warning "writing 8 bytes into a region of size 7" }
+                ^
+
+"Test_name.c", line 55: warning: excess initializers are ignored
+    *(VC16*)a15 = C16;    // { dg-warning "writing 16 bytes into a region of size 15" }
+                  ^
+

@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 15: error: enum "A<T>::E [with T=int]" has no member "e1"
+  int n = A<int>::E::e1; // expected-error {{implicit instantiation of undefined member}}
+                     ^
+
+"Test_name.c", line 25: error: class "A<int>" has no member "e1"
+  A<int>::E a1 = A<int>::e1; // expected-error {{no member named 'e1' in 'A<int>'; did you mean simply 'e1'?}}
+                         ^
+
+"Test_name.c", line 48: error: identifier "e2" is undefined
+  template<typename T> typename B<T>::E B<T>::g() { return e2; }
+                                                           ^
+
+"Test_name.c", line 56: error: an unscoped enumeration must be opaque in order to be specialized
+  template<> enum A<long long>::E : long long { e3, e4 }; // expected-error {{explicit specialization of 'E' after instantiation}} expected-note {{first required here}}
+                                ^
+
+"Test_name.c", line 82: error: enum "C<T>::E [with T=int]" has no member "e0"
+  C<int>::E c4 = C<int>::E::e0; // expected-error {{no member named 'e0' in 'C<int>::E'}}
+                            ^
+
+"Test_name.c", line 86: error: template parameter "B<T>::E [with T=T *]" (declared at line 86) cannot be used as an enum type name
+  template<typename T> enum class B<T*>::E { e5, e6 }; // expected-error {{nested name specifier for a declaration cannot depend on a template parameter}}
+                                         ^
+
+"Test_name.c", line 95: error: enum "D<T>::E [with T=int]" has no member "e1"
+  D<int>::E d1 = D<int>::E::e1; // expected-error {{incomplete type 'D<int>::E'}}
+                            ^
+
+"Test_name.c", line 99: error: enum "D<T>::E [with T=char]" has no member "e2"
+  D<char>::E d4 = D<char>::E::e2; // expected-error {{no member named 'e2' in 'D<char>::E'; did you mean simply 'e2'?}}
+                              ^
+
+"Test_name.c", line 100: error: explicit specialization of enum "D<T>::E [with T=char]" must precede its first use (at line 98)
+  template<> enum class D<char>::E { e3 }; // expected-error {{explicit specialization of 'E' after instantiation}}
+                                 ^
+
+"Test_name.c", line 106: error: invalid friend declaration
+    template<typename T> friend enum D<T>::E; // expected-warning {{elaborated enum specifier cannot be declared as a friend}}
+                         ^
+
+"Test_name.c", line 108: error: an explicit specialization declaration may not be a friend declaration
+    template<> friend enum D<short>::E; // expected-warning {{elaborated enum specifier cannot be declared as a friend}}
+               ^
+
+"Test_name.c", line 111: error: enum "D<T>::E [with T=double]" cannot be defined in the current scope
+    template<> friend enum D<double>::E { e3 }; // expected-error {{cannot define a type in a friend declaration}}
+                           ^
+
+"Test_name.c", line 111: error: an explicit specialization declaration may not be a friend declaration
+    template<> friend enum D<double>::E { e3 }; // expected-error {{cannot define a type in a friend declaration}}
+               ^
+
+"Test_name.c", line 119: error: member "F::n" (declared at line 116) is inaccessible
+    e = F::n // expected-error {{private member}}
+           ^
+
+"Test_name.c", line 143: error: type "Access::S::N" (declared at line 133) is inaccessible
+    : Access::S::N { // expected-error {{private member}}
+                 ^
+
+"Test_name.c", line 145: error: member "Access::S::k" (declared at line 134) is inaccessible
+    b = Access::S::k // expected-error {{private member}}
+                   ^
+
+"Test_name.c", line 150: error: member "Access::S::k" (declared at line 134) is inaccessible
+    d = Access::S::k
+                   ^
+
+17 errors detected in the compilation of "Test_name.c".

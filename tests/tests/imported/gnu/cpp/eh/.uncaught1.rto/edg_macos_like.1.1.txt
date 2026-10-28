@@ -1,0 +1,39 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/type_traits", line 519: error: identifier "__float128" is undefined
+      struct __is_floating_point_helper<__float128>
+                                        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 142: error: identifier "__float128" is undefined
+    __float128
+    ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 143: error: identifier "__float128" is undefined
+    abs(__float128 __x)
+        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 151: error: function call requires a real floating-point argument
+      return __builtin_signbit(__x) ? -__x : __x;
+                              ^
+
+"./eh/uncaught1.C", line 51: warning: function "std::uncaught_exception" was declared deprecated ("use 'std::uncaught_exceptions()' instead")
+    test (id, id, std::uncaught_exception ());
+                       ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 126: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__ ("use '" "std::uncaught_exceptions()" "' instead")))
+                    ^
+
+"./eh/uncaught1.C", line 57: warning: function "std::uncaught_exception" was declared deprecated ("use 'std::uncaught_exceptions()' instead")
+    test (id, x.id, std::uncaught_exception ());
+                         ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 126: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__ ("use '" "std::uncaught_exceptions()" "' instead")))
+                    ^
+
+"./eh/uncaught1.C", line 62: warning: function "std::uncaught_exception" was declared deprecated ("use 'std::uncaught_exceptions()' instead")
+    test (id, id, std::uncaught_exception ());
+                       ^
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/exception", line 126: note: because of a "deprecated" attribute
+    __attribute__ ((__deprecated__ ("use '" "std::uncaught_exceptions()" "' instead")))
+                    ^
+
+4 errors detected in the compilation of "Test_name.c".

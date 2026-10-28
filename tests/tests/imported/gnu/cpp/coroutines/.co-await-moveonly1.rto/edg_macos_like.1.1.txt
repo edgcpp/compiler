@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./coroutines/co-await-moveonly1.C", line 47: error: identifier "co_await" is undefined
+          co_await MoveOnlyAwaitable();
+          ^
+
+"./coroutines/co-await-moveonly1.C", line 53: error: identifier "co_await" is undefined
+          co_await std::move(moveonly);
+          ^
+
+"./coroutines/co-await-moveonly1.C", line 53: error: qualified name is not allowed
+          co_await std::move(moveonly);
+                   ^
+
+"./coroutines/co-await-moveonly1.C", line 61: error: identifier "co_await" is undefined
+          co_await moveonly;
+          ^
+
+"./coroutines/co-await-moveonly1.C", line 61: error: "moveonly" has already been declared in the current scope
+          co_await moveonly;
+                   ^
+
+"./coroutines/co-await-moveonly1.C", line 60: warning: variable "moveonly" was declared but never referenced
+          auto moveonly = MoveOnlyAwaitable();
+               ^
+
+"./coroutines/co-await-moveonly1.C", line 63: warning: missing return statement at end of non-void function "myCoroutine"
+  }
+  ^
+
+5 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,399 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/atomic-ops.c", line 49: error: function call is not allowed in a constant expression
+  _Static_assert(__c11_atomic_is_lock_free(3), "");
+                                          ^
+
+"Sema/atomic-ops.c", line 51: error: function call is not allowed in a constant expression
+  _Static_assert(__c11_atomic_is_lock_free(8), "");
+                                          ^
+
+"Sema/atomic-ops.c", line 53: error: function call is not allowed in a constant expression
+  _Static_assert(__c11_atomic_is_lock_free(16), "");
+                                          ^
+
+"Sema/atomic-ops.c", line 57: error: function call is not allowed in a constant expression
+  _Static_assert(__c11_atomic_is_lock_free(17), "");
+                                          ^
+
+"Sema/atomic-ops.c", line 61: error: function call is not allowed in a constant expression
+  _Static_assert(__atomic_is_lock_free(3, 0), "");
+                                      ^
+
+"Sema/atomic-ops.c", line 65: error: function call is not allowed in a constant expression
+  _Static_assert(__atomic_is_lock_free(16, 0), "");
+                                      ^
+
+"Sema/atomic-ops.c", line 69: error: function call is not allowed in a constant expression
+  _Static_assert(__atomic_is_lock_free(17, 0), "");
+                                      ^
+
+"Sema/atomic-ops.c", line 74: error: function call is not allowed in a constant expression
+  _Static_assert(__c11_atomic_is_lock_free(sizeof(*((atomic_long*)0))), "");
+                                          ^
+
+"Sema/atomic-ops.c", line 77: error: function call is not allowed in a constant expression
+  _Static_assert(__c11_atomic_is_lock_free(sizeof(*((_Atomic(__int128)*)0))), "");
+                                          ^
+
+"Sema/atomic-ops.c", line 112: error: expression must have a constant value
+  _Static_assert(__atomic_always_lock_free(1, incomplete), "");
+                                              ^
+"Sema/atomic-ops.c", line 112: note: the value of variable "incomplete" (declared at line 87) cannot be used as a constant
+  _Static_assert(__atomic_always_lock_free(1, incomplete), "");
+                                              ^
+
+"Sema/atomic-ops.c", line 113: error: expression must have a constant value
+  _Static_assert(!__atomic_always_lock_free(2, incomplete), "");
+                                               ^
+"Sema/atomic-ops.c", line 113: note: the value of variable "incomplete" (declared at line 87) cannot be used as a constant
+  _Static_assert(!__atomic_always_lock_free(2, incomplete), "");
+                                               ^
+
+"Sema/atomic-ops.c", line 113: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(2, incomplete), "");
+  ^
+
+"Sema/atomic-ops.c", line 114: error: expression must have a constant value
+  _Static_assert(!__atomic_always_lock_free(4, incomplete), "");
+                                               ^
+"Sema/atomic-ops.c", line 114: note: the value of variable "incomplete" (declared at line 87) cannot be used as a constant
+  _Static_assert(!__atomic_always_lock_free(4, incomplete), "");
+                                               ^
+
+"Sema/atomic-ops.c", line 114: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(4, incomplete), "");
+  ^
+
+"Sema/atomic-ops.c", line 118: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(2, &i8), "");
+  ^
+
+"Sema/atomic-ops.c", line 121: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(4, &i16), "");
+  ^
+
+"Sema/atomic-ops.c", line 124: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(8, &i32), "");
+  ^
+
+"Sema/atomic-ops.c", line 138: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(4, (void*)2), "");
+  ^
+
+"Sema/atomic-ops.c", line 139: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(4, (void*)-2), "");
+  ^
+
+"Sema/atomic-ops.c", line 145: error: static assertion failed with ""
+  _Static_assert(!__atomic_always_lock_free(2, "string"), "");
+  ^
+
+"Sema/atomic-ops.c", line 160: error: must be an _Atomic qualified type
+    __c11_atomic_init(I, 5);
+                      ^
+
+"Sema/atomic-ops.c", line 163: error: too few arguments in function call
+    __c11_atomic_load(0);
+                       ^
+
+"Sema/atomic-ops.c", line 164: warning: extra arguments ignored
+    __c11_atomic_load(0,0,0);
+                          ^
+
+"Sema/atomic-ops.c", line 164: error: first argument must be a pointer to integer or enum type
+    __c11_atomic_load(0,0,0);
+                      ^
+
+"Sema/atomic-ops.c", line 165: error: first argument must be a pointer to integer or enum type
+    __c11_atomic_store(0,0,0);
+                       ^
+
+"Sema/atomic-ops.c", line 166: error: must be an _Atomic qualified type
+    __c11_atomic_store((int*)0,0,0);
+                       ^
+
+"Sema/atomic-ops.c", line 177: error: first argument must be a pointer to integer or enum type
+    float load_n_3 = __atomic_load_n(D, memory_order_relaxed);
+                                     ^
+
+"Sema/atomic-ops.c", line 177: error: a value of type "void" cannot be used to initialize an entity of type "float"
+    float load_n_3 = __atomic_load_n(D, memory_order_relaxed);
+                     ^
+
+"Sema/atomic-ops.c", line 178: error: first argument must be a pointer to integer or enum type
+    __atomic_load_n(s1, memory_order_relaxed);
+                    ^
+
+"Sema/atomic-ops.c", line 186: warning: extra arguments ignored
+    __atomic_load(I, *P, memory_order_relaxed, 42);
+                                               ^
+
+"Sema/atomic-ops.c", line 187: error: invalid type conversion
+    (int)__atomic_load(I, I, memory_order_seq_cst);
+    ^
+
+"Sema/atomic-ops.c", line 194: warning: argument of type "int" is incompatible with parameter of type "int *"
+    __c11_atomic_store(p, 1, memory_order_seq_cst);
+                          ^
+
+"Sema/atomic-ops.c", line 194: warning: conversion of nonzero integer to pointer
+    __c11_atomic_store(p, 1, memory_order_seq_cst);
+                          ^
+
+"Sema/atomic-ops.c", line 195: error: invalid type conversion
+    (int)__c11_atomic_store(f, 1, memory_order_seq_cst);
+    ^
+
+"Sema/atomic-ops.c", line 199: warning: argument of type "const int *" is incompatible with parameter of type "volatile void *"
+    __atomic_store_n(CI, 4, memory_order_release);
+                     ^
+
+"Sema/atomic-ops.c", line 201: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    __atomic_store_n(i, 1, memory_order_release);
+                     ^
+
+"Sema/atomic-ops.c", line 202: error: first argument must be a pointer to integer or enum type
+    __atomic_store_n(s1, *s2, memory_order_release);
+                     ^
+
+"Sema/atomic-ops.c", line 211: error: must be an _Atomic qualified type
+    int exchange_2 = __c11_atomic_exchange(I, 1, memory_order_seq_cst);
+                                           ^
+
+"Sema/atomic-ops.c", line 211: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int exchange_2 = __c11_atomic_exchange(I, 1, memory_order_seq_cst);
+                     ^
+
+"Sema/atomic-ops.c", line 212: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    int exchange_3 = __atomic_exchange_n(i, 1, memory_order_seq_cst);
+                                         ^
+
+"Sema/atomic-ops.c", line 216: error: argument of type "struct S *" is incompatible with parameter of type "int *"
+    __atomic_exchange(s1, I, P, memory_order_seq_cst);
+                          ^
+
+"Sema/atomic-ops.c", line 217: error: invalid type conversion
+    (int)__atomic_exchange(s1, s2, s2, memory_order_seq_cst);
+    ^
+
+"Sema/atomic-ops.c", line 238: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    __atomic_fetch_add(i, 3, memory_order_seq_cst);
+                       ^
+
+"Sema/atomic-ops.c", line 242: error: first argument must be a pointer to integer, enum, or supported floating-point type
+    __atomic_fetch_sub(s1, 3, memory_order_seq_cst);
+                       ^
+
+"Sema/atomic-ops.c", line 257: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    __atomic_fetch_and(i, 3, memory_order_seq_cst);
+                       ^
+
+"Sema/atomic-ops.c", line 260: error: first argument must be a pointer to integer or enum type
+    __atomic_fetch_or(F, 3, memory_order_seq_cst);
+                      ^
+
+"Sema/atomic-ops.c", line 261: error: first argument must be a pointer to integer or enum type
+    __atomic_fetch_and(s1, 3, memory_order_seq_cst);
+                       ^
+
+"Sema/atomic-ops.c", line 265: warning: argument of type "int *" is incompatible with parameter of type "float *"
+    _Bool cmpexch_3 = __c11_atomic_compare_exchange_strong(f, I, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                                              ^
+
+"Sema/atomic-ops.c", line 266: warning: argument of type "const int *" is incompatible with parameter of type "int *"
+    (void)__c11_atomic_compare_exchange_strong(i, CI, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                                  ^
+
+"Sema/atomic-ops.c", line 270: warning: argument of type "int *" is incompatible with parameter of type "float *"
+    _Bool cmpexchw_3 = __c11_atomic_compare_exchange_weak(f, I, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                                             ^
+
+"Sema/atomic-ops.c", line 271: warning: argument of type "const int *" is incompatible with parameter of type "int *"
+    (void)__c11_atomic_compare_exchange_weak(i, CI, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                                ^
+
+"Sema/atomic-ops.c", line 276: warning: argument of type "const int *" is incompatible with parameter of type "volatile void *"
+    (void)__atomic_compare_exchange_n(CI, I, 5, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                      ^
+
+"Sema/atomic-ops.c", line 277: warning: argument of type "const int *" is incompatible with parameter of type "void *"
+    (void)__atomic_compare_exchange_n(I, CI, 5, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                         ^
+
+"Sema/atomic-ops.c", line 279: error: expression must be a pointer to a complete object type
+    _Bool cmpexch_7 = __atomic_compare_exchange(I, I, 5, 1, memory_order_seq_cst, memory_order_seq_cst);
+                                                      ^
+
+"Sema/atomic-ops.c", line 280: error: argument of type "int *" is incompatible with parameter of type "int **"
+    _Bool cmpexch_8 = __atomic_compare_exchange(I, P, I, 0, memory_order_seq_cst, memory_order_seq_cst);
+                                                   ^
+
+"Sema/atomic-ops.c", line 294: error: invalid type conversion
+    (int)__atomic_clear(&flag, memory_order_seq_cst);
+    ^
+
+"Sema/atomic-ops.c", line 300: warning: variable "lock" is used before its value is set
+    __atomic_test_and_set(lock, memory_order_acquire);
+                          ^
+
+"Sema/atomic-ops.c", line 321: warning: argument of type "void *" is incompatible with parameter of type "int"
+    __c11_atomic_init(&n, (void*)0);
+                          ^
+
+"Sema/atomic-ops.c", line 323: warning: const variable "cawt" requires an initializer
+    const atomic_wchar_t cawt;
+                             ^
+
+"Sema/atomic-ops.c", line 330: error: too few arguments in function call
+    __c11_atomic_thread_fence();
+                              ^
+
+"Sema/atomic-ops.c", line 343: warning: argument of type "int" is incompatible with parameter of type "int *"
+    __c11_atomic_compare_exchange_strong(&n, k, k, 5, 5);
+                                             ^
+
+"Sema/atomic-ops.c", line 345: error: too few arguments in function call
+    __c11_atomic_compare_exchange_strong(&n, &k, k, memory_order_seq_cst);
+                                                                        ^
+
+"Sema/atomic-ops.c", line 348: error: must be an _Atomic qualified type
+    __c11_atomic_fetch_add(&k, n, 5);
+                           ^
+
+"Sema/atomic-ops.c", line 370: warning: const variable "const_guard" requires an initializer
+    const atomic_flag const_guard;
+                                 ^
+
+"Sema/atomic-ops.c", line 328: warning: variable "x" was declared but never referenced
+    int x = (12);
+        ^
+
+"Sema/atomic-ops.c", line 333: warning: variable "pfn" was set but never used
+    void (*pfn)(memory_order) = &atomic_thread_fence;
+           ^
+
+"Sema/atomic-ops.c", line 361: warning: variable "must_be_struct" was declared but never referenced
+    struct atomic_flag must_be_struct = { 0 };
+                       ^
+
+"Sema/atomic-ops.c", line 376: warning: variable "b" was declared but never referenced
+  void PR12527(void) { int *b = PR12527_a; }
+                            ^
+
+"Sema/atomic-ops.c", line 381: warning: argument of type "flag *" (aka "struct <unnamed> *") is incompatible with parameter of type "int *"
+    PR16931(&flagvar);
+            ^
+
+"Sema/atomic-ops.c", line 703: error: a flexible array member cannot be declared in an otherwise-empty type
+    char z[];
+            ^
+
+"Sema/atomic-ops.c", line 737: error: expression must be a pointer to a complete object type
+    __atomic_exchange(&IncB, &IncB, &IncC, memory_order_relaxed);
+                      ^
+
+"Sema/atomic-ops.c", line 738: error: expression must be a pointer to a complete object type
+    __atomic_exchange(&IncB, &IncB, &IncC, memory_order_acq_rel);
+                      ^
+
+"Sema/atomic-ops.c", line 739: error: expression must be a pointer to a complete object type
+    __atomic_exchange(&IncB, &IncB, &IncC, memory_order_acquire);
+                      ^
+
+"Sema/atomic-ops.c", line 740: error: expression must be a pointer to a complete object type
+    __atomic_exchange(&IncB, &IncB, &IncC, memory_order_consume);
+                      ^
+
+"Sema/atomic-ops.c", line 741: error: expression must be a pointer to a complete object type
+    __atomic_exchange(&IncB, &IncB, &IncC, memory_order_release);
+                      ^
+
+"Sema/atomic-ops.c", line 742: error: expression must be a pointer to a complete object type
+    __atomic_exchange(&IncB, &IncB, &IncC, memory_order_seq_cst);
+                      ^
+
+"Sema/atomic-ops.c", line 743: error: expression must be a pointer to a complete object type
+    __atomic_load(&IncA, &IncB, memory_order_relaxed);
+                  ^
+
+"Sema/atomic-ops.c", line 744: error: expression must be a pointer to a complete object type
+    __atomic_load(&IncA, &IncB, memory_order_acq_rel);
+                  ^
+
+"Sema/atomic-ops.c", line 745: error: expression must be a pointer to a complete object type
+    __atomic_load(&IncA, &IncB, memory_order_acquire);
+                  ^
+
+"Sema/atomic-ops.c", line 746: error: expression must be a pointer to a complete object type
+    __atomic_load(&IncA, &IncB, memory_order_consume);
+                  ^
+
+"Sema/atomic-ops.c", line 747: error: expression must be a pointer to a complete object type
+    __atomic_load(&IncA, &IncB, memory_order_release);
+                  ^
+
+"Sema/atomic-ops.c", line 748: error: expression must be a pointer to a complete object type
+    __atomic_load(&IncA, &IncB, memory_order_seq_cst);
+                  ^
+
+"Sema/atomic-ops.c", line 749: error: expression must be a pointer to a complete object type
+    __atomic_store(&IncA, &IncB, memory_order_relaxed);
+                   ^
+
+"Sema/atomic-ops.c", line 750: error: expression must be a pointer to a complete object type
+    __atomic_store(&IncA, &IncB, memory_order_acq_rel);
+                   ^
+
+"Sema/atomic-ops.c", line 751: error: expression must be a pointer to a complete object type
+    __atomic_store(&IncA, &IncB, memory_order_acquire);
+                   ^
+
+"Sema/atomic-ops.c", line 752: error: expression must be a pointer to a complete object type
+    __atomic_store(&IncA, &IncB, memory_order_consume);
+                   ^
+
+"Sema/atomic-ops.c", line 753: error: expression must be a pointer to a complete object type
+    __atomic_store(&IncA, &IncB, memory_order_release);
+                   ^
+
+"Sema/atomic-ops.c", line 754: error: expression must be a pointer to a complete object type
+    __atomic_store(&IncA, &IncB, memory_order_seq_cst);
+                   ^
+
+"Sema/atomic-ops.c", line 755: error: expression must be a pointer to a complete object type
+    __atomic_compare_exchange(&IncA, &IncB, &IncC, 0, memory_order_relaxed, memory_order_relaxed);
+                              ^
+
+"Sema/atomic-ops.c", line 756: error: expression must be a pointer to a complete object type
+    __atomic_compare_exchange(&IncA, &IncB, &IncC, 0, memory_order_acq_rel, memory_order_acq_rel);
+                              ^
+
+"Sema/atomic-ops.c", line 757: error: expression must be a pointer to a complete object type
+    __atomic_compare_exchange(&IncA, &IncB, &IncC, 0, memory_order_acquire, memory_order_acquire);
+                              ^
+
+"Sema/atomic-ops.c", line 758: error: expression must be a pointer to a complete object type
+    __atomic_compare_exchange(&IncA, &IncB, &IncC, 0, memory_order_consume, memory_order_consume);
+                              ^
+
+"Sema/atomic-ops.c", line 759: error: expression must be a pointer to a complete object type
+    __atomic_compare_exchange(&IncA, &IncB, &IncC, 0, memory_order_release, memory_order_release);
+                              ^
+
+"Sema/atomic-ops.c", line 760: error: expression must be a pointer to a complete object type
+    __atomic_compare_exchange(&IncA, &IncB, &IncC, 0, memory_order_seq_cst, memory_order_seq_cst);
+                              ^
+
+"Sema/atomic-ops.c", line 734: error: variable "IncA" was declared with a never-completed type
+  struct IncompleteTy IncA, IncB, IncC;
+                      ^
+
+"Sema/atomic-ops.c", line 734: error: variable "IncB" was declared with a never-completed type
+  struct IncompleteTy IncA, IncB, IncC;
+                            ^
+
+"Sema/atomic-ops.c", line 734: error: variable "IncC" was declared with a never-completed type
+  struct IncompleteTy IncA, IncB, IncC;
+                                  ^
+
+72 errors detected in the compilation of "Test_name.c".

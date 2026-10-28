@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 11: warning: missing return statement at end of non-void function "S<T>::foo"
+  template <typename T> S<T> S<T>::foo() noexcept(T::value) {}  // #3
+                                                             ^
+
+"Test_name.c", line 23: warning: missing return statement at end of non-void function "S2<T>::foo"
+  template <typename T> S2<T> S2<T>::foo() noexcept(T::value) {}
+                                                               ^
+

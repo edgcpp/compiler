@@ -1,0 +1,96 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions --exceptions Test_name.c
+"Test_name.c", line 16: error: an rvalue reference cannot be bound to an lvalue
+    int &&r = T{}[1];
+              ^
+
+"Test_name.c", line 20: error: invalid redeclaration of type name "cwg1213::U" (declared at line 19)
+    using U = int &&;
+          ^
+
+"Test_name.c", line 27: error: invalid redeclaration of type name "cwg1213::U" (declared at line 20)
+    using U = decltype(X().array[ConvertsToInt()]);
+          ^
+
+"Test_name.c", line 30: warning: unknown attribute "__vector_size__"
+    typedef int V4Int __attribute__((__vector_size__(sizeof(int) * 4)));
+                                     ^
+
+"Test_name.c", line 31: warning: unknown attribute "__ext_vector_type__"
+    typedef int EV4Int __attribute__((__ext_vector_type__(4)));
+                                      ^
+
+"Test_name.c", line 32: error: expression must have pointer-to-object type but it has type "int"
+    using U = decltype(V4Int()[0]);
+                               ^
+
+"Test_name.c", line 32: error: invalid redeclaration of type name "cwg1213::U" (declared at line 27)
+    using U = decltype(V4Int()[0]);
+          ^
+
+"Test_name.c", line 33: error: expression must have pointer-to-object type but it has type "int"
+    using U = decltype(EV4Int()[0]);
+                                ^
+
+"Test_name.c", line 71: error: a trailing return type requires the "auto" type specifier
+      S(s)()->M;
+            ^
+
+"Test_name.c", line 71: error: declaration is incompatible with previous "cwg1223::s" (declared at line 66)
+      S(s)()->M;
+        ^
+
+"Test_name.c", line 82: error: a trailing return type requires the "auto" type specifier
+      A a(B ()->C);
+              ^
+
+"Test_name.c", line 85: error: function returning array is not allowed
+      sizeof(auto () -> C[1]);
+                        ^
+
+"Test_name.c", line 85: warning: operand of sizeof may not be a function
+      sizeof(auto () -> C[1]);
+             ^
+
+"Test_name.c", line 85: warning: expression has no effect
+      sizeof(auto () -> C[1]);
+      ^
+
+"Test_name.c", line 93: error: a class or namespace qualified name is required
+  template <class T> struct A { using X = typename T::X; };
+                                                   ^
+          detected during instantiation of class "cwg1227::A<T> [with T=int]" at line 104
+
+"Test_name.c", line 93: error: expected a ";"
+  template <class T> struct A { using X = typename T::X; };
+                                                    ^
+          detected during instantiation of class "cwg1227::A<T> [with T=int]" at line 104
+
+"Test_name.c", line 123: warning: nonstandard use of "auto" to both deduce the type from an initializer and to announce a trailing return type
+    auto a = 0, b() -> int;
+    ^
+
+"Test_name.c", line 125: warning: nonstandard use of "auto" to both deduce the type from an initializer and to announce a trailing return type
+    auto b() -> int, d = 0;
+    ^
+
+"Test_name.c", line 125: error: declaration is incompatible with "auto cwg1265::d" (declared at line 125)
+    auto b() -> int, d = 0;
+                     ^
+
+"Test_name.c", line 132: warning: nonstandard use of "auto" to both deduce the type from an initializer and to announce a trailing return type
+    auto g(), h = 0;
+    ^
+
+"Test_name.c", line 136: warning: nonstandard use of "auto" to both deduce the type from an initializer and to announce a trailing return type
+    auto k(), l();
+    ^
+
+"Test_name.c", line 156: error: a nontype template argument of reference type must bind to a function or to a complete object
+    Y<x.bitfield> y; // #cwg1295-y
+      ^
+
+"Test_name.c", line 166: error: invalid redeclaration of type name "cwg1295::T" (declared at line 165)
+    using T = unsigned;
+          ^
+
+15 errors detected in the compilation of "Test_name.c".

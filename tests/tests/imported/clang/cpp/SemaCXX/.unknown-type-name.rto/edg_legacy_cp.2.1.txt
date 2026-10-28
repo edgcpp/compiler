@@ -1,0 +1,186 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 18: error: class "N::Wibble" has no member "bar"
+  foo::bar x; // expected-error{{no type named 'bar' in 'N::Wibble'}}
+       ^
+
+"Test_name.c", line 21: error: class "N::Wibble" has no member "bar"
+    foo::bar  = 4; // expected-error{{no member named 'bar' in 'N::Wibble'}}
+         ^
+
+"Test_name.c", line 24: error: declaration is incompatible with "void f()" (declared at line 20)
+  int f(foo::bar); // expected-error{{no type named 'bar' in 'N::Wibble'}}
+      ^
+
+"Test_name.c", line 24: error: class "N::Wibble" has no member "bar"
+  int f(foo::bar); // expected-error{{no type named 'bar' in 'N::Wibble'}}
+             ^
+
+"Test_name.c", line 26: error: variable "f" has already been defined (previous definition at line 24)
+  int f(doulbe); // expected-error{{did you mean 'double'?}}
+      ^
+
+"Test_name.c", line 26: error: identifier "doulbe" is undefined
+  int f(doulbe); // expected-error{{did you mean 'double'?}}
+        ^
+
+"Test_name.c", line 28: error: identifier "zapotron" is undefined
+  int fun(zapotron); // expected-error{{unknown type name 'zapotron'}}
+          ^
+
+"Test_name.c", line 29: error: identifier "zepelin" is undefined
+  int var(zepelin); // expected-error{{did you mean 'zeppelin'?}}
+          ^
+
+"Test_name.c", line 41: warning: missing "typename" is nonstandard here
+    static int h(T::type, int); // expected-warning{{missing 'typename'}}
+                 ^
+
+"Test_name.c", line 42: warning: missing "typename" is nonstandard here
+    static int h(T::type x, char); // expected-warning{{missing 'typename'}}
+                 ^
+
+"Test_name.c", line 46: warning: missing "typename" is nonstandard here
+  A<T>::type g(T t) { return t; } // expected-warning{{missing 'typename'}}
+  ^
+
+"Test_name.c", line 52: warning: variable templates are a C++14 feature
+  void f(T::type) { } // expected-error{{missing 'typename'}}
+         ^
+
+"Test_name.c", line 52: error: "f" has already been declared in the current scope
+  void f(T::type) { } // expected-error{{missing 'typename'}}
+       ^
+
+"Test_name.c", line 52: error: incomplete type "void" is not allowed
+  void f(T::type) { } // expected-error{{missing 'typename'}}
+       ^
+
+"Test_name.c", line 52: error: expected a ";"
+  void f(T::type) { } // expected-error{{missing 'typename'}}
+                  ^
+
+"Test_name.c", line 77: error: identifier "undeclared" is undefined
+  int f1(undeclared, int); // expected-error{{unknown type name 'undeclared'}}
+         ^
+
+"Test_name.c", line 77: error: type name is not allowed
+  int f1(undeclared, int); // expected-error{{unknown type name 'undeclared'}}
+                     ^
+
+"Test_name.c", line 77: error: too many initializer values
+  int f1(undeclared, int); // expected-error{{unknown type name 'undeclared'}}
+                     ^
+
+"Test_name.c", line 79: error: too many initializer values
+  int f2(undeclared, 0); // expected-error{{undeclared identifier}}
+                     ^
+
+"Test_name.c", line 81: error: identifier "p" is undefined
+  int f3(undeclared *p, int); // expected-error{{unknown type name 'undeclared'}}
+                     ^
+
+"Test_name.c", line 81: error: type name is not allowed
+  int f3(undeclared *p, int); // expected-error{{unknown type name 'undeclared'}}
+                        ^
+
+"Test_name.c", line 81: error: too many initializer values
+  int f3(undeclared *p, int); // expected-error{{unknown type name 'undeclared'}}
+                        ^
+
+"Test_name.c", line 83: error: too many initializer values
+  int f4(undeclared *p, 0); // expected-error{{undeclared identifier}}
+                        ^
+
+"Test_name.c", line 85: error: identifier "UnknownType" is undefined
+  int *test(UnknownType *fool) { return 0; } // expected-error{{unknown type name 'UnknownType'}}
+            ^
+
+"Test_name.c", line 85: error: identifier "fool" is undefined
+  int *test(UnknownType *fool) { return 0; } // expected-error{{unknown type name 'UnknownType'}}
+                         ^
+
+"Test_name.c", line 85: error: expected a ";"
+  int *test(UnknownType *fool) { return 0; } // expected-error{{unknown type name 'UnknownType'}}
+                               ^
+
+"Test_name.c", line 92: warning: missing "typename" is nonstandard here
+  template<typename T> int A<T>::h(T::type, int) {} // expected-warning{{missing 'typename'}}
+                                   ^
+
+"Test_name.c", line 92: warning: missing return statement at end of non-void function "A<T>::h(T::type, int)"
+  template<typename T> int A<T>::h(T::type, int) {} // expected-warning{{missing 'typename'}}
+                                                  ^
+
+"Test_name.c", line 93: warning: missing "typename" is nonstandard here
+  template<typename T> int A<T>::h(T::type x, char) {} // expected-warning{{missing 'typename'}}
+                                   ^
+
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "A<T>::h(T::type, char)"
+  template<typename T> int A<T>::h(T::type x, char) {} // expected-warning{{missing 'typename'}}
+                                                     ^
+
+"Test_name.c", line 95: warning: variable templates are a C++14 feature
+  template<typename T> int h(T::type, int); // expected-error{{missing 'typename'}}
+                             ^
+
+"Test_name.c", line 95: error: type name is not allowed
+  template<typename T> int h(T::type, int); // expected-error{{missing 'typename'}}
+                                      ^
+
+"Test_name.c", line 95: error: too many initializer values
+  template<typename T> int h(T::type, int); // expected-error{{missing 'typename'}}
+                                      ^
+
+"Test_name.c", line 96: warning: variable templates are a C++14 feature
+  template<typename T> int h(T::type x, char); // expected-error{{missing 'typename'}}
+                             ^
+
+"Test_name.c", line 96: error: variable template "h" has already been defined (previous definition at line 95)
+  template<typename T> int h(T::type x, char); // expected-error{{missing 'typename'}}
+                           ^
+
+"Test_name.c", line 98: warning: variable templates are a C++14 feature
+  template<typename T> int junk1(T::junk);
+                                 ^
+
+"Test_name.c", line 102: warning: variable templates are a C++14 feature
+  template<typename T> int junk2(T::junk) throw(); // expected-error{{missing 'typename'}}
+                                 ^
+
+"Test_name.c", line 102: error: expected a ";"
+  template<typename T> int junk2(T::junk) throw(); // expected-error{{missing 'typename'}}
+                                          ^
+
+"Test_name.c", line 103: warning: variable templates are a C++14 feature
+  template<typename T> int junk3(T::junk) = delete; // expected-error{{missing 'typename'}}
+                                 ^
+
+"Test_name.c", line 103: error: expected a ";"
+  template<typename T> int junk3(T::junk) = delete; // expected-error{{missing 'typename'}}
+                                          ^
+
+"Test_name.c", line 108: warning: variable templates are a C++14 feature
+  template<typename T> int junk4(T::junk j); // expected-error{{missing 'typename'}}
+                                 ^
+
+"Test_name.c", line 108: error: expected a ")"
+  template<typename T> int junk4(T::junk j); // expected-error{{missing 'typename'}}
+                                         ^
+
+"Test_name.c", line 112: warning: variable templates are a C++14 feature
+  template<typename T> int i(T::type, int());
+                             ^
+
+"Test_name.c", line 112: error: too many initializer values
+  template<typename T> int i(T::type, int());
+                                      ^
+
+"Test_name.c", line 121: error: explicit type is missing ("int" assumed)
+  A<T>::g() { } // expected-error{{expected unqualified-id}}
+  ^
+
+"Test_name.c", line 121: error: declaration is incompatible with "A<T>::type A<T>::g()" (declared at line 37)
+  A<T>::g() { } // expected-error{{expected unqualified-id}}
+        ^
+
+31 errors detected in the compilation of "Test_name.c".

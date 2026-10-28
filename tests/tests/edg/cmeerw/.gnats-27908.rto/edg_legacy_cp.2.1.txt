@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=2 --c++20 Test_name.c
+"Test_name.c", line 10: error: cannot deduce the return type of function "minimal::f(T) [with T=long]" (declared at line 9); it has not been defined
+      g([] (auto a) { f(a); });
+                      ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=long]" at line 10
+            instantiation of "auto minimal::f(T) [with T=long]" at line 10
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=long]" at line 10
+            instantiation of "auto minimal::f(T) [with T=int]" at line 13
+
+"Test_name.c", line 26: error: cannot deduce the return type of function "with_noexcept::C::f2(T) [with T=int]" (declared at line 30); it has not been defined
+        return f2(1);
+               ^
+          detected during:
+            instantiation of "auto with_noexcept::C::f1(T) [with T=long]" at line 31
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=long]" at line 21
+            instantiation of "int with_noexcept::n(T) [with T=lambda [](auto)->auto]" at line 31
+            instantiation of "auto with_noexcept::C::f2(T) [with T=int]" at line 26
+            instantiation of "auto with_noexcept::C::f1(T) [with T=int]" at line 35
+
+"Test_name.c", line 21: error: expression must have bool type (or be convertible to bool)
+    int n(T) noexcept(d<T>()(1L));
+                      ^
+          detected during:
+            instantiation of "int with_noexcept::n(T) [with T=lambda [](auto)->auto]" at line 31
+            instantiation of "auto with_noexcept::C::f2(T) [with T=int]" at line 26
+            instantiation of "auto with_noexcept::C::f1(T) [with T=int]" at line 35
+
+"Test_name.c", line 48: error: cannot deduce the return type of function "with_decltype::C::f2(T) [with T=int]" (declared at line 52); it has not been defined
+        return f2(1);
+               ^
+          detected during:
+            instantiation of "auto with_decltype::C::f1(T) [with T=long]" at line 53
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=long]" at line 53
+            instantiation of "auto with_decltype::C::f2(T) [with T=int]" at line 48
+            instantiation of "auto with_decltype::C::f1(T) [with T=int]" at line 57
+
+4 errors detected in the compilation of "Test_name.c".

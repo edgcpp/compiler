@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 16: warning: expected a declaration
+  CTX; /* { dg-warning "ignored" } */
+     ^
+
+"Test_name.c", line 17: warning: expected a declaration
+  UNK; /* { dg-warning "ignored" } */
+     ^
+
+"Test_name.c", line 55: error: attributes are not permitted in a function definition
+  func (void) UNK { /* { dg-warning "ignored" } */
+              ^
+
+"Test_name.c", line 57: warning: attribute "gnu::const" does not apply here
+    CTX { } /* { dg-warning "ignored" } */
+    ^
+
+"Test_name.c", line 58: warning: attribute "gnu::const" does not apply here
+    CTX; /* { dg-warning "ignored" } */
+    ^
+
+"Test_name.c", line 59: warning: attribute "gnu::const" does not apply here
+    CTX var = 1; /* { dg-warning "ignored" } */
+    ^
+
+"Test_name.c", line 60: warning: attribute "gnu::const" does not apply here
+    CTX x: var = 2; /* { dg-warning "ignored" } */
+    ^
+
+"Test_name.c", line 56: warning: variable "var" was set but never used
+    UNK int var; /* { dg-warning "ignored" } */
+            ^
+
+"Test_name.c", line 60: warning: label "x" was declared but never referenced
+    CTX x: var = 2; /* { dg-warning "ignored" } */
+        ^
+
+1 error detected in the compilation of "Test_name.c".

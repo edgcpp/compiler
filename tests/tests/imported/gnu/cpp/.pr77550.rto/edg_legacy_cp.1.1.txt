@@ -1,0 +1,20 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 8: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef int size_t;
+              ^
+
+"Test_name.c", line 48: warning: function "operator new(unsigned long, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    template <typename _Up> void construct(_Up *p1) { new (p1) _Up; }
+                                                      ^
+          detected during:
+            instantiation of "void C<_Tp>::construct(_Up *) [with _Tp=Foo, _Up=Foo]" at line 75
+            instantiation of "std::_Require<> std::K<_Alloc>::_S_construct(_Tp) [with _Alloc=std::allocator<Foo>, _Tp=Foo *]" at line 93
+            instantiation of "void std::__uninitialized_fill_a(_ForwardIterator, _ForwardIterator, _Tp, _Allocator) [with _ForwardIterator=Foo *, _Tp=int, _Allocator=std::allocator<Foo>]" at line 210
+            instantiation of "void std::deque<_Tp, _Alloc>::_M_fill_initialize(const std::deque<_Tp, _Alloc>::value_type &) [with _Tp=Foo, _Alloc=std::allocator<Foo>]" at line 194
+            instantiation of "std::deque<_Tp, _Alloc>::deque(std::deque<_Tp, _Alloc>::size_type, std::deque<_Tp, _Alloc>::value_type, std::deque<_Tp, _Alloc>::allocator_type) [with _Tp=Foo, _Alloc=std::allocator<Foo>]" at line 294
+
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char, std::char_traits<char>, std::allocator<char>>() [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__cxx11::basic_string<T1, T2, T3>::_Alloc_hider::_Alloc_hider(char *, std::allocator<char> &&) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::__cxx11::basic_string<T1, T2, T3>::basic_string<char, std::char_traits<char>, std::allocator<char>>(const std::__cxx11::basic_string<T1, T2, T3> &) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__cxx11::basic_string<T1, T2, T3>::_Alloc_hider::_Alloc_hider(char *, std::allocator<char> &&) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]'
+collect2: error: ld returned 1 exit status

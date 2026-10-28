@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 14: error: identifier "__vector" is undefined
+    g(0, (__vector int)(*tp));
+          ^
+
+"Test_name.c", line 14: error: expected a ")"
+    g(0, (__vector int)(*tp));
+                   ^
+
+"Test_name.c", line 15: error: expected a ")"
+    g(0, (__vector int)*tp);
+                   ^
+
+"Test_name.c", line 19: error: identifier "__vector" is undefined
+    f<__vector float>(nullptr);
+      ^
+
+"Test_name.c", line 19: error: invalid combination of type specifiers
+    f<__vector float>(nullptr);
+               ^
+
+"Test_name.c", line 19: error: expected an identifier
+    f<__vector float>(nullptr);
+                    ^
+
+"Test_name.c", line 19: error: expected a type specifier
+    f<__vector float>(nullptr);
+                      ^
+
+7 errors detected in the compilation of "Test_name.c".

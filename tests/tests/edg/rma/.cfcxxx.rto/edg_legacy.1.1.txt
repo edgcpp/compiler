@@ -1,0 +1,27 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "V2::V2()" cannot be inlined
+  class V2 : virtual public V1 { };
+        ^
+          detected during:
+            implicit generation of "V2::V2()" at line 9
+            implicit generation of "C::C()" at line 9
+
+"Test_name.c", line 6: remark: function "A::A()" cannot be inlined
+  class A : virtual public V2 { };
+        ^
+          detected during:
+            implicit generation of "A::A()" at line 9
+            implicit generation of "C::C()" at line 9
+
+"Test_name.c", line 7: remark: function "B::B()" cannot be inlined
+  class B : virtual public V1 { };
+        ^
+          detected during:
+            implicit generation of "B::B()" at line 9
+            implicit generation of "C::C()" at line 9
+
+"Test_name.c", line 8: remark: function "C::C()" cannot be inlined
+  class C : public A, public B { };
+        ^
+          detected during implicit generation of "C::C()" at line 9
+

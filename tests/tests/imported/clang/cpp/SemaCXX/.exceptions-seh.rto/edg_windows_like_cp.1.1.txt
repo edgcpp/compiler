@@ -1,0 +1,75 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 -w --ms_extensions --exceptions --exceptions Test_name.c
+"Test_name.c", line 11: error: identifier "_exception_code" is undefined
+    } __except(_exception_code() == 0xC0000094) {
+               ^
+
+"Test_name.c", line 25: error: identifier "_exception_code" is undefined
+    _exception_code(); // expected-error {{'_exception_code' only allowed in __except block or filter expression}}
+    ^
+
+"Test_name.c", line 26: error: identifier "_exception_info" is undefined
+    _exception_info(); // expected-error {{'_exception_info' only allowed in __except filter expression}}
+    ^
+
+"Test_name.c", line 36: error: identifier "_exception_code" is undefined
+    _exception_code(); // expected-error {{'_exception_code' only allowed in __except block or filter expression}}
+    ^
+
+"Test_name.c", line 37: error: identifier "_exception_info" is undefined
+    _exception_info(); // expected-error {{'_exception_info' only allowed in __except filter expression}}
+    ^
+
+"Test_name.c", line 49: error: identifier "__exception_info" is undefined
+    func_template<void *, __exception_info>(); // expected-note {{instantiation of}}
+                          ^
+
+"Test_name.c", line 50: error: identifier "__exception_code" is undefined
+    func_template<unsigned long, __exception_code>(); // expected-note {{instantiation of}}
+                                 ^
+
+"Test_name.c", line 92: error: expected an expression
+    void (^b)() = ^{
+          ^
+
+"Test_name.c", line 92: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    void (^b)() = ^{
+    ^
+
+"Test_name.c", line 92: error: expected an expression
+    void (^b)() = ^{
+                  ^
+
+"Test_name.c", line 99: error: identifier "b" is undefined
+      b();
+      ^
+
+"Test_name.c", line 104: error: expected an identifier
+  void (^use_seh_in_global_block)() = ^{
+        ^
+
+"Test_name.c", line 104: error: function "<error>" may not be initialized
+  void (^use_seh_in_global_block)() = ^{
+                                    ^
+
+"Test_name.c", line 104: error: expected an expression
+  void (^use_seh_in_global_block)() = ^{
+                                      ^
+
+"Test_name.c", line 111: error: expected an identifier
+  void (^use_cxx_in_global_block)() = ^{
+        ^
+
+"Test_name.c", line 111: error: function "<error>" may not be initialized
+  void (^use_cxx_in_global_block)() = ^{
+                                    ^
+
+"Test_name.c", line 111: error: expected an expression
+  void (^use_cxx_in_global_block)() = ^{
+                                      ^
+
+"Test_name.c", line 121: error: expression must have integral or enum type
+    } __except (T()) { // expected-error {{filter expression has non-integral type 'NotInteger'}}
+                ^
+          detected during instantiation of "void dependent_filter<T>() [with T=NotInteger]" at line 129
+
+18 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./coroutines/torture/pr115905.C", line 45: error: identifier "co_await" is undefined
+      (void) co_await Awaiter{};
+             ^
+
+"./coroutines/torture/pr115905.C", line 45: error: expected a ";"
+      (void) co_await Awaiter{};
+                      ^
+
+"./coroutines/torture/pr115905.C", line 50: error: expected a ";"
+      co_await std::suspend_always{};
+               ^
+
+"./coroutines/torture/pr115905.C", line 55: error: identifier "co_return" is undefined
+      co_return;
+      ^
+
+"./coroutines/torture/pr115905.C", line 56: warning: missing return statement at end of non-void function "Coro"
+  }
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

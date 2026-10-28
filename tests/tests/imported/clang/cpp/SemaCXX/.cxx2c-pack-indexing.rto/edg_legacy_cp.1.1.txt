@@ -1,0 +1,156 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 9: error: pack expansion does not make use of any argument packs
+      i...[0]; // expected-error {{'i' does not refer to the name of a parameter pack}}
+       ^
+
+"Test_name.c", line 10: error: pack expansion does not make use of any argument packs
+      V...[0]; // expected-error {{'V' does not refer to the name of a parameter pack}}
+       ^
+
+"Test_name.c", line 11: error: pack expansion does not make use of any argument packs
+      NotAPack...[0] a; // expected-error{{'NotAPack' does not refer to the name of a parameter pack}}
+              ^
+
+"Test_name.c", line 12: error: pack expansion does not make use of any argument packs
+      T...[0] b;   // expected-error{{'T' does not refer to the name of a parameter pack}}
+       ^
+
+"Test_name.c", line 13: error: pack expansion does not make use of any argument packs
+      Tp...[0] c; // expected-error{{'Tp' does not refer to the name of a parameter pack}}
+        ^
+
+"Test_name.c", line 18: error: pack expansion does not make use of any argument packs
+      NotAPack...[0] a[1]; // expected-error{{'NotAPack' does not refer to the name of a parameter pack}}
+              ^
+
+"Test_name.c", line 19: error: pack expansion does not make use of any argument packs
+      T...[0] b[1];   // expected-error{{'T' does not refer to the name of a parameter pack}}
+       ^
+
+"Test_name.c", line 20: error: pack expansion does not make use of any argument packs
+      Tp...[0] c[1]; // expected-error{{'Tp' does not refer to the name of a parameter pack}}
+        ^
+
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "invalid_indexes::test_types<N,T...>()"
+  }
+  ^
+
+"Test_name.c", line 64: warning: expression has no effect
+      p...[non_constant_index()]; // expected-error {{array size is not a constant expression}}\
+      ^
+
+"Test_name.c", line 68: warning: expression has no effect
+      p...[no_index]; // expected-error {{value of type 'const char *' is not implicitly convertible}}
+      ^
+
+"Test_name.c", line 73: error: expression must have a constant value
+          T...[non_constant_index()] a;  // expected-error {{array size is not a constant expression}}\
+               ^
+"Test_name.c", line 73: note: cannot call non-constexpr function "invalid_indexes::non_constant_index" (declared at line 33)
+          T...[non_constant_index()] a;  // expected-error {{array size is not a constant expression}}\
+               ^
+          detected during instantiation of function "lambda []()->auto [with T=<>]" at line 75
+
+"Test_name.c", line 73: error: pack index exceeds number of pack elements
+          T...[non_constant_index()] a;  // expected-error {{array size is not a constant expression}}\
+          ^
+          detected during instantiation of function "lambda []()->auto [with T=<>]" at line 75
+
+"Test_name.c", line 162: error: identifier "P" is undefined
+      using E = P...[0]; // expected-error {{unknown type name 'P'}} \
+                ^
+
+"Test_name.c", line 162: error: expected a ";"
+      using E = P...[0]; // expected-error {{unknown type name 'P'}} \
+                 ^
+
+"Test_name.c", line 174: error: pack index exceeds number of pack elements
+    return S<args...[indices]...>(); // #use
+             ^
+          detected during instantiation of "auto GH88925::f<args...,indices...>(GH88925::sequence<indices...>) [with args=<int, long>, indices=<3>]" at line 185
+
+"Test_name.c", line 178: error: pack index exceeds number of pack elements
+    return W<args...[indices]...>(); // #nttp-use
+             ^
+          detected during instantiation of "auto GH88925::g<args...,indices...>(GH88925::sequence<indices...>) [with args=<foo{}>, indices=<4>]" at line 194
+
+"Test_name.c", line 268: error: pack index exceeds number of pack elements
+    template <unsigned s> static auto x() -> opts... [s] {} // expected-note {{invalid index 0 for pack 'opts' of size 0}}
+                                             ^
+          detected during instantiation of class "GH105903::temp<opts...> [with opts=<>]" at line 272
+
+"Test_name.c", line 9: error: pack index exceeds number of pack elements
+      i...[0]; // expected-error {{'i' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 27
+
+"Test_name.c", line 10: error: pack index exceeds number of pack elements
+      V...[0]; // expected-error {{'V' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 27
+
+"Test_name.c", line 11: error: pack index exceeds number of pack elements
+      NotAPack...[0] a; // expected-error{{'NotAPack' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 27
+
+"Test_name.c", line 12: error: pack index exceeds number of pack elements
+      T...[0] b;   // expected-error{{'T' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 27
+
+"Test_name.c", line 13: error: pack index exceeds number of pack elements
+      Tp...[0] c; // expected-error{{'Tp' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 27
+
+"Test_name.c", line 18: error: pack index exceeds number of pack elements
+      NotAPack...[0] a[1]; // expected-error{{'NotAPack' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack_arrays<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 28
+
+"Test_name.c", line 19: error: pack index exceeds number of pack elements
+      T...[0] b[1];   // expected-error{{'T' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack_arrays<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 28
+
+"Test_name.c", line 20: error: pack index exceeds number of pack elements
+      Tp...[0] c[1]; // expected-error{{'Tp' does not refer to the name of a parameter pack}}
+      ^
+          detected during instantiation of "void not_pack_arrays<T,V,Tp>() [with T=int, V=0, Tp=TTP]" at line 28
+
+"Test_name.c", line 37: error: pack index exceeds number of pack elements
+      return p...[idx]; // #error-param-size
+             ^
+          detected during instantiation of "int invalid_indexes::params<idx,<auto-1>...>(auto...) [with idx=0, <auto-1>=<>]" at line 46
+
+"Test_name.c", line 37: error: pack index exceeds number of pack elements
+      return p...[idx]; // #error-param-size
+             ^
+          detected during instantiation of "int invalid_indexes::params<idx,<auto-1>...>(auto...) [with idx=1, <auto-1>=<int>]" at line 48
+
+"Test_name.c", line 42: error: pack index exceeds number of pack elements
+      T...[N] a; // #error-type-size
+      ^
+          detected during instantiation of "int invalid_indexes::test_types<N,T...>() [with N=-1, T=<>]" at line 53
+
+"Test_name.c", line 42: error: pack index exceeds number of pack elements
+      T...[N] a; // #error-type-size
+      ^
+          detected during instantiation of "int invalid_indexes::test_types<N,T...>() [with N=0, T=<>]" at line 57
+
+"Test_name.c", line 42: error: pack index exceeds number of pack elements
+      T...[N] a; // #error-type-size
+      ^
+          detected during instantiation of "int invalid_indexes::test_types<N,T...>() [with N=1, T=<int>]" at line 59
+
+"Test_name.c", line 211: error: pack index exceeds number of pack elements
+      using R = decltype( args...[idx] ) ; // #test2-R
+                          ^
+          detected during instantiation of "void GH91885::test2<args...>() [with args=<>]" at line 218
+
+"Test_name.c", line 111: warning: variable "InitOk" was declared but never referenced
+  constexpr auto InitOk = constant_initializer<S{}>;
+                 ^
+
+29 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: warning: label "label1" was declared but never referenced
+  [[clang::annotate("label", 3)]] label1:
+                                  ^
+
+"Test_name.c", line 27: warning: label "label2" was declared but never referenced
+  [[clang::annotate("tmpl_label", 6)]] label2:
+                                       ^
+

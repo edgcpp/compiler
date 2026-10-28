@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 24: error: argument of type "void" is incompatible with parameter of type "int"
+      Foo (x->~I ()); // { dg-error "16:invalid" }
+           ^
+
+"Test_name.c", line 26: error: argument of type "void" is incompatible with parameter of type "int"
+      Foo (delete x); // { dg-error "10:invalid" }
+           ^
+
+"Test_name.c", line 27: error: argument of type "void" is incompatible with parameter of type "int"
+      Foo (delete[] x); // { dg-error "10:invalid" }
+           ^
+
+"Test_name.c", line 28: error: argument of type "void" is incompatible with parameter of type "int"
+      Foo (throw x); // { dg-error "10:invalid" }
+           ^
+
+4 errors detected in the compilation of "Test_name.c".

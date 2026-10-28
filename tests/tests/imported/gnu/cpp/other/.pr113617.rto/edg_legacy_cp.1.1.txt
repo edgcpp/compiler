@@ -1,0 +1,12 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o: in function `_start':
+(.text+0xXX): undefined reference to `main'
+/usr/sbin/ld: Test_name.o: in function `void N1::N2::N3::X<(int)1>::boo<U1>(long long, long long, long long, U1 &) [with U1=N1::N2::N3::C<<unnamed>::D<long long>, false>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `N1::N2::N3::AC::AC(int)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `N1::N2::N3::AC::m1(R::S<void ()>)'
+/usr/sbin/ld: Test_name.o: in function `void N1::N2::N3::AB::boo<T1>(long, long, long, T1) [with T1=N1::N2::N3::C<<unnamed>::D<long long>, false>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `R::AJ<T1>::AI R::Y<T1>::operator ->() [with T1=N1::N2::N3::X<(int)0>]'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `R::AJ<T1>::AI R::Y<T1>::operator ->() [with T1=N1::N2::N3::X<(int)1>]'
+/usr/sbin/ld: Test_name.o: in function `void N1::N2::N3::C<T1, false>::boo(long, long, long) [with T1=<unnamed>::D<long long>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `N1::N2::N3::AB::bleh()'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --sun Test_name.c
+"Test_name.c", line 14: error: this declaration has no storage class or type specifier
+  __thread struct S {
+  ^
+
+"Test_name.c", line 14: error: expected a ";"
+  __thread struct S {
+           ^
+
+"Test_name.c", line 17: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 20: error: explicit type is missing ("int" assumed)
+  typedef __thread int I;
+          ^
+
+"Test_name.c", line 20: error: "__thread" has already been declared in the current scope
+  typedef __thread int I;
+          ^
+
+"Test_name.c", line 20: error: expected a ";"
+  typedef __thread int I;
+                   ^
+
+"Test_name.c", line 23: error: invalid combination of type specifiers
+  __thread int ti1;
+           ^
+
+"Test_name.c", line 25: error: invalid combination of type specifiers
+  __thread void f() {
+           ^
+
+"Test_name.c", line 26: error: invalid combination of type specifiers
+  	__thread int a;
+  	         ^
+
+8 errors detected in the compilation of "Test_name.c".

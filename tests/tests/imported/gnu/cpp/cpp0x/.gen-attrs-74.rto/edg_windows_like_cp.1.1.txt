@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: error: attribute does not apply to any entity
+    friend [[deprecated]] void; // { dg-error "standard attributes in middle of decl-specifiers" }
+           ^
+
+"Test_name.c", line 10: error: attribute does not apply to any entity
+    friend [[deprecated]] int fn(); // { dg-error "standard attributes in middle of decl-specifiers" }
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 6: error: identifier "__builtin_ms_va_list" is undefined
+    __builtin_ms_va_list ap;
+    ^
+
+"Test_name.c", line 11: warning: variable "ap" was set but never used
+    __builtin_va_list ap;
+                      ^
+
+1 error detected in the compilation of "Test_name.c".

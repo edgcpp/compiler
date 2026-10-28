@@ -1,0 +1,65 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef signed char v4i8 __attribute__ ((vector_size(4)));
+                                           ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef signed char v4q7 __attribute__ ((vector_size(4)));
+                                           ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef signed char v16i8 __attribute__((vector_size(16), aligned(16)));
+                                           ^
+
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef unsigned char v16u8 __attribute__((vector_size(16), aligned(16)));
+                                             ^
+
+"Test_name.c", line 16: warning: function "__builtin_mips_addu_qb" declared implicitly
+    __builtin_mips_addu_qb(a, a);
+    ^
+
+"Test_name.c", line 16: warning: variable "a" is used before its value is set
+    __builtin_mips_addu_qb(a, a);
+                           ^
+
+"Test_name.c", line 18: warning: function "__builtin_mips_lwx" declared implicitly
+    __builtin_mips_lwx(p, 32);
+    ^
+
+"Test_name.c", line 18: warning: variable "p" is used before its value is set
+    __builtin_mips_lwx(p, 32);
+                       ^
+
+"Test_name.c", line 26: warning: function "__builtin_mips_absq_s_qb" declared implicitly
+    __builtin_mips_absq_s_qb(b);
+    ^
+
+"Test_name.c", line 26: warning: variable "b" is used before its value is set
+    __builtin_mips_absq_s_qb(b);
+                             ^
+
+"Test_name.c", line 28: warning: function "__builtin_mips_subuh_r_qb" declared implicitly
+    __builtin_mips_subuh_r_qb(a, a);
+    ^
+
+"Test_name.c", line 28: warning: variable "a" is used before its value is set
+    __builtin_mips_subuh_r_qb(a, a);
+                              ^
+
+"Test_name.c", line 36: warning: function "__builtin_msa_add_a_b" declared implicitly
+    __builtin_msa_add_a_b(a, a);
+    ^
+
+"Test_name.c", line 36: warning: variable "a" is used before its value is set
+    __builtin_msa_add_a_b(a, a);
+                          ^
+
+"Test_name.c", line 38: warning: function "__builtin_msa_xori_b" declared implicitly
+    __builtin_msa_xori_b(b, 5);
+    ^
+
+"Test_name.c", line 38: warning: variable "b" is used before its value is set
+    __builtin_msa_xori_b(b, 5);
+                         ^
+

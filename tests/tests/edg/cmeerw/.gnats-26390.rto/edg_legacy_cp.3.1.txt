@@ -1,0 +1,35 @@
+fe_only -DTEST_NUMBER=3 --c++20 --gnu_version 120100 Test_name.c
+"Test_name.c", line 242: warning: expression has no effect
+        T();                      // expected in non-gcc/msvc mode: expression has no effect
+        ^
+          detected during:
+            instantiation of "use_in_template_context::C1<T>::operator bool() const [with T=int]" at line 262
+            instantiation of "use_in_template_context::tmpl_task<T>::promise_type::promise_type() [with T=int]" at line 277
+
+"Test_name.c", line 252: warning: expression has no effect
+        T();                      // expected in non-gcc/msvc mode: expression has no effect
+        ^
+          detected during:
+            instantiation of "use_in_template_context::C2<T>::operator bool() const [with T=int]" at line 263
+            instantiation of "use_in_template_context::tmpl_task<T>::promise_type::promise_type(int, int) [with T=int]" at line 283
+
+"Test_name.c", line 191: warning: expression has no effect
+        promise_type() { T(); }   // expect: expression has no effect
+                         ^
+          detected during instantiation of "default_ctor::tmpl_task<T>::promise_type::promise_type() [with T=int]" at line 204
+
+"Test_name.c", line 194: warning: expression has no effect
+        ~promise_type() { T(); }  // expect: expression has no effect
+                          ^
+          detected during instantiation of "default_ctor::tmpl_task<T>::promise_type::~promise_type() [with T=int]" at line 204
+
+"Test_name.c", line 218: warning: expression has no effect
+        promise_type(int, int) { T(); } // expect: expression has no effect
+                                 ^
+          detected during instantiation of "non_default_ctor::tmpl_task<T>::promise_type::promise_type(int, int) [with T=int]" 
+
+"Test_name.c", line 219: warning: expression has no effect
+        ~promise_type() { T(); }  // expect: expression has no effect
+                          ^
+          detected during instantiation of "non_default_ctor::tmpl_task<T>::promise_type::~promise_type() [with T=int]" at line 229
+

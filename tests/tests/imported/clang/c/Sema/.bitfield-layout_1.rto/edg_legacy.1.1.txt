@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 43: error: the size of an array must be greater than zero
+  CHECK_SIZE(s3,10)
+  ^
+
+"Test_name.c", line 51: error: the size of an array must be greater than zero
+  CHECK_SIZE(s4,12)
+  ^
+
+"Test_name.c", line 102: error: the size of an array must be greater than zero
+  CHECK_SIZE(s9,8)
+  ^
+
+"Test_name.c", line 120: error: the size of an array must be greater than zero
+  CHECK_SIZE(s11,8)
+  ^
+
+"Test_name.c", line 130: error: the size of an array must be greater than zero
+  CHECK_SIZE(s12,12)
+  ^
+
+"Test_name.c", line 140: error: the size of an array must be greater than zero
+  CHECK_SIZE(s13,12)
+  ^
+
+"Test_name.c", line 165: error: the size of an array must be greater than zero
+  CHECK_SIZE(s16,8)
+  ^
+
+"Test_name.c", line 173: error: the size of an array must be greater than zero
+  CHECK_SIZE(s17,12)
+  ^
+
+"Test_name.c", line 185: warning: a reduction in alignment without the "packed" attribute is ignored
+    int __attribute__((aligned(1))) a;
+                                    ^
+
+"Test_name.c", line 186: warning: a reduction in alignment without the "packed" attribute is ignored
+    int __attribute__((aligned(1))) b : 4;
+                                    ^
+
+"Test_name.c", line 187: warning: a reduction in alignment without the "packed" attribute is ignored
+    int __attribute__((aligned(1))) c : 32;
+                                    ^
+
+"Test_name.c", line 205: error: the size of an array must be greater than zero
+  CHECK_SIZE(s21,10)
+  ^
+
+9 errors detected in the compilation of "Test_name.c".

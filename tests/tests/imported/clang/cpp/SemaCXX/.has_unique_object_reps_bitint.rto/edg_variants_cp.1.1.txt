@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 -w Test_name.c
+"Test_name.c", line 12: error: static assertion failed
+  static_assert(!__has_unique_object_representations(_BitInt(7)));
+  ^
+
+"Test_name.c", line 13: error: static assertion failed
+  static_assert(!__has_unique_object_representations(unsigned _BitInt(7)));
+  ^
+
+"Test_name.c", line 14: error: static assertion failed
+  static_assert(!__has_unique_object_representations(_BitInt(2)));
+  ^
+
+"Test_name.c", line 15: error: static assertion failed
+  static_assert(!__has_unique_object_representations(unsigned _BitInt(1)));
+  ^
+
+"Test_name.c", line 19: error: identifier "__BITINT_MAXWIDTH__" is undefined
+    if constexpr (N <= __BITINT_MAXWIDTH__) {
+                       ^
+
+"Test_name.c", line 76: error: static assertion failed
+  static_assert(!__has_unique_object_representations(bit_fields_5));
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,130 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./c23-imaginary-constants-5.c", line 7: error: identifier "_Float128" is undefined
+  _Complex _Float128 a = 1.if128;
+           ^
+
+"./c23-imaginary-constants-5.c", line 7: error: _Complex can only be used with floating-point types
+  _Complex _Float128 a = 1.if128;
+  ^
+
+"./c23-imaginary-constants-5.c", line 7: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  _Complex _Float128 a = 1.if128;
+                        ^
+
+"./c23-imaginary-constants-5.c", line 8: error: identifier "_Float128" is undefined
+  _Complex _Float128 b = 2.F128j;
+           ^
+
+"./c23-imaginary-constants-5.c", line 8: error: _Complex can only be used with floating-point types
+  _Complex _Float128 b = 2.F128j;
+  ^
+
+"./c23-imaginary-constants-5.c", line 8: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  _Complex _Float128 b = 2.F128j;
+                       ^
+
+"./c23-imaginary-constants-5.c", line 9: error: identifier "_Float128" is undefined
+  _Complex _Float128 c = 3.f128i;
+           ^
+
+"./c23-imaginary-constants-5.c", line 9: error: _Complex can only be used with floating-point types
+  _Complex _Float128 c = 3.f128i;
+  ^
+
+"./c23-imaginary-constants-5.c", line 9: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  _Complex _Float128 c = 3.f128i;
+                       ^
+
+"./c23-imaginary-constants-5.c", line 10: error: identifier "_Float128" is undefined
+  _Complex _Float128 d = 4.JF128;
+           ^
+
+"./c23-imaginary-constants-5.c", line 10: error: _Complex can only be used with floating-point types
+  _Complex _Float128 d = 4.JF128;
+  ^
+
+"./c23-imaginary-constants-5.c", line 10: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  _Complex _Float128 d = 4.JF128;
+                        ^
+
+"./c23-imaginary-constants-5.c", line 11: error: identifier "_Float128" is undefined
+  __extension__ _Complex _Float128 e = 1.if128;
+                         ^
+
+"./c23-imaginary-constants-5.c", line 11: error: _Complex can only be used with floating-point types
+  __extension__ _Complex _Float128 e = 1.if128;
+                ^
+
+"./c23-imaginary-constants-5.c", line 11: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  __extension__ _Complex _Float128 e = 1.if128;
+                                      ^
+
+"./c23-imaginary-constants-5.c", line 12: error: identifier "_Float128" is undefined
+  __extension__ _Complex _Float128 f = 2.F128j;
+                         ^
+
+"./c23-imaginary-constants-5.c", line 12: error: _Complex can only be used with floating-point types
+  __extension__ _Complex _Float128 f = 2.F128j;
+                ^
+
+"./c23-imaginary-constants-5.c", line 12: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  __extension__ _Complex _Float128 f = 2.F128j;
+                                     ^
+
+"./c23-imaginary-constants-5.c", line 13: error: identifier "_Float128" is undefined
+  __extension__ _Complex _Float128 g = 3.f128i;
+                         ^
+
+"./c23-imaginary-constants-5.c", line 13: error: _Complex can only be used with floating-point types
+  __extension__ _Complex _Float128 g = 3.f128i;
+                ^
+
+"./c23-imaginary-constants-5.c", line 13: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  __extension__ _Complex _Float128 g = 3.f128i;
+                                     ^
+
+"./c23-imaginary-constants-5.c", line 14: error: identifier "_Float128" is undefined
+  __extension__ _Complex _Float128 h = 4.JF128;
+                         ^
+
+"./c23-imaginary-constants-5.c", line 14: error: _Complex can only be used with floating-point types
+  __extension__ _Complex _Float128 h = 4.JF128;
+                ^
+
+"./c23-imaginary-constants-5.c", line 14: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  __extension__ _Complex _Float128 h = 4.JF128;
+                                      ^
+
+"./c23-imaginary-constants-5.c", line 19: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a * a != -1.f128
+                ^
+
+"./c23-imaginary-constants-5.c", line 20: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || b * b != -4.f128
+                   ^
+
+"./c23-imaginary-constants-5.c", line 21: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || c * c != -9.f128
+                   ^
+
+"./c23-imaginary-constants-5.c", line 22: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || d * d != -16.f128
+                    ^
+
+"./c23-imaginary-constants-5.c", line 23: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || e * e != -1.f128
+                   ^
+
+"./c23-imaginary-constants-5.c", line 24: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f * f != -4.f128
+                   ^
+
+"./c23-imaginary-constants-5.c", line 25: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || g * g != -9.f128
+                   ^
+
+"./c23-imaginary-constants-5.c", line 26: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || h * h != -16.f128)
+                    ^
+
+16 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: expected an expression
+    return ^ {
+           ^
+
+"Test_name.c", line 12: warning: parsing restarts here after previous syntax error
+    }();
+       ^
+
+"Test_name.c", line 17: error: expected an expression
+    return ^ {
+           ^
+
+"Test_name.c", line 27: error: expected an expression
+    return ^(Args ...block_args) {
+           ^
+
+"Test_name.c", line 36: error: expected an expression
+    return ^(Args *...block_args) {
+           ^
+
+"Test_name.c", line 45: error: expected an expression
+    return ^(Args *...block_args) {
+           ^
+
+5 errors detected in the compilation of "Test_name.c".

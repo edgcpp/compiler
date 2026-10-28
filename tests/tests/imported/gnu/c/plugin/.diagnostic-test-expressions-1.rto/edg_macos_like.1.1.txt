@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 87: warning: missing return statement at end of non-void function "test_structure_references"
+  }
+  ^
+
+"Test_name.c", line 102: warning: missing return statement at end of non-void function "test_postfix_incdec"
+  }
+  ^
+
+"Test_name.c", line 119: warning: missing return statement at end of non-void function "test_prefix_incdec"
+  }
+  ^
+
+"Test_name.c", line 415: warning: unknown attribute "vector_size"
+    __emit_expression_range (0, (vector(4, float)){2., 2., 2., 2.} + 1); /* { dg-warning "range" } */
+                                 ^
+
+"Test_name.c", line 415: warning: excess initializers are ignored
+    __emit_expression_range (0, (vector(4, float)){2., 2., 2., 2.} + 1); /* { dg-warning "range" } */
+                                                       ^
+
+"Test_name.c", line 422: warning: unknown attribute "vector_size"
+    __emit_expression_range (0, &(vector(4, float)){2., 2., 2., 2.}); /* { dg-warning "range" } */
+                                  ^
+
+"Test_name.c", line 422: warning: excess initializers are ignored
+    __emit_expression_range (0, &(vector(4, float)){2., 2., 2., 2.}); /* { dg-warning "range" } */
+                                                        ^
+
+"Test_name.c", line 455: warning: function "__transaction_atomic" declared implicitly
+    i = __transaction_atomic (42); /* { dg-error "without transactional memory support enabled" } */
+        ^
+
+"Test_name.c", line 460: warning: function "__transaction_relaxed" declared implicitly
+    i = __transaction_relaxed (42); /* { dg-error "without transactional memory support enabled" } */
+        ^
+
+"Test_name.c", line 454: warning: variable "i" was set but never used
+    int i;
+        ^
+
+"Test_name.c", line 559: warning: function "__builtin_call_with_static_chain" declared implicitly
+    __emit_expression_range (0, __builtin_call_with_static_chain (f (i), ptr));  /* { dg-warning "range" } */
+                                ^
+
+"Test_name.c", line 575: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 578: warning: function "__builtin_shuffle" declared implicitly
+    __emit_expression_range (0,  __builtin_shuffle (a, mask) );  /* { dg-warning "range" } */
+                                 ^
+
+"Test_name.c", line 712: warning: missing return statement at end of non-void function "test_multiline_token"
+  }
+  ^
+

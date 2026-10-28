@@ -1,0 +1,269 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) class A; // expected-warning{{attribute 'visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 7: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) class A; // expected-warning{{attribute 'visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 9: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) struct B; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 9: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) struct B; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 11: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) union C; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 11: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) union C; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 13: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum D {D}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 13: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum D {D}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 15: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 15: warning: scoped enum types are a C++11 feature
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                                                                    ^
+
+"Test_name.c", line 15: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 17: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 17: warning: scoped enum types are a C++11 feature
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                                                                    ^
+
+"Test_name.c", line 17: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 22: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) class A; // expected-warning{{attribute 'visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+                     ^
+
+"Test_name.c", line 22: warning: attribute does not apply to any entity
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) class A; // expected-warning{{attribute 'visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+                                                            ^
+
+"Test_name.c", line 24: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) struct B; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                     ^
+
+"Test_name.c", line 24: warning: attribute does not apply to any entity
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) struct B; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                                                            ^
+
+"Test_name.c", line 26: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) union C; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                     ^
+
+"Test_name.c", line 26: warning: attribute does not apply to any entity
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) union C; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                                                            ^
+
+"Test_name.c", line 28: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum D {D}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                     ^
+
+"Test_name.c", line 28: warning: attribute does not apply to any entity
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum D {D}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                                                            ^
+
+"Test_name.c", line 30: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                     ^
+
+"Test_name.c", line 30: warning: scoped enum types are a C++11 feature
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                                                                      ^
+
+"Test_name.c", line 30: warning: attribute does not apply to any entity
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                                                            ^
+
+"Test_name.c", line 32: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                     ^
+
+"Test_name.c", line 32: warning: scoped enum types are a C++11 feature
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                                                                      ^
+
+"Test_name.c", line 32: warning: attribute does not apply to any entity
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                                                            ^
+
+"Test_name.c", line 38: warning: standard attribute syntax is a C++11 feature
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] class E; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+      ^
+
+"Test_name.c", line 38: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] class E; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+        ^
+
+"Test_name.c", line 38: warning: attribute does not apply to any entity
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] class E; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "class" to apply attribute to type declaration}} \
+                                       ^
+
+"Test_name.c", line 40: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] struct F; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+        ^
+
+"Test_name.c", line 40: warning: attribute does not apply to any entity
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] struct F; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                                       ^
+
+"Test_name.c", line 42: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] union G; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+        ^
+
+"Test_name.c", line 42: warning: attribute does not apply to any entity
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] union G; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                                       ^
+
+"Test_name.c", line 44: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum H {H}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+        ^
+
+"Test_name.c", line 44: warning: attribute does not apply to any entity
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum H {H}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                                       ^
+
+"Test_name.c", line 46: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum class I {}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+        ^
+
+"Test_name.c", line 46: warning: scoped enum types are a C++11 feature
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum class I {}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                                                      ^
+
+"Test_name.c", line 46: warning: attribute does not apply to any entity
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum class I {}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum class" to apply attribute to type declaration}} \
+                                       ^
+
+"Test_name.c", line 48: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum struct J {}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+        ^
+
+"Test_name.c", line 48: warning: scoped enum types are a C++11 feature
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum struct J {}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                                                      ^
+
+"Test_name.c", line 48: warning: attribute does not apply to any entity
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum struct J {}; // expected-warning{{attribute 'gnu::visibility' is ignored, place it after "enum struct" to apply attribute to type declaration}} \
+                                       ^
+
+"Test_name.c", line 54: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) class A {} a;
+                   ^
+
+"Test_name.c", line 55: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) struct B {} b;
+                   ^
+
+"Test_name.c", line 56: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) union C {} c;
+                   ^
+
+"Test_name.c", line 57: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum D {D} d;
+                   ^
+
+"Test_name.c", line 58: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {} ec;
+                   ^
+
+"Test_name.c", line 58: warning: scoped enum types are a C++11 feature
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {} ec;
+                                                                    ^
+
+"Test_name.c", line 59: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {} es;
+                   ^
+
+"Test_name.c", line 59: warning: scoped enum types are a C++11 feature
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {} es;
+                                                                    ^
+
+"Test_name.c", line 62: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) class A {} a;
+                     ^
+
+"Test_name.c", line 63: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) struct B {} b;
+                     ^
+
+"Test_name.c", line 64: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) union C {} c;
+                     ^
+
+"Test_name.c", line 65: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum D {D} d;
+                     ^
+
+"Test_name.c", line 66: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {} ec;
+                     ^
+
+"Test_name.c", line 66: warning: scoped enum types are a C++11 feature
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum class EC {} ec;
+                                                                      ^
+
+"Test_name.c", line 67: warning: unknown attribute "visibility"
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {} es;
+                     ^
+
+"Test_name.c", line 67: warning: scoped enum types are a C++11 feature
+      __attribute__((visibility("hidden")))  __attribute__((aligned)) enum struct ES {} es;
+                                                                      ^
+
+"Test_name.c", line 69: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] class E {} e;
+        ^
+
+"Test_name.c", line 70: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] struct F {} f;
+        ^
+
+"Test_name.c", line 71: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] union G {} g;
+        ^
+
+"Test_name.c", line 72: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum H {H} h;
+        ^
+
+"Test_name.c", line 73: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum class I {} i;
+        ^
+
+"Test_name.c", line 73: warning: scoped enum types are a C++11 feature
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum class I {} i;
+                                                      ^
+
+"Test_name.c", line 74: warning: unknown attribute "gnu::visibility"
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum struct J {} j;
+        ^
+
+"Test_name.c", line 74: warning: scoped enum types are a C++11 feature
+      [[gnu::visibility("hidden")]]  [[gnu::aligned]] enum struct J {} j;
+                                                      ^
+

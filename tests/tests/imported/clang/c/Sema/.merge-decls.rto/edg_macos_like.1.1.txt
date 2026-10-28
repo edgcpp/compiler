@@ -1,0 +1,58 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 10: error: declaration is incompatible with "void foo(void)" (declared at line 6)
+  void foo(int); // expected-error {{conflicting types for 'foo'}}
+       ^
+
+"Test_name.c", line 20: error: function "funcdef2" has already been defined (previous definition at line 19)
+  int funcdef2() { return 0; } // expected-error {{redefinition of 'funcdef2'}}
+      ^
+
+"Test_name.c", line 26: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(2) )) int Vi2;
+                          ^
+
+"Test_name.c", line 27: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__(( ext_vector_type(2) )) float Vf2;
+                          ^
+
+"Test_name.c", line 30: error: declaration is incompatible with "Vf2 g0" (declared at line 29)
+  Vi2 g0; // expected-error {{redefinition of 'g0'}}
+      ^
+
+"Test_name.c", line 32: error: _Complex can only be used with floating-point types
+  _Complex int g1; // expected-note {{previous definition is here}}
+  ^
+
+"Test_name.c", line 38: warning: variable "x" was declared but never referenced
+    int x = sizeof(i6096412);
+        ^
+
+"Test_name.c", line 48: warning: function "test1_f" was declared but never referenced
+      extern test1_IA  *test1_f(void);
+                        ^
+
+"Test_name.c", line 72: warning: variable "v" was declared but never referenced
+    int v[sizeof(a) == 1 ? 1 : -1];
+        ^
+
+"Test_name.c", line 77: error: incomplete type "int []" is not allowed
+    return sizeof(*x); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                 ^
+
+"Test_name.c", line 86: warning: argument of type "int (*)[10]" is incompatible with parameter of type "int (*)[11]"
+    test6_f(&arr); // expected-error {{incompatible pointer types passing 'int (*)[10]' to parameter of type 'int (*)[11]}}
+            ^
+
+"Test_name.c", line 93: warning: argument of type "int (*)[5]" is incompatible with parameter of type "int (*)[10]"
+    test7_f(&x); // expected-error {{incompatible pointer types passing 'int (*)[5]' to parameter of type 'int (*)[10]}}
+            ^
+
+"Test_name.c", line 97: error: expression must have struct or union type but it has type "char"
+  char test8_gh62447[d.undef == 8]; // expected-error {{member reference base type 'char' is not a structure or union}}
+                     ^
+
+"Test_name.c", line 98: error: expression must have struct or union type but it has type "char"
+  char test8_gh62447[d.undef == 4]; // expected-error {{member reference base type 'char' is not a structure or union}}
+                     ^
+
+7 errors detected in the compilation of "Test_name.c".

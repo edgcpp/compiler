@@ -1,0 +1,118 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 12: error: this operator is not allowed in an integral constant expression
+  static_assert('j' == data[0]);
+                           ^
+
+"Test_name.c", line 13: error: this operator is not allowed in an integral constant expression
+  static_assert('k' == data[1]);
+                           ^
+
+"Test_name.c", line 15: error: this operator is not allowed in an integral constant expression
+  static_assert('j' == offset_data[0]);
+                                  ^
+
+"Test_name.c", line 16: error: this operator is not allowed in an integral constant expression
+  static_assert(offset_data[0] == data[0]);
+                           ^
+
+"Test_name.c", line 16: error: this operator is not allowed in an integral constant expression
+  static_assert(offset_data[0] == data[0]);
+                                      ^
+
+"Test_name.c", line 19: error: integer operation result is out of range
+  #embed <jk.txt> limit(-1)
+                        ^
+
+"Test_name.c", line 32: error: this operator is not allowed in an integral constant expression
+  static_assert(buffer[0] == 1);
+                      ^
+
+"Test_name.c", line 40: error: this operator is not allowed in an integral constant expression
+  static_assert(other_buffer[0] == 1);
+                            ^
+
+"Test_name.c", line 47: error: this operator is not allowed in an integral constant expression
+  static_assert('j' == third_buffer[0]);
+                                   ^
+
+"Test_name.c", line 48: error: this operator is not allowed in an integral constant expression
+  static_assert('k' == third_buffer[1]);
+                                   ^
+
+"Test_name.c", line 55: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[0]);
+                                    ^
+
+"Test_name.c", line 56: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[1]);
+                                    ^
+
+"Test_name.c", line 57: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[2]);
+                                    ^
+
+"Test_name.c", line 58: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[3]);
+                                    ^
+
+"Test_name.c", line 59: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[4]);
+                                    ^
+
+"Test_name.c", line 60: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[5]);
+                                    ^
+
+"Test_name.c", line 61: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[6]);
+                                    ^
+
+"Test_name.c", line 62: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[7]);
+                                    ^
+
+"Test_name.c", line 63: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[8]);
+                                    ^
+
+"Test_name.c", line 64: error: this operator is not allowed in an integral constant expression
+  static_assert(' ' == fourth_buffer[9]);
+                                    ^
+
+"Test_name.c", line 72: error: this operator is not allowed in an integral constant expression
+  static_assert('j' == fifth_buffer[0]);
+                                   ^
+
+"Test_name.c", line 73: error: this operator is not allowed in an integral constant expression
+  static_assert('k' == fifth_buffer[1]);
+                                   ^
+
+"Test_name.c", line 77: error: integer constant is too large
+  #embed <jk.txt> limit(0xFFFF'FFFF'FFFF'FFFF'1)
+                       ^
+
+"Test_name.c", line 86: error: parameter specified more than once
+  #embed <jk.txt> limit(1) prefix() limit(1)
+                                    ^
+
+"Test_name.c", line 88: error: expected an expression
+  ,
+  ^
+
+"Test_name.c", line 89: error: parameter specified more than once
+  #embed <jk.txt> limit(1) if_empty() limit(2)
+                                      ^
+
+"Test_name.c", line 95: error: the "defined" operator is not permitted here
+  #embed <jk.txt> limit(defined(FOO)) // expected-error {{'defined' cannot appear within this context}}
+                        ^
+
+"Test_name.c", line 95: error: function call is not allowed in a constant expression
+  #embed <jk.txt> limit(defined(FOO)) // expected-error {{'defined' cannot appear within this context}}
+                        ^
+
+"Test_name.c", line 96: error: expected an expression
+    == 0); // expected-error {{expected expression}}
+    ^
+
+29 errors detected in the compilation of "Test_name.c".

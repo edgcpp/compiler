@@ -1,0 +1,314 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 39: warning: expression has no effect
+      one; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 40: error: cannot determine which instance of overloaded function "DontAllowUnresolvedOverloadedExpressionInAnUnusedExpression::two" is intended
+      two; // expected-error{{reference to overloaded function could not be resolved; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 41: warning: expression has no effect
+      oneT<int>; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 42: error: cannot determine which instance of overloaded function "DontAllowUnresolvedOverloadedExpressionInAnUnusedExpression::twoT" is intended
+      twoT<int>; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+      ^
+
+"Test_name.c", line 48: warning: expression has no effect
+      one; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 49: error: cannot determine which instance of overloaded function "DontAllowUnresolvedOverloadedExpressionInAnUnusedExpression::two" is intended
+      two; // expected-error{{reference to overloaded function could not be resolved; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 50: warning: expression has no effect
+      oneT<int>; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 51: error: cannot determine which instance of overloaded function "DontAllowUnresolvedOverloadedExpressionInAnUnusedExpression::twoT" is intended
+      twoT<int>; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+      ^
+
+"Test_name.c", line 86: error: cannot determine which instance of overloaded function "two" is intended
+    { static_cast<void>(two); } // expected-error {{address of overloaded function 'two' cannot be static_cast to type 'void'}}
+                        ^
+
+"Test_name.c", line 87: error: cannot determine which instance of overloaded function "two" is intended
+    { (void)(two); } // expected-error {{address of overloaded function 'two' cannot be cast to type 'void'}}
+            ^
+
+"Test_name.c", line 92: warning: variable "x" was declared but never referenced
+    { ptrdiff_t x = reinterpret_cast<ptrdiff_t>(oneT<int>); } 
+                ^
+
+"Test_name.c", line 97: warning: variable "x" was declared but never referenced
+    { ptrdiff_t x = reinterpret_cast<ptrdiff_t>(twoT<int>); }  
+                ^
+
+"Test_name.c", line 99: error: cannot determine which instance of overloaded function "two" is intended
+    { (void) reinterpret_cast<void (*)(int)>(two); } //expected-error {{reinterpret_cast}}
+                                             ^
+
+"Test_name.c", line 102: error: cannot determine which instance of overloaded function "two" is intended
+    { (void) reinterpret_cast<int>(two); } //expected-error {{reinterpret_cast}}
+                                   ^
+
+"Test_name.c", line 103: error: cannot determine which instance of overloaded function "two" is intended
+    { (void) reinterpret_cast<int (*)(char, double)>(two); } //expected-error {{reinterpret_cast}}
+                                                     ^
+
+"Test_name.c", line 105: error: no instance of overloaded function "twoT" matches the required type
+    { bool b = (twoT<int>); } 
+               ^
+
+"Test_name.c", line 106: error: no instance of overloaded function "twoT" matches the required type
+    { bool b = (twoT<int, int>); } 
+               ^
+
+"Test_name.c", line 108: error: no instance of overloaded function "twoT" matches the required type
+    { bool b = &twoT<int>; //&foo<int>; }
+               ^
+
+"Test_name.c", line 109: error: no instance of overloaded function "twoT" matches the required type
+      b = &(twoT<int>); }
+        ^
+
+"Test_name.c", line 111: warning: variable "x" was set but never used
+    { ptrdiff_t x = (ptrdiff_t) &twoT<int>;
+                ^
+
+"Test_name.c", line 114: warning: variable "x" was set but never used
+    { ptrdiff_t x = (ptrdiff_t) twoT<int>;
+                ^
+
+"Test_name.c", line 118: warning: variable "x" was set but never used
+    { ptrdiff_t x = (ptrdiff_t) &twoT<int,int>;
+                ^
+
+"Test_name.c", line 121: warning: expression has no effect
+    { oneT<int>;   &oneT<int>; } //expected-warning 2{{expression result unused}}
+      ^
+
+"Test_name.c", line 121: warning: expression has no effect
+    { oneT<int>;   &oneT<int>; } //expected-warning 2{{expression result unused}}
+                   ^
+
+"Test_name.c", line 122: error: cannot determine which instance of overloaded function "cant_resolve" is intended
+    { static_cast<void>(cant_resolve<int>); } // expected-error {{address of overload}}
+                        ^
+
+"Test_name.c", line 123: error: no instance of overloaded function "cant_resolve" matches the required type
+    { bool b = cant_resolve<int>; } // expected-error {{address of overload}}
+               ^
+
+"Test_name.c", line 124: error: cannot determine which instance of overloaded function "cant_resolve" is intended
+    { (void) cant_resolve<int>; } // expected-error {{address of overload}}
+             ^
+
+"Test_name.c", line 138: error: nonstandard form for taking the address of a member function
+      if (S::f<char>) return; // expected-error {{call to non-static member function without an object argument}}
+          ^
+
+"Test_name.c", line 139: warning: statement is unreachable
+      if (S::f<int>) return; // expected-error {{call to non-static member function without an object argument}}
+      ^
+
+"Test_name.c", line 139: error: nonstandard form for taking the address of a member function
+      if (S::f<int>) return; // expected-error {{call to non-static member function without an object argument}}
+          ^
+
+"Test_name.c", line 140: warning: statement is unreachable
+      if (&S::f<char>) return;
+      ^
+
+"Test_name.c", line 141: warning: statement is unreachable
+      if (&S::f<int>) return;
+      ^
+
+"Test_name.c", line 142: warning: statement is unreachable
+      if (s.f<char>) return; // expected-error {{reference to non-static member function must be called}}
+      ^
+
+"Test_name.c", line 142: error: a pointer to a bound function may only be used to call the function
+      if (s.f<char>) return; // expected-error {{reference to non-static member function must be called}}
+            ^
+
+"Test_name.c", line 143: error: a pointer to a bound function may only be used to call the function
+      if (s.f<int>) return; // expected-error {{reference to non-static member function must be called}}
+            ^
+
+"Test_name.c", line 144: error: a pointer to a bound function may only be used to call the function
+      if (&s.f<char>) return; // expected-error {{cannot create a non-constant pointer to member function}}
+             ^
+
+"Test_name.c", line 145: error: a pointer to a bound function may only be used to call the function
+      if (&s.f<int>) return; // expected-error {{cannot create a non-constant pointer to member function}}
+             ^
+
+"Test_name.c", line 148: warning: statement is unreachable
+      if (S::g<int>) return;
+      ^
+
+"Test_name.c", line 149: warning: statement is unreachable
+      if (&S::g<char>) return;
+      ^
+
+"Test_name.c", line 150: warning: statement is unreachable
+      if (&S::g<int>) return;
+      ^
+
+"Test_name.c", line 151: warning: statement is unreachable
+      if (s.g<char>) return;
+      ^
+
+"Test_name.c", line 152: warning: statement is unreachable
+      if (s.g<int>) return;
+      ^
+
+"Test_name.c", line 153: warning: statement is unreachable
+      if (&s.g<char>) return;
+      ^
+
+"Test_name.c", line 154: warning: statement is unreachable
+      if (&s.g<int>) return;
+      ^
+
+"Test_name.c", line 156: warning: statement is unreachable
+      if (S::h<42>) return;
+      ^
+
+"Test_name.c", line 157: warning: statement is unreachable
+      if (S::h<int>) return; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+      ^
+
+"Test_name.c", line 157: error: nonstandard form for taking the address of a member function
+      if (S::h<int>) return; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+          ^
+
+"Test_name.c", line 158: warning: statement is unreachable
+      if (&S::h<42>) return;
+      ^
+
+"Test_name.c", line 159: warning: statement is unreachable
+      if (&S::h<int>) return;
+      ^
+
+"Test_name.c", line 160: warning: statement is unreachable
+      if (s.h<42>) return;
+      ^
+
+"Test_name.c", line 161: warning: statement is unreachable
+      if (s.h<int>) return; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+      ^
+
+"Test_name.c", line 161: error: a pointer to a bound function may only be used to call the function
+      if (s.h<int>) return; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+            ^
+
+"Test_name.c", line 163: warning: statement is unreachable
+      if (&s.h<int>) return; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+      ^
+
+"Test_name.c", line 163: error: a pointer to a bound function may only be used to call the function
+      if (&s.h<int>) return; // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+             ^
+
+"Test_name.c", line 165: error: no instance of function template "member_pointers::S::f" matches the required type
+      { bool b = S::f<char>; } // expected-error {{call to non-static member function without an object argument}}
+                 ^
+
+"Test_name.c", line 166: error: no instance of function template "member_pointers::S::f" matches the required type
+      { bool b = S::f<int>; } // expected-error {{call to non-static member function without an object argument}}
+                 ^
+
+"Test_name.c", line 167: error: no instance of function template "member_pointers::S::f" matches the required type
+      { bool b = &S::f<char>; }
+                 ^
+
+"Test_name.c", line 168: error: no instance of function template "member_pointers::S::f" matches the required type
+      { bool b = &S::f<int>; }
+                 ^
+
+"Test_name.c", line 170: error: a pointer to a bound function may only be used to call the function
+      { bool b = s.f<char>; } // expected-error {{reference to non-static member function must be called}}
+                   ^
+
+"Test_name.c", line 171: error: a pointer to a bound function may only be used to call the function
+      { bool b = s.f<int>; } // expected-error {{reference to non-static member function must be called}}
+                   ^
+
+"Test_name.c", line 172: error: a pointer to a bound function may only be used to call the function
+      { bool b = &s.f<char>; } // expected-error {{cannot create a non-constant pointer to member function}}
+                    ^
+
+"Test_name.c", line 173: error: a pointer to a bound function may only be used to call the function
+      { bool b = &s.f<int>; } // expected-error {{cannot create a non-constant pointer to member function}}
+                    ^
+
+"Test_name.c", line 175: error: no instance of function template "member_pointers::S::g" matches the required type
+      { bool b = S::g<char>; }
+                 ^
+
+"Test_name.c", line 176: error: no instance of function template "member_pointers::S::g" matches the required type
+      { bool b = S::g<int>; }
+                 ^
+
+"Test_name.c", line 177: error: no instance of function template "member_pointers::S::g" matches the required type
+      { bool b = &S::g<char>; }
+                 ^
+
+"Test_name.c", line 178: error: no instance of function template "member_pointers::S::g" matches the required type
+      { bool b = &S::g<int>; }
+                 ^
+
+"Test_name.c", line 179: warning: variable "b" was declared but never referenced
+      { bool b = s.g<char>; }
+             ^
+
+"Test_name.c", line 180: warning: variable "b" was declared but never referenced
+      { bool b = s.g<int>; }
+             ^
+
+"Test_name.c", line 181: warning: variable "b" was declared but never referenced
+      { bool b = &s.g<char>; }
+             ^
+
+"Test_name.c", line 182: warning: variable "b" was declared but never referenced
+      { bool b = &s.g<int>; }
+             ^
+
+"Test_name.c", line 184: error: no instance of overloaded function "member_pointers::S::h" matches the required type
+      { bool b = S::h<42>; }
+                 ^
+
+"Test_name.c", line 185: error: no instance of overloaded function "member_pointers::S::h" matches the required type
+      { bool b = S::h<int>; } // expected-error {{cannot form member pointer of type 'bool' without '&' and class name}}
+                 ^
+
+"Test_name.c", line 186: error: no instance of overloaded function "member_pointers::S::h" matches the required type
+      { bool b = &S::h<42>; }
+                 ^
+
+"Test_name.c", line 187: error: no instance of overloaded function "member_pointers::S::h" matches the required type
+      { bool b = &S::h<int>; }
+                 ^
+
+"Test_name.c", line 188: warning: variable "b" was declared but never referenced
+      { bool b = s.h<42>; }
+             ^
+
+"Test_name.c", line 189: error: a pointer to a bound function may only be used to call the function
+      { bool b = s.h<int>; } // expected-error {{cannot form member pointer of type 'bool' without '&' and class name}}
+                   ^
+
+"Test_name.c", line 190: warning: variable "b" was declared but never referenced
+      { bool b = &s.h<42>; }
+             ^
+
+"Test_name.c", line 191: error: a pointer to a bound function may only be used to call the function
+      { bool b = &s.h<int>; } // expected-error {{cannot form member pointer of type 'bool' without '&' and class name}}
+                    ^
+
+43 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,61 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) struct A; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                 ^
+
+"Test_name.c", line 5: warning: attribute does not apply to any entity
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) struct A; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                                                        ^
+
+"Test_name.c", line 7: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) union B; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                 ^
+
+"Test_name.c", line 7: warning: attribute does not apply to any entity
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) union B; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                                                        ^
+
+"Test_name.c", line 9: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) enum C {C}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                 ^
+
+"Test_name.c", line 9: warning: attribute does not apply to any entity
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) enum C {C}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                                                        ^
+
+"Test_name.c", line 14: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) struct A; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 14: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) struct A; // expected-warning{{attribute 'visibility' is ignored, place it after "struct" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 16: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) union B; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 16: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) union B; // expected-warning{{attribute 'visibility' is ignored, place it after "union" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 18: warning: unknown attribute "visibility"
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum C {C}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                   ^
+
+"Test_name.c", line 18: warning: attribute does not apply to any entity
+    __attribute__((visibility("hidden")))  __attribute__((aligned)) enum C {C}; // expected-warning{{attribute 'visibility' is ignored, place it after "enum" to apply attribute to type declaration}} \
+                                                          ^
+
+"Test_name.c", line 22: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) struct D {} d;
+                 ^
+
+"Test_name.c", line 23: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) union E {} e;
+                 ^
+
+"Test_name.c", line 24: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden")))  __attribute__((aligned)) enum F {F} f;
+                 ^
+

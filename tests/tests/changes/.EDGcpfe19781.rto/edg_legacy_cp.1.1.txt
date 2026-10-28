@@ -1,0 +1,73 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 17: error: explicit type is missing ("int" assumed)
+    static constexpr bool val = true;
+           ^
+
+"Test_name.c", line 17: error: expected a ";"
+    static constexpr bool val = true;
+                     ^
+
+"Test_name.c", line 21: error: explicit type is missing ("int" assumed)
+  template<typename... T> struct C : S {
+           ^
+
+"Test_name.c", line 21: error: expected a "," or ">"
+  template<typename... T> struct C : S {
+                   ^
+
+"Test_name.c", line 22: error: identifier "T" is undefined
+    C(const T&...) = delete; // Previously the front end chose this function
+            ^
+
+"Test_name.c", line 22: error: expected a ";"
+    C(const T&...) = delete; // Previously the front end chose this function
+                   ^
+
+"Test_name.c", line 23: error: explicit type is missing ("int" assumed)
+    template<typename... U,
+             ^
+
+"Test_name.c", line 23: error: expected a "," or ">"
+    template<typename... U,
+                     ^
+
+"Test_name.c", line 24: error: identifier "T" is undefined
+             typename = typename B<A<X<T, U>...>::val>::type
+                                       ^
+
+"Test_name.c", line 24: error: identifier "U" is undefined
+             typename = typename B<A<X<T, U>...>::val>::type
+                                          ^
+
+"Test_name.c", line 24: error: expected a ">"
+             typename = typename B<A<X<T, U>...>::val>::type
+                                            ^
+
+"Test_name.c", line 26: error: expected a ")"
+    C(U&&...); // Now the front end chooses this function
+       ^
+
+"Test_name.c", line 26: error: member "C<<unnamed>>::U" is not a valid class member template
+    C(U&&...); // Now the front end chooses this function
+      ^
+
+"Test_name.c", line 28: error: type name is not allowed
+  struct D : C<S> {
+               ^
+
+"Test_name.c", line 29: error: a using-declaration may not name a constructor or destructor
+    using C::C;
+             ^
+
+"Test_name.c", line 32: error: no instance of constructor "D::D" matches the argument list
+            argument types are: (S)
+    D var(s); // Previously an error (calling deleted function), now accepted
+          ^
+"Test_name.c", line 28: note: function "D::D(const D &)" does not match because argument #1 does not match parameter
+  struct D : C<S> {
+         ^
+"Test_name.c", line 28: note: number of parameters of function "D::D()" does not match the call
+  struct D : C<S> {
+         ^
+
+16 errors detected in the compilation of "Test_name.c".

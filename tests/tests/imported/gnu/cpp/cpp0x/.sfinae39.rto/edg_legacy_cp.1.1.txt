@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 49: error: static assertion failed with ""
+  static_assert((!test_braced_cast_to_ptr_to_base< D *> (0)), "");
+  ^
+
+"Test_name.c", line 62: error: static assertion failed with ""
+  static_assert((!test_braced_cast_to_ptr_to_derived< B *> (0)), "");
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,83 @@
+fe_only -DTEST_NUMBER=2 --c++17 --clang_version=120000 Test_name.c
+"Test_name.c", line 28: error: a storage class is not allowed in an explicit specialization
+      static void expl_static_spec(int) // ill-formed: "static" (accepted by MSVC)
+      ^
+
+"Test_name.c", line 12: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 18: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 24: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 30: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 61: error: a nonstatic member reference must be relative to a specific object
+      ++m;                        // reference to non-static member
+        ^
+
+"Test_name.c", line 65: error: a storage class is not allowed in an explicit specialization
+    static void C::expl_static_spec(long) // ill-formed: "static" (accepted by MSVC)
+    ^
+
+"Test_name.c", line 67: error: a nonstatic member reference must be relative to a specific object
+      ++m;                        // reference to non-static member
+        ^
+
+"Test_name.c", line 74: error: a storage class is not allowed in an explicit specialization
+    static int C::expl_static_spec_var<long> = 1; // ill-formed: "static"
+    ^
+
+"Test_name.c", line 121: error: a storage class is not allowed in an explicit specialization
+      static void expl_static_spec(int) // ill-formed: "static" (accepted by MSVC)
+      ^
+
+"Test_name.c", line 105: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 117: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 123: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+
+"Test_name.c", line 154: error: a nonstatic member reference must be relative to a specific object
+      ++m;                        // reference to non-static member
+        ^
+
+"Test_name.c", line 158: error: a storage class is not allowed in an explicit specialization
+    static void C<long>::expl_static_spec(long) // ill-formed: "static" (accepted by MSVC)
+    ^
+
+"Test_name.c", line 160: error: a nonstatic member reference must be relative to a specific object
+      ++m;                        // reference to non-static member
+        ^
+
+"Test_name.c", line 167: error: a storage class is not allowed in an explicit specialization
+    static int C<long>::expl_static_spec_var<long> = 1; // ill-formed: "static"
+    ^
+
+"Test_name.c", line 111: error: a nonstatic member reference must be relative to a specific object
+        ++m;                      // reference to non-static member
+          ^
+          detected during instantiation of class "tmpl::C<T> [with T=int]" at line 172
+
+"Test_name.c", line 197: error: a storage class is not allowed in an explicit specialization
+    template<> extern struct C<1> // ill-formed: "extern"
+               ^
+
+"Test_name.c", line 200: error: a storage class is not allowed in an explicit specialization
+    template<> static struct C<2> // ill-formed: "static"
+               ^
+
+20 errors detected in the compilation of "Test_name.c".

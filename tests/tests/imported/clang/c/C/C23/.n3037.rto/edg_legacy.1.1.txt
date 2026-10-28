@@ -1,0 +1,142 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 41: error: this declaration of struct "AnonymousStructNotMatchingFields" does not declare the same type as the declaration at line 36
+  struct AnonymousStructNotMatchingFields { // c23-error {{type 'struct AnonymousStructNotMatchingFields' has incompatible definitions}} \
+         ^
+
+"Test_name.c", line 52: error: type "untagged_q_t" has already been defined (previous definition at line 51)
+  typedef struct { int x; } untagged_q_t; // both-error {{typedef redefinition with different types}}
+                            ^
+
+"Test_name.c", line 62: error: this declaration of struct "food" does not declare the same type as the declaration at line 60
+  struct food { int (*p)[]; };  // c23-error {{type 'struct food' has incompatible definitions}} \
+         ^
+
+"Test_name.c", line 67: error: this declaration of union "bard" does not declare the same type as the declaration at line 65
+  union bard { int z; float y; }; // c23-error {{type 'union bard' has incompatible definitions}} \
+        ^
+
+"Test_name.c", line 72: error: this declaration of union "purr" does not declare the same type as the declaration at line 70
+  union purr { float y; int x; }; // c23-error {{type 'union purr' has incompatible definitions}} \
+        ^
+
+"Test_name.c", line 82: error: this declaration of struct "attr_test" does not declare the same type as the declaration at line 77
+  struct attr_test { // c17-error {{redefinition of 'attr_test'}} \
+         ^
+
+"Test_name.c", line 91: error: this declaration of struct "attr_test_2" does not declare the same type as the declaration at line 87
+  struct [[gnu::packed]] attr_test_2 { // c17-error {{redefinition of 'attr_test_2'}} \
+                         ^
+
+"Test_name.c", line 115: error: this declaration of struct "field_attr_test_1" does not declare the same type as the declaration at line 110
+  struct field_attr_test_1 { // c17-error {{redefinition of 'field_attr_test_1'}} \
+         ^
+
+"Test_name.c", line 126: error: this declaration of struct "field_attr_test_2" does not declare the same type as the declaration at line 121
+  struct field_attr_test_2 { // c17-error {{redefinition of 'field_attr_test_2'}} \
+         ^
+
+"Test_name.c", line 157: error: this declaration of struct "quals_matter" does not declare the same type as the declaration at line 153
+  struct quals_matter { // c17-error {{redefinition of 'quals_matter'}} \
+         ^
+
+"Test_name.c", line 172: error: "nested" has already been declared in the current scope
+    struct nested { // both-error {{nested redefinition of 'nested'}}
+           ^
+
+"Test_name.c", line 174: warning: expected an identifier
+    };
+     ^
+
+"Test_name.c", line 190: error: this declaration of struct "bit_field_1" does not declare the same type as the declaration at line 178
+  struct bit_field_1 { // c17-error {{redefinition of 'bit_field_1'}} \
+         ^
+
+"Test_name.c", line 201: error: this declaration of struct "bit_field_2" does not declare the same type as the declaration at line 196
+  struct bit_field_2 { // c17-error {{redefinition of 'bit_field_2'}} \
+         ^
+
+"Test_name.c", line 224: error: this declaration of struct "bit_field_4" does not declare the same type as the declaration at line 219
+  struct bit_field_4 { // c17-error {{redefinition of 'bit_field_4'}} \
+         ^
+
+"Test_name.c", line 235: error: this declaration of struct "bit_field_5" does not declare the same type as the declaration at line 230
+  struct bit_field_5 { // c17-error {{redefinition of 'bit_field_5'}} \
+         ^
+
+"Test_name.c", line 266: error: this declaration of enum "Y" does not declare the same type as the declaration at line 264
+  enum Y { YA = 1, YB = 3 }; // c23-error {{type 'enum Y' has incompatible definitions}} \
+       ^
+
+"Test_name.c", line 274: error: "ZC" has already been declared in the current scope
+  enum Z2 { ZC = 1 }; // both-error {{redefinition of enumerator 'ZC'}}
+            ^
+
+"Test_name.c", line 373: error: this declaration of struct "alignment" does not declare the same type as the declaration at line 369
+  struct alignment { // c17-error {{redefinition of 'alignment'}} \
+         ^
+
+"Test_name.c", line 404: error: expected an expression
+    _Static_assert(0 == _Generic(__typeof__(Arg1), __typeof__(Arg2) : 1, default : 0)); // both-warning {{passing a type argument as the first operand to '_Generic' is a C2y extension}}
+                                 ^
+
+"Test_name.c", line 437: error: a value of type "struct <unnamed>" cannot be assigned to an entity of type "struct <unnamed>"
+    inner_unnamed_tagged.untagged = matchingType.untagged; // both-error-re {{assigning to 'struct (unnamed at {{.*}})' from incompatible type 'struct (unnamed at {{.*}})'}}
+                                  ^
+
+"Test_name.c", line 438: error: a value of type "struct <unnamed>" cannot be assigned to an entity of type "struct <unnamed>"
+    inner_unnamed_tagged.untagged = differentFieldName.untaggedDifferent; // both-error-re {{assigning to 'struct (unnamed at {{.*}})' from incompatible type 'struct (unnamed at {{.*}})'}}
+                                  ^
+
+"Test_name.c", line 439: error: a value of type "struct <unnamed>" cannot be assigned to an entity of type "struct <unnamed>"
+    inner_unnamed_tagged.untagged = differentType.untagged; // both-error-re {{assigning to 'struct (unnamed at {{.*}})' from incompatible type 'struct (unnamed at {{.*}})'}}
+                                  ^
+
+"Test_name.c", line 445: error: "E_Untagged1" has already been declared in the current scope
+  _Static_assert(0 == _Generic(nontag_enum, enum { E_Untagged1 } : 1, default : 0)); // both-error {{redefinition of enumerator 'E_Untagged1'}}
+                                                   ^
+
+"Test_name.c", line 461: error: declaration is incompatible with "enum GH150594_E1 Fn1(void)" (declared at line 453)
+    extern enum GH150594_E1 Fn1(void); // both-error {{conflicting types for 'Fn1'}}
+                            ^
+
+"Test_name.c", line 463: error: declaration is incompatible with "enum GH150594_E3 Fn3(void)" (declared at line 455)
+    extern enum GH150594_E3 Fn3(void); // both-error {{conflicting types for 'Fn3'}}
+                            ^
+
+"Test_name.c", line 464: error: declaration is incompatible with "enum GH150594_E4 Fn4(void)" (declared at line 456)
+    extern enum GH150594_E4 Fn4(void); // both-error {{conflicting types for 'Fn4'}}
+                            ^
+
+"Test_name.c", line 468: error: enum "E1" (declared at line 467) was previously declared without an explicit enum base
+    enum E1 : int { e1 }; // both-error {{enumeration previously declared with nonfixed underlying type}}
+              ^
+
+"Test_name.c", line 468: error: this declaration of enum "E1" does not declare the same type as the declaration at line 467
+    enum E1 : int { e1 }; // both-error {{enumeration previously declared with nonfixed underlying type}}
+         ^
+
+"Test_name.c", line 471: error: this declaration of enum "E2" does not declare the same type as the declaration at line 470
+    enum E2 { e2 };       // both-error {{enumeration previously declared with fixed underlying type}}
+         ^
+
+"Test_name.c", line 474: error: this declaration of enum "E3" does not declare the same type as the declaration at line 473
+    enum E3 : short { e3 }; // both-error {{enumeration redeclared with different underlying type 'short' (was 'int')}}
+         ^
+
+"Test_name.c", line 482: error: this declaration of enum "E5" does not declare the same type as the declaration at line 481
+    enum E5 : int { e5 }; // both-error {{enumeration redeclared with different underlying type 'int' (was 'foo' (aka 'short'))}}
+         ^
+
+"Test_name.c", line 511: error: this declaration of struct "GH149965_3" does not declare the same type as the declaration at line 510
+    struct GH149965_3 { enum E1 h; }; // c17-error {{redefinition of 'GH149965_3'}}
+           ^
+
+"Test_name.c", line 516: warning: variable "eptr" is used before its value is set
+    [[maybe_unused]] __typeof__(x1.h) *ptr = eptr;
+                                             ^
+
+"Test_name.c", line 518: warning: variable "eptr2" is used before its value is set
+    [[maybe_unused]] __typeof__(x2.h) *ptr2 = eptr2;
+                                              ^
+
+32 errors detected in the compilation of "Test_name.c".

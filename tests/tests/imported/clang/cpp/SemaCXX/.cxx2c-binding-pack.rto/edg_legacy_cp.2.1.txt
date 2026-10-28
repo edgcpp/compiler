@@ -1,0 +1,145 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 87: error: too many identifiers
+    auto [a1, ...b1, c1] = arr1; // expected-error{{binds to 1 element, but 3 names were provided}}
+                     ^
+
+"Test_name.c", line 77: warning: variable "size" was declared but never referenced
+    int size = sizeof...(rest);
+        ^
+
+"Test_name.c", line 87: warning: structured binding "a1" was declared but never referenced
+    auto [a1, ...b1, c1] = arr1; // expected-error{{binds to 1 element, but 3 names were provided}}
+          ^
+
+"Test_name.c", line 116: warning: variable "a" was declared but never referenced
+    int a = x...[0];
+        ^
+
+"Test_name.c", line 117: warning: variable "b" was declared but never referenced
+    int b = x...[1];
+        ^
+
+"Test_name.c", line 118: warning: variable "c" was declared but never referenced
+    int c = x...[2];
+        ^
+
+"Test_name.c", line 119: warning: variable "d" was declared but never referenced
+    int d = x...[3];
+        ^
+
+"Test_name.c", line 165: error: too many identifiers
+    auto [l, m, n, o, ...p] = C(); // expected-error{{{binds to 3 elements, but 5 names were provided}}}
+                   ^
+
+"Test_name.c", line 158: warning: structured binding "a" was declared but never referenced
+    auto [a, b, c] = C(); // OK, SB0 is a, SB1 is b, and SB2 is c
+          ^
+
+"Test_name.c", line 163: warning: structured binding "h" was declared but never referenced
+    auto [h, i, j, ...k] = C(); // OK, the pack k is empty
+          ^
+
+"Test_name.c", line 165: warning: structured binding "l" was declared but never referenced
+    auto [l, m, n, o, ...p] = C(); // expected-error{{{binds to 3 elements, but 5 names were provided}}}
+          ^
+
+"Test_name.c", line 202: error: expression must have a constant value
+    static_assert(f<int>() == 2);
+                  ^
+"Test_name.c", line 195: note: access to uninitialized object
+    auto [...e] = arr;
+                  ^
+
+"Test_name.c", line 211: error: identifier "clsss" is undefined
+  clsss S2 { // expected-error{{{unknown type name 'clsss'}}}
+  ^
+
+"Test_name.c", line 212: error: expected an expression
+  public:
+  ^
+
+"Test_name.c", line 213: error: identifier "b" is undefined
+    int a,b,c;
+          ^
+
+"Test_name.c", line 213: error: identifier "c" is undefined
+    int a,b,c;
+            ^
+
+"Test_name.c", line 213: error: expected a "}"
+    int a,b,c;
+             ^
+
+"Test_name.c", line 217: error: variable "X" has already been defined (previous definition at line 135)
+  auto X = [] <typename = void> () {
+       ^
+
+"Test_name.c", line 218: error: "S" is ambiguous
+      auto [...pack,a,b,c] = S{};
+                             ^
+
+"Test_name.c", line 218: error: expected a ";"
+      auto [...pack,a,b,c] = S{};
+                              ^
+
+"Test_name.c", line 219: error: "S" is ambiguous
+      auto [x,y,z,...pack2] = S{};
+                              ^
+
+"Test_name.c", line 219: error: expected a ";"
+      auto [x,y,z,...pack2] = S{};
+                               ^
+
+"Test_name.c", line 220: error: "S2" is ambiguous
+      auto [...pack3] = S2{};
+                        ^
+
+"Test_name.c", line 220: error: expected a ";"
+      auto [...pack3] = S2{};
+                          ^
+
+"Test_name.c", line 223: error: expected a declaration
+  }  // namespace
+  ^
+
+"Test_name.c", line 261: warning: parsing restarts here after previous syntax error
+  static_assert(copy_obj(fake_tuple{}) == 12);
+                                             ^
+
+"Test_name.c", line 262: error: identifier "Triple" is undefined
+  static_assert(copy_obj(Triple{}) == 3);
+                         ^
+
+"Test_name.c", line 262: error: expected a ")"
+  static_assert(copy_obj(Triple{}) == 3);
+                               ^
+
+"Test_name.c", line 262: error: identifier "copy_obj" is undefined
+  static_assert(copy_obj(Triple{}) == 3);
+                ^
+
+"Test_name.c", line 263: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 170: warning: function "<unnamed>::g" was referenced but not defined
+  auto g() -> int(&)[4];
+       ^
+
+"Test_name.c", line 190: warning: function "<unnamed>::g(...)" was declared but never referenced
+  int g(...) { return 1; }
+      ^
+
+"Test_name.c", line 182: warning: function "<unnamed>::call_h" was declared but never referenced
+  void call_h() {
+       ^
+
+"Test_name.c", line 201: warning: function "<unnamed>::other_main" was declared but never referenced
+  void other_main() {
+       ^
+
+"Test_name.c", line 211: warning: variable "<unnamed>::S2" was declared but never referenced
+  clsss S2 { // expected-error{{{unknown type name 'clsss'}}}
+        ^
+
+20 errors detected in the compilation of "Test_name.c".

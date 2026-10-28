@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "int"
+    v = (v2di){v[1], v[0]};
+                 ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "int"
+    v = (v2di){v[1], v[0]};
+                       ^
+
+"Test_name.c", line 11: warning: excess initializers are ignored
+    v = (v2di){v[1], v[0]};
+                     ^
+
+"Test_name.c", line 16: error: expression must have pointer-to-object type but it has type "int"
+    v[0] = 1;
+      ^
+
+"Test_name.c", line 18: error: expression must have pointer-to-object type but it has type "int"
+    if (v[0] != 0 || v[1] != 1)
+          ^
+
+"Test_name.c", line 18: error: expression must have pointer-to-object type but it has type "int"
+    if (v[0] != 0 || v[1] != 1)
+                       ^
+
+5 errors detected in the compilation of "Test_name.c".

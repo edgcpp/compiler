@@ -1,0 +1,103 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 107: error: name followed by "::" must be a class or namespace name
+        constexpr S(const S&) : n(T::error) {}
+                                  ^
+          detected during:
+            instantiation of "Unevaluated::Constexpr::S<T>::S(const Unevaluated::Constexpr::S<T> &) [with T=int]" at line 111
+            implicit generation of "Unevaluated::Constexpr::U::U(Unevaluated::Constexpr::U &&)" at line 111
+
+"Test_name.c", line 125: error: reference variable "Unevaluated::ConstexprList::t2" requires an initializer
+      decltype((char){S<2>()}) t2;
+                                 ^
+
+"Test_name.c", line 126: warning: extra braces are nonstandard
+      decltype(+(char[1]){{S<3>()}}) t3;
+                          ^
+
+"Test_name.c", line 184: warning: missing return statement at end of non-void function "Unevaluated::PR12288::main"
+      int main() { baz<int>(); }
+                               ^
+
+"Test_name.c", line 202: error: no instance of function template "Unevaluated::PR13423::F<T>::g [with T=int]" matches the argument list
+      void i() { F<int>::g<U>(); } // expected-error {{no matching function}}
+                 ^
+"Test_name.c", line 196: note: substituting explicit template arguments "<Unevaluated::PR13423::U>" for function template "Unevaluated::PR13423::F<T>::g [with T=int]" failed
+        static typename enable_if<f<U>(), void>::type g() {} // expected-note {{requirement 'f<Unevaluated::PR13423::U>()' was not satisfied}}
+                                                      ^
+
+"Test_name.c", line 232: warning: variable "b1" was declared but never referenced
+        B<&A<-2>::n> b1; // ok
+                     ^
+
+"Test_name.c", line 233: warning: variable "b2" was declared but never referenced
+        B<&A<-2>::k> b2; // expected-note {{instantiation of }}
+                     ^
+
+"Test_name.c", line 224: error: the size of an array must be greater than zero
+      template <int N> constexpr int A<N>::k = *(int[N]){N}; // expected-error 1+{{negative}} expected-note 1+{{not valid in a constant expression}} expected-note 1+{{declared here}}
+                                                     ^
+          detected during implicit definition of "const int Unevaluated::Variables::A<N>::k [with N=-4]" at line 237
+
+"Test_name.c", line 237: warning: invalid narrowing conversion from "int" to "char"
+      decltype(char{A<-4>::k}) d2 = 0;                    // expected-note 1+{{instantiation of }} expected-error {{narrow}} expected-note {{cast}}
+                    ^
+
+"Test_name.c", line 248: error: name followed by "::" must be a class or namespace name
+      template<typename T> constexpr S(T) : n(T::error) {} // expected-error {{no members}}
+                                              ^
+          detected during instantiation of "NoInstantiationWhenSelectingOverload::S::S(T) [with T=const char *]" at line 257
+
+"Test_name.c", line 257: warning: invalid narrowing conversion from "int" to "char"
+    void i() { (void)sizeof(char{f("oops")}); } // expected-note {{instantiation of}}
+                                 ^
+
+"Test_name.c", line 98: error: name followed by "::" must be a class or namespace name
+        S(const S&) : n(T::error) {}
+                        ^
+          detected during instantiation of "Unevaluated::NotConstexpr::S<T>::S(const Unevaluated::NotConstexpr::S<T> &) [with T=int]" at line 101
+
+"Test_name.c", line 224: error: the size of an array must be greater than zero
+      template <int N> constexpr int A<N>::k = *(int[N]){N}; // expected-error 1+{{negative}} expected-note 1+{{not valid in a constant expression}} expected-note 1+{{declared here}}
+                                                     ^
+          detected during implicit definition of "const int Unevaluated::Variables::A<N>::k [with N=-1]" at line 231
+
+"Test_name.c", line 227: error: the size of an array must be greater than zero
+      template<int N> int A<N>::n = *(int[N]){0};
+                                          ^
+          detected during implicit definition of "int Unevaluated::Variables::A<N>::n [with N=-1]" at line 230
+
+"Test_name.c", line 224: error: the size of an array must be greater than zero
+      template <int N> constexpr int A<N>::k = *(int[N]){N}; // expected-error 1+{{negative}} expected-note 1+{{not valid in a constant expression}} expected-note 1+{{declared here}}
+                                                     ^
+          detected during implicit definition of "const int Unevaluated::Variables::A<N>::k [with N=-2]" at line 233
+
+"Test_name.c", line 227: error: the size of an array must be greater than zero
+      template<int N> int A<N>::n = *(int[N]){0};
+                                          ^
+          detected during implicit definition of "int Unevaluated::Variables::A<N>::n [with N=-2]" at line 232
+
+"Test_name.c", line 13: warning: variable "UseBeforeDefinition::j" was declared but never referenced
+    constexpr int j = A::get<int>();
+                  ^
+
+"Test_name.c", line 21: warning: variable "UseBeforeDefinition::l" was declared but never referenced
+    constexpr int l = consume(0);
+                  ^
+
+"Test_name.c", line 23: warning: variable "UseBeforeDefinition::m" was declared but never referenced
+    constexpr int m = k; // expected-error {{constant expression}} expected-note {{initializer of 'k'}}
+                  ^
+
+"Test_name.c", line 67: warning: variable "DataMember::m" was declared but never referenced
+    constexpr int m = S<int>::k; // ok
+                  ^
+
+"Test_name.c", line 68: warning: variable "DataMember::o" was declared but never referenced
+    constexpr int o = n; // expected-error {{constant expression}} expected-note {{initializer of 'n'}}
+                  ^
+
+"Test_name.c", line 236: warning: variable "Unevaluated::Variables::d1" was declared but never referenced
+      decltype(A<-3>::k) d1 = 0; // ok
+                         ^
+
+10 errors detected in the compilation of "Test_name.c".

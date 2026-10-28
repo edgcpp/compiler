@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 26: warning: name following "template" must be a template
+    p->template a1(); // { dg-error "template" }
+                ^
+
+"Test_name.c", line 26: warning: variable "p" is used before its value is set
+    p->template a1(); // { dg-error "template" }
+    ^
+

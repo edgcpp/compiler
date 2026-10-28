@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 -Dalignof=__alignof Test_name.c
+"Test_name.c", line 7: error: invalid alignment value specified by attribute
+  _Alignas(3) int align_illegal; //expected-error {{requested alignment is not a power of 2}}
+           ^
+
+"Test_name.c", line 9: error: alignment cannot be set to less than the default alignment
+  _Alignas(1) int align_small; // expected-error {{requested alignment is less than minimum}}
+  ^
+
+"Test_name.c", line 14: error: attribute "_Alignas" does not apply to bit fields
+    _Alignas(1) char bitfield : 1; // expected-error {{'_Alignas' attribute cannot be applied to a bit-field}}
+    ^
+
+"Test_name.c", line 17: error: alignas does not apply here
+  typedef _Alignas(8) char align_typedef; // expected-error {{'_Alignas' attribute only applies to variables and fields}}
+          ^
+
+"Test_name.c", line 19: error: alignas does not apply here
+  void f(_Alignas(1) char c) { // expected-error {{'_Alignas' attribute cannot be applied to a function parameter}}
+         ^
+
+"Test_name.c", line 20: error: attribute "_Alignas" does not apply to register variables
+    _Alignas(1) register char k; // expected-error {{'_Alignas' attribute cannot be applied to a variable with 'register' storage class}}
+    ^
+
+"Test_name.c", line 20: warning: variable "k" was declared but never referenced
+    _Alignas(1) register char k; // expected-error {{'_Alignas' attribute cannot be applied to a variable with 'register' storage class}}
+                              ^
+
+"Test_name.c", line 29: error: static assertion failed with "j's alignment is wrong"
+  _Static_assert(alignof(align_small) == 1, "j's alignment is wrong");
+  ^
+
+7 errors detected in the compilation of "Test_name.c".

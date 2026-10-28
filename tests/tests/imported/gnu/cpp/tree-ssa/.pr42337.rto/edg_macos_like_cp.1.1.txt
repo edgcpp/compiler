@@ -1,0 +1,61 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: warning: missing return statement at end of non-void function "max(const _Tp &, const _Tp &)"
+  inline const _Tp& max(const _Tp& __a, const _Tp& __b) { }
+                                                          ^
+
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "__normal_iterator<_Iterator, _Container>::operator++"
+    }
+    ^
+
+"Test_name.c", line 23: warning: missing return statement at end of non-void function "operator!=(const __normal_iterator<_IteratorL, _Container> &, const __normal_iterator<_IteratorR, _Container> &)"
+  inline bool operator!=(const __normal_iterator<_IteratorL, _Container>& __lhs, const __normal_iterator<_IteratorR, _Container>& __rhs) { }
+                                                                                                                                           ^
+
+"Test_name.c", line 45: warning: missing return statement at end of non-void function "_Rb_tree_iterator<_Tp>::operator->"
+    }
+    ^
+
+"Test_name.c", line 76: warning: missing return statement at end of non-void function "vector<_Tp, _Alloc>::begin()"
+    iterator begin() { }
+                       ^
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "vector<_Tp, _Alloc>::begin() const"
+    const_iterator begin() const { }
+                                   ^
+
+"Test_name.c", line 78: warning: missing return statement at end of non-void function "vector<_Tp, _Alloc>::end"
+    const_iterator end() const { }
+                                 ^
+
+"Test_name.c", line 79: warning: missing return statement at end of non-void function "vector<_Tp, _Alloc>::size"
+    unsigned long size() const { }
+                                 ^
+
+"Test_name.c", line 133: warning: missing return statement at end of non-void function "SFVT<KEY, VALUE>::size"
+    long unsigned int size() const { }
+                                     ^
+
+"Test_name.c", line 175: warning: missing return statement at end of non-void function "foo"
+  }
+  ^
+
+"Test_name.c", line 61: warning: missing return statement at end of non-void function "map<_Key, _Tp, _Compare, _Alloc>::find [with _Key=int, _Tp=int, _Compare=less<int>, _Alloc=allocator<pair<const int, int>>]"
+    iterator find(const key_type& __x) { }
+                                         ^
+          detected during instantiation of "map<_Key, _Tp, _Compare, _Alloc>::iterator map<_Key, _Tp, _Compare, _Alloc>::find(const map<_Key, _Tp, _Compare, _Alloc>::key_type &) [with _Key=int, _Tp=int, _Compare=less<int>, _Alloc=allocator<pair<const int, int>>]" at line 145
+
+"Test_name.c", line 14: warning: missing return statement at end of non-void function "lower_bound(_ForwardIterator, _ForwardIterator, const _Tp &, _Compare) [with _ForwardIterator=const SF *, _Tp=SF, _Compare=SFVT<unsigned long long, double>::Cmp]"
+  lower_bound(_ForwardIterator __first, _ForwardIterator __last, const _Tp& __val, _Compare __comp) { }
+                                                                                                      ^
+          detected during:
+            instantiation of "_ForwardIterator lower_bound(_ForwardIterator, _ForwardIterator, const _Tp &, _Compare) [with _ForwardIterator=const SF *, _Tp=SF, _Compare=SFVT<unsigned long long, double>::Cmp]" at line 129
+            instantiation of "VALUE SFVT<KEY, VALUE>::IS(const SFVT<KEY, VALUE> &) const [with KEY=unsigned long long, VALUE=double]" at line 135
+            instantiation of "VALUE SFVT<KEY, VALUE>::DP(const SFVT<KEY, VALUE> &) const [with KEY=unsigned long long, VALUE=double]" at line 173
+
+"Test_name.c", line 131: warning: missing return statement at end of non-void function "SFVT<KEY, VALUE>::IS [with KEY=unsigned long long, VALUE=double]"
+    }
+    ^
+          detected during:
+            instantiation of "VALUE SFVT<KEY, VALUE>::IS(const SFVT<KEY, VALUE> &) const [with KEY=unsigned long long, VALUE=double]" at line 135
+            instantiation of "VALUE SFVT<KEY, VALUE>::DP(const SFVT<KEY, VALUE> &) const [with KEY=unsigned long long, VALUE=double]" at line 173
+

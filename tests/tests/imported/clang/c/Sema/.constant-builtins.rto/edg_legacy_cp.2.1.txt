@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 30: error: function call is not allowed in a constant expression
+  int h6 = __builtin_bswapg((char)0x12) == (char)0x12 ? 1 : f();
+           ^
+
+"Test_name.c", line 30: error: function call is not allowed in a constant expression
+  int h6 = __builtin_bswapg((char)0x12) == (char)0x12 ? 1 : f();
+                                                            ^
+
+"Test_name.c", line 31: error: function call is not allowed in a constant expression
+  int h7 = __builtin_bswapg((short)(0x1234)) == (short)(0x3412) ? 1 : f();
+           ^
+
+"Test_name.c", line 31: error: function call is not allowed in a constant expression
+  int h7 = __builtin_bswapg((short)(0x1234)) == (short)(0x3412) ? 1 : f();
+                                                                      ^
+
+"Test_name.c", line 32: error: function call is not allowed in a constant expression
+  int h8 = __builtin_bswapg(0x00001234) == 0x34120000 ? 1 : f();
+           ^
+
+"Test_name.c", line 32: error: function call is not allowed in a constant expression
+  int h8 = __builtin_bswapg(0x00001234) == 0x34120000 ? 1 : f();
+                                                            ^
+
+"Test_name.c", line 33: error: function call is not allowed in a constant expression
+  int h9 = __builtin_bswapg(0x0000000000001234ULL) == 0x3412000000000000 ? 1 : f();
+           ^
+
+"Test_name.c", line 33: error: function call is not allowed in a constant expression
+  int h9 = __builtin_bswapg(0x0000000000001234ULL) == 0x3412000000000000 ? 1 : f();
+                                                                               ^
+
+"Test_name.c", line 52: error: function call is not allowed in a constant expression
+  _Static_assert(_Generic(1u,unsigned:__builtin_clz)(1u) >= 15, "");
+                 ^
+
+"Test_name.c", line 53: error: function call is not allowed in a constant expression
+  _Static_assert(_Generic(1u,unsigned:__builtin_popcount)(1u) == 1, "");
+                 ^
+
+"Test_name.c", line 54: error: function call is not allowed in a constant expression
+  _Static_assert(_Generic(1u,unsigned:__builtin_ctz)(2u) == 1, "");
+                 ^
+
+"Test_name.c", line 60: error: this operator is not allowed in an integral constant expression
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                                ^
+
+"Test_name.c", line 60: error: expression must be an integral constant expression
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                                 ^
+
+"Test_name.c", line 60: error: this operator is not allowed in an integral constant expression
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                               ^
+
+"Test_name.c", line 60: error: this operator is not allowed in an integral constant expression
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                              ^
+
+"Test_name.c", line 60: error: this operator is not allowed in an integral constant expression
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                             ^
+
+"Test_name.c", line 60: error: function call is not allowed in a constant expression
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                            ^
+
+"Test_name.c", line 60: error: expression must have integral type
+  _Static_assert((__builtin_constant_p(1) ? (***&strlen)("foo") : 0) == 3, "");
+                                                         ^
+
+18 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,19 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics interface3b2.cc Test_name.c
+interface3b2.cc:
+Test_name.c:
+"./ext/interface3/interface3b.C", line 6: warning: unrecognized #pragma
+  #pragma implementation "dir2/interface3.cc"
+          ^
+
+"./ext/interface3/dir1/interface3.h", line 2: warning: unrecognized #pragma
+  #pragma interface "dir1/interface3.h"
+          ^
+
+"./ext/interface3/dir1/../dir2/interface3.h", line 2: warning: unrecognized #pragma
+  #pragma interface "dir2/interface3.h"
+          ^
+
+/usr/sbin/ld: interface3b2.o: in function `main':
+interface3b2.int.c:(.text+0xXX): undefined reference to `g1()'
+/usr/sbin/ld: interface3b2.int.c:(.text+0xXX): undefined reference to `g2()'
+collect2: error: ld returned 1 exit status

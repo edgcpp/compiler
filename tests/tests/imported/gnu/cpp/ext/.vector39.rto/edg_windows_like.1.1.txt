@@ -1,0 +1,102 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "vector_size"
+  typedef unsigned char v16qi __attribute__((vector_size(16)));
+                                             ^
+
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef unsigned int v4si __attribute__((vector_size(16)));
+                                           ^
+
+"Test_name.c", line 23: error: a reference of type "v16qi &" (aka "unsigned char &") (not const-qualified) cannot be initialized with a value of type "v4si" (aka "unsigned int")
+    v16qi &ref_normal_v4si = normal_v4si; // { dg-error {cannot bind non-const lvalue} }
+                             ^
+
+"Test_name.c", line 24: error: a reference of type "v16qi &" (aka "unsigned char &") (not const-qualified) cannot be initialized with a value of type "const v4si"
+    v16qi &ref_const_v4si = const_v4si; // { dg-error {cannot bind non-const lvalue} }
+                            ^
+
+"Test_name.c", line 25: error: a reference of type "v16qi &" (aka "unsigned char &") (not const-qualified) cannot be initialized with a value of type "v4si" (aka "unsigned int")
+    v16qi &ref_normal_v4si_ptr = *normal_v4si_ptr; // { dg-error {cannot bind non-const lvalue} }
+                                 ^
+
+"Test_name.c", line 26: error: a reference of type "v16qi &" (aka "unsigned char &") (not const-qualified) cannot be initialized with a value of type "const v4si"
+    v16qi &ref_const_v4si_ptr = *const_v4si_ptr; // { dg-error {cannot bind non-const lvalue} }
+                                ^
+
+"Test_name.c", line 27: error: a reference of type "v16qi &" (aka "unsigned char &") (not const-qualified) cannot be initialized with a value of type "v4si" (aka "unsigned int")
+    v16qi &ref_normal_v4si_ref = normal_v4si_ref; // { dg-error {cannot bind non-const lvalue} }
+                                 ^
+
+"Test_name.c", line 28: error: a reference of type "v16qi &" (aka "unsigned char &") (not const-qualified) cannot be initialized with a value of type "const v4si"
+    v16qi &ref_const_v4si_ref = const_v4si_ref; // { dg-error {cannot bind non-const lvalue} }
+                                ^
+
+"Test_name.c", line 31: error: qualifiers dropped in binding reference of type "v16qi &" (aka "unsigned char &") to initializer of type "const v16qi"
+    v16qi &ref_const_v16qi = const_v16qi; // { dg-error {discards qualifiers} }
+                             ^
+
+"Test_name.c", line 33: error: qualifiers dropped in binding reference of type "v16qi &" (aka "unsigned char &") to initializer of type "const v16qi"
+    v16qi &ref_const_v16qi_ptr = *const_v16qi_ptr; // { dg-error {discards qualifiers} }
+                                 ^
+
+"Test_name.c", line 35: error: qualifiers dropped in binding reference of type "v16qi &" (aka "unsigned char &") to initializer of type "const v16qi"
+    v16qi &ref_const_v16qi_ref = const_v16qi_ref; // { dg-error {discards qualifiers} }
+                                 ^
+
+"Test_name.c", line 47: error: an rvalue reference cannot be bound to an lvalue
+    v16qi &&ref_normal_v16qi = normal_v16qi; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                               ^
+
+"Test_name.c", line 48: error: qualifiers dropped in binding reference of type "v16qi &&" (aka "unsigned char &&") to initializer of type "const v16qi"
+    v16qi &&ref_const_v16qi = const_v16qi; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                              ^
+
+"Test_name.c", line 49: error: an rvalue reference cannot be bound to an lvalue
+    v16qi &&ref_normal_v16qi_ptr = *normal_v16qi_ptr; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                   ^
+
+"Test_name.c", line 50: error: qualifiers dropped in binding reference of type "v16qi &&" (aka "unsigned char &&") to initializer of type "const v16qi"
+    v16qi &&ref_const_v16qi_ptr = *const_v16qi_ptr; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                  ^
+
+"Test_name.c", line 51: error: an rvalue reference cannot be bound to an lvalue
+    v16qi &&ref_normal_v16qi_ref = normal_v16qi_ref; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                   ^
+
+"Test_name.c", line 52: error: qualifiers dropped in binding reference of type "v16qi &&" (aka "unsigned char &&") to initializer of type "const v16qi"
+    v16qi &&ref_const_v16qi_ref = const_v16qi_ref; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                  ^
+
+"Test_name.c", line 81: error: an rvalue reference cannot be bound to an lvalue
+    const v16qi &&ref_normal_v16qi = normal_v16qi; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                     ^
+
+"Test_name.c", line 82: error: an rvalue reference cannot be bound to an lvalue
+    const v16qi &&ref_const_v16qi = const_v16qi; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                    ^
+
+"Test_name.c", line 83: error: an rvalue reference cannot be bound to an lvalue
+    const v16qi &&ref_normal_v16qi_ptr = *normal_v16qi_ptr; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                         ^
+
+"Test_name.c", line 84: error: an rvalue reference cannot be bound to an lvalue
+    const v16qi &&ref_const_v16qi_ptr = *const_v16qi_ptr; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                        ^
+
+"Test_name.c", line 85: error: an rvalue reference cannot be bound to an lvalue
+    const v16qi &&ref_normal_v16qi_ref = normal_v16qi_ref; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                         ^
+
+"Test_name.c", line 86: error: an rvalue reference cannot be bound to an lvalue
+    const v16qi &&ref_const_v16qi_ref = const_v16qi_ref; // { dg-error {cannot bind rvalue reference} "" { target c++11 } }
+                                        ^
+
+"Test_name.c", line 91: error: invalid type conversion
+    v16qi &ref_normal_v4si = reinterpret_cast<v16qi>(normal_v4si); // { dg-error {cannot bind non-const lvalue} }
+                             ^
+
+"Test_name.c", line 92: error: invalid type conversion
+    v16qi &ref_const_v4si = reinterpret_cast<v16qi>(const_v4si); // { dg-error {cannot bind non-const lvalue} }
+                            ^
+
+23 errors detected in the compilation of "Test_name.c".

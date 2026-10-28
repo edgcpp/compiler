@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=2 --target linux_aarch64 -w --c++17 --clang_version 180100 Test_name.c
+"Test_name.c", line 162: error: function "arm_neon_types::f" has already been defined (previous definition at line 158)
+    void f(__attribute__((neon_vector_type(8))) __bf16 v)
+         ^
+
+"Test_name.c", line 170: error: function "arm_neon_types::f(__fp16)" has already been defined (previous definition at line 166)
+    void f(__attribute__((neon_vector_type(8))) __fp16 v)
+         ^
+
+"Test_name.c", line 178: error: function "arm_neon_types::f(float)" has already been defined (previous definition at line 174)
+    void f(__attribute__((neon_vector_type(4))) float v)
+         ^
+
+"Test_name.c", line 186: error: function "arm_neon_types::f(double)" has already been defined (previous definition at line 182)
+    void f(__attribute__((neon_vector_type(2))) double v)
+         ^
+
+"Test_name.c", line 195: error: function "arm_neon_types::f(signed char)" has already been defined (previous definition at line 191)
+    void f(__attribute__((neon_vector_type(16))) signed char v)
+         ^
+
+"Test_name.c", line 203: error: function "arm_neon_types::f(short)" has already been defined (previous definition at line 199)
+    void f(__attribute__((neon_vector_type(8))) short v)
+         ^
+
+"Test_name.c", line 211: error: function "arm_neon_types::f(int)" has already been defined (previous definition at line 207)
+    void f(__attribute__((neon_vector_type(4))) int v)
+         ^
+
+"Test_name.c", line 219: error: function "arm_neon_types::f(long)" has already been defined (previous definition at line 215)
+    void f(__attribute__((neon_vector_type(2))) long v)
+         ^
+
+"Test_name.c", line 228: error: function "arm_neon_types::f(unsigned char)" has already been defined (previous definition at line 224)
+    void f(__attribute__((neon_vector_type(16))) unsigned char v)
+         ^
+
+"Test_name.c", line 232: error: function "arm_neon_types::f(unsigned char)" has already been defined (previous definition at line 224)
+    void f(__attribute__((neon_polyvector_type(8))) unsigned char v)
+         ^
+
+"Test_name.c", line 236: error: function "arm_neon_types::f(unsigned char)" has already been defined (previous definition at line 224)
+    void f(__attribute__((neon_polyvector_type(16))) unsigned char v)
+         ^
+
+"Test_name.c", line 244: error: function "arm_neon_types::f(unsigned short)" has already been defined (previous definition at line 240)
+    void f(__attribute__((neon_vector_type(8))) unsigned short v)
+         ^
+
+"Test_name.c", line 248: error: function "arm_neon_types::f(unsigned short)" has already been defined (previous definition at line 240)
+    void f(__attribute__((neon_polyvector_type(4))) unsigned short v)
+         ^
+
+"Test_name.c", line 252: error: function "arm_neon_types::f(unsigned short)" has already been defined (previous definition at line 240)
+    void f(__attribute__((neon_polyvector_type(8))) unsigned short v)
+         ^
+
+"Test_name.c", line 260: error: function "arm_neon_types::f(unsigned int)" has already been defined (previous definition at line 256)
+    void f(__attribute__((neon_vector_type(4))) unsigned int v)
+         ^
+
+"Test_name.c", line 268: error: function "arm_neon_types::f(unsigned long)" has already been defined (previous definition at line 264)
+    void f(__attribute__((neon_vector_type(2))) unsigned long v)
+         ^
+
+"Test_name.c", line 272: error: function "arm_neon_types::f(unsigned long)" has already been defined (previous definition at line 264)
+    void f(__attribute__((neon_polyvector_type(1))) unsigned long v)
+         ^
+
+"Test_name.c", line 276: error: function "arm_neon_types::f(unsigned long)" has already been defined (previous definition at line 264)
+    void f(__attribute__((neon_polyvector_type(2))) unsigned long v)
+         ^
+
+18 errors detected in the compilation of "Test_name.c".

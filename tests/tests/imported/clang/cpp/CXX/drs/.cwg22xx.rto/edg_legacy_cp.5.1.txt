@@ -1,0 +1,96 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions --exceptions Test_name.c
+"Test_name.c", line 16: error: a lambda parameter cannot hide an explicit capture
+    auto f = [a](int a) { (void)a; };
+                     ^
+
+"Test_name.c", line 16: warning: variable "a" is used before its value is set
+    auto f = [a](int a) { (void)a; };
+              ^
+
+"Test_name.c", line 16: warning: variable "f" was declared but never referenced
+    auto f = [a](int a) { (void)a; };
+         ^
+
+"Test_name.c", line 19: warning: variable "g" was declared but never referenced
+    auto g = [=](int a) { (void)a; };
+         ^
+
+"Test_name.c", line 34: error: a qualified type is nonstandard for anonymous bit fields
+    const unsigned : 1;
+    ^
+
+"Test_name.c", line 36: error: a qualified type is nonstandard for anonymous bit fields
+    volatile unsigned : 1;
+    ^
+
+"Test_name.c", line 38: error: a qualified type is nonstandard for anonymous bit fields
+    const volatile unsigned : 1;
+    ^
+
+"Test_name.c", line 111: error: declaration is incompatible with function template "void cwg2233::MultilevelSpecialization::B<T...>::f(int, int (&)[V]...) [with T=<int, int>]" (declared at line 108)
+      void B<int, int>::f(int i, int (&arr1)[a], int (&arr2)[b]) {}
+                        ^
+
+"Test_name.c", line 121: error: default argument not at end of parameter list
+      void g(int = 0, T...);
+                   ^
+
+"Test_name.c", line 129: error: default argument not at end of parameter list
+      void g(int = 0, T...);
+                   ^
+
+"Test_name.c", line 147: error: copy-list-initialization cannot use a constructor marked "explicit"
+  const B &b2{a}; // FIXME ill-formed
+             ^
+
+"Test_name.c", line 148: error: no suitable user-defined conversion from "cwg2267::A" to "const cwg2267::B" exists
+  const B &b3(a);
+              ^
+
+"Test_name.c", line 155: error: no instance of constructor "cwg2267::D::D" matches the argument list
+            argument types are: (cwg2267::C)
+  const D &d2{c}; // FIXME ill-formed
+             ^
+"Test_name.c", line 143: note: function "cwg2267::D::D(const cwg2267::D &)" does not match because argument #1 does not match parameter
+  struct D { D(); };
+         ^
+"Test_name.c", line 143: note: function "cwg2267::D::D(cwg2267::D &&)" does not match because argument #1 does not match parameter
+  struct D { D(); };
+         ^
+"Test_name.c", line 143: note: number of parameters of function "cwg2267::D::D()" does not match the call
+  struct D { D(); };
+             ^
+
+"Test_name.c", line 170: error: the default constructor of "cwg2273::B" cannot be referenced -- it is a deleted function
+  B b;
+    ^
+
+"Test_name.c", line 193: error: more than one instance of overloaded function "cwg2277::B::f" matches the argument list:
+            function "cwg2277::B::f(int)" (declared at line 187)
+            function "cwg2277::A::f(int, int)" (declared at line 181)
+            argument types are: (int)
+            object type is: cwg2277::B
+    b.f(0); // FIXME: this is well-formed for the same reason as initialization of 'b' above
+      ^
+
+"Test_name.c", line 206: error: a variable declared with an auto type specifier cannot appear in its own initializer
+      auto [a] = T{a};
+                   ^
+
+"Test_name.c", line 216: error: name followed by "::" must be a class or namespace name
+      p->template id<int>::~id<int>();
+                  ^
+
+"Test_name.c", line 216: error: "id" is not a type name
+      p->template id<int>::~id<int>();
+                           ^
+
+"Test_name.c", line 216: error: type name is not allowed
+      p->template id<int>::~id<int>();
+                               ^
+
+"Test_name.c", line 216: error: expected an expression
+      p->template id<int>::~id<int>();
+                                    ^
+
+17 errors detected in the compilation of "Test_name.c".

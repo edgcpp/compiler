@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 9: error: cannot declare multiple packs in a structured binding declaration
+      rest, ...more_rest] = arr; // expected-error{{multiple packs in structured binding declaration}}
+            ^
+
+"Test_name.c", line 12: error: expected a "]"
+    auto [y...] = arr; // expected-error{{'...' must immediately precede declared identifier}}
+           ^
+
+"Test_name.c", line 12: error: there are more elements than there are binding names
+    auto [y...] = arr; // expected-error{{'...' must immediately precede declared identifier}}
+         ^
+
+"Test_name.c", line 14: error: expected an identifier
+    auto [...] = arr; // #2
+             ^
+
+"Test_name.c", line 14: error: expected a "]"
+    auto [...] = arr; // #2
+               ^
+
+"Test_name.c", line 14: error: there are more elements than there are binding names
+    auto [...] = arr; // #2
+         ^
+
+"Test_name.c", line 18: error: expected an identifier
+    auto [a, ..., b] = arr; // #3
+                ^
+
+"Test_name.c", line 18: error: there are more elements than there are binding names
+    auto [a, ..., b] = arr; // #3
+         ^
+
+"Test_name.c", line 21: error: expected an identifier
+    auto [a1, ...] = arr; // #4
+                 ^
+
+"Test_name.c", line 21: error: expected a "]"
+    auto [a1, ...] = arr; // #4
+                   ^
+
+"Test_name.c", line 21: error: there are more elements than there are binding names
+    auto [a1, ...] = arr; // #4
+         ^
+
+"Test_name.c", line 24: error: expected an identifier
+    auto [..., b] = arr; // #5
+             ^
+
+"Test_name.c", line 24: error: "b" has already been declared in the current scope
+    auto [..., b] = arr; // #5
+               ^
+
+"Test_name.c", line 24: error: there are more elements than there are binding names
+    auto [..., b] = arr; // #5
+         ^
+
+"Test_name.c", line 8: warning: structured binding "x" was declared but never referenced
+    auto [x, ... // #1
+          ^
+
+"Test_name.c", line 12: warning: structured binding "y" was declared but never referenced
+    auto [y...] = arr; // expected-error{{'...' must immediately precede declared identifier}}
+          ^
+
+"Test_name.c", line 14: warning: variable "<unnamed>" was declared but never referenced
+    auto [...] = arr; // #2
+         ^
+
+"Test_name.c", line 18: warning: structured binding "a" was declared but never referenced
+    auto [a, ..., b] = arr; // #3
+          ^
+
+"Test_name.c", line 21: warning: structured binding "a1" was declared but never referenced
+    auto [a1, ...] = arr; // #4
+          ^
+
+"Test_name.c", line 24: warning: structured binding "b" was declared but never referenced
+    auto [..., b] = arr; // #5
+               ^
+
+14 errors detected in the compilation of "Test_name.c".

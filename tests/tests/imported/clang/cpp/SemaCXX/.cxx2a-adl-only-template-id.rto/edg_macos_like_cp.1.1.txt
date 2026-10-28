@@ -1,0 +1,119 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 32: error: no operator ">" matches these operands
+            operand types are: bool > N::Q
+    f<0>(q); // expected-error {{invalid operands to binary expression}} // expected-error {{chained comparison 'X < Y > Z' does not behave the same as a mathematical expression}}
+       ^
+"Test_name.c", line 32: note: built-in operator>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    f<0>(q); // expected-error {{invalid operands to binary expression}} // expected-error {{chained comparison 'X < Y > Z' does not behave the same as a mathematical expression}}
+       ^
+"Test_name.c", line 32: note: built-in operator>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    f<0>(q); // expected-error {{invalid operands to binary expression}} // expected-error {{chained comparison 'X < Y > Z' does not behave the same as a mathematical expression}}
+       ^
+"Test_name.c", line 32: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    f<0>(q); // expected-error {{invalid operands to binary expression}} // expected-error {{chained comparison 'X < Y > Z' does not behave the same as a mathematical expression}}
+       ^
+"Test_name.c", line 32: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    f<0>(q); // expected-error {{invalid operands to binary expression}} // expected-error {{chained comparison 'X < Y > Z' does not behave the same as a mathematical expression}}
+       ^
+
+"Test_name.c", line 32: warning: variable "f" is used before its value is set
+    f<0>(q); // expected-error {{invalid operands to binary expression}} // expected-error {{chained comparison 'X < Y > Z' does not behave the same as a mathematical expression}}
+    ^
+
+"Test_name.c", line 44: error: identifier "some_logn_name" is undefined
+    some_logn_name<3>(q); // expected-error {{did you mean 'N::some_long_name'?}}
+    ^
+
+"Test_name.c", line 45: error: expected a ">"
+    somethign < 3 ? h() > 4 : h(0); // expected-error {{did you mean 'something'}}
+                                  ^
+
+"Test_name.c", line 47: error: expected a ">"
+    somethign < 3 ? h() + 4 : h(0); // expected-error {{did you mean 'something'}}
+                                  ^
+
+"Test_name.c", line 49: error: identifier "somethign" is undefined
+    somethign < 3 ? h() + 4 : h(0) >(0); // expected-error {{undeclared identifier 'somethign'}}
+    ^
+
+"Test_name.c", line 56: error: W is not a template
+  struct W<int> {}; // expected-error {{undeclared template struct 'W'}}
+         ^
+
+"Test_name.c", line 57: error: X is not a template
+  X<int>::Y xy; // expected-error {{no template named 'X'}}
+  ^
+
+"Test_name.c", line 58: error: identifier "X" is undefined
+  void xf(X<int> x); // expected-error {{no template named 'X'}}
+          ^
+
+"Test_name.c", line 59: error: X is not a template
+  struct A : X<int> { // expected-error {{no template named 'X'}}
+             ^
+
+"Test_name.c", line 60: error: X is not a template
+    A() : X<int>() {} // expected-error {{no template named 'X'}}
+          ^
+
+"Test_name.c", line 64: error: expected an identifier
+  struct g<int> {}; // expected-error {{'g' refers to a function template}}
+          ^
+
+"Test_name.c", line 64: error: incomplete type "g" is not allowed
+  struct g<int> {}; // expected-error {{'g' refers to a function template}}
+          ^
+
+"Test_name.c", line 65: error: this declaration has no storage class or type specifier
+  g<int>::Y xy; // expected-error {{no template named 'g'}} FIXME lies
+  ^
+
+"Test_name.c", line 65: error: declaration is incompatible with "int g()" (declared at line 15)
+  g<int>::Y xy; // expected-error {{no template named 'g'}} FIXME lies
+  ^
+
+"Test_name.c", line 65: error: expected a ";"
+  g<int>::Y xy; // expected-error {{no template named 'g'}} FIXME lies
+   ^
+
+"Test_name.c", line 66: error: declaration is incompatible with "void xf(<error-type>)" (declared at line 58)
+  void xf(g<int> x); // expected-error {{variable has incomplete type 'void'}} expected-error 1+{{}}
+       ^
+
+"Test_name.c", line 66: error: incomplete type "void" is not allowed
+  void xf(g<int> x); // expected-error {{variable has incomplete type 'void'}} expected-error 1+{{}}
+       ^
+
+"Test_name.c", line 66: error: type name is not allowed
+  void xf(g<int> x); // expected-error {{variable has incomplete type 'void'}} expected-error 1+{{}}
+            ^
+
+"Test_name.c", line 66: error: identifier "x" is undefined
+  void xf(g<int> x); // expected-error {{variable has incomplete type 'void'}} expected-error 1+{{}}
+                 ^
+
+"Test_name.c", line 67: error: incomplete type "g" is not allowed
+  struct B : g<int> { // expected-error {{expected class name}}
+             ^
+
+"Test_name.c", line 67: error: class or struct definition is missing
+  struct B : g<int> { // expected-error {{expected class name}}
+              ^
+
+"Test_name.c", line 75: error: expression must have class type but it has type "vector_components::vector_float2" (aka "float")
+      return A.x < B.x && B.y > A.y;
+             ^
+
+"Test_name.c", line 75: error: expression must have class type but it has type "vector_components::vector_float2" (aka "float")
+      return A.x < B.x && B.y > A.y;
+                   ^
+
+"Test_name.c", line 75: error: expression must have class type but it has type "vector_components::vector_float2" (aka "float")
+      return A.x < B.x && B.y > A.y;
+                          ^
+
+"Test_name.c", line 75: error: expression must have class type but it has type "vector_components::vector_float2" (aka "float")
+      return A.x < B.x && B.y > A.y;
+                                ^
+
+25 errors detected in the compilation of "Test_name.c".

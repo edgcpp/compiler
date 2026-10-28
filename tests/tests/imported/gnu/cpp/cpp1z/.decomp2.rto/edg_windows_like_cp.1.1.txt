@@ -1,0 +1,118 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: error: too many initializer values
+  V a = (V) { 1, 2, 3, 4 };
+                 ^
+
+"Test_name.c", line 8: warning: a user-provided literal suffix must begin with "_"
+  __complex__ double b = 5.0 + 6.0i;
+                               ^
+
+"Test_name.c", line 8: error: user-defined literal operator not found
+  __complex__ double b = 5.0 + 6.0i;
+                               ^
+
+"Test_name.c", line 9: error: _Complex can only be used with floating-point types
+  __complex__ int c = 7 + 8i;
+  ^
+
+"Test_name.c", line 9: error: user-defined literal operator not found
+  __complex__ int c = 7 + 8i;
+                          ^
+
+"Test_name.c", line 14: warning: structured bindings are a C++17 feature
+    auto & [ d, e, f, g ] = a;	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 14: error: type "int" has no components to bind to
+    auto & [ d, e, f, g ] = a;	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 15: warning: structured bindings are a C++17 feature
+    auto [ h, i, j, k ] = a;	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 15: error: type "int" has no components to bind to
+    auto [ h, i, j, k ] = a;	// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 16: warning: structured bindings are a C++17 feature
+    auto [ l, m ] = b;		// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 16: error: type "double __complex__" has no components to bind to
+    auto [ l, m ] = b;		// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 17: warning: structured bindings are a C++17 feature
+    auto & [ n, o ] = b;		// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 17: error: type "double __complex__" has no components to bind to
+    auto & [ n, o ] = b;		// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 18: warning: structured bindings are a C++17 feature
+    auto & [ p, q ] = c;		// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 19: warning: structured bindings are a C++17 feature
+    auto [ r, s ] = c;		// { dg-warning "structured bindings only available with" "" { target c++14_down } }
+         ^
+
+"Test_name.c", line 36: error: expression must have pointer-to-object type but it has type "int"
+    if (d != 11 || &d != &a[0]
+                            ^
+
+"Test_name.c", line 37: error: expression must have pointer-to-object type but it has type "int"
+        || e != 13 || &e != &a[1]
+                               ^
+
+"Test_name.c", line 38: error: expression must have pointer-to-object type but it has type "int"
+        || f != 15 || &f != &a[2]
+                               ^
+
+"Test_name.c", line 39: error: expression must have pointer-to-object type but it has type "int"
+        || g != 17 || &g != &a[3]
+                               ^
+
+"Test_name.c", line 40: error: expression must have pointer-to-object type but it has type "int"
+        || h != 15 || &h == &a[0]
+                               ^
+
+"Test_name.c", line 41: error: expression must have pointer-to-object type but it has type "int"
+        || i != 17 || &i == &a[1]
+                               ^
+
+"Test_name.c", line 42: error: expression must have pointer-to-object type but it has type "int"
+        || j != 19 || &j == &a[2]
+                               ^
+
+"Test_name.c", line 43: error: expression must have pointer-to-object type but it has type "int"
+        || k != 21 || &k == &a[3]
+                               ^
+
+"Test_name.c", line 52: error: expression must have pointer-to-object type but it has type "int"
+        || a[0] != 11 || a[1] != 13 || a[2] != 15 || a[3] != 17
+             ^
+
+"Test_name.c", line 52: error: expression must have pointer-to-object type but it has type "int"
+        || a[0] != 11 || a[1] != 13 || a[2] != 15 || a[3] != 17
+                           ^
+
+"Test_name.c", line 52: error: expression must have pointer-to-object type but it has type "int"
+        || a[0] != 11 || a[1] != 13 || a[2] != 15 || a[3] != 17
+                                         ^
+
+"Test_name.c", line 52: error: expression must have pointer-to-object type but it has type "int"
+        || a[0] != 11 || a[1] != 13 || a[2] != 15 || a[3] != 17
+                                                       ^
+
+"Test_name.c", line 53: error: user-defined literal operator not found
+        || b != 15.0 + 12.0i
+                       ^
+
+"Test_name.c", line 54: error: user-defined literal operator not found
+        || c != 25 + 27i)
+                     ^
+
+22 errors detected in the compilation of "Test_name.c".

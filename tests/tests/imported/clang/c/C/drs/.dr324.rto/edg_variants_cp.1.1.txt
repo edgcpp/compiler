@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c89 --ms_extensions Test_name.c
+"Test_name.c", line 27: warning: unrecognized character escape sequence
+  const char *lit_str = "\y"; /* expected-warning {{unknown escape sequence '\y'}} */
+                         ^
+
+"Test_name.c", line 28: warning: unrecognized character escape sequence
+  char lit_char = '\y';       /* expected-warning {{unknown escape sequence '\y'}} */
+                   ^
+
+"Test_name.c", line 53: error: missing closing quote
+  't
+  ^
+
+"Test_name.c", line 53: error: expected a declaration
+  't
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

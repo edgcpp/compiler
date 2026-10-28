@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 9: error: array is too large
+  char buffer4[0xFFFF'FFFF'FFFF'FFFF'1wb]; /* expected-error {{array is too large (295'147'905'179'352'825'841 elements)}} */
+       ^
+
+"Test_name.c", line 15: error: identifier "__SIZE_MAX__" is undefined
+  static_assert(0x1FFF'FFFF'FFFF'FFFFwb <= __SIZE_MAX__);
+                                           ^
+
+2 errors detected in the compilation of "Test_name.c".

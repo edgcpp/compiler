@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 12: error: too many arguments in function call
+  void f0(T x, decltype((f)(N, x)) y) { }
+                            ^
+
+"Test_name.c", line 12: error: a parameter may not have void type
+  void f0(T x, decltype((f)(N, x)) y) { }
+               ^
+
+"Test_name.c", line 15: error: function template "f0<T,N>(T, decltype((<expression>)))" has already been defined (previous definition at line 8)
+  void f0(U u, decltype(f(M, u))) { } // expected-error{{redefinition}}
+       ^
+
+"Test_name.c", line 21: warning: missing return statement at end of non-void function "f1<T...>()"
+  N<sizeof...(T)> f1() {} // expected-note{{previous}}
+                        ^
+
+"Test_name.c", line 24: warning: missing return statement at end of non-void function "f1<<unnamed>,T...>()"
+  N<sizeof...(T)> f1() {}
+                        ^
+
+"Test_name.c", line 27: error: function template "f1<T...>()" has already been defined (previous definition at line 20)
+  N<sizeof...(U)> f1() {} // expected-error{{redefinition}}
+                  ^
+
+4 errors detected in the compilation of "Test_name.c".

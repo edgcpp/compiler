@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 26: warning: variable "obj1" was declared but never referenced
+    omp_interop_t obj1;  /* { dg-note "'obj1' was declared here" }  */
+                  ^
+
+"Test_name.c", line 27: warning: variable "obj2" was declared but never referenced
+    omp_interop_t obj2 = omp_interop_none;
+                  ^
+
+"Test_name.c", line 48: warning: variable "obj3" was declared but never referenced
+    omp_interop_t obj3 = omp_interop_none;
+                  ^
+
+"Test_name.c", line 49: warning: variable "obj4" was declared but never referenced
+    omp_interop_t obj4;  /* { dg-note "'obj4' was declared here" } */
+                  ^
+
+"Test_name.c", line 70: warning: variable "obj5" was declared but never referenced
+    omp_interop_t obj5 = omp_interop_none;
+                  ^
+
+"Test_name.c", line 71: warning: variable "obj6" was declared but never referenced
+    omp_interop_t obj6 = omp_interop_none;
+                  ^
+

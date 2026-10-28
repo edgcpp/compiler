@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=2 --c++20 Test_name.c
+"Test_name.c", line 96: error: identifier "I" is undefined
+    const int D<H>::C::tgv = [] (auto j) { return H + I + j + V; } (2);
+                                                      ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 96
+            instantiation of class "in_class_in_class_template_scope::D<H>::C [with H=3]" at line 96
+            instantiation of class "in_class_in_class_template_scope::D<H> [with H=3]" at line 96
+            instantiation of "const int in_class_in_class_template_scope::D<H>::C::tgv [with H=3, I=1]" at line 96
+
+"Test_name.c", line 172: error: identifier "I" is undefined
+    const int C<H>::tgv = [] (auto j) { return H + I + j + V; } (2);
+                                                   ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 172
+            instantiation of class "in_class_template_scope::C<H> [with H=3]" at line 172
+            instantiation of "const int in_class_template_scope::C<H>::tgv [with H=3, I=1]" at line 172
+
+"Test_name.c", line 230: error: identifier "I" is undefined
+    const int D<G>::C<H>::tgv = [] (auto j) { return G + H + I + j + V; } (2);
+                                                             ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 230
+            instantiation of class "in_class_template_in_class_template_scope::D<G>::C<H> [with G=4, H=3]" at line 230
+            instantiation of class "in_class_template_in_class_template_scope::D<G> [with G=4]" at line 230
+            instantiation of "const int in_class_template_in_class_template_scope::D<G>::C<H>::tgv [with G=4, H=3, I=1]" at line 230
+
+3 errors detected in the compilation of "Test_name.c".

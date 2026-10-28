@@ -1,0 +1,116 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 13: warning: linkage specification is incompatible with previous "test1::x" (declared at line 8)
+      extern int x; // expected-error {{declaration of 'x' has a different language linkage}}
+                 ^
+
+"Test_name.c", line 15: error: linkage specification is incompatible with previous "test1::f" (declared at line 10)
+      void f(); // expected-error {{declaration of 'f' has a different language linkage}}
+           ^
+
+"Test_name.c", line 54: warning: function "g" was declared but never referenced
+      void g();
+           ^
+
+"Test_name.c", line 61: warning: unknown attribute "__visibility__"
+    class __attribute__ ((__visibility__("default"))) shared_future;
+                          ^
+
+"Test_name.c", line 137: warning: variable "n" was declared but never referenced
+      extern const int n;
+                       ^
+
+"Test_name.c", line 157: error: variable "test15::a" has already been defined (previous definition at line 156)
+    static const int a; // expected-error {{redefinition of 'a'}}
+                     ^
+
+"Test_name.c", line 189: error: cannot determine which instance of function template "test17::bar" is intended
+      return reinterpret_cast<void*>(bar<typeof(foo<L, I>), foo<L, I> >);
+                                     ^
+
+"Test_name.c", line 226: error: pointer to reference is not allowed
+    unsigned &*foo; //expected-error{{'foo' declared as a pointer to a reference of type}}
+              ^
+
+"Test_name.c", line 246: warning: variable "n" was declared but never referenced
+      void f() { static int n; struct Inner {};}
+                            ^
+
+"Test_name.c", line 247: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } E;
+      ^
+"Test_name.c", line 246: note: type is not C-like because of this member declaration
+      void f() { static int n; struct Inner {};}
+           ^
+
+"Test_name.c", line 253: warning: variable "ui" was declared but never referenced
+      void f() { struct Inner {}; Use<Inner> ui; }
+                                             ^
+
+"Test_name.c", line 254: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } F;
+      ^
+"Test_name.c", line 253: note: type is not C-like because of this member declaration
+      void f() { struct Inner {}; Use<Inner> ui; }
+           ^
+
+"Test_name.c", line 24: warning: function "test2_f(int)" was declared but never referenced
+    static void test2_f(int x) {
+                ^
+
+"Test_name.c", line 22: warning: function "test2_f()" was declared but never referenced
+    static void test2_f() {
+                ^
+
+"Test_name.c", line 84: warning: variable "test7_x" was declared but never referenced
+    static int test7_x;
+               ^
+
+"Test_name.c", line 90: warning: variable "test7_y" was declared but never referenced
+    static int test7_y;
+               ^
+
+"Test_name.c", line 95: warning: function "test7_f" was declared but never referenced
+  extern "C" { typedef int test7_F(); static test7_F test7_f; }
+                                                     ^
+
+"Test_name.c", line 102: warning: function "test8_f" was declared but never referenced
+    static void test8_f();
+                ^
+
+"Test_name.c", line 108: warning: function "test8_g" was declared but never referenced
+    static void test8_g();
+                ^
+
+"Test_name.c", line 217: warning: function "pr16247_foo(double)" was declared but never referenced
+  void pr16247_foo(double) {}
+       ^
+
+"Test_name.c", line 9: warning: variable "test1::y" was declared but never referenced
+    static int y;
+               ^
+
+"Test_name.c", line 36: warning: variable "test3::<unnamed>::x2" was declared but never referenced
+      int x2;
+          ^
+
+"Test_name.c", line 51: warning: function "test5::g" was declared but never referenced
+    static void g();
+                ^
+
+"Test_name.c", line 134: warning: variable "test12::n" was declared but never referenced
+    const int n = 0;
+              ^
+
+"Test_name.c", line 144: warning: function "test13::a" was declared but never referenced
+    static void a(void) {}
+                ^
+
+"Test_name.c", line 151: warning: function "test14::<unnamed>::a" was declared but never referenced
+      static void a(void) {}
+                  ^
+
+"Test_name.c", line 223: warning: function "PR16247::pr16247_bar(double)" was declared but never referenced
+    void pr16247_bar(double) {}
+         ^
+
+4 errors detected in the compilation of "Test_name.c".

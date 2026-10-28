@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 11: warning: expression has no effect
+    "this string literal  \
+    ^
+
+"Test_name.c", line 1000: warning: expression has no effect
+    "string literal";
+    ^
+
+"Test_name.c", line 2005: error: static assertion failed
+    _Static_assert(F(\
+    ^
+
+"Test_name.c", line 2000: error: static assertion failed
+    _Static_assert(2001 == \
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

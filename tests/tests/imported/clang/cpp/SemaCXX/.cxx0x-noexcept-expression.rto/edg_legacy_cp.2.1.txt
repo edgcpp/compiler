@@ -1,0 +1,129 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions --exceptions Test_name.c
+"Test_name.c", line 14: error: cannot determine which instance of overloaded function "f" is intended
+    bool b = noexcept(f); // expected-error {{reference to overloaded function could not be resolved; did you mean to call it with no arguments?}}
+                      ^
+
+"Test_name.c", line 14: warning: variable "b" was declared but never referenced
+    bool b = noexcept(f); // expected-error {{reference to overloaded function could not be resolved; did you mean to call it with no arguments?}}
+         ^
+
+"Test_name.c", line 15: warning: variable "b2" was declared but never referenced
+    bool b2 = noexcept(f(0));
+         ^
+
+"Test_name.c", line 23: error: a pointer to a bound function may only be used to call the function
+      bool b = noexcept(this->g); // expected-error {{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+                              ^
+
+"Test_name.c", line 23: warning: variable "b" was declared but never referenced
+      bool b = noexcept(this->g); // expected-error {{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+           ^
+
+"Test_name.c", line 24: warning: variable "b2" was declared but never referenced
+      bool b2 = noexcept(this->g(0));
+           ^
+
+"Test_name.c", line 34: warning: statement is unreachable
+      try {
+      ^
+
+"Test_name.c", line 34: error: this statement is not allowed inside of a statement expression
+      try {
+      ^
+
+"Test_name.c", line 33: error: static assertion failed
+    static_assert(noexcept(({
+    ^
+
+"Test_name.c", line 42: error: this statement is not allowed inside of a statement expression
+      try {
+      ^
+
+"Test_name.c", line 47: warning: statement is unreachable
+      0;
+      ^
+
+"Test_name.c", line 51: error: this statement is not allowed inside of a statement expression
+      try {
+      ^
+
+"Test_name.c", line 58: error: static assertion failed
+    static_assert(!noexcept(({
+    ^
+
+"Test_name.c", line 71: warning: statement is unreachable
+      if constexpr (true) 0; else throw 1;
+      ^
+
+"Test_name.c", line 71: warning: expression has no effect
+      if constexpr (true) 0; else throw 1;
+                          ^
+
+"Test_name.c", line 79: error: static assertion failed with ""
+    static_assert(!noexcept(static_cast<int(*)[b ? 41 : 42]>(0)), "");         // expected-warning {{variable length arrays in C++ are a Clang extension}} \
+    ^
+
+"Test_name.c", line 81: error: static assertion failed with ""
+    static_assert(!noexcept(static_cast<int(*)[b ? throw : 42]>(0)), "");      // expected-warning {{variable length arrays in C++ are a Clang extension}} \
+    ^
+
+"Test_name.c", line 83: error: static assertion failed with ""
+    static_assert(!noexcept(reinterpret_cast<int(*)[b ? throw : 42]>(0)), ""); // expected-warning {{variable length arrays in C++ are a Clang extension}} \
+    ^
+
+"Test_name.c", line 85: error: static assertion failed with ""
+    static_assert(!noexcept((int(*)[b ? throw : 42])0), "");                   // expected-warning {{variable length arrays in C++ are a Clang extension}} \
+    ^
+
+"Test_name.c", line 87: error: static assertion failed with ""
+    static_assert(!noexcept((int(*)[b ? throw : 42]){0}), "");                 // expected-warning {{variable length arrays in C++ are a Clang extension}} \
+    ^
+
+"Test_name.c", line 93: error: expression must have bool type (or be convertible to bool)
+    void foo(void) const &noexcept(f());
+                                   ^
+
+"Test_name.c", line 100: error: expression must have a constant value
+  void h() noexcept(ptr);     // expected-error {{conversion from 'const int *' to 'bool' is not allowed in a converted constant expression}}
+                    ^
+"Test_name.c", line 100: note: the value of variable "P1401::ptr" (declared at line 97) cannot be used as a constant
+  void h() noexcept(ptr);     // expected-error {{conversion from 'const int *' to 'bool' is not allowed in a converted constant expression}}
+                    ^
+
+"Test_name.c", line 118: error: static assertion failed
+  static_assert(!noexcept(typeid(*&(const Polymorphic<true, true>&) Polymorphic<true, true>{})));
+  ^
+
+"Test_name.c", line 131: error: type name is not allowed
+    dependent.f<void>();  // This should need to be `.template f` to parse as a template
+                ^
+
+"Test_name.c", line 131: error: expected an expression
+    dependent.f<void>();  // This should need to be `.template f` to parse as a template
+                      ^
+
+"Test_name.c", line 139: error: type name is not allowed
+    dependent.f<void>();
+                ^
+
+"Test_name.c", line 139: error: expected an expression
+    dependent.f<void>();
+                      ^
+
+"Test_name.c", line 146: error: type name is not allowed
+    dependent.f<void>();
+                ^
+
+"Test_name.c", line 146: error: expected an expression
+    dependent.f<void>();
+                      ^
+
+"Test_name.c", line 158: error: class "typeid_::X<true>" has no member "non_existent"
+    not_dependent.non_existent();
+                  ^
+
+"Test_name.c", line 176: error: parameter "that" is not a variable
+    void ICE(int that) noexcept(noexcept([that]() {}));
+                                          ^
+
+23 errors detected in the compilation of "Test_name.c".

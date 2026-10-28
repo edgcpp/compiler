@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --gnu_version=80200 -tused -e 200 --no_wrap Test_name.c
+"./other/sve_tls_2.C", line 9: error: explicit type is missing ("int" assumed)
+  extern __thread int z;
+         ^
+
+"./other/sve_tls_2.C", line 9: error: expected a ";"
+  extern __thread int z;
+                  ^
+
+"./other/sve_tls_2.C", line 15: error: too many initializer values
+    asm volatile ("" :: "w" ((v32qi) { -1, 0, 0, -1, -1, -1, 0, 0,
+                                           ^
+
+"./other/sve_tls_2.C", line 23: error: too many initializer values
+        asm volatile ("" :: "w" ((v32qi) { -1, 0, 0, -1, -1, -1, 0, 0,
+                                               ^
+
+"./other/sve_tls_2.C", line 27: error: identifier "z" is undefined
+        "r" (z));
+             ^
+
+5 errors detected in the compilation of "Test_name.c".

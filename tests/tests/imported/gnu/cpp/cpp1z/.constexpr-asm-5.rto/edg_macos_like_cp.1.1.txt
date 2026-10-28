@@ -1,0 +1,398 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 --exceptions Test_name.c
+"Test_name.c", line 27: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+  struct K { constexpr operator int () { return 4; } };
+             ^
+
+"Test_name.c", line 28: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+  struct L { constexpr operator const char * () { return "test"; } };
+             ^
+
+"Test_name.c", line 81: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+  struct Y { constexpr int size () { return 4; }
+             ^
+
+"Test_name.c", line 82: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+  	   constexpr const char *data (int) { return "test"; } };
+  	   ^
+
+"Test_name.c", line 93: error: expected an asm string
+    asm ((""));			// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+         ^
+
+"Test_name.c", line 95: error: expected an asm string
+    asm (("" + 0));		// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+         ^
+
+"Test_name.c", line 97: error: expected an asm string
+    asm ((0) ::);			// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+         ^
+
+"Test_name.c", line 99: error: expected a ")"
+    asm ("" : (A {}) (v1));	// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+              ^
+
+"Test_name.c", line 101: error: expected a ")"
+    asm ("" : : (B {}) (1));	// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+                ^
+
+"Test_name.c", line 103: error: expected a ")"
+    asm ("" ::: (C {}));		// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+                ^
+
+"Test_name.c", line 105: error: expected an asm string
+    asm ((D {}));			// { dg-error "'D\\\(\\\).D::data' cannot be used as a function" }
+         ^
+
+"Test_name.c", line 106: error: expected a ")"
+    asm ("" : (E {}) (v1));	// { dg-error "'E\\\{0\\\}.E::size' cannot be used as a function" }
+              ^
+
+"Test_name.c", line 107: error: expected a ")"
+    __asm ("" :: (F {}) (1));	// { dg-error "constexpr string 'size\\\(\\\)' must be implicitly convertible to 'std::size_t'" }
+                 ^
+
+"Test_name.c", line 110: error: expected a ")"
+    asm ("" : : : (G {}));	// { dg-error "constexpr string 'data\\\(\\\)' must be implicitly convertible to 'const char\\\*'" }
+                  ^
+
+"Test_name.c", line 112: error: expected an asm operand
+    asm ("" : "=r" (v1), (H {}) (v2)); // { dg-error "call to non-'constexpr' function 'short int H::size\\\(\\\) const'" }
+                         ^
+
+"Test_name.c", line 114: error: expected an asm string
+    asm ((I {}));			// { dg-error "call to non-'constexpr' function 'const char\\\* I::data\\\(\\\) const'" }
+         ^
+
+"Test_name.c", line 117: error: expected an asm string
+    asm ((J (0)));
+         ^
+
+"Test_name.c", line 118: error: expected a ")"
+    asm ("" :: (J (1)) (1));	// { dg-error "constexpr string 'size\\\(\\\)' must be a constant expression" }
+               ^
+
+"Test_name.c", line 119: error: expected an asm string
+    asm ((M {}));
+         ^
+
+"Test_name.c", line 123: error: expected an asm string
+    asm ((O {}));
+         ^
+
+"Test_name.c", line 124: error: expected an asm string
+    asm ((P (0)));
+         ^
+
+"Test_name.c", line 125: error: expected an asm string
+    asm ((P (2)));
+         ^
+
+"Test_name.c", line 126: error: expected an asm string
+    asm ((Q (0)));
+         ^
+
+"Test_name.c", line 127: error: expected an asm string
+    asm ((Q (1)));
+         ^
+
+"Test_name.c", line 128: error: expected an asm string
+    asm ((R (0)));
+         ^
+
+"Test_name.c", line 129: error: expected an asm string
+    asm ((R (2)));
+         ^
+
+"Test_name.c", line 130: error: expected an asm string
+    asm ((S {}));
+         ^
+
+"Test_name.c", line 132: error: expected an asm string
+    asm ((string_view {}));
+         ^
+
+"Test_name.c", line 133: error: expected an asm string
+    asm ((string_view ("test")));
+         ^
+
+"Test_name.c", line 134: error: expected an asm string
+    asm ((string_view ("א")));
+         ^
+
+"Test_name.c", line 135: error: expected an asm string
+    asm ((string_view (0, nullptr)));
+         ^
+
+"Test_name.c", line 136: error: expected an asm string
+    asm ((string_view (4, "testwithextrachars")));
+         ^
+
+"Test_name.c", line 137: error: expected an asm string
+    asm ((string_view (42, "test")));				// { dg-error "array subscript value '41' is outside the bounds of array type 'const char \\\[5\\\]'" }
+         ^
+
+"Test_name.c", line 140: error: expected an asm string
+    asm ((array<char, 2> { 'O', 'K' }));
+         ^
+
+"Test_name.c", line 141: error: expected an asm string
+    asm ((array<wchar_t, 2> { L'O', L'K' }));			// { dg-error "constexpr string 'data\\\(\\\)' must be implicitly convertible to 'const char\\\*'" }
+         ^
+
+"Test_name.c", line 143: error: expected an asm string
+    asm ((array<char, 4> { 't', 'e', 's', 't' }));
+         ^
+
+"Test_name.c", line 146: error: expected an asm string
+      asm ((a));
+           ^
+
+"Test_name.c", line 145: warning: variable "a" was declared but never referenced
+      constexpr auto a = array<char, 4> { 't', 'e', 's', 't' };
+                     ^
+
+"Test_name.c", line 152: error: expected an asm string
+    asm ((W {}));				// { dg-error "no matching function for call to 'W::size\\\(\\\)'" }
+         ^
+
+"Test_name.c", line 153: error: expected an asm string
+    asm ((X {}));				// { dg-error "no matching function for call to 'X::data\\\(\\\)'" }
+         ^
+
+"Test_name.c", line 154: error: expected an asm string
+    asm ((Y {}));				// { dg-error "no matching function for call to 'Y::data\\\(\\\)'" }
+         ^
+
+"Test_name.c", line 91: warning: variable "v1" was set but never used
+    int v1, v2;
+        ^
+
+"Test_name.c", line 91: warning: variable "v2" was declared but never referenced
+    int v1, v2;
+            ^
+
+"Test_name.c", line 166: error: expected an asm string
+    asm ((""));			// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+         ^
+
+"Test_name.c", line 168: error: expected an asm string
+    asm (("" + 0));		// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+         ^
+
+"Test_name.c", line 170: error: expected an asm string
+    asm ((0) ::);			// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+         ^
+
+"Test_name.c", line 172: error: expected a ")"
+    asm ("" : (A {}) (v1));	// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+              ^
+
+"Test_name.c", line 174: error: expected a ")"
+    asm ("" : : (B {}) (1));	// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+                ^
+
+"Test_name.c", line 176: error: expected a ")"
+    asm ("" ::: (C {}));		// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+                ^
+
+"Test_name.c", line 178: error: expected an asm string
+    asm ((D {}));			// { dg-error "'D\\\(\\\).D::data' cannot be used as a function" }
+         ^
+
+"Test_name.c", line 179: error: expected a ")"
+    asm ("" : (E {}) (v1));	// { dg-error "'E\\\{0\\\}.E::size' cannot be used as a function" }
+              ^
+
+"Test_name.c", line 180: error: expected a ")"
+    __asm ("" :: (F {}) (1));	// { dg-error "constexpr string 'size\\\(\\\)' must be implicitly convertible to 'std::size_t'" }
+                 ^
+
+"Test_name.c", line 183: error: expected a ")"
+    asm ("" : : : (G {}));	// { dg-error "constexpr string 'data\\\(\\\)' must be implicitly convertible to 'const char\\\*'" }
+                  ^
+
+"Test_name.c", line 185: error: expected an asm operand
+    asm ("" : "=r" (v1), (H {}) (v2)); // { dg-error "call to non-'constexpr' function 'short int H::size\\\(\\\) const'" }
+                         ^
+
+"Test_name.c", line 187: error: expected an asm string
+    asm ((I {}));			// { dg-error "call to non-'constexpr' function 'const char\\\* I::data\\\(\\\) const'" }
+         ^
+
+"Test_name.c", line 190: error: expected an asm string
+    asm ((J (0)));
+         ^
+
+"Test_name.c", line 191: error: expected a ")"
+    asm ("" :: (J (1)) (1));	// { dg-error "constexpr string 'size\\\(\\\)' must be a constant expression" }
+               ^
+
+"Test_name.c", line 192: error: expected an asm string
+    asm ((M {}));
+         ^
+
+"Test_name.c", line 196: error: expected an asm string
+    asm ((O {}));
+         ^
+
+"Test_name.c", line 197: error: expected an asm string
+    asm ((P (0)));
+         ^
+
+"Test_name.c", line 198: error: expected an asm string
+    asm ((P (2)));
+         ^
+
+"Test_name.c", line 199: error: expected an asm string
+    asm ((Q (0)));
+         ^
+
+"Test_name.c", line 200: error: expected an asm string
+    asm ((Q (1)));
+         ^
+
+"Test_name.c", line 201: error: expected an asm string
+    asm ((R (0)));
+         ^
+
+"Test_name.c", line 202: error: expected an asm string
+    asm ((R (2)));
+         ^
+
+"Test_name.c", line 203: error: expected an asm string
+    asm ((S {}));
+         ^
+
+"Test_name.c", line 205: error: expected an asm string
+    asm ((string_view {}));
+         ^
+
+"Test_name.c", line 206: error: expected an asm string
+    asm ((string_view ("test")));
+         ^
+
+"Test_name.c", line 207: error: expected an asm string
+    asm ((string_view ("א")));
+         ^
+
+"Test_name.c", line 208: error: expected an asm string
+    asm ((string_view (0, nullptr)));
+         ^
+
+"Test_name.c", line 209: error: expected an asm string
+    asm ((string_view (4, "testwithextrachars")));
+         ^
+
+"Test_name.c", line 210: error: expected an asm string
+    asm ((string_view (42, "test")));				// { dg-error "array subscript value '41' is outside the bounds of array type 'const char \\\[5\\\]'" }
+         ^
+
+"Test_name.c", line 213: error: expected an asm string
+    asm ((array<char, 2> { 'O', 'K' }));
+         ^
+
+"Test_name.c", line 214: error: expected an asm string
+    asm ((array<wchar_t, 2> { L'O', L'K' }));			// { dg-error "constexpr string 'data\\\(\\\)' must be implicitly convertible to 'const char\\\*'" }
+         ^
+
+"Test_name.c", line 216: error: expected an asm string
+    asm ((array<char, 4> { 't', 'e', 's', 't' }));
+         ^
+
+"Test_name.c", line 219: error: expected an asm string
+      asm ((a));
+           ^
+
+"Test_name.c", line 218: warning: variable "a" was declared but never referenced
+      constexpr auto a = array<char, 4> { 't', 'e', 's', 't' };
+                     ^
+
+"Test_name.c", line 225: error: expected an asm string
+    asm ((W {}));				// { dg-error "no matching function for call to 'W::size\\\(\\\)'" }
+         ^
+
+"Test_name.c", line 226: error: expected an asm string
+    asm ((X {}));				// { dg-error "no matching function for call to 'X::data\\\(\\\)'" }
+         ^
+
+"Test_name.c", line 227: error: expected an asm string
+    asm ((Y {}));				// { dg-error "no matching function for call to 'Y::data\\\(\\\)'" }
+         ^
+
+"Test_name.c", line 164: warning: variable "v2" was declared but never referenced
+    int v1, v2;
+            ^
+
+"Test_name.c", line 306: error: expected an asm string
+      asm ((A<int> {}));		// { dg-error "use of deleted function 'constexpr int NN::A<T>::size\\\(\\\) const \\\[with T = int\\\]'" }
+           ^
+
+"Test_name.c", line 310: error: expected an asm string
+      asm ((C {}));		// { dg-error "use of deleted function 'constexpr int NN::C::size\\\(\\\) const'" }
+           ^
+
+"Test_name.c", line 315: error: expected an asm string
+      asm (("foo"_myd));
+           ^
+
+"Test_name.c", line 316: error: expected an asm string
+      asm (("foo" + E {}));
+           ^
+
+"Test_name.c", line 317: error: expected an asm string
+      asm ((H {}));
+           ^
+
+"Test_name.c", line 318: error: expected an asm string
+      asm ((I {}));
+           ^
+
+"Test_name.c", line 328: error: expected an asm string
+      asm ((Q {}));
+           ^
+
+"Test_name.c", line 329: error: expected an asm string
+      asm ((R {}));
+           ^
+
+"Test_name.c", line 336: error: expected an asm string
+      asm ((A<VV> {}));		// { dg-error "use of deleted function 'constexpr int NN::A<T>::size\\\(\\\) const \\\[with T = int\\\]'" }
+           ^
+
+"Test_name.c", line 340: error: expected an asm string
+      asm ((C {}));		// { dg-error "use of deleted function 'constexpr int NN::C::size\\\(\\\) const'" }
+           ^
+
+"Test_name.c", line 345: error: expected an asm string
+      asm (("foo"_myd));
+           ^
+
+"Test_name.c", line 346: error: expected an asm string
+      asm (("foo" + E {}));
+           ^
+
+"Test_name.c", line 347: error: expected an asm string
+      asm ((H {}));
+           ^
+
+"Test_name.c", line 348: error: expected an asm string
+      asm ((I {}));
+           ^
+
+"Test_name.c", line 358: error: expected an asm string
+      asm ((Q {}));
+           ^
+
+"Test_name.c", line 359: error: expected an asm string
+      asm ((R {}));
+           ^
+
+"Test_name.c", line 360: error: expected an asm string
+      asm ((TT {}));
+           ^
+
+"Test_name.c", line 361: error: expected an asm string
+      asm ((UU {}));		// { dg-error "constexpr string must be a string literal or object with 'size' and 'data' members" }
+           ^
+
+90 errors detected in the compilation of "Test_name.c".

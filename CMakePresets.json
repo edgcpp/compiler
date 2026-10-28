@@ -187,6 +187,66 @@
       }
     },
     {
+      "name": "linux-gcc-macos-like-debug",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC) macOS-like Build Config - DEBUG",
+      "description": "CI coverage build: Linux build using GCC with the macOS (arm64) host and feature choices",
+      "binaryDir": "${sourceDir}/build/gcc-macos-like",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc-macos-like",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
+      "name": "linux-gcc-windows-like-debug",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC) Windows-like Build Config - DEBUG",
+      "description": "CI coverage build: Linux build using GCC with the Windows ABI and feature choices",
+      "binaryDir": "${sourceDir}/build/gcc-windows-like",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc-windows-like",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
+      "name": "linux-gcc-variants-debug",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC) variants Build Config - DEBUG",
+      "description": "CI coverage build: Linux build using GCC with build-time variants no platform uses",
+      "binaryDir": "${sourceDir}/build/gcc-variants",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc-variants",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
+      "name": "linux-gcc-legacy-debug",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC) legacy Build Config - DEBUG",
+      "description": "CI coverage build: Linux build using GCC with the Cfront ABI and legacy compatibility",
+      "binaryDir": "${sourceDir}/build/gcc-legacy",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc-legacy",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
       "name": "linux-i686-gcc-debug",
       "inherits": "linux-common",
       "displayName": "Linux i686 (GCC) Build Config - DEBUG",

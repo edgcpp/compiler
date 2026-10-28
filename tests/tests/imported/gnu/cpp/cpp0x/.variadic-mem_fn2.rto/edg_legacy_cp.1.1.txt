@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: error: expected a ")"
+      return tail.apply<1>(more...); // { dg-error "" } needs .template
+                               ^
+
+"Test_name.c", line 9: error: parameter pack "more" was referenced but not expanded
+      return tail.apply<1>(more...); // { dg-error "" } needs .template
+                           ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,58 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --exceptions Test_name.c
+"Test_name.c", line 14: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+  SecretDestructor sd1; // all-dtors-error{{private}}
+                   ^
+
+"Test_name.c", line 15: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+  thread_local SecretDestructor sd2; // thread-local-dtors-error{{private}}
+                                ^
+
+"Test_name.c", line 17: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+    static SecretDestructor sd3; // all-dtors-error{{private}}
+                            ^
+
+"Test_name.c", line 18: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+    thread_local SecretDestructor sd4; // thread-local-dtors-error{{private}}
+                                  ^
+
+"Test_name.c", line 21: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+  [[clang::always_destroy]] SecretDestructor sd6; // expected-error{{private}}
+                                             ^
+
+"Test_name.c", line 22: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+  [[clang::always_destroy]] thread_local SecretDestructor sd7; // expected-error{{private}}
+                                                          ^
+
+"Test_name.c", line 24: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+  [[clang::no_destroy]] SecretDestructor sd8;
+                                         ^
+
+"Test_name.c", line 27: warning: variable "p" was declared but never referenced
+    [[clang::no_destroy]] int p; // expected-error{{no_destroy attribute can only be applied to a variable with static or thread storage duration}}
+                              ^
+
+"Test_name.c", line 28: warning: variable "p2" was declared but never referenced
+    [[clang::always_destroy]] int p2; // expected-error{{always_destroy attribute can only be applied to a variable with static or thread storage duration}}
+                                  ^
+
+"Test_name.c", line 29: warning: variable "p3" was declared but never referenced
+    [[clang::no_destroy]] static int p3;
+                                     ^
+
+"Test_name.c", line 30: warning: variable "p4" was declared but never referenced
+    [[clang::always_destroy]] static int p4;
+                                         ^
+
+"Test_name.c", line 43: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+  SecretDestructor arr[10];
+                   ^
+
+"Test_name.c", line 47: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+    static SecretDestructor arr2[10];
+                            ^
+
+"Test_name.c", line 49: error: "SecretDestructor::~SecretDestructor() noexcept" (declared at line 11) is inaccessible
+    thread_local SecretDestructor arr3[10];
+                                  ^
+
+10 errors detected in the compilation of "Test_name.c".

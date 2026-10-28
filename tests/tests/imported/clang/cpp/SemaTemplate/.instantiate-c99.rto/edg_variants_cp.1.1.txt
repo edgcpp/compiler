@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 64: warning: variable "array2" was declared but never referenced
+      int array2[10] = { [5] = 3 };
+          ^
+
+"Test_name.c", line 18: warning: out-of-order initializers are nonstandard in C++
+        .x = x  // expected-error{{does not refer}}
+         ^
+          detected during instantiation of "void DesigInit0<T, XType, YType>::f(XType, YType) [with T=Point2D, XType=int, YType=double]" at line 31
+
+"Test_name.c", line 18: warning: out-of-order initializers are nonstandard in C++
+        .x = x  // expected-error{{does not refer}}
+         ^
+          detected during instantiation of "void DesigInit0<T, XType, YType>::f(XType, YType) [with T=Point3D, XType=int, YType=double]" at line 37
+
+"Test_name.c", line 18: warning: out-of-order initializers are nonstandard in C++
+        .x = x  // expected-error{{does not refer}}
+         ^
+          detected during instantiation of "void DesigInit0<T, XType, YType>::f(XType, YType) [with T=ColorPoint3D, XType=int, YType=double]" at line 48
+
+"Test_name.c", line 17: error: class "Color" has no field "y"
+        .y = y, // expected-error{{does not refer}}
+         ^
+          detected during instantiation of "void DesigInit0<T, XType, YType>::f(XType, YType) [with T=Color, XType=int, YType=double]" at line 49
+
+"Test_name.c", line 61: error: subscript out of range
+        [Subscript2] = val2 // expected-error{{exceeds array bounds}}
+        ^
+          detected during instantiation of "void DesigArrayInit0<T, Subscript1, Subscript2, Val1, Val2>::f(Val1, Val2) [with T=int [8], Subscript1=5, Subscript2=13, Val1=float, Val2=int]" at line 69
+
+"Test_name.c", line 77: error: array range designators cannot be applied to dynamic initializers
+        [Subscript1...Subscript2] = val1 // expected-error{{exceeds}}
+                                    ^
+          detected during instantiation of "void DesigArrayRangeInit0<T, Subscript1, Subscript2, Val1>::f(Val1) [with T=int [8], Subscript1=3, Subscript2=5, Val1=float]" at line 85
+
+"Test_name.c", line 77: error: subscript out of range
+        [Subscript1...Subscript2] = val1 // expected-error{{exceeds}}
+        ^
+          detected during instantiation of "void DesigArrayRangeInit0<T, Subscript1, Subscript2, Val1>::f(Val1) [with T=int [8], Subscript1=5, Subscript2=13, Val1=float]" at line 86
+
+4 errors detected in the compilation of "Test_name.c".

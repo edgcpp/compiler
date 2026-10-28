@@ -1,0 +1,310 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./contracts/contracts-pre9.C", line 9: error: expected a ","
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre9.C", line 9: error: expected a "]"
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre9.C", line 9: error: expected a ";"
+    int f(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre9.C", line 10: error: expected a ","
+    int g(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre9.C", line 10: error: expected a "]"
+    int g(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre9.C", line 10: error: expected a ";"
+    int g(int a) [[ pre: a > 0 ]];
+                       ^
+
+"./contracts/contracts-pre9.C", line 14: error: expected a ","
+  int S<T>::f(int a) [[ pre: a > 0 ]]
+                           ^
+
+"./contracts/contracts-pre9.C", line 14: error: expected a "]"
+  int S<T>::f(int a) [[ pre: a > 0 ]]
+                           ^
+
+"./contracts/contracts-pre9.C", line 14: error: member function "S<T>::f" may not be redeclared outside its class
+  int S<T>::f(int a) [[ pre: a > 0 ]]
+            ^
+
+"./contracts/contracts-pre9.C", line 14: error: expected a ";"
+  int S<T>::f(int a) [[ pre: a > 0 ]]
+                           ^
+
+"./contracts/contracts-pre9.C", line 30: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"./contracts/contracts-pre9.C", line 33: error: name followed by "::" must be a class or namespace name
+  int S_arg<T>::f(T a) [[ pre: a > 0 ]]
+      ^
+
+"./contracts/contracts-pre9.C", line 33: error: S_arg is not a template
+  int S_arg<T>::f(T a) [[ pre: a > 0 ]]
+      ^
+
+"./contracts/contracts-pre9.C", line 33: error: expected a ","
+  int S_arg<T>::f(T a) [[ pre: a > 0 ]]
+                             ^
+
+"./contracts/contracts-pre9.C", line 33: error: expected a "]"
+  int S_arg<T>::f(T a) [[ pre: a > 0 ]]
+                             ^
+
+"./contracts/contracts-pre9.C", line 39: error: name followed by "::" must be a class or namespace name
+  int S_arg<T>::g(T a)
+      ^
+
+"./contracts/contracts-pre9.C", line 39: error: S_arg is not a template
+  int S_arg<T>::g(T a)
+      ^
+
+"./contracts/contracts-pre9.C", line 47: error: expected a ","
+    T f(int a) [[ pre: a > 0 ]];
+                     ^
+
+"./contracts/contracts-pre9.C", line 47: error: expected a "]"
+    T f(int a) [[ pre: a > 0 ]];
+                     ^
+
+"./contracts/contracts-pre9.C", line 47: error: expected a ";"
+    T f(int a) [[ pre: a > 0 ]];
+                     ^
+
+"./contracts/contracts-pre9.C", line 48: error: expected a ","
+    T g(int a) [[ pre: a > 0 ]];
+                     ^
+
+"./contracts/contracts-pre9.C", line 48: error: expected a "]"
+    T g(int a) [[ pre: a > 0 ]];
+                     ^
+
+"./contracts/contracts-pre9.C", line 48: error: expected a ";"
+    T g(int a) [[ pre: a > 0 ]];
+                     ^
+
+"./contracts/contracts-pre9.C", line 52: error: expected a ","
+  T S_ret<T>::f(int a) [[ pre: a > 0 ]]
+                             ^
+
+"./contracts/contracts-pre9.C", line 52: error: expected a "]"
+  T S_ret<T>::f(int a) [[ pre: a > 0 ]]
+                             ^
+
+"./contracts/contracts-pre9.C", line 52: error: member function "S_ret<T>::f" may not be redeclared outside its class
+  T S_ret<T>::f(int a) [[ pre: a > 0 ]]
+              ^
+
+"./contracts/contracts-pre9.C", line 52: error: expected a ";"
+  T S_ret<T>::f(int a) [[ pre: a > 0 ]]
+                             ^
+
+"/usr/include/libio.h", line 307: error: identifier "size_t" is undefined
+    size_t __pad5;
+    ^
+
+"/usr/include/libio.h", line 311: error: identifier "size_t" is undefined
+    char _unused2[15 * sizeof (int) - 4 * sizeof (void *) - sizeof (size_t)];
+                                                                    ^
+
+"/usr/include/libio.h", line 339: error: identifier "size_t" is undefined
+  typedef __ssize_t __io_read_fn (void *__cookie, char *__buf, size_t __nbytes);
+                                                               ^
+
+"/usr/include/libio.h", line 348: error: identifier "size_t" is undefined
+       size_t __n);
+       ^
+
+"/usr/include/libio.h", line 470: error: identifier "size_t" is undefined
+  extern size_t _IO_sgetn (_IO_FILE *, void *, size_t);
+         ^
+
+"/usr/include/libio.h", line 470: error: identifier "size_t" is undefined
+  extern size_t _IO_sgetn (_IO_FILE *, void *, size_t);
+                                               ^
+
+"/usr/include/stdio.h", line 319: error: identifier "size_t" is undefined
+  extern FILE *fmemopen (void *__s, size_t __len, const char *__modes)
+                                    ^
+
+"/usr/include/stdio.h", line 325: error: identifier "size_t" is undefined
+  extern FILE *open_memstream (char **__bufloc, size_t *__sizeloc) throw () ;
+                                                ^
+
+"/usr/include/stdio.h", line 337: error: identifier "size_t" is undefined
+        int __modes, size_t __n) throw ();
+                     ^
+
+"/usr/include/stdio.h", line 344: error: identifier "size_t" is undefined
+           size_t __size) throw ();
+           ^
+
+"/usr/include/stdio.h", line 386: error: identifier "size_t" is undefined
+  extern int snprintf (char *__restrict __s, size_t __maxlen,
+                                             ^
+
+"/usr/include/stdio.h", line 390: error: identifier "size_t" is undefined
+  extern int vsnprintf (char *__restrict __s, size_t __maxlen,
+                                              ^
+
+"/usr/include/stdio.h", line 666: error: identifier "size_t" is undefined
+            size_t *__restrict __n, int __delimiter,
+            ^
+
+"/usr/include/stdio.h", line 669: error: identifier "size_t" is undefined
+          size_t *__restrict __n, int __delimiter,
+          ^
+
+"/usr/include/stdio.h", line 679: error: identifier "size_t" is undefined
+         size_t *__restrict __n,
+         ^
+
+"/usr/include/stdio.h", line 709: error: identifier "size_t" is undefined
+  extern size_t fread (void *__restrict __ptr, size_t __size,
+         ^
+
+"/usr/include/stdio.h", line 709: error: identifier "size_t" is undefined
+  extern size_t fread (void *__restrict __ptr, size_t __size,
+                                               ^
+
+"/usr/include/stdio.h", line 710: error: identifier "size_t" is undefined
+         size_t __n, FILE *__restrict __stream) ;
+         ^
+
+"/usr/include/stdio.h", line 715: error: identifier "size_t" is undefined
+  extern size_t fwrite (const void *__restrict __ptr, size_t __size,
+         ^
+
+"/usr/include/stdio.h", line 715: error: identifier "size_t" is undefined
+  extern size_t fwrite (const void *__restrict __ptr, size_t __size,
+                                                      ^
+
+"/usr/include/stdio.h", line 716: error: identifier "size_t" is undefined
+          size_t __n, FILE *__restrict __s);
+          ^
+
+"/usr/include/stdio.h", line 737: error: identifier "size_t" is undefined
+  extern size_t fread_unlocked (void *__restrict __ptr, size_t __size,
+         ^
+
+"/usr/include/stdio.h", line 737: error: identifier "size_t" is undefined
+  extern size_t fread_unlocked (void *__restrict __ptr, size_t __size,
+                                                        ^
+
+"/usr/include/stdio.h", line 738: error: identifier "size_t" is undefined
+           size_t __n, FILE *__restrict __stream) ;
+           ^
+
+"/usr/include/stdio.h", line 739: error: identifier "size_t" is undefined
+  extern size_t fwrite_unlocked (const void *__restrict __ptr, size_t __size,
+         ^
+
+"/usr/include/stdio.h", line 739: error: identifier "size_t" is undefined
+  extern size_t fwrite_unlocked (const void *__restrict __ptr, size_t __size,
+                                                               ^
+
+"/usr/include/stdio.h", line 740: error: identifier "size_t" is undefined
+            size_t __n, FILE *__restrict __stream);
+            ^
+
+"/usr/include/stdio.h", line 943: error: expected a declaration
+  }
+  ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/cstdio", line 149: error: expected a declaration
+  }
+  ^
+
+"./contracts/contracts-pre9.C", line 87: warning: parsing restarts here after previous syntax error
+      S_arg<double> s_arg_double;
+                                ^
+
+"./contracts/contracts-pre9.C", line 88: error: this declaration has no storage class or type specifier
+      printf ("s_arg_double.f(-10): %d\n", s_arg_double.f(-10));
+      ^
+
+"./contracts/contracts-pre9.C", line 88: error: declaration is incompatible with "int printf(const char *, ...)" (declared at line 362 of "/usr/include/stdio.h")
+      printf ("s_arg_double.f(-10): %d\n", s_arg_double.f(-10));
+      ^
+
+"./contracts/contracts-pre9.C", line 88: error: identifier "s_arg_double" is undefined
+      printf ("s_arg_double.f(-10): %d\n", s_arg_double.f(-10));
+                                           ^
+
+"./contracts/contracts-pre9.C", line 88: error: too many initializer values
+      printf ("s_arg_double.f(-10): %d\n", s_arg_double.f(-10));
+                                           ^
+
+"./contracts/contracts-pre9.C", line 88: error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+      printf ("s_arg_double.f(-10): %d\n", s_arg_double.f(-10));
+              ^
+
+"./contracts/contracts-pre9.C", line 89: error: this declaration has no storage class or type specifier
+      printf ("s_arg_double.g(-10): %d\n", s_arg_double.g(-10));
+      ^
+
+"./contracts/contracts-pre9.C", line 89: error: variable "printf" has already been defined (previous definition at line 88)
+      printf ("s_arg_double.g(-10): %d\n", s_arg_double.g(-10));
+      ^
+
+"./contracts/contracts-pre9.C", line 89: error: too many initializer values
+      printf ("s_arg_double.g(-10): %d\n", s_arg_double.g(-10));
+                                           ^
+
+"./contracts/contracts-pre9.C", line 89: error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+      printf ("s_arg_double.g(-10): %d\n", s_arg_double.g(-10));
+              ^
+
+"./contracts/contracts-pre9.C", line 90: error: this declaration has no storage class or type specifier
+      printf ("s_arg_double.f(10): %d\n", s_arg_double.f(10));
+      ^
+
+"./contracts/contracts-pre9.C", line 90: error: variable "printf" has already been defined (previous definition at line 88)
+      printf ("s_arg_double.f(10): %d\n", s_arg_double.f(10));
+      ^
+
+"./contracts/contracts-pre9.C", line 90: error: too many initializer values
+      printf ("s_arg_double.f(10): %d\n", s_arg_double.f(10));
+                                          ^
+
+"./contracts/contracts-pre9.C", line 90: error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+      printf ("s_arg_double.f(10): %d\n", s_arg_double.f(10));
+              ^
+
+"./contracts/contracts-pre9.C", line 91: error: this declaration has no storage class or type specifier
+      printf ("s_arg_double.g(10): %d\n", s_arg_double.g(10));
+      ^
+
+"./contracts/contracts-pre9.C", line 91: error: variable "printf" has already been defined (previous definition at line 88)
+      printf ("s_arg_double.g(10): %d\n", s_arg_double.g(10));
+      ^
+
+"./contracts/contracts-pre9.C", line 91: error: too many initializer values
+      printf ("s_arg_double.g(10): %d\n", s_arg_double.g(10));
+                                          ^
+
+"./contracts/contracts-pre9.C", line 91: error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+      printf ("s_arg_double.g(10): %d\n", s_arg_double.g(10));
+              ^
+
+"./contracts/contracts-pre9.C", line 92: error: expected a declaration
+    }
+    ^
+
+"./contracts/contracts-pre9.C", line 108: warning: parsing restarts here after previous syntax error
+    return 0;
+            ^
+
+"./contracts/contracts-pre9.C", line 109: error: expected a declaration
+  }
+  ^
+
+74 errors detected in the compilation of "Test_name.c".

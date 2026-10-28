@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 54: warning: missing return statement at end of non-void function "write_into_out_parameter_on_nonzero"
+  bool write_into_out_parameter_on_nonzero(__attribute__((os_returns_retained_on_non_zero)) S** out) {}
+                                                                                                      ^
+
+"Test_name.c", line 56: warning: missing return statement at end of non-void function "write_into_out_parameter_on_nonzero_invalid"
+  bool write_into_out_parameter_on_nonzero_invalid(__attribute__((os_returns_retained_on_non_zero)) S* out) {} // expected-warning{{'os_returns_retained_on_non_zero' attribute only applies to pointer/reference-to-OSObject-pointer parameters}}
+                                                                                                             ^
+
+"Test_name.c", line 58: warning: missing return statement at end of non-void function "write_into_out_parameter_on_zero"
+  bool write_into_out_parameter_on_zero(__attribute__((os_returns_retained_on_zero)) S** out) {}
+                                                                                               ^
+
+"Test_name.c", line 60: warning: missing return statement at end of non-void function "write_into_out_parameter_on_zero_invalid"
+  bool write_into_out_parameter_on_zero_invalid(__attribute__((os_returns_retained_on_zero)) S* out) {} // expected-warning{{'os_returns_retained_on_zero' attribute only applies to pointer/reference-to-OSObject-pointer parameters}}
+                                                                                                      ^
+

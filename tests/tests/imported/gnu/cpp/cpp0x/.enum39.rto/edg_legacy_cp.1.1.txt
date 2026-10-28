@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 11: warning: enum bit fields are always unsigned, but enum "E" includes negative enumerator
+    E a : 2;	// { dg-warning "'S::a' is too small to hold all values of 'enum class E'" }
+          ^
+
+"Test_name.c", line 12: warning: enum bit fields are always unsigned, but enum "E" includes negative enumerator
+    E b : 2;	// { dg-warning "'S::b' is too small to hold all values of 'enum class E'" }
+          ^
+
+"Test_name.c", line 13: warning: enum bit fields are always unsigned, but enum "E" includes negative enumerator
+    E c : 3;	// { dg-bogus "'S::c' is too small to hold all values of 'enum class E'" }
+          ^
+
+"Test_name.c", line 14: warning: bit field cannot contain all values of the enumerated type
+    F d : 3;	// { dg-warning "'S::d' is too small to hold all values of 'enum F'" }
+          ^
+
+"Test_name.c", line 15: warning: bit field cannot contain all values of the enumerated type
+    F e : 3;	// { dg-warning "'S::e' is too small to hold all values of 'enum F'" }
+          ^
+

@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 8: error: identifier "error" is undefined
+  error e; // expected-error {{unknown type name}}
+  ^
+
+"Test_name.c", line 13: error: explicit type is missing ("int" assumed)
+    foo() { // expected-error {{a type specifier is required for all declarations}}
+    ^
+
+"Test_name.c", line 14: error: this range-based "for" statement requires a suitable "begin" function and none was found
+      for (auto *c : *variables_to_modify)
+                     ^
+
+"Test_name.c", line 16: warning: missing return statement at end of non-void function "Bar<<unnamed>>::foo"
+    }
+    ^
+
+"Test_name.c", line 22: error: incomplete type "X" is not allowed
+    for (X x // expected-error {{incomplete type}}
+           ^
+
+"Test_name.c", line 23: error: this range-based "for" statement requires a suitable "begin" function and none was found
+        : a) { // expected-error {{range expression of type 'int'}}
+          ^
+
+"Test_name.c", line 23: error: this range-based "for" statement requires a suitable "end" function and none was found
+        : a) { // expected-error {{range expression of type 'int'}}
+          ^
+
+"Test_name.c", line 28: error: invalid specifier for structured binding declaration
+    for (S [x, y] // expected-error {{must be 'auto'}}
+         ^
+
+"Test_name.c", line 29: error: this range-based "for" statement requires a suitable "begin" function and none was found
+        : a) { // expected-error {{range expression}}
+          ^
+
+"Test_name.c", line 29: error: this range-based "for" statement requires a suitable "end" function and none was found
+        : a) { // expected-error {{range expression}}
+          ^
+
+"Test_name.c", line 30: error: identifier "x" is undefined
+      typename decltype(x)::a b;
+                        ^
+
+10 errors detected in the compilation of "Test_name.c".

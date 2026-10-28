@@ -1,0 +1,101 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 6: error: zero-length bit field must be unnamed
+    int simple : I; // expected-error{{bit-field 'simple' has zero width}}
+        ^
+          detected during instantiation of class "Bitfields<I, J> [with I=0, J=1]" at line 12
+
+"Test_name.c", line 7: warning: signed bit field of length 1
+    int parens : (J);
+        ^
+          detected during instantiation of class "Bitfields<I, J> [with I=0, J=1]" at line 12
+
+"Test_name.c", line 17: warning: signed bit field of length 1
+    int bitfield : I + J; // expected-error{{bit-field 'bitfield' has zero width}}
+        ^
+          detected during instantiation of class "BitfieldPlus<I, J> [with I=0, J=1]" at line 21
+
+"Test_name.c", line 17: error: zero-length bit field must be unnamed
+    int bitfield : I + J; // expected-error{{bit-field 'bitfield' has zero width}}
+        ^
+          detected during instantiation of class "BitfieldPlus<I, J> [with I=-5, J=5]" at line 22
+
+"Test_name.c", line 27: error: invalid size for bit field
+    int bitfield : I - J; // expected-error{{bit-field 'bitfield' has negative width (-1)}} \
+                   ^
+          detected during instantiation of class "BitfieldMinus<I, J> [with I=0, J=1]" at line 33
+
+"Test_name.c", line 27: error: zero-length bit field must be unnamed
+    int bitfield : I - J; // expected-error{{bit-field 'bitfield' has negative width (-1)}} \
+        ^
+          detected during instantiation of class "BitfieldMinus<I, J> [with I=5, J=5]" at line 34
+
+"Test_name.c", line 39: error: expression must have a constant value
+    int bitfield : I / J; // expected-error{{expression is not an integral constant expression}} \
+                   ^
+"Test_name.c", line 39: note: division by zero
+    int bitfield : I / J; // expected-error{{expression is not an integral constant expression}} \
+                     ^
+          detected during instantiation of class "BitfieldDivide<I, J> [with I=5, J=0]" at line 45
+
+"Test_name.c", line 59: error: invalid size for bit field
+    int bitfield : (-I); // expected-error{{bit-field 'bitfield' has negative width (-5)}}
+                   ^
+          detected during instantiation of class "BitfieldNeg<I> [with I=5]" at line 69
+
+"Test_name.c", line 64: error: invalid size for bit field
+    int bitfield : (-I); // expected-error{{bit-field 'bitfield' has negative width (-5)}}
+                   ^
+          detected during instantiation of class "BitfieldNeg2<T, I> [with T=int, I=5]" at line 71
+
+"Test_name.c", line 137: warning: variable "a" is used before its value is set
+    test_asm(a);
+             ^
+
+"Test_name.c", line 140: warning: variable "b" is used before its value is set
+    test_asm(b); // expected-note {{in instantiation of function template specialization 'test_asm<int>' requested here}}
+             ^
+
+"Test_name.c", line 146: warning: variable "ip" was declared but never referenced
+        int *ip = I; // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}}
+             ^
+
+"Test_name.c", line 132: error: operand of "*" must be a pointer but has type "int"
+    asm ("nop" : "=r"(*t) : "r"(*t)); // expected-error {{indirection requires pointer operand ('int' invalid)}}
+                       ^
+          detected during instantiation of "void test_asm(T) [with T=int]" at line 140
+
+"Test_name.c", line 132: error: expression must be a modifiable lvalue
+    asm ("nop" : "=r"(*t) : "r"(*t)); // expected-error {{indirection requires pointer operand ('int' invalid)}}
+                      ^
+          detected during instantiation of "void test_asm(T) [with T=int]" at line 140
+
+"Test_name.c", line 132: error: operand of "*" must be a pointer but has type "int"
+    asm ("nop" : "=r"(*t) : "r"(*t)); // expected-error {{indirection requires pointer operand ('int' invalid)}}
+                                 ^
+          detected during instantiation of "void test_asm(T) [with T=int]" at line 140
+
+"Test_name.c", line 146: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+        int *ip = I; // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}}
+                  ^
+          detected during:
+            instantiation of "PR6424::X<I>::X() [with I=7]" at line 153
+            instantiation of "void PR6424::Y<<unnamed>>::f() [with <unnamed>=3]" at line 156
+
+"Test_name.c", line 161: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+        int *ip = I; // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}}
+                  ^
+          detected during:
+            instantiation of "void *PR6424::X2<I>::operator new(unsigned long) [with I=7]" at line 169
+            instantiation of "void PR6424::Y2<<unnamed>>::f() [with <unnamed>=3]" at line 173
+
+"Test_name.c", line 187: warning: parameter "o" was set but never used
+    template<typename T> void test_asm_tied(T o) {
+                                              ^
+          detected during instantiation of "void PR10864::test_asm_tied(T) [with T=int]" at line 191
+
+"Test_name.c", line 187: warning: parameter "o" was set but never used
+    template<typename T> void test_asm_tied(T o) {
+                                              ^
+          detected during instantiation of "void PR10864::test_asm_tied(T) [with T=float]" at line 192
+
+12 errors detected in the compilation of "Test_name.c".

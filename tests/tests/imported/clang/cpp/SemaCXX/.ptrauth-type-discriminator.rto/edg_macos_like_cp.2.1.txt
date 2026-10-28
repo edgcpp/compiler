@@ -1,0 +1,154 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 18: error: type name is not allowed
+    return __builtin_ptrauth_type_discriminator(T);
+                                                ^
+
+"Test_name.c", line 18: error: identifier "__builtin_ptrauth_type_discriminator" is undefined
+    return __builtin_ptrauth_type_discriminator(T);
+           ^
+
+"Test_name.c", line 25: error: type name is not allowed
+    constexpr unsigned d0 = __builtin_ptrauth_type_discriminator(MemFnTy);
+                                                                 ^
+
+"Test_name.c", line 25: error: identifier "__builtin_ptrauth_type_discriminator" is undefined
+    constexpr unsigned d0 = __builtin_ptrauth_type_discriminator(MemFnTy);
+                            ^
+
+"Test_name.c", line 28: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(int (S::*)()) == d0);
+                                                            ^
+
+"Test_name.c", line 29: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(decltype(memFnPtr)) == d0);
+                                                       ^
+
+"Test_name.c", line 30: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(decltype(memFnPtr2)) == d0);
+                                                       ^
+
+"Test_name.c", line 31: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(decltype(&S::foo)) == d0);
+                                                       ^
+
+"Test_name.c", line 34: error: expected an expression
+    constexpr unsigned d1 = __builtin_ptrauth_type_discriminator(void (S::*)(int));
+                                                                       ^
+
+"Test_name.c", line 34: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    constexpr unsigned d1 = __builtin_ptrauth_type_discriminator(void (S::*)(int));
+                                                                 ^
+
+"Test_name.c", line 34: error: type name is not allowed
+    constexpr unsigned d1 = __builtin_ptrauth_type_discriminator(void (S::*)(int));
+                                                                             ^
+
+"Test_name.c", line 38: error: expected an expression
+    constexpr unsigned d2 = __builtin_ptrauth_type_discriminator(void (S::*)(float));
+                                                                       ^
+
+"Test_name.c", line 38: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    constexpr unsigned d2 = __builtin_ptrauth_type_discriminator(void (S::*)(float));
+                                                                 ^
+
+"Test_name.c", line 38: error: type name is not allowed
+    constexpr unsigned d2 = __builtin_ptrauth_type_discriminator(void (S::*)(float));
+                                                                             ^
+
+"Test_name.c", line 42: error: expected an expression
+    constexpr unsigned d3 = __builtin_ptrauth_type_discriminator(int (*())[s]);
+                                                                        ^
+
+"Test_name.c", line 47: error: type name is not allowed
+    constexpr unsigned d4 = __builtin_ptrauth_type_discriminator(decltype(f4));
+                                                                 ^
+
+"Test_name.c", line 48: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(int (*)(float)) == d4);
+                                                             ^
+
+"Test_name.c", line 48: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(int (*)(float)) == d4);
+                                                               ^
+
+"Test_name.c", line 53: error: type name is not allowed
+    constexpr unsigned d5 = __builtin_ptrauth_type_discriminator(decltype(f5));
+                                                                 ^
+
+"Test_name.c", line 54: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(int (*)(int)) == d5);
+                                                             ^
+
+"Test_name.c", line 54: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(int (*)(int)) == d5);
+                                                               ^
+
+"Test_name.c", line 55: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(short (*)(short)) == d5);
+                                                               ^
+
+"Test_name.c", line 55: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(short (*)(short)) == d5);
+                                                                 ^
+
+"Test_name.c", line 56: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(char (*)(char)) == d5);
+                                                              ^
+
+"Test_name.c", line 56: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(char (*)(char)) == d5);
+                                                                ^
+
+"Test_name.c", line 57: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(long (*)(long)) == d5);
+                                                              ^
+
+"Test_name.c", line 57: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(long (*)(long)) == d5);
+                                                                ^
+
+"Test_name.c", line 58: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(unsigned int (*)(unsigned int)) == d5);
+                                                       ^
+
+"Test_name.c", line 58: error: expected a ")"
+    static_assert(__builtin_ptrauth_type_discriminator(unsigned int (*)(unsigned int)) == d5);
+                                                                ^
+
+"Test_name.c", line 59: error: expected an expression
+    static_assert(__builtin_ptrauth_type_discriminator(int (&)(int)) == d5);
+                                                             ^
+
+"Test_name.c", line 59: error: type name is not allowed
+    static_assert(__builtin_ptrauth_type_discriminator(int (&)(int)) == d5);
+                                                               ^
+
+"Test_name.c", line 67: error: type name is not allowed
+    (void)__builtin_ptrauth_type_discriminator(decltype(vmarray)); // expected-error {{cannot pass undiscriminated type 'decltype(vmarray)' (aka 'int[s]')}}
+                                               ^
+
+"Test_name.c", line 68: error: type name is not allowed
+    (void)__builtin_ptrauth_type_discriminator(int *); // expected-error {{cannot pass undiscriminated type 'int *' to '__builtin_ptrauth_type_discriminator'}}
+                                               ^
+
+"Test_name.c", line 68: error: expected an expression
+    (void)__builtin_ptrauth_type_discriminator(int *); // expected-error {{cannot pass undiscriminated type 'int *' to '__builtin_ptrauth_type_discriminator'}}
+                                                    ^
+
+"Test_name.c", line 70: error: expected an expression
+    (void)__builtin_ptrauth_type_discriminator(int (*)(int), int (*)(int));
+                                                     ^
+
+"Test_name.c", line 70: error: type name is not allowed
+    (void)__builtin_ptrauth_type_discriminator(int (*)(int), int (*)(int));
+                                                       ^
+
+"Test_name.c", line 70: error: expected an expression
+    (void)__builtin_ptrauth_type_discriminator(int (*)(int), int (*)(int));
+                                                                   ^
+
+"Test_name.c", line 70: error: type name is not allowed
+    (void)__builtin_ptrauth_type_discriminator(int (*)(int), int (*)(int));
+                                                                     ^
+
+38 errors detected in the compilation of "Test_name.c".

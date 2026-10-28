@@ -1,0 +1,374 @@
+fe_only -DTEST_NUMBER=1 --target linux_aarch64 -w --c++17 --clang_version 100000 Test_name.c
+"Test_name.c", line 7: error: identifier "__SVInt8_t" is undefined
+    typedef __SVInt8_t svint8_t;
+            ^
+
+"Test_name.c", line 8: error: identifier "__SVInt16_t" is undefined
+    typedef __SVInt16_t svint16_t;
+            ^
+
+"Test_name.c", line 9: error: identifier "__SVInt32_t" is undefined
+    typedef __SVInt32_t svint32_t;
+            ^
+
+"Test_name.c", line 10: error: identifier "__SVInt64_t" is undefined
+    typedef __SVInt64_t svint64_t;
+            ^
+
+"Test_name.c", line 11: error: identifier "__SVUint8_t" is undefined
+    typedef __SVUint8_t svuint8_t;
+            ^
+
+"Test_name.c", line 12: error: identifier "__SVUint16_t" is undefined
+    typedef __SVUint16_t svuint16_t;
+            ^
+
+"Test_name.c", line 13: error: identifier "__SVUint32_t" is undefined
+    typedef __SVUint32_t svuint32_t;
+            ^
+
+"Test_name.c", line 14: error: identifier "__SVUint64_t" is undefined
+    typedef __SVUint64_t svuint64_t;
+            ^
+
+"Test_name.c", line 15: error: identifier "__SVFloat16_t" is undefined
+    typedef __SVFloat16_t svfloat16_t;
+            ^
+
+"Test_name.c", line 17: error: identifier "__SVBFloat16_t" is undefined
+    typedef __SVBFloat16_t svbfloat16_t;
+            ^
+
+"Test_name.c", line 21: error: identifier "__SVFloat32_t" is undefined
+    typedef __SVFloat32_t svfloat32_t;
+            ^
+
+"Test_name.c", line 22: error: identifier "__SVFloat64_t" is undefined
+    typedef __SVFloat64_t svfloat64_t;
+            ^
+
+"Test_name.c", line 62: error: identifier "__SVBool_t" is undefined
+    typedef __SVBool_t  svbool_t;
+            ^
+
+"Test_name.c", line 73: error: identifier "__SVInt8_t" is undefined
+  __SVInt8_t use_as_return_type();
+  ^
+
+"Test_name.c", line 75: error: identifier "__SVInt8_t" is undefined
+  void use_as_param_type(__SVInt8_t v)
+                         ^
+
+"Test_name.c", line 78: error: incomplete type "void" is not allowed
+  void use_in_overload_set(__SVInt8_t);
+       ^
+
+"Test_name.c", line 78: error: identifier "__SVInt8_t" is undefined
+  void use_in_overload_set(__SVInt8_t);
+                           ^
+
+"Test_name.c", line 79: error: declaration is incompatible with "<error-type> use_in_overload_set" (declared at line 78)
+  void use_in_overload_set(int);;
+       ^
+
+"Test_name.c", line 81: error: "__SVInt8_t" is not a type name
+  __SVInt8_t return_value(__SVInt8_t v)
+  ^
+
+"Test_name.c", line 81: error: expected a ")"
+  __SVInt8_t return_value(__SVInt8_t v)
+                                     ^
+
+"Test_name.c", line 82: error: expected a ";"
+  {
+  ^
+
+"Test_name.c", line 103: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_class(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 104: error: "__SVInt8_t" is not a type name
+  static_assert(__is_convertible_to(__SVInt8_t, __SVInt8_t));
+                                    ^
+
+"Test_name.c", line 104: error: "__SVInt8_t" is not a type name
+  static_assert(__is_convertible_to(__SVInt8_t, __SVInt8_t));
+                                                ^
+
+"Test_name.c", line 105: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_empty(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 106: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_enum(__SVInt8_t));
+                           ^
+
+"Test_name.c", line 107: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_function(__SVInt8_t));
+                               ^
+
+"Test_name.c", line 108: error: "__SVInt8_t" is not a type name
+  static_assert(__is_pod(__SVInt8_t));
+                         ^
+
+"Test_name.c", line 109: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_polymorphic(__SVInt8_t));
+                                  ^
+
+"Test_name.c", line 110: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_union(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 111: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivial(__SVInt8_t));
+                             ^
+
+"Test_name.c", line 112: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_standard_layout(__SVInt8_t));
+                                      ^
+
+"Test_name.c", line 113: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivially_copyable(__SVInt8_t));
+                                        ^
+
+"Test_name.c", line 114: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_literal_type(__SVInt8_t));
+                                   ^
+
+"Test_name.c", line 115: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_final(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 116: error: "__SVInt8_t" is not a type name
+  static_assert(!__has_unique_object_representations(__SVInt8_t));
+                                                     ^
+
+"Test_name.c", line 117: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_aggregate(__SVInt8_t));
+                                ^
+
+"Test_name.c", line 119: error: "__SVInt8_t" is not a type name
+  static_assert(__is_constructible(__SVInt8_t));
+                                   ^
+
+"Test_name.c", line 120: error: "__SVInt8_t" is not a type name
+  static_assert(__is_constructible(__SVInt8_t, __SVInt8_t));
+                                   ^
+
+"Test_name.c", line 120: error: "__SVInt8_t" is not a type name
+  static_assert(__is_constructible(__SVInt8_t, __SVInt8_t));
+                                               ^
+
+"Test_name.c", line 121: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_constructible(__SVInt8_t, int));
+                                    ^
+
+"Test_name.c", line 122: error: "__SVInt8_t" is not a type name
+  static_assert(__is_nothrow_constructible(__SVInt8_t));
+                                           ^
+
+"Test_name.c", line 123: error: "__SVInt8_t" is not a type name
+  static_assert(__is_nothrow_constructible(__SVInt8_t, __SVInt8_t));
+                                           ^
+
+"Test_name.c", line 123: error: "__SVInt8_t" is not a type name
+  static_assert(__is_nothrow_constructible(__SVInt8_t, __SVInt8_t));
+                                                       ^
+
+"Test_name.c", line 124: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_nothrow_constructible(__SVInt8_t, int));
+                                            ^
+
+"Test_name.c", line 125: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivially_constructible(__SVInt8_t));
+                                             ^
+
+"Test_name.c", line 126: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivially_constructible(__SVInt8_t, __SVInt8_t));
+                                             ^
+
+"Test_name.c", line 126: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivially_constructible(__SVInt8_t, __SVInt8_t));
+                                                         ^
+
+"Test_name.c", line 127: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_trivially_constructible(__SVInt8_t, int));
+                                              ^
+
+"Test_name.c", line 129: error: "__SVInt8_t" is not a type name
+  static_assert(__is_assignable(__SVInt8_t &, __SVInt8_t));
+                                ^
+
+"Test_name.c", line 129: error: "__SVInt8_t" is not a type name
+  static_assert(__is_assignable(__SVInt8_t &, __SVInt8_t));
+                                              ^
+
+"Test_name.c", line 130: error: "__SVInt8_t" is not a type name
+  static_assert(__is_nothrow_assignable(__SVInt8_t &, __SVInt8_t));
+                                        ^
+
+"Test_name.c", line 130: error: "__SVInt8_t" is not a type name
+  static_assert(__is_nothrow_assignable(__SVInt8_t &, __SVInt8_t));
+                                                      ^
+
+"Test_name.c", line 131: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivially_assignable(__SVInt8_t &, __SVInt8_t));
+                                          ^
+
+"Test_name.c", line 131: error: "__SVInt8_t" is not a type name
+  static_assert(__is_trivially_assignable(__SVInt8_t &, __SVInt8_t));
+                                                        ^
+
+"Test_name.c", line 133: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_assignable(__SVInt8_t &, int));
+                                 ^
+
+"Test_name.c", line 133: error: static assertion failed
+  static_assert(!__is_assignable(__SVInt8_t &, int));
+  ^
+
+"Test_name.c", line 134: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_nothrow_assignable(__SVInt8_t &, int));
+                                         ^
+
+"Test_name.c", line 134: error: static assertion failed
+  static_assert(!__is_nothrow_assignable(__SVInt8_t &, int));
+  ^
+
+"Test_name.c", line 135: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_trivially_assignable(__SVInt8_t &, int));
+                                           ^
+
+"Test_name.c", line 135: error: static assertion failed
+  static_assert(!__is_trivially_assignable(__SVInt8_t &, int));
+  ^
+
+"Test_name.c", line 137: error: "__SVInt8_t" is not a type name
+  static_assert(__is_destructible(__SVInt8_t));
+                                  ^
+
+"Test_name.c", line 138: error: "__SVInt8_t" is not a type name
+  static_assert(__is_nothrow_destructible(__SVInt8_t));
+                                          ^
+
+"Test_name.c", line 141: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_array(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 142: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_arithmetic(__SVInt8_t));
+                                 ^
+
+"Test_name.c", line 143: error: "__SVInt8_t" is not a type name
+  static_assert(__is_complete_type(__SVInt8_t));
+                                   ^
+
+"Test_name.c", line 144: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_const(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 145: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_floating_point(__SVInt8_t));
+                                     ^
+
+"Test_name.c", line 146: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_fundamental(__SVInt8_t));
+                                  ^
+
+"Test_name.c", line 147: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_integral(__SVInt8_t));
+                               ^
+
+"Test_name.c", line 148: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_lvalue_reference(__SVInt8_t));
+                                       ^
+
+"Test_name.c", line 149: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_member_function_pointer(__SVInt8_t));
+                                              ^
+
+"Test_name.c", line 150: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_member_object_pointer(__SVInt8_t));
+                                            ^
+
+"Test_name.c", line 151: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_member_pointer(__SVInt8_t));
+                                     ^
+
+"Test_name.c", line 152: error: "__SVInt8_t" is not a type name
+  static_assert(__is_object(__SVInt8_t));
+                            ^
+
+"Test_name.c", line 153: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_pointer(__SVInt8_t));
+                              ^
+
+"Test_name.c", line 154: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_reference(__SVInt8_t));
+                                ^
+
+"Test_name.c", line 155: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_rvalue_reference(__SVInt8_t));
+                                       ^
+
+"Test_name.c", line 156: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_scalar(__SVInt8_t));
+                             ^
+
+"Test_name.c", line 157: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_unsigned(__SVInt8_t));
+                               ^
+
+"Test_name.c", line 158: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_void(__SVInt8_t));
+                           ^
+
+"Test_name.c", line 159: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_volatile(__SVInt8_t));
+                               ^
+
+"Test_name.c", line 160: error: "__SVInt8_t" is not a type name
+  static_assert(__is_same_as(__SVInt8_t, __SVInt8_t));
+                             ^
+
+"Test_name.c", line 160: error: "__SVInt8_t" is not a type name
+  static_assert(__is_same_as(__SVInt8_t, __SVInt8_t));
+                                         ^
+
+"Test_name.c", line 161: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_same_as(__SVInt8_t, __SVInt16_t));
+                              ^
+
+"Test_name.c", line 161: error: identifier "__SVInt16_t" is undefined
+  static_assert(!__is_same_as(__SVInt8_t, __SVInt16_t));
+                                          ^
+
+"Test_name.c", line 162: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_bounded_array(__SVInt8_t));
+                                    ^
+
+"Test_name.c", line 163: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_unbounded_array(__SVInt8_t));
+                                      ^
+
+"Test_name.c", line 164: error: "__SVInt8_t" is not a type name
+  static_assert(__is_referenceable(__SVInt8_t));
+                                   ^
+
+"Test_name.c", line 165: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_literal_type(__SVInt8_t));
+                                   ^
+
+"Test_name.c", line 166: error: "__SVInt8_t" is not a type name
+  static_assert(__is_convertible(__SVInt8_t, __SVInt8_t));
+                                 ^
+
+"Test_name.c", line 166: error: "__SVInt8_t" is not a type name
+  static_assert(__is_convertible(__SVInt8_t, __SVInt8_t));
+                                             ^
+
+"Test_name.c", line 167: error: "__SVInt8_t" is not a type name
+  static_assert(!__is_convertible(__SVInt8_t, int));
+                                  ^
+
+93 errors detected in the compilation of "Test_name.c".

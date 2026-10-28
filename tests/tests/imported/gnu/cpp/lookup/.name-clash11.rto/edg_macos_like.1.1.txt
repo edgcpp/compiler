@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 79: warning: unknown attribute "vector_size"
+        int A __attribute__ ((vector_size (A))); // { dg-warning "changes meaning" }
+                              ^
+
+"Test_name.c", line 82: error: static assertion failed with "sizeof (this->A) == 16"
+        void test () { ASSERT (sizeof (this->A) == 16); }
+                       ^
+"Test_name.c", line 82: note: the final comparison was 4 == 16
+        void test () { ASSERT (sizeof (this->A) == 16); }
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

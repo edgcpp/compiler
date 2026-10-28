@@ -1,0 +1,33 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)ptr; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 21: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)ptr; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 32: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)ptr; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 43: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)ptr->field; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 55: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)&b_inst; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 69: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)ptr; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 81: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)ptr; // { dg-warning "old-style cast" }
+         ^
+
+"Test_name.c", line 92: warning: variable "f" was declared but never referenced
+    foo *f = (foo *)&b_inst;  // { dg-warning "old-style cast" }
+         ^
+

@@ -1,0 +1,354 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 13: error: expected a ","
+    S() [[ pre: pre_ ]] [[ post: post_ ]];
+              ^
+
+"Test_name.c", line 13: error: expected a "]"
+    S() [[ pre: pre_ ]] [[ post: post_ ]];
+              ^
+
+"Test_name.c", line 14: error: expected a ","
+    ~S() [[ pre: pre_ ]] [[ post: post_ ]];
+               ^
+
+"Test_name.c", line 14: error: expected a "]"
+    ~S() [[ pre: pre_ ]] [[ post: post_ ]];
+               ^
+
+"Test_name.c", line 14: error: expected a ";"
+    ~S() [[ pre: pre_ ]] [[ post: post_ ]];
+               ^
+
+"Test_name.c", line 13: error: "pre_" is not a nonstatic data member or base class of class "S"
+    S() [[ pre: pre_ ]] [[ post: post_ ]];
+                ^
+
+"Test_name.c", line 13: error: expected a "(" or a "{"
+    S() [[ pre: pre_ ]] [[ post: post_ ]];
+                     ^
+
+"Test_name.c", line 13: error: expected a "{"
+    S() [[ pre: pre_ ]] [[ post: post_ ]];
+                                         ^
+
+"Test_name.c", line 13: error: expected a "}"
+    S() [[ pre: pre_ ]] [[ post: post_ ]];
+                                         ^
+
+"Test_name.c", line 17: error: function "S::S()" has already been defined (previous definition at line 13)
+  S::S() { return; }
+     ^
+
+"Test_name.c", line 22: error: expected a ","
+    SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                    ^
+
+"Test_name.c", line 22: error: expected a "]"
+    SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                    ^
+
+"Test_name.c", line 23: error: expected a ","
+    ~SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                     ^
+
+"Test_name.c", line 23: error: expected a "]"
+    ~SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                     ^
+
+"Test_name.c", line 23: error: expected a ";"
+    ~SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                     ^
+
+"Test_name.c", line 22: error: "pre_" is not a nonstatic data member or base class of class "SInline"
+    SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                      ^
+
+"Test_name.c", line 22: error: expected a "(" or a "{"
+    SInline() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                           ^
+
+"Test_name.c", line 28: error: expected a ","
+    SDelegate0(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                          ^
+
+"Test_name.c", line 28: error: expected a "]"
+    SDelegate0(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                          ^
+
+"Test_name.c", line 30: error: expected a ","
+    ~SDelegate0() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 30: error: expected a "]"
+    ~SDelegate0() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 30: error: expected a ";"
+    ~SDelegate0() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 28: error: "pre_" is not a nonstatic data member or base class of class "SDelegate0"
+    SDelegate0(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                            ^
+
+"Test_name.c", line 28: error: expected a "(" or a "{"
+    SDelegate0(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                                 ^
+
+"Test_name.c", line 36: error: expected a ","
+    SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] : SDelegate1(0) { return; }
+                       ^
+
+"Test_name.c", line 36: error: expected a "]"
+    SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] : SDelegate1(0) { return; }
+                       ^
+
+"Test_name.c", line 37: error: expected a ","
+    ~SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 37: error: expected a "]"
+    ~SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 37: error: expected a ";"
+    ~SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 36: error: "pre_" is not a nonstatic data member or base class of class "SDelegate1"
+    SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] : SDelegate1(0) { return; }
+                         ^
+
+"Test_name.c", line 36: error: expected a "(" or a "{"
+    SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] : SDelegate1(0) { return; }
+                              ^
+
+"Test_name.c", line 36: error: expected a "{"
+    SDelegate1() [[ pre: pre_ ]] [[ post: post_ ]] : SDelegate1(0) { return; }
+                                                               ^
+
+"Test_name.c", line 42: error: expected a ","
+    SDelegate2(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                          ^
+
+"Test_name.c", line 42: error: expected a "]"
+    SDelegate2(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                          ^
+
+"Test_name.c", line 43: error: expected a ","
+    SDelegate2() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate2(0) { return; }
+                       ^
+
+"Test_name.c", line 43: error: expected a "]"
+    SDelegate2() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate2(0) { return; }
+                       ^
+
+"Test_name.c", line 44: error: expected a ","
+    ~SDelegate2() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 44: error: expected a "]"
+    ~SDelegate2() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 44: error: expected a ";"
+    ~SDelegate2() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 42: error: "pre_" is not a nonstatic data member or base class of class "SDelegate2"
+    SDelegate2(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                            ^
+
+"Test_name.c", line 42: error: expected a "(" or a "{"
+    SDelegate2(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                                 ^
+
+"Test_name.c", line 43: error: "pre_" is not a nonstatic data member or base class of class "SDelegate2"
+    SDelegate2() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate2(0) { return; }
+                         ^
+
+"Test_name.c", line 43: error: expected a "(" or a "{"
+    SDelegate2() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate2(0) { return; }
+                              ^
+
+"Test_name.c", line 43: error: expected a "{"
+    SDelegate2() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate2(0) { return; }
+                                                                                         ^
+
+"Test_name.c", line 49: error: expected a ","
+    SDelegate3(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                          ^
+
+"Test_name.c", line 49: error: expected a "]"
+    SDelegate3(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                          ^
+
+"Test_name.c", line 50: error: expected a ","
+    SDelegate3() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate3(0) { return; }
+                       ^
+
+"Test_name.c", line 50: error: expected a "]"
+    SDelegate3() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate3(0) { return; }
+                       ^
+
+"Test_name.c", line 51: error: expected a ","
+    ~SDelegate3() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 51: error: expected a "]"
+    ~SDelegate3() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 51: error: expected a ";"
+    ~SDelegate3() [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                        ^
+
+"Test_name.c", line 49: error: "pre_" is not a nonstatic data member or base class of class "SDelegate3"
+    SDelegate3(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                            ^
+
+"Test_name.c", line 49: error: expected a "(" or a "{"
+    SDelegate3(int) [[ pre: pre_ ]] [[ post: post_ ]] { return; }
+                                 ^
+
+"Test_name.c", line 50: error: "pre_" is not a nonstatic data member or base class of class "SDelegate3"
+    SDelegate3() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate3(0) { return; }
+                         ^
+
+"Test_name.c", line 50: error: expected a "(" or a "{"
+    SDelegate3() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate3(0) { return; }
+                              ^
+
+"Test_name.c", line 50: error: expected a "{"
+    SDelegate3() [[ pre: pre_ && delegate_ ]] [[ post: post_ && delegate_ ]] : SDelegate3(0) { return; }
+                                                                                         ^
+
+"Test_name.c", line 57: error: expected a ","
+    S1() [[ pre: pre_ ]] [[ post: post_ ]] { }
+               ^
+
+"Test_name.c", line 57: error: expected a "]"
+    S1() [[ pre: pre_ ]] [[ post: post_ ]] { }
+               ^
+
+"Test_name.c", line 57: error: "pre_" is not a nonstatic data member or base class of class "S1<T>"
+    S1() [[ pre: pre_ ]] [[ post: post_ ]] { }
+                 ^
+
+"Test_name.c", line 57: error: expected a "(" or a "{"
+    S1() [[ pre: pre_ ]] [[ post: post_ ]] { }
+                      ^
+
+"Test_name.c", line 63: error: expected a ","
+    S2(T) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                ^
+
+"Test_name.c", line 63: error: expected a "]"
+    S2(T) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                ^
+
+"Test_name.c", line 63: error: "pre_" is not a nonstatic data member or base class of class "S2"
+    S2(T) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                  ^
+
+"Test_name.c", line 63: error: expected a "(" or a "{"
+    S2(T) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                       ^
+
+"Test_name.c", line 70: error: expected a ","
+    S3(S) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                ^
+
+"Test_name.c", line 70: error: expected a "]"
+    S3(S) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                ^
+
+"Test_name.c", line 70: error: "pre_" is not a nonstatic data member or base class of class "S3<T>"
+    S3(S) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                  ^
+
+"Test_name.c", line 70: error: expected a "(" or a "{"
+    S3(S) [[ pre: pre_ ]] [[ post: post_ ]] { }
+                       ^
+
+"Test_name.c", line 75: error: expected a ","
+    G0() [[ post: x > 0 ]] {}
+                ^
+
+"Test_name.c", line 75: error: expected a "]"
+    G0() [[ post: x > 0 ]] {}
+                ^
+
+"Test_name.c", line 76: error: expected a ","
+    ~G0() [[ pre: x > 0 ]] {}
+                ^
+
+"Test_name.c", line 76: error: expected a "]"
+    ~G0() [[ pre: x > 0 ]] {}
+                ^
+
+"Test_name.c", line 76: error: expected a ";"
+    ~G0() [[ pre: x > 0 ]] {}
+                ^
+
+"Test_name.c", line 75: error: "x" is not a nonstatic data member or base class of class "G0"
+    G0() [[ post: x > 0 ]] {}
+                  ^
+
+"Test_name.c", line 75: error: expected a "(" or a "{"
+    G0() [[ post: x > 0 ]] {}
+                    ^
+
+"Test_name.c", line 82: error: expected a ","
+    G1() [[ post: this->x > 0 ]] {}
+                ^
+
+"Test_name.c", line 82: error: expected a "]"
+    G1() [[ post: this->x > 0 ]] {}
+                ^
+
+"Test_name.c", line 83: error: expected a ","
+    ~G1() [[ pre: this->x > 0 ]] {}
+                ^
+
+"Test_name.c", line 83: error: expected a "]"
+    ~G1() [[ pre: this->x > 0 ]] {}
+                ^
+
+"Test_name.c", line 83: error: expected a ";"
+    ~G1() [[ pre: this->x > 0 ]] {}
+                ^
+
+"Test_name.c", line 82: error: expected an identifier
+    G1() [[ post: this->x > 0 ]] {}
+                  ^
+
+"Test_name.c", line 91: error: expected a ","
+    G2() [[ pre: ::x > 0 ]] {}
+               ^
+
+"Test_name.c", line 91: error: expected a "]"
+    G2() [[ pre: ::x > 0 ]] {}
+               ^
+
+"Test_name.c", line 92: error: expected a ","
+    ~G2() [[ post: ::x > 0 ]] {}
+                 ^
+
+"Test_name.c", line 92: error: expected a "]"
+    ~G2() [[ post: ::x > 0 ]] {}
+                 ^
+
+"Test_name.c", line 92: error: expected a ";"
+    ~G2() [[ post: ::x > 0 ]] {}
+                 ^
+
+"Test_name.c", line 91: error: the global scope has no class named "x"
+    G2() [[ pre: ::x > 0 ]] {}
+                   ^
+
+"Test_name.c", line 91: error: expected a "(" or a "{"
+    G2() [[ pre: ::x > 0 ]] {}
+                     ^
+
+88 errors detected in the compilation of "Test_name.c".

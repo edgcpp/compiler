@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef int v2si __attribute__ ((vector_size (2 * sizeof(int))));
+                                   ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef short v2hi __attribute__ ((vector_size (2 * sizeof(short))));
+                                     ^
+

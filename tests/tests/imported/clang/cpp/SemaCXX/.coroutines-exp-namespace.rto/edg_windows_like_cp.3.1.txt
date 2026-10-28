@@ -1,0 +1,1056 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions --exceptions Test_name.c
+"Test_name.c", line 12: error: identifier "co_await" is undefined
+    co_await a; // expected-error {{include <experimental/coroutine>}}
+    ^
+
+"Test_name.c", line 17: error: identifier "co_yield" is undefined
+    co_yield a; // expected-error {{include <experimental/coroutine>}}
+    ^
+
+"Test_name.c", line 22: error: identifier "co_return" is undefined
+    co_return a; // expected-error {{include <experimental/coroutine>}}
+    ^
+
+"Test_name.c", line 27: error: identifier "co_await" is undefined
+    co_await 4; // expected-error {{std::coroutine_traits type was not found; include <coroutine> before defining a coroutine; include <experimental/coroutine> if your version of libcxx is less than 14.0}}
+    ^
+
+"Test_name.c", line 27: error: expected a ";"
+    co_await 4; // expected-error {{std::coroutine_traits type was not found; include <coroutine> before defining a coroutine; include <experimental/coroutine> if your version of libcxx is less than 14.0}}
+             ^
+
+"Test_name.c", line 89: error: identifier "co_await" is undefined
+    co_await a;                      // expected-warning {{support for std::experimental::coroutine_traits will be removed}}
+    ^
+
+"Test_name.c", line 90: warning: missing return statement at end of non-void function "no_specialization"
+  }
+  ^
+
+"Test_name.c", line 96: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 97: warning: missing return statement at end of non-void function "no_promise_type"
+  }
+  ^
+
+"Test_name.c", line 100: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 101: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 101: error: "a" has already been declared in the current scope
+    co_await a;
+             ^
+
+"Test_name.c", line 102: warning: missing return statement at end of non-void function "no_promise_type_multiple_awaits"
+  }
+  ^
+
+"Test_name.c", line 107: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 108: warning: missing return statement at end of non-void function "bad_promise_type"
+  }
+  ^
+
+"Test_name.c", line 115: error: identifier "co_yield" is undefined
+    co_yield 0;                    // expected-error {{no member named 'yield_value' in 'std::experimental::coroutine_traits<double, int>::promise_type'}}
+    ^
+
+"Test_name.c", line 115: error: expected a ";"
+    co_yield 0;                    // expected-error {{no member named 'yield_value' in 'std::experimental::coroutine_traits<double, int>::promise_type'}}
+             ^
+
+"Test_name.c", line 116: warning: missing return statement at end of non-void function "bad_promise_type_2"
+  }
+  ^
+
+"Test_name.c", line 128: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 159: error: identifier "co_return" is undefined
+    co_return 5; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 159: error: expected a ";"
+    co_return 5; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+              ^
+
+"Test_name.c", line 178: error: identifier "co_yield" is undefined
+    co_yield 0;
+    ^
+
+"Test_name.c", line 178: error: expected a ";"
+    co_yield 0;
+             ^
+
+"Test_name.c", line 179: error: expected a ";"
+    co_yield {"foo", 1, 2};
+             ^
+
+"Test_name.c", line 180: error: expected a ";"
+    co_yield {1e100};                    // expected-error {{cannot be narrowed}} expected-note {{explicit cast}} expected-warning {{implicit conversion}} expected-warning {{braces around scalar}}
+             ^
+
+"Test_name.c", line 181: error: expected a ";"
+    co_yield {"foo", __LONG_LONG_MAX__}; // expected-error {{cannot be narrowed}} expected-note {{explicit cast}} expected-warning {{changes value}}
+             ^
+
+"Test_name.c", line 182: error: expected a ";"
+    co_yield {"foo"};
+             ^
+
+"Test_name.c", line 183: error: expected a ";"
+    co_yield "foo"; // expected-error {{no matching}}
+             ^
+
+"Test_name.c", line 184: error: expected a ";"
+    co_yield 1.0;
+             ^
+
+"Test_name.c", line 185: error: expected a ";"
+    co_yield yield; // expected-error {{no member named 'await_ready' in 'not_awaitable'}}
+             ^
+
+"Test_name.c", line 189: error: identifier "co_await" is undefined
+    co_await auto_await_suspend{}; // Should compile successfully.
+    ^
+
+"Test_name.c", line 193: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 195: error: identifier "co_return" is undefined
+      co_return 3;
+      ^
+
+"Test_name.c", line 195: error: expected a ";"
+      co_return 3;
+                ^
+
+"Test_name.c", line 197: error: identifier "co_return" is undefined
+      co_return {4}; // expected-warning {{braces around scalar initializer}}
+      ^
+
+"Test_name.c", line 197: error: expected a ";"
+      co_return {4}; // expected-warning {{braces around scalar initializer}}
+                ^
+
+"Test_name.c", line 199: error: identifier "co_return" is undefined
+      co_return "foo"; // expected-error {{cannot initialize a parameter of type 'int' with an lvalue of type 'const char[4]'}}
+      ^
+
+"Test_name.c", line 199: error: expected a ";"
+      co_return "foo"; // expected-error {{cannot initialize a parameter of type 'int' with an lvalue of type 'const char[4]'}}
+                ^
+
+"Test_name.c", line 200: error: identifier "co_return" is undefined
+    co_return 42;
+    ^
+
+"Test_name.c", line 200: error: expected a ";"
+    co_return 42;
+              ^
+
+"Test_name.c", line 205: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 210: error: identifier "co_yield" is undefined
+    co_yield 0; // expected-note {{use of 'co_yield'}}
+    ^
+
+"Test_name.c", line 210: error: expected a ";"
+    co_yield 0; // expected-note {{use of 'co_yield'}}
+             ^
+
+"Test_name.c", line 215: error: identifier "co_yield" is undefined
+    co_yield blah; // expected-error {{use of undeclared identifier}}
+    ^
+
+"Test_name.c", line 222: error: identifier "co_yield" is undefined
+    co_yield blah; // expected-error {{use of undeclared identifier}}
+    ^
+
+"Test_name.c", line 229: error: identifier "co_yield" is undefined
+    co_yield 42;
+    ^
+
+"Test_name.c", line 229: error: expected a ";"
+    co_yield 42;
+             ^
+
+"Test_name.c", line 236: error: identifier "co_yield" is undefined
+    co_yield blah(v);
+    ^
+
+"Test_name.c", line 242: error: identifier "co_await" is undefined
+    co_await a; // expected-note {{use of 'co_await'}}
+    ^
+
+"Test_name.c", line 247: error: identifier "co_await" is undefined
+    co_await 42; // expected-error {{'int' is not a structure or union}}
+    ^
+
+"Test_name.c", line 247: error: expected a ";"
+    co_await 42; // expected-error {{'int' is not a structure or union}}
+             ^
+
+"Test_name.c", line 254: error: identifier "co_await" is undefined
+    co_await 42;
+    ^
+
+"Test_name.c", line 254: error: expected a ";"
+    co_await 42;
+             ^
+
+"Test_name.c", line 261: error: identifier "co_await" is undefined
+    co_await v; // expected-error {{'long' is not a structure or union}}
+    ^
+
+"Test_name.c", line 261: error: "v" has already been declared in the current scope
+    co_await v; // expected-error {{'long' is not a structure or union}}
+             ^
+
+"Test_name.c", line 268: error: identifier "co_return" is undefined
+    co_return; // OK
+    ^
+
+"Test_name.c", line 273: error: identifier "co_return" is undefined
+      co_return; // expected-note {{use of 'co_return'}}
+      ^
+
+"Test_name.c", line 280: error: identifier "co_return" is undefined
+      co_return; // expected-note {{use of 'co_return'}}
+      ^
+
+"Test_name.c", line 289: error: identifier "co_return" is undefined
+      co_return v; // expected-note {{use of 'co_return'}}
+      ^
+
+"Test_name.c", line 299: error: identifier "co_return" is undefined
+      co_return v; // expected-note {{use of 'co_return'}}
+      ^
+
+"Test_name.c", line 307: error: identifier "co_yield" is undefined
+      co_yield 0; // expected-error {{'co_yield' cannot be used in a constructor}}
+      ^
+
+"Test_name.c", line 307: error: expected a ";"
+      co_yield 0; // expected-error {{'co_yield' cannot be used in a constructor}}
+               ^
+
+"Test_name.c", line 311: error: identifier "co_await" is undefined
+      co_await a; // expected-error {{'co_await' cannot be used in a constructor}}
+      ^
+
+"Test_name.c", line 311: error: "a" has already been declared in the current scope
+      co_await a; // expected-error {{'co_await' cannot be used in a constructor}}
+               ^
+
+"Test_name.c", line 314: error: identifier "co_return" is undefined
+      co_return 0; // expected-error {{'co_return' cannot be used in a destructor}}
+      ^
+
+"Test_name.c", line 314: error: expected a ";"
+      co_return 0; // expected-error {{'co_return' cannot be used in a destructor}}
+                ^
+
+"Test_name.c", line 317: error: identifier "co_yield" is undefined
+      co_yield 0; // OK.
+      ^
+
+"Test_name.c", line 317: error: expected a ";"
+      co_yield 0; // OK.
+               ^
+
+"Test_name.c", line 320: error: identifier "co_yield" is undefined
+      co_yield 0; // OK.
+      ^
+
+"Test_name.c", line 320: error: expected a ";"
+      co_yield 0; // OK.
+               ^
+
+"Test_name.c", line 323: error: identifier "co_await" is undefined
+      co_await a; // OK.
+      ^
+
+"Test_name.c", line 326: error: identifier "co_await" is undefined
+      co_await a; // OK.
+      ^
+
+"Test_name.c", line 329: error: identifier "co_await" is undefined
+      co_await a; // OK. Not a special member
+      ^
+
+"Test_name.c", line 338: error: identifier "co_await" is undefined
+    decltype(co_await a); // expected-error {{'co_await' cannot be used in an unevaluated context}}
+             ^
+
+"Test_name.c", line 338: error: expected a ")"
+    decltype(co_await a); // expected-error {{'co_await' cannot be used in an unevaluated context}}
+                      ^
+
+"Test_name.c", line 338: warning: declaration does not declare anything
+    decltype(co_await a); // expected-error {{'co_await' cannot be used in an unevaluated context}}
+    ^
+
+"Test_name.c", line 340: error: expected a ")"
+    sizeof(co_await a);   // expected-error {{'co_await' cannot be used in an unevaluated context}}
+                    ^
+
+"Test_name.c", line 343: error: expected a ")"
+    typeid(co_await a);   // expected-error {{'co_await' cannot be used in an unevaluated context}}
+                    ^
+
+"Test_name.c", line 343: warning: expression has no effect
+    typeid(co_await a);   // expected-error {{'co_await' cannot be used in an unevaluated context}}
+    ^
+
+"Test_name.c", line 346: error: identifier "co_yield" is undefined
+    decltype(co_yield 1); // expected-error {{'co_yield' cannot be used in an unevaluated context}}
+             ^
+
+"Test_name.c", line 346: error: expected a ")"
+    decltype(co_yield 1); // expected-error {{'co_yield' cannot be used in an unevaluated context}}
+                      ^
+
+"Test_name.c", line 346: warning: declaration does not declare anything
+    decltype(co_yield 1); // expected-error {{'co_yield' cannot be used in an unevaluated context}}
+    ^
+
+"Test_name.c", line 348: error: expected a ")"
+    sizeof(co_yield 2);   // expected-error {{'co_yield' cannot be used in an unevaluated context}}
+                    ^
+
+"Test_name.c", line 351: error: expected a ")"
+    typeid(co_yield 3);   // expected-error {{'co_yield' cannot be used in an unevaluated context}}
+                    ^
+
+"Test_name.c", line 351: warning: expression has no effect
+    typeid(co_yield 3);   // expected-error {{'co_yield' cannot be used in an unevaluated context}}
+    ^
+
+"Test_name.c", line 359: error: identifier "co_await" is undefined
+  void default_argument(int arg = co_await 0) {} // expected-error {{'co_await' cannot be used outside a function}}
+                                  ^
+
+"Test_name.c", line 359: error: unexpected end of default argument expression
+  void default_argument(int arg = co_await 0) {} // expected-error {{'co_await' cannot be used outside a function}}
+                                           ^
+
+"Test_name.c", line 364: error: identifier "co_await" is undefined
+      []() -> void { co_await a; }(); // OK
+                     ^
+
+"Test_name.c", line 365: error: identifier "co_await" is undefined
+      co_await a;                     // expected-error {{'co_await' cannot be used in the handler of a try block}}
+      ^
+
+"Test_name.c", line 373: error: identifier "co_await" is undefined
+        co_await a;                     // expected-error {{'co_await' cannot be used in the handler of a try block}}
+        ^
+
+"Test_name.c", line 374: error: identifier "co_await" is undefined
+        []() -> void { co_await a; }(); // OK
+                       ^
+
+"Test_name.c", line 376: error: identifier "co_return" is undefined
+        co_return 123;
+        ^
+
+"Test_name.c", line 376: error: expected a ";"
+        co_return 123;
+                  ^
+
+"Test_name.c", line 384: error: identifier "co_await" is undefined
+      []() -> void { co_await a; }(); // OK
+                     ^
+
+"Test_name.c", line 391: error: identifier "co_yield" is undefined
+      co_yield 1; // expected-error {{'co_yield' cannot be used in the handler of a try block}}
+      ^
+
+"Test_name.c", line 391: error: expected a ";"
+      co_yield 1; // expected-error {{'co_yield' cannot be used in the handler of a try block}}
+               ^
+
+"Test_name.c", line 398: error: identifier "co_return" is undefined
+      co_return 123; // OK
+      ^
+
+"Test_name.c", line 398: error: expected a ";"
+      co_return 123; // OK
+                ^
+
+"Test_name.c", line 403: error: identifier "co_yield" is undefined
+    co_yield 0; // expected-error {{'co_yield' cannot be used in a constexpr function}}
+    ^
+
+"Test_name.c", line 403: error: expected a ";"
+    co_yield 0; // expected-error {{'co_yield' cannot be used in a constexpr function}}
+             ^
+
+"Test_name.c", line 408: error: identifier "co_await" is undefined
+    co_await a; // expected-error {{'co_await' cannot be used in a varargs function}}
+    ^
+
+"Test_name.c", line 412: error: identifier "co_await" is undefined
+    co_await a; // expected-error {{'co_await' cannot be used in a function with a deduced return type}}
+    ^
+
+"Test_name.c", line 421: error: expected an operator
+  awaitable operator co_await(coawait_arg_type) noexcept;
+                     ^
+
+"Test_name.c", line 427: error: identifier "co_await" is undefined
+    co_await t; // expected-error {{no member named 'await_ready' in 'dependent_operator_co_await_lookup::not_awaitable'}}
+    ^
+
+"Test_name.c", line 427: error: "t" has already been declared in the current scope
+    co_await t; // expected-error {{no member named 'await_ready' in 'dependent_operator_co_await_lookup::not_awaitable'}}
+             ^
+
+"Test_name.c", line 435: error: expected an operator
+  awaitable operator co_await(indirectly_awaitable); // expected-note {{should be declared prior to}}
+                     ^
+
+"Test_name.c", line 443: error: identifier "co_await" is undefined
+    co_await t;
+    ^
+
+"Test_name.c", line 443: error: "t" has already been declared in the current scope
+    co_await t;
+             ^
+
+"Test_name.c", line 470: error: expected an operator
+  awaitable operator co_await(await_arg_1);
+                     ^
+
+"Test_name.c", line 474: error: identifier "co_await" is undefined
+    co_await t;
+    ^
+
+"Test_name.c", line 474: error: "t" has already been declared in the current scope
+    co_await t;
+             ^
+
+"Test_name.c", line 475: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::await_template_3<T,U>(U)"
+  }
+  ^
+
+"Test_name.c", line 482: error: identifier "co_await" is undefined
+      co_await typename T::await_arg{}; // expected-error {{call to function 'operator co_await'}}}
+      ^
+
+"Test_name.c", line 482: error: expected a ";"
+      co_await typename T::await_arg{}; // expected-error {{call to function 'operator co_await'}}}
+               ^
+
+"Test_name.c", line 483: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<T, I>::mem_fn"
+    }
+    ^
+
+"Test_name.c", line 486: error: identifier "co_await" is undefined
+      co_await t;
+      ^
+
+"Test_name.c", line 486: error: "t" has already been declared in the current scope
+      co_await t;
+               ^
+
+"Test_name.c", line 487: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<T, I>::dep_mem_fn(U)"
+    }
+    ^
+
+"Test_name.c", line 496: error: identifier "co_await" is undefined
+      co_await transform_awaitable{};
+      ^
+
+"Test_name.c", line 498: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<long, 0>::mem_fn"
+    }
+    ^
+
+"Test_name.c", line 500: error: identifier "co_await" is undefined
+    coro<R> dep_mem_fn(U u) { co_await u; }
+                              ^
+
+"Test_name.c", line 500: error: "u" has already been declared in the current scope
+    coro<R> dep_mem_fn(U u) { co_await u; }
+                                       ^
+
+"Test_name.c", line 500: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<long, 0>::dep_mem_fn<R,U>(U)"
+    coro<R> dep_mem_fn(U u) { co_await u; }
+                                          ^
+
+"Test_name.c", line 503: error: expected an operator
+  awaitable operator co_await(await_arg_2); // expected-note {{'operator co_await' should be declared prior to the call site}}
+                     ^
+
+"Test_name.c", line 514: error: identifier "co_await" is undefined
+    co_await transform_awaitable{};
+    ^
+
+"Test_name.c", line 516: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<long, 0>::dep_mem_fn<R,U>(U) [with R=dependent_operator_co_await_lookup::transform_promise, U=int]"
+  }
+  ^
+
+"Test_name.c", line 518: error: expected an operator
+  void operator co_await(transform_awaitable) = delete;
+                ^
+
+"Test_name.c", line 519: error: expected an operator
+  awaitable operator co_await(transformed);
+                     ^
+
+"Test_name.c", line 526: error: identifier "co_await" is undefined
+    co_await transform_awaitable{};
+    ^
+
+"Test_name.c", line 527: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<long, 0>::dep_mem_fn<R,U>(U) [with R=dependent_operator_co_await_lookup::transform_promise, U=long]"
+  }
+  ^
+
+"Test_name.c", line 532: error: identifier "co_await" is undefined
+      co_await transform_awaitable{};
+      ^
+
+"Test_name.c", line 533: warning: missing return statement at end of non-void function "dependent_operator_co_await_lookup::dependent_member<int, 0>::mem_fn"
+    }
+    ^
+
+"Test_name.c", line 560: error: identifier "co_await" is undefined
+    co_await f; // expected-error {{reference to overloaded function}}
+    ^
+
+"Test_name.c", line 563: error: identifier "co_yield" is undefined
+    co_yield g; // expected-error {{no matching member function for call to 'yield_value'}}
+    ^
+
+"Test_name.c", line 566: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 567: error: identifier "co_return" is undefined
+    co_return g; // expected-error {{address of overloaded function 'g' does not match required type 'int'}}
+    ^
+
+"Test_name.c", line 571: error: identifier "co_await" is undefined
+    co_await f; // expected-error {{reference to overloaded function}}
+    ^
+
+"Test_name.c", line 574: error: identifier "co_yield" is undefined
+    co_yield g;
+    ^
+
+"Test_name.c", line 577: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 578: error: identifier "co_return" is undefined
+    co_return g;
+    ^
+
+"Test_name.c", line 589: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 590: warning: missing return statement at end of non-void function "missing_get_return_object"
+  }
+  ^
+
+"Test_name.c", line 600: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 601: warning: missing return statement at end of non-void function "missing_initial_suspend"
+  }
+  ^
+
+"Test_name.c", line 610: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 611: warning: missing return statement at end of non-void function "missing_final_suspend"
+  }
+  ^
+
+"Test_name.c", line 622: error: identifier "co_await" is undefined
+    co_await a; // expected-note {{function is a coroutine due to use of 'co_await' here}}
+    ^
+
+"Test_name.c", line 623: warning: missing return statement at end of non-void function "bad_initial_suspend"
+  }
+  ^
+
+"Test_name.c", line 634: error: identifier "co_await" is undefined
+    co_await a; // expected-note {{function is a coroutine due to use of 'co_await' here}}
+    ^
+
+"Test_name.c", line 635: warning: missing return statement at end of non-void function "bad_final_suspend"
+  }
+  ^
+
+"Test_name.c", line 647: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 648: warning: missing return statement at end of non-void function "bad_implicit_return"
+  }
+  ^
+
+"Test_name.c", line 652: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 653: warning: missing return statement at end of non-void function "bad_implicit_return_dependent(T)"
+  }
+  ^
+
+"Test_name.c", line 663: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 664: warning: missing return statement at end of non-void function "no_unhandled_exception"
+  }
+  ^
+
+"Test_name.c", line 668: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 669: warning: missing return statement at end of non-void function "no_unhandled_exception_dependent(T)"
+  }
+  ^
+
+"Test_name.c", line 687: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 688: warning: missing return statement at end of non-void function "calls_unhandled_exception"
+  }
+  ^
+
+"Test_name.c", line 694: error: identifier "co_await" is undefined
+    co_await a;
+    ^
+
+"Test_name.c", line 695: warning: missing return statement at end of non-void function "calls_unhandled_exception_dependent(T)"
+  }
+  ^
+
+"Test_name.c", line 708: error: identifier "co_await" is undefined
+    co_await 42; // expected-error {{'await_transform' is unavailable}}
+    ^
+
+"Test_name.c", line 708: error: expected a ";"
+    co_await 42; // expected-error {{'await_transform' is unavailable}}
+             ^
+
+"Test_name.c", line 709: warning: missing return statement at end of non-void function "calls_await_transform"
+  }
+  ^
+
+"Test_name.c", line 721: error: identifier "co_await" is undefined
+    co_await 42; // expected-error {{called object type 'int' is not a function or function pointer}}
+    ^
+
+"Test_name.c", line 721: error: expected a ";"
+    co_await 42; // expected-error {{called object type 'int' is not a function or function pointer}}
+             ^
+
+"Test_name.c", line 723: warning: missing return statement at end of non-void function "bad_coawait"
+  }
+  ^
+
+"Test_name.c", line 742: error: identifier "co_await" is undefined
+    co_await 42;
+    ^
+
+"Test_name.c", line 742: error: expected a ";"
+    co_await 42;
+             ^
+
+"Test_name.c", line 743: warning: missing return statement at end of non-void function "ok_static_coawait"
+  }
+  ^
+
+"Test_name.c", line 747: error: identifier "co_await" is undefined
+      co_await 12;
+      ^
+
+"Test_name.c", line 747: error: expected a ";"
+      co_await 12;
+               ^
+
+"Test_name.c", line 748: warning: missing return statement at end of non-void function "lambda [](auto &)->coro<good_promise_1>"
+    };
+    ^
+
+"Test_name.c", line 750: error: identifier "co_await" is undefined
+      co_await 24;
+      ^
+
+"Test_name.c", line 750: error: expected a ";"
+      co_await 24;
+               ^
+
+"Test_name.c", line 751: warning: missing return statement at end of non-void function "lambda [](auto &)->coro<good_promise_1>"
+    }("argument");
+    ^
+
+"Test_name.c", line 754: error: identifier "co_await" is undefined
+        co_await 36;
+        ^
+
+"Test_name.c", line 754: error: expected a ";"
+        co_await 36;
+                 ^
+
+"Test_name.c", line 755: warning: missing return statement at end of non-void function "lambda []()->coro<good_promise_1>"
+      };
+      ^
+
+"Test_name.c", line 756: error: identifier "co_await" is undefined
+      co_await 48;
+      ^
+
+"Test_name.c", line 756: error: expected a ";"
+      co_await 48;
+               ^
+
+"Test_name.c", line 757: warning: missing return statement at end of non-void function "lambda [](auto &)->coro<good_promise_1>"
+    };
+    ^
+
+"Test_name.c", line 764: error: identifier "co_await" is undefined
+    co_await a; // expected-error {{'co_await' cannot be used in the 'main' function}}
+    ^
+
+"Test_name.c", line 780: error: identifier "co_return" is undefined
+    co_return; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 781: warning: missing return statement at end of non-void function "badly_specialized_coro_handle"
+  }
+  ^
+
+"Test_name.c", line 798: warning: missing return statement at end of non-void function "std::experimental::coroutine_traits<int, promise_on_alloc_failure_tag>::promise_type::get_return_object"
+      int get_return_object() {}
+                               ^
+
+"Test_name.c", line 808: error: identifier "co_return" is undefined
+    co_return; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 809: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+"Test_name.c", line 823: error: identifier "co_return" is undefined
+    co_return; // FIXME: Add a "declared coroutine here" note.
+    ^
+
+"Test_name.c", line 824: warning: missing return statement at end of non-void function "private_alloc_failure_handler"
+  }
+  ^
+
+"Test_name.c", line 829: error: identifier "co_return" is undefined
+    co_return; // FIXME: Add a "declared coroutine here" note.
+    ^
+
+"Test_name.c", line 830: warning: missing return statement at end of non-void function "dependent_private_alloc_failure_handler(T)"
+  }
+  ^
+
+"Test_name.c", line 846: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 847: warning: missing return statement at end of non-void function "throwing_in_class_new"
+  }
+  ^
+
+"Test_name.c", line 851: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 852: warning: missing return statement at end of non-void function "dependent_throwing_in_class_new(T)"
+  }
+  ^
+
+"Test_name.c", line 864: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 865: warning: missing return statement at end of non-void function "uses_nothrow_new"
+  }
+  ^
+
+"Test_name.c", line 869: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 870: warning: missing return statement at end of non-void function "dependent_uses_nothrow_new(T)"
+  }
+  ^
+
+"Test_name.c", line 884: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 885: warning: missing return statement at end of non-void function "good_coroutine_calls_custom_new_operator"
+  }
+  ^
+
+"Test_name.c", line 910: error: identifier "co_return" is undefined
+    co_return;
+    ^
+
+"Test_name.c", line 911: warning: missing return statement at end of non-void function "good_coroutine_calls_noexcept_custom_new_operator"
+  }
+  ^
+
+"Test_name.c", line 925: error: more than one instance of overloaded function "f" has "C" linkage
+  extern "C" int f(mismatch_gro_type_tag1) {
+                 ^
+
+"Test_name.c", line 927: error: identifier "co_return" is undefined
+    co_return; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 928: warning: missing return statement at end of non-void function "f(mismatch_gro_type_tag1)"
+  }
+  ^
+
+"Test_name.c", line 934: warning: missing return statement at end of non-void function "std::experimental::coroutine_traits<int, mismatch_gro_type_tag2>::promise_type::get_return_object"
+      void *get_return_object() {} //expected-note {{member 'get_return_object' declared here}}
+                                 ^
+
+"Test_name.c", line 942: error: more than one instance of overloaded function "f" has "C" linkage
+  extern "C" int f(mismatch_gro_type_tag2) {
+                 ^
+
+"Test_name.c", line 945: error: identifier "co_return" is undefined
+    co_return; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 946: warning: missing return statement at end of non-void function "f(mismatch_gro_type_tag2)"
+  }
+  ^
+
+"Test_name.c", line 952: warning: missing return statement at end of non-void function "std::experimental::coroutine_traits<int, mismatch_gro_type_tag3>::promise_type::get_return_object"
+      int get_return_object() {}
+                               ^
+
+"Test_name.c", line 961: error: more than one instance of overloaded function "f" has "C" linkage
+  extern "C" int f(mismatch_gro_type_tag3) {
+                 ^
+
+"Test_name.c", line 963: error: identifier "co_return" is undefined
+    co_return; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 964: warning: missing return statement at end of non-void function "f(mismatch_gro_type_tag3)"
+  }
+  ^
+
+"Test_name.c", line 970: warning: missing return statement at end of non-void function "std::experimental::coroutine_traits<int, mismatch_gro_type_tag4>::promise_type::get_return_object"
+      int get_return_object() {}
+                               ^
+
+"Test_name.c", line 971: warning: missing return statement at end of non-void function "std::experimental::coroutine_traits<int, mismatch_gro_type_tag4>::promise_type::get_return_object_on_allocation_failure"
+      static char *get_return_object_on_allocation_failure() {} //expected-note {{member 'get_return_object_on_allocation_failure' declared}}
+                                                              ^
+
+"Test_name.c", line 979: error: more than one instance of overloaded function "f" has "C" linkage
+  extern "C" int f(mismatch_gro_type_tag4) {
+                 ^
+
+"Test_name.c", line 981: error: identifier "co_return" is undefined
+    co_return; //expected-note {{function is a coroutine due to use of 'co_return' here}}
+    ^
+
+"Test_name.c", line 982: warning: missing return statement at end of non-void function "f(mismatch_gro_type_tag4)"
+  }
+  ^
+
+"Test_name.c", line 1018: error: identifier "co_await" is undefined
+      co_await a; // expected-note {{call to 'await_ready' implicitly required by coroutine function here}}
+      ^
+
+"Test_name.c", line 1018: error: "a" has already been declared in the current scope
+      co_await a; // expected-note {{call to 'await_ready' implicitly required by coroutine function here}}
+               ^
+
+"Test_name.c", line 1016: warning: variable "a" was declared but never referenced
+      bad_await_ready_return a;
+                             ^
+
+"Test_name.c", line 1022: error: identifier "co_await" is undefined
+      co_await b; // expected-note {{call to 'await_suspend' implicitly required by coroutine function here}}
+      ^
+
+"Test_name.c", line 1022: error: "b" has already been declared in the current scope
+      co_await b; // expected-note {{call to 'await_suspend' implicitly required by coroutine function here}}
+               ^
+
+"Test_name.c", line 1021: warning: variable "b" was declared but never referenced
+      bad_await_suspend_return b;
+                               ^
+
+"Test_name.c", line 1026: error: identifier "co_await" is undefined
+      co_await c; // OK
+      ^
+
+"Test_name.c", line 1026: error: "c" has already been declared in the current scope
+      co_await c; // OK
+               ^
+
+"Test_name.c", line 1025: warning: variable "c" was declared but never referenced
+      await_ready_explicit_bool c;
+                                ^
+
+"Test_name.c", line 1033: error: identifier "co_await" is undefined
+      co_await a;                                     // expected-note {{call to 'await_suspend' implicitly required by coroutine function here}}
+      ^
+
+"Test_name.c", line 1033: error: "a" has already been declared in the current scope
+      co_await a;                                     // expected-note {{call to 'await_suspend' implicitly required by coroutine function here}}
+               ^
+
+"Test_name.c", line 1034: error: identifier "co_await" is undefined
+      co_await b;                                     // expected-note {{call to 'await_suspend' implicitly required by coroutine function here}}
+      ^
+
+"Test_name.c", line 1034: error: "b" has already been declared in the current scope
+      co_await b;                                     // expected-note {{call to 'await_suspend' implicitly required by coroutine function here}}
+               ^
+
+"Test_name.c", line 1035: error: identifier "co_await" is undefined
+      co_await c;                                     // OK
+      ^
+
+"Test_name.c", line 1035: error: "c" has already been declared in the current scope
+      co_await c;                                     // OK
+               ^
+
+"Test_name.c", line 1036: error: identifier "co_await" is undefined
+      co_await d;                                     // OK
+      ^
+
+"Test_name.c", line 1036: error: "d" has already been declared in the current scope
+      co_await d;                                     // OK
+               ^
+
+"Test_name.c", line 1029: warning: variable "a" was declared but never referenced
+      await_suspend_type_test<bool &&> a;
+                                       ^
+
+"Test_name.c", line 1030: warning: variable "b" was declared but never referenced
+      await_suspend_type_test<bool &> b;
+                                      ^
+
+"Test_name.c", line 1031: warning: variable "c" was declared but never referenced
+      await_suspend_type_test<const void> c;
+                                          ^
+
+"Test_name.c", line 1032: warning: variable "d" was declared but never referenced
+      await_suspend_type_test<const volatile bool> d; // cxx20_2b-note {{in instantiation of template class}}
+                                                   ^
+
+"Test_name.c", line 1049: error: identifier "co_return" is undefined
+    co_return 42;
+    ^
+
+"Test_name.c", line 1049: error: expected a ";"
+    co_return 42;
+              ^
+
+"Test_name.c", line 1106: error: identifier "co_yield" is undefined
+      auto TC = co_yield 0;
+                ^
+
+"Test_name.c", line 1106: error: expected a ";"
+      auto TC = co_yield 0;
+                         ^
+
+"Test_name.c", line 1107: error: type name is not allowed
+      static_assert(TC.MatchesArgs<TestType &>, "");
+                                   ^
+
+"Test_name.c", line 1107: error: expected an expression
+      static_assert(TC.MatchesArgs<TestType &>, "");
+                                             ^
+
+"Test_name.c", line 1108: error: type name is not allowed
+      static_assert(!TC.MatchesArgs<TestType>, "");
+                                    ^
+
+"Test_name.c", line 1108: error: expected an expression
+      static_assert(!TC.MatchesArgs<TestType>, "");
+                                             ^
+
+"Test_name.c", line 1109: error: type name is not allowed
+      static_assert(!TC.MatchesArgs<TestType *>, "");
+                                    ^
+
+"Test_name.c", line 1109: error: expected an expression
+      static_assert(!TC.MatchesArgs<TestType *>, "");
+                                              ^
+
+"Test_name.c", line 1110: warning: missing return statement at end of non-void function "CoroHandleMemberFunctionTest::TestType::test_qual()"
+    }
+    ^
+
+"Test_name.c", line 1113: error: identifier "co_yield" is undefined
+      auto TC = co_yield 0;
+                ^
+
+"Test_name.c", line 1113: error: expected a ";"
+      auto TC = co_yield 0;
+                         ^
+
+"Test_name.c", line 1114: error: expected an expression
+      static_assert(TC.MatchesArgs<const TestType &>, ""); // expected-error {{static assertion failed}}
+                                   ^
+
+"Test_name.c", line 1115: error: expected an expression
+      static_assert(TC.MatchesArgs<const TestType &>, ""); // expected-error {{static assertion failed}}
+                                   ^
+
+"Test_name.c", line 1116: error: expected an expression
+      static_assert(TC.MatchesArgs<const TestType &, int *>, "");
+                                   ^
+
+"Test_name.c", line 1116: error: expected a string literal
+      static_assert(TC.MatchesArgs<const TestType &, int *>, "");
+                                                     ^
+
+"Test_name.c", line 1117: warning: missing return statement at end of non-void function "CoroHandleMemberFunctionTest::TestType::test_asserts"
+    }
+    ^
+
+"Test_name.c", line 1121: error: identifier "co_yield" is undefined
+      auto TC = co_yield 0;
+                ^
+
+"Test_name.c", line 1121: error: expected a ";"
+      auto TC = co_yield 0;
+                         ^
+
+"Test_name.c", line 1122: error: expected an expression
+      static_assert(TC.MatchesArgs<const TestType &, int *, const float &&, volatile void *volatile>, "");
+                                   ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

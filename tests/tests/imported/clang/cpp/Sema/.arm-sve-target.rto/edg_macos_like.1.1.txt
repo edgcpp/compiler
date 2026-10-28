@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -DNONEON --c++11 --target linux_aarch64 Test_name.c
+"Test_name.c", line 8: error: identifier "__SVFloat32_t" is undefined
+    __SVFloat32_t x; // expected-error {{SVE vector type '__SVFloat32_t' cannot be used in a target without sve}}
+    ^
+
+"Test_name.c", line 13: error: identifier "__SVFloat32_t" is undefined
+    __SVFloat32_t x;
+    ^
+
+"Test_name.c", line 18: error: identifier "__SVFloat32_t" is undefined
+    __SVFloat32_t x;
+    ^
+
+"Test_name.c", line 23: error: identifier "__SVFloat32_t" is undefined
+    __SVFloat32_t x;
+    ^
+
+"Test_name.c", line 26: error: identifier "__SVFloat32_t" is undefined
+  __SVFloat32_t other_ret();
+  ^
+
+"Test_name.c", line 27: error: identifier "__SVFloat32_t" is undefined
+  __SVFloat32_t test_ret() { // expected-error {{SVE vector type '__SVFloat32_t' cannot be used in a target without sve}}
+  ^
+
+"Test_name.c", line 32: error: identifier "__SVFloat32_t" is undefined
+  __SVFloat32_t test_ret_target() {
+  ^
+
+"Test_name.c", line 36: error: identifier "__SVFloat32_t" is undefined
+  void test_arg(__SVFloat32_t arg) { // expected-error {{SVE vector type '__SVFloat32_t' cannot be used in a target without sve}}
+                ^
+
+"Test_name.c", line 40: error: identifier "__SVFloat32_t" is undefined
+  void test_arg_target(__SVFloat32_t arg) {
+                       ^
+
+"Test_name.c", line 43: error: identifier "__clang_svint32x4_t" is undefined
+  __clang_svint32x4_t test4x() { // expected-error {{SVE vector type '__clang_svint32x4_t' cannot be used in a target without sve}}
+  ^
+
+"Test_name.c", line 44: error: identifier "__clang_svint32x4_t" is undefined
+    __clang_svint32x4_t x; // expected-error {{SVE vector type '__clang_svint32x4_t' cannot be used in a target without sve}}
+    ^
+
+"Test_name.c", line 49: error: identifier "__clang_svint32x4_t" is undefined
+  __clang_svint32x4_t test4x_target() {
+  ^
+
+"Test_name.c", line 50: error: identifier "__clang_svint32x4_t" is undefined
+    __clang_svint32x4_t x;
+    ^
+
+"Test_name.c", line 55: error: incomplete type "void" is not allowed
+  void foo(__SVFloat32_t *&ptrA, __SVFloat32_t* &ptrB) {
+       ^
+
+"Test_name.c", line 55: error: identifier "__SVFloat32_t" is undefined
+  void foo(__SVFloat32_t *&ptrA, __SVFloat32_t* &ptrB) {
+           ^
+
+"Test_name.c", line 55: error: identifier "ptrA" is undefined
+  void foo(__SVFloat32_t *&ptrA, __SVFloat32_t* &ptrB) {
+                           ^
+
+"Test_name.c", line 55: error: identifier "ptrB" is undefined
+  void foo(__SVFloat32_t *&ptrA, __SVFloat32_t* &ptrB) {
+                                                 ^
+
+"Test_name.c", line 55: error: expected a ";"
+  void foo(__SVFloat32_t *&ptrA, __SVFloat32_t* &ptrB) {
+                                                       ^
+
+18 errors detected in the compilation of "Test_name.c".

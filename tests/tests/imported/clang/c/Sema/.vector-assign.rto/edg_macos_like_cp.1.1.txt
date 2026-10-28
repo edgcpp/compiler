@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 17: warning: variable "v2" is used before its value is set
+    v1 = v2; // expected-warning {{incompatible vector types assigning to 'v2s' (vector of 2 'int' values) from 'v2u' (vector of 2 'unsigned int' values)}}
+         ^
+
+"Test_name.c", line 18: warning: variable "v3" is used before its value is set
+    v1 = v3; // expected-error {{assigning to 'v2s' (vector of 2 'int' values) from incompatible type 'v1s' (vector of 1 'int' value)}}
+         ^
+
+"Test_name.c", line 19: warning: variable "v4" is used before its value is set
+    v1 = v4; // expected-warning {{incompatible vector types assigning to 'v2s' (vector of 2 'int' values) from 'v2f' (vector of 2 'float' values)}}
+         ^
+
+"Test_name.c", line 20: warning: variable "v5" is used before its value is set
+    v1 = v5; // expected-warning {{incompatible vector types assigning to 'v2s' (vector of 2 'int' values) from 'v4ss' (vector of 4 'short' values)}}
+         ^
+
+"Test_name.c", line 45: error: expression must have pointer-to-object type but it has type "float"
+     return a[b];
+            ^
+
+"Test_name.c", line 54: warning: argument of type "const unsigned int *" is incompatible with parameter of type "longlongvec *" (aka "long long *")
+    test3a(src);  // expected-error {{incompatible pointer types passing 'const unsigned int *' to parameter of type 'longlongvec *'}}
+           ^
+
+1 error detected in the compilation of "Test_name.c".

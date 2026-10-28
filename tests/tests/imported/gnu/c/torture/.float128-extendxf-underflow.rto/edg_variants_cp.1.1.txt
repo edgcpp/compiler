@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/float128-extendxf-underflow.c", line 27: error: identifier "__float128" is undefined
+    volatile __float128 r;
+             ^
+
+"./torture/float128-extendxf-underflow.c", line 31: error: extra text after expected end of number
+    if (r != 0x1p-16384q)
+                       ^
+
+"./torture/float128-extendxf-underflow.c", line 31: warning: floating-point value cannot be represented exactly
+    if (r != 0x1p-16384q)
+             ^
+
+"./torture/float128-extendxf-underflow.c", line 33: warning: function "feenableexcept" declared implicitly
+    feenableexcept (
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

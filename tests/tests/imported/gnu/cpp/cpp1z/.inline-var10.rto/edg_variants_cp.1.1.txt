@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 9: error: "constexpr" is not valid here
+  constexpr struct S var[8] = {};
+  ^
+          detected during instantiation of "const S var[8] [with N=6]" at line 12
+
+1 error detected in the compilation of "Test_name.c".

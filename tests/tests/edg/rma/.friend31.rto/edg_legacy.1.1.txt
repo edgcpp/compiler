@@ -1,0 +1,20 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 7: remark: function "B::B()" cannot be inlined
+  struct B : virtual private A { friend void f(); };
+         ^
+          detected during:
+            implicit generation of "B::B()" at line 14
+            implicit generation of "C::C()" at line 14
+
+"Test_name.c", line 8: remark: function "BB::BB()" cannot be inlined
+  struct BB : virtual private A { friend void fb(); };
+         ^
+          detected during:
+            implicit generation of "BB::BB()" at line 14
+            implicit generation of "C::C()" at line 14
+
+"Test_name.c", line 9: remark: function "C::C()" cannot be inlined
+  struct C : virtual private B, virtual private BB {
+         ^
+          detected during implicit generation of "C::C()" at line 14
+

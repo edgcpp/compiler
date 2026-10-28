@@ -1,0 +1,48 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 21: remark: function "A::A()" cannot be inlined
+  struct A : public virtual V, public virtual S { int i; };
+         ^
+          detected during:
+            implicit generation of "A::A()" at line 24
+            implicit generation of "E::E()" at line 24
+
+"Test_name.c", line 22: remark: function "B::B()" cannot be inlined
+  struct B : public virtual V, public virtual S {};
+         ^
+          detected during:
+            implicit generation of "B::B()" at line 24
+            implicit generation of "E::E()" at line 24
+
+"Test_name.c", line 24: remark: function "E::E()" cannot be inlined
+  struct E : public A, public B {} e;
+         ^
+          detected during implicit generation of "E::E()" at line 24
+
+"Test_name.c", line 36: remark: function "X::X()" cannot be inlined
+  struct X : public virtual V, public S { int i; };
+         ^
+          detected during:
+            implicit generation of "X::X()" at line 39
+            implicit generation of "Z::Z()" at line 39
+
+"Test_name.c", line 37: remark: function "Y::Y()" cannot be inlined
+  struct Y : public S, public virtual V { int j; };
+         ^
+          detected during:
+            implicit generation of "Y::Y()" at line 39
+            implicit generation of "Z::Z()" at line 39
+
+"Test_name.c", line 39: remark: function "Z::Z()" cannot be inlined
+  struct Z : public X, public Y { } z;
+         ^
+          detected during implicit generation of "Z::Z()" at line 39
+
+"Test_name.c", line 41: error: "Z::i" is ambiguous
+  int g() { return z.i + z.j; }
+                     ^
+
+"Test_name.c", line 41: error: "Z::j" is ambiguous
+  int g() { return z.i + z.j; }
+                           ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: a value of type "bool" cannot be used to initialize an entity of type "int *"
+  int* j = false;
+           ^
+
+"Test_name.c", line 21: error: default argument of type "bool" is incompatible with parameter of type "int *"
+  void bar(int *j = false);
+                    ^
+
+"Test_name.c", line 28: error: argument of type "bool" is incompatible with parameter of type "int *"
+    foo(false);
+        ^
+
+"Test_name.c", line 38: error: argument of type "bool" is incompatible with parameter of type "int *"
+    foo(false == true);
+        ^
+
+"Test_name.c", line 45: error: argument of type "bool" is incompatible with parameter of type "int *"
+    foo((42 + 24) < 32);
+        ^
+
+"Test_name.c", line 53: error: argument of type "bool" is incompatible with parameter of type "int *"
+    foo(kFlag);
+        ^
+
+"Test_name.c", line 91: warning: variable "b" was set but never used
+    bool b;
+         ^
+
+"Test_name.c", line 115: warning: variable "b" was set but never used
+    bool b;
+         ^
+
+"Test_name.c", line 210: warning: expression has no effect
+      zero_on_null(&x);
+      ^
+
+6 errors detected in the compilation of "Test_name.c".

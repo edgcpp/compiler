@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 25: error: template constraint not satisfied
+    B y{1, 2}; // { dg-error "deduction|no match" }
+             ^
+"Test_name.c", line 15: note: substitution of arguments "<int, int>" for requires-clause failed
+    B(T, auto... xs) requires (f(xs...)); // { dg-error "constant expression" }
+                                ^
+"Test_name.c", line 15: note: atomic constraint not constant
+    B(T, auto... xs) requires (f(xs...)); // { dg-error "constant expression" }
+                                ^
+"Test_name.c", line 25: note: expression cannot be interpreted
+    B y{1, 2}; // { dg-error "deduction|no match" }
+             ^
+
+"Test_name.c", line 25: error: no instance of constructor "B" matches the argument list
+            argument types are: (int, int)
+    B y{1, 2}; // { dg-error "deduction|no match" }
+      ^
+
+"Test_name.c", line 25: error: cannot deduce class template arguments
+    B y{1, 2}; // { dg-error "deduction|no match" }
+    ^
+
+"Test_name.c", line 26: error: template constraint not satisfied
+    C z{1, 2}; // { dg-error "deduction|no match" }
+             ^
+"Test_name.c", line 20: note: substitution of arguments "<int, int>" for requires-clause failed
+    C(T, auto x) requires (f(x)); // { dg-error "constant expression" }
+                            ^
+"Test_name.c", line 20: note: atomic constraint not constant
+    C(T, auto x) requires (f(x)); // { dg-error "constant expression" }
+                            ^
+"Test_name.c", line 20: note: expression cannot be interpreted
+    C(T, auto x) requires (f(x)); // { dg-error "constant expression" }
+                             ^
+
+"Test_name.c", line 26: error: no instance of constructor "C" matches the argument list
+            argument types are: (int, int)
+    C z{1, 2}; // { dg-error "deduction|no match" }
+      ^
+
+"Test_name.c", line 26: error: cannot deduce class template arguments
+    C z{1, 2}; // { dg-error "deduction|no match" }
+    ^
+
+6 errors detected in the compilation of "Test_name.c".

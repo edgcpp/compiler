@@ -1,0 +1,25 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./special/initp1.C", line 21: warning: unknown attribute "init_priority"
+  Two foo __attribute__((init_priority(1005))) ( 5, 6 );
+                         ^
+
+"./special/initp1.C", line 23: warning: unknown attribute "init_priority"
+  Two goo __attribute__((init_priority(1007))) = Two( 7, 8 );
+                         ^
+
+"./special/initp1.C", line 33: warning: unknown attribute "init_priority"
+  Two coo[ 3 ] __attribute__((init_priority(1000)));
+                              ^
+
+"./special/initp1.C", line 35: warning: unknown attribute "init_priority"
+  Two koo[ 3 ] __attribute__((init_priority(1000))) = {
+                              ^
+
+"./special/initp1.C", line 41: warning: unknown attribute "init_priority"
+  Two xoo[ 3 ] __attribute__((init_priority(1100)));
+                              ^
+
+"./special/initp1.C", line 43: warning: unknown attribute "init_priority"
+  Two zoo[ 3 ] __attribute__((init_priority(1100))) = {
+                              ^
+

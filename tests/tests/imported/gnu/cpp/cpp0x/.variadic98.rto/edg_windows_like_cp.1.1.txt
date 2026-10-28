@@ -1,0 +1,161 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 81: warning: missing return statement at end of non-void function "std::move(_Tp &&)"
+      }
+      ^
+
+"Test_name.c", line 96: warning: missing return statement at end of non-void function "std::pair<_T1, _T2>::operator=(std::pair<_U1, _U2> &&)"
+  	}
+  	^
+
+"Test_name.c", line 188: warning: missing return statement at end of non-void function "std::_Select1st<_Pair>::operator()"
+  	}
+  	^
+
+"Test_name.c", line 244: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_get_Node_allocator"
+  	}
+  	^
+
+"Test_name.c", line 246: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_get_node"
+  	}
+  	^
+
+"Test_name.c", line 254: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_create_node(_Args &&...)"
+  	}
+  	^
+
+"Test_name.c", line 266: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_rightmost"
+  	}
+  	^
+
+"Test_name.c", line 268: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_begin"
+  	}
+  	^
+
+"Test_name.c", line 270: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_end()"
+  	}
+  	^
+
+"Test_name.c", line 272: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_end() const"
+  	}
+  	^
+
+"Test_name.c", line 274: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_S_right"
+  	}
+  	^
+
+"Test_name.c", line 276: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_S_value"
+  	}
+  	^
+
+"Test_name.c", line 292: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::end"
+  	}
+  	^
+
+"Test_name.c", line 302: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_"
+      }
+      ^
+
+"Test_name.c", line 305: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_lower"
+      }
+      ^
+
+"Test_name.c", line 321: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::equal_range(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::key_type &)"
+      }
+      ^
+
+"Test_name.c", line 331: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_equal_"
+      }
+      ^
+
+"Test_name.c", line 340: warning: missing return statement at end of non-void function "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::count"
+      }
+      ^
+
+"Test_name.c", line 354: warning: missing return statement at end of non-void function "std::initializer_list<_E>::begin"
+  	}
+  	^
+
+"Test_name.c", line 356: warning: missing return statement at end of non-void function "std::initializer_list<_E>::end"
+  	}
+  	^
+
+"Test_name.c", line 414: warning: missing return statement at end of non-void function "test01"
+  }
+  ^
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=const std::pair<const int, double> &]"
+      }
+      ^
+          detected during:
+            instantiation of "std::enable_if<<expression>, _Tp &&>::type std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=const std::pair<const int, double> &]" at line 250
+            instantiation of "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Link_type std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_create_node(_Args &&...) [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>, _Args=<const std::pair<const int, double> &>]" at line 301
+            instantiation of "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_(std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Const_Base_ptr, std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_Const_Base_ptr, const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::value_type &) [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 328
+            instantiation of "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_equal_(std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator, const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::value_type &) [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 335
+            instantiation of "void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_equal(_InputIterator, _InputIterator) [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>, _InputIterator=const std::pair<const int, double> *]" at line 380
+            instantiation of "std::multimap<_Key, _Tp, _Compare, _Alloc>::multimap(std::initializer_list<std::multimap<_Key, _Tp, _Compare, _Alloc>::value_type>, const _Compare &, const std::multimap<_Key, _Tp, _Compare, _Alloc>::allocator_type &) [with _Key=int, _Tp=double, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 406
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=std::_Rb_tree_const_iterator<std::pair<const int, double>>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::enable_if<<expression>, _Tp &&>::type std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=std::_Rb_tree_const_iterator<std::pair<const int, double>>]" at line 91
+            instantiation of "std::pair<_T1, _T2>::pair(_U1 &&, _U2 &&) [with _T1=std::_Rb_tree_const_iterator<std::pair<const int, double>>, _T2=std::_Rb_tree_const_iterator<std::pair<const int, double>>, _U1=std::_Rb_tree_const_iterator<std::pair<const int, double>>, _U2=std::_Rb_tree_const_iterator<std::pair<const int, double>>, <unnamed>=void]" at line 324
+            instantiation of "std::pair<std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator, std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::equal_range(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::key_type &) const [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 338
+            instantiation of "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::size_type std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::count(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::key_type &) const [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 389
+            instantiation of "std::multimap<_Key, _Tp, _Compare, _Alloc>::size_type std::multimap<_Key, _Tp, _Compare, _Alloc>::count(const std::multimap<_Key, _Tp, _Compare, _Alloc>::key_type &) const [with _Key=int, _Tp=double, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 413
+
+"Test_name.c", line 121: warning: missing return statement at end of non-void function "std::__iterator_category(const _Iter &) [with _Iter=std::_Rb_tree_const_iterator<std::pair<const int, double>>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::iterator_traits<_Iter>::iterator_category std::__iterator_category(const _Iter &) [with _Iter=std::_Rb_tree_const_iterator<std::pair<const int, double>>]" at line 125
+            instantiation of "std::iterator_traits<_InputIterator>::difference_type std::distance(_InputIterator, _InputIterator) [with _InputIterator=std::_Rb_tree_const_iterator<std::pair<const int, double>>]" at line 339
+            instantiation of "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::size_type std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::count(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::key_type &) const [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 389
+            instantiation of "std::multimap<_Key, _Tp, _Compare, _Alloc>::size_type std::multimap<_Key, _Tp, _Compare, _Alloc>::count(const std::multimap<_Key, _Tp, _Compare, _Alloc>::key_type &) const [with _Key=int, _Tp=double, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 413
+
+"Test_name.c", line 123: warning: missing return statement at end of non-void function "std::__distance(_InputIterator, _InputIterator, std::input_iterator_tag) [with _InputIterator=std::_Rb_tree_const_iterator<std::pair<const int, double>>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::iterator_traits<_InputIterator>::difference_type std::__distance(_InputIterator, _InputIterator, std::input_iterator_tag) [with _InputIterator=std::_Rb_tree_const_iterator<std::pair<const int, double>>]" at line 125
+            instantiation of "std::iterator_traits<_InputIterator>::difference_type std::distance(_InputIterator, _InputIterator) [with _InputIterator=std::_Rb_tree_const_iterator<std::pair<const int, double>>]" at line 339
+            instantiation of "std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::size_type std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::count(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::key_type &) const [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 389
+            instantiation of "std::multimap<_Key, _Tp, _Compare, _Alloc>::size_type std::multimap<_Key, _Tp, _Compare, _Alloc>::count(const std::multimap<_Key, _Tp, _Compare, _Alloc>::key_type &) const [with _Key=int, _Tp=double, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 413
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=std::_Rb_tree_iterator<std::pair<const int, double>>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::enable_if<<expression>, _Tp &&>::type std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=std::_Rb_tree_iterator<std::pair<const int, double>>]" at line 91
+            instantiation of "std::pair<_T1, _T2>::pair(_U1 &&, _U2 &&) [with _T1=std::_Rb_tree_iterator<std::pair<const int, double>>, _T2=std::_Rb_tree_iterator<std::pair<const int, double>>, _U1=std::_Rb_tree_iterator<std::pair<const int, double>>, _U2=std::_Rb_tree_iterator<std::pair<const int, double>>, <unnamed>=void]" at line 318
+            instantiation of "std::pair<std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator, std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::equal_range(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::key_type &) [with _Key=int, _Val=std::pair<const int, double>, _KeyOfValue=std::_Select1st<std::pair<const int, double>>, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 392
+            instantiation of "std::pair<std::multimap<_Key, _Tp, _Compare, _Alloc>::iterator, std::multimap<_Key, _Tp, _Compare, _Alloc>::iterator> std::multimap<_Key, _Tp, _Compare, _Alloc>::equal_range(const std::multimap<_Key, _Tp, _Compare, _Alloc>::key_type &) [with _Key=int, _Tp=double, _Compare=std::less<int>, _Alloc=std::allocator<std::pair<const int, double>>]" at line 411
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=int]"
+      }
+      ^
+          detected during:
+            instantiation of "std::enable_if<<expression>, _Tp &&>::type std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=int]" at line 91
+            instantiation of "std::pair<_T1, _T2>::pair(_U1 &&, _U2 &&) [with _T1=const int, _T2=double, _U1=int, _U2=double, <unnamed>=void]" at line 407
+
+"Test_name.c", line 77: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=double]"
+      }
+      ^
+          detected during:
+            instantiation of "std::enable_if<<expression>, _Tp &&>::type std::forward<_Tp>(std::identity<_Tp>::type &) [with _Tp=double]" at line 91
+            instantiation of "std::pair<_T1, _T2>::pair(_U1 &&, _U2 &&) [with _T1=const int, _T2=double, _U1=int, _U2=double, <unnamed>=void]" at line 407
+
+"Test_name.c", line 121: warning: missing return statement at end of non-void function "std::__iterator_category(const _Iter &) [with _Iter=std::_Rb_tree_iterator<std::pair<const int, double>>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::iterator_traits<_Iter>::iterator_category std::__iterator_category(const _Iter &) [with _Iter=std::_Rb_tree_iterator<std::pair<const int, double>>]" at line 125
+            instantiation of "std::iterator_traits<_InputIterator>::difference_type std::distance(_InputIterator, _InputIterator) [with _InputIterator=std::_Rb_tree_iterator<std::pair<const int, double>>]" at line 412
+
+"Test_name.c", line 123: warning: missing return statement at end of non-void function "std::__distance(_InputIterator, _InputIterator, std::input_iterator_tag) [with _InputIterator=std::_Rb_tree_iterator<std::pair<const int, double>>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::iterator_traits<_InputIterator>::difference_type std::__distance(_InputIterator, _InputIterator, std::input_iterator_tag) [with _InputIterator=std::_Rb_tree_iterator<std::pair<const int, double>>]" at line 125
+            instantiation of "std::iterator_traits<_InputIterator>::difference_type std::distance(_InputIterator, _InputIterator) [with _InputIterator=std::_Rb_tree_iterator<std::pair<const int, double>>]" at line 412
+

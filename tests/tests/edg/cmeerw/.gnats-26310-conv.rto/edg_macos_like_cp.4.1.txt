@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=4 --no_il_lower --il_display --c++11 Test_name.c
+func-scope expr-node
+type:                    file-scope type: int B<5>::*
+orig_lvalue_type:        file-scope type: int B<5>::*
+kind:                    enk_variable
+variable:                func-scope variable: p5
+position.seq:            21
+position.column:         65
+
+func-scope expr-node
+type:                    file-scope type: int B<4>::*
+kind:                    enk_operation
+operation.kind:          eok_pm_base_class_cast
+operation.type_kind:     tk_ptr_to_member
+implicit_step_of_explicit_cast:
+                         TRUE
+operands:                func-scope expr-node
+
+func-scope expr-node
+type:                    file-scope type: int B<3>::*
+kind:                    enk_operation
+operation.kind:          eok_pm_base_class_cast
+operation.type_kind:     tk_ptr_to_member
+implicit_step_of_explicit_cast:
+                         TRUE
+operands:                func-scope expr-node
+
+func-scope expr-node
+type:                    file-scope type: const int B<2>::*
+is_static_cast:          TRUE
+kind:                    enk_operation
+operation.kind:          eok_pm_base_class_cast
+operation.type_kind:     tk_ptr_to_member
+operands:                func-scope expr-node
+position.seq:            21
+position.column:         28
+

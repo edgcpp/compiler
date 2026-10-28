@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --c++14 --clang --clang_version=100100 --multi_trans_unit Test_name.c source2.C
+"Test_name.c", line 8: warning: C++17-style "using" attribute prefix is nonstandard in this mode
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"Test_name.c", line 8: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"Test_name.c", line 9: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int w = 1; // already diagnosed
+           ^
+
+"Test_name.c", line 16: warning: C++17-style nested namespaces are nonstandard in this mode
+  namespace ns::nested // warning: C++17-style nested namespaces are nonstandard in this mode
+                ^
+
+"Test_name.c", line 22: warning: C++20-style nested inline namespaces are nonstandard in this mode
+  namespace ns::inline inested // warning: C++20-style nested inline namespaces are nonstandard in this mode
+                ^
+
+"source2.C", line 1: warning: C++17-style "using" attribute prefix is nonstandard in this mode
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"source2.C", line 1: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int v = 1; // warning: C++17-style "using" attribute prefix is nonstandard in this mode
+           ^
+
+"source2.C", line 2: warning: attribute namespace "ns" is unrecognized
+  [[ using ns: ]] static int w = 1; // already diagnosed
+           ^
+
+"source2.C", line 9: warning: C++17-style nested namespaces are nonstandard in this mode
+  namespace ns::nested // warning: C++17-style nested namespaces are nonstandard in this mode
+                ^
+
+"source2.C", line 15: warning: C++20-style nested inline namespaces are nonstandard in this mode
+  namespace ns::inline inested // warning: C++20-style nested inline namespaces are nonstandard in this mode
+                ^
+
+Catastrophic error: cannot open source file "Test_name.c"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

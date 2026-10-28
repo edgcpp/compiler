@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 20: error: the type in a const_cast must be a pointer, reference, or pointer to member to an object type
+    (void)const_cast<int>(x);
+                     ^
+
+"Test_name.c", line 22: warning: statement is unreachable
+    h(x); // h is a dependent name
+    ^
+
+"Test_name.c", line 23: error: too many arguments in function call
+    g(1, 1); // expected-error{{no matching function for call}}
+         ^
+
+"Test_name.c", line 24: error: identifier "h" is undefined
+    h(1); // expected-error{{use of undeclared identifier 'h'}}
+    ^
+
+"Test_name.c", line 36: warning: missing return statement at end of non-void function "f2"
+  }
+  ^
+
+3 errors detected in the compilation of "Test_name.c".

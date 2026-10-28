@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 -w --c++20 Test_name.c
+"Test_name.c", line 110: error: static assertion failed
+    static_assert((f(1) / 100) == 1);
+    ^
+"Test_name.c", line 110: note: the final comparison was 2 == 1
+    static_assert((f(1) / 100) == 1);
+                               ^
+
+"Test_name.c", line 112: error: static assertion failed
+    static_assert(f(1) == 111);   // still fails in GCC emulation mode, but
+    ^
+"Test_name.c", line 112: note: the final comparison was 222 == 111
+    static_assert(f(1) == 111);   // still fails in GCC emulation mode, but
+                       ^
+
+2 errors detected in the compilation of "Test_name.c".

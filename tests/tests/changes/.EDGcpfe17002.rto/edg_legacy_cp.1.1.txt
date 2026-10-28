@@ -1,0 +1,35 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 13: error: identifier "constexpr" is undefined
+    constexpr operator bool() const { return true; }
+    ^
+
+"Test_name.c", line 13: error: return type may not be specified on a conversion function
+    constexpr operator bool() const { return true; }
+    ^
+
+"Test_name.c", line 17: error: a class-qualified name is required
+    using Type = float;
+          ^
+          detected during instantiation of class "F<true>" at line 16
+
+"Test_name.c", line 17: error: expected a ";"
+    using Type = float;
+               ^
+          detected during instantiation of class "F<true>" at line 16
+
+"Test_name.c", line 20: error: identifier "constexpr" is undefined
+    static constexpr B cond = B{};
+           ^
+
+"Test_name.c", line 20: error: expected a ";"
+    static constexpr B cond = B{};
+                       ^
+
+"Test_name.c", line 25: error: no instance of function template "f" matches the argument list
+    f<0>();  // Previously triggered a spurious error because the conversion
+    ^
+"Test_name.c", line 23: note: substituting explicit template arguments "<0>" for function template "f" failed
+  typename F<C<N>::cond>::Type f();
+                               ^
+
+7 errors detected in the compilation of "Test_name.c".

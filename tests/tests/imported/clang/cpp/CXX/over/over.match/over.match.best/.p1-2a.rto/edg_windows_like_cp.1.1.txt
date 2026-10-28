@@ -1,0 +1,52 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 31: error: more than one instance of overloaded function "templates::foo" matches the argument list:
+            function template "int templates::foo(T)" (declared at line 17)
+            function template "char templates::foo(T)" (declared at line 22)
+            argument types are: (int)
+    static_assert(is_same_v<decltype(foo(10)), int>); // expected-error {{call to 'foo' is ambiguous}}
+                                     ^
+"Test_name.c", line 27: note: substituting "<int>" for function template "templates::foo(T)" failed constraints
+    double foo(T t) requires (AtLeast1<T> && sizeof(T) <= 2) {
+           ^
+"Test_name.c", line 27: note: atomic constraint evaluates to false
+    double foo(T t) requires (AtLeast1<T> && sizeof(T) <= 2) {
+                                                       ^
+
+"Test_name.c", line 32: error: more than one instance of overloaded function "templates::foo" matches the argument list:
+            function template "char templates::foo(T)" (declared at line 22)
+            function template "double templates::foo(T)" (declared at line 27)
+            argument types are: (short)
+    static_assert(is_same_v<decltype(foo(short(10))), double>);
+                                     ^
+"Test_name.c", line 17: note: substituting "<short>" for function template "templates::foo(T)" failed constraints
+    int foo(T t) requires (sizeof(T) == 4) { // expected-note {{candidate function}}
+        ^
+"Test_name.c", line 17: note: atomic constraint evaluates to false
+    int foo(T t) requires (sizeof(T) == 4) { // expected-note {{candidate function}}
+                                     ^
+
+"Test_name.c", line 44: error: more than one instance of overloaded function "templates::bar" matches the argument list:
+            function template "void templates::bar<T>()" (declared at line 35)
+            function template "void templates::bar<T>()" (declared at line 40)
+    static_assert(is_same_v<decltype(bar<char>()), void>);
+                                     ^
+
+"Test_name.c", line 57: error: more than one instance of overloaded function "templates::baz" matches the argument list:
+            function template "int templates::baz<T>()" (declared at line 48)
+            function template "int templates::baz<T>()" (declared at line 53)
+    static_assert(baz<int>() == 1); // expected-error {{call to 'baz' is ambiguous}}
+                  ^
+
+"Test_name.c", line 99: error: more than one instance of overloaded function "non_template::baz" matches the argument list:
+            function template "double non_template::baz<T>()" (declared at line 79)
+            function template "int non_template::baz<T>()" (declared at line 84)
+    static_assert(is_same_v<decltype(baz<int>()), int>); // expected-error {{call to 'baz' is ambiguous}}
+                                     ^
+
+"Test_name.c", line 100: error: more than one instance of overloaded function "non_template::bar" matches the argument list:
+            function template "void non_template::bar<T>()" (declared at line 89)
+            function template "void non_template::bar<T>()" (declared at line 94)
+    static_assert(is_same_v<decltype(bar<int>()), void>); // expected-error {{call to 'bar' is ambiguous}}
+                                     ^
+
+6 errors detected in the compilation of "Test_name.c".

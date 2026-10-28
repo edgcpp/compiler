@@ -1,0 +1,16 @@
+eccp -DTEST_NUMBER=2 -r -x -tused --microsoft Test_name.c
+"Test_name.c", line 11: remark: parameter "p" was never referenced
+      template<> explicit S(S*const&p) { }
+                                    ^
+
+"Test_name.c", line 11: remark: function "S::S(const U &) [with U=S *]" cannot be inlined
+      template<> explicit S(S*const&p) { }
+                          ^
+
+"Test_name.c", line 17: remark: value copied to temporary, reference to temporary used
+          S *const &rcp = &x;
+                          ^
+
+/usr/sbin/ld: Test_name.o: in function `main':
+Test_name.int.c:(.text+0xXX): undefined reference to `S::S()'
+collect2: error: ld returned 1 exit status

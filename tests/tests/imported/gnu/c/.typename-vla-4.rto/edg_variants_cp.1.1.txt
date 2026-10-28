@@ -1,0 +1,72 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --set_flag=no_checking_pragmas --c99 --strict_gnu Test_name.c
+"Test_name.c", line 12: warning: declaration does not declare anything
+  	typeof(int[n++]);			/* { dg-warning "empty declaration" } */
+  	^
+
+"Test_name.c", line 13: warning: variable-length array field type will be treated as zero-length array field type
+  	struct { int x[n++]; };			/* { dg-warning "no instance" } */
+  	               ^
+
+"Test_name.c", line 13: warning: declaration does not declare anything
+  	struct { int x[n++]; };			/* { dg-warning "no instance" } */
+  	^
+
+"Test_name.c", line 14: warning: variable-length array field type will be treated as zero-length array field type
+  	struct foo { int x[n++]; };
+  	                   ^
+
+"Test_name.c", line 15: warning: variable-length array field type will be treated as zero-length array field type
+  	struct { int x[n++]; } x;
+  	               ^
+
+"Test_name.c", line 16: warning: variable-length array field type will be treated as zero-length array field type
+  	struct bar { int x[n++]; } y;
+  	                   ^
+
+"Test_name.c", line 19: warning: variable-length array field type will be treated as zero-length array field type
+  	(struct { int x[n++]; }*)0;
+  	                ^
+
+"Test_name.c", line 19: warning: expression has no effect
+  	(struct { int x[n++]; }*)0;
+  	^
+
+"Test_name.c", line 20: warning: variable-length array field type will be treated as zero-length array field type
+  	(struct q { int x[n++]; }*)0;
+  	                  ^
+
+"Test_name.c", line 20: warning: expression has no effect
+  	(struct q { int x[n++]; }*)0;
+  	^
+
+"Test_name.c", line 21: warning: variable-length array field type will be treated as zero-length array field type
+  	typeof(struct { int x[n++]; });		/* { dg-warning "empty declaration" } */
+  	                      ^
+
+"Test_name.c", line 21: warning: declaration does not declare anything
+  	typeof(struct { int x[n++]; });		/* { dg-warning "empty declaration" } */
+  	^
+
+"Test_name.c", line 22: warning: variable-length array field type will be treated as zero-length array field type
+  	typeof(struct r { int x[n++]; });	/* { dg-warning "empty declaration" } */
+  	                        ^
+
+"Test_name.c", line 22: warning: declaration does not declare anything
+  	typeof(struct r { int x[n++]; });	/* { dg-warning "empty declaration" } */
+  	^
+
+"Test_name.c", line 15: warning: variable "x" was declared but never referenced
+  	struct { int x[n++]; } x;
+  	                       ^
+
+"Test_name.c", line 16: warning: variable "y" was declared but never referenced
+  	struct bar { int x[n++]; } y;
+  	                           ^
+
+"Test_name.c", line 20 (col. 27): internal error: assertion failed: gen_declaration: bad entity kind on source seq list (cp_gen_be.c, line <suppressed> in gen_declaration)
+
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

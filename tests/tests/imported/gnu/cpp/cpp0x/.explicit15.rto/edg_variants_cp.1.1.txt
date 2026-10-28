@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 26: warning: variable "n1" was declared but never referenced
+    int n1 = t; // { dg-error "cannot convert" }
+        ^
+
+"Test_name.c", line 27: warning: variable "n2" was declared but never referenced
+    int n2 = {t}; // { dg-error "cannot convert" }
+        ^
+
+"Test_name.c", line 28: warning: variable "n3" was declared but never referenced
+    int n3(t);
+        ^
+
+"Test_name.c", line 29: warning: variable "n4" was declared but never referenced
+    int n4{t};
+        ^
+
+"Test_name.c", line 30: warning: variable "n5" was declared but never referenced
+    int n5 = int(t);
+        ^
+
+"Test_name.c", line 31: warning: variable "n6" was declared but never referenced
+    int n6 = int{t};
+        ^
+
+"Test_name.c", line 13: error: no suitable conversion function from "A" to "int" exists
+    T t1 = a; // { dg-error "cannot convert" }
+           ^
+          detected during instantiation of "void f<T>() [with T=int]" at line 36
+
+"Test_name.c", line 14: error: no suitable conversion function from "A" to "int" exists
+    T t2 = {a}; // { dg-error "cannot convert" }
+            ^
+          detected during instantiation of "void f<T>() [with T=int]" at line 36
+
+"Test_name.c", line 26: error: no suitable conversion function from "A" to "int" exists
+    int n1 = t; // { dg-error "cannot convert" }
+             ^
+          detected during instantiation of "void g<T>() [with T=A]" at line 37
+
+"Test_name.c", line 27: error: no suitable conversion function from "A" to "int" exists
+    int n2 = {t}; // { dg-error "cannot convert" }
+              ^
+          detected during instantiation of "void g<T>() [with T=A]" at line 37
+
+4 errors detected in the compilation of "Test_name.c".

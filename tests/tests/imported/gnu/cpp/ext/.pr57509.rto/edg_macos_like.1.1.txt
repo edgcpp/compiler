@@ -1,0 +1,23 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: warning: unknown attribute "vector_size"
+  typedef int v4i __attribute__((vector_size(4*sizeof(int))));
+                                 ^
+
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+  typedef float v4f __attribute__((vector_size(4*sizeof(float))));
+                                   ^
+
+"Test_name.c", line 13: error: too many initializer values
+    v4i a = {1,2,3,0};
+               ^
+
+"Test_name.c", line 15: error: too many initializer values
+    v4f b = {1,2,3,0};
+               ^
+
+"Test_name.c", line 7: error: identifier "__builtin_shuffle" is undefined
+  template <class T> void f (T& v) { v = __builtin_shuffle (v, v); }
+                                         ^
+          detected during instantiation of "void f(T &) [with T=v4i]" at line 14
+
+3 errors detected in the compilation of "Test_name.c".

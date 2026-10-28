@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 10: warning: variable "k" was declared but never referenced
+      K k;
+        ^
+
+"Test_name.c", line 68: error: a nonstatic member reference must be relative to a specific object
+        char &g() { return f(); }
+                           ^
+          detected during instantiation of "char &PR14402::A<T>::F::g() [with T=int]" at line 78
+
+"Test_name.c", line 68: error: initial value of reference to non-const must be an lvalue
+        char &g() { return f(); }
+                           ^
+          detected during instantiation of "char &PR14402::A<T>::F::g() [with T=char]" at line 81
+
+2 errors detected in the compilation of "Test_name.c".

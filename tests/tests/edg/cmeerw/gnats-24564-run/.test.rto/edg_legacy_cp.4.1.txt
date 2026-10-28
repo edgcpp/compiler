@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=4 -tused tu2.cpp --ms_c++17 --microsoft_version 1927 Test_name.c
+tu2.cpp:
+Test_name.c:
+/usr/sbin/ld: Test_name.o:(.rodata+0xc): multiple definition of `ici'; tu2.o:(.rodata+0xc): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x10): multiple definition of `tici<void>'; tu2.o:(.rodata+0x10): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x14): multiple definition of `tici<int>'; tu2.o:(.rodata+0x14): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x18): multiple definition of `tici<int *>'; tu2.o:(.rodata+0x18): first defined here
+collect2: error: ld returned 1 exit status

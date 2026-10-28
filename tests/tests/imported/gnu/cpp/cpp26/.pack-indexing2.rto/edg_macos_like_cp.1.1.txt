@@ -1,0 +1,195 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++26 Test_name.c
+"Test_name.c", line 9: error: identifier "Typo" is undefined
+  using Type = Typo...[I]; // { dg-error "does not name a type" }
+               ^
+
+"Test_name.c", line 9: error: expected a ";"
+  using Type = Typo...[I]; // { dg-error "does not name a type" }
+                   ^
+
+"Test_name.c", line 12: error: pack expansion does not make use of any argument packs
+  constexpr auto Var = Typo...[I]; // { dg-error "no parameter packs" }
+                           ^
+
+"Test_name.c", line 21: error: pack expansion does not make use of any argument packs
+  int f2 (X... [N]); // { dg-error "contains no parameter packs" }
+           ^
+
+"Test_name.c", line 21: error: parameter pack "N" was referenced but not expanded
+  int f2 (X... [N]); // { dg-error "contains no parameter packs" }
+                ^
+
+"Test_name.c", line 32: error: pack expansion does not make use of any argument packs
+    i...[0];  // { dg-error "no parameter packs" }
+     ^
+
+"Test_name.c", line 33: error: pack expansion does not make use of any argument packs
+    V...[0];  // { dg-error "no parameter packs" }
+     ^
+
+"Test_name.c", line 34: error: pack expansion does not make use of any argument packs
+    X...[0] x;  // { dg-error "no parameter packs" }
+     ^
+
+"Test_name.c", line 35: error: pack expansion does not make use of any argument packs
+    T...[0] t;  // { dg-error "no parameter packs" }
+     ^
+
+"Test_name.c", line 36: error: pack expansion does not make use of any argument packs
+    Tp...[0] tp;  // { dg-error "expected" }
+      ^
+
+"Test_name.c", line 38: error: pack expansion does not make use of any argument packs
+    X...[0] xarr[1];  // { dg-error "no parameter packs" }
+     ^
+
+"Test_name.c", line 39: error: pack expansion does not make use of any argument packs
+    T...[0] tarr[1];  // { dg-error "no parameter packs" }
+     ^
+
+"Test_name.c", line 40: error: pack expansion does not make use of any argument packs
+    Tp...[0] tparr[1];  // { dg-error "expected" }
+      ^
+
+"Test_name.c", line 97: error: expected an identifier
+    Ts...1;  // { dg-error "expected" }
+      ^
+
+"Test_name.c", line 98: error: expected an expression
+    Ts...[;  // { dg-error "invalid" }
+          ^
+
+"Test_name.c", line 98: error: expected a "]"
+    Ts...[;  // { dg-error "invalid" }
+          ^
+
+"Test_name.c", line 98: error: declaration does not declare anything
+    Ts...[;  // { dg-error "invalid" }
+    ^
+
+"Test_name.c", line 99: error: expected a "]"
+    Ts...[1;  // { dg-error "invalid" }
+           ^
+
+"Test_name.c", line 99: error: declaration does not declare anything
+    Ts...[1;  // { dg-error "invalid" }
+    ^
+
+"Test_name.c", line 100: error: expected an identifier
+    Ts...[];  // { dg-error "pack index missing" }
+      ^
+
+"Test_name.c", line 97: error: parameter pack "Ts" was referenced but not expanded
+    Ts...1;  // { dg-error "expected" }
+    ^
+
+"Test_name.c", line 100: error: parameter pack "Ts" was referenced but not expanded
+    Ts...[];  // { dg-error "pack index missing" }
+    ^
+
+"Test_name.c", line 103: error: expected a ";"
+      decltype(Vs...[1]) d1 = Vs...[]; // { dg-error "pack index missing" }
+                                ^
+
+"Test_name.c", line 104: error: expected an expression
+      decltype(Vs...[1]) d2 = Vs...[; // { dg-error "expected" }
+                                    ^
+
+"Test_name.c", line 104: error: expected a "]"
+      decltype(Vs...[1]) d2 = Vs...[; // { dg-error "expected" }
+                                    ^
+
+"Test_name.c", line 103: error: parameter pack "Vs" was referenced but not expanded
+      decltype(Vs...[1]) d1 = Vs...[]; // { dg-error "pack index missing" }
+                              ^
+
+"Test_name.c", line 111: error: no instance of function template "f" matches the argument list
+            argument types are: (std::nullptr_t, std::nullptr_t)
+    f<int, double>(nullptr, nullptr); // { dg-error "no matching function" }
+    ^
+"Test_name.c", line 18: note: number of parameters of function template "f" does not match the call
+  void f(Ts...[1]);
+       ^
+
+"Test_name.c", line 126: error: identifier "nothere" is undefined
+    using E = nothere...[0]; // { dg-error "does not name a type" }
+              ^
+
+"Test_name.c", line 126: error: expected a ";"
+    using E = nothere...[0]; // { dg-error "does not name a type" }
+                     ^
+
+"Test_name.c", line 32: error: pack index exceeds number of pack elements
+    i...[0];  // { dg-error "no parameter packs" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 33: error: pack index exceeds number of pack elements
+    V...[0];  // { dg-error "no parameter packs" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 34: error: pack index exceeds number of pack elements
+    X...[0] x;  // { dg-error "no parameter packs" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 35: error: pack index exceeds number of pack elements
+    T...[0] t;  // { dg-error "no parameter packs" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 36: error: pack index exceeds number of pack elements
+    Tp...[0] tp;  // { dg-error "expected" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 38: error: pack index exceeds number of pack elements
+    X...[0] xarr[1];  // { dg-error "no parameter packs" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 39: error: pack index exceeds number of pack elements
+    T...[0] tarr[1];  // { dg-error "no parameter packs" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 40: error: pack index exceeds number of pack elements
+    Tp...[0] tparr[1];  // { dg-error "expected" }
+    ^
+          detected during instantiation of "void bad<T,V,Tp>(int) [with T=int, V=0, Tp=TX]" at line 112
+
+"Test_name.c", line 47: error: pack index exceeds number of pack elements
+    return Ts...[N]; // { dg-error "cannot index an empty pack" }
+           ^
+          detected during instantiation of "int getT<N,<auto-1>...>(auto...) [with N=0, <auto-1>=<>]" at line 114
+
+"Test_name.c", line 47: error: pack index exceeds number of pack elements
+    return Ts...[N]; // { dg-error "cannot index an empty pack" }
+           ^
+          detected during instantiation of "int getT<N,<auto-1>...>(auto...) [with N=1, <auto-1>=<>]" at line 115
+
+"Test_name.c", line 61: error: pack index exceeds number of pack elements
+    Ts...[N] t; // { dg-error "cannot index an empty pack" }
+    ^
+          detected during instantiation of "void badtype<N,Ts...>() [with N=0, Ts=<>]" at line 118
+
+"Test_name.c", line 68: error: pack index exceeds number of pack elements
+    Ts...[N] t; // { dg-error "pack index is out of range" }
+    ^
+          detected during instantiation of "void badtype2<N,Ts...>() [with N=1, Ts=<int>]" at line 119
+
+"Test_name.c", line 75: error: pack index exceeds number of pack elements
+    Ts...[N] t; // { dg-error "cannot index an empty pack" }
+    ^
+          detected during instantiation of "void badtype3<N,Ts...>() [with N=-1, Ts=<>]" at line 120
+
+"Test_name.c", line 91: error: expression must have a constant value
+    Ts...[nonconst ()] t; // { dg-error "pack index is not an integral constant" }
+          ^
+"Test_name.c", line 91: note: cannot call non-constexpr function "nonconst" (declared at line 85)
+    Ts...[nonconst ()] t; // { dg-error "pack index is not an integral constant" }
+          ^
+          detected during instantiation of "void badindex<Ts...>() [with Ts=<int, int, int>]" at line 123
+
+43 errors detected in the compilation of "Test_name.c".

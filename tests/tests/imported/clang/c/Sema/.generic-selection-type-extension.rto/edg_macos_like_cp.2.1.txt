@@ -1,0 +1,206 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --c++ Test_name.c
+"Test_name.c", line 10: error: type name is not allowed
+  static_assert(_Generic(int, int : 1, default : 0) == 1);
+                         ^
+
+"Test_name.c", line 14: error: type name is not allowed
+  static_assert(_Generic(int, long : 1, default : 0) == 0);
+                         ^
+
+"Test_name.c", line 17: error: type name is not allowed
+  static_assert(_Generic(int[12], int[0] : 0, int * : 0, int[12] : 1, default : 0) == 1);
+                         ^
+
+"Test_name.c", line 20: error: type name is not allowed
+  static_assert(_Generic(int(int), void(void) : 0, int(void) : 0, void(int) : 0, int(int) : 1, default : 0) == 1);
+                             ^
+
+"Test_name.c", line 20: error: type must be an object type
+  static_assert(_Generic(int(int), void(void) : 0, int(void) : 0, void(int) : 0, int(int) : 1, default : 0) == 1);
+                                   ^
+
+"Test_name.c", line 20: error: type must be an object type
+  static_assert(_Generic(int(int), void(void) : 0, int(void) : 0, void(int) : 0, int(int) : 1, default : 0) == 1);
+                                                   ^
+
+"Test_name.c", line 20: error: type must be an object type
+  static_assert(_Generic(int(int), void(void) : 0, int(void) : 0, void(int) : 0, int(int) : 1, default : 0) == 1);
+                                                                  ^
+
+"Test_name.c", line 20: error: type must be an object type
+  static_assert(_Generic(int(int), void(void) : 0, int(void) : 0, void(int) : 0, int(int) : 1, default : 0) == 1);
+                                                                                 ^
+
+"Test_name.c", line 24: error: expected an expression
+  static_assert(_Generic(const int, long : 1)); // expected-error {{controlling expression type 'const int' not compatible with any generic association type}}
+                         ^
+
+"Test_name.c", line 28: error: expected an expression
+  static_assert(_Generic(const int, int : 0, const int : 1) == 1);
+                         ^
+
+"Test_name.c", line 29: error: type name is not allowed
+  static_assert(_Generic(int volatile _Atomic const, int : 0, const int : 0, volatile int : 0, _Atomic int : 0, _Atomic const volatile int : 1) == 1);
+                         ^
+
+"Test_name.c", line 29: error: expected a ","
+  static_assert(_Generic(int volatile _Atomic const, int : 0, const int : 0, volatile int : 0, _Atomic int : 0, _Atomic const volatile int : 1) == 1);
+                             ^
+
+"Test_name.c", line 33: error: type name is not allowed
+  static_assert(_Generic(__typeof__(ci), int : 0, const int : 1) == 1);
+                         ^
+
+"Test_name.c", line 36: error: static assertion failed
+  static_assert(_Generic(ci, int : 1, const int : 0) == 1); // expected-warning {{due to lvalue conversion of the controlling expression, association of type 'const int' will never be selected because it is qualified}}
+  ^
+"Test_name.c", line 36: note: the final comparison was 0 == 1
+  static_assert(_Generic(ci, int : 1, const int : 0) == 1); // expected-warning {{due to lvalue conversion of the controlling expression, association of type 'const int' will never be selected because it is qualified}}
+                                                     ^
+
+"Test_name.c", line 40: error: expected an expression
+  static_assert(_Generic(struct incomplete, struct incomplete : 1, default : 0) == 1);
+                         ^
+
+"Test_name.c", line 40: error: expected an identifier
+  static_assert(_Generic(struct incomplete, struct incomplete : 1, default : 0) == 1);
+                                                                ^
+
+"Test_name.c", line 40: error: expected an identifier
+  static_assert(_Generic(struct incomplete, struct incomplete : 1, default : 0) == 1);
+                                                                   ^
+
+"Test_name.c", line 40: error: class or struct definition is missing
+  static_assert(_Generic(struct incomplete, struct incomplete : 1, default : 0) == 1);
+                                                                           ^
+
+"Test_name.c", line 41: error: expected an expression
+  static_assert(_Generic(struct another_incomplete, struct incomplete : 1, default : 0) == 0);
+                         ^
+
+"Test_name.c", line 41: error: class "incomplete" has already been defined (previous definition at line 40)
+  static_assert(_Generic(struct another_incomplete, struct incomplete : 1, default : 0) == 0);
+                                                           ^
+
+"Test_name.c", line 41: error: expected an identifier
+  static_assert(_Generic(struct another_incomplete, struct incomplete : 1, default : 0) == 0);
+                                                                        ^
+
+"Test_name.c", line 41: error: expected an identifier
+  static_assert(_Generic(struct another_incomplete, struct incomplete : 1, default : 0) == 0);
+                                                                           ^
+
+"Test_name.c", line 41: error: class or struct definition is missing
+  static_assert(_Generic(struct another_incomplete, struct incomplete : 1, default : 0) == 0);
+                                                                                   ^
+
+"Test_name.c", line 42: error: expected an identifier
+  static_assert(_Generic(1, struct also_incomplete : 1, default : 0) == 0);
+                                                     ^
+
+"Test_name.c", line 42: error: expected an identifier
+  static_assert(_Generic(1, struct also_incomplete : 1, default : 0) == 0);
+                                                        ^
+
+"Test_name.c", line 42: error: class or struct definition is missing
+  static_assert(_Generic(1, struct also_incomplete : 1, default : 0) == 0);
+                                                                ^
+
+"Test_name.c", line 45: error: type name is not allowed
+  static_assert(_Generic(__typeof__(foo), void(int) : 1, default : 0) == 1);
+                         ^
+
+"Test_name.c", line 45: error: type must be an object type
+  static_assert(_Generic(__typeof__(foo), void(int) : 1, default : 0) == 1);
+                                          ^
+
+"Test_name.c", line 46: error: type must be an object type
+  static_assert(_Generic(foo, void(int) : 1, default : 0) == 0); // expected-error {{type 'void (int)' in generic association not an object type}}
+                              ^
+
+"Test_name.c", line 51: error: expected an expression
+  static_assert(_Generic(const int,
+                         ^
+
+"Test_name.c", line 54: error: duplicate association type ("const int") in _Generic selection
+                           const int : 3  // expected-error {{type 'const int' in generic association compatible with previously specified type 'const int'}}
+                           ^
+
+"Test_name.c", line 61: error: expected an expression
+  static_assert(_Generic(volatile CInt, const volatile int : 1, default : 0) == 1);
+                         ^
+
+"Test_name.c", line 62: error: expected an expression
+  static_assert(_Generic(const int, CInt : 1, default : 0) == 1);
+                         ^
+
+"Test_name.c", line 65: error: expected an expression
+  static_assert(_Generic(const int,
+                         ^
+
+"Test_name.c", line 68: error: duplicate association type ("OtherCInt" (aka "const Int")) in _Generic selection
+                           OtherCInt : 3 // expected-error {{type 'OtherCInt' (aka 'const int') in generic association compatible with previously specified type 'CInt' (aka 'const int')}}
+                           ^
+
+"Test_name.c", line 72: error: expected an expression
+  static_assert(_Generic(const int,
+                         ^
+
+"Test_name.c", line 74: error: duplicate association type ("int [12]") in _Generic selection
+                           int[12] : 0,  // expected-error {{type 'int[12]' in generic association compatible with previously specified type 'int[12]'}}
+                           ^
+
+"Test_name.c", line 75: error: type must be an object type
+                           int(int) : 0, // expected-note {{compatible type 'int (int)' specified here}}
+                           ^
+
+"Test_name.c", line 76: error: type must be an object type
+                           int(int) : 0, // expected-error {{type 'int (int)' in generic association compatible with previously specified type 'int (int)'}}
+                           ^
+
+"Test_name.c", line 84: error: type name is not allowed
+  template <typename Ty, int N = _Generic(Ty, int : 0, default : 1)>
+                                          ^
+
+"Test_name.c", line 91: error: type name is not allowed
+  static_assert(bar<int, _Generic(int, int : 1, default : 0)>() == 1);
+                                  ^
+
+"Test_name.c", line 91: error: expected an expression
+  static_assert(bar<int, _Generic(int, int : 1, default : 0)>() == 1);
+                                                              ^
+
+"Test_name.c", line 98: error: type name is not allowed
+    static_assert(_Generic(Ty, int : 1)); // expected-error {{controlling expression type 'double' not compatible with any generic association type}} \
+                           ^
+
+"Test_name.c", line 108: error: type name is not allowed
+  constexpr auto Val = _Generic(Ty, Ty : Ty{});
+                                ^
+
+"Test_name.c", line 124: error: type name is not allowed
+     result = Or<_Generic(Args, int: 1, long: 2, short: 4, float: 8)...>::result
+                          ^
+
+"Test_name.c", line 115: error: too few arguments for class template "Or"
+    enum { result = Arg | Or<Args...>::result };
+                                    ^
+          detected during:
+            instantiation of class "Or<Arg, Args...> [with Arg=<error-constant>, Args=<>]" at line 115
+            instantiation of class "Or<Arg, Args...> [with Arg=<error-constant>, Args=<<error-constant>>]" at line 115
+            instantiation of class "Or<Arg, Args...> [with Arg=<error-constant>, Args=<<error-constant>, <error-constant>>]" at line 124
+            instantiation of class "TypeMask<Args...> [with Args=<int, long, short>]" at line 128
+
+"Test_name.c", line 136: error: type name is not allowed
+    _Generic(T..., int : 1); // expected-error {{expected ','}}
+             ^
+
+"Test_name.c", line 136: error: expected a ","
+    _Generic(T..., int : 1); // expected-error {{expected ','}}
+              ^
+
+"Test_name.c", line 136: error: parameter pack "T" was referenced but not expanded
+    _Generic(T..., int : 1); // expected-error {{expected ','}}
+             ^
+
+49 errors detected in the compilation of "Test_name.c".

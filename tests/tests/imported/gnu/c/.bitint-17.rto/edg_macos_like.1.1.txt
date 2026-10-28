@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 15: warning: signed bit field of length 1
+  struct S4 { char x; _BitInt(195) a : 63; _BitInt(282) b : 280; _BitInt(389) c : 23; _BitInt(2) d : 1; char y; };
+                                                                                                 ^
+
+"Test_name.c", line 20: warning: signed bit field of length 1
+  struct S6 { _BitInt(2) a : 1; };
+                         ^
+
+"Test_name.c", line 23: error: static assertion failed
+  static_assert (expr_has_type (s4.a + 1uwb, _BitInt(195)));
+  ^
+
+"Test_name.c", line 24: error: static assertion failed
+  static_assert (expr_has_type (s4.b + 1uwb, _BitInt(282)));
+  ^
+
+"Test_name.c", line 25: error: static assertion failed
+  static_assert (expr_has_type (s4.c + 1uwb, _BitInt(389)));
+  ^
+
+"Test_name.c", line 30: error: static assertion failed
+  static_assert (expr_has_type (s5.a + 1uwb, _BitInt(192)));
+  ^
+
+"Test_name.c", line 32: error: static assertion failed
+  static_assert (expr_has_type (s5.c + 1uwb, _BitInt(192)));
+  ^
+
+"Test_name.c", line 39: error: static assertion failed
+  static_assert (sizeof (struct S3) == 9);
+  ^
+
+"Test_name.c", line 40: error: static assertion failed
+  static_assert (sizeof (struct S4) == 48);
+  ^
+
+"Test_name.c", line 41: error: static assertion failed
+  static_assert (sizeof (struct S5) == 88);
+  ^
+
+"Test_name.c", line 46: error: static assertion failed
+  static_assert (alignof (struct S4) == 8);
+  ^
+
+"Test_name.c", line 47: error: static assertion failed
+  static_assert (alignof (struct S5) == 8);
+  ^
+
+10 errors detected in the compilation of "Test_name.c".

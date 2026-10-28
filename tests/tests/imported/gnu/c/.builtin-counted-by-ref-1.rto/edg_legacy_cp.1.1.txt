@@ -1,0 +1,146 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./builtin-counted-by-ref-1.c", line 58: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(array_annotated); __auto_type __c = (10); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                ^
+
+"./builtin-counted-by-ref-1.c", line 58: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(array_annotated); __auto_type __c = (10); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+"./builtin-counted-by-ref-1.c", line 61: warning: function "__builtin_counted_by_ref" declared implicitly
+    if (__alignof (*__builtin_counted_by_ref (array_annotated->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 61: error: operand of "*" must be a pointer but has type "int"
+    if (__alignof (*__builtin_counted_by_ref (array_annotated->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 65: warning: function "__builtin_counted_by_ref" declared implicitly
+   (__typeof (*__builtin_counted_by_ref (array_annotated->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 65: error: operand of "*" must be a pointer but has type "int"
+   (__typeof (*__builtin_counted_by_ref (array_annotated->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 69: warning: function "__builtin_counted_by_ref" declared implicitly
+   (__typeof (char[__builtin_counted_by_ref (array_annotated->c)
+                   ^
+
+"./builtin-counted-by-ref-1.c", line 70: warning: operand types are incompatible ("int" and "char *")
+     == &array_annotated->b ? 1 : 10]),
+     ^
+
+"./builtin-counted-by-ref-1.c", line 74: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(array_flex); __auto_type __c = (20); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                           ^
+
+"./builtin-counted-by-ref-1.c", line 74: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(array_flex); __auto_type __c = (20); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+
+"./builtin-counted-by-ref-1.c", line 78: warning: function "__builtin_counted_by_ref" declared implicitly
+   (__typeof (char[__builtin_counted_by_ref (array_flex->c)
+                   ^
+
+"./builtin-counted-by-ref-1.c", line 79: warning: operand types are incompatible ("int" and "short *")
+     == &array_flex->b ? 1 : 10]),
+     ^
+
+"./builtin-counted-by-ref-1.c", line 83: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(array_nested_annotated); __auto_type __c = (30); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                       ^
+
+"./builtin-counted-by-ref-1.c", line 83: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(array_nested_annotated); __auto_type __c = (30); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+
+"./builtin-counted-by-ref-1.c", line 86: warning: function "__builtin_counted_by_ref" declared implicitly
+    if (__alignof (*__builtin_counted_by_ref (array_nested_annotated->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 86: error: operand of "*" must be a pointer but has type "int"
+    if (__alignof (*__builtin_counted_by_ref (array_nested_annotated->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 90: warning: function "__builtin_counted_by_ref" declared implicitly
+   (__typeof (*__builtin_counted_by_ref (array_nested_annotated->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 90: error: operand of "*" must be a pointer but has type "int"
+   (__typeof (*__builtin_counted_by_ref (array_nested_annotated->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 94: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(array_nested_flex); __auto_type __c = (40); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                  ^
+
+"./builtin-counted-by-ref-1.c", line 94: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(array_nested_flex); __auto_type __c = (40); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+
+"./builtin-counted-by-ref-1.c", line 104: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(annotated_p); __auto_type __c = (count); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                               ^
+
+"./builtin-counted-by-ref-1.c", line 104: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(annotated_p); __auto_type __c = (count); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                     ^
+
+"./builtin-counted-by-ref-1.c", line 107: warning: function "__builtin_counted_by_ref" declared implicitly
+    if (__alignof (*__builtin_counted_by_ref (annotated_p->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 107: error: operand of "*" must be a pointer but has type "int"
+    if (__alignof (*__builtin_counted_by_ref (annotated_p->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 111: warning: function "__builtin_counted_by_ref" declared implicitly
+   (__typeof (*__builtin_counted_by_ref (annotated_p->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 111: error: operand of "*" must be a pointer but has type "int"
+   (__typeof (*__builtin_counted_by_ref (annotated_p->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 115: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(flex_p); __auto_type __c = (count * 2); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                              ^
+
+"./builtin-counted-by-ref-1.c", line 115: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(flex_p); __auto_type __c = (count * 2); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+"./builtin-counted-by-ref-1.c", line 119: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(nested_annotated_p); __auto_type __c = (count * 3); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+"./builtin-counted-by-ref-1.c", line 119: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(nested_annotated_p); __auto_type __c = (count * 3); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+
+"./builtin-counted-by-ref-1.c", line 122: warning: function "__builtin_counted_by_ref" declared implicitly
+    if (__alignof (*__builtin_counted_by_ref (nested_annotated_p->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 122: error: operand of "*" must be a pointer but has type "int"
+    if (__alignof (*__builtin_counted_by_ref (nested_annotated_p->c))
+                    ^
+
+"./builtin-counted-by-ref-1.c", line 126: warning: function "__builtin_counted_by_ref" declared implicitly
+   (__typeof (*__builtin_counted_by_ref (nested_annotated_p->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 126: error: operand of "*" must be a pointer but has type "int"
+   (__typeof (*__builtin_counted_by_ref (nested_annotated_p->c)),
+               ^
+
+"./builtin-counted-by-ref-1.c", line 130: warning: function "__builtin_counted_by_ref" declared implicitly
+    ({ __auto_type __p = &(nested_flex_p); __auto_type __c = (count * 4); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                     ^
+
+"./builtin-counted-by-ref-1.c", line 130: error: operand of "*" must be a pointer but has type "int"
+    ({ __auto_type __p = &(nested_flex_p); __auto_type __c = (count * 4); size_t __size = (sizeof (*(*__p)) > __builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c) ? (sizeof (*(*__p))) : (__builtin_offsetof (__typeof(*(*__p)),c) + sizeof (*((*__p)->c)) * __c); if ((*__p = __builtin_malloc(__size))) { __builtin_memset(*__p, 0, __size); __auto_type ret = __builtin_counted_by_ref((*__p)->c); *_Generic(ret, void *: &(size_t){0}, default: ret) = __c; if (sizeof (__builtin_counted_by_ref ((*__p)->c)) != sizeof (char *)) __builtin_abort (); } });
+                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+16 errors detected in the compilation of "Test_name.c".

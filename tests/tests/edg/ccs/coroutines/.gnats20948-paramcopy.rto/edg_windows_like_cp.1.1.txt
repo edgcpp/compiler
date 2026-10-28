@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++20 --set_flag=coroutines --set_flag=no_checking_pragmas -tused Test_name.c
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function 'f__FiRf1BP1BR1BE1B':
+Test_name.c:33:28: error: 'co_await__T6' undeclared (first use in this function)
+Test_name.c:33:28: note: each undeclared identifier is reported only once for each function it appears in
+Test_name.c:38:209: error: '__T17' undeclared (first use in this function); did you mean '__T16'?
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

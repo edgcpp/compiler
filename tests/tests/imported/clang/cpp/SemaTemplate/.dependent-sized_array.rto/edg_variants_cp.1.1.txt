@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: warning: variable "numAs" was declared but never referenced
+    unsigned numAs = sizeof(a) / sizeof(int);
+             ^
+
+"Test_name.c", line 16: warning: variable "a0" was declared but never referenced
+    int a0[] = {}; // expected-warning{{zero}}
+        ^
+
+"Test_name.c", line 18: warning: variable "a3" was declared but never referenced
+    int a3[sizeof(a1)/sizeof(int) != 4? 1 : -1]; // expected-error{{negative}}
+        ^
+
+"Test_name.c", line 28: warning: variable "arr" was declared but never referenced
+      S<0> arr[N] = {{ 4 }};
+           ^
+

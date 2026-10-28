@@ -1,0 +1,162 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-complex.h", line 26: error: identifier "_Float128" is undefined
+  volatile _Float128 a = 1.0f128;
+           ^
+
+"./torture/floatn-complex.h", line 26: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128 a = 1.0f128;
+                        ^
+
+"./torture/floatn-complex.h", line 27: error: identifier "_Float128" is undefined
+  volatile _Complex _Float128 b = 2.0f128 + 3.0if128;
+                    ^
+
+"./torture/floatn-complex.h", line 27: error: _Complex can only be used with floating-point types
+  volatile _Complex _Float128 b = 2.0f128 + 3.0if128;
+  ^
+
+"./torture/floatn-complex.h", line 27: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Complex _Float128 b = 2.0f128 + 3.0if128;
+                                 ^
+
+"./torture/floatn-complex.h", line 27: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Complex _Float128 b = 2.0f128 + 3.0if128;
+                                            ^
+
+"./torture/floatn-complex.h", line 28: error: identifier "_Float128" is undefined
+  volatile _Complex _Float128 c = 2.0f128 + 3.0F128i;
+                    ^
+
+"./torture/floatn-complex.h", line 28: error: _Complex can only be used with floating-point types
+  volatile _Complex _Float128 c = 2.0f128 + 3.0F128i;
+  ^
+
+"./torture/floatn-complex.h", line 28: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Complex _Float128 c = 2.0f128 + 3.0F128i;
+                                 ^
+
+"./torture/floatn-complex.h", line 28: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Complex _Float128 c = 2.0f128 + 3.0F128i;
+                                           ^
+
+"./torture/floatn-complex.h", line 29: error: identifier "_Float128" is undefined
+  volatile _Complex _Float128 d = __builtin_complex (2.0f128, 3.0f128);
+                    ^
+
+"./torture/floatn-complex.h", line 29: error: _Complex can only be used with floating-point types
+  volatile _Complex _Float128 d = __builtin_complex (2.0f128, 3.0f128);
+  ^
+
+"./torture/floatn-complex.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Complex _Float128 d = __builtin_complex (2.0f128, 3.0f128);
+                                                    ^
+
+"./torture/floatn-complex.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Complex _Float128 d = __builtin_complex (2.0f128, 3.0f128);
+                                                             ^
+
+"./torture/floatn-complex.h", line 31: error: identifier "_Float128" is undefined
+  _Complex _Float128
+           ^
+
+"./torture/floatn-complex.h", line 31: error: _Complex can only be used with floating-point types
+  _Complex _Float128
+  ^
+
+"./torture/floatn-complex.h", line 32: error: identifier "_Float128" is undefined
+  fn (_Complex _Float128 arg)
+               ^
+
+"./torture/floatn-complex.h", line 32: error: _Complex can only be used with floating-point types
+  fn (_Complex _Float128 arg)
+      ^
+
+"./torture/floatn-complex.h", line 40: error: identifier "_Float128" is undefined
+    volatile _Complex _Float128 r;
+                      ^
+
+"./torture/floatn-complex.h", line 40: error: _Complex can only be used with floating-point types
+    volatile _Complex _Float128 r;
+    ^
+
+"./torture/floatn-complex.h", line 46: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 3.0f128 || __imag__ r != 3.0f128)
+                     ^
+
+"./torture/floatn-complex.h", line 46: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 3.0f128 || __imag__ r != 3.0f128)
+                                              ^
+
+"./torture/floatn-complex.h", line 49: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 5.0f128 || __imag__ r != 6.0f128)
+                     ^
+
+"./torture/floatn-complex.h", line 49: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 5.0f128 || __imag__ r != 6.0f128)
+                                              ^
+
+"./torture/floatn-complex.h", line 52: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 4.0f128 || __imag__ r != 6.0f128)
+                     ^
+
+"./torture/floatn-complex.h", line 52: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 4.0f128 || __imag__ r != 6.0f128)
+                                              ^
+
+"./torture/floatn-complex.h", line 55: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 2.0f128 || __imag__ r != 3.0f128)
+                     ^
+
+"./torture/floatn-complex.h", line 55: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 2.0f128 || __imag__ r != 3.0f128)
+                                              ^
+
+"./torture/floatn-complex.h", line 58: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 4.0f128 || __imag__ r != 6.0f128)
+                     ^
+
+"./torture/floatn-complex.h", line 58: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 4.0f128 || __imag__ r != 6.0f128)
+                                              ^
+
+"./torture/floatn-complex.h", line 61: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 2.0f128 || __imag__ r != 3.0f128)
+                     ^
+
+"./torture/floatn-complex.h", line 61: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 2.0f128 || __imag__ r != 3.0f128)
+                                              ^
+
+"./torture/floatn-complex.h", line 64: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != -5.0f128 || __imag__ r != 12.0f128)
+                      ^
+
+"./torture/floatn-complex.h", line 64: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != -5.0f128 || __imag__ r != 12.0f128)
+                                                ^
+
+"./torture/floatn-complex.h", line 68: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    r += __builtin_complex (100.0f128, 100.0f128);
+                             ^
+
+"./torture/floatn-complex.h", line 68: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    r += __builtin_complex (100.0f128, 100.0f128);
+                                        ^
+
+"./torture/floatn-complex.h", line 69: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    r -= __builtin_complex (100.0f128, 100.0f128);
+                             ^
+
+"./torture/floatn-complex.h", line 69: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    r -= __builtin_complex (100.0f128, 100.0f128);
+                                        ^
+
+"./torture/floatn-complex.h", line 73: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 0.5f128 || __imag__ r != 0.75f128)
+                     ^
+
+"./torture/floatn-complex.h", line 73: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (__real__ r != 0.5f128 || __imag__ r != 0.75f128)
+                                               ^
+
+13 errors detected in the compilation of "Test_name.c".

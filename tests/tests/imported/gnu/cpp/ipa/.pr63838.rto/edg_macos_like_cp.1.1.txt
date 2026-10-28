@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 12: warning: a volatile operand to an increment expression is deprecated
+  struct S { S () { v++; } ~S () { v++; } }; // { dg-warning "deprecated" "" { target c++2a } }
+                    ^
+
+"Test_name.c", line 12: warning: a volatile operand to an increment expression is deprecated
+  struct S { S () { v++; } ~S () { v++; } }; // { dg-warning "deprecated" "" { target c++2a } }
+                                   ^
+
+"Test_name.c", line 17: warning: a volatile operand to an increment expression is deprecated
+    v++; // { dg-warning "deprecated" "" { target c++2a } }
+    ^
+
+"Test_name.c", line 25: warning: a volatile operand to an increment expression is deprecated
+    v++; // { dg-warning "deprecated" "" { target c++2a } }
+    ^
+

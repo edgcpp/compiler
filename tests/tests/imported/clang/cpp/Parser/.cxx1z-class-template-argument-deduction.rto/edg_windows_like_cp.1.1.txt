@@ -1,0 +1,403 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions Test_name.c
+"Test_name.c", line 19: error: argument list for class template "A" is missing
+    Y<A> ya; // expected-error {{requires template arguments}}
+      ^
+
+"Test_name.c", line 21: error: argument list for class template "A" is missing
+    Y<::A> ycca; // expected-error {{requires template arguments}}
+      ^
+
+"Test_name.c", line 22: error: expected a ">"
+    X<A*> xap; // expected-error {{requires template arguments}}
+       ^
+
+"Test_name.c", line 23: error: expected an identifier
+    X<const A> xca; // expected-error {{requires template arguments}}
+      ^
+
+"Test_name.c", line 24: error: expected a ">"
+    X<A const> xac; // expected-error {{requires template arguments}}
+        ^
+
+"Test_name.c", line 27: error: expected a ">"
+    X<A [[]]> xa_attr;
+        ^
+
+"Test_name.c", line 30: error: argument list for class template "A" is missing
+    template<typename = A> struct YD {}; // expected-error {{requires template arguments}}
+                        ^
+
+"Test_name.c", line 32: error: argument list for class template "A" is missing
+    template<typename = ::A> struct YCCD {}; // expected-error {{requires template arguments}}
+                        ^
+
+"Test_name.c", line 35: error: argument list for class template "A" is missing
+    template <A a = A<int>()> class C { }; // expected-error {{requires template arguments}}
+              ^
+
+"Test_name.c", line 36: error: argument list for class template "A" is missing
+    template<typename T = A> struct G { }; // expected-error {{requires template arguments}}
+                          ^
+
+"Test_name.c", line 49: error: argument list for class template "template_template_arg_pack::Z::Q" is missing
+      YP<ZId<Ts>::Q...> ye; // expected-error {{requires template arguments}}
+         ^
+
+"Test_name.c", line 51: error: parameter pack "Ts" was referenced but not expanded
+      XP<ZId<Ts>::Q> xp; // expected-error {{unexpanded parameter pack}}
+             ^
+
+"Test_name.c", line 52: error: argument list for class template "template_template_arg_pack::Z::Q" is missing
+      YP<ZId<Ts>::Q> yp; // expected-error {{requires template arguments}}
+         ^
+
+"Test_name.c", line 52: error: parameter pack "Ts" was referenced but not expanded
+      YP<ZId<Ts>::Q> yp; // expected-error {{requires template arguments}}
+             ^
+
+"Test_name.c", line 63: error: invalid redeclaration of member function "injected_class_name::A<T>::f(int) [with T=int]" (declared at line 59)
+      void f(T); // expected-error {{multiple overloads of 'f' instantiate to the same signature 'void (int)}}
+           ^
+          detected during instantiation of class "injected_class_name::A<T> [with T=int]" at line 61
+
+"Test_name.c", line 66: error: overloaded function "injected_class_name::A<T>::A [with T=double]" is not a type name
+    A<double>::A b(1); // expected-error {{constructor name}}
+    ^
+
+"Test_name.c", line 70: error: argument list for class template "A" is missing
+    A a; // expected-error {{requires template arguments}}
+    ^
+
+"Test_name.c", line 71: error: argument list for class template "A" is missing
+    A *b; // expected-error {{requires template arguments}}
+    ^
+
+"Test_name.c", line 72: error: argument list for class template "A" is missing
+    const A c; // expected-error {{requires template arguments}}
+          ^
+
+"Test_name.c", line 74: error: argument list for class template "A" is missing
+    void f() throw (A); // expected-error {{requires template arguments}}
+                    ^
+
+"Test_name.c", line 74: error: dynamic exception specifications are not permitted in this mode
+    void f() throw (A); // expected-error {{requires template arguments}}
+             ^
+
+"Test_name.c", line 76: error: argument list for class template "A" is missing
+    friend A; // expected-error {{requires template arguments; argument deduction not allowed in friend declaration}}
+           ^
+
+"Test_name.c", line 78: error: argument list for class template "A" is missing
+    operator A(); // expected-error {{requires template arguments; argument deduction not allowed in conversion function type}}
+             ^
+
+"Test_name.c", line 80: error: argument list for class template "A" is missing
+    static A x; // expected-error {{declaration of variable 'x' with deduced type 'A' requires an initializer}}
+           ^
+
+"Test_name.c", line 85: error: argument list for class template "A" is missing
+    typedef A *AutoPtr; // expected-error {{requires template arguments; argument deduction not allowed in typedef}}
+            ^
+
+"Test_name.c", line 86: error: argument list for class template "A" is missing
+    typedef A (*PFun)(int a); // expected-error{{requires template arguments; argument deduction not allowed in typedef}}
+            ^
+
+"Test_name.c", line 87: error: a trailing return type requires the "auto" type specifier
+    typedef A Fun(int a) -> decltype(a + a); // expected-error{{requires template arguments; argument deduction not allowed in function return type}}
+                         ^
+
+"Test_name.c", line 91: error: argument list for class template "A" is missing
+    void g(A a) { // expected-error{{requires template arguments; argument deduction not allowed in function prototype}}
+           ^
+
+"Test_name.c", line 93: error: argument list for class template "A" is missing
+      catch (A &a) { } // expected-error{{requires template arguments; argument deduction not allowed in exception declaration}}
+             ^
+
+"Test_name.c", line 94: error: argument list for class template "A" is missing
+      catch (const A a) { } // expected-error{{requires template arguments; argument deduction not allowed in exception declaration}}
+                   ^
+
+"Test_name.c", line 95: error: argument list for class template "A" is missing
+      try { } catch (A a) { } // expected-error{{requires template arguments; argument deduction not allowed in exception declaration}}
+                     ^
+
+"Test_name.c", line 101: warning: variable "local" was declared but never referenced
+      A local = 0;
+        ^
+
+"Test_name.c", line 102: warning: variable "local_static" was declared but never referenced
+      static A local_static = 0;
+               ^
+
+"Test_name.c", line 103: warning: variable "thread_local_static" was declared but never referenced
+      static thread_local A thread_local_static = 0;
+                            ^
+
+"Test_name.c", line 123: error: <typeinfo> must be included before typeid is used
+      (void)typeid(A); // expected-error{{requires template arguments; argument deduction not allowed here}}
+            ^
+
+"Test_name.c", line 123: error: argument list for class template "A" is missing
+      (void)typeid(A); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                   ^
+
+"Test_name.c", line 124: error: argument list for class template "A" is missing
+      (void)sizeof(A); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                   ^
+
+"Test_name.c", line 125: error: argument list for class template "A" is missing
+      (void)__alignof(A); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                      ^
+
+"Test_name.c", line 127: error: argument list for class template "A" is missing
+      U<A> v; // expected-error {{requires template arguments}}
+        ^
+
+"Test_name.c", line 130: error: argument list for class template "A" is missing
+      (void)dynamic_cast<A&>(n); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                         ^
+
+"Test_name.c", line 131: error: argument list for class template "A" is missing
+      (void)static_cast<A*>(&n); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                        ^
+
+"Test_name.c", line 132: error: argument list for class template "A" is missing
+      (void)reinterpret_cast<A*>(&n); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                             ^
+
+"Test_name.c", line 133: error: argument list for class template "A" is missing
+      (void)const_cast<A>(n); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                       ^
+
+"Test_name.c", line 134: error: argument list for class template "A" is missing
+      (void)*(A*)(&n); // expected-error{{requires template arguments; argument deduction not allowed here}}
+              ^
+
+"Test_name.c", line 135: error: argument list for class template "A" is missing
+      (void)(A)(n); // expected-error{{requires template arguments; argument deduction not allowed here}}
+             ^
+
+"Test_name.c", line 136: error: argument list for class template "A" is missing
+      (void)(A){n}; // expected-error{{requires template arguments; argument deduction not allowed here}}
+             ^
+
+"Test_name.c", line 127: warning: variable "v" was declared but never referenced
+      U<A> v; // expected-error {{requires template arguments}}
+           ^
+
+"Test_name.c", line 147: error: argument list for class template "A" is missing
+    enum E : A {}; // expected-error{{requires template arguments; argument deduction not allowed here}}
+             ^
+
+"Test_name.c", line 148: error: argument list for class template "A" is missing
+    struct F : A {}; // expected-error{{expected class name}}
+               ^
+
+"Test_name.c", line 148: error: not a class or struct name
+    struct F : A {}; // expected-error{{expected class name}}
+               ^
+
+"Test_name.c", line 150: error: argument list for class template "A" is missing
+    using B = A; // expected-error{{requires template arguments}}
+              ^
+
+"Test_name.c", line 152: error: argument list for class template "A" is missing
+    auto k() -> A; // expected-error{{requires template arguments}}
+                ^
+
+"Test_name.c", line 158: error: cannot deduce class template arguments
+    A *p = 0; // expected-error {{cannot form pointer to deduced class template specialization type}}
+    ^
+
+"Test_name.c", line 159: error: cannot deduce class template arguments
+    A &r = *p; // expected-error {{cannot form reference to deduced class template specialization type}}
+    ^
+
+"Test_name.c", line 160: error: argument list for class template "A" is missing
+    A arr[3] = 0; // expected-error {{cannot form array of deduced class template specialization type}}
+    ^
+
+"Test_name.c", line 161: error: cannot deduce class template arguments
+    A F::*pm = 0; // expected-error {{cannot form pointer to deduced class template specialization type}}
+    ^
+
+"Test_name.c", line 162: error: cannot deduce class template arguments
+    A (*fp)() = 0; // expected-error {{cannot form function returning deduced class template specialization type}}
+    ^
+
+"Test_name.c", line 163: error: invalid specifier for structured binding declaration
+    A [x, y] = 0; // expected-error {{cannot be declared with type 'A'}} expected-error {{type 'A<int>' binds to 0 elements, but 2 names were provided}}
+    ^
+
+"Test_name.c", line 177: warning: variable "a" was declared but never referenced
+      for (typename ::A a = 0; typename ::A b = 0; /**/) {}
+                        ^
+
+"Test_name.c", line 179: error: argument list for class template "A" is missing
+      (void)(typename ::A)(0); // expected-error{{requires template arguments; argument deduction not allowed here}}
+                      ^
+
+"Test_name.c", line 180: error: argument list for class template "A" is missing
+      (void)(typename ::A){0}; // expected-error{{requires template arguments; argument deduction not allowed here}}
+                      ^
+
+"Test_name.c", line 174: warning: variable "a" was declared but never referenced
+      typename ::A a = 0;
+                   ^
+
+"Test_name.c", line 175: warning: variable "b" was declared but never referenced
+      const typename ::A b = 0;
+                         ^
+
+"Test_name.c", line 185: error: cannot deduce class template arguments
+    typename ::A *p = 0; // expected-error {{cannot form pointer to deduced class template specialization type}}
+             ^
+
+"Test_name.c", line 186: error: cannot deduce class template arguments
+    typename ::A &r = *p; // expected-error {{cannot form reference to deduced class template specialization type}}
+             ^
+
+"Test_name.c", line 187: error: argument list for class template "A" is missing
+    typename ::A arr[3] = 0; // expected-error {{cannot form array of deduced class template specialization type}}
+             ^
+
+"Test_name.c", line 188: error: cannot deduce class template arguments
+    typename ::A F::*pm = 0; // expected-error {{cannot form pointer to deduced class template specialization type}}
+             ^
+
+"Test_name.c", line 189: error: cannot deduce class template arguments
+    typename ::A (*fp)() = 0; // expected-error {{cannot form function returning deduced class template specialization type}}
+             ^
+
+"Test_name.c", line 190: error: invalid specifier for structured binding declaration
+    typename ::A [x, y] = 0; // expected-error {{cannot be declared with type 'typename ::A'}} expected-error {{type 'typename ::A<int>' (aka 'A<int>') binds to 0}}
+    ^
+
+"Test_name.c", line 208: warning: variable "p" was declared but never referenced
+      {typename T::A *p = 0;} // expected-error {{refers to class template member}}
+                      ^
+
+"Test_name.c", line 210: error: initialization with "{...}" expected for aggregate object
+      {typename T::A arr[3] = 0;} // expected-error {{refers to class template member}}
+                              ^
+
+"Test_name.c", line 211: warning: variable "pm" was declared but never referenced
+      {typename T::A F::*pm = 0;} // expected-error {{refers to class template member}}
+                         ^
+
+"Test_name.c", line 212: warning: variable "fp" was declared but never referenced
+      {typename T::A (*fp)() = 0;} // expected-error {{refers to class template member}}
+                       ^
+
+"Test_name.c", line 213: error: type name is not allowed
+      {typename T::A [x, y] = 0;} // expected-error {{cannot be declared with type 'typename T::A'}} expected-error {{type 'typename typename_specifier::X::A<int>' (aka 'typename_specifier::X::A<int>') binds to 0}}
+       ^
+
+"Test_name.c", line 213: error: identifier "x" is undefined
+      {typename T::A [x, y] = 0;} // expected-error {{cannot be declared with type 'typename T::A'}} expected-error {{type 'typename typename_specifier::X::A<int>' (aka 'typename_specifier::X::A<int>') binds to 0}}
+                      ^
+
+"Test_name.c", line 213: error: identifier "y" is undefined
+      {typename T::A [x, y] = 0;} // expected-error {{cannot be declared with type 'typename T::A'}} expected-error {{type 'typename typename_specifier::X::A<int>' (aka 'typename_specifier::X::A<int>') binds to 0}}
+                         ^
+
+"Test_name.c", line 218: error: no instance of function template "typename_specifier::g" matches the argument list
+    void h() { g<X>(); } // expected-error {{no matching function}}
+               ^
+"Test_name.c", line 217: note: substituting explicit template arguments "<typename_specifier::X>" for function template "typename_specifier::g" failed
+    template<typename T> void g(typename T::A = 0); // expected-note {{refers to class template member}}
+                              ^
+
+"Test_name.c", line 241: error: exception specification is not allowed
+    B() noexcept(false); // expected-error {{deduction guide must be declared in the same scope as template 'PR49735::B'}} \
+        ^
+
+"Test_name.c", line 241: error: deduction guide must be declared in the same scope as class template "PR49735::B"
+    B() noexcept(false); // expected-error {{deduction guide must be declared in the same scope as template 'PR49735::B'}} \
+    ^
+
+"Test_name.c", line 241: error: the return type must directly designate a specialization of the associated class template
+    B() noexcept(false); // expected-error {{deduction guide must be declared in the same scope as template 'PR49735::B'}} \
+    ^
+
+"Test_name.c", line 247: error: deduction guide must be declared in the same scope as class template "PR49735::B"
+    B() noexcept(false); // expected-error {{deduction guide must be declared in the same scope as template 'PR49735::B'}} \
+    ^
+
+"Test_name.c", line 247: error: the return type must directly designate a specialization of the associated class template
+    B() noexcept(false); // expected-error {{deduction guide must be declared in the same scope as template 'PR49735::B'}} \
+    ^
+
+"Test_name.c", line 257: error: expected an identifier
+    GH57495::vector.d; // expected-error {{cannot use dot operator on a type}}
+                   ^
+
+"Test_name.c", line 266: error: a trailing return type requires the "auto" type specifier
+  template <class T2> pair() -> pair<T2>;   // expected-error 2{{no template named 'pair'}} \
+                             ^
+
+"Test_name.c", line 266: error: pair is not a template
+  template <class T2> pair() -> pair<T2>;   // expected-error 2{{no template named 'pair'}} \
+                                ^
+
+"Test_name.c", line 201: error: expression must have bool type (or be convertible to bool)
+      if (typename T::A a = 0) {} // expected-error {{value of type 'typename typename_specifier::X::A<int>' (aka 'typename_specifier::X::A<int>') is not contextually convertible to 'bool'}}
+                        ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 202: error: expression must have bool type (or be convertible to bool)
+      for (typename T::A a = 0; typename T::A b = 0; /**/) {} // expected-error {{value of type 'typename typename_specifier::X::A<int>' (aka 'typename_specifier::X::A<int>') is not contextually convertible to 'bool'}}
+                                              ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 204: error: argument list for class template "typename_specifier::X::A" is missing
+      {(void)(typename T::A)(0);} // expected-error{{refers to class template member}}
+                       ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 205: error: argument list for class template "typename_specifier::X::A" is missing
+      {(void)(typename T::A){0};} // expected-error{{refers to class template member}}
+                       ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 208: error: cannot deduce class template arguments
+      {typename T::A *p = 0;} // expected-error {{refers to class template member}}
+                ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 209: error: cannot deduce class template arguments
+      {typename T::A &r = *p;} // expected-error {{refers to class template member}}
+                ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 210: error: argument list for class template "typename_specifier::X::A" is missing
+      {typename T::A arr[3] = 0;} // expected-error {{refers to class template member}}
+                ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 211: error: cannot deduce class template arguments
+      {typename T::A F::*pm = 0;} // expected-error {{refers to class template member}}
+                ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 212: error: cannot deduce class template arguments
+      {typename T::A (*fp)() = 0;} // expected-error {{refers to class template member}}
+                ^
+          detected during instantiation of "void typename_specifier::f<T>() [with T=typename_specifier::X]" at line 215
+
+"Test_name.c", line 156: warning: variable "decl::c" was declared but never referenced
+    const A c = 0;
+            ^
+
+"Test_name.c", line 183: warning: variable "typename_specifier::b" was declared but never referenced
+    const typename ::A b = 0;
+                       ^
+
+"Test_name.c", line 222: error: function "parenthesized::X<T>::X(T) [with T=lambda []()->void]", declared using a type with no linkage, must be defined in this translation unit
+    template<typename T> struct X { X(T); };
+                                    ^
+
+85 errors detected in the compilation of "Test_name.c".

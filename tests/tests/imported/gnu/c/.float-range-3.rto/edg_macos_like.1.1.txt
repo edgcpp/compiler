@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 Test_name.c
+"./float-range-3.c", line 12: warning: variable "f1" was declared but never referenced
+    float f1 = 3.5E+38f;
+          ^
+
+"./float-range-3.c", line 14: warning: variable "f3" was declared but never referenced
+    float f3 = 
+          ^
+
+"./float-range-3.c", line 17: warning: variable "d1" was declared but never referenced
+    double d1 = 1.9E+308;
+           ^
+
+"./float-range-3.c", line 19: warning: variable "d3" was declared but never referenced
+    double d3 = 
+           ^
+
+"./float-range-3.c", line 27: error: floating constant is out of range
+    float f1 = 3.3E-46f;
+               ^
+
+"./float-range-3.c", line 28: error: floating constant is out of range
+    float f2 = -3.3E-46f;
+                ^
+
+"./float-range-3.c", line 25: warning: variable "f11" was declared but never referenced
+    float f11 = 3.3E-10000000000000000000f;
+          ^
+
+"./float-range-3.c", line 26: warning: variable "f22" was declared but never referenced
+    float f22 = -3.3E-10000000000000000000f;
+          ^
+
+"./float-range-3.c", line 29: warning: variable "f3" was declared but never referenced
+    float f3 = 0;
+          ^
+
+"./float-range-3.c", line 30: warning: variable "f4" was declared but never referenced
+    float f4 = -0;
+          ^
+
+"./float-range-3.c", line 31: warning: variable "f5" was declared but never referenced
+    float f5 = 0.0;
+          ^
+
+"./float-range-3.c", line 32: warning: variable "f6" was declared but never referenced
+    float f6 = -0.0;
+          ^
+
+"./float-range-3.c", line 34: warning: variable "d11" was declared but never referenced
+    double d11 = 3.3E-10000000000000000000;
+           ^
+
+"./float-range-3.c", line 35: warning: variable "d22" was declared but never referenced
+    double d22 = -3.3E-10000000000000000000;
+           ^
+
+"./float-range-3.c", line 36: warning: variable "d1" was declared but never referenced
+    double d1 = 1.4E-325;
+           ^
+
+"./float-range-3.c", line 37: warning: variable "d2" was declared but never referenced
+    double d2 = -1.4E-325;
+           ^
+
+"./float-range-3.c", line 38: warning: variable "d3" was declared but never referenced
+    double d3 = 0;
+           ^
+
+"./float-range-3.c", line 39: warning: variable "d4" was declared but never referenced
+    double d4 = -0;
+           ^
+
+"./float-range-3.c", line 40: warning: variable "d5" was declared but never referenced
+    double d5 = 0.0;
+           ^
+
+"./float-range-3.c", line 41: warning: variable "d6" was declared but never referenced
+    double d6 = -0.0;
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

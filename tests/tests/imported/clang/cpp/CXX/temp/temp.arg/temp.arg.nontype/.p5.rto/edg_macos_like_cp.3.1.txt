@@ -1,0 +1,165 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 59: error: expression must have a constant value
+    A2<X_ptr> *a12;
+       ^
+"Test_name.c", line 59: note: the value of variable "pointer_to_object_parameters::X_ptr" (declared at line 56) cannot be used as a constant
+    A2<X_ptr> *a12;
+       ^
+
+"Test_name.c", line 81: error: expression must have a constant value
+    void g(zed<bar>*);
+               ^
+"Test_name.c", line 81: note: the value of variable "pointer_to_object_parameters::bar" (declared at line 79) cannot be used as a constant
+    void g(zed<bar>*);
+               ^
+
+"Test_name.c", line 89: error: argument of type "int" is incompatible with template parameter of type "int *"
+    void g2(zed<baz>*);
+                ^
+
+"Test_name.c", line 117: error: qualifiers dropped in binding reference of type "int &" to initializer of type "const int"
+      S0<ci> s0c; // expected-error{{type 'const int'}}
+         ^
+
+"Test_name.c", line 118: error: qualifiers dropped in binding reference of type "int &" to initializer of type "volatile int"
+      S0<vi> s0v; // expected-error{{type 'volatile int'}}
+         ^
+
+"Test_name.c", line 119: error: qualifiers dropped in binding reference of type "int &" to initializer of type "const volatile int"
+      S0<cvi> s0cv; // expected-error{{type 'const volatile int'}}
+         ^
+
+"Test_name.c", line 123: error: qualifiers dropped in binding reference of type "const int &" to initializer of type "volatile int"
+      S1<vi> s1v; // expected-error{{type 'volatile int'}}
+         ^
+
+"Test_name.c", line 124: error: qualifiers dropped in binding reference of type "const int &" to initializer of type "const volatile int"
+      S1<cvi> s1cv; // expected-error{{type 'const volatile int'}}
+         ^
+
+"Test_name.c", line 127: error: qualifiers dropped in binding reference of type "volatile int &" to initializer of type "const int"
+      S2<ci> s2c; // expected-error{{type 'const int'}}
+         ^
+
+"Test_name.c", line 129: error: qualifiers dropped in binding reference of type "volatile int &" to initializer of type "const volatile int"
+      S2<cvi> s2cv; // expected-error{{type 'const volatile int'}}
+         ^
+
+"Test_name.c", line 116: warning: variable "s0" was declared but never referenced
+      S0<i> s0;
+            ^
+
+"Test_name.c", line 117: warning: variable "s0c" was declared but never referenced
+      S0<ci> s0c; // expected-error{{type 'const int'}}
+             ^
+
+"Test_name.c", line 118: warning: variable "s0v" was declared but never referenced
+      S0<vi> s0v; // expected-error{{type 'volatile int'}}
+             ^
+
+"Test_name.c", line 119: warning: variable "s0cv" was declared but never referenced
+      S0<cvi> s0cv; // expected-error{{type 'const volatile int'}}
+              ^
+
+"Test_name.c", line 121: warning: variable "s1" was declared but never referenced
+      S1<i> s1;
+            ^
+
+"Test_name.c", line 122: warning: variable "s1c" was declared but never referenced
+      S1<ci> s1c;
+             ^
+
+"Test_name.c", line 123: warning: variable "s1v" was declared but never referenced
+      S1<vi> s1v; // expected-error{{type 'volatile int'}}
+             ^
+
+"Test_name.c", line 124: warning: variable "s1cv" was declared but never referenced
+      S1<cvi> s1cv; // expected-error{{type 'const volatile int'}}
+              ^
+
+"Test_name.c", line 126: warning: variable "s2" was declared but never referenced
+      S2<i> s2;
+            ^
+
+"Test_name.c", line 127: warning: variable "s2c" was declared but never referenced
+      S2<ci> s2c; // expected-error{{type 'const int'}}
+             ^
+
+"Test_name.c", line 128: warning: variable "s2v" was declared but never referenced
+      S2<vi> s2v;
+             ^
+
+"Test_name.c", line 129: warning: variable "s2cv" was declared but never referenced
+      S2<cvi> s2cv; // expected-error{{type 'const volatile int'}}
+              ^
+
+"Test_name.c", line 131: warning: variable "s3" was declared but never referenced
+      S3<i> s3;
+            ^
+
+"Test_name.c", line 132: warning: variable "s3c" was declared but never referenced
+      S3<ci> s3c;
+             ^
+
+"Test_name.c", line 133: warning: variable "s3v" was declared but never referenced
+      S3<vi> s3v;
+             ^
+
+"Test_name.c", line 134: warning: variable "s3cv" was declared but never referenced
+      S3<cvi> s3cv;
+              ^
+
+"Test_name.c", line 143: warning: variable "ref2" was declared but never referenced
+        T &ref2 = ref; // expected-error{{drops 'const' qualifier}}
+           ^
+
+"Test_name.c", line 177: error: argument of type "int (*)(float)" is incompatible with template parameter of type "int (*)(int)"
+    void x0c(X0<g>); // expected-error-re{{type 'int (float)' {{.*}}convert{{.*}} 'int (*)(int)'}}
+                ^
+
+"Test_name.c", line 178: error: argument of type "int (*)(float)" is incompatible with template parameter of type "int (*)(int)"
+    void x0d(X0<&g>); // expected-error-re{{type 'int (*)(float)' {{.*}}convert{{.*}} 'int (*)(int)'}}
+                ^
+
+"Test_name.c", line 179: error: expression must have a constant value
+    void x0e(X0<funcptr>);
+                ^
+"Test_name.c", line 179: note: the value of variable "pointer_to_function::funcptr" (declared at line 174) cannot be used as a constant
+    void x0e(X0<funcptr>);
+                ^
+
+"Test_name.c", line 199: error: initial value of reference to non-const must be an lvalue
+    void x0b(X0<&f>); // expected-error{{address taken in non-type template argument for template parameter of reference type 'int (&)(int)'}}
+                ^
+
+"Test_name.c", line 200: error: a reference of type "int (&)(int)" (not const-qualified) cannot be initialized with a value of type "int (float)"
+    void x0c(X0<g>); // expected-error{{non-type template parameter of reference type 'int (&)(int)' cannot bind to template argument of type 'int (float)'}}
+                ^
+
+"Test_name.c", line 201: error: initial value of reference to non-const must be an lvalue
+    void x0d(X0<&g>); // expected-error{{address taken in non-type template argument for template parameter of reference type 'int (&)(int)'}}
+                ^
+
+"Test_name.c", line 202: error: a reference of type "int (&)(int)" (not const-qualified) cannot be initialized with a value of type "int (*)(int)"
+    void x0e(X0<funcptr>); // expected-error{{non-type template parameter of reference type 'int (&)(int)' cannot bind to template argument of type 'int (*)(int)'}}
+                ^
+
+"Test_name.c", line 228: error: argument of type "float (pointer_to_member_function::Y::*)(float)" is incompatible with template parameter of type "int (pointer_to_member_function::Y::*)(int)"
+    X0<&Y::h> x0c; // expected-error-re{{type 'float (Y::*)(float){{( __attribute__\(\(thiscall\)\))?}}' {{.*}} convert{{.*}} 'int (Y::*)(int){{( __attribute__\(\(thiscall\)\))?}}'}}
+       ^
+
+"Test_name.c", line 241: error: argument of type "int pointer_to_member_data::X::*" is incompatible with template parameter of type "int pointer_to_member_data::Y::*"
+    X0<&Y::x> x0b;
+       ^
+
+"Test_name.c", line 139: error: expression must be a modifiable lvalue
+        ref++; // expected-error{{read-only variable is not assignable}}
+        ^
+          detected during instantiation of "void reference_parameters::PR6250::inc<T,ref>() [with T=int, ref=reference_parameters::PR6250::counter]" at line 148
+
+"Test_name.c", line 143: error: qualifiers dropped in binding reference of type "int &" to initializer of type "const int"
+        T &ref2 = ref; // expected-error{{drops 'const' qualifier}}
+                  ^
+          detected during instantiation of "void reference_parameters::PR6250::bind<T,ref>() [with T=int, ref=reference_parameters::PR6250::counter]" at line 149
+
+21 errors detected in the compilation of "Test_name.c".

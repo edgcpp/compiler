@@ -1,0 +1,113 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./tree-ssa/forwprop-20.c", line 12: warning: unknown attribute "vector_size"
+  typedef double vecf __attribute__ ((vector_size (2 * sizeof (double))));
+                                      ^
+
+"./tree-ssa/forwprop-20.c", line 13: warning: unknown attribute "vector_size"
+  typedef int64_t veci __attribute__ ((vector_size (2 * sizeof (int64_t))));
+                                       ^
+
+"./tree-ssa/forwprop-20.c", line 17: warning: excess initializers are ignored
+    vecf x = { -d, 5 };
+                   ^
+
+"./tree-ssa/forwprop-20.c", line 18: warning: excess initializers are ignored
+    vecf y = { 1, 4 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 19: warning: excess initializers are ignored
+    veci m = { 2, 0 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 20: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (x, y, m);
+         ^
+
+"./tree-ssa/forwprop-20.c", line 25: warning: excess initializers are ignored
+    vecf x = { d, 5 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 26: warning: excess initializers are ignored
+    vecf y = { 1, 4 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 27: warning: excess initializers are ignored
+    veci m = { 2, 1 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 28: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (x, y, m);
+         ^
+
+"./tree-ssa/forwprop-20.c", line 33: warning: excess initializers are ignored
+    vecf x = { d + 1, 5 };
+                      ^
+
+"./tree-ssa/forwprop-20.c", line 34: warning: excess initializers are ignored
+    vecf y = { 1 , 4 };
+                   ^
+
+"./tree-ssa/forwprop-20.c", line 35: warning: excess initializers are ignored
+    veci m = { 2 , 0 };
+                   ^
+
+"./tree-ssa/forwprop-20.c", line 36: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (y, x, m);
+         ^
+
+"./tree-ssa/forwprop-20.c", line 41: warning: excess initializers are ignored
+    vecf x = { d, 5 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 42: warning: excess initializers are ignored
+    veci m = { 1, 0 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 43: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (x, m);
+         ^
+
+"./tree-ssa/forwprop-20.c", line 48: warning: excess initializers are ignored
+    vecf y = { 1, 2 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 49: warning: excess initializers are ignored
+    veci m = { 0, 0 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 50: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (y, m);
+         ^
+
+"./tree-ssa/forwprop-20.c", line 55: warning: excess initializers are ignored
+    vecf x = { 3, 4 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 56: warning: excess initializers are ignored
+    vecf y = { 1, 2 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 57: warning: excess initializers are ignored
+    veci m = { 3, 0 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 58: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (x, y, m);
+         ^
+
+"./tree-ssa/forwprop-20.c", line 63: warning: excess initializers are ignored
+    vecf x = { -d, 5 };
+                   ^
+
+"./tree-ssa/forwprop-20.c", line 64: warning: excess initializers are ignored
+    vecf y = { d, 4 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 65: warning: excess initializers are ignored
+    veci m = { 2, 0 };
+                  ^
+
+"./tree-ssa/forwprop-20.c", line 66: warning: function "__builtin_shuffle" declared implicitly
+    *r = __builtin_shuffle (x, y, m);
+         ^
+

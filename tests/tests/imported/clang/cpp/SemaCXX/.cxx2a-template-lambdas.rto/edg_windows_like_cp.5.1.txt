@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 20: error: static assertion failed
+      static_assert(is_same<T, int>); // expected-error {{static assertion failed}}
+      ^
+          detected during instantiation of function "lambda [](T)->auto [with T=double]" at line 23
+
+"Test_name.c", line 25: warning: constant "I" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+    auto L1 = []<int I> {
+                     ^
+
+"Test_name.c", line 26: error: static assertion failed
+      static_assert(I == 5); // expected-error {{static assertion failed}}
+      ^
+"Test_name.c", line 26: note: the final comparison was 6 == 5
+      static_assert(I == 5); // expected-error {{static assertion failed}}
+                      ^
+          detected during instantiation of function "lambda []()->auto [with I=6]" at line 29
+
+"Test_name.c", line 32: error: static assertion failed
+      static_assert(is_same<T<U>, DummyTemplate<float> >); // // expected-error {{static assertion failed}}
+      ^
+          detected during instantiation of function "lambda [](T<U> &&)->auto [with T=DummyTemplate, U=double]" at line 35
+
+"Test_name.c", line 41: warning: declaration of "T" hides template parameter
+      auto L = []<typename T> { }; // expected-error {{'T' shadows template parameter}}
+                           ^
+
+"Test_name.c", line 49: warning: constant "x" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+                ^
+          detected during instantiation of "T outer<T>() [with T=int]" at line 54
+
+"Test_name.c", line 49: error: no instance of function template "lambda []()->auto" matches the argument list
+            object type is: lambda []()->auto
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+                                            ^
+"Test_name.c", line 49: note: substituting explicit template arguments "<123>" for function template "lambda []()->auto" failed
+    return []<T x>() { return x; }.template operator()<123>(); // expected-error {{no matching member function}}  \
+             ^
+          detected during instantiation of "T outer<T>() [with T=int *]" at line 55
+
+"Test_name.c", line 67: warning: missing return statement at end of non-void function "GH62611::test"
+  }
+  ^
+
+"Test_name.c", line 88: warning: template parameter "T" is not used in declaring the parameter types of function template "lambda [](int)->bool noexcept(true)::operator auto (*)(int)->bool noexcept(true)"
+    []<typename T>(int)
+                ^
+
+"Test_name.c", line 114: error: reference to local variable of enclosing function is not allowed
+    auto c = []<int t=z>{
+                      ^
+
+"Test_name.c", line 110: warning: variable "b" was declared but never referenced
+    auto b = []<int=x, int=y>{};
+         ^
+
+"Test_name.c", line 123: warning: variable "class_type_global" was declared but never referenced
+    auto class_type_global = []<S=gs>{};
+         ^
+
+"Test_name.c", line 126: warning: variable "class_type_static" was declared but never referenced
+    auto class_type_static = []<S=static_s>{};
+         ^
+
+"Test_name.c", line 129: warning: variable "class_type" was declared but never referenced
+    auto class_type = []<S=s>{};
+         ^
+
+"Test_name.c", line 107: warning: function "<unnamed>::f" was declared but never referenced
+  void f() {
+       ^
+
+5 errors detected in the compilation of "Test_name.c".

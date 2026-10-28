@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: error: attribute "noreturn" does not take arguments
+  [[noreturn()]] void f0 (); // { dg-error ".noreturn. attribute does not take any arguments" }
+            ^
+
+"Test_name.c", line 7: error: attribute "noreturn" does not take arguments
+  [[noreturn(1)]] void f1 (); // { dg-error ".noreturn. attribute does not take any arguments" }
+            ^
+
+"Test_name.c", line 8: error: attribute "noreturn" does not take arguments
+  [[noreturn(1, 2)]] void f2 (); // { dg-error ".noreturn. attribute does not take any arguments" }
+            ^
+
+"Test_name.c", line 9: error: attribute "maybe_unused" does not take arguments
+  [[maybe_unused()]] int f3(); // { dg-error ".maybe_unused. attribute does not take any arguments" }
+                ^
+
+"Test_name.c", line 11: error: attribute "gnu::noinline" does not take arguments
+  [[gnu::noinline()]] int f5(); // { dg-error ".noinline. attribute does not take any arguments" }
+                 ^
+
+5 errors detected in the compilation of "Test_name.c".

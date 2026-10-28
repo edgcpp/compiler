@@ -1,0 +1,60 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 30: error: identifier "__STDCPP_DEFAULT_NEW_ALIGNMENT__" is undefined
+  struct OVERALIGNED A {
+         ^
+
+"Test_name.c", line 35: warning: function "operator new(std::size_t, std::align_val_t)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+  void *ptr_variable(int align) { return new (std::align_val_t(align)) A; }
+                                         ^
+
+"Test_name.c", line 36: warning: function "operator new(std::size_t, std::align_val_t)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+  void *ptr_align16() { return new (std::align_val_t(16)) A; }
+                               ^
+
+"Test_name.c", line 37: warning: function "operator new(std::size_t, std::align_val_t)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+  void *ptr_align15() { return new (std::align_val_t(15)) A; } // expected-warning {{requested alignment is not a power of 2}}
+                               ^
+
+"Test_name.c", line 48: warning: function "operator new(std::size_t, std::align_val_t)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    return new (std::align_val_t(align)) S;
+           ^
+
+"Test_name.c", line 51: warning: function "operator new(std::size_t, std::align_val_t)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    return new (std::align_val_t(256)) S;
+           ^
+
+"Test_name.c", line 54: warning: function "operator new(std::size_t, std::align_val_t)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    return new (std::align_val_t(255)) S; // expected-warning {{requested alignment is not a power of 2}}
+           ^
+
+"Test_name.c", line 66: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, int)
+  X *p = new (123) X; // expected-error {{no matching function}}
+         ^
+"Test_name.c", line 63: note: number of parameters of function "operator new(std::size_t, std::align_val_t, X)" does not match the call
+  void *operator new(std::size_t, std::align_val_t, X); // #3
+        ^
+"Test_name.c", line 62: note: function "operator new(std::size_t, X)" does not match because argument #2 does not match parameter
+  void *operator new(std::size_t, X); // #2
+        ^
+"Test_name.c", line 26: note: function "operator new(std::size_t, std::align_val_t)" does not match because argument #2 does not match parameter
+  void *operator new(std::size_t count, std::align_val_t al) __attribute__((alloc_align(2))); // #1
+        ^
+Note: number of parameters of function "operator new(unsigned long)" does not match the call
+
+"Test_name.c", line 81: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, std::align_val_t, int)
+  X *r = new (std::align_val_t(32), 123) X; // expected-error {{no matching function}}
+         ^
+"Test_name.c", line 63: note: function "operator new(std::size_t, std::align_val_t, X)" does not match because argument #3 does not match parameter
+  void *operator new(std::size_t, std::align_val_t, X); // #3
+        ^
+"Test_name.c", line 62: note: number of parameters of function "operator new(std::size_t, X)" does not match the call
+  void *operator new(std::size_t, X); // #2
+        ^
+"Test_name.c", line 26: note: number of parameters of function "operator new(std::size_t, std::align_val_t)" does not match the call
+  void *operator new(std::size_t count, std::align_val_t al) __attribute__((alloc_align(2))); // #1
+        ^
+Note: number of parameters of function "operator new(unsigned long)" does not match the call
+
+3 errors detected in the compilation of "Test_name.c".

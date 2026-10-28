@@ -1,0 +1,34 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+# CI-only (linux-gcc-macos-like): the host and feature choices of the
+# macos-arm-clang configuration on a Linux build, for code coverage.  The
+# Linux target configurations are kept, so tests still compile, link, and run.
+# --- language features macOS leaves off
+FIXED_POINT_ALLOWED=0
+EMBEDDED_C_ALLOWED=0
+GNU_VECTOR_TYPES_ALLOWED=0
+NAMED_ADDRESS_SPACES_ALLOWED=0
+NAMED_REGISTERS_ALLOWED=0
+THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED=0
+GNU_INIT_PRIORITY_ATTRIBUTE_ALLOWED=0
+GNU_FUNCTION_MULTIVERSIONING=0
+RISCV_VECTOR_BUILTINS_ENABLED=0
+# --- IL and memory management
+RECORD_RAW_ASM_OPERAND_DESCRIPTIONS=1
+KEEP_OBJECT_LIFETIME_INFO_IN_LOWERED_IL_WHEN_EH_ENABLED=0
+FREE_MEMORY_REGIONS_EARLY=0
+# --- 128-bit host integers
+INTEGER_VALUE_REPR_IS_A_HOST_INTEGER=1
+HOST_ALIGNMENT_REQUIRED=16
+# --- host floating point: double, with the host conversion routines; long
+# double is binary64, as on arm64 macOS
+USE_DOUBLE_FOR_HOST_FP_VALUE=1
+USE_FLOAT128_FOR_HOST_FP_VALUE=0
+USE_QUADMATH_LIBRARY=0
+USE_HOST_FP_CONVERSION_ROUTINES=1
+FLOAT80_ENABLING_POSSIBLE=0
+FLOAT128_ENABLING_POSSIBLE=0
+FP_LONG_DOUBLE_IS_BINARY64=1

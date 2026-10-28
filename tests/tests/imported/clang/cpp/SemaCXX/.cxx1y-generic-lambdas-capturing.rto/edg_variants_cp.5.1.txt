@@ -1,0 +1,272 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 -DDELAYED_TEMPLATE_PARSING Test_name.c
+"Test_name.c", line 46: warning: variable "selector" was declared but never referenced
+          int selector[sizeof(c) == 1 ? 
+              ^
+
+"Test_name.c", line 81: error: expected an expression
+      auto B = []() { return ^{ return a; }; }; //expected-error{{cannot be implicitly capture}}\
+                             ^
+
+"Test_name.c", line 80: warning: variable "a" was declared but never referenced
+      int a; //expected-note{{declared here}}
+          ^
+
+"Test_name.c", line 81: warning: variable "B" was declared but never referenced
+      auto B = []() { return ^{ return a; }; }; //expected-error{{cannot be implicitly capture}}\
+           ^
+
+"Test_name.c", line 100: warning: variable "L" was set but never used
+      auto L = [=](auto a) {
+           ^
+
+"Test_name.c", line 117: warning: variable "L" was set but never used
+      auto L = [=](auto a) {
+           ^
+
+"Test_name.c", line 135: warning: variable "L" was set but never used
+      auto L = [=](auto a) {
+           ^
+
+"Test_name.c", line 144: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+        return j + 1; //expected-error{{cannot be implicitly captured}}
+               ^
+
+"Test_name.c", line 143: warning: variable "L" was declared but never referenced
+      auto L = [](auto a) { //expected-note{{begins here}} expected-note 2 {{capture 'j' by}} expected-note 2 {{default capture by}}
+           ^
+
+"Test_name.c", line 173: warning: variable "i" was declared but never referenced
+          int i = x;
+              ^
+
+"Test_name.c", line 196: warning: variable "i" was declared but never referenced
+            const int &i = cx.i;
+                       ^
+
+"Test_name.c", line 194: warning: variable "A" was declared but never referenced
+            decltype(a) A = a;
+                        ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 200
+
+"Test_name.c", line 195: warning: variable "B" was declared but never referenced
+            decltype(b) B = b;
+                        ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=double]" at line 200
+
+"Test_name.c", line 231: warning: variable "i" was declared but never referenced
+          const int &i = x;
+                     ^
+
+"Test_name.c", line 232: warning: variable "A2" was declared but never referenced
+          decltype(a) A2 = a;
+                      ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 237
+
+"Test_name.c", line 537: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+          f(a); //expected-error{{this}}
+          ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 540
+
+"Test_name.c", line 549: warning: variable "x" was declared but never referenced
+            int x = i;
+                ^
+
+"Test_name.c", line 571: warning: variable "x" was declared but never referenced
+            int x = i;
+                ^
+
+"Test_name.c", line 642: warning: variable "x" was declared but never referenced
+            int x = i;
+                ^
+
+"Test_name.c", line 662: warning: variable "r" was declared but never referenced
+        const int &r = x;   //expected-error{{variable}}
+                   ^
+
+"Test_name.c", line 661: warning: variable "L" was declared but never referenced
+      auto L = [](auto a) { //expected-note{{begins}} expected-note 2 {{capture 'x' by}} expected-note 2 {{default capture by}}
+           ^
+
+"Test_name.c", line 668: warning: variable "i" was declared but never referenced
+        int i = x;       
+            ^
+
+"Test_name.c", line 667: warning: variable "L" was declared but never referenced
+      auto L = [](auto a) { 
+           ^
+
+"Test_name.c", line 680: warning: variable "i" was declared but never referenced
+          int i = x;
+              ^
+
+"Test_name.c", line 683: warning: variable "r" was declared but never referenced
+          const int &r = x; //expected-error{{variable}}
+                     ^
+
+"Test_name.c", line 674: warning: variable "L" was declared but never referenced
+      auto L = [=](auto a) { // <-- #A
+           ^
+
+"Test_name.c", line 707: warning: variable "x" was declared but never referenced
+      int x;
+          ^
+
+"Test_name.c", line 724: error: this enclosing-function local variable cannot be referenced in this lambda body because an enclosing lambda does not allow implicit captures
+            return a + y; //expected-error 2{{cannot be implicitly captured}}
+                   ^
+
+"Test_name.c", line 724: error: this enclosing-function local variable cannot be referenced in this lambda body because an enclosing lambda does not allow implicit captures
+            return a + y; //expected-error 2{{cannot be implicitly captured}}
+                       ^
+
+"Test_name.c", line 719: warning: variable "x" was declared but never referenced
+      int x;
+          ^
+
+"Test_name.c", line 720: warning: variable "L" was declared but never referenced
+      auto L = [](auto a) { //expected-note {{declared here}}
+           ^
+
+"Test_name.c", line 730: warning: variable "x" was declared but never referenced
+      int x;
+          ^
+
+"Test_name.c", line 731: warning: variable "L" was declared but never referenced
+      auto L = [](auto a) { 
+           ^
+
+"Test_name.c", line 761: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+    return [](auto a) { return ref_j; }; // ok
+                               ^
+
+"Test_name.c", line 808: error: no suitable conversion function from "lambda [](auto)->int" to "char (*)(char)" exists
+    char (*fc)(char) = L; //expected-error{{no viable conversion}}
+                       ^
+
+"Test_name.c", line 809: error: no suitable conversion function from "lambda [](auto)->int" to "double (*)(double)" exists
+    double (*fd)(double) = L; //expected-error{{no viable conversion}}
+                           ^
+
+"Test_name.c", line 814: warning: variable "i" was declared but never referenced
+      int i = x;
+          ^
+
+"Test_name.c", line 852: error: no suitable conversion function from "lambda [](auto)->double *" to "int *(*)(int)" exists
+    int* (*fi2)(int) = L(3.14); //expected-error{{no viable conversion}}
+                       ^
+
+"Test_name.c", line 914: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+      auto lam = [](auto a) { f(a); }; // expected-error{{'this'}} expected-note {{explicitly capture 'this'}}
+                              ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 915
+
+"Test_name.c", line 969: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+    T t = [](auto a) { f(a); return a; }; //expected-error{{'this'}} expected-note {{explicitly capture 'this'}}
+                       ^
+
+"Test_name.c", line 988: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+    T t = [](auto a) { return x; }; //expected-error{{'this'}} expected-note {{explicitly capture 'this'}}
+                              ^
+
+"Test_name.c", line 1016: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      { return t; }; 
+               ^
+
+"Test_name.c", line 1020: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+      { return t; }; //expected-error 2{{cannot be implicitly captured}}
+               ^
+
+"Test_name.c", line 1058: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+      auto L2 = [](auto a) { f(a); }; //expected-error {{cannot be implicitly captured}} expected-note {{explicitly capture 'this'}}
+                             ^
+
+"Test_name.c", line 1058: warning: variable "L2" was declared but never referenced
+      auto L2 = [](auto a) { f(a); }; //expected-error {{cannot be implicitly captured}} expected-note {{explicitly capture 'this'}}
+           ^
+
+"Test_name.c", line 1106: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+      auto L = [](auto a) { f(a); }; //expected-error{{'this'}} expected-note {{explicitly capture 'this'}}
+                            ^
+
+"Test_name.c", line 1220: warning: variable "x" was declared but never referenced
+            int x = i;
+                ^
+
+"Test_name.c", line 1246: warning: variable "x" was declared but never referenced
+            int x = i;
+                ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 1251
+
+"Test_name.c", line 1265: warning: variable "i" was declared but never referenced
+    int i = 10;
+        ^
+
+"Test_name.c", line 1306: warning: missing return statement at end of non-void function "capture_enclosing_function_parameters::main"
+  }
+  ^
+
+"Test_name.c", line 1316: warning: variable "array" was declared but never referenced
+      int array[5] = { 1, 2, 3, 4, 5 };
+          ^
+
+"Test_name.c", line 1335: error: static assertion failed with "size of closure must be sizeof(x)"
+    ASSERT_CLOSURE_SIZE_EXACT(L, sizeof(x));
+    ^
+"Test_name.c", line 1335: note: the final comparison was 1 == 4
+    ASSERT_CLOSURE_SIZE_EXACT(L, sizeof(x));
+    ^
+
+"Test_name.c", line 1336: warning: missing return statement at end of non-void function "capture_non_odr_used_variable_because_named_in_instantiation_dependent_expressions::test"
+  }
+  ^
+
+"Test_name.c", line 1332: warning: variable "L" was set but never used
+    auto L = [=](auto a) {
+         ^
+
+"Test_name.c", line 1390: error: expression must have a constant value
+    [&](auto) { static_assert(&i != nullptr, ""); }(0); // expected-warning 2{{always true}} expected-note {{instantiation}}
+                              ^
+"Test_name.c", line 1390: note: comparison involves unknown address (e.g., the address of a weak variable)
+    [&](auto) { static_assert(&i != nullptr, ""); }(0); // expected-warning 2{{always true}} expected-note {{instantiation}}
+                                 ^
+
+"Test_name.c", line 1462: error: static assertion failed with "size of closure with no captures must be 1"
+      ASSERT_NO_CAPTURES(L);
+      ^
+"Test_name.c", line 1462: note: the final comparison was 8 == 1
+      ASSERT_NO_CAPTURES(L);
+      ^
+
+"Test_name.c", line 1519: error: static assertion failed with "size of closure with no captures must be 1"
+      ASSERT_NO_CAPTURES(L);
+      ^
+"Test_name.c", line 1519: note: the final comparison was 8 == 1
+      ASSERT_NO_CAPTURES(L);
+      ^
+          detected during instantiation of "auto PR34266::ns5::B::f<T>() [with T=PR34266::ns5::A]" at line 1525
+
+"Test_name.c", line 1540: warning: fold expressions are nonstandard in this mode
+          ((a = b), ...); // expected-warning 0-1{{extension}}
+                  ^
+
+"Test_name.c", line 369: warning: variable "t2" was declared but never referenced
+         T t2{t};       
+           ^
+          detected during instantiation of "void more_nested_captures_1_4::Y<T>::foo(R) [with T=int, R=char]" at line 388
+
+"Test_name.c", line 948: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+    T t = [](auto a) { f(a); return a; }; //expected-error{{'this'}} \
+                       ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 933
+            instantiation of "this_capture::check_nsdmi_and_this_capture_of_member_functions::FunctorInt::FunctorInt(T) [with T=lambda [](auto)->auto]" at line 948
+
+"Test_name.c", line 1087: error: the enclosing-function "this" cannot be referenced in a lambda body unless it is in the capture list
+      auto L = [](auto a) { f(a); }; //expected-error{{'this'}} expected-note {{explicitly capture 'this'}}
+                            ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 1088
+            instantiation of "int enclosing_function_is_template_this_capture::X::g(T) [with T=int]" at line 1094
+
+22 errors detected in the compilation of "Test_name.c".

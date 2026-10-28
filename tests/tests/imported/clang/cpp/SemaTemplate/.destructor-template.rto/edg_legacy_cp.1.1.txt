@@ -1,0 +1,49 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 31: warning: variable "y" is used before its value is set
+      y->template Y<T>::~Y();
+      ^
+
+"Test_name.c", line 53: warning: variable "x" is used before its value is set
+        x->A<int>::~A<int>();
+        ^
+
+"Test_name.c", line 61: error: "PR7904::Foo" is not a class template
+    Foo::~Foo() { // expected-error{{destructor cannot be declared as a template}}
+    ^
+
+"Test_name.c", line 61: error: this declaration has no storage class or type specifier
+    Foo::~Foo() { // expected-error{{destructor cannot be declared as a template}}
+    ^
+
+"Test_name.c", line 79: warning: variable "x" is used before its value is set
+      x->template shared_ptr<T>::~shared_ptr();
+      ^
+
+"Test_name.c", line 91: error: no instance of function template "PR16852::f" matches the argument list
+    void g() { f(); } // expected-error {{no matching function for call to 'f'}}
+               ^
+"Test_name.c", line 90: note: candidate function template "PR16852::f" failed deduction
+    template<typename T> decltype(S<T>().~S()) f(); // expected-note {{candidate template ignored: couldn't infer template argument 'T'}}
+                                               ^
+
+"Test_name.c", line 97: error: expected a declaration
+    ~PR33189() { } // expected-error{{destructor cannot be declared as a template}}
+    ^
+
+"Test_name.c", line 97: error: expected a ";"
+    ~PR33189() { } // expected-error{{destructor cannot be declared as a template}}
+    ^
+
+"Test_name.c", line 103: error: expected a declaration
+    ~S(); // expected-error{{destructor cannot be declared as a template}}
+    ^
+
+"Test_name.c", line 103: error: expected a ";"
+    ~S(); // expected-error{{destructor cannot be declared as a template}}
+    ^
+
+"Test_name.c", line 120: error: "GH159630::X::typo<T>::typ0" is not a class template
+  X::typo<T>::typ0::~typ0() {} // expected-error {{no member named 'typ0'}} \
+  ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 --strict_gnu Test_name.c
+"Test_name.c", line 21: warning: variable-length array field type will be treated as zero-length array field type
+  	struct bar { int x; int f[n]; }* p = b;
+  	                          ^
+
+"Test_name.c", line 22: warning: variable "q" was declared but never referenced
+  	struct bar* q = a;
+  	            ^
+
+"Test_name.c", line 38: warning: variable-length array field type will be treated as zero-length array field type
+  	struct foo { int x; int f[n]; }* p = b;
+  	                          ^
+
+"Test_name.c", line 39: warning: variable "q" was declared but never referenced
+  	struct foo* q = a;
+  	            ^
+

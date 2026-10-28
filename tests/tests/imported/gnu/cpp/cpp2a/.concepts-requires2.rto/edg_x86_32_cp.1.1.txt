@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 23: error: template constraint not satisfied
+    bad(0); // { dg-message "" }
+    ^
+"Test_name.c", line 19: note: substitution of arguments "<int>" for requires-clause failed
+  template<typename T> requires Bad<T> void bad(T x) { }
+                                ^
+"Test_name.c", line 17: note: atomic constraint must have type bool
+  concept Bad = p1<T>() && p2<T>(); // { dg-error "bool" }
+                     ^
+
+"Test_name.c", line 23: error: no instance of function template "bad" matches the argument list
+            argument types are: (int)
+    bad(0); // { dg-message "" }
+    ^
+"Test_name.c", line 19: note: substituting "<int>" for function template "bad" failed constraints
+  template<typename T> requires Bad<T> void bad(T x) { }
+                                            ^
+"Test_name.c", line 19: note: concept "Bad" not satisfied for "<int>"
+  template<typename T> requires Bad<T> void bad(T x) { }
+                                ^
+"Test_name.c", line 17: note: atomic constraint must have type bool
+  concept Bad = p1<T>() && p2<T>(); // { dg-error "bool" }
+                     ^
+
+"Test_name.c", line 31: error: atomic constraint must have type bool
+  concept C1 = (X()); // { dg-error "bool" }
+                ^
+
+"Test_name.c", line 34: error: atomic constraint must have type bool
+  concept C2 = (X() == X()); // { dg-error "bool" }
+                    ^
+
+"Test_name.c", line 46: error: no instance of function template "h1" matches the argument list
+            argument types are: (int)
+    h1(0); // { dg-message "" }
+    ^
+"Test_name.c", line 38: note: substituting "<int>" for function template "h1" failed constraints
+  void h1(T) { }
+       ^
+"Test_name.c", line 37: note: concept "C1" not satisfied for "<int>"
+    requires C1<T>
+             ^
+"Test_name.c", line 31: note: atomic constraint failed substitution
+  concept C1 = (X()); // { dg-error "bool" }
+                ^
+
+"Test_name.c", line 47: error: no instance of function template "h2" matches the argument list
+            argument types are: (int)
+    h2(0); // { dg-message "" }
+    ^
+"Test_name.c", line 42: note: substituting "<int>" for function template "h2" failed constraints
+  void h2(T);
+       ^
+"Test_name.c", line 41: note: concept "C2" not satisfied for "<int>"
+    requires C2<T>
+             ^
+"Test_name.c", line 34: note: atomic constraint failed substitution
+  concept C2 = (X() == X()); // { dg-error "bool" }
+                    ^
+
+"Test_name.c", line 67: error: atomic constraint must have type bool
+    requires (dependent_true<T>{}) // { dg-message "bool" }
+              ^
+
+"Test_name.c", line 71: error: atomic constraint must have type bool
+    requires (dependent_false<T>{}) // { dg-message "bool" }
+              ^
+
+"Test_name.c", line 74: error: template constraint not satisfied
+  S5<int> x5; // { dg-error "template constraint failure" }
+        ^
+"Test_name.c", line 67: note: substitution of arguments "<int>" for requires-clause failed
+    requires (dependent_true<T>{}) // { dg-message "bool" }
+             ^
+"Test_name.c", line 67: note: atomic constraint failed substitution
+    requires (dependent_true<T>{}) // { dg-message "bool" }
+              ^
+
+"Test_name.c", line 75: error: template constraint not satisfied
+  S6<int> x6; // { dg-error "template constraint failure" }
+        ^
+"Test_name.c", line 71: note: substitution of arguments "<int>" for requires-clause failed
+    requires (dependent_false<T>{}) // { dg-message "bool" }
+             ^
+"Test_name.c", line 71: note: atomic constraint failed substitution
+    requires (dependent_false<T>{}) // { dg-message "bool" }
+              ^
+
+10 errors detected in the compilation of "Test_name.c".

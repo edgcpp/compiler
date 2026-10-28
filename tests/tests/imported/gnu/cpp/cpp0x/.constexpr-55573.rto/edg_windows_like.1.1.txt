@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+    typedef T __attribute__((vector_size (N * sizeof (T)))) type;
+                             ^
+
+"Test_name.c", line 26: error: too many initializer values
+  Rot3<float> r2 ((Vec) {0, 1, 0, 0}, (Vec){0, 0, 1, 0}, (Vec){1, 0, 0, 0});
+                            ^
+
+"Test_name.c", line 26: error: too many initializer values
+  Rot3<float> r2 ((Vec) {0, 1, 0, 0}, (Vec){0, 0, 1, 0}, (Vec){1, 0, 0, 0});
+                                               ^
+
+"Test_name.c", line 26: error: too many initializer values
+  Rot3<float> r2 ((Vec) {0, 1, 0, 0}, (Vec){0, 0, 1, 0}, (Vec){1, 0, 0, 0});
+                                                                  ^
+
+3 errors detected in the compilation of "Test_name.c".

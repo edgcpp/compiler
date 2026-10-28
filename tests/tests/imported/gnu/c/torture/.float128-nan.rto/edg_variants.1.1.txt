@@ -1,0 +1,42 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/float128-nan.c", line 15: error: identifier "__float128" is undefined
+    __float128 value;
+    ^
+
+"./torture/float128-nan.c", line 41: warning: unknown attribute "noclone"
+  __attribute__((noinline, noclone))
+                           ^
+
+"./torture/float128-nan.c", line 42: error: identifier "__float128" is undefined
+  check_nan (__float128 val, bool quiet)
+             ^
+
+"./torture/float128-nan.c", line 45: error: identifier "__float128" is undefined
+    volatile __float128 tmp;
+             ^
+
+"./torture/float128-nan.c", line 54: error: function call requires a real floating-point argument
+    if (!__builtin_isnan (u.value))
+                         ^
+
+"./torture/float128-nan.c", line 70: error: identifier "__float128" is undefined
+    __float128 nan;
+    ^
+
+"./torture/float128-nan.c", line 72: error: builtin function is not available because 128-bit floating-point types are not supported
+    nan = __builtin_nanq ("");
+          ^
+
+"./torture/float128-nan.c", line 77: warning: function "__builtin_nanq" declared implicitly
+    nan = __builtin_nanq ("0x0");
+          ^
+
+"./torture/float128-nan.c", line 87: error: builtin function is not available because 128-bit floating-point types are not supported
+    nan = __builtin_nansq ("");
+          ^
+
+"./torture/float128-nan.c", line 92: warning: function "__builtin_nansq" declared implicitly
+    nan = __builtin_nansq ("0x0");
+          ^
+
+7 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,833 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions --exceptions Test_name.c
+"Test_name.c", line 28: error: "a" has already been declared in the current scope
+      using B::a; // #cwg400-using-B-a
+               ^
+
+"Test_name.c", line 37: error: "cwg400::E::a" is ambiguous
+    struct E : A, B { struct a b; };
+                             ^
+
+"Test_name.c", line 43: error: invalid base class
+      using G::A;
+            ^
+
+"Test_name.c", line 45: error: invalid base class
+      using G::a;
+            ^
+
+"Test_name.c", line 47: error: invalid base class
+      using F::a;
+            ^
+
+"Test_name.c", line 53: error: type "cwg401::C::type" (declared at line 69) is inaccessible
+    template<class T, class U = typename T::type> class A : public T {}; // #cwg401-A
+                                            ^
+          detected during processing of template argument list for "cwg401::A" based on template argument <cwg401::C> at line 70
+
+"Test_name.c", line 53: error: type "cwg401::B::type" (declared at line 65) is inaccessible
+    template<class T, class U = typename T::type> class A : public T {}; // #cwg401-A
+                                            ^
+          detected during processing of template argument list for "cwg401::A" based on template argument <cwg401::B> at line 78
+
+"Test_name.c", line 53: error: type "cwg401::D::type" (declared at line 74) is inaccessible
+    template<class T, class U = typename T::type> class A : public T {}; // #cwg401-A
+                                            ^
+          detected during processing of template argument list for "cwg401::A" based on template argument <cwg401::D> at line 79
+
+"Test_name.c", line 98: error: no instance of function template "cwg401::f" matches the argument list
+            argument types are: (cwg401::B)
+    void g(B b) { f(b); } // #cwg402-f-b
+                  ^
+"Test_name.c", line 92: note: candidate function template "cwg401::f" failed deduction
+    template<class T, class U = typename T::type> void f(T) {} // #cwg402-f
+                                                       ^
+
+"Test_name.c", line 133: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+      void test1(A::S as) { f(as); }
+                            ^
+
+"Test_name.c", line 135: error: too many arguments in function call
+      void test2(A::S as) { void f(); f(as); }
+                                        ^
+
+"Test_name.c", line 140: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+      void test5(A::S as) { int f; f(as); }
+                                   ^
+
+"Test_name.c", line 140: warning: variable "f" is used before its value is set
+      void test5(A::S as) { int f; f(as); }
+                                   ^
+
+"Test_name.c", line 142: error: no suitable user-defined conversion from "cwg405::A::S" to "f" exists
+      void test6(A::S as) { struct f {}; (void) f(as); }
+                                                  ^
+
+"Test_name.c", line 153: error: identifier "f" is undefined
+    void testD(D::S ds) { f(ds); }
+                          ^
+
+"Test_name.c", line 160: error: identifier "f" is undefined
+    void testE(E::S es) { f(es); }
+                          ^
+
+"Test_name.c", line 166: error: static data member declaration is not allowed in this class
+      static int n;
+      ^
+
+"Test_name.c", line 170: error: static data member declaration is not allowed in this class
+      static int n;
+      ^
+
+"Test_name.c", line 183: error: typedef "S" may not be used in an elaborated type specifier
+        struct S *p;
+               ^
+
+"Test_name.c", line 183: warning: variable "p" was declared but never referenced
+        struct S *p;
+                  ^
+
+"Test_name.c", line 180: warning: variable "p" was declared but never referenced
+      struct S *p;
+                ^
+
+"Test_name.c", line 200: error: "cwg407::UsingDir::C::S" is ambiguous
+        struct S s;
+               ^
+
+"Test_name.c", line 200: error: typedef "S" may not be used in an elaborated type specifier
+        struct S s;
+               ^
+
+"Test_name.c", line 225: error: typedef "S" may not be used in an elaborated type specifier
+        struct S s;
+               ^
+
+"Test_name.c", line 258: error: incomplete type "int []" is not allowed
+      static_assert(sizeof(arr) != sizeof(int), "");
+                          ^
+
+"Test_name.c", line 270: warning: missing "typename" is nonstandard here
+      A<T*>::B b4;
+      ^
+
+"Test_name.c", line 286: warning: pointless friend declaration
+        friend void i<>(int);
+                    ^
+
+"Test_name.c", line 294: error: function "cwg410::M::A::z" (declared at line 288) is inaccessible
+      template<> void i(int) { A::z(); }
+                                  ^
+
+"Test_name.c", line 297: error: function "cwg410::M::A::z" (declared at line 288) is inaccessible
+    void g(int) { M::A::z(); }
+                        ^
+
+"Test_name.c", line 310: error: too many initializer values
+    S s = { 1, 2, 3 };
+                  ^
+
+"Test_name.c", line 320: error: no suitable constructor exists to convert from "int" to "cwg413::E"
+    T t2 = { 1, 2 };
+                ^
+
+"Test_name.c", line 356: error: class "cwg417::B::X" has already been defined (previous definition at line 354)
+    struct B::X { struct Y; };
+           ^
+
+"Test_name.c", line 357: error: class "cwg417::B::X" has no tag member named "Y"
+    struct C::X::Y {}; // ok!
+                 ^
+
+"Test_name.c", line 376: error: class "cwg417::G" cannot be defined in the current scope
+      struct cwg417::G {};
+             ^
+
+"Test_name.c", line 378: error: class "cwg417::N::H" cannot be defined in the current scope
+      struct cwg417::H {};
+             ^
+
+"Test_name.c", line 447: error: invalid destructor name for type "class <unnamed>"
+      p->template Y<int>::~Y<int>();
+                           ^
+
+"Test_name.c", line 448: error: invalid destructor name for type "class <unnamed>"
+      p->~Y<int>();
+          ^
+
+"Test_name.c", line 449: error: invalid destructor name for type "class <unnamed>"
+      p->template ~Y<int>();
+                   ^
+
+"Test_name.c", line 468: error: "id" is not a type name
+      p->~id<int>();
+         ^
+
+"Test_name.c", line 468: error: type name is not allowed
+      p->~id<int>();
+             ^
+
+"Test_name.c", line 468: error: expected an expression
+      p->~id<int>();
+                  ^
+
+"Test_name.c", line 469: error: "id" is not a type name
+      q->~id<int>();
+         ^
+
+"Test_name.c", line 469: error: type name is not allowed
+      q->~id<int>();
+             ^
+
+"Test_name.c", line 469: error: expected an expression
+      q->~id<int>();
+                  ^
+
+"Test_name.c", line 470: error: name followed by "::" must be a class or namespace name
+      p->id<int>::~id<int>();
+         ^
+
+"Test_name.c", line 470: error: "id" is not a type name
+      p->id<int>::~id<int>();
+                  ^
+
+"Test_name.c", line 470: error: type name is not allowed
+      p->id<int>::~id<int>();
+                      ^
+
+"Test_name.c", line 470: error: expected an expression
+      p->id<int>::~id<int>();
+                           ^
+
+"Test_name.c", line 471: error: name followed by "::" must be a class or namespace name
+      q->id<int>::~id<int>();
+         ^
+
+"Test_name.c", line 471: error: "id" is not a type name
+      q->id<int>::~id<int>();
+                  ^
+
+"Test_name.c", line 471: error: type name is not allowed
+      q->id<int>::~id<int>();
+                      ^
+
+"Test_name.c", line 471: error: expected an expression
+      q->id<int>::~id<int>();
+                           ^
+
+"Test_name.c", line 472: error: name followed by "::" must be a class or namespace name
+      p->template id<int>::~id<int>(); // OK since cwg2292
+                  ^
+
+"Test_name.c", line 472: error: "id" is not a type name
+      p->template id<int>::~id<int>(); // OK since cwg2292
+                           ^
+
+"Test_name.c", line 472: error: type name is not allowed
+      p->template id<int>::~id<int>(); // OK since cwg2292
+                               ^
+
+"Test_name.c", line 472: error: expected an expression
+      p->template id<int>::~id<int>(); // OK since cwg2292
+                                    ^
+
+"Test_name.c", line 473: error: name followed by "::" must be a class or namespace name
+      q->template id<int>::~id<int>(); // OK since cwg2292
+                  ^
+
+"Test_name.c", line 473: error: "id" is not a type name
+      q->template id<int>::~id<int>(); // OK since cwg2292
+                           ^
+
+"Test_name.c", line 473: error: type name is not allowed
+      q->template id<int>::~id<int>(); // OK since cwg2292
+                               ^
+
+"Test_name.c", line 473: error: expected an expression
+      q->template id<int>::~id<int>(); // OK since cwg2292
+                                    ^
+
+"Test_name.c", line 474: error: name followed by "::" must be a class or namespace name
+      p->A::template id<int>::~id<int>();
+                     ^
+
+"Test_name.c", line 474: error: "id" is not a type name
+      p->A::template id<int>::~id<int>();
+                              ^
+
+"Test_name.c", line 474: error: type name is not allowed
+      p->A::template id<int>::~id<int>();
+                                  ^
+
+"Test_name.c", line 474: error: expected an expression
+      p->A::template id<int>::~id<int>();
+                                       ^
+
+"Test_name.c", line 475: error: name followed by "::" must be a class or namespace name
+      q->A::template id<int>::~id<int>();
+                     ^
+
+"Test_name.c", line 475: error: "id" is not a type name
+      q->A::template id<int>::~id<int>();
+                              ^
+
+"Test_name.c", line 475: error: type name is not allowed
+      q->A::template id<int>::~id<int>();
+                                  ^
+
+"Test_name.c", line 475: error: expected an expression
+      q->A::template id<int>::~id<int>();
+                                       ^
+
+"Test_name.c", line 482: error: expression must be an lvalue or a function designator
+    int *p = &X().n;
+              ^
+
+"Test_name.c", line 508: warning: class member typedef may not be redeclared
+      typedef int N;
+                  ^
+
+"Test_name.c", line 520: warning: class member typedef may not be redeclared
+      typedef X X;
+                ^
+
+"Test_name.c", line 529: warning: class member typedef may not be redeclared
+      typedef int M;
+                  ^
+
+"Test_name.c", line 562: error: function "cwg427::D::D(cwg427::B &)" (declared at line 554) cannot be referenced -- it is a deleted function
+    const D &d4(b);
+                ^
+
+"Test_name.c", line 571: error: a throw expression may not have void type
+      throw void();
+            ^
+
+"Test_name.c", line 573: warning: statement is unreachable
+      throw make<void*>();
+      ^
+
+"Test_name.c", line 574: warning: statement is unreachable
+      throw make<const volatile void*>();
+      ^
+
+"Test_name.c", line 575: warning: statement is unreachable
+      throw x;
+      ^
+
+"Test_name.c", line 575: error: incomplete type "cwg428::X" is not allowed
+      throw x;
+            ^
+
+"Test_name.c", line 578: warning: statement is unreachable
+      throw make<X&>();
+      ^
+
+"Test_name.c", line 578: error: incomplete type "cwg428::X" is not allowed
+      throw make<X&>();
+            ^
+
+"Test_name.c", line 581: warning: statement is unreachable
+      throw make<X*>();
+      ^
+
+"Test_name.c", line 581: error: a throw expression may not have pointer-to-incomplete type
+      throw make<X*>();
+            ^
+
+"Test_name.c", line 584: warning: statement is unreachable
+      throw make<const volatile X&>();
+      ^
+
+"Test_name.c", line 584: error: incomplete type "const volatile cwg428::X" is not allowed
+      throw make<const volatile X&>();
+            ^
+
+"Test_name.c", line 587: warning: statement is unreachable
+      throw make<const volatile X*>();
+      ^
+
+"Test_name.c", line 587: error: a throw expression may not have pointer-to-incomplete type
+      throw make<const volatile X*>();
+            ^
+
+"Test_name.c", line 598: error: placement "new" expression refers to non-placement function "cwg429::A::operator delete" (declared at line 597)
+    } *a = new (0) A;
+           ^
+
+"Test_name.c", line 628: error: type name is not allowed
+          ->get<T>();
+                ^
+
+"Test_name.c", line 628: error: expected an expression
+          ->get<T>();
+                   ^
+
+"Test_name.c", line 636: error: type name is not allowed
+      b->A::B<T>::get<int>();
+                      ^
+
+"Test_name.c", line 636: error: expected an expression
+      b->A::B<T>::get<int>();
+                           ^
+
+"Test_name.c", line 639: error: type name is not allowed
+      b->A::B<T>::get<T>();
+                      ^
+
+"Test_name.c", line 639: error: expected an expression
+      b->A::B<T>::get<T>();
+                         ^
+
+"Test_name.c", line 643: error: type name is not allowed
+      c->get<int>();
+             ^
+
+"Test_name.c", line 643: error: expected an expression
+      c->get<int>();
+                  ^
+
+"Test_name.c", line 651: error: argument list for class template "cwg432::B" is missing
+    template<typename T> struct B : A<B> {};
+                                      ^
+
+"Test_name.c", line 656: error: argument list for class template "cwg432::D" is missing
+    template<typename T> struct D : decltype(A<D>()) {};
+                                               ^
+
+"Test_name.c", line 676: error: a reference of type "const int *&" (not const-qualified) cannot be initialized with a value of type "int *"
+      const int *&rpci = pi;
+                         ^
+
+"Test_name.c", line 678: warning: variable "rcpci" was declared but never referenced
+      const int * const &rcpci = pi; // OK
+                         ^
+
+"Test_name.c", line 686: error: expression must have a constant value
+    static_assert(&rcpci == &pi, "");
+                  ^
+"Test_name.c", line 686: note: comparison involves unknown address (e.g., the address of a weak variable)
+    static_assert(&rcpci == &pi, "");
+                         ^
+
+"Test_name.c", line 694: error: "f" has already been declared in the current scope
+    void f();
+         ^
+
+"Test_name.c", line 704: warning: dynamic exception specifications are deprecated
+      void f() throw(S);
+               ^
+
+"Test_name.c", line 702: error: incomplete type "cwg437::S" is not allowed
+    template<typename U> struct T : U {};
+                                    ^
+          detected during instantiation of class "cwg437::T<U> [with U=cwg437::S]" at line 707
+
+"Test_name.c", line 707: warning: dynamic exception specifications are deprecated
+      void g() throw(T<S>);
+               ^
+
+"Test_name.c", line 711: warning: dynamic exception specifications are deprecated
+      void h() throw(U);
+               ^
+
+"Test_name.c", line 734: error: function "cwg444::B::operator=(cwg444::D &)" (declared at line 727) cannot be referenced -- it is a deleted function
+      d = d;
+        ^
+
+"Test_name.c", line 747: error: function "cwg445::A::f" (declared at line 745) is inaccessible
+      friend void A::f();
+                     ^
+
+"Test_name.c", line 764: error: function "cwg446::A::A(const cwg446::A &)" (declared at line 757) cannot be referenced -- it is a deleted function
+      b ? A() : a;
+                ^
+
+"Test_name.c", line 767: error: function "cwg446::A::A(const cwg446::A &)" (declared at line 757) cannot be referenced -- it is a deleted function
+      b ? a : A();
+          ^
+
+"Test_name.c", line 775: error: function "cwg446::A::A(const cwg446::A &)" (declared at line 757) cannot be referenced -- it is a deleted function
+      b ? a : C();
+              ^
+
+"Test_name.c", line 775: error: function "cwg446::A::A(const cwg446::A &)" (declared at line 757) cannot be referenced -- it is a deleted function
+      b ? a : C();
+          ^
+
+"Test_name.c", line 778: error: function "cwg446::A::A(const cwg446::A &)" (declared at line 757) cannot be referenced -- it is a deleted function
+      b ? c : A();
+          ^
+
+"Test_name.c", line 781: error: function "cwg446::A::A(const cwg446::A &)" (declared at line 757) cannot be referenced -- it is a deleted function
+      b ? A() : C();
+                ^
+
+"Test_name.c", line 797: error: type name is not allowed
+      g(__builtin_offsetof(T, n)).h<int>();
+                                    ^
+
+"Test_name.c", line 797: error: expected an expression
+      g(__builtin_offsetof(T, n)).h<int>();
+                                         ^
+
+"Test_name.c", line 801: error: use the "typename" keyword to treat nontype "cwg447::U<<unnamed>>::type [with <unnamed>=<expression>]" as a type in a dependent context
+      U<__builtin_offsetof(T, n)>::type b;
+      ^
+
+"Test_name.c", line 806: error: type name is not allowed
+      g(__builtin_offsetof(A, a[N])).h<int>();
+                                       ^
+
+"Test_name.c", line 806: error: expected an expression
+      g(__builtin_offsetof(A, a[N])).h<int>();
+                                            ^
+
+"Test_name.c", line 809: error: use the "typename" keyword to treat nontype "cwg447::U<<unnamed>>::type [with <unnamed>=<expression>]" as a type in a dependent context
+      U<__builtin_offsetof(A, a[N])>::type d;
+      ^
+
+"Test_name.c", line 799: warning: variable "a" was declared but never referenced
+      U<__builtin_offsetof(A, n)>::type a;
+                                        ^
+
+"Test_name.c", line 807: warning: variable "c" was declared but never referenced
+      U<__builtin_offsetof(A, a[0])>::type c;
+                                           ^
+
+"Test_name.c", line 842: error: initial value of reference to non-const must be an lvalue
+      f2(S().n);
+         ^
+
+"Test_name.c", line 849: error: initial value of reference to non-const must be an lvalue
+      f2(A{});
+         ^
+
+"Test_name.c", line 857: warning: division by zero
+    const int a = 1 / 0;
+                    ^
+
+"Test_name.c", line 859: warning: division by zero
+    const int b = 1 / 0; // #cwg451-b
+                    ^
+
+"Test_name.c", line 861: error: expression must have a constant value
+    static_assert(b, "");
+                  ^
+"Test_name.c", line 861: note: the value of variable "cwg451::b" (declared at line 859) cannot be used as a constant
+    static_assert(b, "");
+                  ^
+
+"Test_name.c", line 881: error: a value of type "int" cannot be used to initialize an entity of type "void *"
+    void *p = null;
+              ^
+
+"Test_name.c", line 886: error: a value of type "bool" cannot be used to initialize an entity of type "void *"
+    void *q = f;
+              ^
+
+"Test_name.c", line 895: error: expression must have a constant value
+    static_assert(b, "");
+                  ^
+"Test_name.c", line 895: note: attempt to read from volatile storage
+    static_assert(b, "");
+                  ^
+
+"Test_name.c", line 901: error: expression must have a constant value
+      eb = b
+           ^
+"Test_name.c", line 901: note: attempt to read from volatile storage
+      eb = b
+           ^
+
+"Test_name.c", line 925: error: type name is not allowed
+      return T;
+             ^
+
+"Test_name.c", line 942: error: type name is not allowed
+      return T;
+             ^
+
+"Test_name.c", line 951: error: namespace-qualified name is required
+      using X;
+            ^
+
+"Test_name.c", line 953: error: a namespace name is not allowed
+      using cwg460::X;
+                    ^
+
+"Test_name.c", line 956: error: a namespace name is not allowed
+      using X::Q;
+               ^
+
+"Test_name.c", line 1015: warning: dynamic initialization in unreachable code
+      int k = stuff(); // #cwg467-k
+          ^
+
+"Test_name.c", line 1012: error: transfer of control bypasses initialization of:
+            variable "k" (declared at line 1015)
+      goto later;
+      ^
+
+"Test_name.c", line 1036: error: incomplete type "cwg469::X<int &>" is not allowed
+    X<int&> x;
+            ^
+
+"Test_name.c", line 1049: error: class "cwg470::A<T>::B [with T=int]" explicitly instantiated more than once
+    template struct A<int>::B;
+             ^
+
+"Test_name.c", line 1083: error: protected member "cwg472::B::i" (declared at line 1078) is not accessible through a "cwg472::I" pointer or object
+      ip->i = 0;
+          ^
+
+"Test_name.c", line 1104: error: declaration is incompatible with previous "cwg474::N::g" (declared at line 1100)
+      int g();
+          ^
+
+"Test_name.c", line 1118: error: "explicit" is not allowed
+      friend explicit A::A();
+      ^
+
+"Test_name.c", line 1120: error: "virtual" is not allowed
+      friend virtual void A::f();
+             ^
+
+"Test_name.c", line 1123: error: "explicit" is not allowed
+    explicit A::A() {}
+    ^
+
+"Test_name.c", line 1125: error: invalid specifier outside a class declaration
+    virtual void A::f() {}
+    ^
+
+"Test_name.c", line 1145: warning: "cwg479::S::S(const cwg479::S &)" (declared at line 1141), required for copy that was eliminated, is inaccessible
+      throw S();
+            ^
+
+"Test_name.c", line 1145: warning: "cwg479::S::~S()" (declared at line 1142), required to destroy temporary that was eliminated, is inaccessible
+      throw S();
+            ^
+
+"Test_name.c", line 1145: error: "cwg479::S::~S()" (declared at line 1142) is inaccessible
+      throw S();
+            ^
+
+"Test_name.c", line 1156: error: "cwg479::S::~S()" (declared at line 1142) is inaccessible
+      S s;
+        ^
+
+"Test_name.c", line 1159: error: "cwg479::S::S(const cwg479::S &)" (declared at line 1141) is inaccessible
+      throw s;
+            ^
+
+"Test_name.c", line 1159: error: "cwg479::S::~S()" (declared at line 1142) is inaccessible
+      throw s;
+            ^
+
+"Test_name.c", line 1169: error: "cwg479::S::S(const cwg479::S &)" (declared at line 1141) is inaccessible
+      } catch (S s) {
+                 ^
+
+"Test_name.c", line 1169: error: "cwg479::S::~S()" (declared at line 1142) is inaccessible
+      } catch (S s) {
+                 ^
+
+"Test_name.c", line 1185: error: cannot convert pointer to member of base class "cwg480::A" to pointer to member of derived class "cwg480::D" -- base class is virtual
+    int D::*b = a;
+                ^
+
+"Test_name.c", line 1189: error: cannot convert pointer to member of derived class "cwg480::D" to pointer to member of base class "cwg480::A" -- base class is virtual
+    int A::*d = static_cast<int A::*>(c);
+                            ^
+
+"Test_name.c", line 1194: error: cannot convert pointer to base class "cwg480::A" to pointer to derived class "cwg480::D" -- base class is virtual
+    D *g = static_cast<D*>(f);
+                       ^
+
+"Test_name.c", line 1199: error: cannot convert pointer to base class "cwg480::A" to pointer to derived class "cwg480::D" -- base class is virtual
+    D &k = static_cast<D&>(j);
+                           ^
+
+"Test_name.c", line 1205: error: identifier "T" is undefined
+    T *x;
+    ^
+
+"Test_name.c", line 1230: error: identifier "U_no_typo_correction" is undefined
+             U_no_typo_correction *C>
+             ^
+
+"Test_name.c", line 1233: error: identifier "U_no_typo_correction" is undefined
+      U_no_typo_correction *x;
+      ^
+
+"Test_name.c", line 1263: warning: nonstandard qualified name in namespace member declaration
+    int cwg482::b = 0;
+        ^
+
+"Test_name.c", line 1265: warning: nonstandard qualified name in namespace member declaration
+    void cwg482::g() {}
+         ^
+
+"Test_name.c", line 1278: error: qualified name is not allowed
+    typedef int N::type;
+                ^
+
+"Test_name.c", line 1282: warning: qualified name is not allowed in member declaration
+      struct A::B {};
+             ^
+
+"Test_name.c", line 1287: error: qualified name is not allowed
+      enum class A::C {};
+                    ^
+
+"Test_name.c", line 1295: error: identifier "__SCHAR_MAX__" is undefined
+      static_assert(__SCHAR_MAX__ >= 127, "");
+                    ^
+
+"Test_name.c", line 1296: error: identifier "__SHRT_MAX__" is undefined
+      static_assert(__SHRT_MAX__ >= 32767, "");
+                    ^
+
+"Test_name.c", line 1297: error: identifier "__INT_MAX__" is undefined
+      static_assert(__INT_MAX__ >= 32767, "");
+                    ^
+
+"Test_name.c", line 1298: error: identifier "__LONG_MAX__" is undefined
+      static_assert(__LONG_MAX__ >= 2147483647, "");
+                    ^
+
+"Test_name.c", line 1299: error: identifier "__LONG_LONG_MAX__" is undefined
+      static_assert(__LONG_LONG_MAX__ >= 9223372036854775807, "");
+                    ^
+
+"Test_name.c", line 1302: error: identifier "__PTRDIFF_WIDTH__" is undefined
+      static_assert(__PTRDIFF_WIDTH__ >= 16, "");
+                    ^
+
+"Test_name.c", line 1303: error: identifier "__SIG_ATOMIC_WIDTH__" is undefined
+      static_assert(__SIG_ATOMIC_WIDTH__ >= 8, "");
+                    ^
+
+"Test_name.c", line 1304: error: identifier "__SIZE_WIDTH__" is undefined
+      static_assert(__SIZE_WIDTH__ >= 16, "");
+                    ^
+
+"Test_name.c", line 1305: error: identifier "__WCHAR_WIDTH__" is undefined
+      static_assert(__WCHAR_WIDTH__ >= 8, "");
+                    ^
+
+"Test_name.c", line 1306: error: identifier "__WINT_WIDTH__" is undefined
+      static_assert(__WINT_WIDTH__ >= 16, "");
+                    ^
+
+"Test_name.c", line 1330: error: invalid redeclaration of type name "cwg484::CT" (declared at line 1329)
+    struct CT {};
+           ^
+
+"Test_name.c", line 1338: error: typedef "DT" may not be used in an elaborated type specifier
+    struct N::DT {};
+              ^
+
+"Test_name.c", line 1343: error: explicit type is missing ("int" assumed)
+      S();
+      ^
+
+"Test_name.c", line 1345: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } S;
+      ^
+"Test_name.c", line 1343: note: type is not C-like because of this member declaration
+      S();
+      ^
+
+"Test_name.c", line 1371: error: no instance of overloaded function "cwg486::f" matches the argument list
+            argument types are: (void (*)())
+      f<void()>(&g);
+      ^
+"Test_name.c", line 1362: note: substituting explicit template arguments "<void ()>" for function template "cwg486::f(T *)" failed
+    template<typename T> T f(T *); // #cwg486-f
+                           ^
+
+"Test_name.c", line 1374: error: no instance of overloaded function "cwg486::f" matches the argument list
+            argument types are: (int (*)[10])
+      f<int[10]>(&n);
+      ^
+"Test_name.c", line 1362: note: substituting explicit template arguments "<int [10]>" for function template "cwg486::f(T *)" failed
+    template<typename T> T f(T *); // #cwg486-f
+                           ^
+
+"Test_name.c", line 1383: error: expression must have a constant value
+    static_assert(4 + e, "");
+                  ^
+"Test_name.c", line 1383: note: cannot call non-constexpr function "cwg487::operator+" (declared at line 1382)
+    static_assert(4 + e, "");
+                    ^
+
+"Test_name.c", line 1433: error: declaration is incompatible with "int cwg490::X<cwg490::A::T>::*cwg490::A::i()" (declared at line 1416)
+      friend int X<T>::*A::i();
+                           ^
+
+"Test_name.c", line 1436: error: invalid friend declaration
+      friend int K::*A::j();
+      ^
+
+"Test_name.c", line 1436: error: expected a ";"
+      friend int K::*A::j();
+                  ^
+
+"Test_name.c", line 1452: error: too many initializer values
+    A c[2] = { a, {}, b[1] };
+                      ^
+
+"Test_name.c", line 1463: error: expression must have bool type (or be convertible to bool)
+      if (X()) {
+          ^
+
+"Test_name.c", line 1516: error: const variable "cs" requires an initializer -- class "S" has no user-provided default constructor
+      const S cs;
+                ^
+
+"Test_name.c", line 1518: error: expression must be a modifiable lvalue
+      cs.*pm = 88;
+      ^
+
+"Test_name.c", line 1529: error: expression must be a modifiable lvalue
+      cs.*pm = 88;
+      ^
+
+"Test_name.c", line 1536: error: incomplete type "char []" is not allowed
+    void f() { throw str; }
+                     ^
+
+"Test_name.c", line 491: error: invalid redeclaration of type name "type" (declared at line 490)
+      typedef U type;
+                ^
+          detected during instantiation of "void cwg422::f<T,U>() [with T=int, U=char]" at line 497
+
+"Test_name.c", line 819: error: no instance of overloaded function "cwg448::f" matches the argument list
+            argument types are: (cwg448::HideFromADL::X)
+      f<T>(t);
+      ^
+"Test_name.c", line 816: note: function template "cwg448::f(int)" does not match because argument #1 does not match parameter
+    template<typename T = int> void f(int); // #cwg448-f-int
+                                    ^
+          detected during instantiation of "void cwg448::g(T) [with T=cwg448::HideFromADL::X]" at line 830
+
+"Test_name.c", line 823: error: no instance of overloaded function "cwg448::f" matches the argument list
+            argument types are: (cwg448::HideFromADL::X)
+      cwg448::f(t);
+      ^
+"Test_name.c", line 816: note: function template "cwg448::f(int)" does not match because argument #1 does not match parameter
+    template<typename T = int> void f(int); // #cwg448-f-int
+                                    ^
+          detected during instantiation of "void cwg448::g(T) [with T=cwg448::HideFromADL::X]" at line 830
+
+"Test_name.c", line 1219: error: type "c" has already been defined (previous definition at line 1218)
+        typedef C c;
+                  ^
+          detected during instantiation of "void cwg481::E<A, C>::f() [with A=int, C=int]" at line 1226
+
+"Test_name.c", line 857: warning: variable "cwg451::a" was declared but never referenced
+    const int a = 1 / 0;
+              ^
+
+165 errors detected in the compilation of "Test_name.c".

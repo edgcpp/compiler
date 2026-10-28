@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions --exceptions Test_name.c
+"Test_name.c", line 16: warning: statement is unreachable
+    return 1; // expected-warning {{will never be executed}}
+    ^
+
+"Test_name.c", line 28: warning: statement is unreachable
+    return bar(); // expected-warning {{will never be executed}}
+    ^
+
+"Test_name.c", line 35: warning: statement is unreachable
+      bar();     // expected-warning {{will never be executed}}
+      ^
+
+"Test_name.c", line 41: warning: statement is unreachable
+      bar();     // expected-warning {{will never be executed}}
+      ^
+
+"Test_name.c", line 44: warning: statement is unreachable
+    bar();       // expected-warning {{will never be executed}}
+    ^
+
+"Test_name.c", line 48: error: expected an expression
+    ^{ return;
+    ^
+
+"Test_name.c", line 53: warning: statement is unreachable
+      bar();     // expected-warning {{will never be executed}}
+      ^
+
+"Test_name.c", line 95: warning: statement is unreachable
+      return; // expected-warning {{will never be executed}}
+      ^
+
+"Test_name.c", line 100: warning: statement is unreachable
+    [[clang::musttail]] return g(a); // expected-warning {{will never be executed}}
+                        ^
+
+1 error detected in the compilation of "Test_name.c".

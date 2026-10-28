@@ -1,0 +1,118 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 6: error: function "dup" has already been defined (previous definition at line 5)
+  int __attribute__((target_version("default"))) dup(void) { return 1; }
+                                                 ^
+
+"Test_name.c", line 9: error: function "dup" has already been defined (previous definition at line 5)
+  int __attribute__((target_version("default"))) dup(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 14: error: function "dup1" has already been defined (previous definition at line 11)
+  int dup1(void) { return 2; }
+      ^
+
+"Test_name.c", line 18: error: function "foo" has already been defined (previous definition at line 16)
+  int __attribute__((target_version("default"))) foo(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 21: error: function "foo" has already been defined (previous definition at line 16)
+  int __attribute__((target_version("sha3 + aes "))) foo(void) { return 1; }
+                                                     ^
+
+"Test_name.c", line 25: error: function "foo" has already been defined (previous definition at line 16)
+  int __attribute__((target("dotprod"))) foo(void) { return -1; }
+                                         ^
+
+"Test_name.c", line 25: warning: target attribute not recognized
+  int __attribute__((target("dotprod"))) foo(void) { return -1; }
+                            ^
+
+"Test_name.c", line 29: error: function "foo" has already been defined (previous definition at line 16)
+  int foo(void) { return 2; }
+      ^
+
+"Test_name.c", line 32: warning: target attribute not recognized
+  __attribute__ ((target("bf16,sve,sve2,dotprod"))) int func(void) { return 1; }
+                         ^
+
+"Test_name.c", line 32: warning: target attribute not recognized
+  __attribute__ ((target("bf16,sve,sve2,dotprod"))) int func(void) { return 1; }
+                         ^
+
+"Test_name.c", line 32: warning: target attribute not recognized
+  __attribute__ ((target("bf16,sve,sve2,dotprod"))) int func(void) { return 1; }
+                         ^
+
+"Test_name.c", line 32: warning: target attribute not recognized
+  __attribute__ ((target("bf16,sve,sve2,dotprod"))) int func(void) { return 1; }
+                         ^
+
+"Test_name.c", line 34: error: function "func" has already been defined (previous definition at line 32)
+  __attribute__ ((target("default"))) int func(void) { return 0; }
+                                          ^
+
+"Test_name.c", line 39: error: function "one" has already been defined (previous definition at line 37)
+  void __attribute__((target_version("flagm2+bti"))) one(void) {}
+                                                     ^
+
+"Test_name.c", line 42: error: function "two" has already been defined (previous definition at line 41)
+  void __attribute__((target_version("ssbs+fp16fml"))) two(void) {}
+                                                       ^
+
+"Test_name.c", line 49: error: function "default_first" has already been defined (previous definition at line 48)
+  int __attribute__((target_version("dit"))) default_first(void) { return 2; }
+                                             ^
+
+"Test_name.c", line 50: error: function "default_first" has already been defined (previous definition at line 48)
+  int __attribute__((target_version("mops"))) default_first(void) { return 3; }
+                                              ^
+
+"Test_name.c", line 54: error: function "default_middle" has already been defined (previous definition at line 53)
+  int __attribute__((target_version("default"))) default_middle(void) { return 1; }
+                                                 ^
+
+"Test_name.c", line 55: error: function "default_middle" has already been defined (previous definition at line 53)
+  int __attribute__((target_version("aes"))) default_middle(void) { return 2; }
+                                             ^
+
+"Test_name.c", line 59: error: function "default_last" has already been defined (previous definition at line 58)
+  int __attribute__((target_version("lse+aes"))) default_last(void) { return 1; }
+                                                 ^
+
+"Test_name.c", line 60: error: function "default_last" has already been defined (previous definition at line 58)
+  int __attribute__((target_version("default"))) default_last(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 65: error: function "default_fwd_declare" has already been defined (previous definition at line 64)
+  int default_fwd_declare(void) { return 1; }
+      ^
+
+"Test_name.c", line 79: error: function "redef" has already been defined (previous definition at line 76)
+  void __attribute__((target_version("rdm+rng+crc"))) redef(void) {}
+                                                      ^
+
+"Test_name.c", line 89: warning: arithmetic on pointer to void or function type
+    ovl++;
+       ^
+
+"Test_name.c", line 89: error: expression must be a modifiable lvalue
+    ovl++;
+    ^
+
+"Test_name.c", line 102: error: declaration is incompatible with "int rtype(int)" (declared at line 100)
+  float __attribute__((target_version("rdm"))) rtype(int);
+                                               ^
+
+"Test_name.c", line 106: error: function "combine" has already been defined (previous definition at line 104)
+  int __attribute__((aarch64_vector_pcs, target_version("sha3"))) combine(void) { return 2; }
+                                                                  ^
+
+"Test_name.c", line 112: error: function "unspec_args" has already been defined (previous definition at line 109)
+  int __attribute__((target_version("default"))) unspec_args() { return 0; }
+                                                 ^
+
+"Test_name.c", line 121: error: function "unspec_args_implicit_default_first" has already been defined (previous definition at line 119)
+  int __attribute__((target_version("default"))) unspec_args_implicit_default_first() { return 0; }
+                                                 ^
+
+23 errors detected in the compilation of "Test_name.c".

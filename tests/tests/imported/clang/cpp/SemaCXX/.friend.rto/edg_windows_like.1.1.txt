@@ -1,0 +1,167 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 5: error: invalid specifier outside a class declaration
+  friend class A; // expected-error {{'friend' used outside of class}}
+  ^
+
+"Test_name.c", line 6: error: invalid specifier outside a class declaration
+  void f() { friend class A; } // expected-error {{'friend' used outside of class}}
+             ^
+
+"Test_name.c", line 8: error: invalid specifier outside a class declaration
+  class D { void f() { friend class A; } }; // expected-error {{'friend' used outside of class}}
+                       ^
+
+"Test_name.c", line 49: warning: type qualifier on return type is meaningless
+      friend const int getInt(int inInt = 0) {}
+             ^
+
+"Test_name.c", line 49: warning: missing return statement at end of non-void function "test3::getInt"
+      friend const int getInt(int inInt = 0) {}
+                                              ^
+
+"Test_name.c", line 73: error: declaration is incompatible with "rdar8529993::A::~A()" (declared at line 69)
+    template<int> friend A::~A(); // expected-error {{destructor cannot be declared as a template}}
+                            ^
+
+"Test_name.c", line 156: error: namespace "test8::ns1" has no actual member "f"
+      template<class T> friend void ns1::f(T t); // expected-error {{cannot befriend target of using declaration}}
+                                         ^
+
+"Test_name.c", line 157: error: inherited member is not allowed
+      friend void B::f(); // expected-error {{cannot befriend target of using declaration}}
+                     ^
+
+"Test_name.c", line 158: error: inherited member is not allowed
+      friend void C<int>::f(); // expected-error {{cannot befriend target of using declaration}}
+                          ^
+
+"Test_name.c", line 167: error: class "test9::C" has no member "f"
+      friend void C::f(int, int, int) {}  // expected-error {{friend declaration of 'f' does not match any declaration in 'test9::C'}}
+                     ^
+
+"Test_name.c", line 206: error: identifier "f10_d" is undefined
+      f10_d(); // expected-error {{undeclared identifier}}
+      ^
+
+"Test_name.c", line 211: error: namespace "test10" has no member "f10_d"
+      ::test10::f10_d(); // expected-error {{no member named 'f10_d'}}
+                ^
+
+"Test_name.c", line 221: error: namespace "test10" has no member "f10_d"
+      ::test10::f10_d(x); // expected-error {{no type named 'f10_d'}}
+                ^
+
+"Test_name.c", line 240: error: identifier "f10_d" is undefined
+      f10_d(); // expected-error {{undeclared identifier}}
+      ^
+
+"Test_name.c", line 241: error: namespace "test10" has no member "f10_d"
+      ::test10::f10_d(); // expected-error {{no member named 'f10_d'}}
+                ^
+
+"Test_name.c", line 249: error: namespace "test10" has no member "f10_d"
+      ::test10::f10_d(x); // expected-error {{no type named 'f10_d'}}
+                ^
+
+"Test_name.c", line 250: error: namespace "test10" has no member "f10_d"
+      ::test10::f10_d(y); // expected-error {{no type named 'f10_d'}}
+                ^
+
+"Test_name.c", line 251: error: namespace "test10" has no member "f10_d"
+      ::test10::f10_d(z); // expected-error {{no type named 'f10_d'}}
+                ^
+
+"Test_name.c", line 260: error: no instance of overloaded function "f10_d" matches the argument list
+            argument types are: (test10::W)
+      f10_d(w); // expected-error {{no matching}}
+      ^
+"Test_name.c", line 256: note: function "f10_d(test10::X)" does not match because argument #1 does not match parameter
+      extern void f10_d(X); // expected-note {{candidate}}
+                  ^
+"Test_name.c", line 255: note: number of parameters of function "f10_d()" does not match the call
+      extern void f10_d(); // expected-note {{candidate}}
+                  ^
+
+"Test_name.c", line 263: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+        f10_d(); // expected-error {{not a function}}
+        ^
+
+"Test_name.c", line 263: warning: variable "f10_d" is used before its value is set
+        f10_d(); // expected-error {{not a function}}
+        ^
+
+"Test_name.c", line 264: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+        f10_d(x); // expected-error {{not a function}}
+        ^
+
+"Test_name.c", line 265: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+        f10_d(y); // expected-error {{not a function}}
+        ^
+
+"Test_name.c", line 270: error: identifier "f10_d" is undefined
+      f10_d(); // expected-error {{undeclared identifier}}
+      ^
+
+"Test_name.c", line 281: error: identifier "f10_d" is undefined
+      f10_d(); // expected-error {{undeclared identifier}}
+      ^
+
+"Test_name.c", line 300: warning: unknown attribute "visibility"
+    class __attribute__((visibility("hidden"))) B;
+                         ^
+
+"Test_name.c", line 303: warning: unknown attribute "visibility"
+      friend class __attribute__((visibility("hidden"), noreturn)) B; // expected-warning {{'noreturn' attribute only applies to functions and methods}}
+                                  ^
+
+"Test_name.c", line 303: warning: attribute "noreturn" does not apply here
+      friend class __attribute__((visibility("hidden"), noreturn)) B; // expected-warning {{'noreturn' attribute only applies to functions and methods}}
+                                                        ^
+
+"Test_name.c", line 318: error: nonstandard local-class friend declaration -- no prior declaration in the enclosing scope
+      friend void m();
+                  ^
+
+"Test_name.c", line 330: error: member "A::B::p" (declared at line 337) is inaccessible
+        (void)b->p;
+                 ^
+
+"Test_name.c", line 370: error: identifier "f_pr6954" is undefined
+    f_pr6954(5); // expected-error{{undeclared identifier 'f_pr6954'}}
+    ^
+
+"Test_name.c", line 400: warning: "T f()" declares a non-template function -- add <> to refer to a template instance
+      friend T f();
+               ^
+
+"Test_name.c", line 406: warning: "T g()" declares a non-template function -- add <> to refer to a template instance
+      friend T g(); // expected-error {{return type}}
+               ^
+
+"Test_name.c", line 406: error: cannot overload functions distinguished by return type alone
+      friend T g(); // expected-error {{return type}}
+               ^
+          detected during instantiation of class "PR33222::Y<T> [with T=float]" at line 408
+
+"Test_name.c", line 412: warning: "T h()" declares a non-template function -- add <> to refer to a template instance
+      friend T h(); // expected-error {{return type}}
+               ^
+
+"Test_name.c", line 412: error: cannot overload functions distinguished by return type alone
+      friend T h(); // expected-error {{return type}}
+               ^
+          detected during instantiation of class "PR33222::Z<T> [with T=float]" at line 415
+
+"Test_name.c", line 422: error: no instance of overloaded function "qualified_friend_no_match::f" matches the specified type
+      friend void qualified_friend_no_match::f(double); // expected-error {{friend declaration of 'f' does not match any declaration in namespace 'qualified_friend_no_match'}}
+                                             ^
+
+"Test_name.c", line 423: error: namespace "qualified_friend_no_match" has no member "g"
+      friend void qualified_friend_no_match::g(); // expected-error {{friend declaration of 'g' does not match any declaration in namespace 'qualified_friend_no_match'}}
+                                             ^
+
+"Test_name.c", line 431: error: no instance of overloaded function "qualified_friend_no_match::Y::f" matches the specified type
+      friend void Y::f(double); // expected-error {{friend declaration of 'f' does not match any declaration in 'qualified_friend_no_match::Y'}}
+                     ^
+
+30 errors detected in the compilation of "Test_name.c".

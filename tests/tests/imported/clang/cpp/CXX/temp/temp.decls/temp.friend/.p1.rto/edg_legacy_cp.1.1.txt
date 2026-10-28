@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 173: error: member "test7::A<T>::x [with T=int]" (declared at line 162) is inaccessible
+        return a.x; // expected-error {{'x' is a private member of 'test7::A<int>'}}
+                 ^
+
+"Test_name.c", line 179: error: "A" has already been declared in the current scope
+      friend class A; // expected-error {{template 'A' cannot be referenced with the 'class' specifier}}
+                   ^
+
+"Test_name.c", line 277: error: "test12::Foo<T>::Foo(T *, bool) [with T=int]" (declared at line 267) is inaccessible
+      Foo<int> s(&globalInt, false); // expected-error {{calling a private constructor}}
+                 ^
+
+"Test_name.c", line 320: error: incomplete type "test15::B<T>" is not allowed
+      template <class U> friend void B<T>::bar(U);
+                                     ^
+
+"Test_name.c", line 320: error: class "test15::B<long>" has no member "bar"
+      template <class U> friend void B<T>::bar(U);
+                                           ^
+          detected during instantiation of class "test15::A<T> [with T=long]" at line 327
+
+"Test_name.c", line 386: error: "foo" has already been declared in the current scope
+  using ns2::foo; // expected-note {{found by name lookup}}
+             ^
+
+"Test_name.c", line 389: error: invalid friend declaration
+    friend void foo<T>() {} // expected-error {{ambiguous}} expected-error{{no candidate function template was found for dependent friend function template specialization}}
+    ^
+
+"Test_name.c", line 389: error: expected a ";"
+    friend void foo<T>() {} // expected-error {{ambiguous}} expected-error{{no candidate function template was found for dependent friend function template specialization}}
+                   ^
+
+"Test_name.c", line 112: error: member "test3::Bool::value" (declared at line 102) is inaccessible
+      if (b.value) // expected-error {{'value' is a private member of 'test3::Bool'}}
+            ^
+          detected during instantiation of "T test3::transform(test3::Bool, T) [with T=int]" at line 118
+
+"Test_name.c", line 107: error: member "test3::Bool::value" (declared at line 102) is inaccessible
+        return b.value; // expected-error {{'value' is a private member of 'test3::Bool'}}
+                 ^
+          detected during instantiation of "T test3::User<T>::compute(test3::Bool) [with T=int]" at line 121
+
+"Test_name.c", line 206: error: member "test9::A<T>::C::x [with T=int]" (declared at line 215) is inaccessible
+        return c->x; // expected-error {{'x' is a private member}}
+                  ^
+          detected during instantiation of "int test9::A<T>::foo(test9::A<T>::C *) [with T=int]" at line 219
+
+"Test_name.c", line 236: error: function "test10::A<T>::foo [with T=char]" (declared at line 227) is inaccessible
+      l2.foo(); // expected-error {{'foo' is a private member of 'test10::A<char>'}}
+         ^
+          detected during instantiation of "test10::A<T> test10::bar(const T *, const test10::A<T> &) [with T=int]" at line 241
+
+"Test_name.c", line 308: error: function "test14::A<T>::foo [with T=long]" (declared at line 303) is inaccessible
+      void foo() { return A<long>::foo(); } // expected-error {{'foo' is a private member of 'test14::A<long>'}}
+                                   ^
+          detected during instantiation of "void test14::B<T>::foo() [with T=int]" at line 311
+
+"Test_name.c", line 327: error: function "test15::A<T>::foo [with T=long]" (declared at line 322) is inaccessible
+      void foo() { return A<long>::foo(); } // expected-error {{'foo' is a private member of 'test15::A<long>'}}
+                                   ^
+          detected during instantiation of "void test15::B<T>::foo() [with T=int]" at line 338
+
+"Test_name.c", line 349: error: member "PR10913::X<T>::member [with T=int]" (declared at line 357) is inaccessible
+      x->member = 0; // expected-error{{'member' is a protected member of 'PR10913::X<int>'}}
+         ^
+          detected during instantiation of "void PR10913::f2<U,T>(PR10913::X<T> *) [with U=float, T=int]" at line 362
+
+15 errors detected in the compilation of "Test_name.c".

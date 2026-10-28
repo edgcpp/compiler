@@ -1,0 +1,445 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 5: error: not a class or struct name
+  struct S : A {}; // expected-error{{expected class name}}
+             ^
+
+"Test_name.c", line 7: error: identifier "__builtin_is_cpp_trivially_relocatable" is undefined
+  static_assert(__builtin_is_cpp_trivially_relocatable()); // expected-error {{expected a type}}
+                ^
+
+"Test_name.c", line 9: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S));
+                                                       ^
+
+"Test_name.c", line 10: error: identifier "A" is undefined
+  static_assert(__builtin_is_cpp_trivially_relocatable(A)); // expected-error{{unknown type name 'A'}}
+                                                       ^
+
+"Test_name.c", line 12: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(int, int)); // expected-error {{type trait requires 1 argument; have 2 arguments}}
+                                                       ^
+
+"Test_name.c", line 12: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(int, int)); // expected-error {{type trait requires 1 argument; have 2 arguments}}
+                                                            ^
+
+"Test_name.c", line 14: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(int&));
+                                                       ^
+
+"Test_name.c", line 14: error: expected an expression
+  static_assert(__builtin_is_cpp_trivially_relocatable(int&));
+                                                           ^
+
+"Test_name.c", line 20: error: type name is not allowed
+  static_assert(!__builtin_is_cpp_trivially_relocatable(int&));
+                                                        ^
+
+"Test_name.c", line 20: error: expected an expression
+  static_assert(!__builtin_is_cpp_trivially_relocatable(int&));
+                                                            ^
+
+"Test_name.c", line 21: error: type name is not allowed
+  static_assert(!!__builtin_is_cpp_trivially_relocatable(int&));
+                                                         ^
+
+"Test_name.c", line 21: error: expected an expression
+  static_assert(!!__builtin_is_cpp_trivially_relocatable(int&));
+                                                             ^
+
+"Test_name.c", line 23: error: type name is not allowed
+  static_assert(bool(__builtin_is_cpp_trivially_relocatable(int&)));
+                                                            ^
+
+"Test_name.c", line 23: error: expected an expression
+  static_assert(bool(__builtin_is_cpp_trivially_relocatable(int&)));
+                                                                ^
+
+"Test_name.c", line 26: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(int&) && __builtin_is_cpp_trivially_relocatable(int&));
+                                                       ^
+
+"Test_name.c", line 26: error: expected an expression
+  static_assert(__builtin_is_cpp_trivially_relocatable(int&) && __builtin_is_cpp_trivially_relocatable(int&));
+                                                           ^
+
+"Test_name.c", line 26: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(int&) && __builtin_is_cpp_trivially_relocatable(int&));
+                                                                                                       ^
+
+"Test_name.c", line 26: error: expected an expression
+  static_assert(__builtin_is_cpp_trivially_relocatable(int&) && __builtin_is_cpp_trivially_relocatable(int&));
+                                                                                                           ^
+
+"Test_name.c", line 33: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  requires __builtin_is_cpp_trivially_relocatable(T) void f();  // #cand1
+                                                 ^
+
+"Test_name.c", line 33: error: type name is not allowed
+  requires __builtin_is_cpp_trivially_relocatable(T) void f();  // #cand1
+                                                  ^
+
+"Test_name.c", line 36: error: type name is not allowed
+  concept C = __builtin_is_cpp_trivially_relocatable(T); // #concept2
+                                                     ^
+
+"Test_name.c", line 41: error: no instance of function template "concepts::f" matches the argument list
+      f<int&>();
+      ^
+"Test_name.c", line 33: note: substituting "<int &>" for function template "concepts::f" failed constraints
+  requires __builtin_is_cpp_trivially_relocatable(T) void f();  // #cand1
+                                                          ^
+"Test_name.c", line 33: note: atomic constraint failed substitution
+  requires __builtin_is_cpp_trivially_relocatable(T) void f();  // #cand1
+           ^
+
+"Test_name.c", line 48: error: no instance of function template "concepts::g" matches the argument list
+      g<int&>();
+      ^
+"Test_name.c", line 38: note: substituting "<int &>" for function template "concepts::g" failed constraints
+  template <C T> void g();  // #cand2
+                      ^
+"Test_name.c", line 38: note: concept "concepts::C" not satisfied for "<int &>"
+  template <C T> void g();  // #cand2
+            ^
+"Test_name.c", line 36: note: atomic constraint failed substitution
+  concept C = __builtin_is_cpp_trivially_relocatable(T); // #concept2
+              ^
+
+"Test_name.c", line 61: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(int[vla_size]));
+                                                       ^
+
+"Test_name.c", line 67: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S));
+                                                       ^
+
+"Test_name.c", line 81: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S));
+                                                       ^
+
+"Test_name.c", line 94: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S2));
+                                                       ^
+
+"Test_name.c", line 105: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(S3));
+                                                       ^
+
+"Test_name.c", line 118: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(U));
+                                                       ^
+
+"Test_name.c", line 135: error: class "GH143325::Foo" has already been defined (previous definition at line 130)
+  struct Foo { // expected-error {{redefinition of 'Foo'}}
+         ^
+
+"Test_name.c", line 137: error: declaration does not declare anything
+    int;
+    ^
+
+"Test_name.c", line 145: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(Wrapper));
+                                                       ^
+
+"Test_name.c", line 163: error: type name is not allowed
+  static_assert(__builtin_is_cpp_trivially_relocatable(UnionOfPolymorphic));
+                                                       ^
+
+"Test_name.c", line 181: error: type name is not allowed
+  static_assert (__builtin_is_cpp_trivially_relocatable(GH143599));
+                                                        ^
+
+"Test_name.c", line 200: error: static assertion failed
+  static_assert(__is_trivially_copyable(S));
+  ^
+
+"Test_name.c", line 215: error: static assertion failed
+  static_assert(__is_trivially_copyable(S2));
+  ^
+
+"Test_name.c", line 231: error: static assertion failed
+  static_assert(__is_trivially_copyable(S4));
+  ^
+
+"Test_name.c", line 248: error: static assertion failed
+  static_assert(__is_trivially_copyable(S5));
+  ^
+
+"Test_name.c", line 265: error: static assertion failed
+  static_assert(__is_trivially_copyable(S6));
+  ^
+
+"Test_name.c", line 276: error: static assertion failed
+  static_assert(__is_trivially_copyable(S7));
+  ^
+
+"Test_name.c", line 285: error: static assertion failed
+  static_assert(__is_trivially_copyable(S8));
+  ^
+
+"Test_name.c", line 294: error: static assertion failed
+  static_assert(__is_trivially_copyable(S9));
+  ^
+
+"Test_name.c", line 303: error: static assertion failed
+  static_assert(__is_trivially_copyable(S10));
+  ^
+
+"Test_name.c", line 317: error: static assertion failed
+  static_assert(__is_trivially_copyable(S11));
+  ^
+
+"Test_name.c", line 326: error: static assertion failed
+  static_assert(__is_trivially_copyable(S12));
+  ^
+
+"Test_name.c", line 339: error: static assertion failed
+  static_assert(__is_constructible(S1, char*));
+  ^
+
+"Test_name.c", line 350: error: static assertion failed
+  static_assert(__is_constructible(S2, float));
+  ^
+
+"Test_name.c", line 358: error: static assertion failed
+  static_assert(__is_constructible(S2, float, void));
+  ^
+
+"Test_name.c", line 367: error: static assertion failed
+  static_assert(__is_constructible(int[]));
+  ^
+
+"Test_name.c", line 371: error: static assertion failed
+  static_assert(__is_constructible(void));
+  ^
+
+"Test_name.c", line 375: error: static assertion failed
+  static_assert(__is_constructible(void, void));
+  ^
+
+"Test_name.c", line 379: error: static assertion failed
+  static_assert(__is_constructible(const void));
+  ^
+
+"Test_name.c", line 383: error: static assertion failed
+  static_assert(__is_constructible(volatile void));
+  ^
+
+"Test_name.c", line 387: error: static assertion failed
+  static_assert(__is_constructible(int ()));
+  ^
+
+"Test_name.c", line 391: error: static assertion failed
+  static_assert(__is_constructible(void (int, float)));
+  ^
+
+"Test_name.c", line 398: error: static assertion failed
+  static_assert(__is_assignable(S1&, const S1&));
+  ^
+
+"Test_name.c", line 403: error: static assertion failed
+  static_assert(__is_assignable(void, int));
+  ^
+
+"Test_name.c", line 407: error: static assertion failed
+  static_assert(__is_assignable(int, int));
+  ^
+
+"Test_name.c", line 411: error: static assertion failed
+  static_assert(__is_assignable(int*, int));
+  ^
+
+"Test_name.c", line 415: error: static assertion failed
+  static_assert(__is_assignable(int[], int));
+  ^
+
+"Test_name.c", line 419: error: static assertion failed
+  static_assert(__is_assignable(int&, void));
+  ^
+
+"Test_name.c", line 423: error: static assertion failed
+  static_assert(__is_assignable(int*&, float*));
+  ^
+
+"Test_name.c", line 427: error: static assertion failed
+  static_assert(__is_assignable(const int&, int));
+  ^
+
+"Test_name.c", line 432: error: static assertion failed
+  static_assert(__is_assignable(const S2, S2));
+  ^
+
+"Test_name.c", line 443: error: static assertion failed
+  static_assert(__is_assignable(S3, const S3&));
+  ^
+
+"Test_name.c", line 449: error: static assertion failed
+  static_assert(__is_assignable(S3, S3&&));
+  ^
+
+"Test_name.c", line 460: error: static assertion failed
+  static_assert(__is_assignable(C1, C1));
+  ^
+
+"Test_name.c", line 470: error: static assertion failed
+      static_assert(__is_empty(A));
+      ^
+
+"Test_name.c", line 478: error: static assertion failed
+      static_assert(__is_empty(R));
+      ^
+
+"Test_name.c", line 486: error: static assertion failed
+      static_assert(__is_empty(VirtualFunc));
+      ^
+
+"Test_name.c", line 495: error: static assertion failed
+      static_assert(__is_empty(VB));
+      ^
+
+"Test_name.c", line 504: error: static assertion failed
+      static_assert(__is_empty(Derived));
+      ^
+
+"Test_name.c", line 515: error: static assertion failed
+      static_assert(__is_empty(Multi));
+      ^
+
+"Test_name.c", line 526: error: static assertion failed
+      static_assert(__is_empty(BitField)); // no diagnostics
+      ^
+
+"Test_name.c", line 532: error: static assertion failed
+      static_assert(__is_empty(DependentBitField<0>)); // no diagnostics
+      ^
+
+"Test_name.c", line 534: error: static assertion failed
+      static_assert(__is_empty(DependentBitField<2>));
+      ^
+
+"Test_name.c", line 546: error: static assertion failed
+  static_assert(__is_standard_layout(WithVirtual));
+  ^
+
+"Test_name.c", line 559: error: static assertion failed
+  static_assert(__is_standard_layout(MixedAccess));
+  ^
+
+"Test_name.c", line 569: error: static assertion failed
+  static_assert(__is_standard_layout(VB));
+  ^
+
+"Test_name.c", line 584: error: static assertion failed
+  static_assert(__is_standard_layout(U));
+  ^
+
+"Test_name.c", line 605: error: static assertion failed
+  static_assert(__is_standard_layout(DerivedClass));
+  ^
+
+"Test_name.c", line 615: error: static assertion failed
+  static_assert(__is_standard_layout(BaseC));
+  ^
+
+"Test_name.c", line 634: error: static assertion failed
+  static_assert(__is_standard_layout(C));
+  ^
+
+"Test_name.c", line 647: error: static assertion failed
+  static_assert(__is_standard_layout(E));
+  ^
+
+"Test_name.c", line 658: error: static assertion failed
+  static_assert(__is_standard_layout(F));
+  ^
+
+"Test_name.c", line 676: error: static assertion failed
+      static_assert(__is_final(C));
+      ^
+
+"Test_name.c", line 683: error: static assertion failed
+      static_assert(__is_final(U));
+      ^
+
+"Test_name.c", line 691: error: static assertion failed
+      static_assert(__is_final(I));
+      ^
+
+"Test_name.c", line 697: error: static assertion failed
+      static_assert(__is_final(Fty));
+      ^
+
+"Test_name.c", line 704: error: static assertion failed
+      static_assert(__is_final(Arr));
+      ^
+
+"Test_name.c", line 710: error: static assertion failed
+      static_assert(__is_final(Ref));
+      ^
+
+"Test_name.c", line 722: error: static assertion failed
+    static_assert(__is_aggregate(S1));
+    ^
+
+"Test_name.c", line 736: error: static assertion failed
+    static_assert(__is_aggregate(S2));
+    ^
+
+"Test_name.c", line 746: error: static assertion failed
+    static_assert(__is_aggregate(S3));
+    ^
+
+"Test_name.c", line 756: error: static assertion failed
+    static_assert(__is_aggregate(S4));
+    ^
+
+"Test_name.c", line 768: error: static assertion failed
+    static_assert(__is_aggregate(S5));
+    ^
+
+"Test_name.c", line 781: error: static assertion failed
+    static_assert(__is_aggregate(S6));
+    ^
+
+"Test_name.c", line 798: error: static assertion failed
+    static_assert(__is_aggregate(S7));
+    ^
+
+"Test_name.c", line 830: error: static assertion failed
+  static_assert(__is_abstract(Overrides));
+  ^
+
+"Test_name.c", line 836: error: static assertion failed
+  static_assert(__is_abstract(NonAbstract));
+  ^
+
+"Test_name.c", line 849: error: static assertion failed
+  static_assert(__is_abstract(Derived2));
+  ^
+
+"Test_name.c", line 856: error: static assertion failed
+  static_assert(__is_abstract(I));
+  ^
+
+"Test_name.c", line 862: error: static assertion failed
+  static_assert(__is_abstract(Fty));
+  ^
+
+"Test_name.c", line 869: error: static assertion failed
+  static_assert(__is_abstract(Arr));
+  ^
+
+"Test_name.c", line 876: error: static assertion failed
+  static_assert(__is_abstract(Ref));
+  ^
+
+"Test_name.c", line 883: error: static assertion failed
+  static_assert(__is_abstract(Ptr));
+  ^
+
+"Test_name.c", line 890: error: static assertion failed
+  static_assert(__is_abstract(U));
+  ^
+
+107 errors detected in the compilation of "Test_name.c".

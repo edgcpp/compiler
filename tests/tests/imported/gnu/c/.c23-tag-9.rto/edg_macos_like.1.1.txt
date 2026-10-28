@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 7: error: this declaration of struct "foo" does not declare the same type as the declaration at line 6
+  struct foo { alignas(128) int x; } y;	/* { dg-error "redefinition" } */
+         ^
+
+"Test_name.c", line 8: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  static_assert(alignof(y) == 128);
+                       ^
+
+"Test_name.c", line 8: error: static assertion failed
+  static_assert(alignof(y) == 128);
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

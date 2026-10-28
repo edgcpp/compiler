@@ -1,0 +1,62 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 7: error: expected a ","
+  auto g0(int a) [[ pre: a < 0 ]] [[ post r: r > 0 ]]
+                       ^
+
+"Test_name.c", line 7: error: expected a ","
+  auto g0(int a) [[ pre: a < 0 ]] [[ post r: r > 0 ]]
+                                          ^
+
+"Test_name.c", line 12: error: expected a ","
+  int g1(int m) [[ post r: r == m ]];
+                        ^
+
+"Test_name.c", line 14: error: expected a ","
+  int g1(int n) [[ post s: s == n ]]
+                        ^
+
+"Test_name.c", line 25: error: expected a ","
+    [[ pre: sizeof(decltype(g2(5))) > 4 ]]
+          ^
+
+"Test_name.c", line 30: error: expected a ","
+  auto g4(int m) [[ post: m ]];
+                        ^
+
+"Test_name.c", line 32: error: expected a ","
+  auto g4(int m) [[ post: m ]]
+                        ^
+
+"Test_name.c", line 37: error: expected a ","
+  auto g5(int m) [[ pre: m ]];
+                       ^
+
+"Test_name.c", line 39: error: expected a ","
+  auto g5(int m) [[ pre: m ]]
+                       ^
+
+"Test_name.c", line 45: error: expected a ","
+  auto g6(T t) [[ post r: r == t ]];
+                       ^
+
+"Test_name.c", line 45: error: expected a "]"
+  auto g6(T t) [[ post r: r == t ]];
+                        ^
+
+"Test_name.c", line 45: error: expected a ";"
+  auto g6(T t) [[ post r: r == t ]];
+                        ^
+
+"Test_name.c", line 48: error: expected a ","
+  auto g6(S s) [[ post q: q == s ]]
+                       ^
+
+"Test_name.c", line 48: error: expected a "]"
+  auto g6(S s) [[ post q: q == s ]]
+                        ^
+
+"Test_name.c", line 48: error: expected a ";"
+  auto g6(S s) [[ post q: q == s ]]
+                        ^
+
+15 errors detected in the compilation of "Test_name.c".

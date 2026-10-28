@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/type_traits", line 519: error: identifier "__float128" is undefined
+      struct __is_floating_point_helper<__float128>
+                                        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/stl_algobase.h", line 1073: error: identifier "__float128" is undefined
+    __size_to_integer(__float128 __n) { return (long long)__n; }
+                      ^
+
+"./graphite/pr42130.C", line 9: warning: unknown attribute "noclone"
+  vector<unsigned> & __attribute__((noinline, noclone)) foo(unsigned n)
+                                              ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 9: error: const variable "still_cant_be_const" requires an initializer
+  const int still_cant_be_const __attribute__((loader_uninitialized));
+                                                                     ^
+
+"Test_name.c", line 26: warning: variable "local" was declared but never referenced
+    int local __attribute__((loader_uninitialized));
+        ^
+
+"Test_name.c", line 29: warning: variable "sl" was declared but never referenced
+    static int sl __attribute__((loader_uninitialized));
+               ^
+
+"Test_name.c", line 42: error: variable "redef_attr_first" has already been defined (previous definition at line 41)
+  int redef_attr_first;
+      ^
+
+"Test_name.c", line 47: error: variable "redef_attr_second" has already been defined (previous definition at line 46)
+  int redef_attr_second __attribute__((loader_uninitialized));
+      ^
+
+"Test_name.c", line 68: error: incomplete type "Incomplete" is not allowed
+  Incomplete incomplete __attribute__((loader_uninitialized));
+             ^
+
+"Test_name.c", line 72: error: incomplete type "Incomplete" is not allowed
+  struct Incomplete s_incomplete __attribute__((loader_uninitialized));
+                    ^
+
+"Test_name.c", line 6: warning: variable "local_ok" was declared but never referenced
+  static int local_ok __attribute__((loader_uninitialized));
+             ^
+
+"Test_name.c", line 9: warning: variable "still_cant_be_const" was declared but never referenced
+  const int still_cant_be_const __attribute__((loader_uninitialized));
+            ^
+
+5 errors detected in the compilation of "Test_name.c".

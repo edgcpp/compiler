@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size(16)));
+                                  ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef short v8hi __attribute__((vector_size(16)));
+                                    ^
+
+"Test_name.c", line 9: error: identifier "__Int16x8_t" is undefined
+  struct s { __Int16x8_t x; __Int32x4_t y; };
+             ^
+
+"Test_name.c", line 9: error: identifier "__Int32x4_t" is undefined
+  struct s { __Int16x8_t x; __Int32x4_t y; };
+                            ^
+
+"Test_name.c", line 10: error: identifier "__Int16x8_t" is undefined
+  union u1 { __Int16x8_t x; __Int32x4_t y; };
+             ^
+
+"Test_name.c", line 10: error: identifier "__Int32x4_t" is undefined
+  union u1 { __Int16x8_t x; __Int32x4_t y; };
+                            ^
+
+"Test_name.c", line 11: error: identifier "__Int32x4_t" is undefined
+  union u2 { __Int32x4_t s; __Int16x8_t y; };
+             ^
+
+"Test_name.c", line 11: error: identifier "__Int16x8_t" is undefined
+  union u2 { __Int32x4_t s; __Int16x8_t y; };
+                            ^
+
+"Test_name.c", line 26: warning: variable "z1" was declared but never referenced
+    v4si z1[] = { i, i };
+         ^
+
+"Test_name.c", line 27: warning: variable "z2" was declared but never referenced
+    v4si z2[] = { i, h };
+         ^
+
+"Test_name.c", line 28: warning: variable "z3" was declared but never referenced
+    v4si z3[] = { h, i };
+         ^
+
+"Test_name.c", line 29: warning: variable "z4" was declared but never referenced
+    v4si z4[] = { h, h };
+         ^
+
+"Test_name.c", line 30: warning: variable "z5" was declared but never referenced
+    v8hi z5[] = { i, i };
+         ^
+
+"Test_name.c", line 31: warning: variable "z6" was declared but never referenced
+    v8hi z6[] = { i, h };
+         ^
+
+"Test_name.c", line 32: warning: variable "z7" was declared but never referenced
+    v8hi z7[] = { h, i };
+         ^
+
+"Test_name.c", line 33: warning: variable "z8" was declared but never referenced
+    v8hi z8[] = { h, h };
+         ^
+
+6 errors detected in the compilation of "Test_name.c".

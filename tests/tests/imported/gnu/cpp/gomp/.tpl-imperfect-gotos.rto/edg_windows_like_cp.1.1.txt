@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 51: error: transfer of control bypasses initialization of:
+            variable "j" (declared at line 52)
+        if (i > 16) goto c; /* { dg-error "invalid branch to/from OpenMP structured block" } */
+                    ^
+
+"Test_name.c", line 126: error: transfer of control bypasses initialization of:
+            variable "j" (declared at line 127)
+        if (i > 16) goto c; /* { dg-error "invalid branch to/from OpenMP structured block" } */
+                    ^
+
+2 errors detected in the compilation of "Test_name.c".

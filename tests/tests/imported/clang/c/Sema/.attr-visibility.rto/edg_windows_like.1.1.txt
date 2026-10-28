@@ -1,0 +1,69 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "visibility"
+  void test0(void) __attribute__((visibility("default")));
+                                  ^
+
+"Test_name.c", line 6: warning: unknown attribute "visibility"
+  void test1(void) __attribute__((visibility("hidden")));
+                                  ^
+
+"Test_name.c", line 7: warning: unknown attribute "visibility"
+  void test2(void) __attribute__((visibility("internal")));
+                                  ^
+
+"Test_name.c", line 9: warning: unknown attribute "visibility"
+  void test3(void) __attribute__((visibility("protected"))); // expected-warning {{target does not support 'protected' visibility; using 'default'}}
+                                  ^
+
+"Test_name.c", line 11: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) test4; // expected-note {{previous attribute is here}}
+                        ^
+
+"Test_name.c", line 13: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("default"))) test4; // expected-error {{visibility does not match previous declaration}}
+                        ^
+
+"Test_name.c", line 16: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) test5; // expected-note {{previous attribute is here}}
+                        ^
+
+"Test_name.c", line 17: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("default"))) test5; // expected-error {{visibility does not match previous declaration}}
+                        ^
+
+"Test_name.c", line 19: warning: unknown attribute "visibility"
+  void test6(void) __attribute__((visibility("default"), // expected-error {{visibility does not match previous declaration}}
+                                  ^
+
+"Test_name.c", line 20: warning: unknown attribute "visibility"
+                              visibility("hidden"))); // expected-note {{previous attribute is here}}
+                              ^
+
+"Test_name.c", line 22: warning: unknown attribute "visibility"
+  extern int test7 __attribute__((visibility("default"))); // expected-note {{previous attribute is here}}
+                                  ^
+
+"Test_name.c", line 23: warning: unknown attribute "visibility"
+  extern int test7 __attribute__((visibility("hidden"))); // expected-error {{visibility does not match previous declaration}}
+                                  ^
+
+"Test_name.c", line 25: warning: unknown attribute "visibility"
+  typedef int __attribute__((visibility("default"))) bar; // expected-warning {{'visibility' attribute ignored}}
+                             ^
+
+"Test_name.c", line 27: warning: unknown attribute "type_visibility"
+  int x __attribute__((type_visibility("default"))); // expected-error {{'type_visibility' attribute only applies to types and namespaces}}
+                       ^
+
+"Test_name.c", line 29: warning: unknown attribute "visibility"
+  int PR17105 __attribute__((visibility(hidden))); // expected-error {{'visibility' attribute requires a string}}
+                             ^
+
+"Test_name.c", line 31: warning: unrecognized #pragma
+  #pragma clang attribute push([[gnu::visibility("default")]], apply_to=function)
+          ^
+
+"Test_name.c", line 35: warning: unrecognized #pragma
+  #pragma clang attribute pop
+          ^
+

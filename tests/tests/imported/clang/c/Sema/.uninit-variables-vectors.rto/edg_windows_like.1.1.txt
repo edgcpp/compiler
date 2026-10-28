@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "__vector_size__"
+  typedef int __v4si __attribute__((__vector_size__(16)));
+                                    ^
+
+"Test_name.c", line 6: warning: unknown attribute "__vector_size__"
+  typedef float __m128 __attribute__((__vector_size__(16)));
+                                      ^
+
+"Test_name.c", line 12: warning: variable "x" is used before its value is set
+    x = _mm_xor_ps(x,x); // expected-warning {{variable 'x' is uninitialized when used here}}
+                   ^
+
+"Test_name.c", line 13: warning: variable "y" is used before its value is set
+    y = _mm_xor_ps(y,y); // expected-warning {{variable 'y' is uninitialized when used here}}
+                   ^
+
+"Test_name.c", line 14: warning: variable "z" is used before its value is set
+    z = _mm_xor_ps(z,z); // expected-warning {{variable 'z' is uninitialized when used here}}
+                   ^
+
+"Test_name.c", line 15: warning: variable "w" is used before its value is set
+    w = _mm_xor_ps(w,w); // expected-warning {{variable 'w' is uninitialized when used here}}
+                   ^
+

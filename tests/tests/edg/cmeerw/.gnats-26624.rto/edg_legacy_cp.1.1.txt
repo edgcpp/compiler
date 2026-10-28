@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 -w --c++14 Test_name.c
+"Test_name.c", line 81: error: template nesting depth does not match the previous declaration of variable template "tmpl::C<U>::tv [with U=short]"
+  C< short> ::tv< T &> ; 
+              ^
+
+"Test_name.c", line 80: error: cannot deduce "auto" type (initializer required)
+  template< class T> const auto 
+                           ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-vec1.C", line 10: warning: variable "a" is used before its value is set
+    a <=> b;
+    ^
+
+"./cpp2a/spaceship-vec1.C", line 10: warning: variable "b" is used before its value is set
+    a <=> b;
+          ^
+
+"./cpp2a/spaceship-vec1.C", line 10: warning: expression has no effect
+    a <=> b;
+    ^
+
+1 error detected in the compilation of "Test_name.c".

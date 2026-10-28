@@ -1,0 +1,422 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --target linux_aarch64 Test_name.c
+"Test_name.c", line 127: warning: variable "piw" was declared but never referenced
+    constexpr int piw = bit_cast<no_pad>(pir).x;
+                  ^
+
+"Test_name.c", line 131: warning: variable "bad" was declared but never referenced
+    constexpr no_pad bad = bit_cast<no_pad>(pir);
+                     ^
+
+"Test_name.c", line 150: error: expression must have a constant value
+    constexpr G g = __builtin_bit_cast(G, s);
+                    ^
+"Test_name.c", line 139: note: class types with bitfields "S" are not currently supported for constexpr evaluation of __builtin_bit_cast
+    struct S {
+           ^
+
+"Test_name.c", line 150: warning: variable "g" was declared but never referenced
+    constexpr G g = __builtin_bit_cast(G, s);
+                ^
+
+"Test_name.c", line 188: error: expression must have a constant value
+    constexpr G g = __builtin_bit_cast(G, X{0});
+                    ^
+"Test_name.c", line 188: note: a union, pointer, or pointer-to-member type "X" prevents constexpr evaluation of __builtin_bit_cast
+    constexpr G g = __builtin_bit_cast(G, X{0});
+                    ^
+
+"Test_name.c", line 191: error: expression must have a constant value
+    constexpr X x = __builtin_bit_cast(X, G{0});
+                    ^
+"Test_name.c", line 191: note: a union, pointer, or pointer-to-member type "X" prevents constexpr evaluation of __builtin_bit_cast
+    constexpr X x = __builtin_bit_cast(X, G{0});
+                    ^
+
+"Test_name.c", line 200: error: expression must have a constant value
+    constexpr unsigned long ptr = __builtin_bit_cast(unsigned long, has_pointer{0});
+                                  ^
+"Test_name.c", line 200: note: a union, pointer, or pointer-to-member type "int *" prevents constexpr evaluation of __builtin_bit_cast
+    constexpr unsigned long ptr = __builtin_bit_cast(unsigned long, has_pointer{0});
+                                  ^
+
+"Test_name.c", line 203: error: expression must have a constant value
+    constexpr has_pointer hptr =  __builtin_bit_cast(has_pointer, 0ul);
+                                  ^
+"Test_name.c", line 203: note: a union, pointer, or pointer-to-member type "int *" prevents constexpr evaluation of __builtin_bit_cast
+    constexpr has_pointer hptr =  __builtin_bit_cast(has_pointer, 0ul);
+                                  ^
+
+"Test_name.c", line 188: warning: variable "g" was declared but never referenced
+    constexpr G g = __builtin_bit_cast(G, X{0});
+                ^
+
+"Test_name.c", line 191: warning: variable "x" was declared but never referenced
+    constexpr X x = __builtin_bit_cast(X, G{0});
+                ^
+
+"Test_name.c", line 200: warning: variable "ptr" was declared but never referenced
+    constexpr unsigned long ptr = __builtin_bit_cast(unsigned long, has_pointer{0});
+                            ^
+
+"Test_name.c", line 203: warning: variable "hptr" was declared but never referenced
+    constexpr has_pointer hptr =  __builtin_bit_cast(has_pointer, 0ul);
+                          ^
+
+"Test_name.c", line 227: error: expression must have a constant value
+    constexpr E e = __builtin_bit_cast(E, C{});
+                    ^
+"Test_name.c", line 227: note: a union, pointer, or pointer-to-member type "int *" prevents constexpr evaluation of __builtin_bit_cast
+    constexpr E e = __builtin_bit_cast(E, C{});
+                    ^
+
+"Test_name.c", line 227: warning: variable "e" was declared but never referenced
+    constexpr E e = __builtin_bit_cast(E, C{});
+                ^
+
+"Test_name.c", line 244: error: expression must have a constant value
+  constexpr unsigned long test_from_nullptr = __builtin_bit_cast(unsigned long, nullptr);
+                                              ^
+"Test_name.c", line 244: note: a union, pointer, or pointer-to-member type "std::nullptr_t" prevents constexpr evaluation of __builtin_bit_cast
+  constexpr unsigned long test_from_nullptr = __builtin_bit_cast(unsigned long, nullptr);
+                                              ^
+
+"Test_name.c", line 246: warning: expression has no effect
+  constexpr int test_from_nullptr_pass = (__builtin_bit_cast(unsigned char[8], nullptr), 0);
+                                          ^
+
+"Test_name.c", line 249: warning: variable "npt" was declared but never referenced
+    nullptr_t npt = __builtin_bit_cast(nullptr_t, 0ul);
+              ^
+
+"Test_name.c", line 255: warning: variable "npt2" was declared but never referenced
+    nullptr_t npt2 = __builtin_bit_cast(nullptr_t, im);
+              ^
+
+"Test_name.c", line 260: error: expression must have a constant value
+  constexpr int ttn = test_to_nullptr();
+                      ^
+"Test_name.c", line 260: note: a union, pointer, or pointer-to-member type "std::nullptr_t" prevents constexpr evaluation of __builtin_bit_cast
+  constexpr int ttn = test_to_nullptr();
+                      ^
+
+"Test_name.c", line 264: warning: returning reference to local temporary
+  constexpr const long &returns_local() { return 0L; }
+                                                 ^
+
+"Test_name.c", line 268: error: expression must have a constant value
+  constexpr nullptr_t test_nullptr_bad = __builtin_bit_cast(nullptr_t, returns_local());
+                                         ^
+"Test_name.c", line 268: note: attempt to access expired storage
+  constexpr nullptr_t test_nullptr_bad = __builtin_bit_cast(nullptr_t, returns_local());
+                                                                                    ^
+
+"Test_name.c", line 285: warning: variable "tmp" was set but never used
+    int tmp = np.a + np.b;
+        ^
+
+"Test_name.c", line 312: error: expression must have a constant value
+  constexpr unsigned long run_ref_mem = __builtin_bit_cast(
+                                        ^
+"Test_name.c", line 304: note: non-static data member of reference type "ref_mem" prevents constexpr evaluation of __builtin_bit_cast
+  struct ref_mem {
+         ^
+
+"Test_name.c", line 321: error: expression must have a constant value
+  constexpr int run_u = __builtin_bit_cast(int, u{32});
+                        ^
+"Test_name.c", line 321: note: a union, pointer, or pointer-to-member type "u" prevents constexpr evaluation of __builtin_bit_cast
+  constexpr int run_u = __builtin_bit_cast(int, u{32});
+                        ^
+
+"Test_name.c", line 329: error: expression must have a constant value
+  constexpr int run_vol_mem = __builtin_bit_cast(int, vol_mem{43});
+                                                      ^
+
+"Test_name.c", line 336: error: expression must have a constant value
+  constexpr int run_mem_ptr = __builtin_bit_cast(unsigned long, mem_ptr{nullptr});
+                              ^
+"Test_name.c", line 336: note: a union, pointer, or pointer-to-member type "int vol_mem::*" prevents constexpr evaluation of __builtin_bit_cast
+  constexpr int run_mem_ptr = __builtin_bit_cast(unsigned long, mem_ptr{nullptr});
+                              ^
+
+"Test_name.c", line 475: warning: unknown attribute "vector_size"
+  typedef unsigned uint2 __attribute__((vector_size(2 * sizeof(unsigned))));
+                                        ^
+
+"Test_name.c", line 476: warning: unknown attribute "vector_size"
+  typedef char byte8 __attribute__((vector_size(sizeof(unsigned long long))));
+                                    ^
+
+"Test_name.c", line 478: error: too many initializer values
+  constexpr uint2 test_vector = { 0x0C05FEFE, 0xCAFEBABE };
+                                              ^
+
+"Test_name.c", line 27: error: static assertion failed
+    static_assert(sizeof(To) == sizeof(From));
+    ^
+"Test_name.c", line 27: note: the final comparison was 8 == 4
+    static_assert(sizeof(To) == sizeof(From));
+                             ^
+          detected during instantiation of "To bit_cast<To,From>(const From &) [with To=unsigned long long, From=test_vector::uint2]" at line 480
+
+"Test_name.c", line 37: error: the type of the second operand "test_vector::uint2" (aka "unsigned int") must have the same size as "unsigned long long"
+    return __builtin_bit_cast(To, from);
+                                  ^
+          detected during instantiation of "To bit_cast<To,From>(const From &) [with To=unsigned long long, From=test_vector::uint2]" at line 480
+
+"Test_name.c", line 27: error: static assertion failed
+    static_assert(sizeof(To) == sizeof(From));
+    ^
+"Test_name.c", line 27: note: the final comparison was 4 == 8
+    static_assert(sizeof(To) == sizeof(From));
+                             ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::uint2, From=unsigned long long]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::uint2, Init=unsigned long long]" at line 484
+
+"Test_name.c", line 37: error: the type of the second operand "unsigned long long" must have the same size as "test_vector::uint2" (aka "unsigned int")
+    return __builtin_bit_cast(To, from);
+                                  ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::uint2, From=unsigned long long]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::uint2, Init=unsigned long long]" at line 484
+
+"Test_name.c", line 27: error: static assertion failed
+    static_assert(sizeof(To) == sizeof(From));
+    ^
+"Test_name.c", line 27: note: the final comparison was 1 == 8
+    static_assert(sizeof(To) == sizeof(From));
+                             ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::byte8, From=unsigned long long]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::byte8, Init=unsigned long long]" at line 485
+
+"Test_name.c", line 37: error: the type of the second operand "unsigned long long" must have the same size as "test_vector::byte8" (aka "char")
+    return __builtin_bit_cast(To, from);
+                                  ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::byte8, From=unsigned long long]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::byte8, Init=unsigned long long]" at line 485
+
+"Test_name.c", line 487: warning: unknown attribute "ext_vector_type"
+  typedef bool bool8 __attribute__((ext_vector_type(8)));
+                                    ^
+
+"Test_name.c", line 488: warning: unknown attribute "ext_vector_type"
+  typedef bool bool9 __attribute__((ext_vector_type(9)));
+                                    ^
+
+"Test_name.c", line 489: warning: unknown attribute "ext_vector_type"
+  typedef bool bool16 __attribute__((ext_vector_type(16)));
+                                     ^
+
+"Test_name.c", line 490: warning: unknown attribute "ext_vector_type"
+  typedef bool bool17 __attribute__((ext_vector_type(17)));
+                                     ^
+
+"Test_name.c", line 491: warning: unknown attribute "ext_vector_type"
+  typedef bool bool32 __attribute__((ext_vector_type(32)));
+                                     ^
+
+"Test_name.c", line 492: warning: unknown attribute "ext_vector_type"
+  typedef bool bool128 __attribute__((ext_vector_type(128)));
+                                      ^
+
+"Test_name.c", line 494: error: too many initializer values
+  static_assert(bit_cast<unsigned char>(bool8{1,0,1,0,1,0,1,0}) == (LITTLE_END ? 0x55 : 0xAA), "");
+                                                ^
+
+"Test_name.c", line 499: error: too many initializer values
+  static_assert(bit_cast<unsigned short>(bool16{1,1,1,1,1,0,0,0, 1,1,1,1,0,1,0,0}) == (LITTLE_END ? 0x2F1F : 0xF8F4), "");
+                                                  ^
+
+"Test_name.c", line 27: error: static assertion failed
+    static_assert(sizeof(To) == sizeof(From));
+    ^
+"Test_name.c", line 27: note: the final comparison was 1 == 2
+    static_assert(sizeof(To) == sizeof(From));
+                             ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::bool16, From=short]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::bool16, Init=short]" at line 501
+
+"Test_name.c", line 37: error: the type of the second operand "short" must have the same size as "test_vector::bool16" (aka "bool")
+    return __builtin_bit_cast(To, from);
+                                  ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::bool16, From=short]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::bool16, Init=short]" at line 501
+
+"Test_name.c", line 27: error: static assertion failed
+    static_assert(sizeof(To) == sizeof(From));
+    ^
+"Test_name.c", line 27: note: the final comparison was 1 == 4
+    static_assert(sizeof(To) == sizeof(From));
+                             ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::bool32, From=int]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::bool32, Init=int]" at line 502
+
+"Test_name.c", line 37: error: the type of the second operand "int" must have the same size as "test_vector::bool32" (aka "bool")
+    return __builtin_bit_cast(To, from);
+                                  ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::bool32, From=int]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::bool32, Init=int]" at line 502
+
+"Test_name.c", line 27: error: static assertion failed
+    static_assert(sizeof(To) == sizeof(From));
+    ^
+"Test_name.c", line 27: note: the final comparison was 1 == 16
+    static_assert(sizeof(To) == sizeof(From));
+                             ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::bool128, From=__int128_t]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::bool128, Init=__int128_t]" at line 503
+
+"Test_name.c", line 37: error: the type of the second operand "__int128_t" (aka "__int128") must have the same size as "test_vector::bool128" (aka "bool")
+    return __builtin_bit_cast(To, from);
+                                  ^
+          detected during:
+            instantiation of "To bit_cast<To,From>(const From &) [with To=test_vector::bool128, From=__int128_t]" at line 42
+            instantiation of "bool round_trip<Intermediate,Init>(const Init &) [with Intermediate=test_vector::bool128, Init=__int128_t]" at line 503
+
+"Test_name.c", line 507: error: too many initializer values
+  constexpr unsigned short bad_bool9_to_short = __builtin_bit_cast(unsigned short, bool9{1,1,0,1,0,1,0,1,0});
+                                                                                           ^
+
+"Test_name.c", line 510: error: the type of the second operand "unsigned short" must have the same size as "test_vector::bool9" (aka "bool")
+  constexpr bool9 bad_short_to_bool9 = __builtin_bit_cast(bool9, static_cast<unsigned short>(0));
+                                                                 ^
+
+"Test_name.c", line 513: error: the type of the second operand "unsigned int" must have the same size as "test_vector::bool17" (aka "bool")
+  constexpr bool17 bad_int_to_bool17 = __builtin_bit_cast(bool17, 0x0001CAFEU);
+                                                                  ^
+
+"Test_name.c", line 518: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    constexpr _Complex unsigned test_int_complex = { 0x0C05FEFE, 0xCAFEBABE };
+    ^
+
+"Test_name.c", line 519: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    static_assert(round_trip<_Complex unsigned>(0xCAFEBABE0C05FEFEULL), "");
+                             ^
+
+"Test_name.c", line 526: error: expression must have a constant value
+    constexpr TwoFloats TF = __builtin_bit_cast(TwoFloats, test_float_complex);
+                             ^
+"Test_name.c", line 526: note: type "float __complex__" is currently not supported for constexpr evaluation of __builtin_bit_cast
+    constexpr TwoFloats TF = __builtin_bit_cast(TwoFloats, test_float_complex);
+                             ^
+
+"Test_name.c", line 529: error: expression must have a constant value
+    constexpr double D = __builtin_bit_cast(double, test_float_complex);
+                         ^
+"Test_name.c", line 529: note: type "float __complex__" is currently not supported for constexpr evaluation of __builtin_bit_cast
+    constexpr double D = __builtin_bit_cast(double, test_float_complex);
+                         ^
+
+"Test_name.c", line 542: error: indirect nonvirtual base class is not allowed
+      constexpr E() :  F{3} {} // expected-error {{not a direct or virtual base}}
+                       ^
+
+"Test_name.c", line 244: warning: variable "test_from_nullptr" was declared but never referenced
+  constexpr unsigned long test_from_nullptr = __builtin_bit_cast(unsigned long, nullptr);
+                          ^
+
+"Test_name.c", line 246: warning: variable "test_from_nullptr_pass" was declared but never referenced
+  constexpr int test_from_nullptr_pass = (__builtin_bit_cast(unsigned char[8], nullptr), 0);
+                ^
+
+"Test_name.c", line 260: warning: variable "ttn" was declared but never referenced
+  constexpr int ttn = test_to_nullptr();
+                ^
+
+"Test_name.c", line 268: warning: variable "test_nullptr_bad" was declared but never referenced
+  constexpr nullptr_t test_nullptr_bad = __builtin_bit_cast(nullptr_t, returns_local());
+                      ^
+
+"Test_name.c", line 299: warning: variable "run_test_indeterminate" was declared but never referenced
+  constexpr int run_test_indeterminate = test_indeterminate(false);
+                ^
+
+"Test_name.c", line 302: warning: variable "run_test_indeterminate2" was declared but never referenced
+  constexpr int run_test_indeterminate2 = test_indeterminate(true);
+                ^
+
+"Test_name.c", line 312: warning: variable "run_ref_mem" was declared but never referenced
+  constexpr unsigned long run_ref_mem = __builtin_bit_cast(
+                          ^
+
+"Test_name.c", line 321: warning: variable "run_u" was declared but never referenced
+  constexpr int run_u = __builtin_bit_cast(int, u{32});
+                ^
+
+"Test_name.c", line 329: warning: variable "run_vol_mem" was declared but never referenced
+  constexpr int run_vol_mem = __builtin_bit_cast(int, vol_mem{43});
+                ^
+
+"Test_name.c", line 336: warning: variable "run_mem_ptr" was declared but never referenced
+  constexpr int run_mem_ptr = __builtin_bit_cast(unsigned long, mem_ptr{nullptr});
+                ^
+
+"Test_name.c", line 345: warning: variable "good_one" was declared but never referenced
+  constexpr char good_one = one().x[0] + one().x[2] + one().x[3];
+                 ^
+
+"Test_name.c", line 348: warning: variable "bad_one" was declared but never referenced
+  constexpr char bad_one = one().x[1];
+                 ^
+
+"Test_name.c", line 357: warning: variable "good_two" was declared but never referenced
+  constexpr short good_two = two().c + two().s;
+                  ^
+
+"Test_name.c", line 370: warning: variable "ok_byte" was declared but never referenced
+  constexpr int ok_byte = (__builtin_bit_cast(std::byte[8], pad{1, 2}), 0);
+                ^
+
+"Test_name.c", line 371: warning: variable "ok_uchar" was declared but never referenced
+  constexpr int ok_uchar = (__builtin_bit_cast(unsigned char[8], pad{1, 2}), 0);
+                ^
+
+"Test_name.c", line 379: warning: variable "bad_my_byte" was declared but never referenced
+  constexpr int bad_my_byte = (__builtin_bit_cast(my_byte[8], pad{1, 2}), 0);
+                ^
+
+"Test_name.c", line 384: warning: variable "bad_char" was declared but never referenced
+  constexpr int bad_char =  (__builtin_bit_cast(char[8], pad{1, 2}), 0);
+                ^
+
+"Test_name.c", line 403: warning: variable "identity2b" was declared but never referenced
+  constexpr unsigned char identity2b = __builtin_bit_cast(unsigned char, identity2a.n);
+                          ^
+
+"Test_name.c", line 409: warning: variable "identity3b" was declared but never referenced
+  constexpr unsigned char identity3b = __builtin_bit_cast(unsigned char, identity3a.n);
+                          ^
+
+"Test_name.c", line 413: warning: variable "test_bool::test_bad_bool" was declared but never referenced
+  constexpr bool test_bad_bool = bit_cast<bool>('A'); // expected-error {{must be initialized by a constant expression}} expected-note{{in call}}
+                 ^
+
+"Test_name.c", line 507: warning: variable "test_vector::bad_bool9_to_short" was declared but never referenced
+  constexpr unsigned short bad_bool9_to_short = __builtin_bit_cast(unsigned short, bool9{1,1,0,1,0,1,0,1,0});
+                           ^
+
+"Test_name.c", line 510: warning: variable "test_vector::bad_short_to_bool9" was declared but never referenced
+  constexpr bool9 bad_short_to_bool9 = __builtin_bit_cast(bool9, static_cast<unsigned short>(0));
+                  ^
+
+"Test_name.c", line 513: warning: variable "test_vector::bad_int_to_bool17" was declared but never referenced
+  constexpr bool17 bad_int_to_bool17 = __builtin_bit_cast(bool17, 0x0001CAFEU);
+                   ^
+
+"Test_name.c", line 529: warning: variable "test_complex::D" was declared but never referenced
+    constexpr double D = __builtin_bit_cast(double, test_float_complex);
+                     ^
+
+"Test_name.c", line 530: warning: variable "test_complex::M" was declared but never referenced
+    constexpr int M = __builtin_bit_cast(int, test_int_complex); // expected-error {{size of '__builtin_bit_cast' source type 'const _Complex unsigned int' does not match destination type 'int' (8 vs 4 bytes)}}
+                  ^
+
+36 errors detected in the compilation of "Test_name.c".

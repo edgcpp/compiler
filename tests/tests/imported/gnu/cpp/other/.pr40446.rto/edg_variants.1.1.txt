@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 142: error: identifier "__float128" is undefined
+    __float128
+    ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 143: error: identifier "__float128" is undefined
+    abs(__float128 __x)
+        ^
+
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/bits/std_abs.h", line 151: error: function call requires a real floating-point argument
+      return __builtin_signbit(__x) ? -__x : __x;
+                              ^
+
+"./other/pr40446.C", line 9: warning: allowing all exceptions is incompatible with previous function "abort" (declared at line 514 of "/usr/include/stdlib.h")
+  extern "C" void abort ();
+                          ^
+
+3 errors detected in the compilation of "Test_name.c".

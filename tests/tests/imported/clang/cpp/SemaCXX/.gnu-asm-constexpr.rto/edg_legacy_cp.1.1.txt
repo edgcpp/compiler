@@ -1,0 +1,98 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 32: error: expected an asm string
+      asm((RAII("nop")) : (RAII("+ir")) (i) : (RAII("g")) (i) : (RAII("memory")));
+          ^
+
+"Test_name.c", line 33: error: expected an asm string
+      asm((RAIILeak("nop"))); // expected-error {{the expression in this asm operand must be produced by a constant expression}}
+          ^
+
+"Test_name.c", line 34: error: expected an asm string
+      asm((RAII("nop"))
+          ^
+
+"Test_name.c", line 37: warning: parsing restarts here after previous syntax error
+      );
+      ^
+
+"Test_name.c", line 38: error: expected an asm string
+      asm((RAII("nop"))
+          ^
+
+"Test_name.c", line 42: warning: parsing restarts here after previous syntax error
+      );
+      ^
+
+"Test_name.c", line 43: error: expected an asm string
+      asm((RAII("nop"))
+          ^
+
+"Test_name.c", line 47: warning: parsing restarts here after previous syntax error
+      );
+      ^
+
+"Test_name.c", line 82: error: expected an asm string
+      asm(("")); // expected-error {{the expression in this asm operand must be a string literal or an object with 'data()' and 'size()' member functions}}
+          ^
+
+"Test_name.c", line 83: error: expected an asm string
+      asm((NotAString{})); // expected-error {{the string object in this asm operand is missing 'data()' and 'size()' member functions}}
+          ^
+
+"Test_name.c", line 84: error: expected an asm string
+      asm((MessageInvalidData{})); // expected-error {{the expression in this asm operand must have a 'data()' member function returning an object convertible to 'const char *'}} \
+          ^
+
+"Test_name.c", line 86: error: expected an asm string
+      asm((MessageInvalidSize{})); // expected-error {{the expression in this asm operand must have a 'size()' member function returning an object convertible to 'std::size_t'}} \
+          ^
+
+"Test_name.c", line 89: error: expected an asm string
+      asm((WMessage{})); // expected-error {{value of type 'const wchar_t *' is not implicitly convertible to 'const char *'}} \
+          ^
+
+"Test_name.c", line 95: error: expected an asm string
+      asm((U{})); // expected-error {{expression contains unexpanded parameter pack 'U'}}
+          ^
+
+"Test_name.c", line 96: error: expected a ")"
+      asm("" : (U{})); // expected-error {{expression contains unexpanded parameter pack 'U'}}
+               ^
+
+"Test_name.c", line 97: error: expected a ")"
+      asm("" :: (U{})); // expected-error {{expression contains unexpanded parameter pack 'U'}}
+                ^
+
+"Test_name.c", line 98: error: expected a ")"
+      asm("" ::: (U{})); // expected-error {{expression contains unexpanded parameter pack 'U'}}
+                 ^
+
+"Test_name.c", line 103: error: expected an asm string
+      asm((T{})); // #err-int
+          ^
+
+"Test_name.c", line 104: error: expected a ")"
+      asm("" : (T{"+g"})(i)); // #err-int2
+               ^
+
+"Test_name.c", line 105: error: expected a ")"
+      asm("" :: (T{"g"})(i)); // #err-int3
+                ^
+
+"Test_name.c", line 106: error: expected a ")"
+      asm("" ::: (T{"memory"})); // #err-int4
+                 ^
+
+"Test_name.c", line 121: error: expected a ")"
+      asm("" : (T{"g"})(i)); // #err-invalid1
+               ^
+
+"Test_name.c", line 122: error: expected a ")"
+      asm("" :: (T{"+g"})(i)); // #err-invalid2
+                ^
+
+"Test_name.c", line 123: error: expected a ")"
+      asm("" ::: (T{"foo"})); // #err-invalid3
+                 ^
+
+21 errors detected in the compilation of "Test_name.c".

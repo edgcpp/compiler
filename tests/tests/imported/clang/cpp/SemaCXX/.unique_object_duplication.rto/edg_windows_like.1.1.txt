@@ -1,0 +1,89 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"SemaCXX/unique_object_duplication.h", line 32: warning: variable "allowedStatic1" was declared but never referenced
+    static constexpr int allowedStatic1 = 0;
+                         ^
+
+"SemaCXX/unique_object_duplication.h", line 33: warning: variable "allowedStatic2" was declared but never referenced
+    static const float allowedStatic2 = 1;
+                       ^
+
+"SemaCXX/unique_object_duplication.h", line 34: warning: variable "allowedStatic3" was declared but never referenced
+    static constexpr int allowedStatic3 = init_constexpr(2);
+                         ^
+
+"SemaCXX/unique_object_duplication.h", line 35: warning: variable "allowedStatic4" was declared but never referenced
+    static const int allowedStatic4 = init_constexpr(3);
+                     ^
+
+"SemaCXX/unique_object_duplication.h", line 52: warning: variable "allowedStatic4" was declared but never referenced
+    static constexpr int allowedStatic4 = 0;
+                         ^
+
+"SemaCXX/unique_object_duplication.h", line 62: warning: variable "allowedStatic4" was declared but never referenced
+    static constexpr int allowedStatic4 = init_constexpr(3);
+                         ^
+
+"SemaCXX/unique_object_duplication.h", line 67: warning: unknown attribute "visibility"
+  __attribute__((visibility("hidden"))) inline void static_local_always_hidden() {
+                 ^
+
+"SemaCXX/unique_object_duplication.h", line 72: warning: variable "disallowedStatic2" was declared but never referenced
+        static int disallowedStatic2 = 3;
+                   ^
+
+"SemaCXX/unique_object_duplication.h", line 78: warning: variable "disallowedStatic3" was declared but never referenced
+        static int disallowedStatic3 = 3;
+                   ^
+
+"SemaCXX/unique_object_duplication.h", line 68: warning: variable "disallowedStatic1" was declared but never referenced
+      static int disallowedStatic1 = 3;
+                 ^
+
+"SemaCXX/unique_object_duplication.h", line 77: warning: variable "lmb" was declared but never referenced
+      auto lmb = []() {
+           ^
+
+"SemaCXX/unique_object_duplication.h", line 85: warning: unknown attribute "visibility"
+  __attribute__((visibility("default"))) void static_local_never_hidden() {
+                 ^
+
+"SemaCXX/unique_object_duplication.h", line 89: warning: variable "allowedStatic2" was declared but never referenced
+        static int allowedStatic2 = 3;
+                   ^
+
+"SemaCXX/unique_object_duplication.h", line 93: warning: variable "allowedStatic3" was declared but never referenced
+        static int allowedStatic3 = 3;
+                   ^
+
+"SemaCXX/unique_object_duplication.h", line 86: warning: variable "allowedStatic1" was declared but never referenced
+      static int allowedStatic1 = 3;
+                 ^
+
+"SemaCXX/unique_object_duplication.h", line 92: warning: variable "lmb" was declared but never referenced
+      auto lmb = []() {
+           ^
+
+"SemaCXX/unique_object_duplication.h", line 105: warning: variable "allowedAddressLocal" was declared but never referenced
+    int allowedAddressLocal = 0;
+        ^
+
+"SemaCXX/unique_object_duplication.h", line 110: warning: variable "disallowedThreadLocal" was declared but never referenced
+    thread_local int disallowedThreadLocal = 0;
+                     ^
+
+"SemaCXX/unique_object_duplication.h", line 175: warning: unknown attribute "visibility"
+      __attribute__((visibility("default"))) static inline float allowedStaticMember2 = 0.0;
+                     ^
+
+"SemaCXX/unique_object_duplication.h", line 182: warning: unknown attribute "visibility"
+    struct __attribute__((visibility("default"))) NeverHidden {
+                          ^
+
+"SemaCXX/unique_object_duplication.h", line 221: warning: unknown attribute "visibility"
+  class __attribute__((visibility("default"))) Outer {
+                       ^
+
+"SemaCXX/unique_object_duplication.h", line 240: warning: unknown attribute "visibility"
+    class __attribute__((visibility("default"))) AlwaysVisible {
+                         ^
+

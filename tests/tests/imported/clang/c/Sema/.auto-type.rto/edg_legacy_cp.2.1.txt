@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 13: error: a variable declared with an auto type specifier cannot appear in its own initializer
+  __auto_type e = e; // expected-error {{variable 'e' declared with deduced type '__auto_type' cannot appear in its own initializer}}
+                  ^
+
+"Test_name.c", line 15: error: "__auto_type" not allowed here
+  struct s { __auto_type a; }; // expected-error {{'__auto_type' not allowed in struct member}}
+             ^
+
+"Test_name.c", line 17: error: "__auto_type" must be a placeholder for the complete type of the variable (not for a component of that type)
+  __auto_type f = 1, g = 1.0; // expected-error {{'__auto_type' deduced as 'int' in declaration of 'f' and deduced as 'double' in declaration of 'g'}}
+  ^
+
+"Test_name.c", line 19: error: "auto" type cannot appear in top-level function type
+  __auto_type h() {} // expected-error {{'__auto_type' not allowed in function return type}}
+  ^
+
+"Test_name.c", line 25: warning: missing return statement at end of non-void function "i"
+  }
+  ^
+
+"Test_name.c", line 23: warning: variable "j" was declared but never referenced
+    __auto_type j = (struct bitfield){1}.field; // expected-error {{cannot pass bit-field as __auto_type initializer in C}}
+                ^
+
+"Test_name.c", line 28: error: "__auto_type" not allowed here
+  __auto_type l; // expected-error {{'__auto_type' not allowed in K&R-style function parameter}}
+  ^
+
+"Test_name.c", line 29: warning: missing return statement at end of non-void function "k"
+  {}
+   ^
+
+"Test_name.c", line 37: error: "restrict" is not allowed
+    restrict __auto_type rat = &a;
+    ^
+
+"Test_name.c", line 42: error: "__auto_type" not allowed here
+    _Atomic(__auto_type) aat2 = a; // expected-error {{'__auto_type' not allowed here}} \
+            ^
+
+"Test_name.c", line 82: error: duplicate association type ("int") in _Generic selection
+                   __typeof__(a) : 1);  // expected-error {{type 'typeof (a)' (aka 'int') in generic association compatible with previously specified type 'typeof (i)' (aka 'int')}}
+                   ^
+
+"Test_name.c", line 37: warning: variable "rat" was set but never used
+    restrict __auto_type rat = &a;
+                         ^
+
+"Test_name.c", line 38: warning: variable "aat1" was set but never used
+    _Atomic __auto_type aat1 = a;
+                        ^
+
+"Test_name.c", line 39: warning: variable "paat" was set but never used
+    _Atomic __auto_type paat = &a;
+                        ^
+
+"Test_name.c", line 77: warning: variable "i" was set but never used
+    __auto_type i = 12;
+                ^
+
+"Test_name.c", line 78: warning: variable "f" was set but never used
+    __auto_type f = 1.2f;
+                ^
+
+"Test_name.c", line 90: warning: variable "v" was set but never used
+    __auto_type v = ptr;
+                ^
+
+8 errors detected in the compilation of "Test_name.c".

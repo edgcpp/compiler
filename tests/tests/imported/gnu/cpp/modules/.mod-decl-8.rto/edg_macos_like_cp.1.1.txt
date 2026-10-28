@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"Test_name.c", line 12: warning: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+    module
+    ^
+
+"Test_name.c", line 14: warning: "import" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+    import
+    ^
+
+"Test_name.c", line 13: warning: variable "x" was declared but never referenced
+      x;  // OK
+      ^
+
+"Test_name.c", line 15: warning: variable "y" was declared but never referenced
+      y;  // OK
+      ^
+
+"Test_name.c", line 13: error: expected an expression
+  module x; 
+  ^
+
+"Test_name.c", line 15: error: expected an expression
+  import y; 
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

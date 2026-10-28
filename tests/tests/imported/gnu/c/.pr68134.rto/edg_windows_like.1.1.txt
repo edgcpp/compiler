@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 Test_name.c
+"./pr68134.c", line 6: warning: unknown attribute "vector_size"
+  typedef double float64x1_t __attribute__ ((vector_size (8)));
+                                             ^
+
+"./pr68134.c", line 16: warning: variable "exp" was declared but never referenced
+    uint64_t exp = 0;
+             ^
+

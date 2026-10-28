@@ -1,0 +1,139 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 10: warning: structured binding "x" was declared but never referenced
+  void no_tuple_size_1() { auto [x, y] = A(); } // ok, bind elementwise
+                                 ^
+
+"Test_name.c", line 13: warning: structured binding "x" was declared but never referenced
+  void no_tuple_size_2() { auto [x, y] = A(); } // ok, bind elementwise
+                                 ^
+
+"Test_name.c", line 17: error: std::tuple_size<"Bad1">::value is not a valid integral constant-expression
+  void no_tuple_size_3() { auto [x, y] = Bad1(); } // ok, omitting value is valid after DR2386
+                                ^
+
+"Test_name.c", line 21: error: std::tuple_size<"Bad2">::value is not a valid integral constant-expression
+  void no_tuple_size_4() { auto [x, y] = Bad2(); } // expected-error {{cannot bind this type; 'std::tuple_size<Bad2>::value' is not a valid integral constant expression}}
+                                ^
+
+"Test_name.c", line 28: error: "std::tuple_element" not defined
+      auto [a0, a1] = A(); // expected-error {{binds to 3 elements}}
+           ^
+
+"Test_name.c", line 29: error: "std::tuple_element" not defined
+      auto [b0, b1] = B(); // expected-error {{binds to 3 elements}}
+           ^
+
+"Test_name.c", line 31: error: "std::tuple_element" not defined
+    auto [a0, a1, a2] = A(); // expected-error {{undeclared identifier 'get'}} expected-note {{in implicit initialization of binding declaration 'a0'}}
+         ^
+
+"Test_name.c", line 38: error: "std::tuple_element" not defined
+    auto [a0, a1, a2] = A(); // expected-error {{undeclared identifier 'get'}} expected-note {{in implicit initialization of binding declaration 'a0'}}
+         ^
+
+"Test_name.c", line 44: error: "std::tuple_element" not defined
+    auto [a0, a1, a2] = A(); // expected-error-re {{'std::tuple_element<0U{{L*}}, A>::type' does not name a type}} expected-note {{in implicit}}
+         ^
+
+"Test_name.c", line 50: error: cannot instantiate "std::tuple_element" for <0, "A">
+    auto [a0, a1, a2] = A(); // expected-error {{implicit instantiation of undefined template 'std::tuple_element<0, A>'}} expected-note {{in implicit}}
+         ^
+
+"Test_name.c", line 56: error: cannot instantiate "std::tuple_element" for <1, "A">
+    auto [a0, a1, a2] = A(); // expected-error {{implicit instantiation of undefined template 'std::tuple_element<1, A>'}} expected-note {{in implicit}}
+         ^
+
+"Test_name.c", line 72: error: cannot instantiate "std::tuple_element" for <0, "B">
+    auto [b0, b1, b2] = B();
+         ^
+
+"Test_name.c", line 77: error: cannot instantiate "std::tuple_element" for <0, "B">
+    auto &[br0, br1, br2] = b;
+          ^
+
+"Test_name.c", line 80: error: cannot instantiate "std::tuple_element" for <0, "B">
+    auto &&[brr0, brr1, brr2] = B();
+           ^
+
+"Test_name.c", line 67: error: incomplete type "std::tuple_element<0UL, B>" is not allowed
+    typedef const typename std::tuple_element<N, T>::type type;
+                           ^
+          detected during instantiation of class "std::tuple_element<N, const T> [with N=0UL, T=B]" at line 83
+
+"Test_name.c", line 108: error: invalid redeclaration of type name "Int1" (declared at line 107)
+    using Int1 = decltype(b0);
+          ^
+
+"Test_name.c", line 113: error: invalid redeclaration of type name "ConstInt1" (declared at line 112)
+    using ConstInt1 = decltype(bcr0);
+          ^
+
+"Test_name.c", line 116: error: invalid redeclaration of type name "Int2" (declared at line 115)
+    using Int2 = decltype(b1);
+          ^
+
+"Test_name.c", line 121: error: invalid redeclaration of type name "ConstInt2" (declared at line 120)
+    using ConstInt2 = decltype(bcr1);
+          ^
+
+"Test_name.c", line 124: error: invalid redeclaration of type name "Int3" (declared at line 123)
+    using Int3 = decltype(b2);
+          ^
+
+"Test_name.c", line 129: error: invalid redeclaration of type name "ConstInt3" (declared at line 128)
+    using ConstInt3 = decltype(bcr2);
+          ^
+
+"Test_name.c", line 156: error: this structured binding requires a suitable "get" function and none was found
+    auto [d] = D(); // expected-error {{no matching function for call to 'get'}} expected-note {{in implicit init}}
+         ^
+
+"Test_name.c", line 167: error: this structured binding requires a suitable "get" function and none was found
+    auto [e] = E(); // expected-error {{no matching function for call to 'get'}} expected-note {{in implicit init}}
+         ^
+
+"Test_name.c", line 177: error: this structured binding requires a suitable "get" function and none was found
+    auto [x] = ADL::X(); // expected-error {{undeclared identifier 'get'}} expected-note {{in implicit init}}
+         ^
+
+"Test_name.c", line 210: error: initial value of reference to non-const must be an lvalue
+    { auto [a] = wrap<int&, void, int&&>(); } // expected-error {{non-const lvalue reference to type 'int' cannot bind}} expected-note {{in implicit}}
+           ^
+
+"Test_name.c", line 214: error: a reference of type "std::tuple_element<0UL, wrap<int, void, float &>>::type &" (aka "int &") (not const-qualified) cannot be initialized with a value of type "float"
+    { auto [a] = wrap<int, void, float&>(); } // expected-error {{cannot bind}} expected-note {{implicit}}
+           ^
+
+"Test_name.c", line 228: error: cannot instantiate "std::tuple_element" for <0, "constant::Q">
+    auto [a, b, c] = q;    // expected-note {{temporary}}
+         ^
+
+"Test_name.c", line 232: error: cannot instantiate "std::tuple_element" for <0, "constant::Q">
+      auto [a, b, c] = q;
+           ^
+
+"Test_name.c", line 240: error: cannot instantiate "std::tuple_element" for <0, "constant::Q">
+        auto [a, b, c] = q;
+             ^
+
+"Test_name.c", line 262: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+"Test_name.c", line 272: warning: missing return statement at end of non-void function "get<N>(ValidMemberGet)"
+  template <size_t N> int get(ValidMemberGet) { static_assert(N && false, ""); }
+                                                                               ^
+
+"Test_name.c", line 278: warning: missing return statement at end of non-void function "f2"
+  }
+  ^
+
+"Test_name.c", line 291: error: this structured binding requires a suitable "get" function and none was found
+  auto [x] = Derived(); // expected-error{{member 'get' found in multiple base classes of different types}}
+       ^
+
+"Test_name.c", line 143: warning: variable "c" was declared but never referenced
+  constexpr C c = C();
+              ^
+
+28 errors detected in the compilation of "Test_name.c".

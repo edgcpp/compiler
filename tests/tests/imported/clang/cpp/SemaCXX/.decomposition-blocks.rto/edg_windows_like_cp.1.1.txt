@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 10: error: incomplete type "void" is not allowed
+  void run(void (^)());
+       ^
+
+"Test_name.c", line 10: error: expected an expression
+  void run(void (^)());
+                 ^
+
+"Test_name.c", line 10: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+  void run(void (^)());
+           ^
+
+"Test_name.c", line 13: error: expected an expression
+    run(^{
+        ^
+
+"Test_name.c", line 12: warning: structured binding "i" was declared but never referenced
+    auto [i, j] = S{-1, 42}; // expected-note {{'i' declared here}}
+          ^
+
+4 errors detected in the compilation of "Test_name.c".

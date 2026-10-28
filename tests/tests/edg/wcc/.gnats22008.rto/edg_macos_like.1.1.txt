@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --g++ -W --gnu_version 80100 Test_name.c
+"Test_name.c", line 5: error: unknown attribute "__vector_size__"
+  typedef int V __attribute__((__vector_size__(16)));
+                               ^
+
+"Test_name.c", line 8: error: unknown attribute "gnu::__vector_size__"
+  using V3 [[gnu::__vector_size__(N)]] = T;
+             ^
+
+2 errors detected in the compilation of "Test_name.c".

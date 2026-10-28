@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 52: warning: expression has no effect
+  #embed <jk.txt>
+   ^
+
+"Test_name.c", line 19: catastrophic error: cannot open embed file "jk.txt"
+  #embed <jk.txt>
+         ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

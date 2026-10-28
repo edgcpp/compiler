@@ -1,0 +1,24 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c11 Test_name.c
+"./atomic/c11-atomic-exec-5.c", line 210: warning: division by zero
+  ); feraiseexcept (0); float r = ( var_float_div_invalid_divbyzero /= 0.0f); int rexc = fetestexcept ((
+                                                                       ^
+
+"./atomic/c11-atomic-exec-5.c", line 315: warning: division by zero
+  ); feraiseexcept (0); double r = ( var_double_div_invalid_divbyzero /= 0.0); int rexc = fetestexcept ((
+                                                                         ^
+
+"./atomic/c11-atomic-exec-5.c", line 411: warning: division by zero
+  ); feraiseexcept (0); long double r = ( var_long_double_div_invalid_divbyzero /= 0.0L); int rexc = fetestexcept ((
+                                                                                   ^
+
+"./atomic/c11-atomic-exec-5.c", line 414: warning: division by zero
+  ); feraiseexcept (0); long double r = ( var_long_double_div_overflow /= 3.36210314311209350626267781732175260e-4932L
+                                                                          ^
+
+"./atomic/c11-atomic-exec-5.c", line 429: warning: division by zero
+  ); feraiseexcept (0); _Complex long double r = ( var_complex_long_double_div_overflow /= 3.36210314311209350626267781732175260e-4932L
+                                                                                           ^
+
+/usr/sbin/ld: Test_name.o: undefined reference to symbol 'feraiseexcept@@GLIBC_2.2.5'
+/usr/sbin/ld: /usr/lib64/libm.so.6: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=2 --c++20 Test_name.c
+"Test_name.c", line 196: error: no instance of function template "decltype_auto_deduction_from_paren_init::f" matches the argument list
+    static_assert(f<>() == 0);
+                  ^
+"Test_name.c", line 185: note: candidate function template "decltype_auto_deduction_from_paren_init::f" failed deduction
+    constexpr int f()
+                  ^
+
+"Test_name.c", line 197: error: no instance of function template "decltype_auto_deduction_from_paren_init::g" matches the argument list
+    static_assert(g<>() == 0);
+                  ^
+"Test_name.c", line 191: note: candidate function template "decltype_auto_deduction_from_paren_init::g" failed deduction
+    constexpr int g()
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

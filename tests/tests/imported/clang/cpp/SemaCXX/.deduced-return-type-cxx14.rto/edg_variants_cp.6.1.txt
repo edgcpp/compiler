@@ -1,0 +1,504 @@
+fe_only -DTEST_NUMBER=6 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 -DDELAYED_TEMPLATE_PARSING Test_name.c
+"Test_name.c", line 13: error: cannot overload functions distinguished by return type alone
+  int f(); // expected-error {{differ only in their return type}}
+      ^
+
+"Test_name.c", line 24: error: cannot deduce the return type of function "Conv1::operator auto" (declared at line 22); it has not been defined
+  int conv1a = conv1; // expected-error {{function 'operator auto' with deduced return type cannot be used before it is defined}}
+               ^
+
+"Test_name.c", line 26: error: declaration is incompatible with "Conv1::operator <error-type>()" (declared at line 22)
+  Conv1::operator auto() { return 123; }
+         ^
+
+"Test_name.c", line 28: error: class "Conv1" has no member "operator auto"
+  int conv1c = conv1.operator auto();
+                     ^
+
+"Test_name.c", line 29: error: class "Conv1" has no member "operator int"
+  int conv1d = conv1.operator int(); // expected-error {{no member named 'operator int'}}
+                     ^
+
+"Test_name.c", line 33: error: invalid redeclaration of member function "Conv2::operator auto()" (declared at line 32)
+    operator auto() { return 0.; } // expected-error {{cannot be redeclared}}
+    ^
+
+"Test_name.c", line 40: error: more than one conversion function from "Conv3" to "int *" applies:
+            function "Conv3::operator int *()" (declared at line 37)
+            function "Conv3::operator int *()" (declared at line 38)
+  int *conv3a = conv3; // expected-error {{ambiguous}}
+                ^
+
+"Test_name.c", line 41: error: class "Conv3" has no member "operator auto"
+  int *conv3b = conv3.operator auto();
+                      ^
+
+"Test_name.c", line 42: error: class "Conv3" has no member "operator auto *"
+  int *conv3c = conv3.operator auto*();
+                      ^
+
+"Test_name.c", line 50: error: class "Conv4<int>" has no member "operator auto"
+  int conv4b = conv4int.operator auto();
+                        ^
+
+"Test_name.c", line 58: error: cannot overload functions distinguished by return type alone
+  auto *a(); // expected-error {{differ only in their return type}}
+        ^
+
+"Test_name.c", line 79: error: class "BothOps" has no member "operator auto"
+    BothOps().operator auto(); // ok
+              ^
+
+"Test_name.c", line 80: error: class "BothOps" has no member "operator auto *"
+    BothOps().operator auto *(); // ok
+              ^
+
+"Test_name.c", line 81: error: class "JustTemplateOp" has no member "operator auto"
+    JustTemplateOp().operator auto(); // expected-error {{no member named 'operator auto' in 'JustTemplateOp'}}
+                     ^
+
+"Test_name.c", line 82: error: class "JustTemplateOp" has no member "operator auto *"
+    JustTemplateOp().operator auto *(); // expected-error {{no member named 'operator auto *' in 'JustTemplateOp'}}
+                     ^
+
+"Test_name.c", line 86: error: cannot deduce "auto" type
+    return 100; // expected-error {{cannot deduce return type 'auto *' from returned value of type 'int'}}
+           ^
+
+"Test_name.c", line 85: error: cannot deduce "auto" type
+  auto *ptr_1() {
+                ^
+
+"Test_name.c", line 90: warning: returning reference to local temporary
+    return 0; // expected-warning {{returning reference to local temporary}}
+           ^
+
+"Test_name.c", line 94: error: a brace-enclosed list does not provide a return type
+    return { 1, 2, 3 }; // expected-error {{cannot deduce return type from initializer list}}
+           ^
+
+"Test_name.c", line 99: error: cannot deduce the return type of function "fwd_decl" (declared at line 97); it has not been defined
+  int n = fwd_decl(); // expected-error {{function 'fwd_decl' with deduced return type cannot be used before it is defined}}
+          ^
+
+"Test_name.c", line 110: error: cannot deduce the return type of function "fac_2" (declared at line 108); it has not been defined
+      return n * fac_2(n-1); // expected-error {{cannot be used before it is defined}}
+                 ^
+
+"Test_name.c", line 118: error: cannot deduce "auto" type
+  auto &void_ret_2() {} // expected-error {{cannot deduce return type 'auto &' for function with no return statements}}
+                      ^
+
+"Test_name.c", line 126: error: deduced return type "const int" conflicts with previously deduced type "void"
+    return 0; // expected-error {{'auto' in return type deduced as 'int' here but deduced as 'void' in earlier return statement}}
+           ^
+
+"Test_name.c", line 140: error: a reference of type "float &" (not const-qualified) cannot be initialized with a value of type "double"
+    float &c = f2(0.0); // expected-error {{non-const lvalue reference to type 'float' cannot bind to a value of unrelated type 'double'}}
+               ^
+
+"Test_name.c", line 144: error: cannot deduce the return type of function "Templates::fwd_decl<T>() [with T=int]" (declared at line 143); it has not been defined
+    int e = fwd_decl<int>(); // expected-error {{cannot be used before it is defined}}
+            ^
+
+"Test_name.c", line 151: error: cannot deduce "auto" type
+    auto (*p)() = f1; // expected-error {{variable 'p' with type 'auto (*)()' has incompatible initializer of type '<overloaded function type>'}}
+    ^
+
+"Test_name.c", line 156: error: invalid redeclaration of type name "Templates::dbl" (declared at line 154)
+    typedef float dbl; // cxx14_20-error {{typedef redefinition with different types ('float' vs 'decltype(f2(1.2))' (aka 'double &'))}}
+                  ^
+
+"Test_name.c", line 160: error: no instance of function template "Templates::fwd_decl" matches the specified type
+    extern template int fwd_decl<char>(); // expected-error {{does not refer to a function template}}
+                        ^
+
+"Test_name.c", line 163: error: name followed by "::" must be a class or namespace name
+    template <typename T> auto instantiate() { T::error; } // expected-error {{has no members}} \
+                                               ^
+          detected during instantiation of "auto Templates::instantiate<T>() [with T=int]" at line 166
+
+"Test_name.c", line 166: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int k = instantiate<int>(); // expected-note {{in instantiation of}}
+            ^
+
+"Test_name.c", line 168: error: no instance of function template "Templates::instantiate" matches the specified type
+    template<> void instantiate<double>() {} // expected-error {{no function template matches}}
+                    ^
+
+"Test_name.c", line 180: error: no instance of function template "Templates::take_fn" matches the argument list
+            argument types are: (<unknown-type>)
+    int &check1 = take_fn(arg_single); // expected-error {{no matching}} expected-note@-2 {{couldn't infer}}
+                  ^
+"Test_name.c", line 178: note: candidate function template "Templates::take_fn" failed deduction
+    template<typename T> T &take_fn(T (*p)());
+                            ^
+
+"Test_name.c", line 182: error: no instance of function template "Templates::take_fn" matches the argument list
+            argument types are: (<unknown-type>)
+    int &check3 = take_fn<int>(arg_single); // expected-error {{no matching}} expected-note@-4{{no overload of 'arg_single'}}
+                  ^
+"Test_name.c", line 178: note: function template "Templates::take_fn" does not match because argument #1 does not match parameter
+    template<typename T> T &take_fn(T (*p)());
+                            ^
+
+"Test_name.c", line 184: error: no instance of function template "Templates::take_fn" matches the argument list
+            argument types are: (<unknown-type>)
+    long &check5 = take_fn(arg_multi); // expected-error {{no matching}} expected-note@-6 {{couldn't infer}}
+                   ^
+"Test_name.c", line 178: note: candidate function template "Templates::take_fn" failed deduction
+    template<typename T> T &take_fn(T (*p)());
+                            ^
+
+"Test_name.c", line 186: error: no instance of function template "Templates::take_fn" matches the argument list
+            argument types are: (<unknown-type>)
+    long &check7 = take_fn<long>(arg_multi); // expected-error {{no matching}} expected-note@-8{{no overload of 'arg_multi'}}
+                   ^
+"Test_name.c", line 178: note: function template "Templates::take_fn" does not match because argument #1 does not match parameter
+    template<typename T> T &take_fn(T (*p)());
+                            ^
+
+"Test_name.c", line 191: error: a reference of type "double &" (not const-qualified) cannot be initialized with a value of type "auto"
+    double &mem_check3 = take_fn(Outer<long>::arg_multi);
+                         ^
+
+"Test_name.c", line 192: error: no instance of overloaded function "Templates::Outer<T>::arg_multi [with T=double]" matches the required type
+    double &mem_check4 = take_fn<double>(Outer<double>::arg_multi);
+                                         ^
+
+"Test_name.c", line 200: error: no instance of function template "Templates::Deduce1::f" matches the required type
+        int (*r)() = f; // expected-error {{does not match}}
+                     ^
+
+"Test_name.c", line 202: error: no instance of function template "Templates::Deduce1::g" matches the argument list
+            argument types are: (<unknown-type>)
+        g<int>(f); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 196: note: function template "Templates::Deduce1::g" does not match because argument #1 does not match parameter
+      template<typename T> void g(T(*)()); // expected-note 2{{candidate}}
+                                ^
+
+"Test_name.c", line 203: error: no instance of function template "Templates::Deduce1::g" matches the argument list
+            argument types are: (<unknown-type>)
+        g(f); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 196: note: candidate function template "Templates::Deduce1::g" failed deduction
+      template<typename T> void g(T(*)()); // expected-note 2{{candidate}}
+                                ^
+
+"Test_name.c", line 198: warning: variable "p" was declared but never referenced
+        auto p = f<int>;
+             ^
+
+"Test_name.c", line 199: warning: variable "q" was declared but never referenced
+        auto (*q)() = f<int>;
+               ^
+
+"Test_name.c", line 213: error: no instance of function template "Templates::Deduce2::f" matches the required type
+        int (*r)(int) = f; // expected-error {{does not match}}
+                        ^
+
+"Test_name.c", line 215: error: no instance of function template "Templates::Deduce2::g" matches the argument list
+            argument types are: (<unknown-type>)
+        g<int>(f); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 209: note: function template "Templates::Deduce2::g" does not match because argument #1 does not match parameter
+      template<typename T> void g(T(*)(int)); // expected-note 2{{candidate}}
+                                ^
+
+"Test_name.c", line 216: error: no instance of function template "Templates::Deduce2::g" matches the argument list
+            argument types are: (<unknown-type>)
+        g(f); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 209: note: candidate function template "Templates::Deduce2::g" failed deduction
+      template<typename T> void g(T(*)(int)); // expected-note 2{{candidate}}
+                                ^
+
+"Test_name.c", line 211: warning: variable "p" was declared but never referenced
+        auto p = f<int>;
+             ^
+
+"Test_name.c", line 212: warning: variable "q" was declared but never referenced
+        auto (*q)(int) = f<int>;
+               ^
+
+"Test_name.c", line 229: error: no instance of function template "Templates::Deduce3::g" matches the argument list
+            argument types are: (<unknown-type>)
+        g(f); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 222: note: candidate function template "Templates::Deduce3::g" failed deduction
+      template<typename T> void g(T(*)(int)); // expected-note {{couldn't infer}}
+                                ^
+
+"Test_name.c", line 224: warning: variable "p" was declared but never referenced
+        auto p = f<int>;
+             ^
+
+"Test_name.c", line 225: warning: variable "q" was declared but never referenced
+        auto (*q)(int) = f<int>;
+               ^
+
+"Test_name.c", line 226: warning: variable "r" was declared but never referenced
+        int (*r)(int) = f; // ok
+              ^
+
+"Test_name.c", line 274: error: no instance of overloaded function "OverloadResolutionNonTemplate::g" matches the argument list
+            argument types are: (<unknown-type>)
+    int a = g(f); // expected-error {{no matching function}}
+            ^
+"Test_name.c", line 272: note: function "OverloadResolutionNonTemplate::g(int (*)(int))" does not match because argument #1 does not match parameter
+    char &g(int (*f)(int)); // expected-note {{not viable: no overload of 'f' matching 'int (*)(int)'}}
+          ^
+"Test_name.c", line 271: note: function "OverloadResolutionNonTemplate::g(int (*)())" does not match because argument #1 does not match parameter
+    int &g(int (*f)()); // expected-note {{not viable: no overload of 'f' matching 'int (*)()'}}
+         ^
+
+"Test_name.c", line 293: error: cannot deduce the return type of function "OverloadResolutionTemplate::f(T) [with T=int]" (declared at line 288); it has not been defined
+    int a = g(f); // expected-error {{no matching function}}
+            ^
+
+"Test_name.c", line 293: error: no instance of overloaded function "OverloadResolutionTemplate::g" matches the argument list
+            argument types are: (<unknown-type>)
+    int a = g(f); // expected-error {{no matching function}}
+            ^
+"Test_name.c", line 291: note: function "OverloadResolutionTemplate::g(int (*)(int))" does not match because argument #1 does not match parameter
+    char &g(int (*f)(int)); // expected-note {{not viable: no overload of 'f' matching 'int (*)(int)'}} expected-note {{candidate}}
+          ^
+"Test_name.c", line 290: note: function "OverloadResolutionTemplate::g(int (*)())" does not match because argument #1 does not match parameter
+    int &g(int (*f)()); // expected-note {{not viable: no overload of 'f' matching 'int (*)()'}} expected-note {{candidate}}
+         ^
+
+"Test_name.c", line 306: error: invalid type for defaulted assignment operator
+      auto operator=(const A&) = default; // expected-error {{must return 'A &'}}
+           ^
+
+"Test_name.c", line 309: error: no instance of overloaded function "DefaultedMethods::A::operator=" matches the specified type
+    auto A::operator=(A&&) = default; // expected-error {{return type of out-of-line definition of 'DefaultedMethods::A::operator=' differs from that in the declaration}}
+            ^
+
+"Test_name.c", line 309: error: "= default" can only appear on default constructors, copy/move constructors, copy/move assignment operators, and destructors
+    auto A::operator=(A&&) = default; // expected-error {{return type of out-of-line definition of 'DefaultedMethods::A::operator=' differs from that in the declaration}}
+                             ^
+
+"Test_name.c", line 315: warning: missing return statement at end of non-void function "Constexpr::Y<T>::f [with T=int]"
+    template<typename T> struct Y { constexpr T f() {} }; // expected-note {{control reached end of constexpr function}}
+                                                     ^
+          detected during instantiation of "T Constexpr::Y<T>::f() [with T=int]" at line 319
+
+"Test_name.c", line 319: error: expression must have a constant value
+      constexpr int q = Y<int>().f(); // expected-error {{must be initialized by a constant expression}} expected-note {{in call to 'Y<int>().f()'}}
+                        ^
+"Test_name.c", line 315: note: missing return value
+    template<typename T> struct Y { constexpr T f() {} }; // expected-note {{control reached end of constexpr function}}
+                                                     ^
+
+"Test_name.c", line 319: warning: variable "q" was declared but never referenced
+      constexpr int q = Y<int>().f(); // expected-error {{must be initialized by a constant expression}} expected-note {{in call to 'Y<int>().f()'}}
+                    ^
+
+"Test_name.c", line 323: error: a constexpr function cannot have a nonliteral return type "Constexpr::NonLiteral"
+    constexpr auto f2(int n) { return nl; } // cxx14_20-error {{constexpr function's return type 'struct NonLiteral' is not a literal type}}
+                             ^
+
+"Test_name.c", line 328: error: allocation function requires "void *" return type
+  auto operator new(size_t n, const char*); // expected-error {{must return type 'void *'}}
+       ^
+
+"Test_name.c", line 329: error: deallocation function requires "void" return type
+  auto operator delete(void *, const char*); // expected-error {{must return type 'void'}}
+       ^
+
+"Test_name.c", line 333: error: a virtual function cannot have a deduced return type
+      virtual auto f() { return 0; } // expected-error {{function with deduced return type cannot be virtual}} expected-note {{here}}
+                   ^
+
+"Test_name.c", line 340: error: a virtual function cannot have a deduced return type
+      auto f(); // expected-error {{different return}}
+           ^
+
+"Test_name.c", line 344: error: a virtual function cannot have a deduced return type
+    struct V { virtual auto f(); }; // expected-error {{cannot be virtual}}
+                            ^
+
+"Test_name.c", line 345: error: a virtual function cannot have a deduced return type
+    struct W : V { virtual auto f(); }; // expected-error {{cannot be virtual}}
+                                ^
+
+"Test_name.c", line 346: error: declaration is incompatible with "<error-type> Virtual::V::f()" (declared at line 344)
+    auto V::f() { return 0; } // in tu1.cpp
+            ^
+
+"Test_name.c", line 347: error: declaration is incompatible with "<error-type> Virtual::W::f()" (declared at line 345)
+    auto W::f() { return 0.0; } // in tu2.cpp
+            ^
+
+"Test_name.c", line 361: error: cannot deduce "auto" type
+    auto *g() {} // expected-error {{cannot deduce return type 'auto *' for function with no return statements}}
+               ^
+
+"Test_name.c", line 364: error: function "std_examples::NoReturn::h()" (declared at line 363) cannot be referenced -- it is a deleted function
+    auto x = h(); // expected-error {{call to deleted}}
+             ^
+
+"Test_name.c", line 368: error: a variable declared with an auto type specifier cannot appear in its own initializer
+    auto n = n; // expected-error {{variable 'n' declared with deduced type 'auto' cannot appear in its own initializer}}
+             ^
+
+"Test_name.c", line 370: error: cannot deduce the return type of function "std_examples::UseBeforeComplete::f" (declared at line 369); it has not been defined
+    void g() { &f; } // expected-error {{function 'f' with deduced return type cannot be used before it is defined}}
+                ^
+
+"Test_name.c", line 370: warning: expression has no effect
+    void g() { &f; } // expected-error {{function 'f' with deduced return type cannot be used before it is defined}}
+               ^
+
+"Test_name.c", line 383: error: declaration is incompatible with "int std_examples::Redecl::f()" (declared at line 381)
+    int f(); // expected-error {{functions that differ only in their return type cannot be overloaded}}
+        ^
+
+"Test_name.c", line 384: error: cannot overload functions distinguished by return type alone
+    decltype(auto) f(); // expected-error {{cannot be overloaded}}
+                   ^
+
+"Test_name.c", line 389: error: no instance of function template "std_examples::Redecl::g" matches the specified type
+    template char g(char); // expected-error {{does not refer to a function}}
+                  ^
+
+"Test_name.c", line 396: error: more than one instance of overloaded function "std_examples::Redecl::g" matches the argument list:
+            function template "auto std_examples::Redecl::g(T)" (declared at line 386)
+            function template "T std_examples::Redecl::g(T)" (declared at line 392)
+            argument types are: (int)
+    void h() { return g(42); } // expected-error {{ambiguous}}
+                      ^
+
+"Test_name.c", line 449: error: result of decltype qualifier "int" is not a class or enumeration
+        friend decltype(n) ::DecltypeAutoShouldNotBeADecltypeSpecifier::NNS::j(); // expected-error {{not a class}}
+               ^
+
+"Test_name.c", line 449: error: explicit type is missing ("int" assumed)
+        friend decltype(n) ::DecltypeAutoShouldNotBeADecltypeSpecifier::NNS::j(); // expected-error {{not a class}}
+               ^
+
+"Test_name.c", line 455: error: expected an identifier
+      void f(A a) { a.~decltype(auto)(); } // expected-error {{'decltype(auto)' not allowed here}}
+                       ^
+
+"Test_name.c", line 455: error: expected a ";"
+      void f(A a) { a.~decltype(auto)(); } // expected-error {{'decltype(auto)' not allowed here}}
+                       ^
+
+"Test_name.c", line 456: error: expected an expression
+      void g(int i) { i.~decltype(auto)(); } // expected-error {{'decltype(auto)' not allowed here}}
+                                  ^
+
+"Test_name.c", line 456: error: invalid destructor name for type "int"
+      void g(int i) { i.~decltype(auto)(); } // expected-error {{'decltype(auto)' not allowed here}}
+                        ^
+
+"Test_name.c", line 460: error: expected an identifier
+      struct A : decltype(auto) {}; // expected-error {{'decltype(auto)' not allowed here}}
+                 ^
+
+"Test_name.c", line 462: error: expected an identifier
+        B() : decltype(auto)() {} // expected-error {{'decltype(auto)' not allowed here}}
+              ^
+
+"Test_name.c", line 538: error: namespace "rnk" has no member "bar"
+    ::rnk::bar();
+           ^
+
+"Test_name.c", line 568: error: a trailing return type requires the "auto" type specifier
+      operator auto() -> int { return 0; } // expected-error {{cannot specify any part of a return type in the declaration of a conversion function; put the complete type after 'operator'}}
+                      ^
+
+"Test_name.c", line 570: error: class "TrailingReturnTypeForConversionOperator::X" has no member "operator auto"
+    int k = x.operator auto();
+              ^
+
+"Test_name.c", line 573: error: a trailing return type requires the "auto" type specifier
+      operator auto() -> int & { // expected-error {{cannot specify}}
+                      ^
+
+"Test_name.c", line 607: warning: "auto f1()" declares a non-template function -- add <> to refer to a template instance
+      friend auto f1();
+                  ^
+
+"Test_name.c", line 608: warning: "auto f2()" declares a non-template function -- add <> to refer to a template instance
+      friend auto f2();
+                  ^
+
+"Test_name.c", line 652: error: declaration is incompatible with "auto *PR33222::B<<unnamed>>::q() [with <unnamed>=char [2]]" (declared at line 649)
+    template<> auto B<char[2]>::q() { return (int*)0; } // expected-error {{return type}}
+                                ^
+
+"Test_name.c", line 653: error: declaration is incompatible with "auto *PR33222::B<<unnamed>>::q() [with <unnamed>=char [3]]" (declared at line 649)
+    template<> int B<char[3]>::q() { return 0; } // expected-error {{return type}}
+                               ^
+
+"Test_name.c", line 660: error: a function type is not allowed here
+    template<typename T> struct Y { T x; };
+                                      ^
+          detected during instantiation of class "PR46637::Y<T> [with T=auto ()->auto]" at line 661
+
+"Test_name.c", line 677: error: "auto" is not allowed here
+  auto parseMulExpr(auto node) { // cxx14-error {{'auto' not allowed in function prototype}} \
+                    ^
+
+"Test_name.c", line 694: error: cannot deduce the return type of function "GH71015::parseMulExpr3(T) [with T=GH71015::Node *]" (declared at line 692); it has not been defined
+    return parseMulExpr3(new Node{.left = node, .right = parsePrimaryExpr()}); // expected-error {{cannot be used before it is defined}}
+           ^
+          detected during instantiation of "auto GH71015::parseMulExpr3(T) [with T=GH71015::Node *]" at line 694
+
+"Test_name.c", line 703: error: "auto" is not allowed here
+  auto f(auto x) { // cxx14-error {{'auto' not allowed in function prototype}}
+         ^
+
+"Test_name.c", line 715: error: "auto" is not allowed here
+      static auto c1(auto x) { // since-cxx20-note {{declared here}} // cxx14-error {{'auto' not allowed in function prototype}}
+                     ^
+
+"Test_name.c", line 711: error: cannot deduce the return type of function "GH71015::GH122892::NonTemplate::c1" (declared at line 715); it has not been defined
+          c1(int{}); // since-cxx20-error {{cannot be used before it is defined}}
+          ^
+
+"Test_name.c", line 734: error: "auto" is not allowed here
+      static auto c1(auto x) { // since-cxx20-note {{declared here}} // cxx14-error {{'auto' not allowed in function prototype}}
+                     ^
+
+"Test_name.c", line 730: error: cannot deduce the return type of function "GH71015::GH122892::FunctionTemplateSpecialized::c1" (declared at line 734); it has not been defined
+        c1(int{}); // since-cxx20-error {{cannot be used before it is defined}}
+        ^
+
+"Test_name.c", line 746: error: "auto" is not allowed here
+      static auto c1(auto x) { return x; } // since-cxx20-note {{declared here}} // cxx14-error {{'auto' not allowed in function prototype}}
+                     ^
+
+"Test_name.c", line 744: error: cannot deduce the return type of function "GH71015::GH122892::MemberInit::c1" (declared at line 746); it has not been defined
+      int x1 = c1(int{}); // since-cxx20-error {{cannot be used before it is defined}}
+               ^
+
+"Test_name.c", line 768: warning: template parameter "T" is not used in declaring the parameter types of function template "DeducedTargetTypeOfConversionFunction::operator auto<T>() const"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 771: warning: template parameter "T" is not used in declaring the parameter types of function template "DeducedTargetTypeOfConversionFunction::operator const auto<T>() const"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 774: warning: template parameter "T" is not used in declaring the parameter types of function template "DeducedTargetTypeOfConversionFunction::operator const auto &<T>() const"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 777: warning: template parameter "T" is not used in declaring the parameter types of function template "DeducedTargetTypeOfConversionFunction::operator decltype(auto)<T>() const"
+    template <typename T>
+                       ^
+
+"Test_name.c", line 760: warning: returning reference to local temporary
+    operator const auto&() const { return int(); }
+                                          ^
+
+"Test_name.c", line 793: error: argument list for class template "GH79745::a" is missing
+    a c; // cxx20_23-error {{implicit instantiation of undefined template}} \
+    ^
+
+92 errors detected in the compilation of "Test_name.c".

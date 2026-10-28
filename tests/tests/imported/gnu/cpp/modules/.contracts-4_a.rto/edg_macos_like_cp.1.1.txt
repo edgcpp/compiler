@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/type_traits", line 519: error: identifier "__float128" is undefined
+      struct __is_floating_point_helper<__float128>
+                                        ^
+
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/bits/stl_algobase.h", line 1063: error: identifier "__float128" is undefined
+    __size_to_integer(__float128 __n) { return (long long)__n; }
+                      ^
+
+"./modules/contracts-4_a.C", line 21: error: expected a ","
+    [[ pre: t > 0 ]]
+          ^
+
+"./modules/contracts-4_a.C", line 21: error: expected a "]"
+    [[ pre: t > 0 ]]
+          ^
+
+"./modules/contracts-4_a.C", line 21: error: expected a ";"
+    [[ pre: t > 0 ]]
+          ^
+
+"./modules/contracts-4_a.C", line 28: warning: parsing restarts here after previous syntax error
+  export int fn_int(int n);
+                          ^
+
+5 errors detected in the compilation of "Test_name.c".

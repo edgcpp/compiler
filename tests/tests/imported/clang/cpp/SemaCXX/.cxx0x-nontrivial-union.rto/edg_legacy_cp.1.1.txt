@@ -1,0 +1,56 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 28: error: a member with reference type is not allowed in a union
+    int &i; // expected-error {{union member 'i' has reference type 'int &'}}
+    ^
+
+"Test_name.c", line 96: warning: missing return statement at end of non-void function "optional::optional<T>::operator=(const optional::optional<T> &)"
+      }
+      ^
+
+"Test_name.c", line 107: warning: missing return statement at end of non-void function "optional::optional<T>::operator=(optional::optional<T> &&)"
+      }
+      ^
+
+"Test_name.c", line 175: error: a union can have at most one field initializer -- member "GH48416::U4::a" (declared at line 174) also has an initializer
+      non_trivial_constructor b{}; // expected-error {{initializing multiple members of union}}
+                              ^
+
+"Test_name.c", line 178: error: the default constructor of "GH48416::U1" cannot be referenced -- it is a deleted function
+  U1 u1; // expected-error {{call to implicitly-deleted default constructor}}
+     ^
+
+"Test_name.c", line 183: error: expression must have a constant value
+  static_assert(U2().a == 1000, "");
+                ^
+
+"Test_name.c", line 184: error: expression must have a constant value
+  static_assert(U3().a == 1000, "");
+                ^
+"Test_name.c", line 184: note: invalid access to inactive member "GH48416::U3::a" of union (member "GH48416::U3::b" is active)
+  static_assert(U3().a == 1000, "");
+                    ^
+
+"Test_name.c", line 187: error: expression must have a constant value
+  static_assert(U2().b.x == 100, "");
+                ^
+
+"Test_name.c", line 202: error: the default constructor of "GH81774::a" cannot be referenced -- it is a deleted function
+  } b;
+    ^
+
+"Test_name.c", line 56: error: function "disabled_dtor::deleted_dtor::~deleted_dtor()" (declared at line 64) cannot be referenced -- it is a deleted function
+      disable_dtor(U &&...u) : val(forward<U>(u)...) {} // expected-error {{attempt to use a deleted function}}
+                                  ^
+          detected during instantiation of "disabled_dtor::disable_dtor<T>::disable_dtor(U &&...) [with T=disabled_dtor::deleted_dtor, U=<int, char>]" at line 67
+
+"Test_name.c", line 93: warning: function "operator new(size_t, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+          new (&value) T(o.value);
+          ^
+          detected during instantiation of "optional::optional<T> &optional::optional<T>::operator=(const optional::optional<T> &) [with T=non_trivial]" at line 123
+
+"Test_name.c", line 104: warning: function "operator new(size_t, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+          new (&value) T(move(o.value));
+          ^
+          detected during instantiation of "optional::optional<T> &optional::optional<T>::operator=(optional::optional<T> &&) [with T=non_trivial]" at line 124
+
+8 errors detected in the compilation of "Test_name.c".

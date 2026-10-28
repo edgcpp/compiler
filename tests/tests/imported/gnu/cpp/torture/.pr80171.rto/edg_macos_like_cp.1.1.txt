@@ -1,0 +1,27 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 66: warning: missing return statement at end of non-void function "make_initializer_node::apply<<unnamed>, Iterator>::initializer_node::initialize"
+        }
+        ^
+
+"Test_name.c", line 65: warning: function "operator new(unsigned long, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+          new (p1) typename make_reference_content<recursive_enabled_T>::type;
+          ^
+          detected during:
+            instantiation of "int make_initializer_node::apply<<unnamed>, Iterator>::initializer_node::initialize(void *, unwrap_recursive<make_initializer_node::apply<<unnamed>, Iterator>::initializer_node::recursive_enabled_T>::type) [with <unnamed>=int, Iterator=l_iter<l_item::type>]" at line 124
+            instantiation of "void variant<<unnamed>, TN...>::convert_construct(T, int) [with <unnamed>=Trans_NS__v1_GenericUnsupportedTlv, TN=<Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>>, T=IPv4NeighborAddressSubTlv]" at line 126
+            instantiation of "variant<<unnamed>, TN...>::variant(T) [with <unnamed>=Trans_NS__v1_GenericUnsupportedTlv, TN=<Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>>, T=IPv4NeighborAddressSubTlv]" at line 150
+            instantiation of "void Trans_NS__v1_GenericTlvContainer<<unnamed>, <unnamed>>::addTlv(const TlvClass &) [with <unnamed>=int, <unnamed>=generic_element_tlvs<isis_tlv_config, Trans_NS__v1_GenericUnsupportedTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>>, TlvClass=IPv4NeighborAddressSubTlv]" at line 185
+
+"Test_name.c", line 116: warning: function "operator new(unsigned long, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+      new (0) T(__trans_tmp_2);
+      ^
+          detected during:
+            instantiation of "void move_into::internal_visit(backup_holder<T>, int) [with T=Trans_NS__v1_GenericUnsupportedTlv]" at line 100
+            instantiation of "void visitation_impl_invoke_impl(Visitor, VoidPtrCV, T *) [with Visitor=move_into, VoidPtrCV=void *, T=visitation_impl_step::type]" at line 105
+            instantiation of "void visitation_impl_invoke(Visitor, VoidPtrCV, T, NoBackupFlag) [with Visitor=move_into, VoidPtrCV=void *, T=visitation_impl_step::type *, NoBackupFlag=int]" at line 110
+            instantiation of "void visitation_impl(Visitor, VoidPtrCV, NoBackupFlag, Which, step0 *) [with Which=int, step0=visitation_impl_step, Visitor=move_into, VoidPtrCV=void *, NoBackupFlag=int]" at line 134
+            instantiation of "void variant<<unnamed>, TN...>::internal_apply_visitor(Visitor) [with <unnamed>=Trans_NS__v1_GenericUnsupportedTlv, TN=<Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>>, Visitor=move_into]" at line 129
+            instantiation of "variant<<unnamed>, TN...>::variant(variant<<unnamed>, TN...> &&) [with <unnamed>=Trans_NS__v1_GenericUnsupportedTlv, TN=<Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>>]" at line 9
+            instantiation of "remove_reference<_Tp>::type move(_Tp &&) [with _Tp=variant<Trans_NS__v1_GenericUnsupportedTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>> &]" at line 151
+            instantiation of "void Trans_NS__v1_GenericTlvContainer<<unnamed>, <unnamed>>::addTlv(const TlvClass &) [with <unnamed>=int, <unnamed>=generic_element_tlvs<isis_tlv_config, Trans_NS__v1_GenericUnsupportedTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, IPv4NeighborAddressSubTlv, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>, Trans_NS__v1_GenericFixedLengthTlvBase<int>>, TlvClass=IPv4NeighborAddressSubTlv]" at line 185
+

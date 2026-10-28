@@ -1,0 +1,37 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 7: remark: destructor for base class "A" (declared at line 5) is not virtual
+  struct C : public A, virtual public B {int f(); ~C();};
+                    ^
+
+"Test_name.c", line 7: remark: destructor for base class "B" (declared at line 6) is not virtual
+  struct C : public A, virtual public B {int f(); ~C();};
+                                      ^
+
+"Test_name.c", line 9: remark: destructor for base class "C" (declared at line 7) is not virtual
+  struct D : public C {X x; int f(); ~D();};
+                    ^
+
+"Test_name.c", line 5: remark: function "A::A()" cannot be inlined
+  struct A {virtual int f(); ~A();};
+         ^
+          detected during implicit generation of "A::A()" at line 20
+
+"Test_name.c", line 6: remark: function "B::B()" cannot be inlined
+  struct B {int i; virtual int f(); ~B();};
+         ^
+          detected during:
+            implicit generation of "B::B()" at line 28
+            implicit generation of "D::D()" at line 28
+
+"Test_name.c", line 7: remark: function "C::C()" cannot be inlined
+  struct C : public A, virtual public B {int f(); ~C();};
+         ^
+          detected during:
+            implicit generation of "C::C()" at line 28
+            implicit generation of "D::D()" at line 28
+
+"Test_name.c", line 9: remark: function "D::D()" cannot be inlined
+  struct D : public C {X x; int f(); ~D();};
+         ^
+          detected during implicit generation of "D::D()" at line 28
+

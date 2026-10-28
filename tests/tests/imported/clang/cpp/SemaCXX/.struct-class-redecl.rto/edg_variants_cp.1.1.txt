@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: error: tag kind of union is incompatible with declaration of class "X" (declared at line 5)
+  union X { int x; float y; }; // expected-error{{use of 'X' with tag type that does not match previous declaration}}
+        ^
+
+"Test_name.c", line 14: error: declaration of a member with the same name as its class
+    struct Z { // expected-error{{member 'Z' has the same name as its class}}
+           ^
+
+"Test_name.c", line 40: error: class "D" has already been defined (previous definition at line 38)
+  class D {};  // expected-error{{redefinition of 'D'}}
+        ^
+
+3 errors detected in the compilation of "Test_name.c".

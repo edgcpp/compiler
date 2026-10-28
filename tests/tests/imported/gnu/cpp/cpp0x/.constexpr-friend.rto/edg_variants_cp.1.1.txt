@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: error: a constexpr function cannot have a parameter of nonliteral type "A"
+    friend constexpr int f(A) { return 0; } // { dg-error "constexpr" "" { target c++20_down } }
+                         ^
+
+"Test_name.c", line 18: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+    constexpr int m(C) { return 0; }
+    ^
+
+"Test_name.c", line 19: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+    constexpr int m(A) { return 0; }
+    ^
+
+"Test_name.c", line 17: error: a constexpr function cannot have a parameter of nonliteral type "A"
+    friend constexpr int g(C, A) { return 0; }
+                         ^
+
+"Test_name.c", line 19: error: a constexpr function cannot have a parameter of nonliteral type "A"
+    constexpr int m(A) { return 0; }
+                  ^
+
+"Test_name.c", line 24: error: expression must have a constant value
+  constexpr int k = C<double>().m(A()); // { dg-error "" }
+                                  ^
+
+"Test_name.c", line 25: error: expression must have a constant value
+  constexpr int l = g(C<double>(),A()); // { dg-error "" }
+                                  ^
+
+"Test_name.c", line 22: warning: variable "i" was declared but never referenced
+  constexpr int i = f(C<int>());
+                ^
+
+"Test_name.c", line 23: warning: variable "j" was declared but never referenced
+  constexpr int j = C<int>().m(C<int>());
+                ^
+
+"Test_name.c", line 24: warning: variable "k" was declared but never referenced
+  constexpr int k = C<double>().m(A()); // { dg-error "" }
+                ^
+
+"Test_name.c", line 25: warning: variable "l" was declared but never referenced
+  constexpr int l = g(C<double>(),A()); // { dg-error "" }
+                ^
+
+5 errors detected in the compilation of "Test_name.c".

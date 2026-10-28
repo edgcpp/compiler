@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 7: error: floating constant is out of range
+  float f1 = 1.4E-46f; // expected-warning {{magnitude of floating-point constant too small for type 'float'; minimum is 1.40129846E-45}}
+             ^
+
+"Test_name.c", line 13: warning: floating-point value cannot be represented exactly
+  float f4 = 0x0.42p-1000f; // expected-warning {{magnitude of floating-point constant too small for type 'float'; minimum is 1.40129846E-45}}
+             ^
+
+"Test_name.c", line 25: warning: floating-point value cannot be represented exactly
+  double d4 = 0x0.42p-4200; // expected-warning {{magnitude of floating-point constant too small for type 'double'; minimum is 4.9406564584124654E-324}}
+              ^
+
+"Test_name.c", line 37: warning: floating-point value cannot be represented exactly
+  long double ld4 = 0x0.42p-42000L; // expected-warning {{magnitude of floating-point constant too small for type 'long double'; minimum is 3.64519953188247460253E-4951}}
+                    ^
+
+1 error detected in the compilation of "Test_name.c".

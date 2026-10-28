@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 12: warning: attributes may not appear here
+    (void)new __attribute__((address_space(1))) int; // expected-error{{'new' cannot allocate objects of type 'int' in address space '1'}}
+                             ^
+
+"Test_name.c", line 14: warning: attributes may not appear here
+    (void)new __attribute__((address_space(1))) int [5]; // expected-error{{'new' cannot allocate objects of type 'int' in address space '1'}}
+                             ^
+
+"Test_name.c", line 18: warning: attributes may not appear here
+    (void)new (p) __attribute__((address_space(1))) int; // expected-error{{'new' cannot allocate objects of type 'int' in address space '1'}}
+                                 ^
+
+"Test_name.c", line 20: warning: attributes may not appear here
+    (void)new (p) __attribute__((address_space(1))) int [5]; // expected-error{{'new' cannot allocate objects of type 'int' in address space '1'}}
+                                 ^
+

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 20: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+    requires __is_enum(T)
+                      ^
+
+"Test_name.c", line 20: error: type name is not allowed
+    requires __is_enum(T)
+                       ^
+
+"Test_name.c", line 20: error: identifier "__is_enum" is undefined
+    requires __is_enum(T)
+             ^
+
+3 errors detected in the compilation of "Test_name.c".

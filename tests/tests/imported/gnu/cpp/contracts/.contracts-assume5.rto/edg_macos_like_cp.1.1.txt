@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 16: error: expected a ","
+    [[ assert assume: f(1) > 0 ]];
+              ^
+
+"Test_name.c", line 24: error: expected a ","
+    [[ assert assume: sizeof(decltype(undef(1))) < 0 ]];
+              ^
+
+"Test_name.c", line 30: warning: variable "n" was declared but never referenced
+    constexpr int n = dummy(); // { dg-message "in .constexpr. expansion" }
+                  ^
+
+"Test_name.c", line 32: warning: variable "m" was declared but never referenced
+    constexpr int m = dummy2(); // { dg-message "in .constexpr. expansion" }
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 19: error: identifier "_Decimal32" is undefined
+    _Decimal32 nand32 (const char *);
+    ^
+
+"Test_name.c", line 82: error: identifier "_Decimal32" is undefined
+    *(_Decimal32 *)ax = nand32 (s);
+      ^
+
+"Test_name.c", line 82: error: expected an expression
+    *(_Decimal32 *)ax = nand32 (s);
+                  ^
+
+"Test_name.c", line 82: error: expected a ";"
+    *(_Decimal32 *)ax = nand32 (s);
+                   ^
+
+"Test_name.c", line 87: error: identifier "_Decimal32" is undefined
+    *(_Decimal32 *)a1 = nand32 (s); // { dg-warning "\\\[-Wstringop-overflow" }
+      ^
+
+"Test_name.c", line 87: error: expected an expression
+    *(_Decimal32 *)a1 = nand32 (s); // { dg-warning "\\\[-Wstringop-overflow" }
+                  ^
+
+"Test_name.c", line 87: error: expected a ";"
+    *(_Decimal32 *)a1 = nand32 (s); // { dg-warning "\\\[-Wstringop-overflow" }
+                   ^
+
+7 errors detected in the compilation of "Test_name.c".

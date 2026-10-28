@@ -1,0 +1,64 @@
+fe_only -DTEST_NUMBER=5 --c++11 -w --gn 120100 Test_name.c
+"Test_name.c", line 12: error: identifier "__float128" is undefined
+  using float128 = __float128;
+                   ^
+
+"Test_name.c", line 13: error: identifier "__float128" is undefined
+  using complex128 = __float128 __complex__;
+                     ^
+
+"Test_name.c", line 13: error: _Complex can only be used with floating-point types
+  using complex128 = __float128 __complex__;
+                     ^
+
+"Test_name.c", line 20: error: builtin function is not available because 128-bit floating-point types are not supported
+    complex128 v1 = __divtc3(f, f, f, f);
+                    ^
+
+"Test_name.c", line 21: error: builtin function is not available because 128-bit floating-point types are not supported
+    complex128 v2 = __multc3(f, f, f, f);
+                    ^
+
+"Test_name.c", line 23: error: identifier "__divtc3" is undefined
+    complex128 (*p) (float128, float128, float128, float128) = &__divtc3;
+                                                                ^
+
+"Test_name.c", line 50: error: builtin function is not available because vector types are not supported
+    void __builtin_ia32_vfmsubpd();
+         ^
+
+"Test_name.c", line 51: error: builtin function is not available because vector types are not supported
+    void __builtin_ia32_blendpd();
+         ^
+
+"Test_name.c", line 75: error: identifier "__builtin_ia32_vfmsubpd" is undefined
+  static_assert(fn_has_params(__builtin_ia32_vfmsubpd) == has_ia32_vfmsubpd,
+                              ^
+
+"Test_name.c", line 75: error: no instance of overloaded function "fn_has_params" matches the argument list
+            argument types are: (<error-type>)
+  static_assert(fn_has_params(__builtin_ia32_vfmsubpd) == has_ia32_vfmsubpd,
+                ^
+"Test_name.c", line 60: note: candidate function template "fn_has_params(T *)" failed deduction
+  constexpr bool fn_has_params(T *)
+                 ^
+"Test_name.c", line 56: note: candidate function template "fn_has_params(T (*)(First, Rest...))" failed deduction
+  constexpr bool fn_has_params(T (*)(First, Rest ...))
+                 ^
+
+"Test_name.c", line 88: error: identifier "__builtin_ia32_blendpd" is undefined
+  static_assert(fn_has_params(__builtin_ia32_blendpd) == has_ia32_blendpd,
+                              ^
+
+"Test_name.c", line 88: error: no instance of overloaded function "fn_has_params" matches the argument list
+            argument types are: (<error-type>)
+  static_assert(fn_has_params(__builtin_ia32_blendpd) == has_ia32_blendpd,
+                ^
+"Test_name.c", line 60: note: candidate function template "fn_has_params(T *)" failed deduction
+  constexpr bool fn_has_params(T *)
+                 ^
+"Test_name.c", line 56: note: candidate function template "fn_has_params(T (*)(First, Rest...))" failed deduction
+  constexpr bool fn_has_params(T (*)(First, Rest ...))
+                 ^
+
+12 errors detected in the compilation of "Test_name.c".

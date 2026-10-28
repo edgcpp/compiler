@@ -1,0 +1,497 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 61: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (&eac, ecc);
+    ^
+
+"Test_name.c", line 62: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (&easi, esi);
+    ^
+
+"Test_name.c", line 63: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (&eai, ei);
+    ^
+
+"Test_name.c", line 64: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (&eali, eli);
+    ^
+
+"Test_name.c", line 65: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (&ealli, elli);
+    ^
+
+"Test_name.c", line 72: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pc, ecc);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 75: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 77: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 80: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 82: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 84: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 87: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 89: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 91: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 94: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 96: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (plli, eali);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 98: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    add_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 105: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pc, ecc);
+    ^
+
+"Test_name.c", line 108: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (psi, esi);
+    ^
+
+"Test_name.c", line 111: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pi, ei);
+    ^
+
+"Test_name.c", line 114: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pli, eli);
+    ^
+
+"Test_name.c", line 117: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (plli, elli);
+    ^
+
+"Test_name.c", line 124: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pc, ecc);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 127: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 129: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 132: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 134: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 136: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 139: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 141: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 143: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 146: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 148: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (plli, eali);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 150: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    sub_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 157: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pc, ecc);
+    ^
+
+"Test_name.c", line 160: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (psi, esi);
+    ^
+
+"Test_name.c", line 163: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pi, ei);
+    ^
+
+"Test_name.c", line 166: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pli, eli);
+    ^
+
+"Test_name.c", line 169: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (plli, elli);
+    ^
+
+"Test_name.c", line 176: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pc, ecc);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 179: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 181: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 184: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 186: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 188: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 191: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 193: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 195: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 198: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 200: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (plli, eali);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 202: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    and_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 209: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pc, ecc);
+    ^
+
+"Test_name.c", line 212: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (psi, esi);
+    ^
+
+"Test_name.c", line 215: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pi, ei);
+    ^
+
+"Test_name.c", line 218: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pli, eli);
+    ^
+
+"Test_name.c", line 221: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (plli, elli);
+    ^
+
+"Test_name.c", line 228: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pc, ecc);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 231: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (psi, esi);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 233: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (psi, esi);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 236: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pi, ei);                    // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 238: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pi, ei);                    // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 240: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pi, ei);                    // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 243: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pli, eli);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 245: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pli, eli);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 247: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (pli, eli);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 250: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (plli, elli);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 252: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (plli, eali);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 254: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    or_fetch (plli, elli);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 261: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pc, ecc);
+    ^
+
+"Test_name.c", line 264: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (psi, esi);
+    ^
+
+"Test_name.c", line 267: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pi, ei);
+    ^
+
+"Test_name.c", line 270: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pli, eli);
+    ^
+
+"Test_name.c", line 273: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (plli, elli);
+    ^
+
+"Test_name.c", line 280: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pc, ecc);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 283: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 285: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (psi, esi);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 288: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 290: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 292: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pi, ei);                   // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 295: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 297: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 299: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (pli, eli);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 302: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 304: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (plli, eali);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 306: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    xor_fetch (plli, elli);               // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 313: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pc, ecc);
+    ^
+
+"Test_name.c", line 316: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (psi, esi);
+    ^
+
+"Test_name.c", line 319: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pi, ei);
+    ^
+
+"Test_name.c", line 322: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pli, eli);
+    ^
+
+"Test_name.c", line 325: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (plli, elli);
+    ^
+
+"Test_name.c", line 332: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pc, ecc);                 // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 335: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (psi, esi);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 337: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (psi, esi);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 340: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pi, ei);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 342: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pi, ei);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 344: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pi, ei);                  // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 347: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pli, eli);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 349: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pli, eli);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 351: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (pli, eli);                // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 354: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (plli, elli);              // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 356: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (plli, eali);              // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 358: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    nand_fetch (plli, elli);              // { dg-warning "-Wstringop-overflow" }
+    ^
+
+"Test_name.c", line 433: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    char rc = exchange_n (&eac, ecc);
+              ^
+
+"Test_name.c", line 434: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    short rsi = exchange_n (&easi, esi);
+                ^
+
+"Test_name.c", line 435: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    int ri = exchange_n (&eai, ei);
+             ^
+
+"Test_name.c", line 436: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    long rli = exchange_n (&eali, eli);
+               ^
+
+"Test_name.c", line 437: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    long long rlli = exchange_n (&ealli, elli);
+                     ^
+
+"Test_name.c", line 441: warning: argument of type "_Atomic(unsigned char) *" is incompatible with parameter of type "volatile void *"
+    char ruc = exchange_n (pauc, ecc);
+               ^
+
+"Test_name.c", line 442: warning: argument of type "_Atomic(unsigned short) *" is incompatible with parameter of type "volatile void *"
+    short rusi = exchange_n (pausi, esi);
+                 ^
+
+"Test_name.c", line 443: warning: argument of type "_Atomic(unsigned int) *" is incompatible with parameter of type "volatile void *"
+    int rui = exchange_n (paui, ei);
+              ^
+
+"Test_name.c", line 444: warning: argument of type "_Atomic(unsigned long) *" is incompatible with parameter of type "volatile void *"
+    long ruli = exchange_n (pauli, eli);
+                ^
+
+"Test_name.c", line 445: warning: argument of type "_Atomic(unsigned long long) *" is incompatible with parameter of type "volatile void *"
+    long long rulli = exchange_n (paulli, elli);
+                      ^
+
+"Test_name.c", line 454: warning: argument of type "_Atomic(char) *" is incompatible with parameter of type "volatile void *"
+    char rc = exchange_n (pc, ecc);       // { dg-warning "-Wstringop-overflow" }
+              ^
+
+"Test_name.c", line 458: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    rsi[0] = exchange_n (psi, ecsi);      // { dg-warning "-Wstringop-overflow" }
+             ^
+
+"Test_name.c", line 460: warning: argument of type "_Atomic(short) *" is incompatible with parameter of type "volatile void *"
+    rsi[1] = exchange_n (psi, ecsi);      // { dg-warning "-Wstringop-overflow" }
+             ^
+
+"Test_name.c", line 464: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    ri[0] = exchange_n (pi, eci);         // { dg-warning "-Wstringop-overflow" }
+            ^
+
+"Test_name.c", line 466: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    ri[1] = exchange_n (pi, eci);         // { dg-warning "-Wstringop-overflow" }
+            ^
+
+"Test_name.c", line 468: warning: argument of type "_Atomic(int) *" is incompatible with parameter of type "volatile void *"
+    ri[2] = exchange_n (pi, eci);         // { dg-warning "-Wstringop-overflow" }
+            ^
+
+"Test_name.c", line 472: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    rli[0] = exchange_n (pli, ecli);      // { dg-warning "-Wstringop-overflow" }
+             ^
+
+"Test_name.c", line 474: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    rli[1] = exchange_n (pli, ecli);      // { dg-warning "-Wstringop-overflow" }
+             ^
+
+"Test_name.c", line 476: warning: argument of type "_Atomic(long) *" is incompatible with parameter of type "volatile void *"
+    rli[2] = exchange_n (pli, ecli);      // { dg-warning "-Wstringop-overflow" }
+             ^
+
+"Test_name.c", line 480: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    rlli[0] = exchange_n (plli, eclli);   // { dg-warning "-Wstringop-overflow" }
+              ^
+
+"Test_name.c", line 482: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    rlli[1] = exchange_n (plli, eclli);   // { dg-warning "-Wstringop-overflow" }
+              ^
+
+"Test_name.c", line 484: warning: argument of type "_Atomic(long long) *" is incompatible with parameter of type "volatile void *"
+    rlli[2] = exchange_n (plli, eclli);   // { dg-warning "-Wstringop-overflow" }
+              ^
+

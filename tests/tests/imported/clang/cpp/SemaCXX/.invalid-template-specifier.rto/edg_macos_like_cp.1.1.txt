@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: error: "template" is not allowed
+  const template basic_istream<char>; // expected-error {{expected unqualified-id}}
+        ^
+
+"Test_name.c", line 8: error: basic_istream is not a template
+  const template basic_istream<char>; // expected-error {{expected unqualified-id}}
+                 ^
+
+"Test_name.c", line 12: error: namespace "S" has no member "y"
+    void x() { S::template y<char>(1); } // expected-error {{no member named 'y' in namespace 'S'}}
+                           ^
+
+"Test_name.c", line 12: error: type name is not allowed
+    void x() { S::template y<char>(1); } // expected-error {{no member named 'y' in namespace 'S'}}
+                             ^
+
+4 errors detected in the compilation of "Test_name.c".

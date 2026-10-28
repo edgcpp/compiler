@@ -1,0 +1,682 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./compat/vector-defs.h", line 17: warning: unknown attribute "vector_size"
+  typedef qi __attribute__((vector_size (8))) v8qi;
+                            ^
+
+"./compat/vector-defs.h", line 18: warning: unknown attribute "vector_size"
+  typedef qi __attribute__((vector_size (16))) v16qi;
+                            ^
+
+"./compat/vector-defs.h", line 20: warning: unknown attribute "vector_size"
+  typedef hi __attribute__((vector_size (4))) v2hi;
+                            ^
+
+"./compat/vector-defs.h", line 21: warning: unknown attribute "vector_size"
+  typedef hi __attribute__((vector_size (8))) v4hi;
+                            ^
+
+"./compat/vector-defs.h", line 22: warning: unknown attribute "vector_size"
+  typedef hi __attribute__((vector_size (16))) v8hi;
+                            ^
+
+"./compat/vector-defs.h", line 24: warning: unknown attribute "vector_size"
+  typedef si __attribute__((vector_size (8))) v2si;
+                            ^
+
+"./compat/vector-defs.h", line 25: warning: unknown attribute "vector_size"
+  typedef si __attribute__((vector_size (16))) v4si;
+                            ^
+
+"./compat/vector-defs.h", line 27: warning: unknown attribute "vector_size"
+  typedef di __attribute__((vector_size (8))) v1di;
+                            ^
+
+"./compat/vector-defs.h", line 28: warning: unknown attribute "vector_size"
+  typedef di __attribute__((vector_size (16))) v2di;
+                            ^
+
+"./compat/vector-defs.h", line 30: warning: unknown attribute "vector_size"
+  typedef sf __attribute__((vector_size (8))) v2sf;
+                            ^
+
+"./compat/vector-defs.h", line 31: warning: unknown attribute "vector_size"
+  typedef sf __attribute__((vector_size (16))) v4sf;
+                            ^
+
+"./compat/vector-defs.h", line 32: warning: unknown attribute "vector_size"
+  typedef sf __attribute__((vector_size (64))) v16sf;
+                            ^
+
+"./compat/vector-defs.h", line 34: warning: unknown attribute "vector_size"
+  typedef df __attribute__((vector_size (16))) v2df;
+                            ^
+
+"./compat/vector-defs.h", line 59: warning: unknown attribute "vector_size"
+  typedef qi __attribute__((vector_size (32))) v32qi;
+                            ^
+
+"./compat/vector-defs.h", line 60: warning: unknown attribute "vector_size"
+  typedef hi __attribute__((vector_size (32))) v16hi;
+                            ^
+
+"./compat/vector-defs.h", line 61: warning: unknown attribute "vector_size"
+  typedef si __attribute__((vector_size (32))) v8si;
+                            ^
+
+"./compat/vector-defs.h", line 62: warning: unknown attribute "vector_size"
+  typedef di __attribute__((vector_size (32))) v4di;
+                            ^
+
+"./compat/vector-defs.h", line 63: warning: unknown attribute "vector_size"
+  typedef sf __attribute__((vector_size (32))) v8sf;
+                            ^
+
+"./compat/vector-defs.h", line 64: warning: unknown attribute "vector_size"
+  typedef df __attribute__((vector_size (32))) v4df;
+                            ^
+
+"./compat/struct-layout-1.h", line 47: warning: unknown attribute "__vector_size__"
+  typedef int __m64 __attribute__ ((__vector_size__ (8)));
+                                    ^
+
+"./compat/struct-layout-1.h", line 52: warning: unknown attribute "__vector_size__"
+  typedef float __m128 __attribute__ ((__vector_size__ (16)));
+                                       ^
+
+"./compat/struct-layout-1.h", line 197: error: _Complex can only be used with floating-point types
+  typedef _Complex char Tcchar;
+  ^
+
+"./compat/struct-layout-1.h", line 198: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Tcschar;
+  ^
+
+"./compat/struct-layout-1.h", line 199: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Tcuchar;
+  ^
+
+"./compat/struct-layout-1.h", line 200: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Tcshort;
+  ^
+
+"./compat/struct-layout-1.h", line 201: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Tcushort;
+  ^
+
+"./compat/struct-layout-1.h", line 202: error: _Complex can only be used with floating-point types
+  typedef _Complex int Tcint;
+  ^
+
+"./compat/struct-layout-1.h", line 203: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Tcuint;
+  ^
+
+"./compat/struct-layout-1.h", line 204: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Tclong;
+  ^
+
+"./compat/struct-layout-1.h", line 205: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Tculong;
+  ^
+
+"./compat/struct-layout-1.h", line 206: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Tcllong;
+  ^
+
+"./compat/struct-layout-1.h", line 207: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Tcullong;
+  ^
+
+"./compat/struct-layout-1.h", line 213: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 TDecimal32;
+          ^
+
+"./compat/struct-layout-1.h", line 214: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 TDecimal64;
+          ^
+
+"./compat/struct-layout-1.h", line 215: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 TDecimal128;
+          ^
+
+"./compat/struct-layout-1.h", line 248: error: _Complex can only be used with floating-point types
+  typedef _Complex char Talcchar __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 249: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Talcschar __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 250: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Talcuchar __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 251: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Talcshort __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 252: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Talcushort __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 253: error: _Complex can only be used with floating-point types
+  typedef _Complex int Talcint __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 254: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Talcuint __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 255: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Talclong __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 256: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Talculong __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 257: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Talcllong __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 258: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Talcullong __attribute__((aligned));
+  ^
+
+"./compat/struct-layout-1.h", line 264: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 TalDecimal32 __attribute__((aligned));
+          ^
+
+"./compat/struct-layout-1.h", line 265: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 TalDecimal64 __attribute__((aligned));
+          ^
+
+"./compat/struct-layout-1.h", line 266: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 TalDecimal128 __attribute__((aligned));
+          ^
+
+"./compat/struct-layout-1.h", line 299: error: _Complex can only be used with floating-point types
+  typedef _Complex char Tal1cchar __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 300: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Tal1cschar __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 301: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Tal1cuchar __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 302: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Tal1cshort __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 303: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Tal1cushort __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 304: error: _Complex can only be used with floating-point types
+  typedef _Complex int Tal1cint __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 305: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Tal1cuint __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 306: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Tal1clong __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 307: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Tal1culong __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 308: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Tal1cllong __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 309: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Tal1cullong __attribute__((aligned (1)));
+  ^
+
+"./compat/struct-layout-1.h", line 315: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Tal1Decimal32 __attribute__((aligned (1)));
+          ^
+
+"./compat/struct-layout-1.h", line 316: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Tal1Decimal64 __attribute__((aligned (1)));
+          ^
+
+"./compat/struct-layout-1.h", line 317: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Tal1Decimal128 __attribute__((aligned (1)));
+          ^
+
+"./compat/struct-layout-1.h", line 350: error: _Complex can only be used with floating-point types
+  typedef _Complex char Tal2cchar __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 351: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Tal2cschar __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 352: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Tal2cuchar __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 353: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Tal2cshort __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 354: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Tal2cushort __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 355: error: _Complex can only be used with floating-point types
+  typedef _Complex int Tal2cint __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 356: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Tal2cuint __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 357: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Tal2clong __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 358: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Tal2culong __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 359: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Tal2cllong __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 360: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Tal2cullong __attribute__((aligned (2)));
+  ^
+
+"./compat/struct-layout-1.h", line 366: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Tal2Decimal32 __attribute__((aligned (2)));
+          ^
+
+"./compat/struct-layout-1.h", line 367: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Tal2Decimal64 __attribute__((aligned (2)));
+          ^
+
+"./compat/struct-layout-1.h", line 368: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Tal2Decimal128 __attribute__((aligned (2)));
+          ^
+
+"./compat/struct-layout-1.h", line 401: error: _Complex can only be used with floating-point types
+  typedef _Complex char Tal4cchar __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 402: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Tal4cschar __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 403: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Tal4cuchar __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 404: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Tal4cshort __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 405: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Tal4cushort __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 406: error: _Complex can only be used with floating-point types
+  typedef _Complex int Tal4cint __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 407: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Tal4cuint __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 408: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Tal4clong __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 409: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Tal4culong __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 410: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Tal4cllong __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 411: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Tal4cullong __attribute__((aligned (4)));
+  ^
+
+"./compat/struct-layout-1.h", line 417: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Tal4Decimal32 __attribute__((aligned (4)));
+          ^
+
+"./compat/struct-layout-1.h", line 418: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Tal4Decimal64 __attribute__((aligned (4)));
+          ^
+
+"./compat/struct-layout-1.h", line 419: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Tal4Decimal128 __attribute__((aligned (4)));
+          ^
+
+"./compat/struct-layout-1.h", line 452: error: _Complex can only be used with floating-point types
+  typedef _Complex char Tal8cchar __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 453: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Tal8cschar __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 454: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Tal8cuchar __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 455: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Tal8cshort __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 456: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Tal8cushort __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 457: error: _Complex can only be used with floating-point types
+  typedef _Complex int Tal8cint __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 458: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Tal8cuint __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 459: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Tal8clong __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 460: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Tal8culong __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 461: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Tal8cllong __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 462: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Tal8cullong __attribute__((aligned (8)));
+  ^
+
+"./compat/struct-layout-1.h", line 468: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Tal8Decimal32 __attribute__((aligned (8)));
+          ^
+
+"./compat/struct-layout-1.h", line 469: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Tal8Decimal64 __attribute__((aligned (8)));
+          ^
+
+"./compat/struct-layout-1.h", line 470: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Tal8Decimal128 __attribute__((aligned (8)));
+          ^
+
+"./compat/struct-layout-1.h", line 503: error: _Complex can only be used with floating-point types
+  typedef _Complex char Tal16cchar __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 504: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Tal16cschar __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 505: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Tal16cuchar __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 506: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Tal16cshort __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 507: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Tal16cushort __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 508: error: _Complex can only be used with floating-point types
+  typedef _Complex int Tal16cint __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 509: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Tal16cuint __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 510: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Tal16clong __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 511: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Tal16culong __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 512: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Tal16cllong __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 513: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Tal16cullong __attribute__((aligned (16)));
+  ^
+
+"./compat/struct-layout-1.h", line 519: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Tal16Decimal32 __attribute__((aligned (16)));
+          ^
+
+"./compat/struct-layout-1.h", line 520: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Tal16Decimal64 __attribute__((aligned (16)));
+          ^
+
+"./compat/struct-layout-1.h", line 521: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Tal16Decimal128 __attribute__((aligned (16)));
+          ^
+
+"./compat/struct-layout-1.h", line 554: error: _Complex can only be used with floating-point types
+  typedef _Complex char Talx1cchar ;
+  ^
+
+"./compat/struct-layout-1.h", line 555: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Talx1cschar ;
+  ^
+
+"./compat/struct-layout-1.h", line 556: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Talx1cuchar ;
+  ^
+
+"./compat/struct-layout-1.h", line 557: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Talx1cshort ;
+  ^
+
+"./compat/struct-layout-1.h", line 558: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Talx1cushort ;
+  ^
+
+"./compat/struct-layout-1.h", line 559: error: _Complex can only be used with floating-point types
+  typedef _Complex int Talx1cint ;
+  ^
+
+"./compat/struct-layout-1.h", line 560: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Talx1cuint ;
+  ^
+
+"./compat/struct-layout-1.h", line 561: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Talx1clong ;
+  ^
+
+"./compat/struct-layout-1.h", line 562: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Talx1culong ;
+  ^
+
+"./compat/struct-layout-1.h", line 563: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Talx1cllong ;
+  ^
+
+"./compat/struct-layout-1.h", line 564: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Talx1cullong ;
+  ^
+
+"./compat/struct-layout-1.h", line 570: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Talx1Decimal32 ;
+          ^
+
+"./compat/struct-layout-1.h", line 571: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Talx1Decimal64 ;
+          ^
+
+"./compat/struct-layout-1.h", line 572: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Talx1Decimal128 ;
+          ^
+
+"./compat/struct-layout-1.h", line 602: error: _Complex can only be used with floating-point types
+  typedef _Complex char Talx2cchar ;
+  ^
+
+"./compat/struct-layout-1.h", line 603: error: _Complex can only be used with floating-point types
+  typedef _Complex signed char Talx2cschar ;
+  ^
+
+"./compat/struct-layout-1.h", line 604: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned char Talx2cuchar ;
+  ^
+
+"./compat/struct-layout-1.h", line 605: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Talx2cshort ;
+  ^
+
+"./compat/struct-layout-1.h", line 606: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Talx2cushort ;
+  ^
+
+"./compat/struct-layout-1.h", line 607: error: _Complex can only be used with floating-point types
+  typedef _Complex int Talx2cint ;
+  ^
+
+"./compat/struct-layout-1.h", line 608: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Talx2cuint ;
+  ^
+
+"./compat/struct-layout-1.h", line 609: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Talx2clong ;
+  ^
+
+"./compat/struct-layout-1.h", line 610: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Talx2culong ;
+  ^
+
+"./compat/struct-layout-1.h", line 611: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Talx2cllong ;
+  ^
+
+"./compat/struct-layout-1.h", line 612: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Talx2cullong ;
+  ^
+
+"./compat/struct-layout-1.h", line 618: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Talx2Decimal32 ;
+          ^
+
+"./compat/struct-layout-1.h", line 619: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Talx2Decimal64 ;
+          ^
+
+"./compat/struct-layout-1.h", line 620: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Talx2Decimal128 ;
+          ^
+
+"./compat/struct-layout-1.h", line 647: error: _Complex can only be used with floating-point types
+  typedef _Complex short int Talx4cshort ;
+  ^
+
+"./compat/struct-layout-1.h", line 648: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned short int Talx4cushort ;
+  ^
+
+"./compat/struct-layout-1.h", line 649: error: _Complex can only be used with floating-point types
+  typedef _Complex int Talx4cint ;
+  ^
+
+"./compat/struct-layout-1.h", line 650: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Talx4cuint ;
+  ^
+
+"./compat/struct-layout-1.h", line 651: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Talx4clong ;
+  ^
+
+"./compat/struct-layout-1.h", line 652: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Talx4culong ;
+  ^
+
+"./compat/struct-layout-1.h", line 653: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Talx4cllong ;
+  ^
+
+"./compat/struct-layout-1.h", line 654: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Talx4cullong ;
+  ^
+
+"./compat/struct-layout-1.h", line 660: error: identifier "_Decimal32" is undefined
+  typedef _Decimal32 Talx4Decimal32 ;
+          ^
+
+"./compat/struct-layout-1.h", line 661: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Talx4Decimal64 ;
+          ^
+
+"./compat/struct-layout-1.h", line 662: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Talx4Decimal128 ;
+          ^
+
+"./compat/struct-layout-1.h", line 687: error: _Complex can only be used with floating-point types
+  typedef _Complex int Talx8cint ;
+  ^
+
+"./compat/struct-layout-1.h", line 688: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned int Talx8cuint ;
+  ^
+
+"./compat/struct-layout-1.h", line 689: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Talx8clong ;
+  ^
+
+"./compat/struct-layout-1.h", line 690: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Talx8culong ;
+  ^
+
+"./compat/struct-layout-1.h", line 691: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Talx8cllong ;
+  ^
+
+"./compat/struct-layout-1.h", line 692: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Talx8cullong ;
+  ^
+
+"./compat/struct-layout-1.h", line 697: error: identifier "_Decimal64" is undefined
+  typedef _Decimal64 Talx8Decimal64 ;
+          ^
+
+"./compat/struct-layout-1.h", line 698: error: identifier "_Decimal128" is undefined
+  typedef _Decimal128 Talx8Decimal128 ;
+          ^
+
+"./compat/struct-layout-1.h", line 709: error: _Complex can only be used with floating-point types
+  typedef _Complex long int Taly16clong ;
+  ^
+
+"./compat/struct-layout-1.h", line 710: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long int Taly16culong ;
+  ^
+
+"./compat/struct-layout-1.h", line 711: error: _Complex can only be used with floating-point types
+  typedef _Complex long long int Talx16cllong ;
+  ^
+
+"./compat/struct-layout-1.h", line 712: error: _Complex can only be used with floating-point types
+  typedef _Complex unsigned long long int Talx16cullong ;
+  ^
+
+149 errors detected in the compilation of "Test_name.c".

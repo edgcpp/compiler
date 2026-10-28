@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  using TwoIntsVecSize __attribute__((vector_size(8))) = int;
+                                      ^
+
+"Test_name.c", line 9: error: too many initializer values
+  constexpr TwoIntsVecSize a = {1,2};
+                                  ^
+
+"Test_name.c", line 15: warning: extra braces are nonstandard
+  } Val = {{0,1}};
+           ^
+
+"Test_name.c", line 15: error: too many initializer values
+  } Val = {{0,1}};
+              ^
+
+"Test_name.c", line 17: error: expression must have pointer-to-object type but it has type "int"
+  static_assert(Val.b[1] == 1);
+                      ^
+
+"Test_name.c", line 19: warning: extra braces are nonstandard
+  constexpr TwoIntsVecSize c[3] = {{0,1}, {2,3}, {4,5}};
+                                   ^
+
+"Test_name.c", line 19: error: too many initializer values
+  constexpr TwoIntsVecSize c[3] = {{0,1}, {2,3}, {4,5}};
+                                      ^
+
+"Test_name.c", line 19: warning: extra braces are nonstandard
+  constexpr TwoIntsVecSize c[3] = {{0,1}, {2,3}, {4,5}};
+                                          ^
+
+"Test_name.c", line 19: error: too many initializer values
+  constexpr TwoIntsVecSize c[3] = {{0,1}, {2,3}, {4,5}};
+                                             ^
+
+"Test_name.c", line 19: warning: extra braces are nonstandard
+  constexpr TwoIntsVecSize c[3] = {{0,1}, {2,3}, {4,5}};
+                                                 ^
+
+"Test_name.c", line 19: error: too many initializer values
+  constexpr TwoIntsVecSize c[3] = {{0,1}, {2,3}, {4,5}};
+                                                    ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "int"
+  static_assert(c[0][0] == 0);
+                     ^
+
+"Test_name.c", line 21: error: expression must have pointer-to-object type but it has type "int"
+  static_assert(c[1][1] == 3);
+                     ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+  static_assert(c[2][3]); // expected-error {{not an integral constant expression}} expected-note {{cannot refer to element 3 of array of 2 elements}}
+                     ^
+
+"Test_name.c", line 31: warning: unknown attribute "ext_vector_type"
+  using FourIntsExtVec __attribute__((ext_vector_type(4))) = int;
+                                      ^
+
+"Test_name.c", line 33: error: too many initializer values
+  constexpr FourIntsExtVec b = {1,2,3,4};
+                                  ^
+
+"Test_name.c", line 35: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.s0 == 1 && b.s1 == 2 && b.s2 == 3 && b.s3 == 4);
+                ^
+
+"Test_name.c", line 35: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.s0 == 1 && b.s1 == 2 && b.s2 == 3 && b.s3 == 4);
+                             ^
+
+"Test_name.c", line 35: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.s0 == 1 && b.s1 == 2 && b.s2 == 3 && b.s3 == 4);
+                                          ^
+
+"Test_name.c", line 35: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.s0 == 1 && b.s1 == 2 && b.s2 == 3 && b.s3 == 4);
+                                                       ^
+
+"Test_name.c", line 36: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.x == 1 && b.y == 2 && b.z == 3 && b.w == 4);
+                ^
+
+"Test_name.c", line 36: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.x == 1 && b.y == 2 && b.z == 3 && b.w == 4);
+                            ^
+
+"Test_name.c", line 36: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.x == 1 && b.y == 2 && b.z == 3 && b.w == 4);
+                                        ^
+
+"Test_name.c", line 36: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.x == 1 && b.y == 2 && b.z == 3 && b.w == 4);
+                                                    ^
+
+"Test_name.c", line 37: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.r == 1 && b.g == 2 && b.b == 3 && b.a == 4);
+                ^
+
+"Test_name.c", line 37: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.r == 1 && b.g == 2 && b.b == 3 && b.a == 4);
+                            ^
+
+"Test_name.c", line 37: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.r == 1 && b.g == 2 && b.b == 3 && b.a == 4);
+                                        ^
+
+"Test_name.c", line 37: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.r == 1 && b.g == 2 && b.b == 3 && b.a == 4);
+                                                    ^
+
+"Test_name.c", line 41: error: expression must have class type but it has type "const ExtVector::FourIntsExtVec"
+  static_assert(b.lo.lo == 1); // expected-error {{not an integral constant expression}}
+                ^
+
+"Test_name.c", line 49: error: expression must have pointer-to-class type but it has type "const ExtVector::FourIntsExtVec *"
+  static_assert(p->x == 1);
+                ^
+
+24 errors detected in the compilation of "Test_name.c".

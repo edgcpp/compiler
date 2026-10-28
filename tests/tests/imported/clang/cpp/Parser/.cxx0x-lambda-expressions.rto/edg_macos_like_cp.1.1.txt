@@ -1,0 +1,290 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 21: warning: lambda expressions are a C++11 feature
+      []; // expected-error {{expected body of lambda expression}}
+      ^
+
+"Test_name.c", line 21: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+      []; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 21: error: expected a "{" introducing a lambda body
+      []; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 22: error: expected an identifier
+      [+] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+       ^
+
+"Test_name.c", line 23: error: expected a "]"
+      [foo+] {}; // expected-error {{expected ',' or ']' in lambda capture list}}
+          ^
+
+"Test_name.c", line 23: warning: variable "foo" is used before its value is set
+      [foo+] {}; // expected-error {{expected ',' or ']' in lambda capture list}}
+       ^
+
+"Test_name.c", line 24: error: "this" cannot be captured by reference
+      [foo,&this] {}; // expected-error {{'this' cannot be captured by reference}}
+           ^
+
+"Test_name.c", line 25: error: "this" cannot be captured by reference
+      [&this] {}; // expected-error {{'this' cannot be captured by reference}}
+       ^
+
+"Test_name.c", line 26: error: trailing comma is nonstandard
+      [&,] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+        ^
+
+"Test_name.c", line 27: error: trailing comma is nonstandard
+      [=,] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+        ^
+
+"Test_name.c", line 31: warning: variable "bar" is used before its value is set
+      [foo,bar] () { return 3; };
+           ^
+
+"Test_name.c", line 38: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+      [] -> int { return 0; }; // cxx23ext-warning {{lambda without a parameter clause is a C++23 extension}}
+         ^
+
+"Test_name.c", line 39: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+      [] mutable -> int { return 0; }; // cxx23ext-warning {{is a C++23 extension}}
+         ^
+
+"Test_name.c", line 41: error: expected a type specifier
+      [](int) -> {}; // PR13652 expected-error {{expected a type}}
+                 ^
+
+"Test_name.c", line 50: error: no suitable conversion function from "lambda [](T (*)())->void" to "int" exists
+      int a1[1] = {[b] (T()) {}}; // expected-error{{no viable conversion from '(lambda}}
+                   ^
+
+"Test_name.c", line 52: error: expected a "]"
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                     ^
+
+"Test_name.c", line 52: error: expected an expression
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                     ^
+
+"Test_name.c", line 52: error: expected a "}"
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                       ^
+
+"Test_name.c", line 52: error: too many initializer values
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                      ^
+
+"Test_name.c", line 53: error: this operator is not allowed in an integral constant expression
+      int a4[1] = {[&b] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'const int *'}}
+                    ^
+
+"Test_name.c", line 55: error: expression must have a constant value
+      int a6[1] = {[this] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'C *'}}
+                    ^
+
+"Test_name.c", line 61: error: expression must have a constant value
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                    ^
+
+"Test_name.c", line 61: error: expected a "]"
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                      ^
+
+"Test_name.c", line 61: error: expected a "}"
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                         ^
+
+"Test_name.c", line 48: warning: variable "c" was declared but never referenced
+      const int c = 1;
+                ^
+
+"Test_name.c", line 51: warning: variable "a2" was declared but never referenced
+      int a2[1] = {[b] = 1 };
+          ^
+
+"Test_name.c", line 53: warning: variable "a4" was declared but never referenced
+      int a4[1] = {[&b] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'const int *'}}
+          ^
+
+"Test_name.c", line 55: warning: variable "a6" was declared but never referenced
+      int a6[1] = {[this] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'C *'}}
+          ^
+
+"Test_name.c", line 61: warning: variable "a9" was declared but never referenced
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+          ^
+
+"Test_name.c", line 73: error: expected an expression
+      delete [] { return new int; } (); // expected-error {{'[]' after delete interpreted as 'delete[]'}}
+                ^
+
+"Test_name.c", line 74: error: delete array size expression used (anachronism)
+      delete [&] { return new int; } (); // ok, lambda
+              ^
+
+"Test_name.c", line 74: error: expected an expression
+      delete [&] { return new int; } (); // ok, lambda
+               ^
+
+"Test_name.c", line 74: error: expected an expression
+      delete [&] { return new int; } (); // ok, lambda
+                 ^
+
+"Test_name.c", line 76: error: expected an expression
+      delete []() { return new int; }(); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                ^
+
+"Test_name.c", line 76: error: expected a ";"
+      delete []() { return new int; }(); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                  ^
+
+"Test_name.c", line 77: error: expected a ")"
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                  ^
+
+"Test_name.c", line 77: error: expected an expression
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                          ^
+
+"Test_name.c", line 77: error: expected a "}"
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                                                   ^
+
+"Test_name.c", line 77: error: expression must be a pointer to a complete object type
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+               ^
+
+"Test_name.c", line 77: error: invalid start of member declaration
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                                                      ^
+
+"Test_name.c", line 87: error: expected an expression
+      [n{0}] { return; };                       // cxx14ext-warning    {{initialized lambda captures are a C++14 extension}}
+        ^
+
+"Test_name.c", line 89: error: expression must be a modifiable lvalue
+      [n = 0] { return ++n; };                  // expected-error      {{captured by copy in a non-mutable}}
+                         ^
+
+"Test_name.c", line 91: error: expected an expression
+      [n = {0}] { return; };                    // expected-error      {{<initializer_list>}}
+           ^
+
+"Test_name.c", line 95: warning: "auto" as a type specifier is nonstandard in this mode
+      auto y = [&r = x, x = x + 1]() -> int { // cxx14ext-warning 2 {{initialized lambda captures are a C++14 extension}}
+      ^
+
+"Test_name.c", line 102: warning: function declared with "noreturn" does return
+      [] __attribute__((noreturn)){}; // cxx23ext-warning {{lambda without a parameter clause is a C++23 extension}}
+                                   ^
+
+"Test_name.c", line 104: warning: standard attribute syntax is a C++11 feature
+      []() [[]]
+           ^
+
+"Test_name.c", line 105: error: expected a "{" introducing a lambda body
+        mutable {}; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 105: error: expected a ";"
+        mutable {}; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 116: error: expected a "{" introducing a lambda body
+      []() __attribute__((noreturn)) mutable { while(1); };
+                                     ^
+
+"Test_name.c", line 116: error: expected a ";"
+      []() __attribute__((noreturn)) mutable { while(1); };
+                                     ^
+
+"Test_name.c", line 124: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+      []<typename>[[]](){}; // cxx20ext-warning    {{explicit template parameter list for lambdas is a C++20 extension}}
+        ^
+
+"Test_name.c", line 124: error: expected a "{" introducing a lambda body
+      []<typename>[[]](){}; // cxx20ext-warning    {{explicit template parameter list for lambdas is a C++20 extension}}
+        ^
+
+"Test_name.c", line 124: error: expected an identifier
+      []<typename>[[]](){}; // cxx20ext-warning    {{explicit template parameter list for lambdas is a C++20 extension}}
+                 ^
+
+"Test_name.c", line 124: error: type name is not allowed
+      []<typename>[[]](){}; // cxx20ext-warning    {{explicit template parameter list for lambdas is a C++20 extension}}
+         ^
+
+"Test_name.c", line 131: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+      [] mutable {}; // cxx23ext-warning {{is a C++23 extension}}
+         ^
+
+"Test_name.c", line 140: error: expected a type specifier
+    [](int) -> {}; // expected-error {{expected a type}}
+               ^
+
+"Test_name.c", line 147: warning: rvalue references are a C++11 feature
+    template <class F> A(F&&) {}
+                          ^
+
+"Test_name.c", line 151: error: expected an identifier
+    void mf() { A(([*this]{})); } // cxx17ext-warning {{'*this' by copy is a C++17 extension}}
+                    ^
+
+"Test_name.c", line 151: error: a template argument may not reference a local type
+    void mf() { A(([*this]{})); } // cxx17ext-warning {{'*this' by copy is a C++17 extension}}
+                  ^
+
+"Test_name.c", line 151: error: a template argument may not reference a local type
+    void mf() { A(([*this]{})); } // cxx17ext-warning {{'*this' by copy is a C++17 extension}}
+                ^
+
+"Test_name.c", line 158: error: expected a ")"
+  } s;
+  ^
+
+"Test_name.c", line 158: error: expected a ";"
+  } s;
+  ^
+
+"Test_name.c", line 157: error: expected an identifier
+    void m (T x =[0); // expected-error{{expected variable name or 'this' in lambda capture list}}
+                  ^
+
+"Test_name.c", line 158: error: expected a "]"
+  } s;
+  ^
+
+"Test_name.c", line 158: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+  } s;
+  ^
+
+"Test_name.c", line 158: error: expected a "{" introducing a lambda body
+  } s;
+  ^
+
+"Test_name.c", line 163: error: expected a ")"
+  } *U;
+  ^
+
+"Test_name.c", line 163: error: expected a ";"
+  } *U;
+  ^
+
+"Test_name.c", line 162: error: expression must have pointer-to-object type but it has type "int"
+    void m_fn1(T x = 0[0); // expected-error{{expected ']'}} expected-note{{to match this '['}}
+                       ^
+
+"Test_name.c", line 162: error: expected a "]"
+    void m_fn1(T x = 0[0); // expected-error{{expected ']'}} expected-note{{to match this '['}}
+                        ^
+
+"Test_name.c", line 169: error: a value of type "int" cannot be used to initialize an entity of type "char *"
+      char* i(*[] { return new int; }());
+              ^
+
+"Test_name.c", line 172: error: a value of type "int *" cannot be used to initialize an entity of type "char *"
+      char* j(&[]() -> int& { return *new int; }());
+              ^
+
+54 errors detected in the compilation of "Test_name.c".

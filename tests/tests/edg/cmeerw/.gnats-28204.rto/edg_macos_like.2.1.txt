@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=2 --target linux_aarch64 --gn 140300 Test_name.c
+"Test_name.c", line 5: warning: unrecognized GCC pragma
+  #pragma GCC aarch64 "arm_acle.h"
+              ^
+
+"Test_name.c", line 6: warning: unrecognized GCC pragma
+  #pragma GCC aarch64 "arm_sve.h"
+              ^
+
+"Test_name.c", line 8: error: identifier "__SVBool_t" is undefined
+  void f(__SVBool_t b, unsigned int ui)
+         ^
+
+"Test_name.c", line 10: error: identifier "__tstart" is undefined
+    __tstart();
+    ^
+
+"Test_name.c", line 11: error: identifier "__tcommit" is undefined
+    __tcommit();
+    ^
+
+"Test_name.c", line 13: error: identifier "svpsel_lane_b16" is undefined
+    svpsel_lane_b16(b, b, ui);
+    ^
+
+4 errors detected in the compilation of "Test_name.c".

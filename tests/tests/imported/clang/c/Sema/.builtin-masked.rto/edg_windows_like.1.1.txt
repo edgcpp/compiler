@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "ext_vector_type"
+  typedef int v8i __attribute__((ext_vector_type(8)));
+                                 ^
+
+"Test_name.c", line 6: warning: unknown attribute "ext_vector_type"
+  typedef _Bool v8b __attribute__((ext_vector_type(8)));
+                                   ^
+
+"Test_name.c", line 7: warning: unknown attribute "ext_vector_type"
+  typedef _Bool v2b __attribute__((ext_vector_type(2)));
+                                   ^
+
+"Test_name.c", line 8: warning: unknown attribute "ext_vector_type"
+  typedef float v8f __attribute__((ext_vector_type(8)));
+                                   ^
+
+"Test_name.c", line 89: warning: unknown attribute "clang::address_space"
+  void as(v8b mask, int [[clang::address_space(999)]] * ptr, v8i v) {
+                          ^
+

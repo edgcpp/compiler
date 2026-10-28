@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/pr57748-3.c", line 19: error: expression must have pointer-to-object type but it has type "int"
+    if (p->b[0][0] != 3 || p->b[0][1] != 4)
+                ^
+
+"./torture/pr57748-3.c", line 19: error: expression must have pointer-to-object type but it has type "int"
+    if (p->b[0][0] != 3 || p->b[0][1] != 4)
+                                   ^
+
+"./torture/pr57748-3.c", line 26: warning: excess initializers are ignored
+    V a = { 3, 4 };
+               ^
+
+2 errors detected in the compilation of "Test_name.c".

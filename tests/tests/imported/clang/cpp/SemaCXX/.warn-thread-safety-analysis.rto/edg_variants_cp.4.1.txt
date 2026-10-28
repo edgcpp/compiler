@@ -1,0 +1,285 @@
+fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions -DUSE_CAPABILITY=1 Test_name.c
+"SemaCXX/warn-thread-safety-analysis.cpp", line 198: warning: variable "x" was declared but never referenced
+    int x = sls_guard_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 216: warning: variable "x" was declared but never referenced
+    int x = sls_guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 493: warning: variable "x" was declared but never referenced
+    int x = *pgb_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 509: warning: variable "x" was declared but never referenced
+    int *x = pgb_var;
+         ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 518: warning: variable "x" was declared but never referenced
+    int x = sls_guard_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 528: warning: variable "x" was declared but never referenced
+    int x = sls_guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 538: warning: variable "x" was declared but never referenced
+    int x = *pgb_gvar;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 548: warning: variable "x" was declared but never referenced
+    int x = *pgb_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 553: warning: variable "G" was set but never used
+    GBFoo G;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 610: warning: variable "FooB" was declared but never referenced
+    LateFoo FooB;
+            ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 618: warning: variable "BarA" is used before its value is set
+    BarA.FooPointer->mu.Lock();
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 625: warning: variable "fooB" was set but never used
+    LateFoo fooB;
+            ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 647: warning: variable "BarA" is used before its value is set
+    BarA.FooPointer->mu.Lock();
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 710: warning: variable "x" was declared but never referenced
+    int x = sls_guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 1085: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 1188: warning: variable "a" is used before its value is set
+    a.mu2->Lock();
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 1225: warning: variable "foo" is used before its value is set
+    foo->func(5);
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 1286: warning: variable "c" is used before its value is set
+    Base *b = c;
+              ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 1353: warning: variable "f2" is used before its value is set
+    f2->mu_.Lock();
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 1557: warning: variable "c" is used before its value is set
+    Base *b = c;
+              ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2050: warning: variable "i" was declared but never referenced
+     int i = a;
+         ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2502: warning: attributes ignored here because they do not apply to a declared entity
+      exclusive_locks_required(a)));
+      ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2550: warning: variable "a" is used before its value is set
+    bar.getFoo2(a).mu_.Lock();
+                ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2554: warning: variable "b" is used before its value is set
+    bar.getFoo3(a, b).mu_.Lock();
+                   ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2570: warning: variable "fooArray" is used before its value is set
+    (a > 0 ? fooArray[1] : fooArray[b]).mu_.Lock();
+             ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2574: warning: variable "fooFuncPtr" is used before its value is set
+    fooFuncPtr().mu_.Lock();
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2534: warning: variable "foo" was declared but never referenced
+    Foo foo;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2540: warning: variable "c" was declared but never referenced
+    int c;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2593: warning: variable "a" is used before its value is set
+    bar.getFoo2(a).mu_.Lock();
+                ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2594: warning: variable "b" is used before its value is set
+    bar.getFoo2(b).a = 0;
+                ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2600: warning: variable "c" is used before its value is set
+    bar.getFoo3(a, c).a = 0;
+                   ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 2611: warning: variable "fooArray" is used before its value is set
+    (a > 0 ? fooArray[1] : fooArray[b]).mu_.Lock();
+             ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 3812: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 3814: warning: variable "b" was declared but never referenced
+    int b = a;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4396: warning: variable "a" was declared but never referenced
+    int a = lt->a;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4414: warning: variable "b" was set but never used
+      int b;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4833: warning: variable "result" was declared but never referenced
+    int result = a + b;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4877: warning: variable "zz" was declared but never referenced
+      int zz = a + b;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4853: warning: variable "x" was declared but never referenced
+    int x = c;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4854: warning: variable "y" was declared but never referenced
+    int y = *d;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4867: warning: variable "z" was declared but never referenced
+    int z = a + b;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4904: warning: variable "zz" was declared but never referenced
+      int zz = a + b;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 4909: warning: variable "zz" was declared but never referenced
+      int zz = a + b;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5047: warning: variable "mydat" was declared but never referenced
+      Data mydat(data_);
+           ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5253: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5259: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5270: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5276: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5297: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5310: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5337: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5347: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5358: warning: variable "b" was declared but never referenced
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5642: warning: variable "i" was declared but never referenced
+      int i __attribute__((pt_guarded_by(sls_mu)));
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5643: warning: variable "j" was declared but never referenced
+      int j __attribute__((pt_guarded_var));
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5908: warning: statement is unreachable
+    return 0;
+    ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5946: warning: variable "b" was set but never used
+      int b = a;
+          ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 5951: warning: variable "b" was set but never used
+      auto b = a;
+           ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 6816: warning: variable "i" is used before its value is set
+    int &i = i;
+             ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7038: warning: variable "x" was declared but never referenced
+    int x = guard_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7040: warning: variable "y" was declared but never referenced
+    int y = guard_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7042: warning: variable "z" was declared but never referenced
+    int z = guard_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7044: warning: variable "a" was declared but never referenced
+    int a = guard_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7060: warning: variable "x" was declared but never referenced
+    int x = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7062: warning: variable "y" was declared but never referenced
+    int y = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7064: warning: variable "z" was declared but never referenced
+    int z = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7066: warning: variable "a" was declared but never referenced
+    int a = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7177: warning: variable "x" was declared but never referenced
+    int x = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7179: warning: variable "y" was declared but never referenced
+    int y = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7181: warning: variable "z" was declared but never referenced
+    int z = guardby_var;
+        ^
+
+"SemaCXX/warn-thread-safety-analysis.cpp", line 7592: warning: variable "mu" is used before its value is set
+    Mutex *mu = mu;
+                ^
+

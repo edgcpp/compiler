@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 42: warning: variable "x" is used before its value is set
+    p = x;
+        ^
+
+"Test_name.c", line 52: warning: variable "y" is used before its value is set
+    p = y;   /* { dg-error "incompatible types when assigning to type" } */
+        ^
+
+"Test_name.c", line 112: warning: variable "nested_x" is used before its value is set
+   nested_p = nested_x;
+              ^
+
+"Test_name.c", line 128: warning: variable "nested_y" is used before its value is set
+   nested_p = nested_y; /* { dg-error "incompatible types when assigning to type" } */
+              ^
+

@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 17: error: co_await can only apply to a range-based "for" statement
+    for co_await (int x = 0; x != 10; ++x) {} // expected-error {{'co_await' modifier can only be applied to range-based for loop}}
+        ^
+
+"Test_name.c", line 6: error: class template "std::coroutine_traits" not found
+  U f(T t) {
+    ^
+
+"Test_name.c", line 35: error: too few parameters for this operator function
+  void operator co_await(); // expected-error {{must have at least one parameter}}
+       ^
+
+"Test_name.c", line 35: error: nonmember operator requires a parameter with class or enum type
+  void operator co_await(); // expected-error {{must have at least one parameter}}
+       ^
+
+"Test_name.c", line 36: error: too many parameters for this operator function
+  void operator co_await(X, Y, Z); // expected-error {{must be a unary operator}}
+       ^
+
+"Test_name.c", line 37: error: nonmember operator requires a parameter with class or enum type
+  void operator co_await(int); // expected-error {{parameter of class or enumeration type}}
+       ^
+
+6 errors detected in the compilation of "Test_name.c".

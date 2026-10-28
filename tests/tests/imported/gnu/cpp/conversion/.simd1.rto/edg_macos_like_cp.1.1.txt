@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 22: error: no instance of overloaded function "vld" matches the argument list
+            argument types are: (int, signed char *)
+    vss = vld(i, vscp);        /* { dg-error "no matching function for call" } */
+          ^
+"Test_name.c", line 12: note: function "vld(int, const signed short *)" does not match because argument #2 does not match parameter
+  vector signed short vld (int a1, const vector signed short *a2) { return *a2; } /* { dg-message "vld|no known conversion" } */
+                      ^
+"Test_name.c", line 11: note: function "vld(int, const signed int *)" does not match because argument #2 does not match parameter
+  vector signed int vld (int a1, const vector signed int *a2) { return *a2; } /* { dg-message "vld|no known conversion" } */
+                    ^
+
+1 error detected in the compilation of "Test_name.c".

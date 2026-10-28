@@ -1,0 +1,66 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-floath.h", line 29: error: identifier "_Float128" is undefined
+    volatile _Float128 a = 1.0f128;
+             ^
+
+"./torture/floatn-floath.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    volatile _Float128 a = 1.0f128;
+                          ^
+
+"./torture/floatn-floath.h", line 31: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+      a *= 0.5f128;
+          ^
+
+"./torture/floatn-floath.h", line 32: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a != 3.36210314311209350626267781732175260e-4932F128
+                                                    ^
+
+"./torture/floatn-floath.h", line 35: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+      a *= 0.5f128;
+          ^
+
+"./torture/floatn-floath.h", line 36: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a != 6.47517511943802511092443895822764655e-4966F128
+                                                    ^
+
+"./torture/floatn-floath.h", line 38: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    a *= 0.5f128;
+        ^
+
+"./torture/floatn-floath.h", line 39: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a != 0.0f128)
+            ^
+
+"./torture/floatn-floath.h", line 41: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    a = 1.92592994438723585305597794258492732e-34F128
+                                             ^
+
+"./torture/floatn-floath.h", line 43: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+      a *= 2.0f128;
+          ^
+
+"./torture/floatn-floath.h", line 44: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a != 1.0f128)
+            ^
+
+"./torture/floatn-floath.h", line 46: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    a = 1.18973149535723176508575932662800702e+4932F128
+                                               ^
+
+"./torture/floatn-floath.h", line 48: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+      a *= 0.5f128;
+          ^
+
+"./torture/floatn-floath.h", line 49: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a != 1.0f128 - 1.92592994438723585305597794258492732e-34F128 
+            ^
+
+"./torture/floatn-floath.h", line 49: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (a != 1.0f128 - 1.92592994438723585305597794258492732e-34F128 
+                                                            ^
+
+"./torture/floatn-floath.h", line 49: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+                                       * 0.5f128)
+                                        ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,288 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 104: error: no operator "*" matches these operands
+            operand types are: unsigned int * MyMatrix<unsigned int, 2U, 2U>
+    Mat4.value = Mat4.value * Mat1;
+                            ^
+"Test_name.c", line 104: note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    Mat4.value = Mat4.value * Mat1;
+                            ^
+
+"Test_name.c", line 119: error: no operator "+" matches these operands
+            operand types are: double + StructWithC
+    m.value = m.value + c;
+                      ^
+"Test_name.c", line 119: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    m.value = m.value + c;
+                      ^
+"Test_name.c", line 119: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    m.value = m.value + c;
+                      ^
+"Test_name.c", line 119: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    m.value = m.value + c;
+                      ^
+
+"Test_name.c", line 123: error: no operator "+" matches these operands
+            operand types are: StructWithC + double
+    m.value = c + m.value;
+                ^
+"Test_name.c", line 123: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    m.value = c + m.value;
+                ^
+"Test_name.c", line 123: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    m.value = c + m.value;
+                ^
+"Test_name.c", line 123: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+    m.value = c + m.value;
+                ^
+
+"Test_name.c", line 127: error: no operator "-" matches these operands
+            operand types are: double - StructWithC
+    m.value = m.value - c;
+                      ^
+"Test_name.c", line 127: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+    m.value = m.value - c;
+                      ^
+"Test_name.c", line 127: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    m.value = m.value - c;
+                      ^
+
+"Test_name.c", line 131: error: no operator "-" matches these operands
+            operand types are: StructWithC - double
+    m.value = c - m.value;
+                ^
+"Test_name.c", line 131: note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    m.value = c - m.value;
+                ^
+"Test_name.c", line 131: note: built-in operator-(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+    m.value = c - m.value;
+                ^
+
+"Test_name.c", line 140: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][f] = 0;
+    ^
+
+"Test_name.c", line 142: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[f][9] = 0;
+    ^
+
+"Test_name.c", line 142: error: expression must have integral or unscoped enum type
+    a[f][9] = 0;
+      ^
+
+"Test_name.c", line 144: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[f][f] = 0;
+    ^
+
+"Test_name.c", line 144: error: expression must have integral or unscoped enum type
+    a[f][f] = 0;
+      ^
+
+"Test_name.c", line 147: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[0][f] = 0;
+    ^
+
+"Test_name.c", line 151: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][4] = &f;
+    ^
+
+"Test_name.c", line 155: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[-1][3] = 10.0;
+    ^
+
+"Test_name.c", line 157: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][-1] = 10.0;
+    ^
+
+"Test_name.c", line 159: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[3][-1u] = 10.0;
+    ^
+
+"Test_name.c", line 161: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[-1u][3] = 10.0;
+    ^
+
+"Test_name.c", line 163: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[5][2] = 10.0;
+    ^
+
+"Test_name.c", line 165: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[4][10] = 10.0;
+    ^
+
+"Test_name.c", line 167: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[5][10.0] = f;
+    ^
+
+"Test_name.c", line 171: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    get_matrix()[0][0] = f;
+    ^
+
+"Test_name.c", line 173: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    get_matrix()[5][10.0] = f;
+    ^
+
+"Test_name.c", line 176: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    get_matrix()[3] = 5.0;
+    ^
+
+"Test_name.c", line 179: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float &x = reinterpret_cast<float &>(a[3][3]);
+                                         ^
+
+"Test_name.c", line 182: warning: expression has no effect
+    a[4, 5] = 5.0;
+      ^
+
+"Test_name.c", line 182: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[4, 5] = 5.0;
+    ^
+
+"Test_name.c", line 186: warning: expression has no effect
+    a[4, 5, 4] = 5.0;
+      ^
+
+"Test_name.c", line 186: warning: expression has no effect
+    a[4, 5, 4] = 5.0;
+      ^
+
+"Test_name.c", line 186: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[4, 5, 4] = 5.0;
+    ^
+
+"Test_name.c", line 194: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v1 = a[3][f];
+               ^
+
+"Test_name.c", line 196: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v2 = a[f][9];
+               ^
+
+"Test_name.c", line 196: error: expression must have integral or unscoped enum type
+    float v2 = a[f][9];
+                 ^
+
+"Test_name.c", line 198: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v3 = a[f][f];
+               ^
+
+"Test_name.c", line 198: error: expression must have integral or unscoped enum type
+    float v3 = a[f][f];
+                 ^
+
+"Test_name.c", line 203: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    char *v4 = a[3][4];
+               ^
+
+"Test_name.c", line 207: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v5 = a[-1][3];
+               ^
+
+"Test_name.c", line 209: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v6 = a[3][-1];
+               ^
+
+"Test_name.c", line 211: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v8 = a[-1u][3];
+               ^
+
+"Test_name.c", line 213: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v9 = a[5][2];
+               ^
+
+"Test_name.c", line 215: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v10 = a[4][10];
+                ^
+
+"Test_name.c", line 217: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v11 = a[5][10.0];
+                ^
+
+"Test_name.c", line 221: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v12 = get_matrix()[0][0];
+                ^
+
+"Test_name.c", line 222: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float v13 = get_matrix()[5][10.0];
+                ^
+
+"Test_name.c", line 228: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    return m[2][2];
+           ^
+
+"Test_name.c", line 233: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    return m[2][2];
+           ^
+
+"Test_name.c", line 238: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    return m[2][2];
+           ^
+
+"Test_name.c", line 243: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    float x = a[3];
+              ^
+
+"Test_name.c", line 245: error: expression must have pointer-to-object type but it has type "sx5x10_t" (aka "float")
+    a[2] = f;
+    ^
+
+"Test_name.c", line 16: error: a value of type "unsigned int" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value + B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t add<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=2U, C0=2U, EltTy1=unsigned int, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 31
+
+"Test_name.c", line 16: error: a value of type "unsigned int" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value + B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t add<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=2U, C0=2U, EltTy1=unsigned int, R1=3U, C1=3U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 35
+
+"Test_name.c", line 16: error: a value of type "float" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value + B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t add<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=3U, C0=3U, EltTy1=float, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 38
+
+"Test_name.c", line 44: error: a value of type "unsigned int" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value - B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t subtract<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=2U, C0=2U, EltTy1=unsigned int, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 59
+
+"Test_name.c", line 44: error: a value of type "unsigned int" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value - B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t subtract<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=2U, C0=2U, EltTy1=unsigned int, R1=3U, C1=3U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 63
+
+"Test_name.c", line 44: error: a value of type "float" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value - B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t subtract<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=3U, C0=3U, EltTy1=float, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 66
+
+"Test_name.c", line 72: error: a value of type "unsigned int" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value * B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t multiply<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=2U, C0=2U, EltTy1=unsigned int, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 93
+
+"Test_name.c", line 78: warning: variable "m" is used before its value is set
+    B.value = m.value * A.value;
+              ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t multiply<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=2U, C0=2U, EltTy1=unsigned int, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 93
+
+"Test_name.c", line 72: error: a value of type "unsigned int" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value * B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t multiply<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=3U, C0=2U, EltTy1=unsigned int, R1=3U, C1=3U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 98
+
+"Test_name.c", line 78: warning: variable "m" is used before its value is set
+    B.value = m.value * A.value;
+              ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t multiply<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=unsigned int, R0=3U, C0=2U, EltTy1=unsigned int, R1=3U, C1=3U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 98
+
+"Test_name.c", line 72: error: a value of type "float" cannot be used to initialize an entity of type "char *"
+    char *v1 = A.value * B.value;
+               ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t multiply<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=float, R0=2U, C0=2U, EltTy1=unsigned int, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 101
+
+"Test_name.c", line 78: warning: variable "m" is used before its value is set
+    B.value = m.value * A.value;
+              ^
+          detected during instantiation of "MyMatrix<EltTy2, R2, C2>::matrix_t multiply<EltTy0,R0,C0,EltTy1,R1,C1,EltTy2,R2,C2>(MyMatrix<EltTy0, R0, C0> &, MyMatrix<EltTy1, R1, C1> &) [with EltTy0=float, R0=2U, C0=2U, EltTy1=unsigned int, R1=2U, C1=2U, EltTy2=unsigned int, R2=2U, C2=2U]" at line 101
+
+53 errors detected in the compilation of "Test_name.c".

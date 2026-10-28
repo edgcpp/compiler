@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: warning: operator may not be a static member function
+  struct A { static int &operator[] (int x) { static int a[2]; return a[x]; } };	// { dg-warning "may be a static member function only with" "" { target c++20_down } }
+                         ^
+
+"Test_name.c", line 16: warning: expression has no effect
+    ++a[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 18: warning: expression has no effect
+    ++b[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 20: warning: expression has no effect
+    ++c[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 22: warning: expression has no effect
+    ++d[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 24: warning: expression has no effect
+    ++e[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 26: warning: expression has no effect
+    ++f[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 36: warning: expression has no effect
+    ++a[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 38: warning: expression has no effect
+    ++b[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+
+"Test_name.c", line 40: warning: expression has no effect
+    ++c[0, 1];		// { dg-warning "top-level comma expression in array subscript changed meaning" "" { target c++23 } }
+        ^
+

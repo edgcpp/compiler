@@ -1,0 +1,81 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"./cpp23/ext-floating.h", line 15: error: identifier "_Float128" is undefined
+    using float128_t = _Float128;
+                       ^
+
+"./cpp23/ext-floating3.C", line 26: warning: a user-provided literal suffix must begin with "_"
+  float16_t f16o = 1.0Q;
+                   ^
+
+"./cpp23/ext-floating3.C", line 26: error: user-defined literal operator not found
+  float16_t f16o = 1.0Q;
+                   ^
+
+"./cpp23/ext-floating3.C", line 31: error: user-defined literal operator not found
+  float32_t f32o = 1.0Q;
+                   ^
+
+"./cpp23/ext-floating3.C", line 35: error: user-defined literal operator not found
+  float64_t f64o = 1.0Q;
+                   ^
+
+"./cpp23/ext-floating3.C", line 39: error: user-defined literal operator not found
+  float128_t f128o = 1.0Q;
+                     ^
+
+"./cpp23/ext-floating3.C", line 46: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  constexpr float128_t f128x = 4.0F128;
+                              ^
+
+"./cpp23/ext-floating3.C", line 80: error: more than one instance of overloaded function "foo" matches the argument list:
+            function "foo(std::float32_t)" (declared at line 51)
+            function "foo(std::float64_t)" (declared at line 52)
+            argument types are: (std::float16_t)
+    foo (float16_t (1.0));
+    ^
+
+"./cpp23/ext-floating3.C", line 87: error: more than one instance of overloaded function "bar" matches the argument list:
+            function "bar(float)" (declared at line 53)
+            function "bar(double)" (declared at line 54)
+            function "bar(long double)" (declared at line 55)
+            argument types are: (const std::float16_t)
+    bar (f16x);
+    ^
+
+"./cpp23/ext-floating3.C", line 90: error: more than one instance of overloaded function "bar" matches the argument list:
+            function "bar(double)" (declared at line 54)
+            function "bar(long double)" (declared at line 55)
+            argument types are: (const std::float64_t)
+    static_assert (bar (f64x) == 4);
+                   ^
+
+"./cpp23/ext-floating3.C", line 108: error: more than one instance of overloaded function "qux" matches the argument list:
+            function "qux(std::float64_t)" (declared at line 59)
+            function "qux(std::float32_t)" (declared at line 60)
+            argument types are: (std::float16_t)
+    qux (float16_t (1.0));
+    ^
+
+"./cpp23/ext-floating3.C", line 115: error: more than one instance of overloaded function "fred" matches the argument list:
+            function "fred(long double)" (declared at line 61)
+            function "fred(double)" (declared at line 62)
+            function "fred(float)" (declared at line 63)
+            argument types are: (const std::float16_t)
+    fred (f16x);
+    ^
+
+"./cpp23/ext-floating3.C", line 118: error: more than one instance of overloaded function "fred" matches the argument list:
+            function "fred(long double)" (declared at line 61)
+            function "fred(double)" (declared at line 62)
+            argument types are: (const std::float64_t)
+    static_assert (fred (f64x) == 12);
+                   ^
+
+"./cpp23/ext-floating3.C", line 134: error: static assertion failed
+    static_assert (thud (ldx) == 14);
+    ^
+"./cpp23/ext-floating3.C", line 134: note: the final comparison was 15 == 14
+    static_assert (thud (ldx) == 14);
+                              ^
+
+12 errors detected in the compilation of "Test_name.c".

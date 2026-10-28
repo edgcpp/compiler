@@ -1,0 +1,8 @@
+fe_only -DTEST_NUMBER=1 --module_import_diagnostics -d-module_report --c++20 --header_unit test.h=test.h.rtmod Test_name.c
+3 modules declarations processed (0 failed).
+"Test_name.c", line 4: catastrophic error: cannot find header "test.h" to import
+  import "test.h" ;
+         ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

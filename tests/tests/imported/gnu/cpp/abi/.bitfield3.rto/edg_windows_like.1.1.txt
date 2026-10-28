@@ -1,0 +1,49 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 16: warning: declared size for bit field is larger than the size of the bit field type; truncated to 32 bits
+    int b : 224;	// { dg-warning "exceeds its type" }
+            ^
+
+"Test_name.c", line 44: warning: declared size for bit field is larger than the size of the bit field type; truncated to 64 bits
+    long long n : 160;	// { dg-warning "exceeds its type" }
+                  ^
+
+"Test_name.c", line 69: warning: statement is unreachable
+    if (sizeof (c) != 16)
+    ^
+
+"Test_name.c", line 71: warning: statement is unreachable
+    if (sizeof (c4) != 4 * 16)
+    ^
+
+"Test_name.c", line 73: warning: statement is unreachable
+    if (sizeof (d) != 2 * 4 + 16)
+    ^
+
+"Test_name.c", line 75: warning: statement is unreachable
+    if (__alignof__ (d.k) != 4)
+    ^
+
+"Test_name.c", line 77: warning: statement is unreachable
+    if (&e.o - &e.m != 24)
+    ^
+
+"Test_name.c", line 79: warning: statement is unreachable
+    if (sizeof (e) != 28)
+    ^
+
+"Test_name.c", line 81: warning: statement is unreachable
+    if (sizeof (e4) != 4 * 28)
+    ^
+
+"Test_name.c", line 83: warning: statement is unreachable
+    if (sizeof (f) != 2 * 4 + 28)
+    ^
+
+"Test_name.c", line 85: warning: statement is unreachable
+    if (__alignof__ (f.q) != 4)
+    ^
+
+"Test_name.c", line 87: warning: statement is unreachable
+    return 0;
+    ^
+

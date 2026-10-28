@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 11: error: function "N::f(T) [with T=int]" cannot be explicitly instantiated in the current scope
+      template void ::N::f<int>(int); // expected-warning {{explicit instantiation of 'f' not in a namespace enclosing 'N'}}
+                         ^
+
+"Test_name.c", line 15: error: "f" is not a class or function template name in the current scope
+  template void f<char>(char); // expected-warning {{explicit instantiation of 'N::f' must occur in namespace 'N'}}
+                ^
+
+"Test_name.c", line 19: error: "g" is not a class or function template name in the current scope
+    template void g<int>(int); // expected-warning {{explicit instantiation of 'g' must occur at global scope}}
+                  ^
+
+"Test_name.c", line 20: error: function "g(T) [with T=char]" cannot be explicitly instantiated in the current scope
+    template void ::g<char>(char); // expected-warning {{explicit instantiation of 'g' must occur at global scope}}
+                    ^
+
+"Test_name.c", line 23: warning: "inline" is not allowed
+  template inline void g<double>(double); // expected-warning {{explicit instantiation cannot be 'inline'}}
+           ^
+
+"Test_name.c", line 26: warning: variable "n" was declared but never referenced
+    auto int n = 0; // expected-warning {{'auto' storage class specifier is redundant and incompatible with C++11}}
+             ^
+
+"Test_name.c", line 34: warning: integer conversion resulted in truncation
+  t = { 1234 }; // expected-warning {{constant expression evaluates to 1234 which cannot be narrowed to type 'char' in C++11}} expected-warning {{changes value}} expected-note {{explicit cast}}
+        ^
+
+"Test_name.c", line 47: warning: fold expressions are nonstandard in this mode
+    return (N + ...); // expected-warning {{C++17 extension}}
+              ^
+
+4 errors detected in the compilation of "Test_name.c".

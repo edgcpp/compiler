@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 27: error: no suitable constructor exists to convert from "int" to "X"
+    foo({1, {X{k}}}); // { dg-warning "missing braces around initializer for .I." }
+               ^
+
+"Test_name.c", line 34: error: no suitable constructor exists to convert from "int" to "X"
+    foo({{1, X{k}}});
+               ^
+
+"Test_name.c", line 35: error: no suitable constructor exists to convert from "int" to "X"
+    foo({{1, X{N}}});
+               ^
+
+"Test_name.c", line 39: error: no suitable constructor exists to convert from "int" to "X"
+    foo({{1, {X{k}}}});
+                ^
+
+"Test_name.c", line 40: error: no suitable constructor exists to convert from "int" to "X"
+    foo({{1, {X{N}}}});
+                ^
+
+5 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"./cpp23/ext-floating.h", line 15: error: identifier "_Float128" is undefined
+    using float128_t = _Float128;
+                       ^
+
+"./cpp23/ext-floating2.C", line 67: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float16_t f16g = 1.0F128;
+                  ^
+
+"./cpp23/ext-floating2.C", line 68: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float16_t f16h = (float16_t) 1.0F128;
+                              ^
+
+"./cpp23/ext-floating2.C", line 89: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float32_t f32g = 1.0F128;
+                  ^
+
+"./cpp23/ext-floating2.C", line 90: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float32_t f32h = (float32_t) 1.0F128;
+                              ^
+
+"./cpp23/ext-floating2.C", line 114: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float64_t f64g = 1.0F128;
+                  ^
+
+"./cpp23/ext-floating2.C", line 115: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float64_t f64h = (float64_t) 1.0F128;
+                              ^
+
+"./cpp23/ext-floating2.C", line 143: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float128_t f128g = 1.0F128;
+                    ^
+
+"./cpp23/ext-floating2.C", line 144: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  float128_t f128h = (float128_t) 1.0F128;
+                                 ^
+
+1 error detected in the compilation of "Test_name.c".

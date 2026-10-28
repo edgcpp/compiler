@@ -1,0 +1,25 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 15: warning: unrecognized GCC pragma
+  #pragma GCC visibility push(hidden)
+              ^
+
+"Test_name.c", line 34: warning: unknown attribute "noclone"
+      __attribute__((noinline, noclone))
+                               ^
+
+"Test_name.c", line 79: warning: unknown attribute "visibility"
+      static volatile JITScript *UNJITTABLE __attribute__((visibility ("default")));
+                                                           ^
+
+"Test_name.c", line 110: warning: unknown attribute "noclone"
+    __attribute__((noinline, noclone))
+                             ^
+
+"Test_name.c", line 153: warning: unknown attribute "noclone"
+  __attribute__((noinline, noclone)) void
+                           ^
+
+"Test_name.c", line 164: warning: unrecognized GCC pragma
+  #pragma GCC visibility pop
+              ^
+

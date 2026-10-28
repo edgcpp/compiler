@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 7: warning: division by zero
+      constexpr void zomg() const { (void)(1 / 0); } // expected-error {{constant expression}} \
+                                             ^
+
+"Test_name.c", line 15: warning: division by zero
+        return 1 / 0; // expected-warning {{division by zero}} \
+                 ^
+
+"Test_name.c", line 29: error: expression must have a constant value
+  static_assert(s.heh()); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 7: note: division by zero
+      constexpr void zomg() const { (void)(1 / 0); } // expected-error {{constant expression}} \
+                                             ^
+"Test_name.c", line 21: note: called from:
+          F->zomg(); // expected-note {{in call to 'F->zomg()'}}
+                 ^
+
+"Test_name.c", line 35: error: expression must have a constant value
+  static_assert(s == s2); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 15: note: division by zero
+        return 1 / 0; // expected-warning {{division by zero}} \
+                 ^
+
+"Test_name.c", line 37: error: expression must have a constant value
+  static_assert(*sptr == *sptr2); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 15: note: division by zero
+        return 1 / 0; // expected-warning {{division by zero}} \
+                 ^
+
+"Test_name.c", line 41: warning: division by zero
+    constexpr int foo() { (void)(1/0); return 1;} // expected-error {{never produces a constant expression}} \
+                                  ^
+
+"Test_name.c", line 61: error: expression must have a constant value
+  static_assert(d.c->b.a->foo() == 1); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 41: note: division by zero
+    constexpr int foo() { (void)(1/0); return 1;} // expected-error {{never produces a constant expression}} \
+                                  ^
+
+"Test_name.c", line 67: warning: division by zero
+    constexpr int fail1() const { return 1 / 0; } // expected-warning {{division by zero}} \
+                                           ^
+
+"Test_name.c", line 70: warning: division by zero
+    constexpr int fail2() const { return 1 / 0; } // expected-warning {{division by zero}} \
+                                           ^
+
+"Test_name.c", line 73: warning: division by zero
+    constexpr int fail3(Args... args) const { return 1 / 0; } // expected-warning {{division by zero}} \
+                                                       ^
+
+"Test_name.c", line 78: error: expression must have a constant value
+  static_assert(bar.fail1<int>()); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 67: note: division by zero
+    constexpr int fail1() const { return 1 / 0; } // expected-warning {{division by zero}} \
+                                           ^
+
+"Test_name.c", line 80: error: expression must have a constant value
+  static_assert(bar.fail2<int*, 42>()); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 70: note: division by zero
+    constexpr int fail2() const { return 1 / 0; } // expected-warning {{division by zero}} \
+                                           ^
+
+"Test_name.c", line 82: error: expression must have a constant value
+  static_assert(bar.fail3(3, 4UL, bar, &bar)); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 73: note: division by zero
+    constexpr int fail3(Args... args) const { return 1 / 0; } // expected-warning {{division by zero}} \
+                                                       ^
+
+7 errors detected in the compilation of "Test_name.c".

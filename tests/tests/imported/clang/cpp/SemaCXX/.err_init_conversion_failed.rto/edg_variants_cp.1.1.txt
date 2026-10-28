@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 6: error: a value of type "void" cannot be used to initialize an entity of type "char"
+    char variable = (void)0;
+                    ^
+
+"Test_name.c", line 10: error: default argument of type "void" is incompatible with parameter of type "int"
+  void test1(int x = (void)0) {}
+                     ^
+
+"Test_name.c", line 15: error: return value type does not match the function type
+    return (void)0;
+           ^
+
+"Test_name.c", line 20: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    S4() : x((void)0) {};
+             ^
+
+"Test_name.c", line 26: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    int foo[2] = {1, (void)0};
+                     ^
+
+"Test_name.c", line 31: error: a value of type "void" cannot be used to initialize an entity of type "int"
+    new int((void)0);
+            ^
+
+"Test_name.c", line 37: error: a value of type "void" cannot be used to initialize an entity of type "short"
+    short2 V = { (void)0 };
+                 ^
+
+"Test_name.c", line 45: error: a value of type "float2" (aka "__attribute((ext_vector_type(2))) float") cannot be used to initialize an entity of type "float"
+    const float4 V = (float4){ in, out };
+                               ^
+
+"Test_name.c", line 45: error: a value of type "float2" (aka "__attribute((ext_vector_type(2))) float") cannot be used to initialize an entity of type "float"
+    const float4 V = (float4){ in, out };
+                                   ^
+
+"Test_name.c", line 45: warning: variable "V" was declared but never referenced
+    const float4 V = (float4){ in, out };
+                 ^
+
+"Test_name.c", line 60: error: a value of type "void (template_test::S::*)(int)" cannot be used to initialize an entity of type "void (template_test::S::*)(const int &)"
+    S2<S> X = {&S::foo};
+               ^
+
+10 errors detected in the compilation of "Test_name.c".

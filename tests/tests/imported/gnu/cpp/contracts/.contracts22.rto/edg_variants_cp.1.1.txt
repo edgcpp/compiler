@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./contracts/contracts22.C", line 12: error: expected a ","
+    [[assert default: x < 0]];
+             ^
+
+"./contracts/contracts22.C", line 19: error: expected a ","
+    [[assert default: x < 0]];
+             ^
+
+"./contracts/contracts22.C", line 27: error: expected a ","
+    [[assert default: x < 0]];
+             ^
+
+"./contracts/contracts22.C", line 26: warning: variable "x" was declared but never referenced
+    int x = 1;
+        ^
+
+"./contracts/contracts22.C", line 28: warning: variable "x2" was declared but never referenced
+    constexpr int x2 = f();
+                  ^
+
+3 errors detected in the compilation of "Test_name.c".

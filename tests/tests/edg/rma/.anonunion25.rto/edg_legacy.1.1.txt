@@ -1,0 +1,11 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 4: remark: class "S" defines no constructor to initialize the following:
+            const member "S::i"
+            const member "S::j"
+  struct S {
+         ^
+
+C++ prelinker: warning: no output produced by nm -- possible configuration problem
+/usr/sbin/ld: /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o: in function `_start':
+(.text+0xXX): undefined reference to `main'
+collect2: error: ld returned 1 exit status

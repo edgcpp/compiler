@@ -1,0 +1,35 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 69: error: identifier "__b" is undefined
+      constexpr pair (_T1, _T2 &):first (), second (__b)	// { dg-error "was not declared in this scope" }
+                                                    ^
+
+"Test_name.c", line 82: warning: missing return statement at end of non-void function "std::make_pair(_T1 &&, _T2 &&)"
+    }
+    ^
+
+"Test_name.c", line 85: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef long size_t;
+               ^
+
+"Test_name.c", line 189: error: "table" is not a nonstatic data member or base class of class "boost::unordered_detail::hash_unique_table<boost::unordered_detail::map<std::string, boost::hash<std::string>, std::equal_to<std::string>, boost::unordered_map<std::string, int, boost::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<const std::string, int>>>::value_allocator>>" (aka "boost::unordered_detail::hash_unique_table<boost::unordered_detail::map<std::string, boost::hash<std::string>, std::equal_to<std::string>, __gnu_cxx::__mt_alloc<std::pair<const std::string, int>, __gnu_cxx::__common_pool_policy<__gnu_cxx::__pool, true>>>>")
+  			   value_allocator & a):table (n, a)	// { dg-error "is not a direct base" }
+  			                        ^
+          detected during:
+            instantiation of "boost::unordered_detail::hash_unique_table<T>::hash_unique_table(size_t, boost::unordered_detail::hash_unique_table<T>::hasher, boost::unordered_detail::hash_unique_table<T>::key_equal, boost::unordered_detail::hash_unique_table<T>::value_allocator &) [with T=boost::unordered_detail::map<std::string, boost::hash<std::string>, std::equal_to<std::string>, __gnu_cxx::__mt_alloc<std::pair<const std::string, int>, __gnu_cxx::__common_pool_policy<__gnu_cxx::__pool, true>>>]" at line 215
+            instantiation of "boost::unordered_map<K, T, H, P, A>::unordered_map(boost::unordered_map<K, T, H, P, A>::size_type, boost::unordered_map<K, T, H, P, A>::hasher, boost::unordered_map<K, T, H, P, A>::key_equal, boost::unordered_map<K, T, H, P, A>::allocator_type) [with K=std::string, T=int, H=boost::hash<std::string>, P=std::equal_to<std::string>, A=std::allocator<std::pair<const std::string, int>>]" at line 225
+
+"Test_name.c", line 64: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::remove_reference<_Tp>::type &) [with _Tp=const int &]"
+    }
+    ^
+          detected during:
+            instantiation of "_Tp std::forward<_Tp>(std::remove_reference<_Tp>::type &) [with _Tp=const int &]" at line 81
+            instantiation of "std::pair<std::__decay_and_strip<_T1>::__type, std::__decay_and_strip<_T2>::__type> std::make_pair(_T1 &&, _T2 &&) [with _T1=const int &, _T2=boost::unordered_map<std::string, int, boost::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<const std::string, int>>> &]" at line 226
+
+"Test_name.c", line 64: warning: missing return statement at end of non-void function "std::forward<_Tp>(std::remove_reference<_Tp>::type &) [with _Tp=boost::unordered_map<std::string, int, boost::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<const std::string, int>>> &]"
+    }
+    ^
+          detected during:
+            instantiation of "_Tp std::forward<_Tp>(std::remove_reference<_Tp>::type &) [with _Tp=boost::unordered_map<std::string, int, boost::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<const std::string, int>>> &]" at line 81
+            instantiation of "std::pair<std::__decay_and_strip<_T1>::__type, std::__decay_and_strip<_T2>::__type> std::make_pair(_T1 &&, _T2 &&) [with _T1=const int &, _T2=boost::unordered_map<std::string, int, boost::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<const std::string, int>>> &]" at line 226
+
+2 errors detected in the compilation of "Test_name.c".

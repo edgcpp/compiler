@@ -1,0 +1,31 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/mutex", line 834: error: expected a ";"
+    extern __thread void* __once_callable;
+                    ^
+
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/mutex", line 835: error: expected a ";"
+    extern __thread void (*__once_call)();
+                    ^
+
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/mutex", line 845: error: identifier "__once_callable" is undefined
+   __once_callable = std::__addressof(__c);
+   ^
+
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/mutex", line 847: error: identifier "__once_call" is undefined
+   __once_call = [] { (*static_cast<_Callable*>(__once_callable))(); };
+   ^
+
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/mutex", line 853: error: identifier "__once_callable" is undefined
+        __once_callable = nullptr;
+        ^
+
+"/mds/gnu/build/gcc-15.1.0/include/c++/15.1.0/mutex", line 854: error: identifier "__once_call" is undefined
+        __once_call = nullptr;
+        ^
+
+"./modules/xtreme-header_b.C", line 5: catastrophic error: cannot find header "xtreme-header_a.H" to import
+  import "xtreme-header_a.H";
+         ^
+
+6 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

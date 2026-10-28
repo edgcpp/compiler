@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 9: warning: expression has no effect
+        (T *)&options;
+        ^
+
+"Test_name.c", line 19: error: explicit type is missing ("int" assumed)
+    template <typename T> getOptions() // expected-error {{a type specifier is required for all declarations}}
+                          ^
+
+"Test_name.c", line 21: warning: expression has no effect
+        (T *) & options;
+        ^
+
+"Test_name.c", line 22: warning: missing return statement at end of non-void function "<unnamed>::getOptions<T>()"
+      }
+      ^
+
+"Test_name.c", line 17: warning: declaration does not declare anything
+  struct __attribute__((packed)) { // expected-error {{anonymous structs and classes must be class members}}
+  ^
+
+1 error detected in the compilation of "Test_name.c".

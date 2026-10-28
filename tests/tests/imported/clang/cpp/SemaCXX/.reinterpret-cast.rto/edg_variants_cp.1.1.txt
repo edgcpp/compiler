@@ -1,0 +1,150 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"SemaCXX/reinterpret-cast.cpp", line 29: warning: type qualifier is meaningless on cast type
+    (void)reinterpret_cast<const int>(i);
+                           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 32: warning: nonstandard reinterpret_cast
+    (void)reinterpret_cast<structure>(s);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 32: warning: variable "s" is used before its value is set
+    (void)reinterpret_cast<structure>(s);
+                                      ^
+
+"SemaCXX/reinterpret-cast.cpp", line 35: warning: nonstandard reinterpret_cast
+    (void)reinterpret_cast<float>(f);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 28: warning: variable "ci" was declared but never referenced
+    const int ci = 0;
+              ^
+
+"SemaCXX/reinterpret-cast.cpp", line 45: warning: conversion from pointer to smaller integer
+    (void)reinterpret_cast<char>(fnp);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 65: error: reinterpret_cast cannot cast away const or other type qualifiers
+    (void)reinterpret_cast<int*>(icp);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 67: error: reinterpret_cast cannot cast away const or other type qualifiers
+    int const *const **icpcpp = reinterpret_cast<int const* const**>(ipppc);
+                                ^
+
+"SemaCXX/reinterpret-cast.cpp", line 81: warning: type qualifier is meaningless on cast type
+    (void)reinterpret_cast<const int>(i);
+                           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 83: warning: type qualifier is meaningless on cast type
+    (void)reinterpret_cast<int *const>(ip);
+                           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 100: error: expression must be an lvalue
+    (void)reinterpret_cast<int&>(&c);
+                                 ^
+
+"SemaCXX/reinterpret-cast.cpp", line 107: error: reinterpret_cast cannot cast away const or other type qualifiers
+    (void)reinterpret_cast<int structure::*>(psi);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 112: error: invalid type conversion
+    (void)reinterpret_cast<void (structure::*)()>(psi);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 113: error: invalid type conversion
+    (void)reinterpret_cast<int structure::*>(psf);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 117: error: invalid type conversion
+    (void)reinterpret_cast<void (structure::*)()>(0);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 118: error: invalid type conversion
+    (void)reinterpret_cast<int structure::*>(0);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 134: error: reinterpret_cast cannot cast away const or other type qualifiers
+    (void)reinterpret_cast<char *>(s);
+          ^
+
+"SemaCXX/reinterpret-cast.cpp", line 134: warning: variable "s" is used before its value is set
+    (void)reinterpret_cast<char *>(s);
+                                   ^
+
+"SemaCXX/reinterpret-cast.cpp", line 135: warning: variable "c" is used before its value is set
+    (void)reinterpret_cast<const STRING *>(c);
+                                           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 140: error: taking the address of a bit field is not allowed
+    int *y = &reinterpret_cast<int&>(x.a);
+                                     ^
+
+"SemaCXX/reinterpret-cast.cpp", line 213: warning: variable "v_ptr" is used before its value is set
+    (void)*reinterpret_cast<A*>(v_ptr);
+                                ^
+
+"SemaCXX/reinterpret-cast.cpp", line 220: error: expression must be a pointer to a complete object type
+    (void)*reinterpret_cast<void*>(&a);
+           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 221: error: expression must be a pointer to a complete object type
+    (void)*reinterpret_cast<void*>(&b);
+           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 222: error: expression must be a pointer to a complete object type
+    (void)*reinterpret_cast<void*>(&l);
+           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 223: error: expression must be a pointer to a complete object type
+    (void)*reinterpret_cast<void*>(&d);
+           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 224: error: expression must be a pointer to a complete object type
+    (void)*reinterpret_cast<void*>(&f);
+           ^
+
+"SemaCXX/reinterpret-cast.cpp", line 159: warning: variable "uc" was declared but never referenced
+    unsigned char uc;
+                  ^
+
+"SemaCXX/reinterpret-cast.cpp", line 314: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const TARGETTYPE*>(data);
+                                               ^
+
+"SemaCXX/reinterpret-cast.cpp", line 321: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const TARGETTYPE*>(data);
+                                               ^
+
+"SemaCXX/reinterpret-cast.cpp", line 327: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const TARGETTYPE*>(data);
+                                               ^
+
+"SemaCXX/reinterpret-cast.cpp", line 333: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const TARGETTYPE*>(data);
+                                               ^
+
+"SemaCXX/reinterpret-cast.cpp", line 339: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const TARGETTYPE*>(data);
+                                               ^
+
+"SemaCXX/reinterpret-cast.cpp", line 345: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const TARGETTYPE*>(data);
+                                               ^
+
+"SemaCXX/reinterpret-cast.cpp", line 351: warning: const variable "arr" requires an initializer
+    const int arr[size];
+                       ^
+
+"SemaCXX/reinterpret-cast.cpp", line 352: warning: variable "data" is used before its value is set
+    (void)*reinterpret_cast<const int*>(data);
+                                        ^
+
+"SemaCXX/reinterpret-cast.cpp", line 351: warning: variable "arr" was declared but never referenced
+    const int arr[size];
+              ^
+
+"SemaCXX/reinterpret-cast.cpp", line 357: warning: const variable "data" requires an initializer
+    const int data[size];
+                        ^
+
+15 errors detected in the compilation of "Test_name.c".

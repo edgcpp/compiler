@@ -1,0 +1,158 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: error: type name is not allowed
+    int tmp = add(int, 0, 0);    // expected-error {{expected '(' for function-style cast or type construction}} \
+                  ^
+
+"Test_name.c", line 7: error: identifier "add" is undefined
+    int tmp = add(int, 0, 0);    // expected-error {{expected '(' for function-style cast or type construction}} \
+              ^
+
+"Test_name.c", line 9: error: identifier "uint" is undefined
+    uint tmp = add(uint, 1, 1);  // expected-error {{use of undeclared identifier 'uint'; did you mean 'int'?}} \
+    ^
+
+"Test_name.c", line 9: error: "tmp" has already been declared in the current scope
+    uint tmp = add(uint, 1, 1);  // expected-error {{use of undeclared identifier 'uint'; did you mean 'int'?}} \
+         ^
+
+"Test_name.c", line 9: error: identifier "uint" is undefined
+    uint tmp = add(uint, 1, 1);  // expected-error {{use of undeclared identifier 'uint'; did you mean 'int'?}} \
+                   ^
+
+"Test_name.c", line 12: error: type name is not allowed
+    call(void, f, (int)tmp);     // expected-error {{expected '(' for function-style cast or type construction}} \
+         ^
+
+"Test_name.c", line 12: error: identifier "f" is undefined
+    call(void, f, (int)tmp);     // expected-error {{expected '(' for function-style cast or type construction}} \
+               ^
+
+"Test_name.c", line 12: error: identifier "call" is undefined
+    call(void, f, (int)tmp);     // expected-error {{expected '(' for function-style cast or type construction}} \
+    ^
+
+"Test_name.c", line 21: error: the global scope has no "foo"
+    ::foo([=] {          // expected-error {{no member named 'foo' in the global namespace}}
+      ^
+
+"Test_name.c", line 22: error: identifier "tms" is undefined
+      tms time;          // expected-error {{unknown type name 'tms'; did you mean 'tm'?}}
+      ^
+
+"Test_name.c", line 33: error: name followed by "::" must be a class or namespace name
+      for (auto core : a::c(cores)) { // expected-error {{use of undeclared identifier 'cores'}} \
+                       ^
+
+"Test_name.c", line 33: error: identifier "cores" is undefined
+      for (auto core : a::c(cores)) { // expected-error {{use of undeclared identifier 'cores'}} \
+                            ^
+
+"Test_name.c", line 43: error: identifier "l_volatile_uwchar" is undefined
+     int b = l_volatile_uwchar.a ::c ::~d<>; // expected-error {{use of undeclared identifier 'l_volatile_uwchar'}} \
+             ^
+
+"Test_name.c", line 43: error: name followed by "::~" must be a class name or a type name
+     int b = l_volatile_uwchar.a ::c ::~d<>; // expected-error {{use of undeclared identifier 'l_volatile_uwchar'}} \
+                                   ^
+
+"Test_name.c", line 43: error: "d" is not a type name
+     int b = l_volatile_uwchar.a ::c ::~d<>; // expected-error {{use of undeclared identifier 'l_volatile_uwchar'}} \
+                                       ^
+
+"Test_name.c", line 43: error: expected an expression
+     int b = l_volatile_uwchar.a ::c ::~d<>; // expected-error {{use of undeclared identifier 'l_volatile_uwchar'}} \
+                                          ^
+
+"Test_name.c", line 49: error: identifier "b" is undefined
+  int a = b.c < enum , > :: template ~d < > [ e; // expected-error {{use of undeclared identifier 'b'}} \
+          ^
+
+"Test_name.c", line 49: error: expected an expression
+  int a = b.c < enum , > :: template ~d < > [ e; // expected-error {{use of undeclared identifier 'b'}} \
+                ^
+
+"Test_name.c", line 49: error: expected an identifier
+  int a = b.c < enum , > :: template ~d < > [ e; // expected-error {{use of undeclared identifier 'b'}} \
+                       ^
+
+"Test_name.c", line 49: error: identifier "e" is undefined
+  int a = b.c < enum , > :: template ~d < > [ e; // expected-error {{use of undeclared identifier 'b'}} \
+                                              ^
+
+"Test_name.c", line 49: error: expected a "]"
+  int a = b.c < enum , > :: template ~d < > [ e; // expected-error {{use of undeclared identifier 'b'}} \
+                                               ^
+
+"Test_name.c", line 65: error: identifier "elefant_15_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+          ^
+
+"Test_name.c", line 65: error: identifier "elefant_14_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+                           ^
+
+"Test_name.c", line 65: error: identifier "elefant_13_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+                                            ^
+
+"Test_name.c", line 65: error: identifier "elefant_12_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+                                                             ^
+
+"Test_name.c", line 65: error: identifier "elefant_11_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+                                                                              ^
+
+"Test_name.c", line 65: error: identifier "elefant_10_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+                                                                                               ^
+
+"Test_name.c", line 65: error: identifier "elefant_9_lion" is undefined
+          elefant_15_lion, elefant_14_lion, elefant_13_lion, elefant_12_lion, elefant_11_lion, elefant_10_lion, elefant_9_lion, // expected-error 7 {{use of undeclared identifier}}
+                                                                                                                ^
+
+"Test_name.c", line 66: error: identifier "elefant_8_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+          ^
+
+"Test_name.c", line 66: error: identifier "elefant_7_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+                          ^
+
+"Test_name.c", line 66: error: identifier "elefant_6_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+                                          ^
+
+"Test_name.c", line 66: error: identifier "elefant_5_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+                                                          ^
+
+"Test_name.c", line 66: error: identifier "elefant_4_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+                                                                          ^
+
+"Test_name.c", line 66: error: identifier "elefant_3_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+                                                                                          ^
+
+"Test_name.c", line 66: error: identifier "elefant_2_lion" is undefined
+          elefant_8_lion, elefant_7_lion, elefant_6_lion, elefant_5_lion, elefant_4_lion, elefant_3_lion, elefant_2_lion,       // expected-error 7 {{use of undeclared identifier}}
+                                                                                                          ^
+
+"Test_name.c", line 67: error: identifier "elefant_1_lion" is undefined
+          elefant_1_lion, elefant_0_lion, no_animal, other_mammal);                                                             // expected-error 3 {{use of undeclared identifier}}
+          ^
+
+"Test_name.c", line 67: error: identifier "elefant_0_lion" is undefined
+          elefant_1_lion, elefant_0_lion, no_animal, other_mammal);                                                             // expected-error 3 {{use of undeclared identifier}}
+                          ^
+
+"Test_name.c", line 67: error: identifier "other_mammal" is undefined
+          elefant_1_lion, elefant_0_lion, no_animal, other_mammal);                                                             // expected-error 3 {{use of undeclared identifier}}
+                                                     ^
+
+"Test_name.c", line 64: error: identifier "A" is undefined
+      A(  // FIXME: it's surprising that we don't issue a "use of undeclared identifier" diagnostic for the call itself.
+      ^
+
+39 errors detected in the compilation of "Test_name.c".

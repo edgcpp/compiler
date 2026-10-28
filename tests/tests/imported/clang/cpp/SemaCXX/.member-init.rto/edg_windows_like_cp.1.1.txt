@@ -1,0 +1,87 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++11 Test_name.c
+"Test_name.c", line 6: warning: a default bit-field initializer is a C++20 feature
+    int n : 3 = 7; // expected-warning {{C++20 extension}} expected-warning {{changes value from 7 to -1}}
+              ^
+
+"Test_name.c", line 21: error: the generated default constructor for "Recurse" cannot be used in an initializer for its own data member
+        Recurse().n : // expected-note {{in evaluation of exception spec}}
+        ^
+
+"Test_name.c", line 26: error: an initializer cannot be specified for a flexible array member
+    int as[] = { 1, 2, 3 }; // expected-error {{array bound cannot be deduced from a default member initializer}}
+             ^
+
+"Test_name.c", line 26: error: incomplete type "<error-type>" is not allowed
+    int as[] = { 1, 2, 3 }; // expected-error {{array bound cannot be deduced from a default member initializer}}
+        ^
+
+"Test_name.c", line 28: error: an initializer cannot be specified for a flexible array member
+    int cs[] = { 8, 9, 10 }; // expected-error {{array bound cannot be deduced from a default member initializer}}
+             ^
+
+"Test_name.c", line 35: error: an initializer cannot be specified for a flexible array member
+    int as[] = { decltype(x)::B<C, D>(0) }; // expected-error {{array bound cannot be deduced from a default member initializer}}
+             ^
+
+"Test_name.c", line 35: error: incomplete type "<error-type>" is not allowed
+    int as[] = { decltype(x)::B<C, D>(0) }; // expected-error {{array bound cannot be deduced from a default member initializer}}
+        ^
+
+"Test_name.c", line 38: error: array of functions is not allowed
+    operator int[](){}; // expected-error {{'operator int' cannot be the name of a variable or data member}} \
+                   ^
+
+"Test_name.c", line 38: error: an operator name must be declared as a function
+    operator int[](){}; // expected-error {{'operator int' cannot be the name of a variable or data member}} \
+    ^
+
+"Test_name.c", line 38: error: expected a ";"
+    operator int[](){}; // expected-error {{'operator int' cannot be the name of a variable or data member}} \
+                    ^
+
+"Test_name.c", line 61: error: expected a ";"
+    typedef int A = 0; // expected-error {{illegal initializer}}
+                  ^
+
+"Test_name.c", line 69: error: a value of type "int" cannot be used to initialize an entity of type "T *"
+        T* x = 1; // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}} expected-warning {{unused variable}}
+               ^
+
+"Test_name.c", line 91: error: "PR14838::function::~function()" (declared at line 85) is inaccessible
+      another() : r(thing()) {} // expected-error {{binds to a temporary object}}
+                    ^
+
+"Test_name.c", line 103: error: no suitable constructor exists to convert from "int" to "rdar14084171::Point"
+      Point location = Point(0,0); // expected-error {{no matching constructor for initialization of 'Point'}}
+                             ^
+
+"Test_name.c", line 103: error: expected a ")"
+      Point location = Point(0,0); // expected-error {{no matching constructor for initialization of 'Point'}}
+                              ^
+
+"Test_name.c", line 170: error: argument list for class template "T" is missing
+    int n = T::error; // expected-error {{type 'float' cannot be used prior to '::' because it has no members}}
+            ^
+          detected during instantiation of "explicit_instantiation::X<T>::X() [with T=int]" at line 172
+
+"Test_name.c", line 170: error: argument list for class template "T" is missing
+    int n = T::error; // expected-error {{type 'float' cannot be used prior to '::' because it has no members}}
+            ^
+          detected during instantiation of "explicit_instantiation::X<T>::X() [with T=float]" at line 174
+
+"Test_name.c", line 180: error: name followed by "::" must be a class or namespace name
+      int n = T::error; // expected-error {{type 'int' cannot be used prior to '::' because it has no members}}
+              ^
+          detected during instantiation of "void local_class::f<T>() [with T=int]" at line 183
+
+"Test_name.c", line 180: error: argument list for class template "T" is missing
+      int n = T::error; // expected-error {{type 'int' cannot be used prior to '::' because it has no members}}
+              ^
+          detected during instantiation of "void local_class::f<T>() [with T=int]" at line 183
+
+"Test_name.c", line 207: error: argument list for class template "T" is missing
+    int dm = T::error; // expected-error {{type 'int' cannot be used prior to '::' because it has no members}}
+             ^
+          detected during instantiation of class "GH26057::S<T> [with T=int]" 
+
+19 errors detected in the compilation of "Test_name.c".

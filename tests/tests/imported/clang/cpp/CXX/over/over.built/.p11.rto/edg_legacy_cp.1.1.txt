@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: expression must have integral or unscoped enum type
+    (void)~f; // expected-error {{invalid argument type}}
+           ^
+
+"Test_name.c", line 11: error: expression must have integral or unscoped enum type
+    (void)~pi; // expected-error {{invalid argument type}}
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

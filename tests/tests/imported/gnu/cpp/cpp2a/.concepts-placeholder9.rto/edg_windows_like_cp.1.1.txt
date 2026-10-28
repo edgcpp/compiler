@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 14: error: the deduced placeholder type "int [1]" failed the type constraint
+    C1 auto [c] = y; // { dg-error "constraints" }
+    ^
+"Test_name.c", line 7: note: atomic constraint evaluates to false
+  template <class T> concept C1 = sizeof(T) > sizeof(int[1]);
+                                            ^
+
+"Test_name.c", line 13: warning: structured binding "a" was declared but never referenced
+    C1 auto [a,b] = x;
+             ^
+
+"Test_name.c", line 33: warning: structured binding "a" was declared but never referenced
+    const C2<T> auto& [a, b] = s;
+                       ^
+
+"Test_name.c", line 22: error: the deduced placeholder type "int [1]" failed the type constraint
+    C1 auto [c] = y; // { dg-error "constraints" }
+    ^
+"Test_name.c", line 7: note: atomic constraint evaluates to false
+  template <class T> concept C1 = sizeof(T) > sizeof(int[1]);
+                                            ^
+          detected during instantiation of "void g<T>() [with T=int]" at line 24
+
+2 errors detected in the compilation of "Test_name.c".

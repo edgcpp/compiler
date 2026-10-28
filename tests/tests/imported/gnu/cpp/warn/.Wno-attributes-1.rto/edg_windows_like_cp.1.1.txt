@@ -1,0 +1,238 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: warning: attribute namespace "foo" is unrecognized
+  [[foo::bar]];				// { dg-warning "attribute ignored" }
+    ^
+
+"Test_name.c", line 7: warning: attribute namespace "bar" is unrecognized
+  [[bar::foo, foo::bar, baz::qux]];	// { dg-warning "attribute ignored" }
+    ^
+
+"Test_name.c", line 7: warning: attribute namespace "foo" is unrecognized
+  [[bar::foo, foo::bar, baz::qux]];	// { dg-warning "attribute ignored" }
+              ^
+
+"Test_name.c", line 7: warning: attribute namespace "baz" is unrecognized
+  [[bar::foo, foo::bar, baz::qux]];	// { dg-warning "attribute ignored" }
+                        ^
+
+"Test_name.c", line 8: warning: attribute namespace "bar" is unrecognized
+  [[bar::foo, bar::bar, baz::qux]];	// { dg-bogus "attribute ignored" }
+    ^
+
+"Test_name.c", line 8: warning: attribute namespace "bar" is unrecognized
+  [[bar::foo, bar::bar, baz::qux]];	// { dg-bogus "attribute ignored" }
+              ^
+
+"Test_name.c", line 8: warning: attribute namespace "baz" is unrecognized
+  [[bar::foo, bar::bar, baz::qux]];	// { dg-bogus "attribute ignored" }
+                        ^
+
+"Test_name.c", line 10: warning: attribute namespace "foo" is unrecognized
+  namespace [[foo::bar]] N {		// { dg-warning "'bar' attribute directive ignored" }
+              ^
+
+"Test_name.c", line 13: warning: attribute namespace "bar" is unrecognized
+  namespace [[bar::foo, foo::bar, baz::qux]] O { // { dg-warning "'bar' attribute directive ignored" }
+              ^
+
+"Test_name.c", line 13: warning: attribute namespace "foo" is unrecognized
+  namespace [[bar::foo, foo::bar, baz::qux]] O { // { dg-warning "'bar' attribute directive ignored" }
+                        ^
+
+"Test_name.c", line 13: warning: attribute namespace "baz" is unrecognized
+  namespace [[bar::foo, foo::bar, baz::qux]] O { // { dg-warning "'bar' attribute directive ignored" }
+                                  ^
+
+"Test_name.c", line 16: warning: attribute namespace "bar" is unrecognized
+  namespace [[bar::foo, bar::bar, baz::qux]] P { // { dg-bogus "attribute directive ignored" }
+              ^
+
+"Test_name.c", line 16: warning: attribute namespace "bar" is unrecognized
+  namespace [[bar::foo, bar::bar, baz::qux]] P { // { dg-bogus "attribute directive ignored" }
+                        ^
+
+"Test_name.c", line 16: warning: attribute namespace "baz" is unrecognized
+  namespace [[bar::foo, bar::bar, baz::qux]] P { // { dg-bogus "attribute directive ignored" }
+                                  ^
+
+"Test_name.c", line 24: warning: attribute namespace "foo" is unrecognized
+    [[foo::bar]];				// { dg-warning "attributes at the beginning of statement are ignored" }
+      ^
+
+"Test_name.c", line 25: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]];	// { dg-warning "attributes at the beginning of statement are ignored" }
+      ^
+
+"Test_name.c", line 25: warning: attribute namespace "foo" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]];	// { dg-warning "attributes at the beginning of statement are ignored" }
+                ^
+
+"Test_name.c", line 25: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]];	// { dg-warning "attributes at the beginning of statement are ignored" }
+                          ^
+
+"Test_name.c", line 26: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]];	// { dg-bogus "attributes at the beginning of statement are ignored" }
+      ^
+
+"Test_name.c", line 26: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]];	// { dg-bogus "attributes at the beginning of statement are ignored" }
+                ^
+
+"Test_name.c", line 26: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]];	// { dg-bogus "attributes at the beginning of statement are ignored" }
+                          ^
+
+"Test_name.c", line 27: warning: attribute namespace "foo" is unrecognized
+    [[foo::bar]] ++i;			// { dg-warning "attributes at the beginning of statement are ignored" }
+      ^
+
+"Test_name.c", line 28: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] ++i;	// { dg-warning "attributes at the beginning of statement are ignored" }
+      ^
+
+"Test_name.c", line 28: warning: attribute namespace "foo" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] ++i;	// { dg-warning "attributes at the beginning of statement are ignored" }
+                ^
+
+"Test_name.c", line 28: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] ++i;	// { dg-warning "attributes at the beginning of statement are ignored" }
+                          ^
+
+"Test_name.c", line 29: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] ++i;	// { dg-bogus "attributes at the beginning of statement are ignored" }
+      ^
+
+"Test_name.c", line 29: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] ++i;	// { dg-bogus "attributes at the beginning of statement are ignored" }
+                ^
+
+"Test_name.c", line 29: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] ++i;	// { dg-bogus "attributes at the beginning of statement are ignored" }
+                          ^
+
+"Test_name.c", line 30: warning: attribute namespace "foo" is unrecognized
+    [[foo::bar]] asm ("");		// { dg-warning "attributes ignored on 'asm' declaration" }
+      ^
+
+"Test_name.c", line 31: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] asm (""); // { dg-warning "attributes ignored on 'asm' declaration" }
+      ^
+
+"Test_name.c", line 31: warning: attribute namespace "foo" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] asm (""); // { dg-warning "attributes ignored on 'asm' declaration" }
+                ^
+
+"Test_name.c", line 31: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] asm (""); // { dg-warning "attributes ignored on 'asm' declaration" }
+                          ^
+
+"Test_name.c", line 32: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] asm (""); // { dg-bogus "attributes ignored on 'asm' declaration" }
+      ^
+
+"Test_name.c", line 32: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] asm (""); // { dg-bogus "attributes ignored on 'asm' declaration" }
+                ^
+
+"Test_name.c", line 32: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] asm (""); // { dg-bogus "attributes ignored on 'asm' declaration" }
+                          ^
+
+"Test_name.c", line 33: warning: attribute namespace "foo" is unrecognized
+    [[foo::bar]] using namespace N;	// { dg-warning "'bar' attribute directive ignored" }
+      ^
+
+"Test_name.c", line 33: error: attributes are not allowed here
+    [[foo::bar]] using namespace N;	// { dg-warning "'bar' attribute directive ignored" }
+    ^
+
+"Test_name.c", line 34: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] using namespace O; // { dg-warning "'bar' attribute directive ignored" }
+      ^
+
+"Test_name.c", line 34: warning: attribute namespace "foo" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] using namespace O; // { dg-warning "'bar' attribute directive ignored" }
+                ^
+
+"Test_name.c", line 34: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] using namespace O; // { dg-warning "'bar' attribute directive ignored" }
+                          ^
+
+"Test_name.c", line 34: error: attributes are not allowed here
+    [[bar::foo, foo::bar, baz::qux]] using namespace O; // { dg-warning "'bar' attribute directive ignored" }
+    ^
+
+"Test_name.c", line 35: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] using namespace P; // { dg-bogus "attribute directive ignored" }
+      ^
+
+"Test_name.c", line 35: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] using namespace P; // { dg-bogus "attribute directive ignored" }
+                ^
+
+"Test_name.c", line 35: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] using namespace P; // { dg-bogus "attribute directive ignored" }
+                          ^
+
+"Test_name.c", line 35: error: attributes are not allowed here
+    [[bar::foo, bar::bar, baz::qux]] using namespace P; // { dg-bogus "attribute directive ignored" }
+    ^
+
+"Test_name.c", line 40: warning: attribute namespace "foo" is unrecognized
+    [[foo::bar]] friend int bar (S &);	// { dg-warning "attribute ignored" }
+      ^
+
+"Test_name.c", line 42: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] friend int baz (S &); // { dg-warning "attribute ignored" }
+      ^
+
+"Test_name.c", line 42: warning: attribute namespace "foo" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] friend int baz (S &); // { dg-warning "attribute ignored" }
+                ^
+
+"Test_name.c", line 42: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, foo::bar, baz::qux]] friend int baz (S &); // { dg-warning "attribute ignored" }
+                          ^
+
+"Test_name.c", line 44: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] friend int qux (S &); // { dg-warning "attribute ignored" }
+      ^
+
+"Test_name.c", line 44: warning: attribute namespace "bar" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] friend int qux (S &); // { dg-warning "attribute ignored" }
+                ^
+
+"Test_name.c", line 44: warning: attribute namespace "baz" is unrecognized
+    [[bar::foo, bar::bar, baz::qux]] friend int qux (S &); // { dg-warning "attribute ignored" }
+                          ^
+
+"Test_name.c", line 50: warning: attribute namespace "foo" is unrecognized
+  int [[foo::bar]] i;			// { dg-warning "attribute ignored" }
+        ^
+
+"Test_name.c", line 52: warning: attribute namespace "bar" is unrecognized
+  int [[bar::foo, foo::bar, baz::qux]] j;	// { dg-warning "attribute ignored" }
+        ^
+
+"Test_name.c", line 52: warning: attribute namespace "foo" is unrecognized
+  int [[bar::foo, foo::bar, baz::qux]] j;	// { dg-warning "attribute ignored" }
+                  ^
+
+"Test_name.c", line 52: warning: attribute namespace "baz" is unrecognized
+  int [[bar::foo, foo::bar, baz::qux]] j;	// { dg-warning "attribute ignored" }
+                            ^
+
+"Test_name.c", line 54: warning: attribute namespace "bar" is unrecognized
+  int [[bar::foo, bar::bar, baz::qux]] k;	// { dg-bogus "attribute ignored" }
+        ^
+
+"Test_name.c", line 54: warning: attribute namespace "bar" is unrecognized
+  int [[bar::foo, bar::bar, baz::qux]] k;	// { dg-bogus "attribute ignored" }
+                  ^
+
+"Test_name.c", line 54: warning: attribute namespace "baz" is unrecognized
+  int [[bar::foo, bar::bar, baz::qux]] k;	// { dg-bogus "attribute ignored" }
+                            ^
+
+3 errors detected in the compilation of "Test_name.c".

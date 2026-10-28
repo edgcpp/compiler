@@ -1,0 +1,358 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++20 --exceptions Test_name.c
+"SemaCXX/compare-cxx2a.cpp", line 23: warning: variable "a" is used before its value is set
+    (void)(a <=> a);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 36: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)(a <=> (unsigned long)b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 40: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)((long)a <=> b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 41: error: invalid narrowing conversion from "int" to "unsigned long"
+    (void)((int)a <=> b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 42: error: invalid narrowing conversion from "short" to "unsigned long"
+    (void)((short)a <=> b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 43: error: invalid narrowing conversion from "signed char" to "unsigned long"
+    (void)((signed char)a <=> b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 44: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)((long)a <=> (unsigned long)b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 45: error: invalid narrowing conversion from "int" to "unsigned int"
+    (void)((int)a <=> (unsigned int)b);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 64: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)(a <=> (unsigned long) B);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 72: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)((long) a <=> (unsigned long) B);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 73: error: invalid narrowing conversion from "int" to "unsigned int"
+    (void)((int) a <=> (unsigned int) B);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 92: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)(a <=> (unsigned long) C);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 100: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)((long) a <=> (unsigned long) C);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 101: error: invalid narrowing conversion from "int" to "unsigned int"
+    (void)((int) a <=> (unsigned int) C);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 120: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)(a <=> (unsigned long)0x80000);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 128: error: invalid narrowing conversion from "long" to "unsigned long"
+    (void)((long)a <=> (unsigned long)0x80000);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 129: error: invalid narrowing conversion from "int" to "unsigned int"
+    (void)((int)a <=> (unsigned int)0x80000);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 138: error: invalid types ("bool" and "int") for built-in operator<=>
+    (void)(b <=> -10);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 139: error: invalid types ("bool" and "char") for built-in operator<=>
+    (void)(b <=> char(1));
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 140: error: invalid types ("bool" and "EnumA") for built-in operator<=>
+    (void)(b <=> A);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 143: error: invalid types ("bool" and "int") for built-in operator<=>
+    (void)(b <=> 0);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 144: error: invalid types ("bool" and "int") for built-in operator<=>
+    (void)(b <=> 1);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 161: error: invalid narrowing conversion from "int" to "unsigned long"
+    (void)((int)other <=> (unsigned long)(0xffff'ffff'ffff'ffff));
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 162: error: invalid narrowing conversion from "int" to "unsigned long"
+    (void)((int)other <=> (unsigned long)(0x0000'0000'ffff'ffff));
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 163: error: invalid narrowing conversion from "int" to "unsigned long"
+    (void)((int)other <=> (unsigned long)(0x0000'0000'0fff'ffff));
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 164: error: invalid narrowing conversion from "int" to "unsigned int"
+    (void)((int)other <=> (unsigned)(0x8000'0000));
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 167: error: invalid narrowing conversion from "int" to "unsigned long": constant value does not fit in destination type
+    (void)((unsigned long)other <=> (int)(0xffff'ffff));
+                                    ^
+
+"SemaCXX/compare-cxx2a.cpp", line 219: error: invalid types ("std::nullptr_t" and "std::nullptr_t") for built-in operator<=>
+    auto r1 = (nullptr <=> nullptr);
+                       ^
+
+"SemaCXX/compare-cxx2a.cpp", line 221: error: invalid types ("FnTy *" (aka "void (*)(int)") and "FnTy *" (aka "void (*)(int)")) for built-in operator<=>
+    auto r3 = (fp <=> nullptr);
+                  ^
+
+"SemaCXX/compare-cxx2a.cpp", line 222: error: invalid types ("FnTy *" (aka "void (*)(int)") and "FnTy *" (aka "void (*)(int)")) for built-in operator<=>
+    auto r4 = (0 <=> fp);
+                 ^
+
+"SemaCXX/compare-cxx2a.cpp", line 223: error: invalid types ("std::nullptr_t" and "MemFnTy" (aka "void (Class::*)() const")) for built-in operator<=>
+    auto r5 = (nullptr <=> memp);
+                       ^
+
+"SemaCXX/compare-cxx2a.cpp", line 224: error: invalid types ("int" and "MemDataTy" (aka "long Class::*")) for built-in operator<=>
+    auto r6 = (0 <=> memdp);
+                 ^
+
+"SemaCXX/compare-cxx2a.cpp", line 225: error: invalid types ("int" and "std::nullptr_t") for built-in operator<=>
+    auto r7 = (0 <=> nullptr);
+                 ^
+
+"SemaCXX/compare-cxx2a.cpp", line 220: warning: variable "r2" was declared but never referenced
+    auto r2 = (nullptr <=> x);
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 229: error: invalid types ("MemFnTy" (aka "void (Class::*)() const") and "MemFnTy" (aka "void (Class::*)() const")) for built-in operator<=>
+    (void)(mf <=> mf);
+              ^
+
+"SemaCXX/compare-cxx2a.cpp", line 230: error: invalid types ("MemDataTy" (aka "long Class::*") and "MemDataTy" (aka "long Class::*")) for built-in operator<=>
+    (void)(md <=> md);
+              ^
+
+"SemaCXX/compare-cxx2a.cpp", line 247: error: comparison between two different enum types ("EnumA" and "EnumC")
+    (void)(A <=> C);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 251: error: invalid narrowing conversion from "EnumA" to "unsigned int": constant value does not fit in destination type
+    (void)(ANeg <=> (unsigned)0);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 252: error: invalid narrowing conversion from "EnumA" to "unsigned int": constant value does not fit in destination type
+    (void)((unsigned)0 <=> ANeg);
+                           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 257: error: invalid narrowing conversion from "int" to "unsigned int": constant value does not fit in destination type
+    (void)(B <=> -1);
+                 ^
+
+"SemaCXX/compare-cxx2a.cpp", line 261: error: invalid narrowing conversion from "EnumC" to "unsigned int": constant value does not fit in destination type
+    (void)(C <=> (unsigned)42);
+           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 274: error: no operator "<=>" matches these operands
+            operand types are: EnumCompareTests::EnumA <=> EnumCompareTests::EnumB
+    (void)(EnumA::A <=> EnumB::B);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 274: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(EnumA::A <=> EnumB::B);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 274: note: built-in operator<=>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(EnumA::A <=> EnumB::B);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 274: note: built-in operator<=>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(EnumA::A <=> EnumB::B);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 274: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(EnumA::A <=> EnumB::B);
+                    ^
+
+"SemaCXX/compare-cxx2a.cpp", line 275: error: no operator "<=>" matches these operands
+            operand types are: EnumCompareTests::EnumB <=> EnumCompareTests::EnumA
+    (void)(EnumB::B <=> EnumA::A);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 275: note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+    (void)(EnumB::B <=> EnumA::A);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 275: note: built-in operator<=>(<enum>, <enum>) does not match because argument #2 does not match parameter
+    (void)(EnumB::B <=> EnumA::A);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 275: note: built-in operator<=>(<enum>, <enum>) does not match because argument #1 does not match parameter
+    (void)(EnumB::B <=> EnumA::A);
+                    ^
+"SemaCXX/compare-cxx2a.cpp", line 275: note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+    (void)(EnumB::B <=> EnumA::A);
+                    ^
+
+"SemaCXX/compare-cxx2a.cpp", line 271: warning: variable "r1" was set but never used
+    auto r1 = (EnumA::A <=> EnumA::A2);
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 293: error: no operator "<=>" matches these operands
+            operand types are: int <=> EnumCompareTests::Tag<1>
+    (void)(EnumB::B <=> EnumA::A);
+                    ^
+
+"SemaCXX/compare-cxx2a.cpp", line 331: error: invalid narrowing conversion from "int" to "unsigned int"
+      (void)((unsigned)0 <=> c);
+                             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 338: error: invalid narrowing conversion from "int" to "unsigned int": constant value does not fit in destination type
+      (void)(cc <=> (unsigned)0);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 339: error: invalid narrowing conversion from "int" to "unsigned int"
+      (void)(c <=> (unsigned)0);
+             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 354: error: invalid types ("int [5]" and "int [5]") for built-in operator<=>
+    (void)(arr <=> arr);
+               ^
+
+"SemaCXX/compare-cxx2a.cpp", line 352: warning: variable "ap" was declared but never referenced
+    int *ap = arr + 2;
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 353: warning: variable "arr2" was declared but never referenced
+    int arr2[3];
+        ^
+
+"SemaCXX/compare-cxx2a.cpp", line 364: warning: variable "r1" was set but never used
+    auto r1 = (f <=> i);
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 367: warning: variable "r2" was set but never used
+    auto r2 = (us <=> ld);
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 370: warning: variable "r3" was set but never used
+    auto r3 = (s <=> f);
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 373: warning: variable "r4" was set but never used
+    auto r4 = (0.0 <=> i);
+         ^
+
+"SemaCXX/compare-cxx2a.cpp", line 380: error: invalid types ("NullptrTest::nullptr_t" (aka "std::nullptr_t") and "NullptrTest::nullptr_t" (aka "std::nullptr_t")) for built-in operator<=>
+    auto r = x <=> y;
+               ^
+
+"SemaCXX/compare-cxx2a.cpp", line 390: error: _Complex can only be used with floating-point types
+  void test_diag(_Complex int ci, _Complex float cf, _Complex double cd, int i, float f, StrongE E1, WeakE E2, int *p) {
+                 ^
+
+"SemaCXX/compare-cxx2a.cpp", line 391: error: _Complex can only be used with floating-point types
+    (void)(ci <=> (_Complex int &)ci);
+                   ^
+
+"SemaCXX/compare-cxx2a.cpp", line 395: error: invalid types ("float __complex__" and "float __complex__") for built-in operator<=>
+    (void)(cf <=> i);
+              ^
+
+"SemaCXX/compare-cxx2a.cpp", line 396: error: invalid types ("float __complex__" and "float __complex__") for built-in operator<=>
+    (void)(cf <=> f);
+              ^
+
+"SemaCXX/compare-cxx2a.cpp", line 399: error: invalid types ("float __complex__" and "float __complex__") for built-in operator<=>
+    (void)(E2 <=> cf);
+              ^
+
+"SemaCXX/compare-cxx2a.cpp", line 402: error: _Complex can only be used with floating-point types
+  void test_int(_Complex int x, _Complex int y) {
+                ^
+
+"SemaCXX/compare-cxx2a.cpp", line 402: error: _Complex can only be used with floating-point types
+  void test_int(_Complex int x, _Complex int y) {
+                                ^
+
+"SemaCXX/compare-cxx2a.cpp", line 407: error: invalid types ("double __complex__" and "double __complex__") for built-in operator<=>
+    auto r = x <=> y;
+               ^
+
+"SemaCXX/compare-cxx2a.cpp", line 413: warning: unknown attribute "ext_vector_type"
+    typedef __attribute__((ext_vector_type(4))) int V;
+                           ^
+
+"SemaCXX/compare-cxx2a.cpp", line 475: error: expression must have a constant value
+    if constexpr (++DoAnotherThing() != nullptr) {}
+                  ^
+"SemaCXX/compare-cxx2a.cpp", line 475: note: constexpr function "GH64923::operator++" (declared at line 473) is not defined
+    if constexpr (++DoAnotherThing() != nullptr) {}
+                  ^
+
+"SemaCXX/compare-cxx2a.cpp", line 478: error: expression must have a constant value
+    if constexpr (nullptr == ++DoAnotherThing()) {}
+                  ^
+"SemaCXX/compare-cxx2a.cpp", line 478: note: constexpr function "GH64923::operator++" (declared at line 473) is not defined
+    if constexpr (nullptr == ++DoAnotherThing()) {}
+                             ^
+
+"SemaCXX/compare-cxx2a.cpp", line 488: error: function "GH64162::S::operator<=>(const GH64162::S &) const" (declared at line 485) cannot be referenced -- it is a deleted function
+      return s < s;
+               ^
+
+"SemaCXX/compare-cxx2a.cpp", line 237: error: invalid narrowing conversion from "int" to "unsigned long": constant value does not fit in destination type
+    return (Val <=> (unsigned long)0);
+            ^
+          detected during instantiation of "auto test_template_overflow<Val>() [with Val=-1]" at line 240
+
+"SemaCXX/compare-cxx2a.cpp", line 431: error: name followed by "::" must be a class or namespace name
+    template<typename T> bool operator==(const X<T> &, int) { return T::error; }
+                                                                     ^
+          detected during:
+            instantiation of "bool PR52537::operator==(const PR52537::X<T> &, int) [with T=int [1]]" at line 435
+            instantiation of "bool PR52537::f1<T>() [with T=int]" at line 436
+
+"SemaCXX/compare-cxx2a.cpp", line 431: error: name followed by "::" must be a class or namespace name
+    template<typename T> bool operator==(const X<T> &, int) { return T::error; }
+                                                                     ^
+          detected during:
+            instantiation of "bool PR52537::operator==(const PR52537::X<T> &, int) [with T=int [2]]" at line 439
+            instantiation of "bool PR52537::f2<T>() [with T=int]" at line 440
+
+"SemaCXX/compare-cxx2a.cpp", line 432: error: name followed by "::" must be a class or namespace name
+    template<typename T> int operator<=>(const X<T> &, int) { return T::error; }
+                                                                     ^
+          detected during:
+            instantiation of "int PR52537::operator<=>(const PR52537::X<T> &, int) [with T=int [3]]" at line 443
+            instantiation of "bool PR52537::f3<T>() [with T=int]" at line 444
+
+"SemaCXX/compare-cxx2a.cpp", line 432: error: name followed by "::" must be a class or namespace name
+    template<typename T> int operator<=>(const X<T> &, int) { return T::error; }
+                                                                     ^
+          detected during:
+            instantiation of "int PR52537::operator<=>(const PR52537::X<T> &, int) [with T=int [4]]" at line 447
+            instantiation of "bool PR52537::f4<T>() [with T=int]" at line 448
+
+"SemaCXX/compare-cxx2a.cpp", line 451: error: name followed by "::" must be a class or namespace name
+    template<typename T> struct Z { Z(int) { T::error; } using nondeduced = Z; };
+                                             ^
+          detected during:
+            instantiation of "PR52537::Z<T>::Z(int) [with T=int [5]]" at line 457
+            instantiation of "bool PR52537::f5<T>() [with T=int]" at line 458
+
+"SemaCXX/compare-cxx2a.cpp", line 451: error: name followed by "::" must be a class or namespace name
+    template<typename T> struct Z { Z(int) { T::error; } using nondeduced = Z; };
+                                             ^
+          detected during:
+            instantiation of "PR52537::Z<T>::Z(int) [with T=int [6]]" at line 461
+            instantiation of "bool PR52537::f6<T>() [with T=int]" at line 462
+
+"SemaCXX/compare-cxx2a.cpp", line 473: warning: extern inline function "GH64923::operator++" was referenced but not defined
+  constexpr nullptr_t operator++(MyTask &&T);
+                      ^
+
+65 errors detected in the compilation of "Test_name.c".

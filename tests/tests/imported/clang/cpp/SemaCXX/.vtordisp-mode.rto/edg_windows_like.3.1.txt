@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 -DVTORDISP_MODE=2 Test_name.c
+"Test_name.c", line 28: error: static assertion failed with "size mismatch"
+  static_assert(sizeof(C) == 2 * 4 + 2 * 4 + 4 * VTORDISP_MODE, "size mismatch");
+  ^
+"Test_name.c", line 28: note: the final comparison was 40 == 24
+  static_assert(sizeof(C) == 2 * 4 + 2 * 4 + 4 * VTORDISP_MODE, "size mismatch");
+                          ^
+
+1 error detected in the compilation of "Test_name.c".

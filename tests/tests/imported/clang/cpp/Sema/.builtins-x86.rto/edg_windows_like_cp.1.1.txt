@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 14: error: builtin function is not available because vector types are not supported
+        return __builtin_ia32_pshuflw(a, 0x55 * Imm);
+               ^
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=0]" at line 19
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=1]" at line 20
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=2]" at line 21
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=3]" at line 22
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=4]" at line 23
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=5]" at line 24
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=6]" at line 25
+
+"Test_name.c", line 16: error: identifier "__builtin_ia32_pshuflw" is undefined
+        return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+               ^
+          detected during instantiation of "__v8hi test<Imm>(__v8hi) [with Imm=7]" at line 26
+
+9 errors detected in the compilation of "Test_name.c".

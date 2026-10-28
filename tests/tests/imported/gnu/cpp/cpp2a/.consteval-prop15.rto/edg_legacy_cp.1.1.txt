@@ -1,0 +1,32 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 51: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval {
+    ^
+
+"Test_name.c", line 61: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if not consteval {
+    ^
+
+"Test_name.c", line 73: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval {
+    ^
+
+"Test_name.c", line 82: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if not consteval {
+    ^
+
+"Test_name.c", line 94: error: call to consteval function "f1(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    f1 (non_const); // { dg-error "call to consteval function .f1<int>\\(non_const\\). is not a constant expression" }
+       ^
+"Test_name.c", line 94: note: the value of parameter "non_const" (declared at line 91) cannot be used as a constant
+    f1 (non_const); // { dg-error "call to consteval function .f1<int>\\(non_const\\). is not a constant expression" }
+        ^
+
+"Test_name.c", line 97: error: call to consteval function "f5(auto) [with <auto-1>=int]" did not produce a valid constant expression
+    f5 (non_const); // { dg-error "call to consteval function .f5<int>\\(non_const\\). is not a constant expression" }
+       ^
+"Test_name.c", line 97: note: the value of parameter "non_const" (declared at line 91) cannot be used as a constant
+    f5 (non_const); // { dg-error "call to consteval function .f5<int>\\(non_const\\). is not a constant expression" }
+        ^
+
+2 errors detected in the compilation of "Test_name.c".

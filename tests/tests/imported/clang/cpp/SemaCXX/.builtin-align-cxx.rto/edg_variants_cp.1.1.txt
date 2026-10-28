@@ -1,0 +1,207 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 16: error: no instance of function template "c" matches the argument list
+            argument types are: (void *)
+    c<struct x, foo>(value); // expected-error{{no matching function for call to 'c'}}
+    ^
+"Test_name.c", line 8: note: candidate function template "c" failed deduction
+  void *c(void *d) { // expected-note{{candidate template ignored}}
+        ^
+
+"Test_name.c", line 51: error: too few arguments in function call
+    __builtin_align_up(array);       // expected-error{{too few arguments to function call, expected 2, have 1}}
+                            ^
+
+"Test_name.c", line 56: error: too few arguments in function call
+    __builtin_align_up(value);       // Same here
+                            ^
+
+"Test_name.c", line 70: error: argument of type "unsigned long" is incompatible with parameter of type "const void *"
+        __builtin_align_up(sizeof(T), sizeof(void *));
+                           ^
+
+"Test_name.c", line 70: error: a value of type "void *" cannot be used to initialize an entity of type "const size_t"
+        __builtin_align_up(sizeof(T), sizeof(void *));
+        ^
+
+"Test_name.c", line 89: error: argument of type "int MemPtr::*" is incompatible with parameter of type "const void *"
+    __builtin_align_up(&MemPtr::data, 64);    // expected-error{{operand of type 'int MemPtr::*' where arithmetic or pointer type is required}}
+                       ^
+
+"Test_name.c", line 90: error: argument of type "void (MemPtr::*)()" is incompatible with parameter of type "const void *"
+    __builtin_align_down(&MemPtr::func, 64);  // expected-error{{operand of type 'void (MemPtr::*)()' where arithmetic or pointer type is required}}
+                         ^
+
+"Test_name.c", line 91: error: argument of type "void (MemPtr::*)()" is incompatible with parameter of type "const void *"
+    __builtin_is_aligned(&MemPtr::vfunc, 64); // expected-error{{operand of type 'void (MemPtr::*)()' where arithmetic or pointer type is required}}
+                         ^
+
+"Test_name.c", line 96: error: no suitable conversion function from "Foo" to "const void *" exists
+    (void)__builtin_align_up(i, 64);                            // expected-error{{operand of type 'Foo' where arithmetic or pointer type is required}}
+                             ^
+
+"Test_name.c", line 97: error: no suitable conversion function from "Foo" to "const void *" exists
+    (void)__builtin_align_up(static_cast<Foo &>(i), 64);        // expected-error{{operand of type 'Foo' where arithmetic or pointer type is required}}
+                             ^
+
+"Test_name.c", line 98: error: no suitable conversion function from "const Foo" to "const void *" exists
+    (void)__builtin_align_up(static_cast<const Foo &>(i), 64);  // expected-error{{operand of type 'const Foo' where arithmetic or pointer type is required}}
+                             ^
+
+"Test_name.c", line 99: error: no suitable conversion function from "Foo" to "const void *" exists
+    (void)__builtin_align_up(static_cast<Foo &&>(i), 64);       // expected-error{{operand of type 'Foo' where arithmetic or pointer type is required}}
+                             ^
+
+"Test_name.c", line 100: error: no suitable conversion function from "const Foo" to "const void *" exists
+    (void)__builtin_align_up(static_cast<const Foo &&>(i), 64); // expected-error{{operand of type 'const Foo' where arithmetic or pointer type is required}}
+                             ^
+
+"Test_name.c", line 114: error: argument of type "int" is incompatible with parameter of type "const void *"
+    return __builtin_align_up(ptr, align);
+                              ^
+          detected during instantiation of "T wrap_align_up(T, long) [with T=int]" at line 129
+
+"Test_name.c", line 123: error: argument of type "int" is incompatible with parameter of type "const void *"
+    return __builtin_align_down(ptr, align);
+                                ^
+          detected during instantiation of "T wrap_align_down(T, long) [with T=int]" at line 131
+
+"Test_name.c", line 107: error: argument of type "int" is incompatible with parameter of type "const void *"
+    return __builtin_is_aligned(ptr, align);
+                                ^
+          detected during instantiation of "bool wrap_is_aligned(T, long) [with T=int]" at line 133
+
+"Test_name.c", line 123: error: argument of type "short" is incompatible with parameter of type "const void *"
+    return __builtin_align_down(ptr, align);
+                                ^
+          detected during instantiation of "T wrap_align_down(T, long) [with T=short]" at line 155
+
+"Test_name.c", line 107: error: argument of type "char" is incompatible with parameter of type "const void *"
+    return __builtin_is_aligned(ptr, align);
+                                ^
+          detected during instantiation of "bool wrap_is_aligned(T, long) [with T=char]" at line 160
+
+"Test_name.c", line 114: error: argument of type "bool" is incompatible with parameter of type "const void *"
+    return __builtin_align_up(ptr, align);
+                              ^
+          detected during instantiation of "T wrap_align_up(T, long) [with T=bool]" at line 164
+
+"Test_name.c", line 168: error: this declaration has no storage class or type specifier
+  _Alignas(32) char align32array[128];
+  ^
+
+"Test_name.c", line 168: error: expected a ";"
+  _Alignas(32) char align32array[128];
+               ^
+
+"Test_name.c", line 169: error: identifier "align32array" is undefined
+  static_assert(&align32array[0] == &align32array[0], "");
+                 ^
+
+"Test_name.c", line 206: error: identifier "__UINTPTR_TYPE__" is undefined
+  static_assert((char *)((__UINTPTR_TYPE__)&align32array[7] & ~3) == &align32array[4], ""); // expected-error{{not an integral constant expression}}
+                          ^
+
+"Test_name.c", line 234: error: argument of type "signed long" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<signed long>(7), static_cast<signed short>(4)), "");
+                                      ^
+
+"Test_name.c", line 235: error: argument of type "signed short" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<signed short>(7), static_cast<signed long>(4)), "");
+                                      ^
+
+"Test_name.c", line 237: error: argument of type "signed long" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<signed long>(7), static_cast<signed long>(4)), "");
+                                      ^
+
+"Test_name.c", line 238: error: argument of type "unsigned long" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<unsigned long>(7), static_cast<unsigned long>(4)), "");
+                                      ^
+
+"Test_name.c", line 239: error: argument of type "signed long" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<signed long>(7), static_cast<unsigned long>(4)), "");
+                                      ^
+
+"Test_name.c", line 240: error: argument of type "unsigned long" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<unsigned long>(7), static_cast<signed long>(4)), "");
+                                      ^
+
+"Test_name.c", line 241: error: argument of type "signed long" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<signed long>(7), static_cast<unsigned short>(4)), "");
+                                      ^
+
+"Test_name.c", line 242: error: argument of type "unsigned short" is incompatible with parameter of type "const void *"
+  static_assert(!__builtin_is_aligned(static_cast<unsigned short>(7), static_cast<signed long>(4)), "");
+                                      ^
+
+"Test_name.c", line 245: error: explicit type is missing ("int" assumed)
+  _Alignas(void) char align_void_array[1]; // expected-error {{invalid application of '_Alignas' to an incomplete type 'void'}}
+  ^
+
+"Test_name.c", line 245: error: declaration is incompatible with "int _Alignas" (declared at line 168)
+  _Alignas(void) char align_void_array[1]; // expected-error {{invalid application of '_Alignas' to an incomplete type 'void'}}
+  ^
+
+"Test_name.c", line 245: error: expected a "{"
+  _Alignas(void) char align_void_array[1]; // expected-error {{invalid application of '_Alignas' to an incomplete type 'void'}}
+                 ^
+
+At end of source: warning: missing return statement at end of non-void function "_Alignas"
+
+At end of source: error: expected a "}"
+
+"Test_name.c", line 22: error: static assertion failed with "return type should be the decayed array type"
+    static_assert(__is_same(decltype(__builtin_align_up(array, Alignment)), T *), // expected-error{{requested alignment is not a power of 2}}
+    ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=32L, ArraySize=16L]" at line 34
+
+"Test_name.c", line 24: error: static assertion failed with "return type should be the decayed array type"
+    static_assert(__is_same(decltype(__builtin_align_down(array, Alignment)), T *),
+    ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=32L, ArraySize=16L]" at line 34
+
+"Test_name.c", line 28: error: a value of type "void *" cannot be used to initialize an entity of type "int *"
+    T *x1 = __builtin_align_up(array, Alignment);
+            ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=32L, ArraySize=16L]" at line 34
+
+"Test_name.c", line 29: error: a value of type "void *" cannot be used to initialize an entity of type "int *"
+    T *x2 = __builtin_align_down(array, Alignment);
+            ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=32L, ArraySize=16L]" at line 34
+
+"Test_name.c", line 21: error: incomplete type "fwddecl [16]" is not allowed
+    T array[ArraySize];                                                           // expected-error{{variable has incomplete type 'fwddecl'}}
+      ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=fwddecl, Alignment=16L, ArraySize=16L]" at line 35
+
+"Test_name.c", line 22: error: static assertion failed with "return type should be the decayed array type"
+    static_assert(__is_same(decltype(__builtin_align_up(array, Alignment)), T *), // expected-error{{requested alignment is not a power of 2}}
+    ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=fwddecl, Alignment=16L, ArraySize=16L]" at line 35
+
+"Test_name.c", line 24: error: static assertion failed with "return type should be the decayed array type"
+    static_assert(__is_same(decltype(__builtin_align_down(array, Alignment)), T *),
+    ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=fwddecl, Alignment=16L, ArraySize=16L]" at line 35
+
+"Test_name.c", line 22: error: static assertion failed with "return type should be the decayed array type"
+    static_assert(__is_same(decltype(__builtin_align_up(array, Alignment)), T *), // expected-error{{requested alignment is not a power of 2}}
+    ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=7L, ArraySize=16L]" at line 38
+
+"Test_name.c", line 24: error: static assertion failed with "return type should be the decayed array type"
+    static_assert(__is_same(decltype(__builtin_align_down(array, Alignment)), T *),
+    ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=7L, ArraySize=16L]" at line 38
+
+"Test_name.c", line 28: error: a value of type "void *" cannot be used to initialize an entity of type "int *"
+    T *x1 = __builtin_align_up(array, Alignment);
+            ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=7L, ArraySize=16L]" at line 38
+
+"Test_name.c", line 29: error: a value of type "void *" cannot be used to initialize an entity of type "int *"
+    T *x2 = __builtin_align_down(array, Alignment);
+            ^
+          detected during instantiation of "void test_templated_arguments<T,Alignment,ArraySize>() [with T=int, Alignment=7L, ArraySize=16L]" at line 38
+
+46 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,331 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 -DERRORS Test_name.c
+"Test_name.c", line 22: error: the definition of std::initializer_list does not contain the expected constructor
+  std::initializer_list il1 = {1, 2, 3, 4, 5};
+                              ^
+
+"Test_name.c", line 22: error: no instance of constructor "std::initializer_list" matches the argument list
+            argument types are: (int, int, int, int, int)
+  std::initializer_list il1 = {1, 2, 3, 4, 5};
+                        ^
+
+"Test_name.c", line 22: error: cannot deduce class template arguments
+  std::initializer_list il1 = {1, 2, 3, 4, 5};
+  ^
+
+"Test_name.c", line 23: error: the definition of std::initializer_list does not contain the expected constructor
+  auto il2 = std::initializer_list{1, 2, 3, 4};
+                                  ^
+
+"Test_name.c", line 23: error: no instance of constructor "std::initializer_list" matches the argument list
+            argument types are: (int, int, int, int)
+  auto il2 = std::initializer_list{1, 2, 3, 4};
+                                  ^
+
+"Test_name.c", line 23: error: cannot deduce class template arguments
+  auto il2 = std::initializer_list{1, 2, 3, 4};
+             ^
+
+"Test_name.c", line 23: error: too many initializer values
+  auto il2 = std::initializer_list{1, 2, 3, 4};
+                                      ^
+
+"Test_name.c", line 24: error: no instance of constructor "std::initializer_list" matches the argument list
+            argument types are: (<error-type>)
+  auto il3 = std::initializer_list(il1);
+                                   ^
+
+"Test_name.c", line 24: error: cannot deduce class template arguments
+  auto il3 = std::initializer_list(il1);
+             ^
+
+"Test_name.c", line 25: error: no instance of constructor "std::initializer_list" matches the argument list
+            argument types are: (<error-type>, <error-type>, <error-type>)
+  auto il4 = std::initializer_list{il1, il1, il1};
+                                  ^
+
+"Test_name.c", line 25: error: cannot deduce class template arguments
+  auto il4 = std::initializer_list{il1, il1, il1};
+             ^
+
+"Test_name.c", line 25: error: too many initializer values
+  auto il4 = std::initializer_list{il1, il1, il1};
+                                        ^
+
+"Test_name.c", line 43: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v1 = {1, 2, 3, 4};
+              ^
+
+"Test_name.c", line 43: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v1 = {1, 2, 3, 4};
+              ^
+
+"Test_name.c", line 43: error: no instance of constructor "vector" matches the argument list
+            argument types are: (int, int, int, int)
+  vector v1 = {1, 2, 3, 4};
+         ^
+
+"Test_name.c", line 43: error: cannot deduce class template arguments
+  vector v1 = {1, 2, 3, 4};
+  ^
+
+"Test_name.c", line 53: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v4 = {it, end};
+              ^
+
+"Test_name.c", line 53: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v4 = {it, end};
+              ^
+
+"Test_name.c", line 53: error: copy-list-initialization cannot use "explicit" deduction guide "vector(Iter, Iter)->vector<Iter::value_type> [with Iter=iter]"
+  vector v4 = {it, end};
+         ^
+
+"Test_name.c", line 53: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v4 = {it, end};
+              ^
+
+"Test_name.c", line 54: error: static assertion failed
+  static_assert(has_type<vector<iter>>(v4));
+  ^
+
+"Test_name.c", line 56: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v5{it, end};
+           ^
+
+"Test_name.c", line 56: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v5{it, end};
+           ^
+
+"Test_name.c", line 56: error: the definition of std::initializer_list does not contain the expected constructor
+  vector v5{it, end};
+           ^
+
+"Test_name.c", line 57: error: static assertion failed
+  static_assert(has_type<vector<iter>>(v5));
+  ^
+
+"Test_name.c", line 75: error: copy-list-initialization cannot use "explicit" deduction guide "tuple(T...)->tuple<T...> [with T=<int, int, int>]"
+  tuple td = {1, 2, 3}; // expected-error {{selected an explicit deduction guide}}
+        ^
+
+"Test_name.c", line 76: error: static assertion failed
+  static_assert(has_type<tuple<int, char, const char*, int>>(td));
+  ^
+
+"Test_name.c", line 89: error: more than one instance of constructor "A" matches the argument list:
+            deduction guide "A(unsigned short)->ambiguity::A<int>" (declared at line 87)
+            deduction guide "A(short)->ambiguity::A<int>" (declared at line 88)
+            argument types are: (int)
+    A a = 0; // expected-error {{ambiguous deduction for template arguments of 'A'}}
+      ^
+
+"Test_name.c", line 89: error: cannot deduce class template arguments
+    A a = 0; // expected-error {{ambiguous deduction for template arguments of 'A'}}
+    ^
+
+"Test_name.c", line 95: error: more than one instance of constructor "ambiguity::B" matches the argument list:
+            function template "ambiguity::B(T (&)(int))->ambiguity::B<int>" (declared at line 92)
+            function template "ambiguity::B(int (&)(T))->ambiguity::B<int>" (declared at line 93)
+            argument types are: (int (int))
+    B b = f; // expected-error {{ambiguous deduction for template arguments of 'B'}}
+      ^
+
+"Test_name.c", line 95: error: cannot deduce class template arguments
+    B b = f; // expected-error {{ambiguous deduction for template arguments of 'B'}}
+    ^
+
+"Test_name.c", line 107: error: the definition of std::initializer_list does not contain the expected constructor
+    template<template<typename...> typename A> decltype(auto) a = A{1, 2, 3};
+                                                                   ^
+          detected during instantiation of "decltype(auto) dependent::a [with A=vector]" at line 108
+
+"Test_name.c", line 107: error: the definition of std::initializer_list does not contain the expected constructor
+    template<template<typename...> typename A> decltype(auto) a = A{1, 2, 3};
+                                                                   ^
+          detected during instantiation of "decltype(auto) dependent::a [with A=vector]" at line 108
+
+"Test_name.c", line 107: error: no instance of constructor "vector" matches the argument list
+            argument types are: (int, int, int)
+    template<template<typename...> typename A> decltype(auto) a = A{1, 2, 3};
+                                                                   ^
+          detected during instantiation of "decltype(auto) dependent::a [with A=vector]" at line 108
+
+"Test_name.c", line 107: error: cannot deduce class template arguments
+    template<template<typename...> typename A> decltype(auto) a = A{1, 2, 3};
+                                                                  ^
+          detected during instantiation of "decltype(auto) dependent::a [with A=vector]" at line 108
+
+"Test_name.c", line 107: error: too many initializer values
+    template<template<typename...> typename A> decltype(auto) a = A{1, 2, 3};
+                                                                       ^
+          detected during instantiation of "decltype(auto) dependent::a [with A=vector]" at line 108
+
+"Test_name.c", line 155: error: no instance of constructor "look_into_current_instantiation::B" matches the argument list
+            argument types are: (int)
+    B b = 0; // expected-error {{no viable}}
+      ^
+
+"Test_name.c", line 155: error: cannot deduce class template arguments
+    B b = 0; // expected-error {{no viable}}
+    ^
+
+"Test_name.c", line 213: error: no instance of constructor "transform_params::A" matches the argument list
+            argument types are: (transform_params::Q<&transform_params::n>, transform_params::Q<&transform_params::n>)
+    A a(qn, qn);
+      ^
+
+"Test_name.c", line 213: error: cannot deduce class template arguments
+    A a(qn, qn);
+    ^
+
+"Test_name.c", line 223: error: no instance of constructor "transform_params::B" matches the argument list
+            argument types are: ({...}, const char [4], {...})
+    B b({1, 2, 3}, "foo", {'x', 'y', 'z', 'w'}); // ok
+      ^
+
+"Test_name.c", line 223: error: cannot deduce class template arguments
+    B b({1, 2, 3}, "foo", {'x', 'y', 'z', 'w'}); // ok
+    ^
+
+"Test_name.c", line 223: error: too many initializer values
+    B b({1, 2, 3}, "foo", {'x', 'y', 'z', 'w'}); // ok
+            ^
+
+"Test_name.c", line 230: error: no instance of constructor "transform_params::C" matches the argument list
+            argument types are: (transform_params::Y<0, 1, 2>)
+    C c(Y<0, 1, 2>{});
+      ^
+
+"Test_name.c", line 230: error: cannot deduce class template arguments
+    C c(Y<0, 1, 2>{});
+    ^
+
+"Test_name.c", line 235: error: no instance of constructor "transform_params::D" matches the argument list
+            argument types are: (transform_params::Y<0, 1, 2>)
+    D d(Y<0, 1, 2>{});
+      ^
+
+"Test_name.c", line 235: error: cannot deduce class template arguments
+    D d(Y<0, 1, 2>{});
+    ^
+
+"Test_name.c", line 255: error: no instance of constructor "variadic::C" matches the argument list
+            argument types are: (int, variadic::A<int>, variadic::B<int>)
+    C c(1, a, b);
+      ^
+
+"Test_name.c", line 255: error: cannot deduce class template arguments
+    C c(1, a, b);
+    ^
+
+"Test_name.c", line 270: error: no instance of constructor "variadic::Z" matches the argument list
+            argument types are: (int, variadic::A<int>, variadic::B<int>)
+    Z z(1, a, b);
+      ^
+
+"Test_name.c", line 270: error: cannot deduce class template arguments
+    Z z(1, a, b);
+    ^
+
+"Test_name.c", line 296: error: no instance of constructor "tuple_tests::libcxx_2::tuple" matches the argument list
+            argument types are: (int, int, int)
+      tuple a = {1, 2, 3}; // expected-error {{excess elements in struct initializer}}
+            ^
+
+"Test_name.c", line 296: error: cannot deduce class template arguments
+      tuple a = {1, 2, 3}; // expected-error {{excess elements in struct initializer}}
+      ^
+
+"Test_name.c", line 320: error: argument list for class template "dependent::X" is missing
+      return (X)(X)t + 1; // expected-error {{deduction not allowed}}
+              ^
+
+"Test_name.c", line 320: error: argument list for class template "dependent::X" is missing
+      return (X)(X)t + 1; // expected-error {{deduction not allowed}}
+                 ^
+
+"Test_name.c", line 326: error: argument list for class template "dependent::X" is missing
+      return (X){(X){t}} + 1; // expected-error 2{{deduction not allowed}}
+              ^
+
+"Test_name.c", line 326: error: argument list for class template "dependent::X" is missing
+      return (X){(X){t}} + 1; // expected-error 2{{deduction not allowed}}
+                  ^
+
+"Test_name.c", line 380: error: deduction guide must be declared with the same accessibility as class template "member_guides::A::Public"
+      Public(int) -> Public<int>; // expected-error {{different access}}
+      ^
+
+"Test_name.c", line 383: error: deduction guide must be declared with the same accessibility as class template "member_guides::A::Protected"
+      Protected(int) -> Protected<int>; // expected-error {{different access}}
+      ^
+
+"Test_name.c", line 386: error: deduction guide must be declared with the same accessibility as class template "member_guides::A::Protected"
+      template<typename T> Protected(T) -> Protected<T>; // expected-error {{different access}}
+                           ^
+
+"Test_name.c", line 387: error: deduction guide must be declared with the same accessibility as class template "member_guides::A::Private"
+      template<typename T> Private(T) -> Private<T>; // expected-error {{different access}}
+                           ^
+
+"Test_name.c", line 429: warning: missing return statement at end of non-void function "rdar41330135::f"
+  }
+  ^
+
+"Test_name.c", line 452: error: the return type must directly designate a specialization of the associated class template
+    B(); // expected-error {{deduction guide declaration without trailing return type}}
+    ^
+
+"Test_name.c", line 584: error: no instance of constructor "Foo" matches the argument list
+            argument types are: (int, int, int)
+    insert(Foo(2, 2, 2)); // expected-error{{no viable constructor or deduction guide}}
+               ^
+
+"Test_name.c", line 584: error: cannot deduce class template arguments
+    insert(Foo(2, 2, 2)); // expected-error{{no viable constructor or deduction guide}}
+           ^
+
+"Test_name.c", line 625: error: no instance of function template "function_prototypes::foo3" matches the argument list
+            argument types are: (void (*)(char *))
+    void t3() { foo3(&bar3); }
+                ^
+"Test_name.c", line 623: note: candidate function template "function_prototypes::foo3" failed deduction
+    template<class T> void foo3(fptr1<const T *>) {}
+                           ^
+
+"Test_name.c", line 631: error: no instance of function template "function_prototypes::foo4" matches the argument list
+            argument types are: (void (*)(void (*)(char *)))
+    void t4() { foo4(&bar4); }
+                ^
+"Test_name.c", line 629: note: candidate function template "function_prototypes::foo4" failed deduction
+    template<class T> void foo4(fptr2<const T *>) {}
+                           ^
+
+"Test_name.c", line 636: warning: type qualifier on return type is meaningless
+    const int bar5(int);
+    ^
+
+"Test_name.c", line 637: error: no instance of function template "function_prototypes::foo5" matches the argument list
+            argument types are: (const int (int))
+    void t5() { foo5(bar5); }
+                ^
+"Test_name.c", line 635: note: candidate function template "function_prototypes::foo5" failed deduction
+    template<typename T> void foo5(T(T)) {}
+                              ^
+
+"Test_name.c", line 118: warning: class template argument deduction for alias templates is a C++20 feature
+      typename T::Y ty = 0; // expected-warning {{class template argument deduction for alias templates is a C++20 extension}}
+               ^
+          detected during instantiation of "void dependent::f<T>() [with T=dependent::B]" at line 120
+
+"Test_name.c", line 128: error: type "U" has already been defined (previous definition at line 127)
+      using U = decltype(c); // expected-error {{different types ('C<const char *>' vs 'C<int>')}}
+            ^
+          detected during instantiation of "void dependent::g(T) [with T=const char *]" at line 132
+
+"Test_name.c", line 332: error: expression must have arithmetic or unscoped enum type
+      return new X(X(t)) * 2; // expected-error {{invalid operands}}
+             ^
+          detected during instantiation of "int *dependent::New2(T) [with T=float]" at line 338
+
+69 errors detected in the compilation of "Test_name.c".

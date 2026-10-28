@@ -1,0 +1,178 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 11: error: "auto" not allowed here
+    auto b;       // c23-error {{'auto' not allowed in struct member}} \
+    ^
+
+"Test_name.c", line 16: error: "auto" not allowed here
+      auto smth;  // c23-error {{'auto' not allowed in union member}} \
+      ^
+
+"Test_name.c", line 22: error: "auto" is not allowed here
+  enum E : auto { // c23-error {{'auto' not allowed here}} \
+           ^
+
+"Test_name.c", line 30: error: more than one storage class may not be specified
+  auto basic_usage(auto auto) {   // c23-error {{'auto' not allowed in function prototype}} \
+                        ^
+
+"Test_name.c", line 30: error: "auto" is not allowed here
+  auto basic_usage(auto auto) {   // c23-error {{'auto' not allowed in function prototype}} \
+                   ^
+
+"Test_name.c", line 30: error: "auto" type cannot appear in top-level function type
+  auto basic_usage(auto auto) {   // c23-error {{'auto' not allowed in function prototype}} \
+  ^
+
+"Test_name.c", line 40: error: expected an identifier
+    auto = 4;                     // expected-error {{expected identifier or '('}}
+         ^
+
+"Test_name.c", line 44: error: invalid combination of type specifiers
+    auto auto aa = 12;            // c23-error {{cannot combine with previous 'auto' declaration specifier}} \
+         ^
+
+"Test_name.c", line 48: error: "auto" type cannot appear in top-level array type
+    auto b[4];                    // c23-error {{'auto' not allowed in array declaration}} \
+    ^
+
+"Test_name.c", line 51: error: expected an expression
+    auto array[auto];             // expected-error {{expected expression}} \
+               ^
+
+"Test_name.c", line 51: error: a variable declared with "auto" requires an initializer
+    auto array[auto];             // expected-error {{expected expression}} \
+    ^
+
+"Test_name.c", line 55: error: invalid combination of type specifiers
+    AUTO_MACRO(auto, 1, 2, 3);    // c23-error {{cannot combine with previous 'auto' declaration specifier}} \
+    ^
+
+"Test_name.c", line 55: error: expected an identifier
+    AUTO_MACRO(auto, 1, 2, 3);    // c23-error {{cannot combine with previous 'auto' declaration specifier}} \
+    ^
+
+"Test_name.c", line 59: error: "auto" is not allowed here
+    auto c = (auto)a;             // expected-error {{expected expression}} \
+              ^
+
+"Test_name.c", line 62: error: "auto" is not allowed here
+    auto ci = (auto){12};         // expected-error {{expected expression}} \
+               ^
+
+"Test_name.c", line 65: error: expected an expression
+    int auto_cxx_decl = auto(0);  // expected-error {{expected expression}}
+                        ^
+
+"Test_name.c", line 44: warning: variable "aa" was declared but never referenced
+    auto auto aa = 12;            // c23-error {{cannot combine with previous 'auto' declaration specifier}} \
+              ^
+
+"Test_name.c", line 71: error: "auto" not allowed here
+    struct s_auto { auto a; };            // c23-error {{'auto' not allowed in struct member}} \
+                    ^
+
+"Test_name.c", line 80: error: "auto" is not allowed here
+    typedef auto auto_type;               // c23-error {{'auto' not allowed in typedef}} \
+            ^
+
+"Test_name.c", line 77: warning: variable "s_int" was declared but never referenced
+    auto s_int = (struct { int a; } *)0;  // c17-error {{incompatible pointer to integer conversion initializing 'int' with an expression of type}} \
+         ^
+
+"Test_name.c", line 86: error: "auto" is not allowed here
+    auto auto_size = sizeof(auto);  // expected-error {{expected expression}} \
+                            ^
+
+"Test_name.c", line 92: error: "auto" is not allowed here
+    _Generic(g, auto : 0);  // c23-error {{'auto' not allowed here}} \
+                ^
+
+"Test_name.c", line 96: error: "auto" is not allowed here
+    _Alignof(auto);         // expected-error {{expected expression}} \
+             ^
+
+"Test_name.c", line 99: error: "auto" is not allowed here
+    _Alignas(auto);         // expected-error {{expected expression}} \
+             ^
+
+"Test_name.c", line 99: warning: expected a declaration
+    _Alignas(auto);         // expected-error {{expected expression}} \
+                  ^
+
+"Test_name.c", line 104: error: "auto" type cannot appear in top-level function type
+    extern auto auto_ret_func(void);    // c23-error {{'auto' not allowed in function return type}} \
+           ^
+
+"Test_name.c", line 108: error: "auto" is not allowed here
+    extern void auto_param_func(auto);  // c23-error {{'auto' not allowed in function prototype}} \
+                                ^
+
+"Test_name.c", line 112: error: "auto" type cannot appear in top-level function type
+    auto (auto_ret_func)(void);         // c23-error {{'auto' not allowed in function return type}} \
+    ^
+
+"Test_name.c", line 116: error: "auto" is not allowed here
+    void (auto_param_func)(auto);       // c23-error {{'auto' not allowed in function prototype}} \
+                           ^
+
+"Test_name.c", line 122: error: "auto" is not allowed here
+    _Atomic(auto) atom1 = 12; // c23-error {{'auto' not allowed here}} \
+            ^
+
+"Test_name.c", line 128: warning: variable "atom2" was declared but never referenced
+    _Atomic auto atom2 = 12;  // c23-error {{_Atomic cannot be applied to type 'auto' in C23}} \
+                 ^
+
+"Test_name.c", line 133: warning: variable "ident" was declared but never referenced
+    auto ident [[clang::annotate("this works")]] = 12;  // c17-error {{type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int}}
+         ^
+
+"Test_name.c", line 137: warning: this declaration has no storage class or type specifier
+  constexpr auto int a1 = 0; // c23-error {{illegal storage class on file-scoped variable}} \
+  ^
+
+"Test_name.c", line 137: error: expected a ";"
+  constexpr auto int a1 = 0; // c23-error {{illegal storage class on file-scoped variable}} \
+            ^
+
+"Test_name.c", line 142: warning: this declaration has no storage class or type specifier
+  constexpr int auto a2 = 0; // c23-error {{cannot combine with previous 'int' declaration specifier}} \
+  ^
+
+"Test_name.c", line 142: error: expected a ";"
+  constexpr int auto a2 = 0; // c23-error {{cannot combine with previous 'int' declaration specifier}} \
+            ^
+
+"Test_name.c", line 146: warning: the auto specifier is ignored here (invalid in standard C/C++)
+  auto int b1 = 0; // c23-error {{illegal storage class on file-scoped variable}} \
+  ^
+
+"Test_name.c", line 149: warning: the auto specifier is ignored here (invalid in standard C/C++)
+  int auto b2 = 0; // c23-error {{cannot combine with previous 'int' declaration specifier}} \
+      ^
+
+"Test_name.c", line 153: warning: expression has no effect
+    constexpr auto int c1 = 0; // c23-error {{cannot combine with previous 'auto' declaration specifier}} \
+    ^
+
+"Test_name.c", line 153: error: expected a ";"
+    constexpr auto int c1 = 0; // c23-error {{cannot combine with previous 'auto' declaration specifier}} \
+              ^
+
+"Test_name.c", line 156: warning: expression has no effect
+    constexpr int auto c2 = 0; // c23-error {{cannot combine with previous 'int' declaration specifier}} \
+    ^
+
+"Test_name.c", line 156: error: expected a ";"
+    constexpr int auto c2 = 0; // c23-error {{cannot combine with previous 'int' declaration specifier}} \
+              ^
+
+"Test_name.c", line 159: warning: variable "d1" was declared but never referenced
+    auto int d1 = 0;
+             ^
+
+"Test_name.c", line 160: warning: variable "d2" was declared but never referenced
+    int auto d2 = 0; // c23-error {{cannot combine with previous 'int' declaration specifier}}
+             ^
+
+31 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,112 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 8: warning: initial value of reference to non-const must be an lvalue
+      case 1: return A(i);
+                     ^
+
+"Test_name.c", line 8: warning: returning reference to local temporary
+      case 1: return A(i);
+                     ^
+
+"Test_name.c", line 9: warning: initial value of reference to non-const must be an lvalue
+      case 2: return (A(i));
+                     ^
+
+"Test_name.c", line 9: warning: returning reference to local temporary
+      case 2: return (A(i));
+                     ^
+
+"Test_name.c", line 10: warning: initial value of reference to non-const must be an lvalue
+      case 3: return A(1);
+                     ^
+
+"Test_name.c", line 10: warning: returning reference to local temporary
+      case 3: return A(1);
+                     ^
+
+"Test_name.c", line 11: warning: initial value of reference to non-const must be an lvalue
+      case 4: return (A(1));
+                     ^
+
+"Test_name.c", line 11: warning: returning reference to local temporary
+      case 4: return (A(1));
+                     ^
+
+"Test_name.c", line 12: error: no instance of constructor "A::A" matches the argument list
+            argument types are: (int, int)
+      case 5: return A(i,1);
+                     ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(const A &)" does not match the call
+  struct A { A(int); };
+         ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(int)" does not match the call
+  struct A { A(int); };
+             ^
+
+"Test_name.c", line 13: error: no instance of constructor "A::A" matches the argument list
+            argument types are: (int, int)
+      case 6: return (A(i,1));
+                      ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(const A &)" does not match the call
+  struct A { A(int); };
+         ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(int)" does not match the call
+  struct A { A(int); };
+             ^
+
+"Test_name.c", line 14: error: no instance of constructor "A::A" matches the argument list
+      case 7: return A();
+                     ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(const A &)" does not match the call
+  struct A { A(int); };
+         ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(int)" does not match the call
+  struct A { A(int); };
+             ^
+
+"Test_name.c", line 15: error: no instance of constructor "A::A" matches the argument list
+      case 8: return (A());
+                      ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(const A &)" does not match the call
+  struct A { A(int); };
+         ^
+"Test_name.c", line 4: note: number of parameters of function "A::A(int)" does not match the call
+  struct A { A(int); };
+             ^
+
+"Test_name.c", line 16: warning: initial value of reference to non-const must be an lvalue
+      case 9: return A(int(i));
+                     ^
+
+"Test_name.c", line 16: warning: returning reference to local temporary
+      case 9: return A(int(i));
+                     ^
+
+"Test_name.c", line 17: warning: initial value of reference to non-const must be an lvalue
+      case 10: return (A(int(i)));
+                      ^
+
+"Test_name.c", line 17: warning: returning reference to local temporary
+      case 10: return (A(int(i)));
+                      ^
+
+"Test_name.c", line 18: warning: initial value of reference to non-const must be an lvalue
+      case 11: return A((int)i);
+                      ^
+
+"Test_name.c", line 18: warning: returning reference to local temporary
+      case 11: return A((int)i);
+                      ^
+
+"Test_name.c", line 19: warning: initial value of reference to non-const must be an lvalue
+      case 12: return (A((int)i));
+                      ^
+
+"Test_name.c", line 19: warning: returning reference to local temporary
+      case 12: return (A((int)i));
+                      ^
+
+"Test_name.c", line 21: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

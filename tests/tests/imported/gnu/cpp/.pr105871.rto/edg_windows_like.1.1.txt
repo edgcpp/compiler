@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ ( 1))) unsigned char U;
+                         ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (16))) unsigned char V;
+                         ^
+
+"Test_name.c", line 13: error: identifier "__builtin_shufflevector" is undefined
+    return __builtin_shufflevector ((U){}, (V){}, 0);
+           ^
+
+1 error detected in the compilation of "Test_name.c".

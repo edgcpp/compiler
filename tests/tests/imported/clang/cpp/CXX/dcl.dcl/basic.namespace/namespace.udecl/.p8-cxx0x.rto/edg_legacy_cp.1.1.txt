@@ -1,0 +1,170 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 16: error: a class-qualified name is not allowed
+  using X::i; // expected-error{{using declaration cannot refer to class member}}
+        ^
+
+"Test_name.c", line 17: error: class "X" has no member "s"
+  using X::s; // expected-error{{using declaration cannot refer to class member}}
+           ^
+
+"Test_name.c", line 18: error: a class-qualified name is not allowed
+  using X::e; // expected-error{{using declaration cannot refer to class member}}
+        ^
+
+"Test_name.c", line 19: warning: an enum-type name qualifier is a C++11 feature
+  using X::E::e; // expected-error{{using declaration cannot refer to class member}} expected-warning 0-1{{C++11}}
+           ^
+
+"Test_name.c", line 19: error: a class-qualified name is not allowed
+  using X::E::e; // expected-error{{using declaration cannot refer to class member}} expected-warning 0-1{{C++11}}
+        ^
+
+"Test_name.c", line 33: error: a class-qualified name is not allowed
+    using X::i; // expected-error{{using declaration cannot refer to class member}}
+          ^
+
+"Test_name.c", line 34: error: class "X" has no member "s"
+    using X::s; // expected-error{{using declaration cannot refer to class member}}
+             ^
+
+"Test_name.c", line 35: error: a class-qualified name is not allowed
+    using X::e; // expected-error{{using declaration cannot refer to class member}}
+          ^
+
+"Test_name.c", line 36: error: a class-qualified name is not allowed
+    using X::E::e; // expected-error{{using declaration cannot refer to class member}} expected-warning 0-1{{C++11}}
+          ^
+
+"Test_name.c", line 58: error: a class-qualified name is not allowed
+        using T::member; // expected-error 2{{class member}} expected-note {{use a reference instead}}
+              ^
+
+"Test_name.c", line 68: error: a class-qualified name is not allowed
+        using T::member; // expected-error 2{{class member}} expected-note {{use a reference instead}}
+              ^
+
+"Test_name.c", line 85: error: a class-qualified name is not allowed
+      using T::a; // expected-note {{previous}}
+            ^
+
+"Test_name.c", line 93: error: a class-qualified name is not allowed
+      using T::b; // expected-error {{different kind of symbol}}
+            ^
+
+"Test_name.c", line 96: error: a class-qualified name is not allowed
+      using T::c; // expected-note {{previous}}
+            ^
+
+"Test_name.c", line 97: error: a class-qualified name is not allowed
+      using U::c; // expected-error-re {{redefinition of 'c'{{$}}}}
+            ^
+
+"Test_name.c", line 98: error: identifier "c" is undefined
+      c();
+      ^
+
+"Test_name.c", line 102: error: a class-qualified name is not allowed
+      using T::Xt; // expected-note {{previous}}
+            ^
+
+"Test_name.c", line 104: error: type name is not allowed
+      (void)Xt;
+            ^
+
+"Test_name.c", line 106: error: a class-qualified name is not allowed
+      using T::Xs; // expected-note {{hidden by}}
+            ^
+
+"Test_name.c", line 108: error: type name is not allowed
+      (void)Xs;
+            ^
+
+"Test_name.c", line 111: error: a class-qualified name is not allowed
+      using T::Xe; // expected-note {{hidden by}}
+            ^
+
+"Test_name.c", line 113: error: type name is not allowed
+      (void)Xe;
+            ^
+
+"Test_name.c", line 117: error: a class-qualified name is not allowed
+      using T::Yt; // eypected-error {{different kind of symbol}} expected-note {{candidate}}
+            ^
+
+"Test_name.c", line 121: error: a class-qualified name is not allowed
+      using T::Ys; // expected-note {{hidden by}}
+            ^
+
+"Test_name.c", line 122: error: type name is not allowed
+      (void)Ys;
+            ^
+
+"Test_name.c", line 126: error: a class-qualified name is not allowed
+      using T::Ye; // expected-note {{hidden by}}
+            ^
+
+"Test_name.c", line 114: warning: variable "xe" was declared but never referenced
+      Xe xe; // expected-error {{must use 'enum'}}
+         ^
+
+"Test_name.c", line 127: warning: variable "ye" was declared but never referenced
+      Ye ye; // expected-error {{must use 'enum'}}
+         ^
+
+"Test_name.c", line 133: error: a class-qualified name is not allowed
+      using typename T::X; // expected-error {{cannot refer to class member}}
+                     ^
+
+"Test_name.c", line 198: error: "type" has already been declared in the current scope
+      using typename U::type; // expected-note {{candidate}}
+                        ^
+
+"Test_name.c", line 212: error: a class-qualified name is not allowed
+  using S::n; // expected-error{{class member}} expected-note {{use a reference instead}}
+        ^
+
+"Test_name.c", line 219: error: a class-qualified name is not allowed
+  using S::Q; // expected-error{{class member}}
+        ^
+
+"Test_name.c", line 229: error: a class-qualified name is not allowed
+  using S::E; // expected-error{{class member}}
+        ^
+
+"Test_name.c", line 239: error: a class-qualified name is not allowed
+  using S::T; // expected-error{{class member}}
+        ^
+
+"Test_name.c", line 249: error: a class-qualified name is not allowed
+  using S::f; // expected-error{{class member}}
+        ^
+
+"Test_name.c", line 250: error: a class-qualified name is not allowed
+  using S::g; // expected-error{{class member}}
+        ^
+
+"Test_name.c", line 253: error: a class-qualified name is not allowed
+    using S::n; // expected-error{{class member}} expected-note {{use a reference instead}}
+          ^
+
+"Test_name.c", line 260: error: a class-qualified name is not allowed
+    using S::Q; // expected-error{{class member}}
+          ^
+
+"Test_name.c", line 270: error: a class-qualified name is not allowed
+    using S::E; // expected-error{{class member}}
+          ^
+
+"Test_name.c", line 280: error: a class-qualified name is not allowed
+    using S::T; // expected-error{{class member}}
+          ^
+
+"Test_name.c", line 290: error: a class-qualified name is not allowed
+    using S::f; // expected-error{{class member}}
+          ^
+
+"Test_name.c", line 291: error: a class-qualified name is not allowed
+    using S::g; // expected-error{{class member}}
+          ^
+
+39 errors detected in the compilation of "Test_name.c".

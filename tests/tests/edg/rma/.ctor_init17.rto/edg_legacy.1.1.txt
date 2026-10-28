@@ -1,0 +1,40 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "A::A()" cannot be inlined
+  struct A { const S s[2]; } a;
+         ^
+          detected during implicit generation of "A::A()" at line 5
+
+"Test_name.c", line 6: remark: function "B::B()" cannot be inlined
+  struct B { const S s; } b;
+         ^
+          detected during implicit generation of "B::B()" at line 6
+
+"Test_name.c", line 7: remark: function "C::C()" cannot be inlined
+  struct C { S s[2]; } c;
+         ^
+          detected during implicit generation of "C::C()" at line 7
+
+"Test_name.c", line 11: remark: declaration hides variable "s" (declared at line 4)
+    S s, ss(0);
+      ^
+
+"Test_name.c", line 12: remark: declaration hides variable "a" (declared at line 5)
+    A a;
+      ^
+
+"Test_name.c", line 13: remark: declaration hides variable "i" (declared at line 8)
+    int i = 0;
+        ^
+
+"Test_name.c", line 14: remark: declaration hides variable "j" (declared at line 9)
+    int j;
+        ^
+
+"Test_name.c", line 13: warning: variable "i" was declared but never referenced
+    int i = 0;
+        ^
+
+"Test_name.c", line 14: warning: variable "j" was declared but never referenced
+    int j;
+        ^
+

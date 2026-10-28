@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: error: a nonstatic member reference must be relative to a specific object
+    C::~C();			// { dg-error "" }
+    ^
+
+"Test_name.c", line 9: warning: local class member function "C::~C" requires a definition
+      __attribute__((transaction_safe)) ~C();
+                                        ^
+          detected during instantiation of "void g(T) [with T=int]" at line 15
+
+1 error detected in the compilation of "Test_name.c".

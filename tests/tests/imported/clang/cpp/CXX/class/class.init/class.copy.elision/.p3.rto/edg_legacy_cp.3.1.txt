@@ -1,0 +1,230 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions --c++03 --exceptions Test_name.c
+"Test_name.c", line 12: warning: rvalue references are a C++11 feature
+    A1(A1 &&) = delete; // expected-note {{'A1' has been explicitly marked deleted here}}
+          ^
+
+"Test_name.c", line 12: warning: deleted functions are a C++11 feature
+    A1(A1 &&) = delete; // expected-note {{'A1' has been explicitly marked deleted here}}
+                ^
+
+"Test_name.c", line 16: error: function "test_delete_function::A1::A1(test_delete_function::A1 &&)" (declared at line 12) cannot be referenced -- it is a deleted function
+    return a; // expected-error {{call to deleted constructor of 'A1'}}
+           ^
+
+"Test_name.c", line 28: error: "test_delete_function::A2::A2(test_delete_function::A2 &&)" (declared at line 24) is inaccessible
+    return a; // expected-error {{calling a private constructor of class 'test_delete_function::A2'}}
+           ^
+
+"Test_name.c", line 39: error: function "test_delete_function::B1::B1(test_delete_function::C &&)" (declared at line 35) cannot be referenced -- it is a deleted function
+    return c; // expected-error {{conversion function from 'C' to 'B1' invokes a deleted function}}
+           ^
+
+"Test_name.c", line 50: error: "test_delete_function::B2::B2(test_delete_function::C &&)" (declared at line 46) is inaccessible
+    return c; // expected-error {{calling a private constructor of class 'test_delete_function::B2'}}
+           ^
+
+"Test_name.c", line 62: error: function "test_implicitly_movable_rvalue_ref::A1::A1(const test_implicitly_movable_rvalue_ref::A1 &)" (declared at line 59) cannot be referenced -- it is a deleted function
+    return a;
+           ^
+
+"Test_name.c", line 72: error: "test_implicitly_movable_rvalue_ref::A2::A2(const test_implicitly_movable_rvalue_ref::A2 &)" (declared at line 69) is inaccessible
+    return a;
+           ^
+
+"Test_name.c", line 109: error: function "test_throw_parameter::A1::A1(test_throw_parameter::A1 &&)" (declared at line 101) cannot be referenced -- it is a deleted function
+      throw a; // expected-error {{call to deleted constructor of 'A1'}}
+            ^
+
+"Test_name.c", line 123: error: "test_throw_parameter::A2::A2(test_throw_parameter::A2 &&)" (declared at line 117) is inaccessible
+      throw a; // expected-error {{calling a private constructor of class 'test_throw_parameter::A2'}}
+            ^
+
+"Test_name.c", line 130: error: function "test_throw_parameter::A1::A1(test_throw_parameter::A1 &&)" (declared at line 101) cannot be referenced -- it is a deleted function
+    throw a; // expected-error {{call to deleted constructor of 'A1'}}
+          ^
+
+"Test_name.c", line 156: warning: a ref-qualifier is nonstandard in this mode
+    operator C() &&;
+                 ^
+
+"Test_name.c", line 157: warning: a ref-qualifier is nonstandard in this mode
+    operator C() const & = delete;
+                       ^
+
+"Test_name.c", line 161: error: function "test_non_ctor_conversion::A1::operator test_non_ctor_conversion::C() const &" (declared at line 157) cannot be referenced -- it is a deleted function
+    return a;
+           ^
+
+"Test_name.c", line 165: warning: a ref-qualifier is nonstandard in this mode
+    operator C() &&;
+                 ^
+
+"Test_name.c", line 168: warning: a ref-qualifier is nonstandard in this mode
+    operator C() const &;
+                       ^
+
+"Test_name.c", line 172: error: "test_non_ctor_conversion::A2::operator test_non_ctor_conversion::C() const &" (declared at line 168) is inaccessible
+    return a;
+           ^
+
+"Test_name.c", line 176: warning: a ref-qualifier is nonstandard in this mode
+    operator C() const &;
+                       ^
+
+"Test_name.c", line 177: warning: a ref-qualifier is nonstandard in this mode
+    operator C() && = delete; // expected-note {{'operator C' has been explicitly marked deleted here}}
+                 ^
+
+"Test_name.c", line 185: warning: a ref-qualifier is nonstandard in this mode
+    operator C() const &;
+                       ^
+
+"Test_name.c", line 188: warning: a ref-qualifier is nonstandard in this mode
+    operator C() &&; // expected-note {{declared private here}}
+                 ^
+
+"Test_name.c", line 279: error: function "test_ctor_param_rvalue_ref::B1::B1(test_ctor_param_rvalue_ref::B1 &&)" (declared at line 272) cannot be referenced -- it is a deleted function
+    return b; // cxx11_23-error {{call to deleted constructor of 'B1'}}
+           ^
+
+"Test_name.c", line 286: error: function "test_ctor_param_rvalue_ref::B1::B1(test_ctor_param_rvalue_ref::B1 &&)" (declared at line 272) cannot be referenced -- it is a deleted function
+    return b; // expected-error {{call to deleted constructor of 'B1'}}
+           ^
+
+"Test_name.c", line 292: error: function "test_ctor_param_rvalue_ref::B1::B1(test_ctor_param_rvalue_ref::B1 &&)" (declared at line 272) cannot be referenced -- it is a deleted function
+    return b; // cxx11_23-error {{call to deleted constructor of 'B1'}}
+           ^
+
+"Test_name.c", line 307: error: "test_ctor_param_rvalue_ref::B2::B2(test_ctor_param_rvalue_ref::B2 &&)" (declared at line 300) is inaccessible
+    return b; // cxx11_23-error {{calling a private constructor of class 'test_ctor_param_rvalue_ref::B2'}}
+           ^
+
+"Test_name.c", line 314: error: "test_ctor_param_rvalue_ref::B2::B2(test_ctor_param_rvalue_ref::B2 &&)" (declared at line 300) is inaccessible
+    return b; // expected-error {{calling a private constructor of class 'test_ctor_param_rvalue_ref::B2'}}
+           ^
+
+"Test_name.c", line 320: error: "test_ctor_param_rvalue_ref::B2::B2(test_ctor_param_rvalue_ref::B2 &&)" (declared at line 300) is inaccessible
+    return b; // cxx11_23-error {{calling a private constructor of class 'test_ctor_param_rvalue_ref::B2'}}
+           ^
+
+"Test_name.c", line 333: warning: a ref-qualifier is nonstandard in this mode
+    operator Target() && = delete; // expected-note {{has been explicitly marked deleted here}}
+                      ^
+
+"Test_name.c", line 334: warning: a ref-qualifier is nonstandard in this mode
+    operator Target() &;
+                      ^
+
+"Test_name.c", line 339: warning: a ref-qualifier is nonstandard in this mode
+    operator Target() &&;  // expected-note {{candidate function not viable}}
+                      ^
+
+"Test_name.c", line 377: error: no suitable user-defined conversion from "test_lvalue_ref_is_not_moved_from::MoveOnly" to "test_lvalue_ref_is_not_moved_from::Target" exists
+      return r; // expected-error {{no viable conversion}}
+             ^
+
+"Test_name.c", line 382: error: no suitable user-defined conversion from "test_lvalue_ref_is_not_moved_from::MoveOnly" to "test_lvalue_ref_is_not_moved_from::Target" exists
+      return r;
+             ^
+
+"Test_name.c", line 414: error: function "test_rvalue_ref_to_nonobject::Target::Target(test_rvalue_ref_to_nonobject::MoveOnly (&)())" (declared at line 395) cannot be referenced -- it is a deleted function
+      return r; // expected-error {{invokes a deleted function}}
+             ^
+
+"Test_name.c", line 419: error: function "test_rvalue_ref_to_nonobject::Target::Target(test_rvalue_ref_to_nonobject::MoveOnly (&)())" (declared at line 395) cannot be referenced -- it is a deleted function
+      return r; // expected-error {{invokes a deleted function}}
+             ^
+
+"Test_name.c", line 436: error: function "test_constandnonconstcopy::ConstCopyOnly::ConstCopyOnly(test_constandnonconstcopy::ConstCopyOnly &)" (declared at line 431) cannot be referenced -- it is a deleted function
+    return x; // cxx98-error {{call to deleted constructor}}
+           ^
+
+"Test_name.c", line 460: error: more than one user-defined conversion from "test_conversion::B" to "test_conversion::A" applies:
+            function "test_conversion::B::operator test_conversion::A()" (declared at line 458)
+            function "test_conversion::A::A(test_conversion::B &)" (declared at line 455)
+  A test1(B x) { return x; } // cxx98-error-re {{conversion {{.*}} is ambiguous}}
+                        ^
+
+"Test_name.c", line 464: warning: a ref-qualifier is nonstandard in this mode
+    operator C() &;
+                 ^
+
+"Test_name.c", line 465: warning: a ref-qualifier is nonstandard in this mode
+    operator C() const & = delete; // expected-note {{marked deleted here}}
+                       ^
+
+"Test_name.c", line 486: error: an rvalue reference cannot be bound to an lvalue
+    return w; // cxx98_20-error {{cannot bind to lvalue of type}}
+           ^
+
+"Test_name.c", line 505: error: an rvalue reference cannot be bound to an lvalue
+    return x; // cxx98_20-error {{cannot bind to lvalue of type}}
+           ^
+
+"Test_name.c", line 526: warning: a range-based "for" statement is nonstandard in this mode
+    for (auto x : range<T>())
+         ^
+
+"Test_name.c", line 526: warning: "auto" as a type specifier is nonstandard in this mode
+    for (auto x : range<T>())
+         ^
+
+"Test_name.c", line 535: warning: "auto" as a type specifier is nonstandard in this mode
+    auto x = X<T>().foo(); // expected-error {{no member named 'foo'}}
+    ^
+
+"Test_name.c", line 546: warning: alias declarations are a C++11 feature
+  using a2 = A2<int>;
+        ^
+
+"Test_name.c", line 499: error: an rvalue reference cannot be bound to an lvalue
+  template <class T> T &&test3(T &&x) { return x; } // cxx98_20-error {{cannot bind to lvalue of type}}
+                                               ^
+          detected during instantiation of "T &&test_simpler_implicit_move::test3(T &&) [with T=test_simpler_implicit_move::MoveOnly]" at line 501
+
+"Test_name.c", line 535: error: class "test_auto_variables::X<int>" has no member "foo"
+    auto x = X<T>().foo(); // expected-error {{no member named 'foo'}}
+                    ^
+          detected during instantiation of "test_auto_variables::X<T> test_auto_variables::test_dependent_invalid_decl<T>() [with T=int]" at line 538
+
+"Test_name.c", line 548: error: function "PR51708::f<b>() [with b=PR51708::a1]" returns incomplete type "PR51708::a1"
+  template <class b> b f() {
+                       ^
+          detected during instantiation of "b PR51708::f<b>() [with b=PR51708::a1]" at line 558
+
+"Test_name.c", line 552: error: incomplete type "PR51708::a1" is not allowed
+    b d;
+      ^
+          detected during instantiation of "b PR51708::f<b>() [with b=PR51708::a1]" at line 558
+
+"Test_name.c", line 548: error: function "PR51708::f<b>() [with b=PR51708::a2]" returns incomplete type "PR51708::a2" (aka "PR51708::A2<int>")
+  template <class b> b f() {
+                       ^
+          detected during instantiation of "b PR51708::f<b>() [with b=PR51708::a2]" at line 559
+
+"Test_name.c", line 552: error: incomplete type "PR51708::a2" (aka "PR51708::A2<int>") is not allowed
+    b d;
+      ^
+          detected during instantiation of "b PR51708::f<b>() [with b=PR51708::a2]" at line 559
+
+"Test_name.c", line 561: error: function "PR51708::g<b>() [with b=PR51708::a1]" returns incomplete type "PR51708::a1"
+  template <class b> b g() {
+                       ^
+          detected during instantiation of "b PR51708::g<b>() [with b=PR51708::a1]" at line 571
+
+"Test_name.c", line 565: error: incomplete type "PR51708::a1" is not allowed
+    b d __attribute__((aligned(1)));
+      ^
+          detected during instantiation of "b PR51708::g<b>() [with b=PR51708::a1]" at line 571
+
+"Test_name.c", line 561: error: function "PR51708::g<b>() [with b=PR51708::a2]" returns incomplete type "PR51708::a2" (aka "PR51708::A2<int>")
+  template <class b> b g() {
+                       ^
+          detected during instantiation of "b PR51708::g<b>() [with b=PR51708::a2]" at line 572
+
+"Test_name.c", line 565: error: incomplete type "PR51708::a2" (aka "PR51708::A2<int>") is not allowed
+    b d __attribute__((aligned(1)));
+      ^
+          detected during instantiation of "b PR51708::g<b>() [with b=PR51708::a2]" at line 572
+
+35 errors detected in the compilation of "Test_name.c".

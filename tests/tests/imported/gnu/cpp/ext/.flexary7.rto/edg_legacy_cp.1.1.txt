@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 13: error: a string literal cannot be used to initialize a flexible array member
+  FlexChar ac = {4, "abc"}; 
+                    ^
+
+"Test_name.c", line 26: error: a string literal cannot be used to initialize a flexible array member
+  FlexWchar awc = {3, L"\x61\x62"}; 
+                      ^
+
+"Test_name.c", line 56: error: a string literal cannot be used to initialize a flexible array member
+  FlexT< char>  atc = {4, "abc"}; 
+                          ^
+
+3 errors detected in the compilation of "Test_name.c".

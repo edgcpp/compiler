@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+    typedef typename T::X Y __attribute__((vector_size(8)));	// { dg-error "is not a class, struct" }
+                                           ^
+
+"Test_name.c", line 8: error: a class or namespace qualified name is required
+    typedef typename T::X Y __attribute__((vector_size(8)));	// { dg-error "is not a class, struct" }
+                     ^
+          detected during instantiation of class "A<T> [with T=int]" at line 11
+
+"Test_name.c", line 8: error: global-scope qualifier (leading "::") is not allowed
+    typedef typename T::X Y __attribute__((vector_size(8)));	// { dg-error "is not a class, struct" }
+                      ^
+          detected during instantiation of class "A<T> [with T=int]" at line 11
+
+"Test_name.c", line 8: error: expected a ";"
+    typedef typename T::X Y __attribute__((vector_size(8)));	// { dg-error "is not a class, struct" }
+                          ^
+          detected during instantiation of class "A<T> [with T=int]" at line 11
+
+3 errors detected in the compilation of "Test_name.c".

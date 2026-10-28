@@ -1,0 +1,32 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 16: error: the deduced placeholder type "int" failed the type constraint
+    C<Ts...> auto x = 0; // { dg-error "constraints" }
+    ^
+"Test_name.c", line 13: note: atomic constraint failed substitution
+  concept C = is_same<Ts...>::value; // { dg-error "wrong number" }
+              ^
+
+"Test_name.c", line 25: warning: variable "x" was declared but never referenced
+    C<Ts..., int> auto x = 0; // { dg-error "constraints" }
+                       ^
+
+"Test_name.c", line 32: error: the deduced placeholder type "int" failed the type constraint
+    C<char> auto x = 0; // { dg-error "constraints" }
+    ^
+"Test_name.c", line 13: note: atomic constraint evaluates to false
+  concept C = is_same<Ts...>::value; // { dg-error "wrong number" }
+              ^
+
+"Test_name.c", line 33: warning: variable "y" was declared but never referenced
+    C<int> auto y = 0;
+                ^
+
+"Test_name.c", line 25: error: the deduced placeholder type "int" failed the type constraint
+    C<Ts..., int> auto x = 0; // { dg-error "constraints" }
+    ^
+"Test_name.c", line 13: note: atomic constraint failed substitution
+  concept C = is_same<Ts...>::value; // { dg-error "wrong number" }
+              ^
+          detected during instantiation of "void g<Ts...>() [with Ts=<int>]" at line 29
+
+3 errors detected in the compilation of "Test_name.c".

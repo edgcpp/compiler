@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-scalar2.C", line 7: error: invalid types ("bool" and "int") for built-in operator<=>
+    { true <=> 1; }
+           ^
+
+"./cpp2a/spaceship-scalar2.C", line 8: error: invalid types ("int [2]" and "int [2]") for built-in operator<=>
+    { int a[2]; a <=> a; }
+                  ^
+
+"./cpp2a/spaceship-scalar2.C", line 9: error: invalid narrowing conversion from "int" to "unsigned int": constant value does not fit in destination type
+    { -1 <=> 1U; }
+      ^
+
+"./cpp2a/spaceship-scalar2.C", line 10: error: comparison between two different enum types ("A" and "B")
+    { enum A { a }; enum B { b }; a <=> b; }
+                                    ^
+
+"./cpp2a/spaceship-scalar2.C", line 10: warning: expression has no effect
+    { enum A { a }; enum B { b }; a <=> b; }
+                                  ^
+
+5 errors detected in the compilation of "Test_name.c".

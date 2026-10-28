@@ -1,0 +1,42 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  __GIMPLE(ssa,startwith("dom")) bar(int cond, int val)
+           ^
+
+"Test_name.c", line 7: error: expected a ")"
+  __GIMPLE(ssa,startwith("dom")) bar(int cond, int val)
+                        ^
+
+"Test_name.c", line 7: error: expected a declaration
+  __GIMPLE(ssa,startwith("dom")) bar(int cond, int val)
+                                 ^
+
+"Test_name.c", line 31: warning: parsing restarts here after previous syntax error
+    i_3 = __PHI (__BB4: i_1, __BB2: 0);
+                                      ^
+
+"Test_name.c", line 7: warning: standard requires that parameter "ssa" be given a type by a subsequent declaration ("int" assumed)
+  __GIMPLE(ssa,startwith("dom")) bar(int cond, int val)
+           ^
+
+"Test_name.c", line 7: warning: standard requires that parameter "startwith" be given a type by a subsequent declaration ("int" assumed)
+  __GIMPLE(ssa,startwith("dom")) bar(int cond, int val)
+               ^
+
+"Test_name.c", line 32: error: expected a "{"
+    return i_3;
+    ^
+
+"Test_name.c", line 38: warning: parsing restarts here after previous syntax error
+  }
+  ^
+
+"Test_name.c", line 38: warning: missing return statement at end of non-void function "__GIMPLE"
+  }
+  ^
+
+"Test_name.c", line 42: warning: function "bar" declared implicitly
+    if (bar (1, 1) != 1)
+        ^
+
+3 errors detected in the compilation of "Test_name.c".

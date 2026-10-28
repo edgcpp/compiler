@@ -1,0 +1,10 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 10: remark: function "X::X(double, double)" cannot be inlined
+  		X(double dd1, double dd2) : d1(dd1), d2(dd2) { }
+  		^
+
+"Test_name.c", line 13: error: no suitable constructor exists to convert from "double" to "X"
+  	X x = (X)0.0;
+  	         ^
+
+1 error detected in the compilation of "Test_name.c".

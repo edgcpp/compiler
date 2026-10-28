@@ -1,0 +1,46 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef float V __attribute__((vector_size (4 * sizeof (float))));
+                                 ^
+
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef int VI __attribute__((vector_size (4 * sizeof (float))));
+                                ^
+
+"Test_name.c", line 11: warning: unknown attribute "noipa"
+  __attribute__((noipa)) V
+                 ^
+
+"Test_name.c", line 16: warning: function "__builtin_shuffle" declared implicitly
+    return __builtin_shuffle (b, a, (VI) { 0, 5, 2, 3 });
+           ^
+
+"Test_name.c", line 16: warning: excess initializers are ignored
+    return __builtin_shuffle (b, a, (VI) { 0, 5, 2, 3 });
+                                              ^
+
+"Test_name.c", line 22: warning: excess initializers are ignored
+    V a = (V) { 1.0f, 2.0f, 3.0f, 4.0f };
+                      ^
+
+"Test_name.c", line 23: warning: excess initializers are ignored
+    V b = (V) { 8.0f, 9.0f, 10.0f, 11.0f };
+                      ^
+
+"Test_name.c", line 25: error: expression must have pointer-to-object type but it has type "V" (aka "float")
+    if (c[0] != 9.0f || c[1] != -7.0f || c[2] != 13.0f || c[3] != 15.0f)
+        ^
+
+"Test_name.c", line 25: error: expression must have pointer-to-object type but it has type "V" (aka "float")
+    if (c[0] != 9.0f || c[1] != -7.0f || c[2] != 13.0f || c[3] != 15.0f)
+                        ^
+
+"Test_name.c", line 25: error: expression must have pointer-to-object type but it has type "V" (aka "float")
+    if (c[0] != 9.0f || c[1] != -7.0f || c[2] != 13.0f || c[3] != 15.0f)
+                                         ^
+
+"Test_name.c", line 25: error: expression must have pointer-to-object type but it has type "V" (aka "float")
+    if (c[0] != 9.0f || c[1] != -7.0f || c[2] != 13.0f || c[3] != 15.0f)
+                                                          ^
+
+4 errors detected in the compilation of "Test_name.c".

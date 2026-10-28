@@ -1,0 +1,39 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 8: remark: function "A::A()" cannot be inlined
+   A() { }
+   ^
+
+"Test_name.c", line 14: error: "AA::AA()" provides no initializer for:
+            const member "AA::t"
+            const member "AA::i"
+    AA() { }
+         ^
+
+"Test_name.c", line 19: error: no default constructor exists for class "B"
+  } b;
+    ^
+
+"Test_name.c", line 24: error: "BB::BB(const BB &)" provides no initializer for:
+            const member "BB::i"
+            const member "BB::t"
+    BB(const BB&) { }
+                  ^
+
+"Test_name.c", line 25: error: no default constructor exists for class "BB"
+  } bb;
+    ^
+
+"Test_name.c", line 29: remark: class "CC" defines no constructor to initialize the following:
+            const member "CC::t"
+            const member "CC::i"
+  struct CC {
+         ^
+
+"Test_name.c", line 29: error: implicitly generated constructor for class "CC" cannot initialize:
+            const member "CC::t"
+            const member "CC::i"
+  struct CC {
+         ^
+          detected during implicit generation of "CC::CC()" at line 33
+
+5 errors detected in the compilation of "Test_name.c".

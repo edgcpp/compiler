@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 11: warning: variable "a" was declared but never referenced
+    void push_back(const T&) { int a[sizeof(T) ? -1: -1]; } // expected-error {{array with a negative size}}
+                                   ^
+
+"Test_name.c", line 11: error: the size of an array must be greater than zero
+    void push_back(const T&) { int a[sizeof(T) ? -1: -1]; } // expected-error {{array with a negative size}}
+                                     ^
+          detected during:
+            instantiation of "void vector<T>::push_back(const T &) [with T=S<void *>]" at line 21
+            instantiation of "void ExprEngine::registerCheck(CHECKER *) [with CHECKER=RetainReleaseChecker]" at line 28
+
+"Test_name.c", line 48: error: a nonstatic member reference must be relative to a specific object
+          a = 0; // expected-error {{'test1::O::a' is not a member of class 'test1::O::B<int>'}}
+          ^
+          detected during instantiation of "void test1::O::B<T>::f() [with T=int]" at line 52
+
+"Test_name.c", line 59: error: name followed by "::" must be a class or namespace name
+        T::bar(); // expected-error {{type 'int' cannot}}
+        ^
+          detected during:
+            instantiation of "void test2::A<T>::foo() [with T=int]" at line 65
+            instantiation of "void test2::B<T>::foo(test2::A<T>) [with T=int]" at line 69
+
+"Test_name.c", line 76: error: a nonstatic member reference must be relative to a specific object
+    template<typename T> void f() { S<T>::value; } // expected-error {{invalid use of non-static data member 'value'}}
+                                          ^
+          detected during instantiation of "void PR14124::f<T>() [with T=int]" at line 77
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef unsigned char __attribute__((__vector_size__ (8))) v64u8;
+                                       ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef unsigned char __attribute__((__vector_size__ (64))) v512u8;
+                                       ^
+
+"Test_name.c", line 15: warning: unknown attribute "__noipa__"
+  v64u8 __attribute__((__noipa__)) foo0 (u8 ax, v512u8 au, u64 ay)
+                       ^
+
+"Test_name.c", line 32: warning: excess initializers are ignored
+    v64u8 x = foo0 (2, (v512u8) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     ^
+
+"Test_name.c", line 37: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (x[i] != (i ? 0 : 0xff))
+            ^
+
+1 error detected in the compilation of "Test_name.c".

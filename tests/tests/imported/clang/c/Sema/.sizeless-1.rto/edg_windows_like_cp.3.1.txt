@@ -1,0 +1,347 @@
+fe_only -DTEST_NUMBER=3 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 --strict_gnu Test_name.c
+"Test_name.c", line 7: error: identifier "__SVInt8_t" is undefined
+  typedef __SVInt8_t svint8_t;
+          ^
+
+"Test_name.c", line 8: error: identifier "__SVInt16_t" is undefined
+  typedef __SVInt16_t svint16_t;
+          ^
+
+"Test_name.c", line 13: error: identifier "__thread" is undefined
+  __thread svint8_t thread_int8; // expected-error {{non-local variable with sizeless type 'svint8_t'}}
+  ^
+
+"Test_name.c", line 13: error: "svint8_t" has already been declared in the current scope
+  __thread svint8_t thread_int8; // expected-error {{non-local variable with sizeless type 'svint8_t'}}
+           ^
+
+"Test_name.c", line 13: error: expected a ";"
+  __thread svint8_t thread_int8; // expected-error {{non-local variable with sizeless type 'svint8_t'}}
+                    ^
+
+"Test_name.c", line 14: error: variable "svint8_t" is not a type name
+  svint8_t *global_int8_ptr;
+  ^
+
+"Test_name.c", line 15: error: variable "svint8_t" is not a type name
+  extern svint8_t *extern_int8_ptr;
+         ^
+
+"Test_name.c", line 16: error: variable "svint8_t" is not a type name
+  static svint8_t *static_int8_ptr;
+         ^
+
+"Test_name.c", line 18: error: variable "svint8_t" is not a type name
+  typedef svint8_t int8_typedef;
+          ^
+
+"Test_name.c", line 19: error: variable "svint8_t" is not a type name
+  typedef svint8_t *int8_ptr_typedef;
+          ^
+
+"Test_name.c", line 25: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  int alignof_int8 = _Alignof(svint8_t);                // expected-error {{invalid application of 'alignof' to sizeless type 'svint8_t'}}
+                             ^
+
+"Test_name.c", line 26: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  int alignof_int8_var = _Alignof(*extern_int8_ptr);    // expected-error {{invalid application of 'alignof' to sizeless type 'svint8_t'}} expected-warning {{GNU extension}}
+                                 ^
+
+"Test_name.c", line 27: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+  int alignof_int8_var_ptr = _Alignof(extern_int8_ptr); // expected-warning {{GNU extension}}
+                                     ^
+
+"Test_name.c", line 29: warning: identifier-list parameters may only be used in a function definition
+  void pass_int8(svint8_t); // expected-note {{passing argument to parameter here}}
+       ^
+
+"Test_name.c", line 31: error: variable "svint8_t" is not a type name
+  svint8_t return_int8(void);
+  ^
+
+"Test_name.c", line 33: error: variable "svint8_t" is not a type name
+  typedef svint8_t vec_int8_a __attribute__((vector_size(64)));    // expected-error {{invalid vector element type}}
+          ^
+
+"Test_name.c", line 34: error: variable "svint8_t" is not a type name
+  typedef svint8_t vec_int8_b __attribute__((ext_vector_type(4))); // expected-error {{invalid vector element type}}
+          ^
+
+"Test_name.c", line 38: warning: identifier-list parameters may only be used in a function definition
+  void __attribute__((overloadable)) overf(svint8_t);
+                                     ^
+
+"Test_name.c", line 38: error: the "overloadable" attribute requires a prototyped function declaration
+  void __attribute__((overloadable)) overf(svint8_t);
+                      ^
+
+"Test_name.c", line 41: warning: identifier-list parameters may only be used in a function definition
+  void __attribute__((overloadable)) overf8(svint8_t); // expected-note + {{not viable}}
+                                     ^
+
+"Test_name.c", line 41: error: the "overloadable" attribute requires a prototyped function declaration
+  void __attribute__((overloadable)) overf8(svint8_t); // expected-note + {{not viable}}
+                      ^
+
+"Test_name.c", line 51: error: expected a ";"
+    svint8_t unused_int8; // expected-warning {{unused}}
+             ^
+
+"Test_name.c", line 56: error: variable "svint8_t" is not a type name
+  typedef svint8_t sizeless_array[1]; // expected-error {{array has sizeless element type}}
+          ^
+
+"Test_name.c", line 59: error: variable "svint8_t" is not a type name
+    static svint8_t static_int8; // expected-error {{non-local variable with sizeless type 'svint8_t'}}
+           ^
+
+"Test_name.c", line 61: error: expected a ";"
+    svint8_t local_int8;
+             ^
+
+"Test_name.c", line 65: error: expected a ";"
+    svint8_t __attribute__((aligned)) aligned_int8_1;    // expected-error {{'aligned' attribute cannot be applied to sizeless type 'svint8_t'}}
+             ^
+
+"Test_name.c", line 66: error: expected a ";"
+    svint8_t __attribute__((aligned(4))) aligned_int8_2; // expected-error {{'aligned' attribute cannot be applied to sizeless type 'svint8_t'}}
+             ^
+
+"Test_name.c", line 67: error: expected a ";"
+    svint8_t _Alignas(int) aligned_int8_3;               // expected-error {{'_Alignas' attribute cannot be applied to sizeless type 'svint8_t'}}
+             ^
+
+"Test_name.c", line 73: error: identifier "local_int8" is undefined
+    _Static_assert(__atomic_is_lock_free(1, &local_int8) == __atomic_is_lock_free(1, incomplete_ptr), "");
+                                             ^
+
+"Test_name.c", line 73: error: expression must have a constant value
+    _Static_assert(__atomic_is_lock_free(1, &local_int8) == __atomic_is_lock_free(1, incomplete_ptr), "");
+                                                                                     ^
+"Test_name.c", line 73: note: the value of variable "incomplete_ptr" (declared at line 54) cannot be used as a constant
+    _Static_assert(__atomic_is_lock_free(1, &local_int8) == __atomic_is_lock_free(1, incomplete_ptr), "");
+                                                                                     ^
+
+"Test_name.c", line 74: error: expression must have a constant value
+    _Static_assert(__atomic_is_lock_free(2, &local_int8) == __atomic_is_lock_free(2, incomplete_ptr), ""); // expected-error {{static assertion expression is not an integral constant expression}}
+                                                                                     ^
+"Test_name.c", line 74: note: the value of variable "incomplete_ptr" (declared at line 54) cannot be used as a constant
+    _Static_assert(__atomic_is_lock_free(2, &local_int8) == __atomic_is_lock_free(2, incomplete_ptr), ""); // expected-error {{static assertion expression is not an integral constant expression}}
+                                                                                     ^
+
+"Test_name.c", line 75: error: expression must have a constant value
+    _Static_assert(__atomic_always_lock_free(1, &local_int8) == __atomic_always_lock_free(1, incomplete_ptr), "");
+                                                                                             ^
+"Test_name.c", line 75: note: the value of variable "incomplete_ptr" (declared at line 54) cannot be used as a constant
+    _Static_assert(__atomic_always_lock_free(1, &local_int8) == __atomic_always_lock_free(1, incomplete_ptr), "");
+                                                                                             ^
+
+"Test_name.c", line 83: warning: expression has no effect
+    0, local_int8; // expected-warning {{left operand of comma operator has no effect}} expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 85: error: expected a ";"
+    svint8_t init_int8 = local_int8;
+             ^
+
+"Test_name.c", line 86: error: expected a ";"
+    svint8_t bad_init_int8 = for; // expected-error {{expected expression}}
+             ^
+
+"Test_name.c", line 89: error: expected a ";"
+    svint8_t empty_brace_init_int8 = {};
+             ^
+
+"Test_name.c", line 90: error: expected a ";"
+    svint8_t brace_init_int8 = {local_int8};
+             ^
+
+"Test_name.c", line 91: error: expected a ";"
+    svint8_t bad_brace_init_int8_1 = {local_int8, 0};    // expected-warning {{excess elements in initializer for indivisible sizeless type 'svint8_t'}}
+             ^
+
+"Test_name.c", line 92: error: expected a ";"
+    svint8_t bad_brace_init_int8_2 = {0};                // expected-error {{incompatible type 'int'}}
+             ^
+
+"Test_name.c", line 93: error: expected a ";"
+    svint8_t bad_brace_init_int8_3 = {local_int16};      // expected-error {{incompatible type 'svint16_t'}}
+             ^
+
+"Test_name.c", line 94: error: expected a ";"
+    svint8_t bad_brace_init_int8_4 = {[0] = local_int8}; // expected-error {{initialization of non-aggregate type 'svint8_t' (aka '__SVInt8_t') with a designated initializer list}}
+             ^
+
+"Test_name.c", line 95: error: expected a ";"
+    svint8_t bad_brace_init_int8_5 = {{local_int8}};     // expected-warning {{too many braces around initializer}}
+             ^
+
+"Test_name.c", line 96: error: expected a ";"
+    svint8_t bad_brace_init_int8_6 = {{local_int8, 0}};  // expected-warning {{too many braces around initializer}}
+             ^
+
+"Test_name.c", line 98: error: variable "svint8_t" is not a type name
+    const svint8_t const_int8 = local_int8; // expected-note {{declared const here}}
+          ^
+
+"Test_name.c", line 99: error: variable "svint8_t" is not a type name
+    const svint8_t uninit_const_int8;       // expected-warning {{default initialization of an object of type 'const svint8_t' (aka 'const __SVInt8_t') leaves the object uninitialized}};
+          ^
+
+"Test_name.c", line 99: warning: const variable "uninit_const_int8" requires an initializer
+    const svint8_t uninit_const_int8;       // expected-warning {{default initialization of an object of type 'const svint8_t' (aka 'const __SVInt8_t') leaves the object uninitialized}};
+                                    ^
+
+"Test_name.c", line 101: error: variable "svint8_t" is not a type name
+    volatile svint8_t volatile_int8;
+             ^
+
+"Test_name.c", line 103: error: variable "svint8_t" is not a type name
+    const volatile svint8_t const_volatile_int8 = local_int8; // expected-note {{declared const here}}
+                   ^
+
+"Test_name.c", line 104: error: variable "svint8_t" is not a type name
+    const volatile svint8_t uninit_const_volatile_int8;       // expected-warning {{default initialization of an object of type 'const volatile svint8_t' (aka 'const volatile __SVInt8_t') leaves the object uninitialized}}
+                   ^
+
+"Test_name.c", line 104: warning: const variable "uninit_const_volatile_int8" requires an initializer
+    const volatile svint8_t uninit_const_volatile_int8;       // expected-warning {{default initialization of an object of type 'const volatile svint8_t' (aka 'const volatile __SVInt8_t') leaves the object uninitialized}}
+                                                      ^
+
+"Test_name.c", line 106: error: variable "svint8_t" is not a type name
+    _Atomic svint8_t atomic_int8;      // expected-error {{_Atomic cannot be applied to sizeless type 'svint8_t'}}
+            ^
+
+"Test_name.c", line 107: error: variable "svint8_t" is not a type name
+    __restrict svint8_t restrict_int8; // expected-error {{requires a pointer or reference}}
+               ^
+
+"Test_name.c", line 109: error: expected a ";"
+    svint8_t array_int8[1];          // expected-error {{array has sizeless element type}}
+             ^
+
+"Test_name.c", line 110: error: expected a ";"
+    svint8_t array_int8_init[] = {}; // expected-error {{array has sizeless element type}}
+             ^
+
+"Test_name.c", line 112: error: identifier "init_int8" is undefined
+    _Bool test_int8 = init_int8; // expected-error {{initializing '_Bool' with an expression of incompatible type 'svint8_t'}}
+                      ^
+
+"Test_name.c", line 122: error: expected a ";"
+    local_int8 = (svint8_t)local_int8;
+                           ^
+
+"Test_name.c", line 123: warning: explicit type is missing ("int" assumed)
+    local_int8 = (const svint8_t)local_int8;
+                  ^
+
+"Test_name.c", line 123: error: expected a ")"
+    local_int8 = (const svint8_t)local_int8;
+                        ^
+
+"Test_name.c", line 123: warning: type qualifier is meaningless on cast type
+    local_int8 = (const svint8_t)local_int8;
+                  ^
+
+"Test_name.c", line 124: error: expected a ";"
+    local_int8 = (svint8_t)local_int16; // expected-error {{used type 'svint8_t' (aka '__SVInt8_t') where arithmetic or pointer type is required}}
+                           ^
+
+"Test_name.c", line 125: error: expected a ";"
+    local_int8 = (svint8_t)0;           // expected-error {{used type 'svint8_t' (aka '__SVInt8_t') where arithmetic or pointer type is required}}
+                           ^
+
+"Test_name.c", line 186: warning: expression has no effect
+    global_int8_ptr + 1;               // expected-error {{arithmetic on a pointer to sizeless type}}
+    ^
+
+"Test_name.c", line 187: warning: expression has no effect
+    global_int8_ptr - 1;               // expected-error {{arithmetic on a pointer to sizeless type}}
+    ^
+
+"Test_name.c", line 190: warning: expression has no effect
+    global_int8_ptr - global_int8_ptr; // expected-error {{arithmetic on a pointer to sizeless type}}
+    ^
+
+"Test_name.c", line 69: warning: variable "aligned_int" was declared but never referenced
+    int _Alignas(svint8_t) aligned_int; // expected-error {{invalid application of '_Alignas' to sizeless type 'svint8_t'}}
+                           ^
+
+"Test_name.c", line 88: warning: variable "empty_brace_init_int" was declared but never referenced
+    int empty_brace_init_int = {};
+        ^
+
+"Test_name.c", line 215: error: variable "svint8_t" is not a type name
+  int vararg_receiver(int count, svint8_t first, ...) {
+                                 ^
+
+"Test_name.c", line 219: error: variable "svint8_t" is not a type name
+    __builtin_va_arg(va, svint8_t);
+                         ^
+
+"Test_name.c", line 226: error: variable "svint8_t" is not a type name
+    svint8_t f2;     // expected-error {{field has sizeless type 'svint8_t'}}
+    ^
+
+"Test_name.c", line 227: error: variable "svint8_t" is not a type name
+    svint8_t f3 : 2; // expected-error {{field has sizeless type 'svint8_t'}}
+    ^
+
+"Test_name.c", line 228: warning: this declaration has no storage class or type specifier
+    svint8_t : 3;    // expected-error {{field has sizeless type 'svint8_t'}}
+    ^
+
+"Test_name.c", line 233: error: variable "svint8_t" is not a type name
+    svint8_t f2;     // expected-error {{field has sizeless type 'svint8_t'}}
+    ^
+
+"Test_name.c", line 234: error: variable "svint8_t" is not a type name
+    svint8_t f3 : 2; // expected-error {{field has sizeless type 'svint8_t'}}
+    ^
+
+"Test_name.c", line 235: warning: this declaration has no storage class or type specifier
+    svint8_t : 3;    // expected-error {{field has sizeless type 'svint8_t'}}
+    ^
+
+"Test_name.c", line 240: error: expected a ";"
+    svint8_t local_int8;
+             ^
+
+"Test_name.c", line 243: error: identifier "local_int8" is undefined
+    int a1[_Generic(local_int8, svint8_t : 1, svint16_t : 2, default : 3) == 1 ? 1 : -1];
+                    ^
+
+"Test_name.c", line 243: error: variable "svint8_t" is not a type name
+    int a1[_Generic(local_int8, svint8_t : 1, svint16_t : 2, default : 3) == 1 ? 1 : -1];
+                                ^
+
+"Test_name.c", line 244: error: variable "svint8_t" is not a type name
+    int a2[_Generic(local_int16, svint8_t : 1, svint16_t : 2, default : 3) == 2 ? 1 : -1];
+                                 ^
+
+"Test_name.c", line 245: error: variable "svint8_t" is not a type name
+    int a3[_Generic(0, svint8_t : 1, svint16_t : 2, default : 3) == 3 ? 1 : -1];
+                       ^
+
+"Test_name.c", line 246: error: variable "svint8_t" is not a type name
+    (void)_Generic(0, svint8_t : 1, svint8_t : 2, default : 3); // expected-error {{type 'svint8_t' (aka '__SVInt8_t') in generic association compatible with previously specified type 'svint8_t'}} expected-note {{compatible type}}
+                      ^
+
+"Test_name.c", line 246: error: variable "svint8_t" is not a type name
+    (void)_Generic(0, svint8_t : 1, svint8_t : 2, default : 3); // expected-error {{type 'svint8_t' (aka '__SVInt8_t') in generic association compatible with previously specified type 'svint8_t'}} expected-note {{compatible type}}
+                                    ^
+
+"Test_name.c", line 250: error: expected a ";"
+    svint8_t local_int8;
+             ^
+
+"Test_name.c", line 252: error: expected a ";"
+    (void)(svint8_t){local_int8};
+                    ^
+
+"Test_name.c", line 16: warning: variable "static_int8_ptr" was declared but never referenced
+  static svint8_t *static_int8_ptr;
+                   ^
+
+65 errors detected in the compilation of "Test_name.c".

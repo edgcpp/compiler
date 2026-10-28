@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 12: error: a namespace name is not allowed
+  void f() { A = 0; } // expected-error {{unexpected namespace name 'A': expected expression}}
+             ^
+
+"Test_name.c", line 13: error: "A" has already been declared in the current scope
+  int A; // expected-error {{redefinition of 'A' as different kind of symbol}}
+      ^
+
+"Test_name.c", line 14: error: "A" has already been declared in the current scope
+  class A; // expected-error {{redefinition of 'A' as different kind of symbol}}
+        ^
+
+"Test_name.c", line 23: error: "C" has already been declared in the current scope
+  namespace C {} // expected-error {{redefinition of 'C' as different kind of symbol}}
+            ^
+
+"Test_name.c", line 49: error: no operator "=" matches these operands
+            operand types are: B = int
+          x = 0; // expected-error {{no viable overloaded '='}}
+            ^
+"Test_name.c", line 16: note: function "B::operator=(B &&)" does not match because argument #1 does not match parameter
+  class B {}; // expected-note {{previous definition is here}}
+        ^
+"Test_name.c", line 16: note: function "B::operator=(const B &)" does not match because argument #1 does not match parameter
+  class B {}; // expected-note {{previous definition is here}}
+        ^
+
+"Test_name.c", line 67: error: "B" has already been declared in the current scope
+  namespace B {} // expected-error {{redefinition of 'B' as different kind of symbol}}
+            ^
+
+"Test_name.c", line 78: error: namespace "foo" has no member "X"
+  static foo::X  test2;  // typo: expected-error {{no type named 'X' in}}
+              ^
+
+"Test_name.c", line 97: warning: missing return statement at end of non-void function "PR6620::numeric::f(T &, U &)"
+      { numeric::greater(l, r); }
+                                ^
+
+"Test_name.c", line 76: warning: variable "test1" was declared but never referenced
+  static foo::x  test1;  // ok
+                 ^
+
+7 errors detected in the compilation of "Test_name.c".

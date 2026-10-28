@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 15: error: identifier "__transaction_relaxed" is undefined
+    __transaction_relaxed { candy(); }
+    ^
+
+"Test_name.c", line 15: error: expected a ";"
+    __transaction_relaxed { candy(); }
+                          ^
+
+"Test_name.c", line 8: warning: function "candy" was declared but never referenced
+  static void candy() { candycane(); }
+              ^
+
+"Test_name.c", line 11: warning: function "tootsie_roll" was declared but never referenced
+  static void tootsie_roll () { bark(); }
+              ^
+
+2 errors detected in the compilation of "Test_name.c".

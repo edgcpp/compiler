@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 16: error: template constraint not satisfied
+    static_assert(is_same<char, char>::value); // expected-error {{constraints not satisfied for class template 'is_same' [with T = char, U = char]}}
+                                    ^
+"Test_name.c", line 7: note: substitution of arguments "<char, char>" for requires-clause failed
+    template<typename T, typename U> requires (sizeof(T) >= 4) // expected-note {{because 'sizeof(char) >= 4' (1 >= 4) evaluated to false}}
+                                              ^
+"Test_name.c", line 7: note: atomic constraint evaluates to false
+    template<typename T, typename U> requires (sizeof(T) >= 4) // expected-note {{because 'sizeof(char) >= 4' (1 >= 4) evaluated to false}}
+                                                         ^
+
+"Test_name.c", line 19: error: a class or namespace qualified name is required
+    struct A { using type = typename T::type; }; // expected-error{{type 'int *' cannot be used prior to '::' because it has no members}}
+                                     ^
+          detected during instantiation of class "class_templates::A<T> [with T=int *]" at line 31
+
+"Test_name.c", line 19: error: expected a ";"
+    struct A { using type = typename T::type; }; // expected-error{{type 'int *' cannot be used prior to '::' because it has no members}}
+                                      ^
+          detected during instantiation of class "class_templates::A<T> [with T=int *]" at line 31
+
+"Test_name.c", line 45: error: class template "class_templates::B" has already been defined (previous definition at line 40)
+    struct B<T*> {};
+           ^
+
+"Test_name.c", line 68: error: a class or namespace qualified name is required
+    struct A { using type = typename T::type; }; // expected-error{{type 'int *' cannot be used prior to '::' because it has no members}}
+                                     ^
+          detected during instantiation of class "variable_templates::A<T> [with T=int *]" at line 80
+
+"Test_name.c", line 68: error: expected a ";"
+    struct A { using type = typename T::type; }; // expected-error{{type 'int *' cannot be used prior to '::' because it has no members}}
+                                      ^
+          detected during instantiation of class "variable_templates::A<T> [with T=int *]" at line 80
+
+"Test_name.c", line 80: error: static assertion failed
+    static_assert(v1<int**>); // expected-note{{while checking constraint satisfaction for variable template partial specialization 'v1<int *>' required here}}
+    ^
+
+7 errors detected in the compilation of "Test_name.c".

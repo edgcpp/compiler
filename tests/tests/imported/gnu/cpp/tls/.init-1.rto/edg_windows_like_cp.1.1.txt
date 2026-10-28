@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: error: this declaration has no storage class or type specifier
+  __thread int i = 42;
+  ^
+
+"Test_name.c", line 6: error: expected a ";"
+  __thread int i = 42;
+           ^
+
+"Test_name.c", line 9: error: this declaration has no storage class or type specifier
+  __thread int *p = &j;
+  ^
+
+"Test_name.c", line 9: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread int *p = &j;
+  ^
+
+"Test_name.c", line 9: error: expected a ";"
+  __thread int *p = &j;
+           ^
+
+"Test_name.c", line 12: error: identifier "i" is undefined
+  int *q = &i;
+            ^
+
+"Test_name.c", line 15: error: this declaration has no storage class or type specifier
+  __thread const int k = 42;
+  ^
+
+"Test_name.c", line 15: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread const int k = 42;
+  ^
+
+"Test_name.c", line 15: error: expected a ";"
+  __thread const int k = 42;
+           ^
+
+"Test_name.c", line 16: error: this declaration has no storage class or type specifier
+  __thread const int l = k;
+  ^
+
+"Test_name.c", line 16: error: variable "__thread" has already been defined (previous definition at line 6)
+  __thread const int l = k;
+  ^
+
+"Test_name.c", line 16: error: expected a ";"
+  __thread const int l = k;
+           ^
+
+"Test_name.c", line 8: warning: variable "j" was declared but never referenced
+  static int j;
+             ^
+
+12 errors detected in the compilation of "Test_name.c".

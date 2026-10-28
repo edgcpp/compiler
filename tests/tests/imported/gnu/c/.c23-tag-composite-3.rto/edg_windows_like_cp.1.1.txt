@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 15: error: taking the address of a bit field is not allowed
+  	&x.x;					/* { dg-error "bit-field" } */
+  	^
+
+"Test_name.c", line 23: error: taking the address of a bit field is not allowed
+  	&x.x;					/* { dg-error "bit-field" } */
+  	^
+
+"Test_name.c", line 26: error: this declaration of struct "foo" does not declare the same type as the declaration at line 9
+  struct foo { int x:2; };			/* { dg-error "redefinition" } */
+         ^
+
+"Test_name.c", line 34: error: taking the address of a bit field is not allowed
+  	&a.x;					/* { dg-error "bit-field" } */
+  	^
+
+"Test_name.c", line 40: warning: operand types are incompatible ("struct bar *" and "struct bar *")
+  	(1 ? &a : &c);				/* { dg-error "mismatch" } */
+  	        ^
+
+"Test_name.c", line 40: warning: expression has no effect
+  	(1 ? &a : &c);				/* { dg-error "mismatch" } */
+  	^
+
+"Test_name.c", line 43: error: this declaration of struct "bar" does not declare the same type as the declaration at line 28
+  struct bar { unsigned int x:3; } d;		/* { dg-error "redefinition" } */
+         ^
+
+"Test_name.c", line 49: error: this declaration of struct "bas" does not declare the same type as the declaration at line 47
+  struct bas { int x:2; int :1; int z:1; };	/* { dg-error "redefinition" } */
+         ^
+
+6 errors detected in the compilation of "Test_name.c".

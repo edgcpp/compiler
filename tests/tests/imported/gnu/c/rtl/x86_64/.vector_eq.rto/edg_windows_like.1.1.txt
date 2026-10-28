@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size(16)));
+                                  ^
+
+"Test_name.c", line 8: error: identifier "startwith" is undefined
+  v4si __RTL (startwith ("vregs")) foo (void)
+              ^
+
+"Test_name.c", line 8: error: expected a ")"
+  v4si __RTL (startwith ("vregs")) foo (void)
+                         ^
+
+"Test_name.c", line 8: error: expected a "{"
+  v4si __RTL (startwith ("vregs")) foo (void)
+                                   ^
+
+"Test_name.c", line 10: error: identifier "function" is undefined
+  (function "foo"
+   ^
+
+"Test_name.c", line 10: error: expected a ")"
+  (function "foo"
+            ^
+
+"Test_name.c", line 14: warning: parsing restarts here after previous syntax error
+        (cnote 1 [bb 2] NOTE_INSN_BASIC_BLOCK)
+                                             ^
+
+"Test_name.c", line 15: error: identifier "cnote" is undefined
+        (cnote 2 NOTE_INSN_FUNCTION_BEG)
+         ^
+
+"Test_name.c", line 15: error: expected a ")"
+        (cnote 2 NOTE_INSN_FUNCTION_BEG)
+               ^
+
+"Test_name.c", line 16: error: identifier "cinsn" is undefined
+        (cinsn 3 (set (reg:V4SI <0>) (const_vector:V4SI [(const_int 0) (const_int 0) (const_int 0) (const_int 0)])))
+         ^
+
+"Test_name.c", line 16: error: expected a ")"
+        (cinsn 3 (set (reg:V4SI <0>) (const_vector:V4SI [(const_int 0) (const_int 0) (const_int 0) (const_int 0)])))
+               ^
+
+"Test_name.c", line 17: error: expected a ")"
+        (cinsn 5 (set (reg:V4SI <2>)
+               ^
+
+"Test_name.c", line 19: error: expected a ")"
+        (cinsn 6 (set (reg:V4SI <3>) (reg:V4SI <2>)))
+               ^
+
+"Test_name.c", line 20: error: expected a ")"
+        (cinsn 7 (set (reg:V4SI xmm0) (reg:V4SI <3>)))
+               ^
+
+"Test_name.c", line 21: error: identifier "edge" is undefined
+        (edge-to exit (flags "FALLTHRU"))
+         ^
+
+"Test_name.c", line 21: error: identifier "to" is undefined
+        (edge-to exit (flags "FALLTHRU"))
+              ^
+
+"Test_name.c", line 21: error: expected a ")"
+        (edge-to exit (flags "FALLTHRU"))
+                 ^
+
+"Test_name.c", line 22: error: expected a ";"
+      )
+      ^
+
+"Test_name.c", line 26: warning: parsing restarts here after previous syntax error
+  }
+  ^
+
+"Test_name.c", line 26: warning: missing return statement at end of non-void function "__RTL"
+  }
+  ^
+
+16 errors detected in the compilation of "Test_name.c".

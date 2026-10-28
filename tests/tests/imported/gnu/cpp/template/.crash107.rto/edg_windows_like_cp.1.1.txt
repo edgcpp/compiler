@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 12: error: identifier "X" is undefined
+          X = y*rhs.z() - z*rhs.y(); // { dg-error "not declared|no member" }
+          ^
+
+"Test_name.c", line 13: warning: missing return statement at end of non-void function "Vec<FP_>::operator^="
+      }
+      ^
+
+"Test_name.c", line 18: error: too many initializer values
+  Vec<double> v(3,4,12); // { dg-error "no matching|too many initializers" }
+                  ^
+
+"Test_name.c", line 18: error: no suitable constructor exists to convert from "int" to "Vec<double>"
+  Vec<double> v(3,4,12); // { dg-error "no matching|too many initializers" }
+                ^
+
+"Test_name.c", line 19: error: too many initializer values
+  Vec<double> V(12,4,3);  // { dg-error "no matching|too many initializers" }
+                   ^
+
+"Test_name.c", line 19: error: no suitable constructor exists to convert from "int" to "Vec<double>"
+  Vec<double> V(12,4,3);  // { dg-error "no matching|too many initializers" }
+                ^
+
+"Test_name.c", line 12: error: class "Vec<double>" has no member "z"
+          X = y*rhs.z() - z*rhs.y(); // { dg-error "not declared|no member" }
+                    ^
+          detected during:
+            instantiation of "Vec<FP_> &Vec<FP_>::operator^=(Vec<FP_> &) [with FP_=double]" at line 15
+            instantiation of "Vec<FP_> &Vec<FP_>::operator^(Vec<FP_> &) [with FP_=double]" at line 20
+
+"Test_name.c", line 12: error: class "Vec<double>" has no member "y"
+          X = y*rhs.z() - z*rhs.y(); // { dg-error "not declared|no member" }
+                                ^
+          detected during:
+            instantiation of "Vec<FP_> &Vec<FP_>::operator^=(Vec<FP_> &) [with FP_=double]" at line 15
+            instantiation of "Vec<FP_> &Vec<FP_>::operator^(Vec<FP_> &) [with FP_=double]" at line 20
+
+7 errors detected in the compilation of "Test_name.c".

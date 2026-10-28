@@ -1,0 +1,550 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 22: error: a value of type "int" cannot be used to initialize an entity of type "A"
+    A a1 { 5 };		// { dg-error "invalid conversion from 'int' to 'A'" }
+           ^
+
+"Test_name.c", line 23: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b1 { 7 };		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 25: error: no suitable conversion function from "T" to "D" exists
+    D d1 { D(t) };	// { dg-error "invalid cast from type 'T' to type 'D'" }
+             ^
+
+"Test_name.c", line 26: error: no suitable conversion function from "T" to "D" exists
+    D d2 { t };		// { dg-error "cannot convert 'T' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 28: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    D d3 { 9 };		// { dg-error "cannot convert 'int' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 29: error: a value of type "long" cannot be used to initialize an entity of type "D"
+    D d4 { l };		// { dg-error "cannot convert 'long int' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 31: error: a value of type "A" cannot be used to initialize an entity of type "D"
+    D d6 { G };		// { dg-error "cannot convert 'A' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 32: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    E e1 { 5 };		// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 33: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    E e2 { -1 };		// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 35: error: invalid narrowing conversion from "double" to "E"
+    E e3 { 5.0 };		// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 37: error: invalid narrowing conversion from "double" to "E"
+    E e4 { 5.2 };		// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 39: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b2 = { 7 };		// { dg-error "invalid conversion from 'int' to 'B'" }
+             ^
+
+"Test_name.c", line 40: error: a value of type "int" cannot be used to initialize an entity of type "C"
+    C c2 = { C { 8 } };	// { dg-error "cannot convert 'int' to 'C' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 42: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    D *d7 = new D { 9 };	// { dg-error "cannot convert \[^\n\r]* to 'D' in initialization" "" { target c++14_down } }
+                    ^
+
+"Test_name.c", line 43: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    E *e5 = new E { -4 };	// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                    ^
+
+"Test_name.c", line 45: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    bar ({ 10 });		// { dg-error "cannot convert \[^\n\r]* to 'E'" }
+           ^
+
+"Test_name.c", line 46: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    bar (E { 9 });	// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+             ^
+
+"Test_name.c", line 47: warning: extra braces are nonstandard
+    V v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+             ^
+
+"Test_name.c", line 47: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    V v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+               ^
+
+"Test_name.c", line 48: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    V v2 = { E { 12 } };	// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 49: warning: invalid narrowing conversion from "double" to "E"
+    V v3 = { E { 5.0 } };	// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 49: error: a value of type "double" cannot be used to initialize an entity of type "E"
+    V v3 = { E { 5.0 } };	// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 51: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    V v4 = { 13 };	// { dg-error "cannot convert 'int' to 'E' in initialization" }
+             ^
+
+"Test_name.c", line 52: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    if (B b3 { 5 })	// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+               ^
+
+"Test_name.c", line 54: error: invalid narrowing conversion from "double" to "B"
+    if (B b4 { 4.0 })	// { dg-error "cannot convert 'double' to 'B' in initialization" "" { target c++14_down } }
+               ^
+
+"Test_name.c", line 56: error: a value of type "long" cannot be used to initialize an entity of type "C"
+    C c3 { 8L };		// { dg-error "cannot convert 'long int' to 'C' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 57: error: a value of type "short" cannot be used to initialize an entity of type "B"
+    B b4 {short (c + 5)};	// { dg-error "invalid conversion from 'short int' to 'B'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 58: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b5 {c + 5};		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 60: error: a value of type "long long" cannot be used to initialize an entity of type "C"
+    C c4 { ll };		// { dg-error "cannot convert 'long long int' to 'C' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 62: error: a value of type "short" cannot be used to initialize an entity of type "C"
+    C c5 {short (c + 5)};	// { dg-error "cannot convert 'short int' to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 63: error: a value of type "int" cannot be used to initialize an entity of type "C"
+    C c6 {c + 5};		// { dg-error "cannot convert 'int' to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 30: warning: variable "d5" was declared but never referenced
+    D d5 { D(l) };
+      ^
+
+"Test_name.c", line 68: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    U () : e { 5 } {}	// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+               ^
+
+"Test_name.c", line 69: warning: invalid narrowing conversion from "double" to "E"
+    U (int) : e { 5.0 } {}// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                  ^
+
+"Test_name.c", line 69: error: a value of type "double" cannot be used to initialize an entity of type "E"
+    U (int) : e { 5.0 } {}// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                  ^
+
+"Test_name.c", line 71: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    U (float) : e({ 6 }) {}// { dg-error "list-initializer for non-class type must not be parenthesized" }
+                    ^
+
+"Test_name.c", line 78: error: a value of type "int" cannot be used to initialize an entity of type "A"
+    A a { 5 };		// { dg-error "invalid conversion from 'int' to 'A'" }
+          ^
+
+"Test_name.c", line 79: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b { 6 };		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 80: warning: invalid narrowing conversion from "float" to "C"
+    C c { 3.0f };		// { dg-error "cannot convert \[^\n\r]* to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 80: error: a value of type "float" cannot be used to initialize an entity of type "C"
+    C c { 3.0f };		// { dg-error "cannot convert \[^\n\r]* to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 82: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    D d = { 7 };		// { dg-error "cannot convert \[^\n\r]* to 'D' in initialization" }
+            ^
+
+"Test_name.c", line 89: error: a value of type "int" cannot be used to initialize an entity of type "A"
+    A a1 { 5 };		// { dg-error "invalid conversion from 'int' to 'A'" }
+           ^
+
+"Test_name.c", line 90: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b1 { 7 };		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 93: error: no suitable conversion function from "T" to "D" exists
+    D d2 { t };		// { dg-error "cannot convert 'T' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 95: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    D d3 { 9 };		// { dg-error "cannot convert 'int' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 96: error: a value of type "long" cannot be used to initialize an entity of type "D"
+    D d4 { l };		// { dg-error "cannot convert 'long int' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 98: error: a value of type "A" cannot be used to initialize an entity of type "D"
+    D d6 { G };		// { dg-error "cannot convert 'A' to 'D' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 99: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    E e1 { 5 };		// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 100: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    E e2 { -1 };		// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 102: error: invalid narrowing conversion from "double" to "E"
+    E e3 { 5.0 };		// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 104: error: invalid narrowing conversion from "double" to "E"
+    E e4 { 5.2 };		// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 106: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b2 = { 7 };		// { dg-error "invalid conversion from 'int' to 'B'" }
+             ^
+
+"Test_name.c", line 107: error: a value of type "int" cannot be used to initialize an entity of type "C"
+    C c2 = { C { 8 } };	// { dg-error "cannot convert 'int' to 'C' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 108: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    D *d7 = new D { 9 };	// { dg-error "cannot convert \[^\n\r]* to 'D' in initialization" "" { target c++14_down } }
+                    ^
+
+"Test_name.c", line 109: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    E *e5 = new E { -4 };	// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                    ^
+
+"Test_name.c", line 111: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    bar ({ 10 });		// { dg-error "cannot convert \[^\n\r]* to 'E'" }
+           ^
+
+"Test_name.c", line 112: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    bar (E { 9 });	// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+             ^
+
+"Test_name.c", line 114: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    V v2 = { E { 12 } };	// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 115: warning: invalid narrowing conversion from "double" to "E"
+    V v3 = { E { 5.0 } };	// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 115: error: a value of type "double" cannot be used to initialize an entity of type "E"
+    V v3 = { E { 5.0 } };	// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+
+"Test_name.c", line 118: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    if (B b3 { 5 })	// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+               ^
+
+"Test_name.c", line 120: error: invalid narrowing conversion from "double" to "B"
+    if (B b4 { 4.0 })	// { dg-error "cannot convert 'double' to 'B' in initialization" "" { target c++14_down } }
+               ^
+
+"Test_name.c", line 122: error: a value of type "long" cannot be used to initialize an entity of type "C"
+    C c3 { 8L };		// { dg-error "cannot convert 'long int' to 'C' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 123: error: a value of type "short" cannot be used to initialize an entity of type "B"
+    B b4 {short (c + 5)};	// { dg-error "invalid conversion from 'short int' to 'B'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 124: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b5 {c + 5};		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 126: error: a value of type "long long" cannot be used to initialize an entity of type "C"
+    C c4 { ll };		// { dg-error "cannot convert 'long long int' to 'C' in initialization" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 128: error: a value of type "short" cannot be used to initialize an entity of type "C"
+    C c5 {short (c + 5)};	// { dg-error "cannot convert 'short int' to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 129: error: a value of type "int" cannot be used to initialize an entity of type "C"
+    C c6 {c + 5};		// { dg-error "cannot convert 'int' to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 92: warning: variable "d1" was declared but never referenced
+    D d1 { D(t) };	// { dg-error "invalid cast from type 'T' to type 'D'" }
+      ^
+
+"Test_name.c", line 97: warning: variable "d5" was declared but never referenced
+    D d5 { D(l) };
+      ^
+
+"Test_name.c", line 113: warning: variable "v1" was declared but never referenced
+    V v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+      ^
+
+"Test_name.c", line 117: warning: variable "v4" was declared but never referenced
+    V v4 = { 13 };	// { dg-error "cannot convert 'int' to 'E' in initialization" }
+      ^
+
+"Test_name.c", line 135: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    U2 () : e { 5 } {}	// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                ^
+
+"Test_name.c", line 136: warning: invalid narrowing conversion from "double" to "E"
+    U2 (int) : e { 5.0 } {}// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                   ^
+
+"Test_name.c", line 136: error: a value of type "double" cannot be used to initialize an entity of type "E"
+    U2 (int) : e { 5.0 } {}// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                   ^
+
+"Test_name.c", line 138: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    U2 (float) : e({ 6 }) {}
+                     ^
+
+"Test_name.c", line 145: error: a value of type "int" cannot be used to initialize an entity of type "A"
+    A a { 5 };		// { dg-error "invalid conversion from 'int' to 'A'" "" { target *-*-* } }
+          ^
+
+"Test_name.c", line 146: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    B b { 6 };		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 147: warning: invalid narrowing conversion from "float" to "C"
+    C c { 3.0f };		// { dg-error "cannot convert \[^\n\r]* to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 147: error: a value of type "float" cannot be used to initialize an entity of type "C"
+    C c { 3.0f };		// { dg-error "cannot convert \[^\n\r]* to 'C' in initialization" "" { target c++14_down } }
+          ^
+
+"Test_name.c", line 149: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    D d = { 7 };		// { dg-error "cannot convert \[^\n\r]* to 'D' in initialization" "" { target *-*-* } }
+            ^
+
+"Test_name.c", line 180: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    bar3 (E { 9 });	// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+              ^
+
+"Test_name.c", line 213: error: a value of type "int" cannot be used to initialize an entity of type "A"
+    H a { 5 };		// { dg-error "invalid conversion from 'int' to 'A'" "" { target *-*-* } }
+          ^
+          detected during:
+            implicit generation of "W3<H, I, J, K>::W3() [with H=A, I=B, J=C, K=D]" at line 230
+            instantiation of class "W3<H, I, J, K> [with H=A, I=B, J=C, K=D]" at line 230
+
+"Test_name.c", line 214: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    I b { 6 };		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+          ^
+          detected during:
+            implicit generation of "W3<H, I, J, K>::W3() [with H=A, I=B, J=C, K=D]" at line 230
+            instantiation of class "W3<H, I, J, K> [with H=A, I=B, J=C, K=D]" at line 230
+
+"Test_name.c", line 215: warning: invalid narrowing conversion from "float" to "C"
+    J c { 3.0f };		// { dg-error "cannot convert \[^\n\r]* to 'C' in initialization" "" { target c++14_down } }
+          ^
+          detected during:
+            implicit generation of "W3<H, I, J, K>::W3() [with H=A, I=B, J=C, K=D]" at line 230
+            instantiation of class "W3<H, I, J, K> [with H=A, I=B, J=C, K=D]" at line 230
+
+"Test_name.c", line 215: error: a value of type "float" cannot be used to initialize an entity of type "C"
+    J c { 3.0f };		// { dg-error "cannot convert \[^\n\r]* to 'C' in initialization" "" { target c++14_down } }
+          ^
+          detected during:
+            implicit generation of "W3<H, I, J, K>::W3() [with H=A, I=B, J=C, K=D]" at line 230
+            instantiation of class "W3<H, I, J, K> [with H=A, I=B, J=C, K=D]" at line 230
+
+"Test_name.c", line 217: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    K d = { 7 };		// { dg-error "cannot convert \[^\n\r]* to 'D' in initialization" "" { target *-*-* } }
+            ^
+          detected during:
+            implicit generation of "W3<H, I, J, K>::W3() [with H=A, I=B, J=C, K=D]" at line 230
+            instantiation of class "W3<H, I, J, K> [with H=A, I=B, J=C, K=D]" at line 230
+
+"Test_name.c", line 92: error: no suitable conversion function from "T" to "D" exists
+    D d1 { D(t) };	// { dg-error "invalid cast from type 'T' to type 'D'" }
+             ^
+          detected during instantiation of "void foo2<N>() [with N=0]" at line 223
+
+"Test_name.c", line 113: warning: extra braces are nonstandard
+    V v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+             ^
+          detected during instantiation of "void foo2<N>() [with N=0]" at line 223
+
+"Test_name.c", line 113: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    V v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+               ^
+          detected during instantiation of "void foo2<N>() [with N=0]" at line 223
+
+"Test_name.c", line 117: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    V v4 = { 13 };	// { dg-error "cannot convert 'int' to 'E' in initialization" }
+             ^
+          detected during instantiation of "void foo2<N>() [with N=0]" at line 223
+
+"Test_name.c", line 157: error: a value of type "int" cannot be used to initialize an entity of type "A"
+    H a1 { 5 };		// { dg-error "invalid conversion from 'int' to 'A'" }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 158: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    I b1 { 7 };		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 160: error: no suitable conversion function from "T" to "D" exists
+    K d1 { K(t) };	// { dg-error "invalid cast from type 'T' to type 'D'" }
+             ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 161: error: no suitable conversion function from "T" to "D" exists
+    K d2 { t };		// { dg-error "cannot convert 'T' to 'D' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 163: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    K d3 { 9 };		// { dg-error "cannot convert 'int' to 'D' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 164: error: a value of type "long" cannot be used to initialize an entity of type "D"
+    K d4 { l };		// { dg-error "cannot convert 'long int' to 'D' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 166: error: a value of type "A" cannot be used to initialize an entity of type "D"
+    K d6 { G };		// { dg-error "cannot convert 'A' to 'D' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 167: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    L e1 { 5 };		// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 168: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    L e2 { -1 };		// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 170: error: invalid narrowing conversion from "double" to "E"
+    L e3 { 5.0 };		// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 172: error: invalid narrowing conversion from "double" to "E"
+    L e4 { 5.2 };		// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 174: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    I b2 = { 7 };		// { dg-error "invalid conversion from 'int' to 'B'" }
+             ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 175: error: a value of type "int" cannot be used to initialize an entity of type "C"
+    J c2 = { J { 8 } };	// { dg-error "cannot convert 'int' to 'C' in initialization" "" { target c++14_down } }
+                 ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 176: error: a value of type "int" cannot be used to initialize an entity of type "D"
+    K *d7 = new K { 9 };	// { dg-error "cannot convert \[^\n\r]* to 'D' in initialization" "" { target c++14_down } }
+                    ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 177: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    L *e5 = new L { -4 };	// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                    ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 179: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    bar3 ({ 10 });	// { dg-error "cannot convert \[^\n\r]* to 'E'" }
+            ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 181: warning: extra braces are nonstandard
+    M v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+             ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 181: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    M v1 = { { 11 } };	// { dg-error "cannot convert '<brace-enclosed initializer list>' to 'E' in initialization" }
+               ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 182: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    M v2 = { L { 12 } };	// { dg-error "cannot convert 'int' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 183: warning: invalid narrowing conversion from "double" to "E"
+    M v3 = { L { 5.0 } };	// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 183: error: a value of type "double" cannot be used to initialize an entity of type "E"
+    M v3 = { L { 5.0 } };	// { dg-error "cannot convert 'double' to 'E' in initialization" "" { target c++14_down } }
+                 ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 185: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    M v4 = { 13 };	// { dg-error "cannot convert 'int' to 'E' in initialization" }
+             ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 186: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    if (I b3 { 5 })	// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+               ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 188: error: invalid narrowing conversion from "double" to "B"
+    if (I b4 { 4.0 })	// { dg-error "cannot convert 'double' to 'B' in initialization" "" { target c++14_down } }
+               ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 190: error: a value of type "long" cannot be used to initialize an entity of type "C"
+    J c3 { 8L };		// { dg-error "cannot convert 'long int' to 'C' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 191: error: a value of type "short" cannot be used to initialize an entity of type "B"
+    I b4 {short (c + 5)};	// { dg-error "invalid conversion from 'short int' to 'B'" "" { target c++14_down } }
+          ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 192: error: a value of type "int" cannot be used to initialize an entity of type "B"
+    I b5 {c + 5};		// { dg-error "invalid conversion from 'int' to 'B'" "" { target c++14_down } }
+          ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 194: error: a value of type "long long" cannot be used to initialize an entity of type "C"
+    J c4 { ll };		// { dg-error "cannot convert 'long long int' to 'C' in initialization" "" { target c++14_down } }
+           ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 196: error: a value of type "short" cannot be used to initialize an entity of type "C"
+    J c5 {short (c + 5)};	// { dg-error "cannot convert 'short int' to 'C' in initialization" "" { target c++14_down } }
+          ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 197: error: a value of type "int" cannot be used to initialize an entity of type "C"
+    J c6 {c + 5};		// { dg-error "cannot convert 'int' to 'C' in initialization" "" { target c++14_down } }
+          ^
+          detected during instantiation of "void foo3<H,I,J,K,L,M>() [with H=A, I=B, J=C, K=D, L=E, M=V]" at line 227
+
+"Test_name.c", line 203: error: a value of type "int" cannot be used to initialize an entity of type "E"
+    U3 () : e { 5 } {}	// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                ^
+          detected during instantiation of "U3<L>::U3() [with L=E]" at line 228
+
+"Test_name.c", line 204: warning: invalid narrowing conversion from "double" to "E"
+    U3 (int) : e { 5.0 } {}// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                   ^
+          detected during instantiation of "U3<L>::U3(int) [with L=E]" at line 229
+
+"Test_name.c", line 204: error: a value of type "double" cannot be used to initialize an entity of type "E"
+    U3 (int) : e { 5.0 } {}// { dg-error "cannot convert \[^\n\r]* to 'E' in initialization" "" { target c++14_down } }
+                   ^
+          detected during instantiation of "U3<L>::U3(int) [with L=E]" at line 229
+
+107 errors detected in the compilation of "Test_name.c".

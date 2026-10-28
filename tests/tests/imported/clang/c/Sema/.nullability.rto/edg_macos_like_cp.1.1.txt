@@ -1,0 +1,410 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 22: warning: type qualifier specified more than once
+  typedef int * _Nonnull _Nonnull redundant_1; // expected-warning{{duplicate nullability specifier '_Nonnull'}}
+                         ^
+
+"Test_name.c", line 25: error: at most one of the qualifiers _Nullable, _Nonnull, and _Null_unspecified can modify a type
+  typedef int * _Nonnull _Nullable conflicting_1; // expected-error{{nullability specifier '_Nullable' conflicts with existing specifier '_Nonnull'}}
+                         ^
+
+"Test_name.c", line 26: error: at most one of the qualifiers _Nullable, _Nonnull, and _Null_unspecified can modify a type
+  typedef int * _Null_unspecified _Nonnull conflicting_2; // expected-error{{nullability specifier '_Nonnull' conflicts with existing specifier '_Null_unspecified'}}
+                                  ^
+
+"Test_name.c", line 34: error: at most one of the qualifiers _Nullable, _Nonnull, and _Null_unspecified can modify a type
+  typedef nonnull_int_ptr _Nullable conflicting_2; // expected-error{{nullability specifier '_Nullable' conflicts with existing specifier '_Nonnull'}}
+                          ^
+
+"Test_name.c", line 38: error: at most one of the qualifiers _Nullable, _Nonnull, and _Null_unspecified can modify a type
+  typedef nonnull_int_ptr_typedef _Nullable conflicting_2; // expected-error{{nullability specifier '_Nullable' conflicts with existing specifier '_Nonnull'}}
+                                  ^
+
+"Test_name.c", line 41: error: at most one of the qualifiers _Nullable, _Nonnull, and _Null_unspecified can modify a type
+  typedef nonnull_int_ptr_typedef_typedef _Null_unspecified conflicting_3; // expected-error{{nullability specifier '_Null_unspecified' conflicts with existing specifier '_Nonnull'}}
+                                          ^
+
+"Test_name.c", line 45: error: expected an identifier
+  typedef int (^ _Nonnull block_type_1)(int, int);
+               ^
+
+"Test_name.c", line 48: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef int _Nonnull int_type_1; // expected-error{{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int'}}
+              ^
+
+"Test_name.c", line 52: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int * nonnull_int_ptr_2;
+          ^
+
+"Test_name.c", line 53: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef int _Nullable * nullable_int_ptr_2;
+              ^
+
+"Test_name.c", line 54: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int (* function_pointer_type_2)(int, int);
+          ^
+
+"Test_name.c", line 55: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int (^ block_type_2)(int, int);
+          ^
+
+"Test_name.c", line 55: error: expected an identifier
+  typedef _Nonnull int (^ block_type_2)(int, int);
+                        ^
+
+"Test_name.c", line 56: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int * * _Nullable nonnull_int_ptr_ptr_1;
+          ^
+
+"Test_name.c", line 57: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int *(^ block_type_3)(int, int);
+          ^
+
+"Test_name.c", line 57: error: expected an identifier
+  typedef _Nonnull int *(^ block_type_3)(int, int);
+                         ^
+
+"Test_name.c", line 58: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int *(* function_pointer_type_3)(int, int);
+          ^
+
+"Test_name.c", line 59: error: expected an identifier
+  typedef _Nonnull int_ptr (^ block_type_4)(int, int);
+                            ^
+
+"Test_name.c", line 59: warning: type qualifier on return type is meaningless
+  typedef _Nonnull int_ptr (^ block_type_4)(int, int);
+          ^
+
+"Test_name.c", line 60: warning: type qualifier on return type is meaningless
+  typedef _Nonnull int_ptr (* function_pointer_type_4)(int, int);
+          ^
+
+"Test_name.c", line 63: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void acceptFunctionPtr(_Nonnull int *(*)(void));
+                         ^
+
+"Test_name.c", line 64: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void acceptBlockPtr(_Nonnull int *(^)(void));
+                      ^
+
+"Test_name.c", line 64: error: expected a ")"
+  void acceptBlockPtr(_Nonnull int *(^)(void));
+                                     ^
+
+"Test_name.c", line 68: warning: a value of type "function_pointer_type_3" (aka "int *(*)(int, int)") cannot be assigned to an entity of type "float *"
+    fp = (function_pointer_type_3)0; // expected-error{{from 'function_pointer_type_3' (aka 'int * _Nonnull (*)(int, int)')}}
+       ^
+
+"Test_name.c", line 69: error: identifier "block_type_3" is undefined
+    fp = (block_type_3)0; // expected-error{{from incompatible type 'block_type_3' (aka 'int * _Nonnull (^)(int, int)')}}
+          ^
+
+"Test_name.c", line 69: error: expected a ";"
+    fp = (block_type_3)0; // expected-error{{from incompatible type 'block_type_3' (aka 'int * _Nonnull (^)(int, int)')}}
+                       ^
+
+"Test_name.c", line 70: warning: a value of type "function_pointer_type_4" (aka "_Nonnull int_ptr (*)(int, int)") cannot be assigned to an entity of type "float *"
+    fp = (function_pointer_type_4)0; // expected-error{{from 'function_pointer_type_4' (aka 'int * _Nonnull (*)(int, int)')}}
+       ^
+
+"Test_name.c", line 71: warning: a value of type "function_pointer_type_5" (aka "void (*)(_Nonnull int_ptr)") cannot be assigned to an entity of type "float *"
+    fp = (function_pointer_type_5)0; // expected-error{{from 'function_pointer_type_5' (aka 'void (*)(int * _Nonnull)')}}
+       ^
+
+"Test_name.c", line 72: error: identifier "block_type_4" is undefined
+    fp = (block_type_4)0; // expected-error{{from incompatible type 'block_type_4' (aka 'int_ptr  _Nonnull (^)(int, int)')}}
+          ^
+
+"Test_name.c", line 72: error: expected a ";"
+    fp = (block_type_4)0; // expected-error{{from incompatible type 'block_type_4' (aka 'int_ptr  _Nonnull (^)(int, int)')}}
+                       ^
+
+"Test_name.c", line 67: warning: variable "fp" was set but never used
+    float *fp;
+           ^
+
+"Test_name.c", line 79: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  typedef _Nonnull int * _Nullable *  conflict_int_ptr_ptr_2; // expected-error{{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int'}}
+          ^
+
+"Test_name.c", line 91: warning: a value of type "float *" cannot be used to initialize an entity of type "int *_Nonnull"
+  int * _Nonnull ip_1 = &f; // expected-error{{incompatible pointer types initializing 'int * _Nonnull' with an expression of type 'float *'}}
+                        ^
+
+"Test_name.c", line 96: warning: a value of type "int *" cannot be used to initialize an entity of type "float *"
+    float *fptr = iptr; // expected-error{{incompatible pointer types initializing 'float *' with an expression of type 'int * _Nonnull'}}
+                  ^
+
+"Test_name.c", line 96: warning: variable "iptr" is used before its value is set
+    float *fptr = iptr; // expected-error{{incompatible pointer types initializing 'float *' with an expression of type 'int * _Nonnull'}}
+                  ^
+
+"Test_name.c", line 99: warning: a value of type "int **" cannot be used to initialize an entity of type "float **"
+    float **fptrptr = iptrptr; // expected-error{{incompatible pointer types initializing 'float **' with an expression of type 'int ** _Nonnull'}}
+                      ^
+
+"Test_name.c", line 99: warning: variable "iptrptr" is used before its value is set
+    float **fptrptr = iptrptr; // expected-error{{incompatible pointer types initializing 'float **' with an expression of type 'int ** _Nonnull'}}
+                      ^
+
+"Test_name.c", line 102: warning: a value of type "int *_Nullable *" cannot be used to initialize an entity of type "float **"
+    float * *fptrptr2 = iptrptr2; // expected-error{{incompatible pointer types initializing 'float **' with an expression of type 'int * _Nullable * _Nonnull'}}
+                        ^
+
+"Test_name.c", line 102: warning: variable "iptrptr2" is used before its value is set
+    float * *fptrptr2 = iptrptr2; // expected-error{{incompatible pointer types initializing 'float **' with an expression of type 'int * _Nullable * _Nonnull'}}
+                        ^
+
+"Test_name.c", line 96: warning: variable "fptr" was declared but never referenced
+    float *fptr = iptr; // expected-error{{incompatible pointer types initializing 'float *' with an expression of type 'int * _Nonnull'}}
+           ^
+
+"Test_name.c", line 99: warning: variable "fptrptr" was declared but never referenced
+    float **fptrptr = iptrptr; // expected-error{{incompatible pointer types initializing 'float **' with an expression of type 'int ** _Nonnull'}}
+            ^
+
+"Test_name.c", line 102: warning: variable "fptrptr2" was declared but never referenced
+    float * *fptrptr2 = iptrptr2; // expected-error{{incompatible pointer types initializing 'float **' with an expression of type 'int * _Nullable * _Nonnull'}}
+             ^
+
+"Test_name.c", line 106: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void accepts_nonnull_1(_Nonnull int *ptr);
+                         ^
+
+"Test_name.c", line 107: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void (*accepts_nonnull_2)(_Nonnull int *ptr);
+                            ^
+
+"Test_name.c", line 108: error: expected an identifier
+  void (^accepts_nonnull_3)(_Nonnull int *ptr);
+        ^
+
+"Test_name.c", line 108: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void (^accepts_nonnull_3)(_Nonnull int *ptr);
+                            ^
+
+"Test_name.c", line 113: warning: function "accepts_nonnull_3" declared implicitly
+    accepts_nonnull_3(0); // expected-warning{{null passed to a callee that requires a non-null argument}}
+    ^
+
+"Test_name.c", line 117: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  _Nonnull int *returns_int_ptr(int x) {
+  ^
+
+"Test_name.c", line 122: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+    return (_Nonnull int *)0;
+            ^
+
+"Test_name.c", line 126: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void nullable_to_nonnull(_Nullable int *ptr) {
+                           ^
+
+"Test_name.c", line 128: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+    _Nonnull int *b = ptr; // expected-warning{{implicit conversion from nullable pointer 'int * _Nullable' to non-nullable pointer type 'int * _Nonnull'}}
+    ^
+
+"Test_name.c", line 130: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+    __auto_type _Nonnull c = ptr; // expected-warning{{implicit conversion from nullable pointer 'int * _Nullable' to non-nullable pointer type 'int * _Nullable _Nonnull'}}
+                ^
+
+"Test_name.c", line 127: warning: variable "a" was declared but never referenced
+    int *a = ptr; // okay
+         ^
+
+"Test_name.c", line 128: warning: variable "b" was set but never used
+    _Nonnull int *b = ptr; // expected-warning{{implicit conversion from nullable pointer 'int * _Nullable' to non-nullable pointer type 'int * _Nonnull'}}
+                  ^
+
+"Test_name.c", line 130: warning: variable "c" was declared but never referenced
+    __auto_type _Nonnull c = ptr; // expected-warning{{implicit conversion from nullable pointer 'int * _Nullable' to non-nullable pointer type 'int * _Nullable _Nonnull'}}
+                         ^
+
+"Test_name.c", line 143: warning: variable "nonnullP" is used before its value is set
+    p = c ? nonnullP : nonnullP;
+            ^
+
+"Test_name.c", line 144: warning: variable "nullableP" is used before its value is set
+    p = c ? nonnullP : nullableP; // expected-warning{{implicit conversion from nullable pointer 'int * _Nullable' to non-nullable pointer type 'int * _Nonnull'}}
+                       ^
+
+"Test_name.c", line 145: warning: variable "unspecifiedP" is used before its value is set
+    p = c ? nonnullP : unspecifiedP;
+                       ^
+
+"Test_name.c", line 146: warning: variable "noneP" is used before its value is set
+    p = c ? nonnullP : noneP;
+                       ^
+
+"Test_name.c", line 170: warning: variable "nonnullP2" is used before its value is set
+    p = c ? nonnullP2 : nonnullP2;
+            ^
+
+"Test_name.c", line 171: warning: variable "nullableP2" is used before its value is set
+    p = c ? nonnullP2 : nullableP2; // expected-warning{{implicit conversion from nullable pointer 'IntP _Nullable' (aka 'int *') to non-nullable pointer type 'int * _Nonnull'}}
+                        ^
+
+"Test_name.c", line 137: warning: variable "p" was set but never used
+    int * _Nonnull p;
+                   ^
+
+"Test_name.c", line 184: warning: variable "nonnullP" is used before its value is set
+    p = nonnullP ?: nonnullP;
+        ^
+
+"Test_name.c", line 185: warning: variable "nullableP" is used before its value is set
+    p = nonnullP ?: nullableP;
+                    ^
+
+"Test_name.c", line 186: warning: variable "unspecifiedP" is used before its value is set
+    p = nonnullP ?: unspecifiedP;
+                    ^
+
+"Test_name.c", line 187: warning: variable "noneP" is used before its value is set
+    p = nonnullP ?: noneP;
+                    ^
+
+"Test_name.c", line 178: warning: variable "p" was set but never used
+    int * _Nonnull p;
+                   ^
+
+"Test_name.c", line 216: warning: a value of type "void (*)(int *_Nonnull, void **_Nullable, void ***_Nullable, void *_Null_unspecified *_Nonnull *_Nullable, int *_Nonnull, int *_Nonnull, int *_Nonnull, int *_Nonnull, int *_Nonnull, void **_Nullable)" cannot be used to initialize an entity of type "int"
+    int produceAnErrorMessage = arrays; // expected-error {{incompatible pointer to integer conversion initializing 'int' with an expression of type 'void (int * _Nonnull, void ** _Nullable, void *** _Nullable, void * _Null_unspecified * _Nonnull * _Nullable, int * _Nonnull, int * _Nonnull, int * _Nonnull, int * _Nonnull, int * _Nonnull, void ** _Nullable)'}}
+                                ^
+
+"Test_name.c", line 216: warning: variable "produceAnErrorMessage" was declared but never referenced
+    int produceAnErrorMessage = arrays; // expected-error {{incompatible pointer to integer conversion initializing 'int' with an expression of type 'void (int * _Nonnull, void ** _Nullable, void *** _Nullable, void * _Null_unspecified * _Nonnull * _Nullable, int * _Nonnull, int * _Nonnull, int * _Nonnull, int * _Nonnull, int * _Nonnull, void ** _Nullable)'}}
+        ^
+
+"Test_name.c", line 219: error: a type qualifier is not allowed
+  int notInFunction[_Nullable 3]; // expected-error {{nullability specifier '_Nullable' cannot be applied to non-pointer type 'int[3]'}}
+                    ^
+
+"Test_name.c", line 221: error: a type qualifier is not allowed
+  void nestedArrays(int x[5][_Nonnull 1]) {} // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[1]'}}
+                             ^
+
+"Test_name.c", line 222: error: a type qualifier is not allowed
+  void nestedArrays2(int x[5][_Nonnull 1][2]) {} // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[1][2]'}}
+                              ^
+
+"Test_name.c", line 225: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void nullabilityOnBase(_Nonnull int x[1], // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int'}}
+                         ^
+
+"Test_name.c", line 226: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+                         int _Nonnull y[1]); // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int'}}
+                             ^
+
+"Test_name.c", line 229: error: a type qualifier is not allowed
+  typedef int BAD_INTS[_Nonnull 4]; // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[4]'}}
+                       ^
+
+"Test_name.c", line 231: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  void typedefTest(INTS _Nonnull x,
+                        ^
+
+"Test_name.c", line 232: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+                   _Nonnull INTS xx,
+                   ^
+
+"Test_name.c", line 233: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+                   INTS _Nonnull y[2], // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+                        ^
+
+"Test_name.c", line 236: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  INTS _Nonnull x; // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+       ^
+
+"Test_name.c", line 237: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+  _Nonnull INTS x; // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+  ^
+
+"Test_name.c", line 241: error: expected an identifier
+    void (^simple)(int [_Nonnull 2]) = ^(int x[_Nonnull 2]) {};
+          ^
+
+"Test_name.c", line 241: error: function "<error>" may not be initialized
+    void (^simple)(int [_Nonnull 2]) = ^(int x[_Nonnull 2]) {};
+                                     ^
+
+"Test_name.c", line 241: error: expected an expression
+    void (^simple)(int [_Nonnull 2]) = ^(int x[_Nonnull 2]) {};
+                                       ^
+
+"Test_name.c", line 242: warning: function "simple" declared implicitly
+    simple(0); // expected-warning {{null passed to a callee that requires a non-null argument}}
+    ^
+
+"Test_name.c", line 243: error: expected an identifier
+    void (^nested)(void *_Nullable x[_Nonnull 2]) = ^(void *_Nullable x[_Nonnull 2]) {};
+          ^
+
+"Test_name.c", line 243: error: function "<error>" may not be initialized
+    void (^nested)(void *_Nullable x[_Nonnull 2]) = ^(void *_Nullable x[_Nonnull 2]) {};
+                                                  ^
+
+"Test_name.c", line 243: error: expected an expression
+    void (^nested)(void *_Nullable x[_Nonnull 2]) = ^(void *_Nullable x[_Nonnull 2]) {};
+                                                    ^
+
+"Test_name.c", line 244: warning: function "nested" declared implicitly
+    nested(0); // expected-warning {{null passed to a callee that requires a non-null argument}}
+    ^
+
+"Test_name.c", line 245: error: expected an identifier
+    void (^nestedBad)(int x[2][_Nonnull 2]) = // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[2]'}}
+          ^
+
+"Test_name.c", line 245: error: a type qualifier is not allowed
+    void (^nestedBad)(int x[2][_Nonnull 2]) = // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[2]'}}
+                               ^
+
+"Test_name.c", line 245: error: function "<error>" may not be initialized
+    void (^nestedBad)(int x[2][_Nonnull 2]) = // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[2]'}}
+                                            ^
+
+"Test_name.c", line 246: error: expected an expression
+      ^(int x[2][_Nonnull 2]) {}; // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'int[2]'}}
+      ^
+
+"Test_name.c", line 248: error: expected an identifier
+    void (^withTypedef)(INTS _Nonnull) = ^(INTS _Nonnull x) {};
+          ^
+
+"Test_name.c", line 248: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+    void (^withTypedef)(INTS _Nonnull) = ^(INTS _Nonnull x) {};
+                             ^
+
+"Test_name.c", line 248: error: function "<error>" may not be initialized
+    void (^withTypedef)(INTS _Nonnull) = ^(INTS _Nonnull x) {};
+                                       ^
+
+"Test_name.c", line 248: error: expected an expression
+    void (^withTypedef)(INTS _Nonnull) = ^(INTS _Nonnull x) {};
+                                         ^
+
+"Test_name.c", line 249: warning: function "withTypedef" declared implicitly
+    withTypedef(0); // expected-warning {{null passed to a callee that requires a non-null argument}}
+    ^
+
+"Test_name.c", line 250: error: expected an identifier
+    void (^withTypedefBad)(INTS _Nonnull [2]) = // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+          ^
+
+"Test_name.c", line 250: warning: nullability qualifiers are only permitted on pointer and pointer-to-member types
+    void (^withTypedefBad)(INTS _Nonnull [2]) = // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+                                ^
+
+"Test_name.c", line 250: error: function "<error>" may not be initialized
+    void (^withTypedefBad)(INTS _Nonnull [2]) = // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+                                              ^
+
+"Test_name.c", line 251: error: expected an expression
+        ^(INTS _Nonnull x[2]) {}; // expected-error {{nullability specifier '_Nonnull' cannot be applied to non-pointer type 'INTS' (aka 'int[4]')}}
+        ^
+
+"Test_name.c", line 254: error: expected either a definition or a tag name
+  struct _Nullable NotCplusplusClass {}; // expected-error {{'_Nullable' attribute only applies to classes}}
+         ^
+
+36 errors detected in the compilation of "Test_name.c".

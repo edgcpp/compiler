@@ -1,0 +1,870 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --exceptions Test_name.c
+"Test_name.c", line 50: warning: variable in constexpr function does not have automatic storage duration
+    static const int m = n; // cxx14_20-note {{control flows through the definition of a static variable}} \
+                     ^
+
+"Test_name.c", line 55: warning: variable in constexpr function does not have automatic storage duration
+    thread_local const int m = n; // cxx14_20-note {{control flows through the definition of a thread_local variable}} \
+                           ^
+
+"Test_name.c", line 69: warning: statement is unreachable
+        return 2;
+        ^
+
+"Test_name.c", line 72: warning: missing return statement at end of non-void function "j"
+  } // expected-note 2{{control reached end of constexpr function}}
+  ^
+
+"Test_name.c", line 76: error: expression must have a constant value
+  static_assert(j(2), ""); // expected-error {{constant expression}} expected-note {{in call to 'j(2)'}}
+                ^
+"Test_name.c", line 72: note: missing return value
+  } // expected-note 2{{control reached end of constexpr function}}
+  ^
+
+"Test_name.c", line 98: error: expression must have a constant value
+  constexpr U u2{2}; // expected-error {{constant expression}} expected-note {{in call to 'U(2)'}}
+                ^
+"Test_name.c", line 72: note: missing return value
+  } // expected-note 2{{control reached end of constexpr function}}
+  ^
+"Test_name.c", line 94: note: called from:
+      if (j(n)) {} // expected-note {{in call to 'j(2)'}}
+           ^
+
+"Test_name.c", line 107: error: expression must have a constant value
+  static_assert(l(true), ""); // expected-error {{constant expression}} expected-note {{in call to 'l(true)'}}
+                ^
+"Test_name.c", line 103: note: expression cannot be interpreted
+      throw "invalid value for b!"; // expected-note {{subexpression not valid}}
+      ^
+
+"Test_name.c", line 125: error: expression must have a constant value
+  constexpr int swapped = maybe_htonl(false, 123); // expected-error {{constant expression}} expected-note {{in call}}
+                          ^
+"Test_name.c", line 122: note: conversion from "uchar *" (aka "unsigned char *") to "int *" is invalid in constant-expression evaluation
+    return *reinterpret_cast<int*>(arr); // expected-note {{reinterpret_cast is not allowed in a constant expression}}
+            ^
+
+"Test_name.c", line 148: error: expression must have a constant value
+    static_assert((set(a, 1), a) == 1, ""); // expected-error {{constant expression}} expected-note {{in call to 'set(a, 1)'}}
+                  ^
+"Test_name.c", line 141: note: attempt to modify const storage
+      const_cast<int&>(a) = b; // expected-note 3{{constant expression cannot modify an object that is visible outside that expression}}
+                          ^
+
+"Test_name.c", line 149: error: expression must have a constant value
+    static_assert((set(b, 1), b) == 1, ""); // expected-error {{constant expression}} expected-note {{in call to 'set(b, 1)'}}
+                  ^
+"Test_name.c", line 141: note: attempt to modify const storage
+      const_cast<int&>(a) = b; // expected-note 3{{constant expression cannot modify an object that is visible outside that expression}}
+                          ^
+
+"Test_name.c", line 150: error: expression must have a constant value
+    static_assert((set(c, 1), c) == 1, ""); // expected-error {{constant expression}} expected-note {{in call to 'set(c, 1)'}}
+                  ^
+"Test_name.c", line 141: note: attempt to access run-time storage
+      const_cast<int&>(a) = b; // expected-note 3{{constant expression cannot modify an object that is visible outside that expression}}
+                          ^
+
+"Test_name.c", line 154: error: expression must have a constant value
+    static_assert(wrap(c, 1) == 1, ""); // expected-error {{constant expression}} expected-note {{read of non-const variable 'c'}}
+                  ^
+"Test_name.c", line 154: note: the value of variable "assign::c" (declared at line 138) cannot be used as a constant
+    static_assert(wrap(c, 1) == 1, ""); // expected-error {{constant expression}} expected-note {{read of non-const variable 'c'}}
+                       ^
+
+"Test_name.c", line 187: error: expression must have a constant value
+    static_assert(!test1(101), ""); // expected-error {{constant expression}} expected-note {{in call to 'test1(101)'}}
+                  ^
+"Test_name.c", line 179: note: cannot access position 101 in array of 100 elements
+      reverse(stuff, stuff + n); // expected-note {{cannot refer to element 101 of array of 100 elements}}
+                           ^
+
+"Test_name.c", line 191: warning: subscript out of range
+      foo[10] = 'x'; // expected-warning {{past the end}}
+      ^
+
+"Test_name.c", line 190: warning: variable "foo" was set but never used
+      char foo[10] = { "z" }; // expected-note {{here}}
+           ^
+
+"Test_name.c", line 205: error: expression must have a constant value
+    static_assert(do_stuff(1234, 0) == 1, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 198: note: attempt to access storage one position past the end of an array of 1234 elements
+      arr[k1] = 5; // expected-note {{past-the-end}} expected-note {{cannot refer to element 1235}} expected-note {{cannot refer to element -1}}
+              ^
+
+"Test_name.c", line 206: error: expression must have a constant value
+    static_assert(do_stuff(1235, 0) == 1, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 198: note: cannot access position 1235 in array of 1234 elements
+      arr[k1] = 5; // expected-note {{past-the-end}} expected-note {{cannot refer to element 1235}} expected-note {{cannot refer to element -1}}
+         ^
+
+"Test_name.c", line 207: error: expression must have a constant value
+    static_assert(do_stuff(-1, 0) == 1, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 198: note: cannot access position -1 in array of 1234 elements
+      arr[k1] = 5; // expected-note {{past-the-end}} expected-note {{cannot refer to element 1235}} expected-note {{cannot refer to element -1}}
+         ^
+
+"Test_name.c", line 242: error: expression must have a constant value
+    static_assert(h(), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 230: note: attempt to access run-time storage
+      d.c.a.y = 3;
+              ^
+"Test_name.c", line 241: note: called from:
+    constexpr bool h() { f(d); return check(d); } // expected-note {{in call}}
+                          ^
+
+"Test_name.c", line 245: error: expression must have a constant value
+    static_assert(i(), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 230: note: access to uninitialized object
+      d.c.a.y = 3;
+           ^
+"Test_name.c", line 244: note: called from:
+    constexpr bool i() { D d(0); f(d); return check(d); } // expected-note {{in call}}
+                                  ^
+
+"Test_name.c", line 249: error: expression must have a constant value
+    static_assert(j(), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 247: note: invalid access to inactive member "subobject::A::x" of union (member "subobject::A::y" is active)
+    constexpr bool j() { D d; d.c.a.x = 3; return check(d); } // cxx14-note {{assignment to member 'x' of union with active member 'y'}}
+                                      ^
+
+"Test_name.c", line 256: error: expression must have a constant value
+    static_assert(bad(), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 255: note: attempt to access expired storage
+    constexpr int bad() { int &&n = dead(); n = 1; return n; } // expected-note {{assignment to temporary whose lifetime has ended}}
+                                              ^
+
+"Test_name.c", line 264: error: expression must have a constant value
+    static_assert(test2() == 1, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 260: note: attempt to modify const storage
+    constexpr int modify(int &n) { return n = 1; } // expected-note 2 {{modification of object of const-qualified type 'const int'}}
+                                            ^
+"Test_name.c", line 262: note: called from:
+    constexpr int test2() { const int k = 0; return modify(const_cast<int&>(k)); } // expected-note 2 {{in call}}
+                                                          ^
+
+"Test_name.c", line 265: error: expression must have a constant value
+    constexpr int i = test2(); // expected-error {{constant expression}} expected-note {{in call}}
+                      ^
+"Test_name.c", line 260: note: attempt to modify const storage
+    constexpr int modify(int &n) { return n = 1; } // expected-note 2 {{modification of object of const-qualified type 'const int'}}
+                                            ^
+"Test_name.c", line 262: note: called from:
+    constexpr int test2() { const int k = 0; return modify(const_cast<int&>(k)); } // expected-note 2 {{in call}}
+                                                          ^
+
+"Test_name.c", line 272: error: expression must have a constant value
+    static_assert(test(0), ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 270: note: attempt to access run-time storage
+      return *p = 123; // expected-note {{dereferencing a null pointer}}
+                ^
+
+"Test_name.c", line 294: error: expression must have a constant value
+    constexpr int overflow_int_inc_1 = ref(0x7fffffff)++; // expected-error {{constant}} expected-note {{2147483648}}
+                                       ^
+"Test_name.c", line 294: note: value exceeds range of "int"
+    constexpr int overflow_int_inc_1 = ref(0x7fffffff)++; // expected-error {{constant}} expected-note {{2147483648}}
+                                                      ^
+
+"Test_name.c", line 296: error: expression must have a constant value
+    constexpr int overflow_int_inc_2 = ++ref(0x7fffffff); // expected-error {{constant}} expected-note {{2147483648}}
+                                       ^
+"Test_name.c", line 296: note: value exceeds range of "int"
+    constexpr int overflow_int_inc_2 = ++ref(0x7fffffff); // expected-error {{constant}} expected-note {{2147483648}}
+                                       ^
+
+"Test_name.c", line 300: error: expression must have a constant value
+    static_assert(++ref<short>(0x7fff) == (int)0xffff8000u, "");
+                  ^
+"Test_name.c", line 300: note: value exceeds range of "short"
+    static_assert(++ref<short>(0x7fff) == (int)0xffff8000u, "");
+                  ^
+
+"Test_name.c", line 301: error: expression must have a constant value
+    static_assert(--ref<short>(0x8000) == 0x7fff, "");
+                  ^
+"Test_name.c", line 301: note: value exceeds range of "short"
+    static_assert(--ref<short>(0x8000) == 0x7fff, "");
+                  ^
+
+"Test_name.c", line 304: warning: incrementing a bool value is deprecated
+    static_assert(++ref(false), "");
+                    ^
+
+"Test_name.c", line 307: warning: incrementing a bool value is deprecated
+    static_assert(++ref(true), "");
+                    ^
+
+"Test_name.c", line 318: warning: subscript out of range
+    static_assert(++ref(&arr[10]) == &arr[11], ""); // expected-error {{constant}} expected-note {{cannot refer to element 11}}
+                                         ^
+
+"Test_name.c", line 318: error: expression must have a constant value
+    static_assert(++ref(&arr[10]) == &arr[11], ""); // expected-error {{constant}} expected-note {{cannot refer to element 11}}
+                  ^
+"Test_name.c", line 318: note: cannot access position 11 in array of 10 elements
+    static_assert(++ref(&arr[10]) == &arr[11], ""); // expected-error {{constant}} expected-note {{cannot refer to element 11}}
+                  ^
+
+"Test_name.c", line 320: error: expression must have a constant value
+    static_assert(ref(&arr[10])++ == &arr[10], ""); // expected-error {{constant}} expected-note {{cannot refer to element 11}}
+                  ^
+"Test_name.c", line 320: note: cannot access position 11 in array of 10 elements
+    static_assert(ref(&arr[10])++ == &arr[10], ""); // expected-error {{constant}} expected-note {{cannot refer to element 11}}
+                               ^
+
+"Test_name.c", line 323: error: expression must have a constant value
+    static_assert(--ref(&arr[0]) != &arr[0], ""); // expected-error {{constant}} expected-note {{cannot refer to element -1}}
+                  ^
+"Test_name.c", line 323: note: cannot set pointer before the first array element
+    static_assert(--ref(&arr[0]) != &arr[0], ""); // expected-error {{constant}} expected-note {{cannot refer to element -1}}
+                  ^
+
+"Test_name.c", line 325: error: expression must have a constant value
+    static_assert(ref(&arr[0])-- == &arr[0], ""); // expected-error {{constant}} expected-note {{cannot refer to element -1}}
+                  ^
+"Test_name.c", line 325: note: cannot set pointer before the first array element
+    static_assert(ref(&arr[0])-- == &arr[0], ""); // expected-error {{constant}} expected-note {{cannot refer to element -1}}
+                              ^
+
+"Test_name.c", line 349: error: expression must have a constant value
+    constexpr int wrong_member = f({0}); // expected-error {{constant}} expected-note {{in call to 'f({.a = 0})'}}
+                                 ^
+"Test_name.c", line 347: note: invalid access to inactive member "incdec::U::b" of union (member "incdec::U::a" is active)
+      return ++u.b; // expected-note {{increment of member 'b' of union with active member 'a'}}
+             ^
+
+"Test_name.c", line 350: error: expression must have a constant value
+    constexpr int vol = --ref<volatile int>(0); // expected-error {{constant}} expected-note {{decrement of volatile-qualified}}
+                        ^
+"Test_name.c", line 350: note: attempt to read from volatile storage
+    constexpr int vol = --ref<volatile int>(0); // expected-error {{constant}} expected-note {{decrement of volatile-qualified}}
+                        ^
+
+"Test_name.c", line 433: error: static assertion failed with ""
+    static_assert(test_bool(), "");
+    ^
+
+"Test_name.c", line 448: error: static assertion failed with ""
+    static_assert(test_ptr(), "");
+    ^
+
+"Test_name.c", line 458: error: expression must have a constant value
+    static_assert(test_overflow<int>(), ""); // expected-error {{constant}} expected-note {{call}}
+                  ^
+"Test_name.c", line 454: note: value exceeds range of "int"
+        a *= 2; // expected-note {{value 2147483648 is outside the range}} expected-note {{ 9223372036854775808 }}
+          ^
+
+"Test_name.c", line 460: error: expression must have a constant value
+    static_assert(test_overflow<short>(), ""); // ok, short is promoted to int before multiplication
+                  ^
+"Test_name.c", line 454: note: value exceeds range of "short"
+        a *= 2; // expected-note {{value 2147483648 is outside the range}} expected-note {{ 9223372036854775808 }}
+          ^
+
+"Test_name.c", line 463: error: expression must have a constant value
+    static_assert(test_overflow<long long>(), ""); // expected-error {{constant}} expected-note {{call}}
+                  ^
+"Test_name.c", line 454: note: value exceeds range of "long long"
+        a *= 2; // expected-note {{value 2147483648 is outside the range}} expected-note {{ 9223372036854775808 }}
+          ^
+
+"Test_name.c", line 473: error: expression must have a constant value
+    static_assert(test_promotion(200) == -25536, "");
+                  ^
+"Test_name.c", line 469: note: value exceeds range of "short"
+      s *= s;
+        ^
+
+"Test_name.c", line 474: error: expression must have a constant value
+    static_assert(test_promotion(256) == 0, "");
+                  ^
+"Test_name.c", line 469: note: value exceeds range of "short"
+      s *= s;
+        ^
+
+"Test_name.c", line 479: error: expression must have a constant value
+    static_assert(test_bounds("foo", 0)[0] == 'f', "");
+                  ^
+"Test_name.c", line 479: note: attempt to access expired storage
+    static_assert(test_bounds("foo", 0)[0] == 'f', "");
+                                       ^
+
+"Test_name.c", line 480: error: expression must have a constant value
+    static_assert(test_bounds("foo", 3)[0] == 0, "");
+                  ^
+"Test_name.c", line 480: note: attempt to access expired storage
+    static_assert(test_bounds("foo", 3)[0] == 0, "");
+                                       ^
+
+"Test_name.c", line 481: error: expression must have a constant value
+    static_assert(test_bounds("foo", 4)[-3] == 'o', "");
+                  ^
+"Test_name.c", line 481: note: nonzero subscript for non-array object
+    static_assert(test_bounds("foo", 4)[-3] == 'o', "");
+                                       ^
+
+"Test_name.c", line 482: error: expression must have a constant value
+    static_assert(test_bounds(&"foo"[4], -4)[0] == 'f', "");
+                  ^
+"Test_name.c", line 482: note: attempt to access expired storage
+    static_assert(test_bounds(&"foo"[4], -4)[0] == 'f', "");
+                                            ^
+
+"Test_name.c", line 483: error: expression must have a constant value
+    static_assert(test_bounds("foo", 5) != 0, ""); // expected-error {{constant}} expected-note {{call}}
+                  ^
+"Test_name.c", line 477: note: cannot access position 5 in array of 4 elements
+      return p += o; // expected-note {{element 5 of}} expected-note {{element -1 of}} expected-note {{element 1000 of}}
+               ^
+
+"Test_name.c", line 484: error: expression must have a constant value
+    static_assert(test_bounds("foo", -1) != 0, ""); // expected-error {{constant}} expected-note {{call}}
+                  ^
+"Test_name.c", line 477: note: cannot set pointer before the first array element
+      return p += o; // expected-note {{element 5 of}} expected-note {{element -1 of}} expected-note {{element 1000 of}}
+               ^
+
+"Test_name.c", line 485: error: expression must have a constant value
+    static_assert(test_bounds("foo", 1000) != 0, ""); // expected-error {{constant}} expected-note {{call}}
+                  ^
+"Test_name.c", line 477: note: cannot access position 1000 in array of 4 elements
+      return p += o; // expected-note {{element 5 of}} expected-note {{element -1 of}} expected-note {{element 1000 of}}
+               ^
+
+"Test_name.c", line 530: warning: statement is unreachable
+        not_constexpr();
+        ^
+
+"Test_name.c", line 534: warning: statement is unreachable
+        not_constexpr();
+        ^
+
+"Test_name.c", line 538: warning: statement is unreachable
+        not_constexpr();
+        ^
+
+"Test_name.c", line 666: warning: statement is unreachable
+        return -1;
+        ^
+
+"Test_name.c", line 678: warning: statement is unreachable
+              if (false)
+              ^
+
+"Test_name.c", line 788: error: expression must have a constant value
+    constexpr int k = a.temporary++; // expected-error {{constant expression}} expected-note {{outside the expression that created the temporary}}
+                      ^
+"Test_name.c", line 788: note: attempt to access run-time storage
+    constexpr int k = a.temporary++; // expected-error {{constant expression}} expected-note {{outside the expression that created the temporary}}
+                                 ^
+
+"Test_name.c", line 837: warning: statement is unreachable
+        ({  // expected-note {{jump enters a statement expression}}
+        ^
+
+"Test_name.c", line 833: error: transfer of control into a statement expression is not allowed
+      switch (k) {
+      ^
+
+"Test_name.c", line 843: warning: missing return statement at end of non-void function "StmtExpr::f"
+    }
+    ^
+
+"Test_name.c", line 844: error: expression must have a constant value
+    static_assert(f(1) == 1, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 844: note: this call cannot be evaluated because the target function function "StmtExpr::f" (declared at line 832) is not constexpr or not completely defined yet
+    static_assert(f(1) == 1, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                   ^
+
+"Test_name.c", line 847: warning: variable "n" is used before its value is set
+      return ({ int n; n; }); // expected-note {{read of uninitialized object}}
+                       ^
+
+"Test_name.c", line 849: error: expression must have a constant value
+    static_assert(g() == 0, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 847: note: access to uninitialized object
+      return ({ int n; n; }); // expected-note {{read of uninitialized object}}
+                       ^
+
+"Test_name.c", line 868: warning: function "VirtualFromBase::S1::f() const" is hidden by "VirtualFromBase::X<T>::f [with T=VirtualFromBase::S1]" -- virtual function override intended?
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during:
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::S1]" at line 865
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S1>]" at line 872
+
+"Test_name.c", line 868: warning: function "VirtualFromBase::S1::f() const" is hidden by "VirtualFromBase::X<T>::f [with T=VirtualFromBase::X<VirtualFromBase::S1>]" -- virtual function override intended?
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S1>]" at line 872
+
+"Test_name.c", line 868: error: a function cannot be both constexpr and virtual in this mode
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during:
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::S2]" at line 865
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S2>]" at line 877
+
+"Test_name.c", line 868: error: a function cannot be both constexpr and virtual in this mode
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S2>]" at line 877
+
+"Test_name.c", line 879: error: expression must have a constant value
+    static_assert(q->f() == sizeof(X<S2>), ""); // cxx14-error {{constant expression}} cxx14-note {{virtual function}}
+                  ^
+"Test_name.c", line 879: note: cannot call non-constexpr function "VirtualFromBase::X<T>::f [with T=VirtualFromBase::X<VirtualFromBase::S2>]" (declared at line 868)
+    static_assert(q->f() == sizeof(X<S2>), ""); // cxx14-error {{constant expression}} cxx14-note {{virtual function}}
+                     ^
+
+"Test_name.c", line 890: error: expression must have a constant value
+    static_assert(f() == 123, ""); // expected-error {{constant expression}} cxx14_20-note {{in call}}
+                  ^
+"Test_name.c", line 887: note: attempt to access expired storage
+      return r;
+             ^
+
+"Test_name.c", line 902: error: expression must have a constant value
+    static_assert(g() == 42, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 899: note: attempt to access expired storage
+      *p = 123; // expected-note {{assignment to object outside its lifetime}}
+         ^
+
+"Test_name.c", line 920: error: expression must have a constant value
+    static_assert(h(1) == 0, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 916: note: attempt to access expired storage
+      *p[n] = 0; // expected-note 3{{assignment to object outside its lifetime}}
+            ^
+
+"Test_name.c", line 921: error: expression must have a constant value
+    static_assert(h(2) == 0, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 916: note: attempt to access expired storage
+      *p[n] = 0; // expected-note 3{{assignment to object outside its lifetime}}
+            ^
+
+"Test_name.c", line 922: error: expression must have a constant value
+    static_assert(h(3) == 0, ""); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+"Test_name.c", line 916: note: attempt to access expired storage
+      *p[n] = 0; // expected-note 3{{assignment to object outside its lifetime}}
+            ^
+
+"Test_name.c", line 993: warning: missing return statement at end of non-void function "EmptyClass::f(E &, int)"
+    }
+    ^
+
+"Test_name.c", line 1000: error: expression must have a constant value
+    constexpr int test7 = f(e1, 2);
+                          ^
+"Test_name.c", line 990: note: access to uninitialized object
+      case 2: { E e; e = a; return 0; } // expected-note {{read}} expected-note {{in call}}
+                     ^
+
+"Test_name.c", line 1001: error: expression must have a constant value
+    constexpr int test8 = f(e2, 2); // expected-error {{constant expression}} expected-note {{in call}}
+                          ^
+"Test_name.c", line 990: note: access to uninitialized object
+      case 2: { E e; e = a; return 0; } // expected-note {{read}} expected-note {{in call}}
+                     ^
+
+"Test_name.c", line 1002: error: expression must have a constant value
+    constexpr int test9 = f(e3, 2);
+                          ^
+"Test_name.c", line 990: note: access to uninitialized object
+      case 2: { E e; e = a; return 0; } // expected-note {{read}} expected-note {{in call}}
+                     ^
+
+"Test_name.c", line 1003: error: expression must have a constant value
+    constexpr int testa = f(e1, 3);
+                          ^
+"Test_name.c", line 991: note: access to uninitialized object
+      case 3: { E e; e = static_cast<E&&>(a); return 0; } // expected-note {{read}} expected-note {{in call}}
+                     ^
+
+"Test_name.c", line 1004: error: expression must have a constant value
+    constexpr int testb = f(e2, 3); // expected-error {{constant expression}} expected-note {{in call}}
+                          ^
+"Test_name.c", line 991: note: access to uninitialized object
+      case 3: { E e; e = static_cast<E&&>(a); return 0; } // expected-note {{read}} expected-note {{in call}}
+                     ^
+
+"Test_name.c", line 1005: error: expression must have a constant value
+    constexpr int testc = f(e3, 3);
+                          ^
+"Test_name.c", line 991: note: access to uninitialized object
+      case 3: { E e; e = static_cast<E&&>(a); return 0; } // expected-note {{read}} expected-note {{in call}}
+                     ^
+
+"Test_name.c", line 1018: error: expression must have a constant value
+    static_assert(!f(), "");
+                  ^
+"Test_name.c", line 1014: note: cannot call non-constexpr function "__builtin_object_size" (declared implicitly)
+      __builtin_object_size((i = 1, &a), 0);
+      ^
+
+"Test_name.c", line 1043: error: function "const_char::foo" cannot be called with the given argument list
+  void run() { foo(); }
+               ^
+
+"Test_name.c", line 1045: error: expression must have a constant value
+  static_assert(sum(Cs) == 'a' + 'b', ""); // expected-error{{not an integral constant expression}} expected-note{{in call to 'sum<2>(Cs)'}}
+                ^
+"Test_name.c", line 1034: note: attempt to access run-time storage
+      S += Arr[I]; // expected-note 2{{read of non-constexpr variable 'Cs' is not allowed}}
+              ^
+
+"Test_name.c", line 1046: error: expression must have a constant value
+  constexpr int S = sum(Cs); // expected-error{{must be initialized by a constant expression}} expected-note{{in call}}
+                    ^
+"Test_name.c", line 1034: note: attempt to access run-time storage
+      S += Arr[I]; // expected-note 2{{read of non-constexpr variable 'Cs' is not allowed}}
+              ^
+
+"Test_name.c", line 1102: error: expression must have a constant value
+    static_assert(q.a.n == 456, ""); // expected-error {{constant expression}} expected-note {{outside the expression that created the temporary}}
+                  ^
+"Test_name.c", line 1102: note: attempt to access run-time storage
+    static_assert(q.a.n == 456, ""); // expected-error {{constant expression}} expected-note {{outside the expression that created the temporary}}
+                     ^
+
+"Test_name.c", line 1105: error: expression must have a constant value
+    constexpr int m = a.n; // expected-error {{constant expression}} expected-note {{mutable}}
+                      ^
+"Test_name.c", line 1105: note: access to uninitialized object
+    constexpr int m = a.n; // expected-error {{constant expression}} expected-note {{mutable}}
+                       ^
+
+"Test_name.c", line 1115: error: expression must have a constant value
+    constexpr int p = b.n; // expected-error {{constant expression}} expected-note {{mutable}}
+                      ^
+"Test_name.c", line 1115: note: access to uninitialized object
+    constexpr int p = b.n; // expected-error {{constant expression}} expected-note {{mutable}}
+                       ^
+
+"Test_name.c", line 1129: error: expression must have a constant value
+  static_assert(A().x == 3, ""); // cxx14-error{{not an integral constant expression}} cxx14-note{{in call to 'A()'}}
+                ^
+"Test_name.c", line 1124: note: access to uninitialized object
+        int x = x = 3; // cxx14-note {{outside its lifetime}}
+                ^
+
+"Test_name.c", line 1155: error: expression must have a constant value
+  static_assert(D().y == 2, "");
+                ^
+"Test_name.c", line 1155: note: cannot call non-constexpr function "IndirectFields::D::D()" (declared implicitly)
+  static_assert(D().y == 2, "");
+                ^
+
+"Test_name.c", line 1165: error: expression must have a constant value
+  constexpr E e1 = E();
+                   ^
+"Test_name.c", line 1165: note: cannot call non-constexpr function "IndirectFields::E::E()" (declared implicitly)
+  constexpr E e1 = E();
+                   ^
+
+"Test_name.c", line 1220: error: expression must have a constant value
+    constexpr B bad(true); // expected-error {{must be initialized by a constant expression}} expected-note {{in call to 'B(true)'}}
+                    ^
+"Test_name.c", line 1215: note: attempt to modify const storage
+          const_cast<A &>(a).n = 3; // expected-note {{modification of object of const-qualified type 'const int'}}
+                               ^
+
+"Test_name.c", line 1244: error: expression must have a constant value
+    constexpr int n = ++const_cast<int&>(n); // expected-error {{constant expression}} expected-note {{increment of object outside its lifetime}}
+                      ^
+"Test_name.c", line 1244: note: access to uninitialized object
+    constexpr int n = ++const_cast<int&>(n); // expected-error {{constant expression}} expected-note {{increment of object outside its lifetime}}
+                      ^
+
+"Test_name.c", line 1256: error: expression must have a constant value
+    static_assert((f(), true), "");
+                  ^
+"Test_name.c", line 1254: note: access to uninitialized object
+      a = a;
+      ^
+
+"Test_name.c", line 1266: warning: returning pointer to local variable
+      return &n; // expected-warning {{stack}}
+             ^
+
+"Test_name.c", line 1268: error: expression must have a constant value
+    constexpr int *bad_pointer = get_bad_pointer(); // expected-error {{constant expression}} expected-note {{pointer to 'n' is not a constant expression}}
+                                 ^
+"Test_name.c", line 1268: note: invalid use of address of interpreter storage
+    constexpr int *bad_pointer = get_bad_pointer(); // expected-error {{constant expression}} expected-note {{pointer to 'n' is not a constant expression}}
+                                 ^
+
+"Test_name.c", line 1271: error: expression must have a constant value
+    constexpr DoBadThings dbt = { // expected-error {{constant expression}}
+                                ^
+"Test_name.c", line 1271: note: invalid use of address of interpreter storage
+    constexpr DoBadThings dbt = { // expected-error {{constant expression}}
+                                ^
+
+"Test_name.c", line 1285: warning: variable "sum" is used before its value is set
+    sum += a; // expected-note {{read of uninitialized object}};
+    ^
+
+"Test_name.c", line 1288: error: expression must have a constant value
+  static_assert(scalar(3), ""); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 1285: note: value exceeds range of "int"
+    sum += a; // expected-note {{read of uninitialized object}};
+        ^
+
+"Test_name.c", line 1293: warning: variable "arr" is used before its value is set
+    arr[1] += a; // expected-note {{read of uninitialized object}};
+    ^
+
+"Test_name.c", line 1296: error: expression must have a constant value
+  static_assert(array(3), ""); // expected-error {{constant expression}} \
+                ^
+"Test_name.c", line 1293: note: value exceeds range of "int"
+    arr[1] += a; // expected-note {{read of uninitialized object}};
+           ^
+
+"Test_name.c", line 1301: error: constexpr "UninitCompoundAssign::Foo::Foo()" provides no initializer for:
+            member "UninitCompoundAssign::Foo::val"
+    constexpr Foo() {} // cxx14-warning {{constexpr constructor that does not initialize all members is a C++20 extension}}
+                    ^
+
+"Test_name.c", line 1339: error: static assertion failed with ""
+    static_assert(f(),"");
+    ^
+
+"Test_name.c", line 1344: warning: variable "j" was declared but never referenced
+      int &j = *i;
+           ^
+
+"Test_name.c", line 1353: warning: variable "j" was declared but never referenced
+      int &&j = (int&&)*i;
+            ^
+
+"Test_name.c", line 1362: warning: variable "r" was declared but never referenced
+    int &r  = arr[3]; // expected-note {{read of dereferenced one-past-the-end pointer}} \
+         ^
+
+"Test_name.c", line 1375: warning: variable "a" was declared but never referenced
+     Aggregate a{*i}; //expected-note {{dereferencing a null pointer}}
+               ^
+
+"Test_name.c", line 1406: error: expression must have a constant value
+  constexpr int test4 = (*null_ptr)();
+                        ^
+"Test_name.c", line 1406: note: attempt to access run-time storage
+  constexpr int test4 = (*null_ptr)();
+                         ^
+
+"Test_name.c", line 1412: error: expression must have a constant value
+  constexpr int test_array_err = (f_ptr_arr[1])();
+                                 ^
+"Test_name.c", line 1412: note: attempt to access storage one position past the end of an array of 1 elements
+  constexpr int test_array_err = (f_ptr_arr[1])();
+                                           ^
+
+"Test_name.c", line 1440: error: expression must have a constant value
+  static_assert(test_member(), "");
+                ^
+"Test_name.c", line 1429: note: attempt to access storage one position past the end of an array of 1 elements
+      (s.f_ptr_arr[1])();
+                  ^
+
+"Test_name.c", line 1444: error: expression must have a constant value
+  static_assert(test_member_null(), "");
+                ^
+"Test_name.c", line 1435: note: attempt to access run-time storage
+      (*s.null_ptr)(); // expected-note {{'(*s.null_ptr)' evaluates to a null function pointer}} \
+       ^
+
+"Test_name.c", line 1458: warning: statement is unreachable
+      1u: return false; // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 1458: warning: expression has no effect
+      1u: return false; // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 1458: error: expected a ";"
+      1u: return false; // expected-error {{expected 'case' keyword before expression}}
+        ^
+
+"Test_name.c", line 1460: warning: missing return statement at end of non-void function "missingCase"
+  }
+  ^
+
+"Test_name.c", line 97: warning: variable "u1" was declared but never referenced
+  constexpr U u1{1};
+              ^
+
+"Test_name.c", line 98: warning: variable "u2" was declared but never referenced
+  constexpr U u2{2}; // expected-error {{constant expression}} expected-note {{in call to 'U(2)'}}
+              ^
+
+"Test_name.c", line 125: warning: variable "swapped" was declared but never referenced
+  constexpr int swapped = maybe_htonl(false, 123); // expected-error {{constant expression}} expected-note {{in call}}
+                ^
+
+"Test_name.c", line 1059: warning: variable "void_test" was declared but never referenced
+  constexpr int void_test = (Void(0), 1);
+                ^
+
+"Test_name.c", line 265: warning: variable "const_modify::i" was declared but never referenced
+    constexpr int i = test2(); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+
+"Test_name.c", line 294: warning: variable "incdec::overflow_int_inc_1" was declared but never referenced
+    constexpr int overflow_int_inc_1 = ref(0x7fffffff)++; // expected-error {{constant}} expected-note {{2147483648}}
+                  ^
+
+"Test_name.c", line 295: warning: variable "incdec::overflow_int_inc_1_ok" was declared but never referenced
+    constexpr int overflow_int_inc_1_ok = ref(0x7ffffffe)++;
+                  ^
+
+"Test_name.c", line 296: warning: variable "incdec::overflow_int_inc_2" was declared but never referenced
+    constexpr int overflow_int_inc_2 = ++ref(0x7fffffff); // expected-error {{constant}} expected-note {{2147483648}}
+                  ^
+
+"Test_name.c", line 297: warning: variable "incdec::overflow_int_inc_2_ok" was declared but never referenced
+    constexpr int overflow_int_inc_2_ok = ++ref(0x7ffffffe);
+                  ^
+
+"Test_name.c", line 349: warning: variable "incdec::wrong_member" was declared but never referenced
+    constexpr int wrong_member = f({0}); // expected-error {{constant}} expected-note {{in call to 'f({.a = 0})'}}
+                  ^
+
+"Test_name.c", line 350: warning: variable "incdec::vol" was declared but never referenced
+    constexpr int vol = --ref<volatile int>(0); // expected-error {{constant}} expected-note {{decrement of volatile-qualified}}
+                  ^
+
+"Test_name.c", line 788: warning: variable "modify_temporary_during_construction::k" was declared but never referenced
+    constexpr int k = a.temporary++; // expected-error {{constant expression}} expected-note {{outside the expression that created the temporary}}
+                  ^
+
+"Test_name.c", line 964: warning: variable "PR17615::k" was declared but never referenced
+    constexpr int k = A().r; // expected-error {{constant expression}} expected-note {{in call to}}
+                  ^
+
+"Test_name.c", line 994: warning: variable "EmptyClass::test1" was declared but never referenced
+    constexpr int test1 = f(e1, 0);
+                  ^
+
+"Test_name.c", line 995: warning: variable "EmptyClass::test2" was declared but never referenced
+    constexpr int test2 = f(e2, 0); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+
+"Test_name.c", line 996: warning: variable "EmptyClass::test3" was declared but never referenced
+    constexpr int test3 = f(e3, 0);
+                  ^
+
+"Test_name.c", line 997: warning: variable "EmptyClass::test4" was declared but never referenced
+    constexpr int test4 = f(e1, 1);
+                  ^
+
+"Test_name.c", line 998: warning: variable "EmptyClass::test5" was declared but never referenced
+    constexpr int test5 = f(e2, 1); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+
+"Test_name.c", line 999: warning: variable "EmptyClass::test6" was declared but never referenced
+    constexpr int test6 = f(e3, 1);
+                  ^
+
+"Test_name.c", line 1000: warning: variable "EmptyClass::test7" was declared but never referenced
+    constexpr int test7 = f(e1, 2);
+                  ^
+
+"Test_name.c", line 1001: warning: variable "EmptyClass::test8" was declared but never referenced
+    constexpr int test8 = f(e2, 2); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+
+"Test_name.c", line 1002: warning: variable "EmptyClass::test9" was declared but never referenced
+    constexpr int test9 = f(e3, 2);
+                  ^
+
+"Test_name.c", line 1003: warning: variable "EmptyClass::testa" was declared but never referenced
+    constexpr int testa = f(e1, 3);
+                  ^
+
+"Test_name.c", line 1004: warning: variable "EmptyClass::testb" was declared but never referenced
+    constexpr int testb = f(e2, 3); // expected-error {{constant expression}} expected-note {{in call}}
+                  ^
+
+"Test_name.c", line 1005: warning: variable "EmptyClass::testc" was declared but never referenced
+    constexpr int testc = f(e3, 3);
+                  ^
+
+"Test_name.c", line 1046: warning: variable "const_char::S" was declared but never referenced
+  constexpr int S = sum(Cs); // expected-error{{must be initialized by a constant expression}} expected-note{{in call}}
+                ^
+
+"Test_name.c", line 1105: warning: variable "Mutable::m" was declared but never referenced
+    constexpr int m = a.n; // expected-error {{constant expression}} expected-note {{mutable}}
+                  ^
+
+"Test_name.c", line 1107: warning: variable "Mutable::r" was declared but never referenced
+    constexpr Q r = { static_cast<A&&>(const_cast<A&>(a)) }; // expected-error {{constant expression}} expected-note@-8 {{mutable}}
+                ^
+
+"Test_name.c", line 1115: warning: variable "Mutable::p" was declared but never referenced
+    constexpr int p = b.n; // expected-error {{constant expression}} expected-note {{mutable}}
+                  ^
+
+"Test_name.c", line 1220: warning: variable "ObjectsUnderConstruction::bad" was declared but never referenced
+    constexpr B bad(true); // expected-error {{must be initialized by a constant expression}} expected-note {{in call to 'B(true)'}}
+                ^
+
+"Test_name.c", line 1268: warning: variable "TemporaryWithBadPointer::bad_pointer" was declared but never referenced
+    constexpr int *bad_pointer = get_bad_pointer(); // expected-error {{constant expression}} expected-note {{pointer to 'n' is not a constant expression}}
+                   ^
+
+"Test_name.c", line 1322: warning: variable "literal_comparison::check" was declared but never referenced
+  constexpr bool check = different_in_loop();
+                 ^
+
+"Test_name.c", line 1403: warning: variable "GH48665::functions::test" was declared but never referenced
+  constexpr int test = (*f_ptr)();
+                ^
+
+"Test_name.c", line 1404: warning: variable "GH48665::functions::test2" was declared but never referenced
+  constexpr int test2 = (*f_ref)();
+                ^
+
+"Test_name.c", line 1405: warning: variable "GH48665::functions::test3" was declared but never referenced
+  constexpr int test3 = (*f_ref)();
+                ^
+
+"Test_name.c", line 1406: warning: variable "GH48665::functions::test4" was declared but never referenced
+  constexpr int test4 = (*null_ptr)();
+                ^
+
+"Test_name.c", line 1411: warning: variable "GH48665::functions::test_array_ok" was declared but never referenced
+  constexpr int test_array_ok = (f_ptr_arr[0])();
+                ^
+
+"Test_name.c", line 1412: warning: variable "GH48665::functions::test_array_err" was declared but never referenced
+  constexpr int test_array_err = (f_ptr_arr[1])();
+                ^
+
+"Test_name.c", line 1453: warning: variable "GH149500::q" was declared but never referenced
+    static const void *q = &(*(const struct sysrq_key_op *)0);
+                       ^
+
+85 errors detected in the compilation of "Test_name.c".

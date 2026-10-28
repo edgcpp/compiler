@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --c++11 -tused t2.cpp Test_name.c
+t2.cpp:
+Test_name.c:
+/usr/sbin/ld: Test_name.o: in function `int C<N1>::f() [with N1=(int)1]':
+Test_name.int.c:(.text+0xXX): multiple definition of `int C<N1>::f() [with N1=(int)1]'; t2.o:t2.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o:(.bss+0x0): multiple definition of `type identifier for C<(int)1>'; t2.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status

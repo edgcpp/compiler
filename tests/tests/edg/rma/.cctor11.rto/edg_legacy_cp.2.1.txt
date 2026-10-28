@@ -1,0 +1,10 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 10: error: copy constructor for class "T" may not have a parameter of type "T"
+          T(T& t, T t1=5){a=t.a; tp= &t1; }
+                  ^
+
+"Test_name.c", line 16: warning: initial value of reference to non-const must be an lvalue
+          T z(T(3),T(4));
+              ^
+
+1 error detected in the compilation of "Test_name.c".

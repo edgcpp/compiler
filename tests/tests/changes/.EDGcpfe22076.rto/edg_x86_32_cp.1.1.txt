@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --g++ Test_name.c
+"Test_name.c", line 15: error: invalid nontype template argument of type "int *"
+  S<&(i)> sai = {};  // Error in version 6.0 in pre-C++17 modes.  Now okay.
+    ^
+
+1 error detected in the compilation of "Test_name.c".

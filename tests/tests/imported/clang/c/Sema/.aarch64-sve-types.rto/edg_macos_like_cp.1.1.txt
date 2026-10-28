@@ -1,0 +1,58 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 6: error: identifier "__SVInt8_t" is undefined
+    int size_s8[sizeof(__SVInt8_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVInt8_t'}}
+                       ^
+
+"Test_name.c", line 9: error: identifier "__SVInt16_t" is undefined
+    int size_s16[sizeof(__SVInt16_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVInt16_t'}}
+                        ^
+
+"Test_name.c", line 12: error: identifier "__SVInt32_t" is undefined
+    int size_s32[sizeof(__SVInt32_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVInt32_t'}}
+                        ^
+
+"Test_name.c", line 15: error: identifier "__SVInt64_t" is undefined
+    int size_s64[sizeof(__SVInt64_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVInt64_t'}}
+                        ^
+
+"Test_name.c", line 18: error: identifier "__SVUint8_t" is undefined
+    int size_u8[sizeof(__SVUint8_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVUint8_t'}}
+                       ^
+
+"Test_name.c", line 21: error: identifier "__SVUint16_t" is undefined
+    int size_u16[sizeof(__SVUint16_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVUint16_t'}}
+                        ^
+
+"Test_name.c", line 24: error: identifier "__SVUint32_t" is undefined
+    int size_u32[sizeof(__SVUint32_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVUint32_t'}}
+                        ^
+
+"Test_name.c", line 27: error: identifier "__SVUint64_t" is undefined
+    int size_u64[sizeof(__SVUint64_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVUint64_t'}}
+                        ^
+
+"Test_name.c", line 30: error: identifier "__SVFloat16_t" is undefined
+    int size_f16[sizeof(__SVFloat16_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVFloat16_t'}}
+                        ^
+
+"Test_name.c", line 33: error: identifier "__SVFloat32_t" is undefined
+    int size_f32[sizeof(__SVFloat32_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVFloat32_t'}}
+                        ^
+
+"Test_name.c", line 36: error: identifier "__SVFloat64_t" is undefined
+    int size_f64[sizeof(__SVFloat64_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVFloat64_t'}}
+                        ^
+
+"Test_name.c", line 39: error: identifier "__SVBfloat16_t" is undefined
+    int size_bf16[sizeof(__SVBfloat16_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVBfloat16_t'}}
+                         ^
+
+"Test_name.c", line 42: error: identifier "__SVMfloat8_t" is undefined
+   int size_mf8[sizeof(__SVMfloat8_t) == 0 ? 1 : -1];        // expected-error {{invalid application of 'sizeof' to sizeless type '__SVMfloat8_t'}}
+                       ^
+
+"Test_name.c", line 45: error: identifier "__SVBool_t" is undefined
+    int size_b8[sizeof(__SVBool_t) == 0 ? 1 : -1];       // expected-error {{invalid application of 'sizeof' to sizeless type '__SVBool_t'}}
+                       ^
+
+14 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"SemaCXX/attr-riscv-rvv-vector-bits.cpp", line 6: error: identifier "__rvv_int8m1_t" is undefined
+  typedef __rvv_int8m1_t vint8m1_t;
+          ^
+
+"SemaCXX/attr-riscv-rvv-vector-bits.cpp", line 8: error: identifier "__riscv_v_fixed_vlen" is undefined
+  typedef int8_t gnu_int8m1_t __attribute__((vector_size(__riscv_v_fixed_vlen / 8)));
+                                                         ^
+
+2 errors detected in the compilation of "Test_name.c".

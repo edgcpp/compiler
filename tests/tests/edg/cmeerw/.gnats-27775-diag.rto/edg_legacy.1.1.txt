@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 21: error: a structured binding pack can only be declared inside a template
+    auto [ ... b ] = c;           // error: not inside template
+           ^
+
+"Test_name.c", line 21: error: there are more elements than there are binding names
+    auto [ ... b ] = c;           // error: not inside template
+         ^
+
+"Test_name.c", line 21: warning: structured binding "b" was declared but never referenced
+    auto [ ... b ] = c;           // error: not inside template
+               ^
+
+"Test_name.c", line 24: error: a structured binding pack can only be declared inside a template
+  auto [ ... b ] = C{ 'a', 2, 3 }; // error: not inside template
+         ^
+
+"Test_name.c", line 24: error: there are more elements than there are binding names
+  auto [ ... b ] = C{ 'a', 2, 3 }; // error: not inside template
+       ^
+
+4 errors detected in the compilation of "Test_name.c".

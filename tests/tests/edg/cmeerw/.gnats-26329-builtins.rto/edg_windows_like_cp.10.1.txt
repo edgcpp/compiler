@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=10 --c++11 -w --clang_version 180100 --target linux_aarch64 Test_name.c
+"Test_name.c", line 29: error: identifier "__SVInt8_t" is undefined
+  void f(__SVInt8_t i)
+         ^
+
+"Test_name.c", line 31: error: identifier "__SVFloat32_t" is undefined
+    __SVFloat32_t v1 = __builtin_sve_reinterpret_f32_s8(i);
+    ^
+
+"Test_name.c", line 31: error: builtin function is not available because vector types are not supported
+    __SVFloat32_t v1 = __builtin_sve_reinterpret_f32_s8(i);
+                       ^
+
+"Test_name.c", line 34: error: identifier "__SVCount_t" is undefined
+    __SVCount_t v2 = __builtin_sve_svptrue_c64();
+    ^
+
+"Test_name.c", line 34: error: identifier "__SVCount_t" is undefined
+    __SVCount_t v2 = __builtin_sve_svptrue_c64();
+                     ^
+
+5 errors detected in the compilation of "Test_name.c".

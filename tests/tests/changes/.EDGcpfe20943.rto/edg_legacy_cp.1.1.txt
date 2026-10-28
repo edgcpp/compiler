@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 18: error: cannot deduce "auto" template parameter type "auto" from "int *"
+  template<auto X, decltype(X) = &n> struct S {};  // Previously an error.
+                                 ^
+
+1 error detected in the compilation of "Test_name.c".

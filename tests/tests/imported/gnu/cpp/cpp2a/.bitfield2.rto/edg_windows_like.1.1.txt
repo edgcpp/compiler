@@ -1,0 +1,56 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: error: expression must be a modifiable lvalue
+    int i : true ? 10 : b = 6;	// { dg-error "assignment of read-only variable" }
+                        ^
+
+"Test_name.c", line 11: error: data member initializer is not allowed
+    int : 4 = 10;			// { dg-error "default member initializer for unnamed bit-field" }
+            ^
+
+"Test_name.c", line 12: error: data member initializer is not allowed
+    int : 5 = a + b;		// { dg-error "default member initializer for unnamed bit-field" }
+            ^
+
+"Test_name.c", line 16: warning: a default bit-field initializer is a C++20 feature
+    int j : W = 7;		// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+              ^
+
+"Test_name.c", line 17: warning: a default bit-field initializer is a C++20 feature
+    int k : W { 8 };		// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+              ^
+
+"Test_name.c", line 20: warning: a default bit-field initializer is a C++20 feature
+    int m : (V ? W : b) = 9;	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+                        ^
+
+"Test_name.c", line 22: warning: a default bit-field initializer is a C++20 feature
+    int n : (V ? W : b) { 10 };	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+                        ^
+
+"Test_name.c", line 25: error: data member initializer is not allowed
+    int : 4 = 10;			// { dg-error "default member initializer for unnamed bit-field" }
+            ^
+
+"Test_name.c", line 26: error: data member initializer is not allowed
+    int : 5 = a + b;		// { dg-error "default member initializer for unnamed bit-field" }
+            ^
+
+"Test_name.c", line 18: error: expression must have a constant value
+    int l : V ? 7 : a = 3;	// { dg-error "modification of .a. from outside current evaluation is not a constant expression" }
+            ^
+"Test_name.c", line 18: note: attempt to access run-time storage
+    int l : V ? 7 : a = 3;	// { dg-error "modification of .a. from outside current evaluation is not a constant expression" }
+                      ^
+          detected during instantiation of class "U<V, W> [with V=false, W=10]" at line 28
+
+"Test_name.c", line 20: error: zero-length bit field must be unnamed
+    int m : (V ? W : b) = 9;	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+        ^
+          detected during instantiation of class "U<V, W> [with V=false, W=10]" at line 28
+
+"Test_name.c", line 22: error: zero-length bit field must be unnamed
+    int n : (V ? W : b) { 10 };	// { dg-warning "default member initializers for bit-fields only available with" "" { target c++17_down } }
+        ^
+          detected during instantiation of class "U<V, W> [with V=false, W=10]" at line 28
+
+8 errors detected in the compilation of "Test_name.c".

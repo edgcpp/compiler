@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++17 Test_name.c
+"Test_name.c", line 48: error: operand types are incompatible ("void" and "FourInts" (aka "int"))
+    (void)(four_ints ? (void)1 : four_ints); // expected-error {{GNU vector conditional operand cannot be void}}
+                               ^
+
+"Test_name.c", line 49: error: expression must have arithmetic or unscoped enum type
+    (void)(four_ints ?: (void)1);            // expected-error {{GNU vector conditional operand cannot be void}}
+                        ^
+
+"Test_name.c", line 102: error: expression must have arithmetic or unscoped enum type
+    (void)(four_ints ? four_uints : se); // expected-error {{cannot convert between vector and non-scalar values ('FourUInts' (vector of 4 'unsigned int' values) and 'SE'}}
+                                    ^
+
+"Test_name.c", line 126: error: static assertion failed
+    static_assert(is_same_v<TwoInts, decltype(declval<TwoInts>() ? declval<TwoInts>() : declval<TwoInts>())>);
+    ^
+
+"Test_name.c", line 127: error: static assertion failed
+    static_assert(is_same_v<TwoFloats, decltype(declval<TwoInts>() ? declval<TwoFloats>() : declval<TwoFloats>())>);
+    ^
+
+"Test_name.c", line 137: error: static assertion failed
+    static_assert(is_same_v<TwoFloats, decltype(declval<TwoInts>() ? declval<TwoFloats>() : declval<float>())>);
+    ^
+
+"Test_name.c", line 138: error: static assertion failed
+    static_assert(is_same_v<TwoInts, decltype(declval<TwoInts>() ? declval<TwoInts>() : declval<int>())>);
+    ^
+
+"Test_name.c", line 142: internal error: assertion failed at: "exprutil.c", line <suppressed> in conv_glvalue_to_prvalue
+
+    static_assert(is_same_v<TwoInts, decltype(declval<TwoInts>() ?: declval<TwoInts>())>);
+                                                                  ^
+
+7 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

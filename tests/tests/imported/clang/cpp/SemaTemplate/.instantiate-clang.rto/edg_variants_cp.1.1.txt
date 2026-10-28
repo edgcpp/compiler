@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 16: error: expression must have class type but it has type "double4" (aka "__attribute((ext_vector_type(4))) double")
+      v1.xy = v2.yx;
+              ^
+
+"Test_name.c", line 26: error: expression must have pointer-to-class type but it has type "double4 *" (aka "__attribute((ext_vector_type(4))) double *")
+      v1->xy = v2->yx;
+               ^
+
+"Test_name.c", line 16: error: expression must have class type but it has type "double2" (aka "__attribute((ext_vector_type(2))) double")
+      v1.xy = v2.yx;
+      ^
+          detected during instantiation of "void ExtVectorAccess0<T>::f(T, double4) [with T=double2]" at line 20
+
+"Test_name.c", line 16: error: expression must have class type but it has type "double4" (aka "__attribute((ext_vector_type(4))) double")
+      v1.xy = v2.yx;
+      ^
+          detected during instantiation of "void ExtVectorAccess0<T>::f(T, double4) [with T=double4]" at line 21
+
+"Test_name.c", line 26: error: expression must have pointer-to-class type but it has type "double2 *" (aka "__attribute((ext_vector_type(2))) double *")
+      v1->xy = v2->yx;
+      ^
+          detected during instantiation of "void ExtVectorAccess1<T>::f(T *, double4 *) [with T=double2]" at line 30
+
+"Test_name.c", line 26: error: expression must have pointer-to-class type but it has type "double4 *" (aka "__attribute((ext_vector_type(4))) double *")
+      v1->xy = v2->yx;
+      ^
+          detected during instantiation of "void ExtVectorAccess1<T>::f(T *, double4 *) [with T=double4]" at line 31
+
+"Test_name.c", line 43: error: argument value must be less than the sum of the vector elements
+  template struct ShuffleVector0<double2, double2, 4, 3>; // expected-note{{instantiation}}
+                                                   ^
+          detected during instantiation of "void ShuffleVector0<T, U, N, M>::f(T, U, double2, double2) [with T=double2, U=double2, N=4, M=3]" at line 43
+
+"Test_name.c", line 43: error: argument value must be less than the sum of the vector elements
+  template struct ShuffleVector0<double2, double2, 4, 3>; // expected-note{{instantiation}}
+                                                   ^
+          detected during instantiation of "void ShuffleVector0<T, U, N, M>::f(T, U, double2, double2) [with T=double2, U=double2, N=4, M=3]" at line 43
+
+8 errors detected in the compilation of "Test_name.c".

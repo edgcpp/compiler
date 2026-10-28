@@ -1,0 +1,63 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 37: warning: variable "the_thing" was declared but never referenced
+    foo4 the_thing;
+         ^
+
+"Test_name.c", line 41: warning: variable "myptr" was declared but never referenced
+    foo6 *myptr;
+          ^
+
+"Test_name.c", line 52: warning: variable "s2foo" was declared but never referenced
+    S2::Foo s2foo;
+            ^
+
+"Test_name.c", line 57: warning: variable "fs2" was declared but never referenced
+    foostruct2 fs2;
+               ^
+
+"Test_name.c", line 60: warning: variable "v" was declared but never referenced
+    Vec<vecint> v;
+                ^
+
+"Test_name.c", line 62: warning: variable "nfoo" was declared but never referenced
+    N::Foo nfoo;
+           ^
+
+"Test_name.c", line 65: warning: variable "a" was declared but never referenced
+    static constexpr int a = (ConstExprInt)4;
+                         ^
+
+"Test_name.c", line 89: warning: variable "asdf" was declared but never referenced
+    bar asdf;
+        ^
+
+"Test_name.c", line 99: warning: variable "s2foo" was declared but never referenced
+    typename S2::Foo s2foo;
+                     ^
+
+"Test_name.c", line 115: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    } A; // expected-note {{}}
+      ^
+"Test_name.c", line 114: note: type is not C-like because of this member declaration
+      typedef int Foo; // expected-note {{}}
+                  ^
+
+"Test_name.c", line 118: warning: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration
+    using A2 = struct { // expected-warning {{add a tag name}} expected-note {{this alias declaration}}
+          ^
+"Test_name.c", line 119: note: type is not C-like because of this member declaration
+      typedef int Foo; // expected-note {{}}
+                  ^
+
+"Test_name.c", line 116: warning: variable "adsf" was declared but never referenced
+    A::Foo adsf;
+           ^
+
+"Test_name.c", line 121: warning: variable "adsf2" was declared but never referenced
+    A2::Foo adsf2;
+            ^
+
+"Test_name.c", line 172: warning: variable "<unnamed>::nsy" was declared but never referenced
+  decltype(nsx)::t nsy;
+                   ^
+

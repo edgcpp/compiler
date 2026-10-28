@@ -1,0 +1,54 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 13: remark: return type "int" omitted in declaration of function "main"
+  main () {
+  ^
+
+"Test_name.c", line 9: remark: function "E::E()" cannot be inlined
+  struct E : public D, virtual public C {int m;};
+         ^
+          detected during implicit generation of "E::E()" at line 18
+
+"Test_name.c", line 10: remark: function "EE::EE()" cannot be inlined
+  struct EE : public E {};
+         ^
+          detected during:
+            implicit generation of "EE::EE()" at line 21
+            implicit generation of "G::G()" at line 21
+
+"Test_name.c", line 12: remark: function "G::G()" cannot be inlined
+  struct G : public F, public EE {int o;};
+         ^
+          detected during implicit generation of "G::G()" at line 21
+
+"Test_name.c", line 23: warning: variable "pg" is used before its value is set
+    pa = pg;
+         ^
+
+"Test_name.c", line 14: warning: variable "pa" was set but never used
+    A *pa;
+       ^
+
+"Test_name.c", line 15: warning: variable "pb" was set but never used
+    B *pb;
+       ^
+
+"Test_name.c", line 16: warning: variable "pc" was set but never used
+    C *pc;
+       ^
+
+"Test_name.c", line 17: warning: variable "pd" was set but never used
+    D *pd;
+       ^
+
+"Test_name.c", line 19: warning: variable "pee" was set but never used
+    EE *pee;
+        ^
+
+"Test_name.c", line 20: warning: variable "pf" was set but never used
+    F *pf;
+       ^
+
+"Test_name.c", line 22: warning: variable "a" was set but never used
+    int a;
+        ^
+

@@ -1,0 +1,449 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --target linux_aarch64 Test_name.c
+"Test_name.c", line 11: error: expected a type specifier
+    int * AQ m0;
+          ^
+
+"Test_name.c", line 11: error: expected a ";"
+    int * AQ m0;
+             ^
+
+"Test_name.c", line 15: error: expected a type specifier
+    int * IQ m0;
+          ^
+
+"Test_name.c", line 15: error: expected a ";"
+    int * IQ m0;
+             ^
+
+"Test_name.c", line 21: error: expected a type specifier
+      int * AQ f0; // expected-note 4 {{'U0' is implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+            ^
+
+"Test_name.c", line 21: error: expected a ";"
+      int * AQ f0; // expected-note 4 {{'U0' is implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+               ^
+
+"Test_name.c", line 25: error: expected a type specifier
+      int * IQ f1;
+            ^
+
+"Test_name.c", line 25: error: invalid redeclaration of member function "test_union::U0::__ptrauth(<error-type>, <error-type>, <error-type>)" (declared at line 21)
+      int * IQ f1;
+            ^
+
+"Test_name.c", line 25: error: expected a ";"
+      int * IQ f1;
+               ^
+
+"Test_name.c", line 29: error: expected a type specifier
+      int * AQ f0; // expected-note 8 {{'U1' is implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+            ^
+
+"Test_name.c", line 29: error: expected a ";"
+      int * AQ f0; // expected-note 8 {{'U1' is implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+               ^
+
+"Test_name.c", line 40: error: expected a type specifier
+      int * AQ f0;
+            ^
+
+"Test_name.c", line 40: error: expected a ";"
+      int * AQ f0;
+               ^
+
+"Test_name.c", line 54: error: expected a type specifier
+        int * AQ f0; // expected-note 4 {{' is implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+              ^
+
+"Test_name.c", line 54: error: expected a ";"
+        int * AQ f0; // expected-note 4 {{' is implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+                 ^
+
+"Test_name.c", line 53: error: invalid anonymous union -- member function is not allowed
+      union {
+            ^
+
+"Test_name.c", line 62: error: expected a type specifier
+          int * AQ f0; // expected-note 4 {{implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+                ^
+
+"Test_name.c", line 62: error: expected a ";"
+          int * AQ f0; // expected-note 4 {{implicitly deleted because variant field 'f0' has an address-discriminated '__ptrauth' qualifier}}
+                   ^
+
+"Test_name.c", line 77: warning: variable "u0" was declared but never referenced
+      U0 u0;
+         ^
+
+"Test_name.c", line 78: warning: variable "u1" was declared but never referenced
+      U1 u1;
+         ^
+
+"Test_name.c", line 79: warning: variable "u2" was declared but never referenced
+      U2 u2;
+         ^
+
+"Test_name.c", line 80: warning: variable "s0" was declared but never referenced
+      S0 s0;
+         ^
+
+"Test_name.c", line 81: warning: variable "s1" was declared but never referenced
+      S1 s1;
+         ^
+
+"Test_name.c", line 94: warning: variable "t0" was declared but never referenced
+      U0 t0(*u0); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 95: warning: variable "t1" was declared but never referenced
+      U1 t1(*u1); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 97: warning: variable "t3" was declared but never referenced
+      S0 t3(*s0); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 98: warning: variable "t4" was declared but never referenced
+      S1 t4(*s1); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 110: warning: variable "t0" was declared but never referenced
+      U0 t0(static_cast<U0 &&>(*u0)); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 111: warning: variable "t1" was declared but never referenced
+      U1 t1(static_cast<U1 &&>(*u1)); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 113: warning: variable "t3" was declared but never referenced
+      S0 t3(static_cast<S0 &&>(*s0)); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 114: warning: variable "t4" was declared but never referenced
+      S1 t4(static_cast<S1 &&>(*s1)); // expected-error {{call to implicitly-deleted copy constructor}}
+         ^
+
+"Test_name.c", line 126: error: expected a type specifier
+  bool test_composite_type0(bool c, int * AQ * a0, int * AQ * a1) {
+                                          ^
+
+"Test_name.c", line 126: error: expected a ")"
+  bool test_composite_type0(bool c, int * AQ * a0, int * AQ * a1) {
+                                             ^
+
+"Test_name.c", line 127: error: identifier "a0" is undefined
+    auto t = c ? a0 : a1;
+                 ^
+
+"Test_name.c", line 127: error: identifier "a1" is undefined
+    auto t = c ? a0 : a1;
+                      ^
+
+"Test_name.c", line 131: error: expected a type specifier
+  bool test_composite_type1(bool c, int * AQ * a0, int * AQ2 * a1) {
+                                          ^
+
+"Test_name.c", line 131: error: expected a ")"
+  bool test_composite_type1(bool c, int * AQ * a0, int * AQ2 * a1) {
+                                             ^
+
+"Test_name.c", line 132: error: identifier "a0" is undefined
+    auto t = c ? a0 : a1; // expected-error {{incompatible operand types ('int *__ptrauth(1,1,50) *' and 'int *__ptrauth(1,1,51) *')}}
+                 ^
+
+"Test_name.c", line 132: error: identifier "a1" is undefined
+    auto t = c ? a0 : a1; // expected-error {{incompatible operand types ('int *__ptrauth(1,1,50) *' and 'int *__ptrauth(1,1,51) *')}}
+                      ^
+
+"Test_name.c", line 136: error: expected a type specifier
+  void test_bad_call_diag(void *AQ *ptr); // expected-note{{candidate function not viable: 1st argument ('void *__ptrauth(1,1,51) *') has __ptrauth(1,1,51) qualifier, but parameter has __ptrauth(1,1,50) qualifier}} expected-note {{candidate function not viable: 1st argument ('void **') has no '__ptrauth' qualifier, but parameter has __ptrauth(1,1,50) qualifier}}
+                                ^
+
+"Test_name.c", line 136: error: expected a ")"
+  void test_bad_call_diag(void *AQ *ptr); // expected-note{{candidate function not viable: 1st argument ('void *__ptrauth(1,1,51) *') has __ptrauth(1,1,51) qualifier, but parameter has __ptrauth(1,1,50) qualifier}} expected-note {{candidate function not viable: 1st argument ('void **') has no '__ptrauth' qualifier, but parameter has __ptrauth(1,1,50) qualifier}}
+                                   ^
+
+"Test_name.c", line 140: error: too many initializer values
+    void *AQ ptr1, *AQ2 ptr2, *ptr3;
+          ^
+
+"Test_name.c", line 140: error: a value of type "int" cannot be used to initialize an entity of type "void *"
+    void *AQ ptr1, *AQ2 ptr2, *ptr3;
+          ^
+
+"Test_name.c", line 140: error: expected a ";"
+    void *AQ ptr1, *AQ2 ptr2, *ptr3;
+             ^
+
+"Test_name.c", line 141: error: identifier "ptr2" is undefined
+    test_bad_call_diag(&ptr2); // expected-error {{no matching function for call to 'test_bad_call_diag'}}
+                        ^
+
+"Test_name.c", line 142: error: identifier "ptr3" is undefined
+    test_bad_call_diag(&ptr3); // expected-error {{no matching function for call to 'test_bad_call_diag'}}
+                        ^
+
+"Test_name.c", line 143: error: identifier "ptr1" is undefined
+    test_bad_call_diag2(&ptr1); // expected-error {{no matching function for call to 'test_bad_call_diag2'}}
+                         ^
+
+"Test_name.c", line 144: warning: missing return statement at end of non-void function "test_call_diag"
+  }
+  ^
+
+"Test_name.c", line 148: error: too many initializer values
+    constexpr const int * AQ p = &i;
+                          ^
+
+"Test_name.c", line 148: error: a value of type "int" cannot be used to initialize an entity of type "const int *const"
+    constexpr const int * AQ p = &i;
+                          ^
+
+"Test_name.c", line 148: error: expected a ";"
+    constexpr const int * AQ p = &i;
+                             ^
+
+"Test_name.c", line 149: error: variable "test_constexpr::__ptrauth" has already been defined (previous definition at line 148)
+    constexpr const int * const AQ *pp = &p;
+                                ^
+
+"Test_name.c", line 149: error: too many initializer values
+    constexpr const int * const AQ *pp = &p;
+                                ^
+
+"Test_name.c", line 149: error: a value of type "int" cannot be used to initialize an entity of type "const int *const"
+    constexpr const int * const AQ *pp = &p;
+                                ^
+
+"Test_name.c", line 149: error: expected a ";"
+    constexpr const int * const AQ *pp = &p;
+                                   ^
+
+"Test_name.c", line 150: error: expected a ")"
+    constexpr int i1 = **((const int * const AQ *)pp);
+                                             ^
+
+"Test_name.c", line 150: warning: type qualifier is meaningless on cast type
+    constexpr int i1 = **((const int * const AQ *)pp);
+                           ^
+
+"Test_name.c", line 150: error: identifier "pp" is undefined
+    constexpr int i1 = **((const int * const AQ *)pp);
+                                                  ^
+
+"Test_name.c", line 151: error: expected a ")"
+    constexpr int i2 = **((const int * const AQ2 *)pp);
+                                             ^
+
+"Test_name.c", line 151: warning: type qualifier is meaningless on cast type
+    constexpr int i2 = **((const int * const AQ2 *)pp);
+                           ^
+
+"Test_name.c", line 158: error: too many initializer values
+      int * AQ v0;
+            ^
+
+"Test_name.c", line 158: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int * AQ v0;
+            ^
+
+"Test_name.c", line 158: error: expected a ";"
+      int * AQ v0;
+               ^
+
+"Test_name.c", line 159: error: "__ptrauth" has already been declared in the current scope
+      int * AQ *v1;
+            ^
+
+"Test_name.c", line 159: error: too many initializer values
+      int * AQ *v1;
+            ^
+
+"Test_name.c", line 159: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int * AQ *v1;
+            ^
+
+"Test_name.c", line 159: error: expected a ";"
+      int * AQ *v1;
+               ^
+
+"Test_name.c", line 161: error: identifier "v0" is undefined
+      [v0, v1]() {
+       ^
+
+"Test_name.c", line 161: error: identifier "v1" is undefined
+      [v0, v1]() {
+           ^
+
+"Test_name.c", line 162: error: identifier "v0" is undefined
+        static_assert(__is_same(decltype(v0), int * AQ));
+                                         ^
+
+"Test_name.c", line 162: error: expected a ")"
+        static_assert(__is_same(decltype(v0), int * AQ));
+                                                    ^
+
+"Test_name.c", line 163: error: identifier "v1" is undefined
+        static_assert(__is_same(decltype(v1), int * AQ *));
+                                         ^
+
+"Test_name.c", line 163: error: expected a ")"
+        static_assert(__is_same(decltype(v1), int * AQ *));
+                                                    ^
+
+"Test_name.c", line 166: error: identifier "v0" is undefined
+      [v2 = v0, v3 = v1]() {
+            ^
+
+"Test_name.c", line 166: error: identifier "v1" is undefined
+      [v2 = v0, v3 = v1]() {
+                     ^
+
+"Test_name.c", line 168: error: expected a ")"
+        static_assert(__is_same(decltype(v3), int * AQ *));
+                                                    ^
+
+"Test_name.c", line 178: error: expected a ">"
+    template <typename T> struct is_qualified<T * AQ> {
+                                                  ^
+
+"Test_name.c", line 193: error: expected a ">"
+    S<int * AQ> s0;
+            ^
+
+"Test_name.c", line 194: error: template constraint not satisfied
+    S<int *> s1;
+           ^
+"Test_name.c", line 188: note: substitution of arguments "<int *>" for requires-clause failed
+      requires(Ptrauthable<T>)
+               ^
+"Test_name.c", line 188: note: concept is false for arguments "<int *>"
+      requires(Ptrauthable<T>)
+               ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    concept Ptrauthable = is_qualified<T>::value;
+                          ^
+
+"Test_name.c", line 196: error: expected a ">"
+    S<int * AQ2> s1;
+            ^
+
+"Test_name.c", line 196: error: variable "test_concept::s1" has already been defined (previous definition at line 194)
+    S<int * AQ2> s1;
+                 ^
+
+"Test_name.c", line 208: error: too many initializer values
+      int * AQ p0;
+            ^
+
+"Test_name.c", line 208: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int * AQ p0;
+            ^
+
+"Test_name.c", line 208: error: expected a ";"
+      int * AQ p0;
+               ^
+
+"Test_name.c", line 210: error: "__ptrauth" has already been declared in the current scope
+      int * AQ2 p2;
+            ^
+
+"Test_name.c", line 210: error: too many initializer values
+      int * AQ2 p2;
+            ^
+
+"Test_name.c", line 210: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int * AQ2 p2;
+            ^
+
+"Test_name.c", line 210: error: expected a ";"
+      int * AQ2 p2;
+                ^
+
+"Test_name.c", line 211: error: identifier "p0" is undefined
+      func(&p0);
+            ^
+
+"Test_name.c", line 211: error: no instance of function template "test_concept::func" matches the argument list
+            argument types are: (<error-type>)
+      func(&p0);
+      ^
+"Test_name.c", line 201: note: candidate function template "test_concept::func" failed deduction
+    void func(T *);
+         ^
+
+"Test_name.c", line 212: error: no instance of function template "test_concept::func" matches the argument list
+            argument types are: (int **)
+      func(&p1); // expected-error {{no matching function for call to 'func'}}
+      ^
+"Test_name.c", line 201: note: substituting "<int *>" for function template "test_concept::func" failed constraints
+    void func(T *);
+         ^
+"Test_name.c", line 200: note: concept "test_concept::Ptrauthable" not satisfied for "<int *>"
+      requires(Ptrauthable<T>)
+               ^
+"Test_name.c", line 183: note: atomic constraint evaluates to false
+    concept Ptrauthable = is_qualified<T>::value;
+                          ^
+
+"Test_name.c", line 213: error: identifier "p2" is undefined
+      func(&p2); // expected-error {{no matching function for call to 'func'}}
+            ^
+
+"Test_name.c", line 213: error: no instance of function template "test_concept::func" matches the argument list
+            argument types are: (<error-type>)
+      func(&p2); // expected-error {{no matching function for call to 'func'}}
+      ^
+"Test_name.c", line 201: note: candidate function template "test_concept::func" failed deduction
+    void func(T *);
+         ^
+
+"Test_name.c", line 227: error: expected a ">"
+    test_ptrauth_conflict<int * __ptrauth(1,1,123), int *  __ptrauth(1,1,123)>();
+                                ^
+
+"Test_name.c", line 227: error: expected an identifier
+    test_ptrauth_conflict<int * __ptrauth(1,1,123), int *  __ptrauth(1,1,123)>();
+                                                    ^
+
+"Test_name.c", line 227: error: expected a type specifier
+    test_ptrauth_conflict<int * __ptrauth(1,1,123), int *  __ptrauth(1,1,123)>();
+                                                                     ^
+
+"Test_name.c", line 227: error: expected a type specifier
+    test_ptrauth_conflict<int * __ptrauth(1,1,123), int *  __ptrauth(1,1,123)>();
+                                                                       ^
+
+"Test_name.c", line 227: error: expected a type specifier
+    test_ptrauth_conflict<int * __ptrauth(1,1,123), int *  __ptrauth(1,1,123)>();
+                                                                         ^
+
+"Test_name.c", line 227: error: expected a "{"
+    test_ptrauth_conflict<int * __ptrauth(1,1,123), int *  __ptrauth(1,1,123)>();
+                                                                             ^
+
+At end of source: warning: missing return statement at end of non-void function "<error>"
+
+At end of source: error: expected a "}"
+
+"Test_name.c", line 225: warning: variable "no_ptrauth" was declared but never referenced
+  constexpr int no_ptrauth = test_ptrauth_conflict<int *, int *>();
+                ^
+
+"Test_name.c", line 226: warning: variable "matching_ptrauth" was declared but never referenced
+  constexpr int matching_ptrauth =
+                ^
+
+"Test_name.c", line 147: warning: variable "test_constexpr::i" was declared but never referenced
+    constexpr int i = 100;
+                  ^
+
+"Test_name.c", line 150: warning: variable "test_constexpr::i1" was declared but never referenced
+    constexpr int i1 = **((const int * const AQ *)pp);
+                  ^
+
+"Test_name.c", line 151: warning: variable "test_constexpr::i2" was declared but never referenced
+    constexpr int i2 = **((const int * const AQ2 *)pp);
+                  ^
+
+84 errors detected in the compilation of "Test_name.c".

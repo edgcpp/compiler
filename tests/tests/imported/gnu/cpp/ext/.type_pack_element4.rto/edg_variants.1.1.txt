@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 12: warning: integer conversion resulted in a change of sign
+    if constexpr (Level != -1){
+                           ^
+
+"Test_name.c", line 13: error: no instance of function template "get" matches the argument list
+            argument types are: (tuple<int, int>)
+      return take_impl<Level - 1>(get<Level - 1>(data)); // { dg-error "" }
+                                  ^
+"Test_name.c", line 8: note: candidate function template "get" failed deduction
+  __type_pack_element<__i, _Elements...> &get(tuple<_Elements...> &__t) noexcept; // { dg-error "index is out of range" }
+                                          ^
+          detected during:
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=0UL]" at line 13
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=1UL]" at line 13
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=2UL]" at line 18
+
+"Test_name.c", line 15: warning: statement is unreachable
+    return 0;
+    ^
+          detected during:
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=0UL]" at line 13
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=1UL]" at line 13
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=2UL]" at line 18
+
+"Test_name.c", line 15: warning: statement is unreachable
+    return 0;
+    ^
+          detected during:
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=1UL]" at line 13
+            instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=2UL]" at line 18
+
+"Test_name.c", line 15: warning: statement is unreachable
+    return 0;
+    ^
+          detected during instantiation of "unsigned int take_impl<Level>(unsigned int) [with Level=2UL]" at line 18
+
+1 error detected in the compilation of "Test_name.c".

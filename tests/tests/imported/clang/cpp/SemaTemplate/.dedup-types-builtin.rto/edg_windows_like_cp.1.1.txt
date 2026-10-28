@@ -1,0 +1,289 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 24: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList>::empty_list, TypeList<>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 25: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList>::same, TypeList<>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 26: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList>::twice, TypeList<>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 27: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList>::dep_only_types, TypeList<>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 28: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList>::dep_only_template, TypeList<int, double>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 29: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList, int*, double*, int*>::empty_list, TypeList<>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 30: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList, int*, double*, int*>::same, TypeList<int*, double*>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 31: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList, int*, double*, int*>::twice, TypeList<int*, double*>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 32: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList, int*, double*, int*>::dep_only_types, TypeList<int*, double*>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 33: error: static assertion failed
+  static_assert(!__is_same(Dependent<TypeList, int*, double*, int*>::dep_only_template, TypeList<int, double>)); // expected-error {{static assertion failed}}
+  ^
+
+"Test_name.c", line 41: error: static assertion failed
+    static_assert(!__is_same(Twice<__builtin_dedup_pack<int, double, int>...>, TypeList<int, double, int, double>)); // expected-error {{static assertion failed}}
+    ^
+          detected during instantiation of class "TwiceTemplateWrapper<<unnamed>> [with <unnamed>=int]" at line 44
+
+"Test_name.c", line 49: error: type name is not allowed
+    IntList<__builtin_dedup_pack<int>...>* wrong_template; // expected-error {{template argument for non-type template parameter must be an expression}}
+            ^
+
+"Test_name.c", line 49: error: pack expansion does not make use of any argument packs
+    IntList<__builtin_dedup_pack<int>...>* wrong_template; // expected-error {{template argument for non-type template parameter must be an expression}}
+                                     ^
+
+"Test_name.c", line 51: error: expected a type specifier
+    TypeList<__builtin_dedup_pack<1, 2, 3>...>* wrong_template_args; // expected-error  {{template argument for template type parameter must be a type}}
+                                  ^
+
+"Test_name.c", line 51: error: expected a type specifier
+    TypeList<__builtin_dedup_pack<1, 2, 3>...>* wrong_template_args; // expected-error  {{template argument for template type parameter must be a type}}
+                                     ^
+
+"Test_name.c", line 51: error: expected a type specifier
+    TypeList<__builtin_dedup_pack<1, 2, 3>...>* wrong_template_args; // expected-error  {{template argument for template type parameter must be a type}}
+                                        ^
+
+"Test_name.c", line 53: error: incomplete type "__builtin_dedup_pack<>" is not allowed
+    __builtin_dedup_pack<> not_enough_args; // expected-error {{data member type contains an unexpanded parameter pack}}
+                           ^
+
+"Test_name.c", line 55: error: argument list for class template "__builtin_dedup_pack" is missing
+    __builtin_dedup_pack missing_template_args; // expected-error {{use of template '__builtin_dedup_pack' requires template arguments}}
+    ^
+
+"Test_name.c", line 69: error: static assertion failed with ""
+    static_assert(
+    ^
+          detected during instantiation of class "Foo<<unnamed>> [with <unnamed>=int]" at line 88
+
+"Test_name.c", line 91: error: static assertion failed
+  static_assert(!__is_same(TypeList<__builtin_dedup_pack<int>...>, TypeList<int>)); // expected-error {{outside}}
+  ^
+
+"Test_name.c", line 95: error: static assertion failed
+    static_assert(!__is_same(TypeList<__builtin_dedup_pack<int>...>, TypeList<int>)); // expected-error {{static assertion failed}}
+    ^
+          detected during instantiation of class "NonDepInTemplate<T> [with T=int]" at line 97
+
+"Test_name.c", line 120: error: static assertion failed
+  static_assert(DedupBases<Base1, Base1, Base2, Base1, Base2, Base2>{1, 2}.a1 != 1); // expected-error {{static assertion failed}} \
+  ^
+"Test_name.c", line 120: note: the final comparison was 1 != 1
+  static_assert(DedupBases<Base1, Base1, Base2, Base1, Base2, Base2>{1, 2}.a1 != 1); // expected-error {{static assertion failed}} \
+                                                                              ^
+
+"Test_name.c", line 122: error: static assertion failed
+  static_assert(DedupBases<Base1, Base1, Base2, Base1, Base2, Base2>{1, 2}.a2 != 2); // expected-error {{static assertion failed}} \
+  ^
+"Test_name.c", line 122: note: the final comparison was 2 != 2
+  static_assert(DedupBases<Base1, Base1, Base2, Base1, Base2, Base2>{1, 2}.a2 != 2); // expected-error {{static assertion failed}} \
+                                                                              ^
+
+"Test_name.c", line 126: error: pack expansion does not make use of any argument packs
+  constexpr int dedup_params(__builtin_dedup_pack<T...>... as) {
+                                                       ^
+
+"Test_name.c", line 127: error: fold expression does not refer to a parameter pack
+   return (as + ...);
+                ^
+
+"Test_name.c", line 129: error: no instance of function template "dedup_params" matches the argument list
+            argument types are: (int, int)
+  static_assert(dedup_params<int, int, short, int, short, short>(1, 2)); // expected-error {{no matching function}} \
+                ^
+"Test_name.c", line 126: note: number of parameters of function template "dedup_params" does not match the call
+  constexpr int dedup_params(__builtin_dedup_pack<T...>... as) {
+                ^
+
+"Test_name.c", line 136: error: no instance of function template "dedup_params_into_type_list" matches the argument list
+            argument types are: (TypeList<int, short, long> *, int, short, int, long, long)
+  static_assert(dedup_params_into_type_list(static_cast<TypeList<int,short,long>*>(nullptr), 1, short(1), 1, 1l, 1l) != 5); // expected-error {{static assertion failed}} \
+                ^
+"Test_name.c", line 133: note: candidate function template "dedup_params_into_type_list" failed deduction
+  constexpr int dedup_params_into_type_list(TypeList<__builtin_dedup_pack<T...>...> *, T... as) {
+                ^
+
+"Test_name.c", line 139: error: a nontype template parameter may not have class type
+  template <class T, __builtin_dedup_pack<T, int>...> // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here}}
+                     ^
+          detected during processing of template argument list for "InTemplateParams" based on template argument <int> at line 142
+
+"Test_name.c", line 139: error: a nontype template parameter may not have class type
+  template <class T, __builtin_dedup_pack<T, int>...> // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here}}
+                     ^
+          detected during processing of template argument list for "InTemplateParams" based on template arguments <int, <error-constant>> at line 142
+
+"Test_name.c", line 139: error: a nontype template parameter may not have class type
+  template <class T, __builtin_dedup_pack<T, int>...> // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here}}
+                     ^
+          detected during processing of template argument list for "InTemplateParams" based on template arguments <int, <error-constant>, <error-constant>> at line 142
+
+"Test_name.c", line 139: error: a nontype template parameter may not have class type
+  template <class T, __builtin_dedup_pack<T, int>...> // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here}}
+                     ^
+          detected during processing of template argument list for "InTemplateParams" based on template arguments <int, <error-constant>, <error-constant>, <error-constant>> at line 142
+
+"Test_name.c", line 139: error: a nontype template parameter may not have class type
+  template <class T, __builtin_dedup_pack<T, int>...> // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here}}
+                     ^
+          detected during processing of template argument list for "InTemplateParams" based on template arguments <int, <error-constant>, <error-constant>, <error-constant>, <error-constant>> at line 142
+
+"Test_name.c", line 146: error: a nontype template parameter may not have class type
+    template <__builtin_dedup_pack<T, int>...> // expected-error {{expansions of '__builtin_dedup_pack' are not supported here}}
+              ^
+          detected during instantiation of class "DeepTemplateParams<T> [with T=int]" at line 149
+
+"Test_name.c", line 155: error: pack expansion does not make use of any argument packs
+    MemInitializers() : __builtin_dedup_pack<T...>()... {} // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                                    ^
+
+"Test_name.c", line 163: error: fold expression does not refer to a parameter pack
+   return ((1 + __builtin_dedup_pack<T...>()) + ...); // expected-error {{expansions of '__builtin_dedup_pack' are not supported here.}} \
+                                                ^
+
+"Test_name.c", line 163: error: incomplete type "__builtin_dedup_pack<int, int, short, double, int, short, double, int>" is not allowed
+   return ((1 + __builtin_dedup_pack<T...>()) + ...); // expected-error {{expansions of '__builtin_dedup_pack' are not supported here.}} \
+                ^
+          detected during instantiation of "int dedup_in_expressions<T...>() [with T=<int, int, short, double, int, short, double, int>]" at line 166
+
+"Test_name.c", line 169: error: pack expansion does not make use of any argument packs
+  void in_exception_spec() throw(__builtin_dedup_pack<T...>...); // expected-error{{C++17 does not allow dynamic exception specifications}} \
+                                                           ^
+
+"Test_name.c", line 169: error: dynamic exception specifications are not permitted in this mode
+  void in_exception_spec() throw(__builtin_dedup_pack<T...>...); // expected-error{{C++17 does not allow dynamic exception specifications}} \
+                           ^
+
+"Test_name.c", line 169: error: expected a ")"
+  void in_exception_spec() throw(__builtin_dedup_pack<T...>...); // expected-error{{C++17 does not allow dynamic exception specifications}} \
+                                                           ^
+          detected during instantiation of "in_exception_spec" based on template arguments <int, double, int> at line 174
+
+"Test_name.c", line 178: error: pack expansion does not make use of any argument packs
+  constexpr bool in_type_trait = __is_trivially_constructible(int, __builtin_dedup_pack<T...>...);  // expected-error{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                                                                             ^
+
+"Test_name.c", line 178: error: incomplete type "__builtin_dedup_pack<int, int, int>" is not allowed
+  constexpr bool in_type_trait = __is_trivially_constructible(int, __builtin_dedup_pack<T...>...);  // expected-error{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                                                   ^
+          detected during instantiation of "const bool in_type_trait [with T=<int, int, int>]" at line 180
+
+"Test_name.c", line 178: error: expected a ")"
+  constexpr bool in_type_trait = __is_trivially_constructible(int, __builtin_dedup_pack<T...>...);  // expected-error{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                                                                             ^
+          detected during instantiation of "const bool in_type_trait [with T=<int, int, int>]" at line 180
+
+"Test_name.c", line 180: error: static assertion failed
+  static_assert(in_type_trait<int, int, int>); // expected-note{{in instantiation of variable template specialization}}
+  ^
+
+"Test_name.c", line 184: error: parameter pack "T" was referenced but not expanded
+    friend __builtin_dedup_pack<T>...; // expected-warning {{variadic 'friend' declarations are a C++2c extension}} \
+                                ^
+
+"Test_name.c", line 184: error: expected an identifier
+    friend __builtin_dedup_pack<T>...; // expected-warning {{variadic 'friend' declarations are a C++2c extension}} \
+                                  ^
+
+"Test_name.c", line 184: error: invalid friend declaration
+    friend __builtin_dedup_pack<T>...; // expected-warning {{variadic 'friend' declarations are a C++2c extension}} \
+    ^
+
+"Test_name.c", line 196: error: pack expansion does not make use of any argument packs
+    using __builtin_dedup_pack<T...>::func...; // expected-error  2 {{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                          ^
+
+"Test_name.c", line 196: error: incomplete type "__builtin_dedup_pack<>" is not allowed
+    using __builtin_dedup_pack<T...>::func...; // expected-error  2 {{expansions of '__builtin_dedup_pack' are not supported here.}}
+          ^
+          detected during instantiation of class "InUsingDecl<T...> [with T=<>]" at line 200
+
+"Test_name.c", line 196: error: expected a ";"
+    using __builtin_dedup_pack<T...>::func...; // expected-error  2 {{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                          ^
+          detected during instantiation of class "InUsingDecl<T...> [with T=<>]" at line 200
+
+"Test_name.c", line 196: error: incomplete type "__builtin_dedup_pack<WithFunc1, WithFunc2>" is not allowed
+    using __builtin_dedup_pack<T...>::func...; // expected-error  2 {{expansions of '__builtin_dedup_pack' are not supported here.}}
+          ^
+          detected during instantiation of class "InUsingDecl<T...> [with T=<WithFunc1, WithFunc2>]" at line 201
+
+"Test_name.c", line 196: error: expected a ";"
+    using __builtin_dedup_pack<T...>::func...; // expected-error  2 {{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                          ^
+          detected during instantiation of class "InUsingDecl<T...> [with T=<WithFunc1, WithFunc2>]" at line 201
+
+"Test_name.c", line 216: warning: pack expansion in init-capture is a C++20 feature
+      [...foos=__builtin_dedup_pack<T...>()]{}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+       ^
+
+"Test_name.c", line 216: error: pack expansion does not make use of any argument packs
+      [...foos=__builtin_dedup_pack<T...>()]{}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+       ^
+
+"Test_name.c", line 216: error: incomplete type "__builtin_dedup_pack<>" is not allowed
+      [...foos=__builtin_dedup_pack<T...>()]{}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+               ^
+          detected during instantiation of "int LambdaInitCaptures<T...>::test() [with T=<>]" at line 220
+
+"Test_name.c", line 216: error: incomplete type "__builtin_dedup_pack<int, int, int>" is not allowed
+      [...foos=__builtin_dedup_pack<T...>()]{}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+               ^
+          detected during instantiation of "int LambdaInitCaptures<T...>::test() [with T=<int, int, int>]" at line 221
+
+"Test_name.c", line 224: error: pack expansion does not make use of any argument packs
+  struct alignas(__builtin_dedup_pack<T...>...) AlignAs {}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                           ^
+
+"Test_name.c", line 224: error: incomplete type "__builtin_dedup_pack<>" is not allowed
+  struct alignas(__builtin_dedup_pack<T...>...) AlignAs {}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                 ^
+          detected during instantiation of class "AlignAs<T...> [with T=<>]" at line 225
+
+"Test_name.c", line 224: error: incomplete type "__builtin_dedup_pack<int, double>" is not allowed
+  struct alignas(__builtin_dedup_pack<T...>...) AlignAs {}; // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                 ^
+          detected during instantiation of class "AlignAs<T...> [with T=<int, double>]" at line 226
+
+"Test_name.c", line 155: error: "__builtin_dedup_pack" is not a nonstatic data member or base class of class "MemInitializers<>"
+    MemInitializers() : __builtin_dedup_pack<T...>()... {} // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                        ^
+          detected during instantiation of "MemInitializers<T...>::MemInitializers() [with T=<>]" at line 157
+
+"Test_name.c", line 155: error: expected a "{"
+    MemInitializers() : __builtin_dedup_pack<T...>()... {} // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                                    ^
+          detected during instantiation of "MemInitializers<T...>::MemInitializers() [with T=<>]" at line 157
+
+"Test_name.c", line 155: error: "__builtin_dedup_pack" is not a nonstatic data member or base class of class "MemInitializers<Base1, Base2>"
+    MemInitializers() : __builtin_dedup_pack<T...>()... {} // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                        ^
+          detected during instantiation of "MemInitializers<T...>::MemInitializers() [with T=<Base1, Base2>]" at line 158
+
+"Test_name.c", line 155: error: expected a "{"
+    MemInitializers() : __builtin_dedup_pack<T...>()... {} // expected-error 2{{expansions of '__builtin_dedup_pack' are not supported here.}}
+                                                    ^
+          detected during instantiation of "MemInitializers<T...>::MemInitializers() [with T=<Base1, Base2>]" at line 158
+
+61 errors detected in the compilation of "Test_name.c".

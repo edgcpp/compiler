@@ -1,0 +1,158 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 27: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cmpps(__a, __b, 32); // expected-error {{argument value 32 is outside the valid range [0, 31]}}
+           ^
+
+"Test_name.c", line 31: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cmppd(__a, __b, 32); // expected-error {{argument value 32 is outside the valid range [0, 31]}}
+           ^
+
+"Test_name.c", line 35: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cmpss(__a, __b, 32); // expected-error {{argument value 32 is outside the valid range [0, 31]}}
+           ^
+
+"Test_name.c", line 39: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cmpsd(__a, __b, 32); // expected-error {{argument value 32 is outside the valid range [0, 31]}}
+           ^
+
+"Test_name.c", line 43: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cmpps512_mask(__a, __b, 32, -1, 4); // expected-error {{argument value 32 is outside the valid range [0, 31]}}
+           ^
+
+"Test_name.c", line 47: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_cmppd512_mask(__a, __b, 32, -1, 4); // expected-error {{argument value 32 is outside the valid range [0, 31]}}
+           ^
+
+"Test_name.c", line 51: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpcomub(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 55: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpcomuw(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 59: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpcomud(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 63: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpcomuq(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 67: warning: function "__builtin_ia32_vpcomub" declared implicitly
+    return __builtin_ia32_vpcomub(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 71: warning: function "__builtin_ia32_vpcomuw" declared implicitly
+    return __builtin_ia32_vpcomuw(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 75: warning: function "__builtin_ia32_vpcomud" declared implicitly
+    return __builtin_ia32_vpcomud(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 79: warning: function "__builtin_ia32_vpcomuq" declared implicitly
+    return __builtin_ia32_vpcomuq(__a, __b, 8); // expected-error {{argument value 8 is outside the valid range [0, 7]}}
+           ^
+
+"Test_name.c", line 83: warning: function "__builtin_ia32_cmpps512_mask" declared implicitly
+    return __builtin_ia32_cmpps512_mask(__a, __b, 0, __u, 0); // expected-error {{invalid rounding argument}}
+           ^
+
+"Test_name.c", line 88: warning: function "__builtin_ia32_cmpps512_mask" declared implicitly
+    return __builtin_ia32_cmpps512_mask(__a, __b, 0, __u, 4); // no-error
+           ^
+
+"Test_name.c", line 92: warning: function "__builtin_ia32_cmpps512_mask" declared implicitly
+    return __builtin_ia32_cmpps512_mask(__a, __b, 0, __u, 8); // no-error
+           ^
+
+"Test_name.c", line 96: warning: function "__builtin_ia32_cmpps512_mask" declared implicitly
+    return __builtin_ia32_cmpps512_mask(__a, __b, 0, __u, 12); // no-error
+           ^
+
+"Test_name.c", line 100: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_getmantps512_mask(a, 0, b, (__mmask16)-1, 10); // expected-error {{invalid rounding argument}}
+           ^
+
+"Test_name.c", line 104: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_getmantss_round_mask(a, b, 0, c, (__mmask8)-1, 10); // expected-error {{invalid rounding argument}}
+           ^
+
+"Test_name.c", line 108: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_gatherd_d(a, b, c, mask, 5); // expected-error {{scale argument must be 1, 2, 4, or 8}}
+           ^
+
+"Test_name.c", line 112: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldq512(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 116: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldd512(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 120: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldw512(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 124: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdq512(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 128: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdd512(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 132: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdw512(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 136: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldq256(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 140: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldq128(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 144: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldd256(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 148: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldd128(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 152: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldw256(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 156: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshldw128(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 160: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdq256(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 164: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdq128(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 168: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdd256(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 172: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdd128(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 176: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdw256(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+"Test_name.c", line 180: error: builtin function is not available because vector types are not supported
+    return __builtin_ia32_vpshrdw128(__A, __B, 1024); // expected-error {{argument value 1024 is outside the valid range [0, 255]}}
+           ^
+
+31 errors detected in the compilation of "Test_name.c".

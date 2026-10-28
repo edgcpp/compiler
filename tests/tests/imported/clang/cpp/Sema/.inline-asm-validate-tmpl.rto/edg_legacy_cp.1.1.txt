@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: warning: parameter "value" was set but never used
+  template <int N> void	test(int value)
+                       	         ^
+
+"Test_name.c", line 17: warning: parameter "value" was set but never used
+  template <int N> void	testb(int value)
+                       	          ^
+
+"Test_name.c", line 23: warning: parameter "value" was set but never used
+  template <int N> void	testc(int value)
+                       	          ^
+
+"Test_name.c", line 27: warning: missing return statement at end of non-void function "foo"
+  int	foo() { testc<2>(10); }
+     	                      ^
+

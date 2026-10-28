@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 12: warning: pack indexing is a C++26 feature
+  using Type = Ts...[I]; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+               ^
+
+"Test_name.c", line 15: warning: pack indexing is a C++26 feature
+  constexpr auto Var = Ts...[I]; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+                       ^
+
+"Test_name.c", line 21: warning: pack indexing is a C++26 feature
+    return Ts...[I]; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+           ^
+
+"Test_name.c", line 26: warning: pack indexing is a C++26 feature
+    Ts...[0] a; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+    ^
+
+"Test_name.c", line 54: warning: pack indexing is a C++26 feature
+      decltype(pack...[0]) x5 = 42; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+               ^
+
+"Test_name.c", line 56: warning: pack indexing is a C++26 feature
+      [[maybe_unused]] decltype((pack...[0])) x6 = i; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+                                 ^
+
+"Test_name.c", line 74: warning: pack indexing is a C++26 feature
+    [[maybe_unused]] decltype(pack...[0]) x1; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+                              ^
+
+"Test_name.c", line 75: warning: pack indexing is a C++26 feature
+    [[maybe_unused]] decltype((pack...[0])) x2; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+                               ^
+
+"Test_name.c", line 84: warning: pack indexing is a C++26 feature
+    T...[0] a = p; // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+    ^
+
+"Test_name.c", line 85: warning: pack indexing is a C++26 feature
+    (T...[0])(a);  // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+     ^
+
+"Test_name.c", line 91: warning: pack indexing is a C++26 feature
+    same_type<decltype(Is...[0]), int>();	// { dg-warning "pack indexing only available with" "" { target c++23_down } }
+                       ^
+
+"Test_name.c", line 92: warning: pack indexing is a C++26 feature
+    same_type<decltype((Is...[0])), int>(); // { dg-warning "pack indexing only available with" "" { target c++23_down } }
+                        ^
+
+"Test_name.c", line 102: warning: variable "s" was declared but never referenced
+    S<int> s;
+           ^
+

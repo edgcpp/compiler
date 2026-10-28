@@ -1,0 +1,35 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -DDEPENDENT_OR Test_name.c
+"Test_name.c", line 21: error: static assertion failed
+    static_assert(test<true, False> == 2);
+    ^
+"Test_name.c", line 21: note: the final comparison was 1 == 2
+    static_assert(test<true, False> == 2);
+                                    ^
+
+"Test_name.c", line 22: error: static assertion failed
+    static_assert(test<true, True> == 2);
+    ^
+"Test_name.c", line 22: note: the final comparison was 1 == 2
+    static_assert(test<true, True> == 2);
+                                   ^
+
+"Test_name.c", line 23: error: static assertion failed
+    static_assert(test<true, char> == 2); // satisfaction of second term of || not considered
+    ^
+"Test_name.c", line 23: note: the final comparison was 1 == 2
+    static_assert(test<true, char> == 2); // satisfaction of second term of || not considered
+                                   ^
+
+"Test_name.c", line 25: error: static assertion failed
+    static_assert(test<false, True> == 2); // constraints are partially ordered
+    ^
+"Test_name.c", line 25: note: the final comparison was 1 == 2
+    static_assert(test<false, True> == 2); // constraints are partially ordered
+                                    ^
+
+"Test_name.c", line 12: error: name followed by "::" must be a class or namespace name
+    template<typename T> struct X { static constexpr bool value = T::value; }; // expected-error {{cannot be used prior to '::'}}
+                                                                  ^
+          detected during instantiation of class "PR45589::X<T> [with T=char]" at line 26
+
+5 errors detected in the compilation of "Test_name.c".

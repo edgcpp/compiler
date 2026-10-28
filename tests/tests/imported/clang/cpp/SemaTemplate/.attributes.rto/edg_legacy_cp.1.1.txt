@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 9: error: invalid alignment value specified by attribute
+      char c[1] __attribute__((__aligned__((N)))); // expected-error {{alignment is not a power of 2}}
+                                           ^
+          detected during:
+            instantiation of class "attribute_aligned::X<N> [with N=3]" at line 17
+            instantiation of class "attribute_aligned::check_alignment<N> [with N=3]" at line 22
+
+"Test_name.c", line 13: error: the size of an array must be greater than zero
+      int check_failed[X ? 1 : -1]; // expected-error {{array with a negative size}}
+                       ^
+          detected during instantiation of class "attribute_aligned::check<X> [with X=false]" at line 22
+
+"Test_name.c", line 36: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+        static_assert(alignof(t) == alignof(T), "my_aligned_storage align wrong"); // expected-warning{{'alignof' applied to an expression is a GNU extension}}
+                             ^
+
+"Test_name.c", line 324: warning: variable "Instance1" was declared but never referenced
+    AnnotatedPackTemplateStruct<int, 1, 2, 3> Instance1{};
+                                              ^
+
+"Test_name.c", line 325: warning: variable "Instance2" was declared but never referenced
+    AnnotatedPackTemplateStruct<float, 3, 2, 1> Instance2{};
+                                                ^
+
+"Test_name.c", line 326: warning: variable "Instance3" was declared but never referenced
+    AnnotatedPackTemplateStruct<bool, 7, 8, 9> Instance3{};
+                                               ^
+
+"Test_name.c", line 327: warning: variable "Instance4" was declared but never referenced
+    AnnotatedPackTemplateStruct<char, 1, 2, 3> Instance4{};
+                                               ^
+
+"Test_name.c", line 328: warning: variable "Instance5" was declared but never referenced
+    AnnotatedPackTemplateStruct<char> Instance5{};
+                                      ^
+
+"Test_name.c", line 472: warning: variable "Instance1" was declared but never referenced
+    InvalidAnnotatedPackTemplateStruct<int, 1, 2, 3> Instance1{};
+                                                     ^
+
+"Test_name.c", line 473: warning: variable "Instance2" was declared but never referenced
+    InvalidAnnotatedPackTemplateStruct<float, 3, 2, 1> Instance2{};
+                                                       ^
+
+"Test_name.c", line 474: warning: variable "Instance3" was declared but never referenced
+    InvalidAnnotatedPackTemplateStruct<char, 5, 6, 7> Instance3{};
+                                                      ^
+
+"Test_name.c", line 475: warning: variable "Instance4" was declared but never referenced
+    InvalidAnnotatedPackTemplateStruct<bool, 7, 8, 9> Instance4{};
+                                                      ^
+
+"Test_name.c", line 476: warning: variable "Instance5" was declared but never referenced
+    InvalidAnnotatedPackTemplateStruct<bool> Instance5{};
+                                             ^
+
+"Test_name.c", line 616: error: class "preferred_name::C<int>" has no member "f"
+      p.f(); // expected-error {{no member named 'f' in 'preferred_name::X'}}
+        ^
+
+"Test_name.c", line 617: error: class "preferred_name::C<float>" has no member "f"
+      q.f(); // expected-error {{no member named 'f' in 'preferred_name::Y'}}
+        ^
+
+"Test_name.c", line 618: error: class "preferred_name::C<double>" has no member "f"
+      r.f(); // expected-error {{no member named 'f' in 'preferred_name::C<double>'}}
+        ^
+
+"Test_name.c", line 625: error: class "preferred_name::D<int>" has no member "get"
+    int use_dint = D<int>().get(); // expected-error {{no member named 'get' in 'preferred_name::DInt'}}
+                            ^
+
+"Test_name.c", line 637: error: no suitable conversion function from "preferred_name::MemberTemplate<int>::Iter<const int>" to "int" exists
+    int n = it; // expected-error {{no viable conversion from 'preferred_name::MemberTemplate<int>::const_iterator' to 'int'}}
+            ^
+
+"Test_name.c", line 642: error: class "preferred_name::Foo<1, 2, int, float>" has no member "nosuch"
+    Foo<1, 2, int, float>::nosuch x; // expected-error {{no type named 'nosuch' in 'preferred_name::Bar<int, float>'}}
+                           ^
+
+"Test_name.c", line 642: error: variable "preferred_name::x" has already been defined (previous definition at line 576)
+    Foo<1, 2, int, float>::nosuch x; // expected-error {{no type named 'nosuch' in 'preferred_name::Bar<int, float>'}}
+                                  ^
+
+"Test_name.c", line 644: error: class "preferred_name::Foo<1, 2, int, float>" has no member "nosuch"
+  ::preferred_name::Foo<1, 2, int, float>::nosuch x; // expected-error {{no type named 'nosuch' in 'preferred_name::Bar<int, float>'}}
+                                           ^
+
+10 errors detected in the compilation of "Test_name.c".

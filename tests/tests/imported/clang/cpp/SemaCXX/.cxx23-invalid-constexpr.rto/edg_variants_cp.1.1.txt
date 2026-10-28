@@ -1,0 +1,72 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 12: warning: variable "D" was declared but never referenced
+    double D = 2.0 / 0.0; // expected-note {{division by zero}}
+           ^
+
+"Test_name.c", line 18: warning: variable "d2" was declared but never referenced
+      double d2 = 2.0 / 0.0; // expected-note {{division by zero}}
+             ^
+
+"Test_name.c", line 24: warning: variable "D" was declared but never referenced
+    double D = 2.0 / 0.0; // expected-note {{division by zero}}
+           ^
+
+"Test_name.c", line 80: error: default constexpr comparison function calls non-constexpr function function "X::operator==" (declared at line 57)
+    constexpr bool operator==(WrapperNonT const&) const = default;
+                   ^
+
+"Test_name.c", line 73: error: defaulted default constructor cannot be constexpr because the corresponding implicitly declared default constructor would not be constexpr
+    constexpr WrapperNonT() = default;
+              ^
+
+"Test_name.c", line 111: error: expression must have a constant value
+    constexpr auto C = F1(); // expected-error {{constexpr variable cannot have non-literal type 'const NonLiteral'}}
+                       ^
+"Test_name.c", line 111: note: cannot call non-constexpr function "F1" (declared at line 34)
+    constexpr auto C = F1(); // expected-error {{constexpr variable cannot have non-literal type 'const NonLiteral'}}
+                       ^
+
+"Test_name.c", line 111: error: a constexpr variable must have a literal type or a reference type
+    constexpr auto C = F1(); // expected-error {{constexpr variable cannot have non-literal type 'const NonLiteral'}}
+    ^
+
+"Test_name.c", line 114: error: expression must have a constant value
+    constexpr auto D = F2(L); // expected-error {{constexpr variable 'D' must be initialized by a constant expression}}
+                       ^
+"Test_name.c", line 114: note: the value of variable "L" (declared at line 113) cannot be used as a constant
+    constexpr auto D = F2(L); // expected-error {{constexpr variable 'D' must be initialized by a constant expression}}
+                          ^
+
+"Test_name.c", line 128: error: expression must have a constant value
+    static_assert((NonDefaultMembers(), true),""); // expected-error{{expression is not an integral constant expression}} \
+                   ^
+
+"Test_name.c", line 130: error: expression must have a constant value
+    constexpr bool FFF = (NonDefaultMembers() == NonDefaultMembers()); // expected-error {{must be initialized by a constant expression}} \
+                          ^
+
+"Test_name.c", line 130: error: expression must have a constant value
+    constexpr bool FFF = (NonDefaultMembers() == NonDefaultMembers()); // expected-error {{must be initialized by a constant expression}} \
+                                                 ^
+
+"Test_name.c", line 105: warning: variable "A" was declared but never referenced
+    constexpr int A = F(3); // expected-error {{constexpr variable 'A' must be initialized by a constant expression}}
+                  ^
+
+"Test_name.c", line 108: warning: variable "B" was declared but never referenced
+    constexpr int B = F0(0); // expected-error {{constexpr variable 'B' must be initialized by a constant expression}}
+                  ^
+
+"Test_name.c", line 111: warning: variable "C" was declared but never referenced
+    constexpr auto C = F1(); // expected-error {{constexpr variable cannot have non-literal type 'const NonLiteral'}}
+                   ^
+
+"Test_name.c", line 114: warning: variable "D" was declared but never referenced
+    constexpr auto D = F2(L); // expected-error {{constexpr variable 'D' must be initialized by a constant expression}}
+                   ^
+
+"Test_name.c", line 116: warning: variable "E" was declared but never referenced
+    constexpr auto E = FT(1); // expected-error {{constexpr variable 'E' must be initialized by a constant expression}}
+                   ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 -DHAVE -DHAVE_NOT -DHAVE -DHAVE_NOT --c Test_name.c
+"Test_name.c", line 14: error: identifier "__SIZEOF_INT128__" is undefined
+  int a[__SIZEOF_INT128__ == 16 ? 1 : -1];
+        ^
+
+"Test_name.c", line 23: error: integer constant is too large
+  long long SignedTooBig = 123456789012345678901234567890; // expected-error {{integer literal is too large to be represented in any integer type}}
+                         ^
+
+"Test_name.c", line 23: warning: integer conversion resulted in a change of sign
+  long long SignedTooBig = 123456789012345678901234567890; // expected-error {{integer literal is too large to be represented in any integer type}}
+                           ^
+
+"Test_name.c", line 24: error: integer constant is too large
+  unsigned long long UnsignedTooBig = 123456789012345678901234567890; // expected-error {{integer literal is too large to be represented in any integer type}}
+                                    ^
+
+"Test_name.c", line 28: warning: variable "mpi_int" was declared but never referenced
+  static const int mpi_int __attribute__(( type_tag_for_datatype(mpi,int) )) = 10;
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

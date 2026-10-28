@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 13: warning: this declaration has no storage class or type specifier
+  constexpr int i = 0234;  // c2y-warning {{octal literals without a '0o' prefix are deprecated}}
+  ^
+
+"Test_name.c", line 13: error: expected a ";"
+  constexpr int i = 0234;  // c2y-warning {{octal literals without a '0o' prefix are deprecated}}
+            ^
+
+"Test_name.c", line 14: warning: this declaration has no storage class or type specifier
+  constexpr int j = 0o234; /* ext-warning {{octal integer literals are a C2y extension}}
+  ^
+
+"Test_name.c", line 14: error: expected a ";"
+  constexpr int j = 0o234; /* ext-warning {{octal integer literals are a C2y extension}}
+            ^
+
+"Test_name.c", line 14: error: extra text after expected end of number
+  constexpr int j = 0o234; /* ext-warning {{octal integer literals are a C2y extension}}
+                     ^
+
+"Test_name.c", line 19: error: identifier "i" is undefined
+  static_assert(i == 156);
+                ^
+
+"Test_name.c", line 20: error: identifier "j" is undefined
+  static_assert(j == 156);
+                ^
+
+"Test_name.c", line 23: error: extra text after expected end of number
+  static_assert(0O1234 == 0o1234);  /* ext-warning 2 {{octal integer literals are a C2y extension}}
+                 ^
+
+"Test_name.c", line 23: error: extra text after expected end of number
+  static_assert(0O1234 == 0o1234);  /* ext-warning 2 {{octal integer literals are a C2y extension}}
+                           ^
+
+"Test_name.c", line 29: error: extra text after expected end of number
+  static_assert(0o234ull == 156);  /* ext-warning {{octal integer literals are a C2y extension}}
+                 ^
+
+"Test_name.c", line 29: error: static assertion failed
+  static_assert(0o234ull == 156);  /* ext-warning {{octal integer literals are a C2y extension}}
+  ^
+
+"Test_name.c", line 35: error: extra text after expected end of number
+  static const void *ptr = 0o0;  /* ext-warning {{octal integer literals are a C2y extension}}
+                            ^
+
+"Test_name.c", line 41: error: extra text after expected end of number
+  #if 0o123 != 0x53   /* ext-warning {{octal integer literals are a C2y extension}}
+       ^
+
+"Test_name.c", line 45: catastrophic error: #error directive: "oh no, math stopped working!"
+  #error "oh no, math stopped working!"
+   ^
+
+11 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

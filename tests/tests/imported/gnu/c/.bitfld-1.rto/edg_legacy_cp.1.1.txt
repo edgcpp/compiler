@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c89 --strict_gnu Test_name.c
+"Test_name.c", line 19: error: expression must be an integral constant expression
+    unsigned int a: 3.5;		/* { dg-error "integer constant" } */
+                    ^
+
+"Test_name.c", line 20: error: expression must have a constant value
+    unsigned int b: x;		/* { dg-error "integer constant" } */
+                    ^
+"Test_name.c", line 20: note: the value of variable "x" (declared at line 14) cannot be used as a constant
+    unsigned int b: x;		/* { dg-error "integer constant" } */
+                    ^
+
+"Test_name.c", line 21: error: invalid size for bit field
+    unsigned int c: -1;		/* { dg-error "negative width" } */
+                    ^
+
+"Test_name.c", line 22: error: zero-length bit field must be unnamed
+    unsigned int d: 0;		/* { dg-error "zero width" } */
+                 ^
+
+"Test_name.c", line 25: error: invalid type for a bit field
+    double e: 1;			/* { dg-error "invalid type" } */
+    ^
+
+"Test_name.c", line 26: error: invalid type for a bit field
+    float f: 1;			/* { dg-error "invalid type" } */
+    ^
+
+"Test_name.c", line 29: warning: bit field cannot contain all values of the enumerated type
+    enum foo i: 2;		/* { dg-warning "narrower" } */
+                ^
+
+"Test_name.c", line 32: error: invalid size for bit field
+    unsigned int k: 256;		/* { dg-error "exceeds its type" } */
+                    ^
+
+7 errors detected in the compilation of "Test_name.c".

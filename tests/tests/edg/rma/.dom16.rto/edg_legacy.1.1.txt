@@ -1,0 +1,27 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 4: remark: function "A::A()" cannot be inlined
+  struct A {
+         ^
+          detected during:
+            implicit generation of "A::A()" at line 16
+            implicit generation of "D::D()" at line 16
+
+"Test_name.c", line 7: remark: function "B::B()" cannot be inlined
+  struct B {
+         ^
+          detected during:
+            implicit generation of "B::B()" at line 16
+            implicit generation of "D::D()" at line 16
+
+"Test_name.c", line 10: remark: function "C::C()" cannot be inlined
+  struct C : virtual A, virtual B {
+         ^
+          detected during:
+            implicit generation of "C::C()" at line 16
+            implicit generation of "D::D()" at line 16
+
+"Test_name.c", line 13: remark: function "D::D()" cannot be inlined
+  struct D : virtual A, virtual B, virtual C { };
+         ^
+          detected during implicit generation of "D::D()" at line 16
+

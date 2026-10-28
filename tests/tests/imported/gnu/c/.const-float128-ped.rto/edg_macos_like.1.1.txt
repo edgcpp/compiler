@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 9: error: identifier "__float128" is undefined
+  __float128 a = 123.456789q; /* { dg-warning "non-standard suffix on floating constant" } */
+  ^
+
+"Test_name.c", line 9: error: extra text after expected end of number
+  __float128 a = 123.456789q; /* { dg-warning "non-standard suffix on floating constant" } */
+                           ^
+
+2 errors detected in the compilation of "Test_name.c".

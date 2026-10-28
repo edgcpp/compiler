@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --c --variadic_macros Test_name.c
+"Test_name.c", line 18: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #if defined __VA_ARGS__
+              ^
+
+"Test_name.c", line 21: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #if __VA_ARGS__
+      ^
+
+"Test_name.c", line 25: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #define __VA_ARGS__ 1
+          ^
+
+"Test_name.c", line 26: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #define OLM __VA_ARGS__
+              ^
+
+"Test_name.c", line 27: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #define FLM(__VA_ARGS__)
+              ^
+
+"Test_name.c", line 29: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #ifdef __VA_ARGS__
+         ^
+
+"Test_name.c", line 30: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #ifndef __VA_ARGS__
+          ^
+
+"Test_name.c", line 34: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #if defined __VA_ARGS__
+              ^
+
+"Test_name.c", line 35: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #if defined(__VA_ARGS__)
+              ^
+
+"Test_name.c", line 39: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #if __VA_ARGS__
+      ^
+
+"Test_name.c", line 43: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #elif __VA_ARGS__
+        ^
+
+"Test_name.c", line 46: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #pragma __VA_ARGS__
+          ^
+
+"Test_name.c", line 48: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #assert __VA_ARGS__
+          ^
+
+"Test_name.c", line 50: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  #undef __VA_ARGS__
+         ^
+
+"Test_name.c", line 52: error: the identifier __VA_ARGS__ can only appear in the replacement lists of variadic macros
+  struct __VA_ARGS__;
+         ^
+
+15 errors detected in the compilation of "Test_name.c".

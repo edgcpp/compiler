@@ -1,0 +1,13 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 7: remark: destructor for base class "A" (declared at line 5) is not virtual
+  struct C : public A, virtual public B {int f(); ~C();};
+                    ^
+
+"Test_name.c", line 7: remark: destructor for base class "B" (declared at line 6) is not virtual
+  struct C : public A, virtual public B {int f(); ~C();};
+                                      ^
+
+"Test_name.c", line 9: remark: destructor for base class "C" (declared at line 7) is not virtual
+  struct D : public C {X x; int f(); ~D();};
+                    ^
+

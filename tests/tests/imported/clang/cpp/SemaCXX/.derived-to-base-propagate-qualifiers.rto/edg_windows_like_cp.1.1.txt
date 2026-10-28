@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 25: error: expression must be a modifiable lvalue
+    CObj.Val = 1; // expected-error {{cannot assign to variable 'CObj' with const-qualified type 'const Derived'}}
+    ^
+
+"Test_name.c", line 28: error: expression must be a modifiable lvalue
+    CVObj.Val = 1; // expected-error {{cannot assign to variable 'CVObj' with const-qualified type 'const volatile Derived'}}
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --ms_extensions Test_name.c
+"Test_name.c", line 66: error: a value of type "void *" cannot be used to initialize an entity of type "int"
+  int k = 'x'_ambiguous; // expected-error {{ambiguous}}
+          ^
+
+"Test_name.c", line 69: error: function "operator ""_deleted(unsigned long long)" (declared at line 68) cannot be referenced -- it is a deleted function
+  int m = 42_deleted; // expected-error {{attempt to use a deleted}}
+          ^
+
+"Test_name.c", line 75: error: user-defined literal operator not found
+    int k1 = 'x'_using; // expected-error {{no matching literal operator for call to 'operator""_using'}}
+             ^
+
+"Test_name.c", line 85: error: ambiguous literal operators and/or literal operator template:
+            function "AmbiguousRawTemplate::operator ""_ambig1(const char *)" (declared at line 82)
+            function template "int AmbiguousRawTemplate::operator ""_ambig1<<unnamed>...>()" (declared at line 83)
+    int k1 = 123_ambig1; // expected-error {{call to 'operator""_ambig1' is ambiguous}}
+             ^
+
+"Test_name.c", line 93: error: ambiguous literal operators and/or literal operator template:
+            function "AmbiguousRawTemplate::operator ""_ambig2(const char *)" (declared at line 90)
+            function template "int AmbiguousRawTemplate::Inner::operator ""_ambig2<<unnamed>...>()" (declared at line 88)
+    int k2 = 123_ambig2; // expected-error {{call to 'operator""_ambig2' is ambiguous}}
+             ^
+
+"Test_name.c", line 102: error: ambiguous literal operators and/or literal operator template:
+            function template "int AmbiguousRawTemplate::Inner::operator ""_ambig2<<unnamed>...>()" (declared at line 88)
+            function "AmbiguousRawTemplate::operator ""_ambig2(const char *)" (declared at line 90)
+      int k4 = 123_ambig2; // expected-error {{ambiguous}}
+               ^
+
+"Test_name.c", line 114: error: ambiguous literal operators and/or literal operator template:
+            function template "int AmbiguousRawTemplate::Inner::operator ""_ambig2<<unnamed>...>()" (declared at line 88)
+            function "AmbiguousRawTemplate::operator ""_ambig2(const char *)" (declared at line 90)
+      int k7 = 123._ambig2; // expected-error {{ambiguous}}
+               ^
+
+"Test_name.c", line 135: error: identifier "_x" is undefined
+    int k = _x(); // expected-error {{undeclared identifier '_x'}}
+            ^
+
+"Test_name.c", line 138: error: user-defined literal operator not found
+    int k2 = 123_y; // expected-error {{no matching literal operator for call to 'operator""_y'}}
+             ^
+
+"Test_name.c", line 142: error: a parameter pack declaration is not allowed here
+    template<...> // expected-error {{expected template parameter}}
+             ^
+
+"Test_name.c", line 142: error: explicit type is missing ("int" assumed)
+    template<...> // expected-error {{expected template parameter}}
+             ^
+
+"Test_name.c", line 143: error: a literal operator template must have a template parameter list equivalent to "<char ...>"
+    int operator""_b(); // expected-error {{no function template matches function template specialization}}
+        ^
+
+"Test_name.c", line 153: error: a literal operator cannot be a member of a class
+              ""_q<'a'>;
+              ^
+
+"Test_name.c", line 153: error: expected an identifier
+              ""_q<'a'>;
+                  ^
+
+"Test_name.c", line 155: error: a literal operator cannot be a member of a class
+      T::template operator""_q<'a'>(); // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                          ^
+
+"Test_name.c", line 155: error: expected an expression
+      T::template operator""_q<'a'>(); // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                                    ^
+
+"Test_name.c", line 156: error: a literal operator cannot be a member of a class
+      T::template operator""_q<'a'>::X; // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                          ^
+
+"Test_name.c", line 156: error: the global scope has no "X"
+      T::template operator""_q<'a'>::X; // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                                     ^
+
+"Test_name.c", line 157: error: a literal operator cannot be a member of a class
+      T::operator""_q<'a'>(); // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                 ^
+
+"Test_name.c", line 157: error: expected an expression
+      T::operator""_q<'a'>(); // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                           ^
+
+"Test_name.c", line 158: error: a literal operator cannot be a member of a class
+      typename T::template operator""_q<'a'> a; // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                                   ^
+
+"Test_name.c", line 158: error: type name is not allowed
+      typename T::template operator""_q<'a'> a; // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+      ^
+
+"Test_name.c", line 158: error: identifier "a" is undefined
+      typename T::template operator""_q<'a'> a; // expected-error {{non-namespace scope 'T' cannot have a literal operator member}} expected-error +{{}}
+                                             ^
+
+"Test_name.c", line 159: error: a literal operator cannot be a member of a class
+      typename T::operator""_q(""); // expected-error +{{}} expected-note {{to match}}
+                          ^
+
+"Test_name.c", line 160: error: a literal operator cannot be a member of a class
+      T::operator""_q(""); // expected-error {{non-namespace scope 'T' cannot have a literal operator member}}
+                 ^
+
+"Test_name.c", line 167: error: a literal operator cannot be a member of a class
+      S::operator""_q(); // expected-error {{non-namespace scope 'S' cannot have a literal operator member}}
+                 ^
+
+26 errors detected in the compilation of "Test_name.c".

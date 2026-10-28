@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"Test_name.c", line 26: warning: variable "i" was declared but never referenced
+    internal_t i {};
+               ^
+
+"Test_name.c", line 27: warning: variable "ii" was declared but never referenced
+    internal_tmpl_t<int> ii {};
+                         ^
+
+"Test_name.c", line 33: warning: variable "i" was declared but never referenced
+    internal_t i {};
+               ^
+
+"Test_name.c", line 44: warning: expression has no effect
+    = (internal_t{}, internal_tmpl_t<int>{},
+       ^
+
+"Test_name.c", line 113: warning: expression has no effect
+    int z = (internal, 0);
+             ^
+
+"Test_name.c", line 115: warning: expression has no effect
+    value;
+    ^
+
+"Test_name.c", line 111: warning: variable "x" was declared but never referenced
+    int x = value;
+        ^
+
+"Test_name.c", line 112: warning: variable "y" was declared but never referenced
+    int y = ref;
+        ^
+
+"Test_name.c", line 113: warning: variable "z" was declared but never referenced
+    int z = (internal, 0);
+        ^
+
+"Test_name.c", line 116: warning: variable "b" was declared but never referenced
+    bool b = value < value;
+         ^
+
+"Test_name.c", line 48: warning: expression has no effect
+    = (internal_t{}, internal_tmpl_t<T>{},
+       ^
+          detected during instantiation of "int var_tmpl [with T=ok_inst_tag]" 
+
+"Test_name.c", line 16: warning: function "<unnamed>::ns::internal_ovl(<unnamed>::ns::internal_t)" was declared but never referenced
+      void internal_ovl(internal_t) {}
+           ^
+
