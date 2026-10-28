@@ -14,3 +14,15 @@ bool x4 = a >= b;
 
 bool y1 = a == p;  // Array and pointer: not diagnosed.
 bool y2 = p < a;
+
+// Class operands converted to arrays by conversion functions.
+struct C { using arr_t = int[2]; operator arr_t &() const; };
+struct P { operator int *() const; };
+void g(C c, P q) {
+  bool z1 = c == c;    // Two arrays: diagnosed.
+  bool z2 = c < c;
+  bool z3 = c == a;
+  bool z4 = c == p;    // Array and pointer: not diagnosed.
+  bool z5 = q == q;    // Conversions to pointers: not diagnosed.
+  bool z6 = +c == +c;  // Explicit decay: not diagnosed.
+}

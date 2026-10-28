@@ -5,8 +5,11 @@ A comparison between two arrays using an equality or relational operator is
 deprecated in C++20 and not allowed in C++26 (P2865).  The front end did not
 diagnose it.  It is now a warning in C++20 and C++23, and an error in C++26
 (only a warning when emulating GCC versions before 15 or Clang versions before
-20, which do the same).  For example, with --c++26:
+20, which do the same).  This includes class operands that are converted to
+arrays by a conversion function.  For example, with --c++26:
 
   int a[2], b[2];
-  bool x = a == b;   // Now an error.
+  bool x = a == b;      // Now an error.
   bool y = a == &b[0];  // Okay: one operand is a pointer.
+  struct C { using A = int[2]; operator A &() const; } c;
+  bool z = c == c;      // Now an error.

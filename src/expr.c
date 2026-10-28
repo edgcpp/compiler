@@ -32487,18 +32487,37 @@ different enum types (or, in C, have different affiliated enum types).
 }  /* diagnose_comparison_if_different_enum_types */
 
 
+static a_boolean is_array_comparison_operand(an_operand *opnd)
+/*
+Return TRUE if opnd, an operand of a built-in equality or relational operator,
+is an array: either it has array type, or it is a class operand that overload
+resolution converted to an array and then to a pointer (e.g., through a
+conversion function returning a reference to an array).
+*/
+{
+  a_boolean is_array = is_array_type(opnd->type);
+
+  if (!is_array && is_expression_operand(opnd)) {
+    an_expr_node_ptr expr = opnd->variant.expression;
+    is_array = is_operation_node(expr) &&
+               node_operator_is(expr, eok_array_to_pointer);
+  }  /* if */
+  return is_array;
+}  /* is_array_comparison_operand */
+
+
 static void check_for_array_comparison(an_operand         *opnd1,
                                        an_operand         *opnd2,
                                        a_source_position  *operator_pos)
 /*
 opnd1 and opnd2 are the operands of a built-in equality or relational
 operator at operator_pos, before the array-to-pointer conversion.  If both
-have array type, issue a diagnostic: such comparisons are deprecated in C++20
-and not allowed in C++26 (P2865).
+are arrays, issue a diagnostic: such comparisons are deprecated in C++20 and
+not allowed in C++26 (P2865).
 */
 {
-  if (cpp20_mode && is_array_type(opnd1->type) &&
-      is_array_type(opnd2->type)) {
+  if (cpp20_mode && is_array_comparison_operand(opnd1) &&
+      is_array_comparison_operand(opnd2)) {
     if (cpp26_mode && !gpp_version_is(<150000) &&
         !clangcpp_version_is(<200000)) {
       /* GCC 15 and Clang 20 implement P2865.  Earlier versions only issue a

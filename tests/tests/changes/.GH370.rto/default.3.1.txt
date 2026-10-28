@@ -15,4 +15,16 @@ fe_only -DTEST_NUMBER=3 --c++26 --clang_version 200000 Test_name.c
   bool x4 = a >= b;
               ^
 
-4 errors detected in the compilation of "Test_name.c".
+"Test_name.c", line 22: error: comparison between two arrays is not allowed
+    bool z1 = c == c;    // Two arrays: diagnosed.
+                ^
+
+"Test_name.c", line 23: error: comparison between two arrays is not allowed
+    bool z2 = c < c;
+                ^
+
+"Test_name.c", line 24: error: comparison between two arrays is not allowed
+    bool z3 = c == a;
+                ^
+
+7 errors detected in the compilation of "Test_name.c".
