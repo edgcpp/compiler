@@ -20690,30 +20690,30 @@ static a_boolean bind_template_params_for_lambda_rescan(
                        a_saved_template_param_symbol_ptr  *p_saved,
                        size_t                             *p_num_saved)
 /*
-If an instantiation scope for template_param_list is active and lambda names
-a parameter, bind those with a value in template_arg_list for the rescan of
-tokens; *p_saved and *p_num_saved get the state to restore (NULL if none).
-Return FALSE if a named parameter has no value (lookup would skip it and find
-an outer entity of that name).  Generic lambdas and packs are not handled.
+If an instantiation scope for template_param_list is active, bind the
+parameters that have a value in template_arg_list for the rescan of tokens;
+*p_saved and *p_num_saved get the state to restore (NULL if none).  Return
+FALSE if lambda names a parameter that has no value (lookup would skip it and
+find an outer entity of that name).  Generic lambdas and lambdas that name a
+pack are not handled.
 */
 {
   a_template_param_ptr  tpp;
-  a_boolean             names_a_parameter = FALSE;
-  a_boolean             names_a_pack = FALSE;
+  a_boolean             bind_params = FALSE;
   a_boolean             all_named_have_values = TRUE;
 
   *p_saved = NULL;
   *p_num_saved = 0;
   if (!lambda->is_generic && !lambda->has_template_param_list &&
       instantiation_scope_is_active_for_param_list(template_param_list)) {
+    bind_params = TRUE;
     for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
-      if (lambda_tokens_name_template_param(tokens, tpp)) {
-        names_a_parameter = TRUE;
-        if (tpp->is_pack) names_a_pack = TRUE;
+      if (tpp->is_pack && lambda_tokens_name_template_param(tokens, tpp)) {
+        bind_params = FALSE;
       }  /* if */
     }  /* for */
   }  /* if */
-  if (names_a_parameter && !names_a_pack) {
+  if (bind_params) {
     a_saved_template_param_symbol_ptr saved;
     size_t                            num_saved;
     saved = save_template_param_symbols(template_param_list, &num_saved);
