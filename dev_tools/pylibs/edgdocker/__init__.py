@@ -383,6 +383,10 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
     'run',
     # Automatically destroy the container when its task is done.
     '--rm',
+    # Don't persist the container's output; it is already streamed to the
+    # attached terminal.
+    '--log-driver',
+    'none',
     # The container needs privileges for various things, e.g. setarch
     '--privileged',
     # Set a sane hostname.
