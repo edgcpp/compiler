@@ -11093,14 +11093,19 @@ member and the object are marked initialized as subobjects of complete_obj
 the function-name field is set as for __builtin_source_location (the enclosing
 function's __func__ string); otherwise it is set to the empty string, which is
 what source_location_of uses since an entity's function field is
-implementation-defined.  On any construction failure *p_result is set to FALSE
-(any needed diagnostic having been issued).  Return TRUE if the source-location
-type was valid (so the builtin/intrinsic was handled), FALSE if it was an error
-type (which has already been diagnosed).
+implementation-defined.  If use_pos is NULL, the result is a value-initialized
+std::source_location (whose pointer member is null, so that all its queries
+return zero or the empty string); that is only possible for a class result.
+On any construction failure *p_result is set to FALSE (any needed diagnostic
+having been issued).  Return TRUE if the source-location type was valid (so
+the builtin/intrinsic was handled), FALSE if it was an error type (which has
+already been diagnosed).
 */
 {
   a_boolean                       handled = TRUE;
   a_gnu_source_location_type_info interp_inf;
+
+  check_assertion(use_pos != NULL || result_class_type != NULL);
 
   /* Load the type information; if the type is invalid, silently fail (this has
      already been diagnosed). */
@@ -11110,11 +11115,13 @@ type (which has already been diagnosed).
     do_constexpr_fail(*p_result);
     handled = FALSE;
   } else {
-    a_byte  *obj_storage;
-    /* Allocate the source location __impl object. */
-    alloc_storage_promotable_object(ips, interp_inf.impl_type, &obj_storage,
-                                    p_result);
-    if (*p_result) {
+    a_byte  *obj_storage = NULL;
+    if (use_pos != NULL) {
+      /* Allocate the source location __impl object. */
+      alloc_storage_promotable_object(ips, interp_inf.impl_type, &obj_storage,
+                                      p_result);
+    }  /* if */
+    if (*p_result && obj_storage != NULL) {
       /* Populate the source location __impl object.  The fields (and their
          associated types) are guaranteed to have been validated when the
          source-location type was first used. */
@@ -11155,14 +11162,16 @@ type (which has already been diagnosed).
       do_constexpr_write_source_column(ips, use_pos, column_fp->type,
                                        column_f_bytes, p_result);
       mark_subobject_initialized(column_f_bytes, obj_storage);
-
+    }  /* if */
+    if (*p_result) {
       if (result_class_type == NULL) {
         /* Scalar (pointer) result: result_storage is the __impl pointer. */
         clear_address(result_storage, obj_storage);
         mark_complete_object_initialized(result_storage);
       } else {
-        /* Class result: store the __impl address in the source_location
-           object's single pointer member and mark the member and the object
+        /* Class result: store the __impl address (null for a
+           value-initialized source_location) in the source_location object's
+           single pointer member and mark the member and the object
            initialized as subobjects of complete_obj, mirroring
            make_reflective_string_view. */
         a_field_ptr  slfp = next_alloc_field(fields_of(result_class_type));
@@ -15736,7 +15745,10 @@ static a_boolean do_constexpr_std_meta_type_of(
                                         a_byte                *result_storage,
                                         a_byte                *complete_obj)
 /*
-Implement std::meta::type_of(info).
+Implement std::meta::type_of(info).  The type of a nonstatic member function
+is a plain function type (N5046 [dcl.fct]): the class of the implicit object
+parameter is not part of it, but its cv-qualifiers and ref-qualifier are
+(e.g., "void() const" for "void f() const").
 
 See do_constexpr_intrinsic_call for the meaning of the parameters.
 */
@@ -15781,6 +15793,15 @@ See do_constexpr_intrinsic_call for the meaning of the parameters.
     default:
       break;
   }  /* switch */
+  if (tp != NULL && tp->kind == tk_routine &&
+      tp->variant.routine.extra_info->this_class != NULL) {
+    /* Drop the class of a nonstatic member function from its type.  The new
+       type must outlive the evaluation. */
+    a_memory_region_number  region_to_switch_back_to;
+    switch_to_file_scope_region(&region_to_switch_back_to);
+    tp = routine_type_without_this_class(tp, /*copy_default_args=*/FALSE);
+    switch_back_to_original_region(region_to_switch_back_to);
+  }  /* if */
   if (tp == NULL) {
     info_with_pos(ec_invalid_reflection_for_intrinsic,
                   &call_node->position, ips);
@@ -15835,10 +15856,11 @@ Set *parent_rvp to the reflection of the parent that std::meta::parent_of and
 std::meta::has_parent report for the entity reflected by rvp.  That parent is
 the enumeration type of an enumerator, the class of which the entity is a
 member, or else the nearest namespace or file scope that encloses its
-declaration.  Return TRUE when there is such a parent, and FALSE (leaving
+declaration (for a namespace or namespace alias, that is the enclosing
+namespace).  Return TRUE when there is such a parent, and FALSE (leaving
 *parent_rvp untouched) when the entity is of a kind that has none to report,
-such as an unnamed constant or a type that is not a class, an enumeration, or
-a typedef.  rvp is modified in place: It is normalized by applying
+such as an unnamed constant, the global namespace, or a type that is not a
+class, an enumeration, or a typedef.  rvp is modified in place: It is normalized by applying
 strip_template_arg and extract_reflected_entity to it (in that order).
 */
 {
@@ -15886,6 +15908,16 @@ strip_template_arg and extract_reflected_entity to it (in that order).
       break;
     case iek_variable:
       scp = &((a_variable*)rvp->entity.ptr)->source_corresp;
+      break;
+    case iek_namespace:
+      /* A namespace alias. */
+      scp = &((a_namespace*)rvp->entity.ptr)->source_corresp;
+      break;
+    case iek_scope:
+      /* A namespace is reflected as its scope; the correspondence is that of
+         the namespace.  The global namespace (and any other scope) has
+         none, and therefore no parent. */
+      scp = source_corresp_for_reflection(rvp);
       break;
     default:
       break;
@@ -16698,19 +16730,23 @@ See do_constexpr_intrinsic_call for the meaning of the parameters.
 
 
 static a_boolean do_constexpr_std_meta_source_location_of(
-                                        an_interpreter_state  *ips,
-                                        a_routine_ptr         callee,
-                                        an_expr_node_ptr      call_node,
-                                        a_byte                **p_arg_bytes,
-                                        a_byte                *result_storage,
-                                        a_byte                *complete_obj)
+                                   an_interpreter_state        *ips,
+                                   a_routine_ptr               callee,
+                                   ARG_UNUSED an_expr_node_ptr call_node,
+                                   a_byte                      **p_arg_bytes,
+                                   a_byte                      *result_storage,
+                                   a_byte                      *complete_obj)
 /*
 Implement std::meta::source_location_of(<reflection_value>).  It returns a
 std::source_location describing the declaration of the reflected entity.  The
 file/line/column come from the entity's declaration position; the function-name
-field is left empty (it is implementation-defined for an entity).  The call
-fails to be a constant expression for a reflection that has no associated
-declaration position.
+field is left empty (it is implementation-defined for an entity).  N5046
+[meta.reflection.names] specifies the function without a Throws clause (in
+P2996R13, without a "Constant When" clause), so the call is always a constant
+expression: a reflection of a value, of a type other than a class or
+enumeration type (that is not a type alias), of the global namespace, or of a
+data member description yields a value-initialized std::source_location, as
+does any other reflection with no associated declaration position.
 
 See do_constexpr_intrinsic_call for the meaning of the parameters.
 */
@@ -16719,26 +16755,48 @@ See do_constexpr_intrinsic_call for the meaning of the parameters.
   a_reflection_value  *rvp = (a_reflection_value*)p_arg_bytes[0];
   a_type_ptr          rtp = skip_typerefs(callee->type), sl_type;
   a_source_correspondence_ptr
-                      scp;
+                      scp = NULL;
   a_source_position   *use_pos = NULL;
 
   strip_template_arg(rvp);
-  scp = source_corresp_for_reflection(rvp);
+  switch (rvp->entity.kind) {
+    case iek_constant:
+      /* A value has no source location; a named constant (an enumerator) is
+         an entity, which does. */
+      scp = source_corresp_for_reflection(rvp);
+      if (scp != NULL && scp->name == NULL) scp = NULL;
+      break;
+    case iek_type:
+      { a_type_ptr  tp = (a_type_ptr)rvp->entity.ptr;
+        if (type_is_typedef(tp)) {
+          /* A type alias. */
+          scp = source_corresp_for_reflection(rvp);
+        } else {
+          tp = skip_typerefs(tp);
+          if (is_immediate_class_type(tp) || is_immediate_enum_type(tp)) {
+            scp = &tp->source_corresp;
+          }  /* if */
+        }  /* if */
+      }
+      break;
+    case iek_none:
+    case iek_data_member_spec:
+      /* No source location. */
+      break;
+    default:
+      /* The global namespace has no source correspondence. */
+      scp = source_corresp_for_reflection(rvp);
+      break;
+  }  /* switch */
   if (scp != NULL && scp->decl_position.seq != 0) {
     use_pos = &scp->decl_position;
   }  /* if */
-  if (use_pos == NULL) {
-    do_constexpr_fail(result);
-    info_with_pos(ec_invalid_reflection_for_intrinsic, &call_node->position,
-                  ips);
-  } else {
-    check_assertion(type_is(rtp, tk_routine));
-    sl_type = skip_typerefs(rtp->variant.routine.return_type);
-    (void)build_source_location_value(ips, use_pos,
-                                      /*use_current_function=*/FALSE,
-                                      sl_type, result_storage, complete_obj,
-                                      &result);
-  }  /* if */
+  check_assertion(type_is(rtp, tk_routine));
+  sl_type = skip_typerefs(rtp->variant.routine.return_type);
+  (void)build_source_location_value(ips, use_pos,
+                                    /*use_current_function=*/FALSE,
+                                    sl_type, result_storage, complete_obj,
+                                    &result);
   return result;
 }  /* do_constexpr_std_meta_source_location_of */
 
@@ -16784,6 +16842,164 @@ not the scope).
     }  /* if */
   }  /* for */
 }  /* collect_scoped_reflections */
+
+
+typedef struct a_member_order_key {
+  /* The sort key of a member in sort_reflections_in_declaration_order. */
+  a_boolean	is_implicit;
+			/* TRUE for an implicitly-declared member, i.e., a
+			   compiler-generated function. */
+  a_decl_sequence_number
+		seq;
+			/* The declaration sequence number of the symbol of
+			   the member, or, for a member that has none, that
+			   of the member after which it is placed. */
+  a_boolean	follows;
+			/* TRUE if the member has no sequence number of its
+			   own and seq is that of its predecessor. */
+} a_member_order_key;
+
+namespace detail {
+
+template<>
+struct Is_trivially_copyable_edg_impl<a_member_order_key> :
+                                                Integral_constant<bool, true> {
+};  /* Is_trivially_copyable_edg_impl */
+
+template<>
+struct Is_trivially_destructible_edg_impl<a_member_order_key> :
+                                                Integral_constant<bool, true> {
+};  /* Is_trivially_destructible_edg_impl */
+
+}  /* namespace detail */
+
+
+static a_decl_sequence_number decl_sequence_for_reflection(
+                                                 a_reflection_value  *rvp)
+/*
+Return the declaration sequence number (see a_symbol::decl_seq) of the symbol
+of the entity reflected by rvp, or NO_DECL_SEQUENCE_NUMBER if the entity has
+no symbol or its symbol has no sequence number.  The latter is the case for
+compiler-generated special member functions and for unnamed bit-fields, which
+all share one symbol.
+*/
+{
+  a_decl_sequence_number   seq = NO_DECL_SEQUENCE_NUMBER;
+  a_source_correspondence  *scp = source_corresp_for_reflection(rvp);
+
+  if (scp != NULL && scp->assoc_info != NULL) {
+    seq = ((a_symbol_ptr)scp->assoc_info)->decl_seq;
+  }  /* if */
+  return seq;
+}  /* decl_sequence_for_reflection */
+
+
+static int compare_member_order_keys(const a_member_order_key  *k1,
+                                     const a_member_order_key  *k2)
+/*
+Compare two member sort keys (see sort_reflections_in_declaration_order).
+Return a negative value if the member with key k1 comes first, a positive
+value if the member with key k2 does, and 0 if the keys are the same.
+Implicitly-declared members come after all the others; among the rest, the
+members are ordered by their declaration sequence numbers, and a member
+placed after its predecessor follows the predecessor itself.
+*/
+{
+  int  result;
+
+  if (k1->is_implicit != k2->is_implicit) {
+    result = k1->is_implicit ? 1 : -1;
+  } else if (k1->seq != k2->seq) {
+    result = k1->seq < k2->seq ? -1 : 1;
+  } else if (k1->follows != k2->follows) {
+    result = k1->follows ? 1 : -1;
+  } else {
+    result = 0;
+  }  /* if */
+  return result;
+}  /* compare_member_order_keys */
+
+
+static void sort_reflections_in_declaration_order(
+                                  Dyn_array<a_reflection_value>  *reflections)
+/*
+Sort the reflections of the members of a class or namespace in *reflections
+into the order in which the members are declared, as std::meta::members_of
+requires (N5046 [meta.reflection.member.queries]).  The order is that of the
+declaration sequence numbers of the symbols of the members (a_symbol::decl_seq;
+see decl_sequence_for_reflection).  A sequence number is assigned at the first
+declaration of a member, so, unlike the declaration positions, the numbers are
+not disturbed by macro expansions, and they do not move to the definition of a
+member that is defined outside its class or namespace.  Implicitly-declared
+members (compiler-generated functions) have no sequence number and come after
+all the others.  An unnamed bit-field has no sequence number either; it is
+placed after the member whose declaration position precedes its own most
+closely or, if there are no positions to compare, after the member collected
+before it.  Members whose keys are still the same keep their relative order.
+*/
+{
+  size_t                         n = reflections->length(), i, j;
+  Dyn_array<a_member_order_key>  keys(n);
+  Dyn_array<size_t>              order(n);
+  Dyn_array<a_reflection_value>  sorted(n);
+
+  for (i = 0; i < n; ++i) {
+    a_reflection_value  *rvp = &(*reflections)[i];
+    a_member_order_key  key;
+    key.is_implicit = (rvp->entity.kind == iek_routine &&
+                       ((a_routine*)rvp->entity.ptr)->compiler_generated);
+    key.seq = key.is_implicit ? NO_DECL_SEQUENCE_NUMBER
+                              : decl_sequence_for_reflection(rvp);
+    key.follows = FALSE;
+    keys.push_back(key);
+  }  /* for */
+  /* Give the members without a sequence number (unnamed bit-fields) the
+     number of a predecessor.  Only members whose declaration position is
+     before that of the bit-field are candidates, and the one declared last
+     (with the largest number) is the closest. */
+  for (i = 0; i < n; ++i) {
+    if (!keys[i].is_implicit && keys[i].seq == NO_DECL_SEQUENCE_NUMBER) {
+      a_source_correspondence  *scp;
+      a_boolean                found = FALSE;
+      scp = source_corresp_for_reflection(&(*reflections)[i]);
+      if (scp != NULL && scp->decl_position.seq != 0) {
+        for (j = 0; j < n; ++j) {
+          a_source_correspondence  *scp2;
+          if (keys[j].is_implicit ||
+              keys[j].seq == NO_DECL_SEQUENCE_NUMBER ||
+              keys[j].follows) {
+            continue;
+          }  /* if */
+          scp2 = source_corresp_for_reflection(&(*reflections)[j]);
+          if (scp2 != NULL && scp2->decl_position.seq != 0 &&
+              compare_source_positions(&scp2->decl_position,
+                                       &scp->decl_position) < 0 &&
+              (!found || keys[j].seq > keys[i].seq)) {
+            keys[i].seq = keys[j].seq;
+            found = TRUE;
+          }  /* if */
+        }  /* for */
+      }  /* if */
+      if (!found && i > 0) {
+        keys[i].seq = keys[i-1].seq;
+      }  /* if */
+      keys[i].follows = TRUE;
+    }  /* if */
+  }  /* for */
+  for (i = 0; i < n; ++i) {
+    order.push_back(i);
+  }  /* for */
+  sort(&order, [&keys](size_t  i1, size_t  i2) {
+    int  cmp = compare_member_order_keys(&keys[i1], &keys[i2]);
+    return cmp != 0 ? cmp < 0 : i1 < i2;
+  });
+  for (i = 0; i < n; ++i) {
+    sorted.push_back((*reflections)[order[i]]);
+  }  /* for */
+  for (i = 0; i < n; ++i) {
+    (*reflections)[i] = sorted[i];
+  }  /* for */
+}  /* sort_reflections_in_declaration_order */
 
 
 static a_constant_ptr info_array_element_pointer(
@@ -17186,6 +17402,8 @@ See do_constexpr_intrinsic_call for the meaning of the parameters.
                   ips);
     goto done;
   }  /* if */
+  /* The members were collected by kind; put them in declaration order. */
+  sort_reflections_in_declaration_order(&all_reflections);
   /* Keep only members that are accessible from the given access_context. */
   keep_accessible_reflections(&all_reflections, &scope_rv, &dc_rv);
   result = make_info_vector(ips, callee, call_node, &all_reflections,

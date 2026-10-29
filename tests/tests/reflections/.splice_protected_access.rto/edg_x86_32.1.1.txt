@@ -1,0 +1,34 @@
+eccp -DTEST_NUMBER=1 --c++26 --set_flag=reflection Test_name.c
+"/usr/include/c++/15/type_traits", line 514: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+      struct __is_floating_point_helper<__gnu_cxx::__bfloat16_t>
+                                                   ^
+
+"/usr/include/c++/15/bits/cpp_type_traits.h", line 348: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+      struct __is_floating<__gnu_cxx::__bfloat16_t>
+                                      ^
+
+"/usr/include/c++/15/ext/type_traits.h", line 224: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+      struct __promote<__gnu_cxx::__bfloat16_t>
+                                  ^
+
+"/usr/include/c++/15/ext/type_traits.h", line 225: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+      { typedef __gnu_cxx::__bfloat16_t __type; };
+                           ^
+
+"/usr/include/c++/15/bits/std_abs.h", line 135: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+    constexpr __gnu_cxx::__bfloat16_t
+                         ^
+
+"/usr/include/c++/15/bits/std_abs.h", line 136: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+    abs(__gnu_cxx::__bfloat16_t __x)
+                   ^
+
+"/usr/include/c++/15/bits/std_abs.h", line 137: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+    { return __gnu_cxx::__bfloat16_t(__builtin_fabsf(__x)); }
+                        ^
+
+"/usr/include/c++/15/bits/ostream.h", line 286: error: namespace "__gnu_cxx" has no member "__bfloat16_t"
+        operator<<(__gnu_cxx::__bfloat16_t __f)
+                              ^
+
+8 errors detected in the compilation of "Test_name.c".
