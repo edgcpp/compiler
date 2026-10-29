@@ -88,6 +88,27 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
             instantiation of "lambda [](char, int, long, unsigned int)->auto" based on template argument <char> at line 43
             instantiation of type "lambda_calls::MeowMeow<char, int, long, unsigned int>" at line 81
 
+"Test_name.c", line 43: error: argument list for alias template "lambda_calls::U" is missing
+  using MeowMeow = decltype([]<True>(U...) {}.template operator()<char>(U()...));
+                                     ^
+          detected during:
+            instantiation of "lambda [](char, int, long, unsigned int)->auto" based on template argument <char> at line 43
+            instantiation of type "lambda_calls::MeowMeow<char, int, long, unsigned int>" at line 81
+
+"Test_name.c", line 43: error: argument list for alias template "lambda_calls::U" is missing
+  using MeowMeow = decltype([]<True>(U...) {}.template operator()<char>(U()...));
+                                     ^
+          detected during:
+            instantiation of "lambda [](char, int, long, unsigned int)->auto" based on template argument <char> at line 43
+            instantiation of type "lambda_calls::MeowMeow<char, int, long, unsigned int>" at line 81
+
+"Test_name.c", line 43: error: argument list for alias template "lambda_calls::U" is missing
+  using MeowMeow = decltype([]<True>(U...) {}.template operator()<char>(U()...));
+                                     ^
+          detected during:
+            instantiation of "lambda [](char, int, long, unsigned int)->auto" based on template argument <char> at line 43
+            instantiation of type "lambda_calls::MeowMeow<char, int, long, unsigned int>" at line 81
+
 "Test_name.c", line 43: error: cannot deduce the return type of function "lambda [](char, int, long, unsigned int)->auto [with <unnamed>=char]" (declared at line 43); it has not been defined
   using MeowMeow = decltype([]<True>(U...) {}.template operator()<char>(U()...));
                                                        ^
@@ -97,25 +118,9 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     int x = T11()();
         ^
 
-"Test_name.c", line 100: error: identifier "T" is undefined
-    return Value<T, U...> + V + (int)sizeof(Param);
-                 ^
-          detected during:
-            instantiation of function "lambda [](auto)->auto [with V=0, <auto-1>=const char *]" at line 101
-            instantiation of type "lambda_calls::GH82104::T14<char, char>" at line 103
-            instantiation of type "lambda_calls::GH82104::T15<char>" at line 105
-
 "Test_name.c", line 100: error: argument list for alias template "lambda_calls::U" is missing
     return Value<T, U...> + V + (int)sizeof(Param);
                     ^
-          detected during:
-            instantiation of function "lambda [](auto)->auto [with V=0, <auto-1>=const char *]" at line 101
-            instantiation of type "lambda_calls::GH82104::T14<char, char>" at line 103
-            instantiation of type "lambda_calls::GH82104::T15<char>" at line 105
-
-"Test_name.c", line 100: error: expected a ">"
-    return Value<T, U...> + V + (int)sizeof(Param);
-                     ^
           detected during:
             instantiation of function "lambda [](auto)->auto [with V=0, <auto-1>=const char *]" at line 101
             instantiation of type "lambda_calls::GH82104::T14<char, char>" at line 103
@@ -164,4 +169,4 @@ At end of source: error: expected a "}"
   namespace lambda_calls {
                          ^
 
-19 errors detected in the compilation of "Test_name.c".
+20 errors detected in the compilation of "Test_name.c".

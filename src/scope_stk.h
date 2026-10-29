@@ -2453,6 +2453,62 @@ extern void update_template_param_symbols(
                           a_template_arg_ptr   arg_list,
                           a_boolean            partial_argument_list = FALSE);
 
+extern void restore_template_param_symbols_for_param_list(
+                                     a_template_param_ptr template_param_list,
+                                     a_scope_depth        starting_depth);
+
+/*
+State block saving the scope stack and template parameter binding state across
+a temporary template parameter binding during a rescan or substitution.
+*/
+typedef struct a_rescan_param_binding_state {
+  a_template_param_ptr
+                template_param_list;
+                        /* The template parameter list whose symbols were
+                           bound. */
+  a_template_arg_ptr
+                saved_deduced_template_args;
+                        /* The prior deduced_template_args value on the
+                           matching instantiation scope, if any. */
+  a_pack_expansion_stack_entry_ptr
+                pack_suppression;
+                        /* Pack expansion suppression entry pushed when
+                           preserving un-deduced packs during a rescan, or
+                           NULL if none was pushed. */
+  a_scope_depth inst_scope_depth;
+                        /* Depth of the matching instantiation scope, or
+                           NO_SCOPE_DEPTH if none is on the scope stack. */
+  a_byte_boolean
+                updated_symbols;
+                        /* TRUE if the template parameter symbols were updated
+                           and must be restored on exit. */
+  a_byte_boolean
+                pushed_decl_scope;
+                        /* TRUE if a reactivated template declaration scope was
+                           pushed and must be popped on exit. */
+  a_byte_boolean
+                variadic_updated;
+                        /* TRUE if in_variadic_template was updated and must be
+                           restored on exit. */
+  a_byte_boolean
+                saved_inst_in_variadic;
+                        /* Prior in_variadic_template flag on the matching
+                           instantiation scope. */
+  a_byte_boolean
+                saved_top_in_variadic;
+                        /* Prior in_variadic_template flag on the top scope
+                           stack entry. */
+} a_rescan_param_binding_state;
+
+extern void begin_rescan_param_binding(
+                            a_template_param_ptr         template_param_list,
+                            a_template_arg_ptr           template_arg_list,
+                            a_boolean                    push_decl_scope,
+                            a_boolean                    enable_variadic,
+                            a_rescan_param_binding_state *state);
+
+extern void end_rescan_param_binding(a_rescan_param_binding_state *state);
+
 extern void finish_function_processing_for_function_def(
                                             a_function_def_number n,
                                             a_boolean             only_inline);

@@ -5641,10 +5641,12 @@ is used in the constraint, its evaluation will fail.
       a_template_ptr  templ = rp->assoc_template;
       check_assertion(templ != NULL);
       init_ctws_state(&ctws_state);
+      push_instantiation_scope_for_rescan(symbol_for(templ));
       expr = copy_expr_with_substitutions(expr, t_args,
                                           templ_params_of(symbol_for(templ)),
                                           CTWS_NO_OPTIONS, &failed,
                                           &ctws_state);
+      pop_instantiation_scope_for_rescan();
       if (failed) {
         /* If substitution failed, the function is discarded as a candidate.
            No need to try another attribute. */
@@ -31226,7 +31228,7 @@ TRUE and FALSE is returned.
     /* The initializer is a braced-init-list, so its type is not known. */
     arg_type = NULL;
   }  /* if */
-  if (is_template_dependent_context()) {
+  if (is_template_dependent_context() || scope_stack_top().is_rescan) {
     /* See whether deduction can be done. */
     if (arg_type != NULL ? is_template_dependent_type(arg_type) :
                            arg_list_is_dependent(initializer_alep)) {

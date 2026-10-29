@@ -1,0 +1,16 @@
+[GH #338]
+Spurious substitution failure for lambda naming template parameter in signature
+
+Previously, a lambda expression appearing in a function template signature
+(or an enable_if attribute) that referenced an enclosing template parameter
+failed template argument substitution.  For example, with --c++20:
+
+  template<typename T>
+  void f(char (*)[sizeof([] { return T{}; }())]) {}
+  void g() {
+    char a[sizeof(int)];
+    f<int>(&a);  // Previously a spurious error, now okay.
+  }
+
+Concept type-constraint checks also retain their bound arguments across nested
+lambda rescans, including template-template arguments used by generic lambdas.

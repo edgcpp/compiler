@@ -2025,7 +2025,9 @@ static a_boolean template_arg_can_update_param_symbol(a_template_arg_ptr  tap)
 /*
 Return TRUE if tap has a value that can be used to update a template parameter
 symbol.  Missing entries can occur in deduction and partial-ordering argument
-lists that are not complete instantiation argument lists.
+lists that are not complete instantiation argument lists.  An array bound of
+unknown type is also treated as missing because its bound is not a usable
+value.
 */
 {
   a_boolean  result = TRUE;
@@ -2033,7 +2035,7 @@ lists that are not complete instantiation argument lists.
   if (is_type_templ_arg(tap)) {
     result = tap->variant.type != NULL;
   } else if (is_nontype_templ_arg(tap)) {
-    result = tap->is_array_bound_of_unknown_type ||
+    result = !tap->is_array_bound_of_unknown_type &&
              tap->variant.constant != NULL;
   } else if (is_template_templ_arg(tap)) {
     result = tap->variant.templ.ptr != NULL;
@@ -2142,7 +2144,9 @@ skip the initial not_visible pass and error coercion.
       break;
     }  /* if */
     if (tap_to_update != NULL && partial_argument_list &&
-        !template_arg_can_update_param_symbol(tap_to_update)) {
+        (!template_arg_can_update_param_symbol(tap_to_update) ||
+         (tpp->is_pack && pack_expansion_stack != NULL &&
+          pack_expansion_stack->is_suppression))) {
       tap_to_update = NULL;
     }  /* if */
     if (tap_to_update != NULL) {
@@ -2225,6 +2229,200 @@ for parameter packs are reset.
   }  /* for */
   db_exit();
 }  /* restore_default_template_params */
+
+
+void restore_template_param_symbols_for_param_list(
+                                     a_template_param_ptr template_param_list,
+                                     a_scope_depth        starting_depth)
+/*
+Restore the template parameter symbols for template_param_list by searching
+the scope stack downward from starting_depth for an active instantiation scope
+with the same parameter list.  If one is found, update the symbols from its
+template arguments (or its bound rescan arguments if it is a rescan scope);
+otherwise restore the default template parameter values.
+*/
+{
+  a_scope_depth  scope_depth = NO_SCOPE_DEPTH;
+  a_scope_depth  d;
+
+  for (d = starting_depth; d >= 0; --d) {
+    if (scope_is(&scope_stack[d], sck_template_instantiation) &&
+        scope_stack[d].template_decl_info != NULL &&
+        scope_stack[d].template_decl_info->parameters == template_param_list) {
+      scope_depth = d;
+      break;
+    }  /* if */
+  }  /* for */
+  if (scope_depth == NO_SCOPE_DEPTH) {
+    restore_default_template_params(template_param_list, /*packs_only=*/FALSE);
+  } else if (scope_stack[scope_depth].template_arg_list == NULL &&
+             scope_stack[scope_depth].deduced_template_args != NULL) {
+    a_template_param_ptr  tpp;
+    for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+      if (tpp->param_symbol != NULL &&
+          tpp->param_symbol->template_param_not_visible) {
+        restore_default_template_param(tpp);
+      }  /* if */
+    }  /* for */
+    update_template_param_symbols(
+                                template_param_list,
+                                scope_stack[scope_depth].deduced_template_args,
+                                /*partial_argument_list=*/TRUE);
+  } else if (scope_stack[scope_depth].template_arg_list == NULL &&
+             scope_stack[scope_depth].deduced_template_args == NULL) {
+    a_template_param_ptr  tpp;
+    for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+      restore_default_template_param(tpp);
+    }  /* for */
+  } else {
+    update_template_param_symbols(template_param_list,
+                                  scope_stack[scope_depth].template_arg_list);
+  }  /* if */
+}  /* restore_template_param_symbols_for_param_list */
+
+
+void begin_rescan_param_binding(
+                             a_template_param_ptr          template_param_list,
+                             a_template_arg_ptr            template_arg_list,
+                             a_boolean                     push_decl_scope,
+                             a_boolean                     enable_variadic,
+                             a_rescan_param_binding_state  *state)
+/*
+Bind the template parameter symbols in template_param_list to the values in
+template_arg_list for a rescan or substitution operation, recording the prior
+state in *state so that end_rescan_param_binding can restore it.  Parameters
+without a value in template_arg_list are left at their resting dependent
+values.  When push_decl_scope is TRUE and no instantiation or declaration scope
+for template_param_list is currently on the scope stack, push a reactivated
+template declaration scope so that ordinary lookup can find the parameter
+symbols.  When enable_variadic is TRUE and template_param_list contains a
+parameter pack, mark the current and instantiation scopes as variadic so that
+pack expansions in rescanned tokens are expanded.
+*/
+{
+  memzero((char *)state, sizeof(*state));
+  state->template_param_list = template_param_list;
+  state->inst_scope_depth = NO_SCOPE_DEPTH;
+  if (template_param_list != NULL &&
+      template_param_list->param_symbol != NULL) {
+    for (a_scope_depth  d = depth_scope_stack; d >= 0; --d) {
+      if (scope_is(&scope_stack[d], sck_template_instantiation) &&
+          scope_stack[d].template_decl_info != NULL &&
+          scope_stack[d].template_decl_info->parameters ==
+                                                         template_param_list) {
+        state->inst_scope_depth = d;
+        break;
+      }  /* if */
+    }  /* for */
+    if (state->inst_scope_depth != NO_SCOPE_DEPTH) {
+      a_scope_stack_entry_ptr  inst_ssep =
+                                         &scope_stack[state->inst_scope_depth];
+      state->saved_deduced_template_args = inst_ssep->deduced_template_args;
+      if (inst_ssep->template_arg_list == NULL) {
+        inst_ssep->deduced_template_args = template_arg_list;
+      }  /* if */
+      if (push_decl_scope) {
+        if (!enable_variadic && template_arg_list != NULL) {
+          a_template_arg_ptr  tap;
+          for (tap = template_arg_list; tap != NULL; tap = tap->next) {
+            if (tap->is_pack_element) {
+              enable_variadic = TRUE;
+              break;
+            }  /* if */
+          }  /* for */
+        }  /* if */
+        { a_template_param_ptr  tpp;
+          for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+            if (tpp->is_pack) {
+              state->saved_inst_in_variadic = inst_ssep->in_variadic_template;
+              state->saved_top_in_variadic =
+                                        scope_stack_top().in_variadic_template;
+              state->variadic_updated = TRUE;
+              inst_ssep->in_variadic_template = TRUE;
+              scope_stack_top().in_variadic_template = TRUE;
+              if (!enable_variadic) {
+                push_expansion_suppression(&state->pack_suppression);
+              }  /* if */
+              break;
+            }  /* if */
+          }  /* for */
+        }
+      }  /* if */
+    } else if (push_decl_scope) {
+      a_boolean  decl_scope_active = FALSE;
+      for (a_scope_depth  d = depth_scope_stack; d >= 0; --d) {
+        if (scope_is(&scope_stack[d], sck_template_declaration) &&
+            scope_stack[d].number ==
+                               template_param_list->param_symbol->decl_scope) {
+          decl_scope_active = TRUE;
+          break;
+        }  /* if */
+      }  /* for */
+      if (!decl_scope_active) {
+        a_scope_depth             orig_depth_template_decl_scope =
+                                              depth_template_declaration_scope;
+        a_template_decl_info_ptr  decl_info =
+                                          template_param_list->cache.decl_info;
+        if (decl_info == NULL) {
+          decl_info = alloc_template_decl_info();
+          decl_info->parameters = template_param_list;
+          decl_info->declaration_scope =
+                                 template_param_list->param_symbol->decl_scope;
+          template_param_list->cache.decl_info = decl_info;
+        }  /* if */
+        push_template_declaration_scope_full(
+                                 decl_info,
+                                 template_param_list->param_symbol->decl_scope,
+                                 /*is_template_template_param=*/FALSE,
+                                 /*is_template_param_rescan=*/TRUE);
+        scope_stack_top().is_reactivation = TRUE;
+        scope_stack_top().depth_template_declaration_scope =
+             depth_template_declaration_scope = orig_depth_template_decl_scope;
+        state->pushed_decl_scope = TRUE;
+      }  /* if */
+    }  /* if */
+    { a_template_param_ptr  tpp;
+      for (tpp = template_param_list; tpp != NULL; tpp = tpp->next) {
+        if (tpp->param_symbol != NULL &&
+            tpp->param_symbol->template_param_not_visible) {
+          restore_default_template_param(tpp);
+        }  /* if */
+      }  /* for */
+    }
+    if (template_arg_list != NULL) {
+      update_template_param_symbols(template_param_list, template_arg_list,
+                                    /*partial_argument_list=*/TRUE);
+    }  /* if */
+    state->updated_symbols = TRUE;
+  }  /* if */
+}  /* begin_rescan_param_binding */
+
+
+void end_rescan_param_binding(a_rescan_param_binding_state *state)
+/*
+Restore the scope stack and template parameter symbol state saved by a prior
+call to begin_rescan_param_binding.
+*/
+{
+  if (state->pack_suppression != NULL) {
+    pop_expansion_suppression(state->pack_suppression);
+  }  /* if */
+  if (state->pushed_decl_scope) {
+    pop_scope();
+  }  /* if */
+  if (state->inst_scope_depth != NO_SCOPE_DEPTH) {
+    a_scope_stack_entry_ptr  inst_ssep = &scope_stack[state->inst_scope_depth];
+    inst_ssep->deduced_template_args = state->saved_deduced_template_args;
+    if (state->variadic_updated) {
+      inst_ssep->in_variadic_template = state->saved_inst_in_variadic;
+      scope_stack_top().in_variadic_template = state->saved_top_in_variadic;
+    }  /* if */
+  }  /* if */
+  if (state->updated_symbols) {
+    restore_template_param_symbols_for_param_list(state->template_param_list,
+                                                  depth_scope_stack);
+  }  /* if */
+}  /* end_rescan_param_binding */
 
 
 static void reset_enclosing_pack_values(void)
@@ -5774,9 +5972,20 @@ class to be defined.
     }  /* if */
   } else if (is_lambda_body) {
     /* A real instantiation of a generic lambda.  If we are still in the
-       function in which the lambda was defined, use the existing context. */
-    if (lambda_scope->depth_in_scope_stack == orig_depth &&
-        orig_depth != DEPTH_OF_FILE_SCOPE) {
+       function or enclosing template instantiation/rescan scope in which the
+       lambda was defined, use the existing context. */
+    if ((lambda_scope->depth_in_scope_stack == orig_depth &&
+         orig_depth != DEPTH_OF_FILE_SCOPE) ||
+        (scope_stack[orig_depth].depth_innermost_function_scope ==
+                                                             NO_SCOPE_DEPTH &&
+         depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&
+         lambda_scope->depth_in_scope_stack != NO_SCOPE_DEPTH &&
+         template_supplement_for_symbol(template_sym)->cache->decl_info !=
+                                                                        NULL &&
+         template_supplement_for_symbol(template_sym)->cache->decl_info->
+                                                     enclosing_template_decl ==
+           scope_stack[depth_innermost_instantiation_scope].
+                                                         template_decl_info)) {
       use_existing_context = TRUE;
     }  /* if */
     is_real_lambda_instantiation = TRUE;
@@ -10403,37 +10612,15 @@ being popped.
      instantiation, however, this requires restoring the values from the
      previous instantiation. */
   if (kind == (a_scope_kind)sck_template_instantiation) {
-    a_scope_depth                     prev_depth;
-    a_template_decl_info_ptr	      template_decl_info =
-                                                     ssep->template_decl_info;
+    a_template_decl_info_ptr  template_decl_info = ssep->template_decl_info;
 
     check_assertion(template_decl_info != NULL);
-    prev_depth = NO_SCOPE_DEPTH;
-    /* Loop through the scope stack looking for a previous instantiation
-       scope that uses the same template parameter list as the one being
-       popped.  This is necessary because template parameter lists are
-       shared between a class and the member functions defined inside the
-       class. */
-    for (scope_depth = depth_scope_stack - 1;
-         scope_depth >= 0;
-         scope_depth--) {
-      if (scope_stack[scope_depth].kind ==
-          (a_scope_kind)sck_template_instantiation &&
-          scope_stack[scope_depth].template_decl_info->parameters ==
-                                              template_decl_info->parameters) {
-        prev_depth = scope_depth;
-        break;
-      }  /* if */
-    }  /* for */
-    if (prev_depth == NO_SCOPE_DEPTH) {
-      /* Restore the default values of the parameters. */
-      restore_default_template_params(template_decl_info->parameters,
-                                      /*packs_only=*/FALSE);
-    } else {
-      /* Restore the parameter values from the previous instantiation. */
-      update_template_param_symbols(template_decl_info->parameters,
-                                    scope_stack[prev_depth].template_arg_list);
-    }  /* if */
+    /* Restore the parameter values from any enclosing instantiation or rescan
+       scope that shares this template parameter list, or reset them to their
+       default values. */
+    restore_template_param_symbols_for_param_list(
+                                                template_decl_info->parameters,
+                                                depth_scope_stack - 1);
   }  /* if */
   if (ssep->packs_referenced != NULL) {
     /* If there were any variadic parameter packs that were referenced but
@@ -11964,7 +12151,11 @@ template that is being instantiated.
   tdip = ssep->template_decl_info;
   *templ_param_list = tdip->parameters;
   check_assertion(*templ_param_list != NULL);
-  *templ_arg_list = ssep->template_arg_list;
+  if (ssep->template_arg_list != NULL) {
+    *templ_arg_list = ssep->template_arg_list;
+  } else {
+    *templ_arg_list = ssep->deduced_template_args;
+  }  /* if */
 }  /* get_curr_template_params_and_args */
 
 
@@ -13192,7 +13383,10 @@ entries.
 {
   a_pack_expansion_stack_entry_ptr	pesep = NULL;
 
-  if (is_prototype_instantiation_context() && is_variadic_template_context()) {
+  if ((is_prototype_instantiation_context() ||
+       (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&
+        scope_stack[depth_innermost_instantiation_scope].is_rescan)) &&
+      is_variadic_template_context()) {
     pesep = push_pack_expansion_stack();
     pesep->is_suppression = TRUE;
   }  /* if */

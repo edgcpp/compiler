@@ -449,6 +449,10 @@ extern a_boolean constant_is_recursive(a_constant  *cp);
 extern void traverse_dynamic_init(a_dynamic_init_ptr                  dip,
                                   an_expr_or_stmt_traversal_block_ptr tblock);
 
+extern void traverse_variable_init(
+                                   a_variable_ptr                      var,
+                                   an_expr_or_stmt_traversal_block_ptr tblock);
+
 extern void traverse_expr_list(an_expr_node_ptr                    expr_list,
                                an_expr_or_stmt_traversal_block_ptr tblock);
 
