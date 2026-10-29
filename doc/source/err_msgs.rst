@@ -10447,3 +10447,7 @@ Error Messages
    - | ``tag_redefined_differently``\ :
      | this declaration of *entity-kind "entity"*\  does not declare the
        same type as the declaration at line *xxxx*\ 
+ * - ``3600``\ 
+   - | ``bad_gcc_unroll_pragma_value``\ :
+     | the argument of "#pragma GCC unroll" must be a non-negative integral
+       constant less than 65535

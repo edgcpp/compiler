@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll 1.0f			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 12: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+    #pragma GCC unroll 0xffffffffffffffffULL	// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 15: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+    #pragma GCC unroll -42			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 24: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll 1.0f			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 27: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+    #pragma GCC unroll 0xffffffffffffffffULL	// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 30: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+    #pragma GCC unroll -42			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 39: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll (N + 1.0f)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 63: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll (N + 1.0f)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+
+"Test_name.c", line 66: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+    #pragma GCC unroll (N + 0xffffffffffffffffULL)// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+          detected during instantiation of "void qux<T,N,U>(U) [with T=float, N=0, U=int (&)[3]]" at line 87
+
+"Test_name.c", line 69: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+    #pragma GCC unroll (N - 42)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+          detected during instantiation of "void qux<T,N,U>(U) [with T=float, N=0, U=int (&)[3]]" at line 87
+
+"Test_name.c", line 72: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll ((T) 1.0f)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+          detected during instantiation of "void qux<T,N,U>(U) [with T=float, N=0, U=int (&)[3]]" at line 87
+
+"Test_name.c", line 75: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll ((T) 0xffffffffffffffffULL)// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+          detected during instantiation of "void qux<T,N,U>(U) [with T=float, N=0, U=int (&)[3]]" at line 87
+
+"Test_name.c", line 78: error: this constant expression has type "float" instead of the required integral or enum type
+    #pragma GCC unroll ((T) -42)			// { dg-error "'#pragma GCC unroll' requires an assignment-expression that evaluates to a non-negative integral constant less than" }
+                       ^
+          detected during instantiation of "void qux<T,N,U>(U) [with T=float, N=0, U=int (&)[3]]" at line 87
+
+13 errors detected in the compilation of "Test_name.c".

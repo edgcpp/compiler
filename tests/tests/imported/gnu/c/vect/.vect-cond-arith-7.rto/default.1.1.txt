@@ -15,19 +15,3 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
   void __attribute__ ((noipa)) f_0 (double *restrict a, double *restrict b, double *restrict c, double *restrict d) { for (int i = 0; i < (128 * 11 / 64 + 3); ++i) { double mb = (0 & 1 ? -b[i] : b[i]); double mc = c[i]; double md = (0 & 2 ? -d[i] : d[i]); a[i] = b[i] < 10 ? mb * mc + md : 10.0; } } void __attribute__ ((noipa)) f_1 (double *restrict a, double *restrict b, double *restrict c, double *restrict d) { for (int i = 0; i < (128 * 11 / 64 + 3); ++i) { double mb = (1 & 1 ? -b[i] : b[i]); double mc = c[i]; double md = (1 & 2 ? -d[i] : d[i]); a[i] = b[i] < 10 ? mb * mc + md : 10.0; } } void __attribute__ ((noipa)) f_2 (double *restrict a, double *restrict b, double *restrict c, double *restrict d) { for (int i = 0; i < (128 * 11 / 64 + 3); ++i) { double mb = (2 & 1 ? -b[i] : b[i]); double mc = c[i]; double md = (2 & 2 ? -d[i] : d[i]); a[i] = b[i] < 10 ? mb * mc + md : 10.0; } } void __attribute__ ((noipa)) f_3 (double *restrict a, double *restrict b, double *restrict c, double *restrict d) { for (int i = 0; i < (128 * 11 / 64 + 3); ++i) { double mb = (3 & 1 ? -b[i] : b[i]); double mc = c[i]; double md = (3 & 2 ? -d[i] : d[i]); a[i] = b[i] < 10 ? mb * mc + md : 10.0; } }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
 
-"./vect/vect-cond-arith-7.c", line 54: warning: unrecognized GCC pragma
-  #pragma GCC novector
-              ^
-
-"./vect/vect-cond-arith-7.c", line 54: warning: unrecognized GCC pragma
-  #pragma GCC novector
-              ^
-
-"./vect/vect-cond-arith-7.c", line 54: warning: unrecognized GCC pragma
-  #pragma GCC novector
-              ^
-
-"./vect/vect-cond-arith-7.c", line 54: warning: unrecognized GCC pragma
-  #pragma GCC novector
-              ^
-

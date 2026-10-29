@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++17 --gnu_version=150000 -tused Test_name.c
+"Test_name.c", line 8: error: this constant expression has type "float" instead of the required integral or enum type
+  #pragma GCC unroll 1.0f                   // Error: not integral.
+                     ^
+
+"Test_name.c", line 11: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+  #pragma GCC unroll -42                    // Error: negative.
+                     ^
+
+"Test_name.c", line 14: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+  #pragma GCC unroll 65535                  // Error: too large.
+                     ^
+
+"Test_name.c", line 17: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+  #pragma GCC unroll 0xffffffffffffffffULL  // Error: too large.
+                     ^
+
+"Test_name.c", line 20: error: expression must have a constant value
+  #pragma GCC unroll v                      // Error: not a constant.
+                     ^
+"Test_name.c", line 20: note: the value of parameter "v" (declared at line 7) cannot be used as a constant
+  #pragma GCC unroll v                      // Error: not a constant.
+                     ^
+
+"Test_name.c", line 27: error: the argument of "#pragma GCC unroll" must be a non-negative integral constant less than 65535
+  #pragma GCC unroll(N - 42)                // Error in f2<1>: negative.
+                    ^
+          detected during instantiation of "void f2<N>(int *) [with N=1]" at line 33
+
+6 errors detected in the compilation of "Test_name.c".

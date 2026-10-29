@@ -1,0 +1,47 @@
+//allowed_words: novector
+[GH #174]
+C- and C++-generating back ends: placement of GCC loop pragmas
+
+The GCC loop pragmas "#pragma GCC unroll", "#pragma GCC ivdep", and
+"#pragma GCC novector" were previously recorded in the IL as pragmas of the
+enclosing block and so were emitted by the C-generating back end at the start
+of that block, rather than immediately in front of the loop to which they
+apply.  The back-end compiler then rejected the generated code.  For example:
+
+  void h();
+  void f(char *first, char *last) {
+    h();
+  #pragma GCC unroll 4    // Previously emitted in front of the call of h,
+    while (first != last) // causing a "for, while or do statement expected"
+      ++first;            // error from the back-end compiler.
+  }
+
+In C99 and later modes, the C++-generating back end emitted such a pragma in
+front of the implicit block that surrounds an iteration statement, rather than
+in front of the loop inside it.  A loop pragma that followed an iteration or
+selection statement was emitted inside that statement's implicit block.  In
+both cases, the generated code could not be compiled.
+
+When the loop has attributes (e.g., "[[likely]]"), the C++-generating back
+end now emits the loop pragmas after those attributes when the generated code
+is for GCC, which requires a loop pragma to immediately precede the loop
+keyword, and before them when it is for Clang, which requires that order.
+
+The argument of "#pragma GCC unroll" is now scanned and evaluated as an
+integral constant expression, and its value replaces the original text in the
+generated code.  Previously, the argument was copied unchanged, so one that
+used C++ constructs or template parameters made the generated C code invalid.
+For example:
+
+  template<int N> void g(int *p) {
+  #pragma GCC unroll(N)                  // Now emitted as "unroll 4" in g<4>.
+    for (int i = 0; i < N; ++i) p[i] = 0;
+  }
+  void h(int *p) {
+  #pragma GCC unroll sizeof(decltype(0)) // Now emitted as "unroll 4".
+    for (int i = 0; i < 4; ++i) p[i] = 0;
+    g<4>(p);
+  }
+
+An argument that is negative or not less than 65535 is now diagnosed, as GCC
+does.

@@ -15,7 +15,3 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
   unsigned int * __attribute__((noipa)) maskgatherusiudi (int n, unsigned long long *indices, unsigned int *data) { unsigned int *out = __builtin_malloc (sizeof (unsigned int) * n); for (int i = 0; i < n; ++i) { unsigned long long d = indices[i]; if (d > 1) out[i] = data[d]; } return out; }
                                 ^
 
-"./vect/pr103581.c", line 42: warning: unrecognized GCC pragma
-  #pragma GCC novector
-              ^
-

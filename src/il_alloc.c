@@ -4475,6 +4475,7 @@ pointer to it.
 #if GNU_EXTENSIONS_ALLOWED
     case pk_gcc_immediate:
     case pk_gcc_next_token:
+    case pk_gcc_next_statement:
       clear_gcc_pragma_descr(&pp->variant.gcc);
       break;
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED

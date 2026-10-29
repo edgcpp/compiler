@@ -20528,17 +20528,13 @@ Generate one of the predefined UPC pragmas.
 
 #endif /* UPC_EXTENSIONS_ALLOWED */
 
-static void gen_pragma(void)
+static void gen_pragma_entry(a_pragma_ptr pp)
 /*
-Generate a declaration for a pragma.  The current source sequence entry
-is the one associated with the pragma.
+Generate a declaration for the pragma pp.
 */
 {
-  a_pragma_ptr pp = ss_entry_ptr(curr_source_sequence_entry, a_pragma_ptr);
   a_boolean    saved_suppress_line_breaking = octl.suppress_line_breaking;
 
-  /* Advance past the source sequence entry for the pragma. */
-  adv_curr_source_sequence_entry();
   /* Ignore this entry if told to do so. */
   if (!pp->ignore_in_back_end) {
     octl.suppress_line_breaking = TRUE;
@@ -20612,7 +20608,64 @@ is the one associated with the pragma.
     }  /* if */
     octl.suppress_line_breaking = saved_suppress_line_breaking;
   }  /* if */
+}  /* gen_pragma_entry */
+
+
+static void gen_pragma(void)
+/*
+Generate a declaration for a pragma.  The current source sequence entry
+is the one associated with the pragma.
+*/
+{
+  a_pragma_ptr pp = ss_entry_ptr(curr_source_sequence_entry, a_pragma_ptr);
+
+  /* Advance past the source sequence entry for the pragma. */
+  adv_curr_source_sequence_entry();
+#if GNU_EXTENSIONS_ALLOWED
+  if (pp->kind == pk_gcc_next_statement) {
+    /* A GCC loop pragma (e.g., "#pragma GCC unroll") is generated in front
+       of the statement to which it is bound (see gen_gcc_statement_pragmas)
+       instead. */
+  } else
+#endif /* GNU_EXTENSIONS_ALLOWED */
+  /* Do not insert code here. */
+  {
+    gen_pragma_entry(pp);
+  }
 }  /* gen_pragma */
+
+
+#if GNU_EXTENSIONS_ALLOWED
+
+static void gen_gcc_statement_pragmas(a_statement_ptr statement)
+/*
+Generate any GCC loop pragmas (e.g., "#pragma GCC unroll") that are bound to
+the given statement.  These must be next to the statement (see
+gen_statement_full for their order relative to its attributes), so they are
+generated here rather than at their source sequence entries (see gen_pragma).
+*/
+{
+  if (!statement->has_associated_pragma) {
+    /* No pragmas are bound to the statement. */
+  } else if (innermost_function_scope == NULL ||
+             in_file_scope(statement)) {
+    /* The pragmas are on the list of a file or namespace scope, which
+       find_assoc_pragma locates through the front end's scope stack.  That
+       stack is no longer valid here. */
+  } else {
+    a_pragma_ptr pp = NULL;
+    while ((pp = find_assoc_pragma((char *)statement, iek_statement,
+                                   innermost_function_scope, pp)) != NULL) {
+      if (pp->kind == pk_gcc_next_statement) {
+        gen_pragma_entry(pp);
+        /* Resume the output at the position of the statement. */
+        set_output_position(&statement->position);
+      }  /* if */
+    }  /* while */
+  }  /* if */
+}  /* gen_gcc_statement_pragmas */
+
+#endif /* GNU_EXTENSIONS_ALLOWED */
 
 
 static void write_tok_str_if_nonnull(a_const_char *str)
@@ -22469,7 +22522,20 @@ one that yields the value) of a statement expression.
     /* Adjust the output position to match the statement position. */
     set_output_position(&statement->position);
   }  /* if */
+#if GNU_EXTENSIONS_ALLOWED
+  /* Generate any GCC loop pragmas bound to the statement.  Clang requires
+     them to precede the attributes of the loop, but GCC requires them to
+     follow those attributes (e.g., "[[likely]] #pragma GCC unroll 4 for"). */
+  if (clang_is_generated_code_target) {
+    gen_gcc_statement_pragmas(statement);
+  }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED */
   gen_attributes(statement->attributes, al_prefix, /*primary_only=*/FALSE);
+#if GNU_EXTENSIONS_ALLOWED
+  if (!clang_is_generated_code_target) {
+    gen_gcc_statement_pragmas(statement);
+  }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED */
   switch (kind) {
     case stmk_empty:
       write_tok_ch(';');

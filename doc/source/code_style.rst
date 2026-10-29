@@ -707,3 +707,16 @@ instead of:
 .. code:: cpp
 
    f(a, b, c, d, /*is_foo_bar=*/FALSE, /*needs_more_squirrels=*/VERY_FALSE);
+
+Wrapping Array Subscripts
+-------------------------
+
+Array subscripts that cause the line length to exceed 79 characters are
+wrapped like a function call whose argument cannot fit: the line is broken
+after the "``[``" and the continuation is right-aligned to column 79, including
+the closing "``]``" and any punctuation that follows it:
+
+.. code:: cpp
+
+   pkdp = pragma_description_for_pragma_kind[
+                     /* something very long (right-aligned to column 79) */];
