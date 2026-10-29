@@ -390,6 +390,12 @@ typedef struct an_expr_or_stmt_traversal_block {
   /* Fields used by is_glvalue_for_auto_object: */
   a_boolean	is_temp;
 			/* TRUE if the underlying object is a temporary. */
+  a_boolean	look_for_temporaries;
+			/* TRUE if a temporary anywhere on the addressing
+			   path (e.g., in either operand of a "?" operator,
+			   or a class prvalue whose member is selected)
+			   should be reported in preference to a local
+			   variable. */
 #if HANDLE_VIRTUAL_BASES_IN_COMPLETE_CTOR_DTORS
   a_variable_ptr
 		orig_params;

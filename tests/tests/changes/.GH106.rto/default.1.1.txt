@@ -19,4 +19,12 @@ fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
   const int& f5() { int i = 0; return i; }  // Local variable: only a warning.
                                       ^
 
-4 errors detected in the compilation of "Test_name.c".
+"Test_name.c", line 17: error: returning reference to local temporary
+  const int& f7() { return make().x; }      // Member of a call's result.
+                           ^
+
+"Test_name.c", line 19: error: returning reference to local temporary
+    return b ? static_cast<int&&>(i) : S().x;
+           ^
+
+6 errors detected in the compilation of "Test_name.c".
