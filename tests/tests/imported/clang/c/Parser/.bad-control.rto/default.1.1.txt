@@ -7,4 +7,8 @@ fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999
     continue; /* expected-error {{'continue' statement not in loop statement}} */
     ^
 
-2 errors detected in the compilation of "Test_name.c".
+"Test_name.c", line 14: error: a break statement may only be used within a loop or switch
+    switch(({ if (first) { first = 0; break; } 1; })) { // expected-error {{'break' statement not in loop or switch statement}}
+                                      ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -2995,6 +2995,7 @@ statement is the top block of a GNU statement expression ({ ... }).
   }  /* if */
   sssep->switch_has_dependent_case
                                = FALSE;
+  sssep->in_switch_condition   = FALSE;
   sssep->contains_user_label   = FALSE;
   sssep->contains_active_switch_case = FALSE;
   sssep->record_declared_entities = FALSE;
@@ -3538,8 +3539,9 @@ static a_struct_stmt_stack_entry_ptr find_enclosing_struct_stmt(
                                                      a_boolean find_loop)
 /*
 Search the structured statement stack from the current entry outward,
-looking for a switch statement (if find_switch is TRUE) or a loop
-statement (while, do, or for; if find_loop is TRUE).  Return a pointer
+looking for a switch statement whose condition is not being scanned (if
+find_switch is TRUE) or a loop statement (while, do, or for; if find_loop is
+TRUE).  Return a pointer
 to the first structured statement stack entry found, or NULL if none 
 was found.
 */
@@ -3552,7 +3554,7 @@ was found.
      the compound statement that defines the function. */
   while (sssep != &struct_stmt_stack[0]) {
     kind = sssep->kind;
-    if (find_switch && kind == ssk_switch) {
+    if (find_switch && kind == ssk_switch && !sssep->in_switch_condition) {
       goto found;
     } else if (find_loop &&
                (kind == ssk_while || kind == ssk_do || kind == ssk_for ||
@@ -4589,7 +4591,9 @@ See also 3.6.4.2.
   (void)required_token(tok_lparen, ec_exp_lparen);
   add_stop_token(tok_rparen);
   /* Scan the "condition", which in C++ may be a condition declaration. */
+  struct_stmt_stack[depth_stmt_stack].in_switch_condition = TRUE;
   scan_condition(sp, &is_condition_decl);
+  struct_stmt_stack[depth_stmt_stack].in_switch_condition = FALSE;
   if (!is_error_node(sp->expr)) {
     /* Issue a remark if the selector is constant. */
     if (is_constant_node(skip_parens(sp->expr))) {

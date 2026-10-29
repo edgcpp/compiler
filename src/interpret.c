@@ -9704,6 +9704,7 @@ transfer, or perform their cleanup and let it propagate further.
              (see the handling of ips->switch_entry above). */
           ips->switch_entry = case_stmt;
           push_stmt_work(ips, stmt->variant.switch_stmt.body_statement);
+          item->phase = iwp_2nd_resume;
           pop_when_done = FALSE;
           goto done;
         }  /* if */
@@ -9928,10 +9929,11 @@ range_based_for_cleanup:
           do_constexpr_fail(result);
         }  /* if */
       }  /* if */
-      if (!result && !ips->failed &&
+      if (!result && !ips->failed && item->phase == iwp_2nd_resume &&
           ips->transfer.kind == ctk_switch_break) {
         /* Break out of the switch statement (which completes the execution of
-           the break statement). */
+           the break statement).  A break statement in the condition (in a GNU
+           statement expression) applies to an enclosing statement instead. */
         ips->transfer.kind = ctk_none;
         result = TRUE;
       }  /* if */
