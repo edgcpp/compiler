@@ -371,6 +371,16 @@ indicated routine has just been processed.
   a_boolean  needed = FALSE;
   a_type_ptr class_type = parent_class_of(routine);
 
+#if IA64_ABI && ABI_COMPATIBILITY_VERSION >= 410
+  if (is_unspecialized_template_class(class_type) &&
+      class_type->variant.class_struct_union.do_not_instantiate &&
+      !class_type->variant.class_struct_union.explicitly_instantiated &&
+      class_type->source_corresp.name_linkage == nlk_cplusplus_external &&
+      !class_type_supp(class_type)->named_in_inline_template_directive) {
+    /* Lowering suppresses this specialization's virtual function table. */
+  } else
+#endif /* IA64_ABI && ABI_COMPATIBILITY_VERSION >= 410 */
+  /* Do not insert code here. */
   if (class_type->variant.class_struct_union.
                              any_virtual_functions_including_in_base_classes) {
     if (routine->special_kind == (a_special_function_kind)sfk_constructor ||

@@ -1,0 +1,103 @@
+fe_only -DTEST_NUMBER=4 -tused --ms_c++20 --microsoft_version 1950 Test_name.c
+"Test_name.c", line 11: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 11: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void direct_call::C<T>::f() [with T=int]" at line 20
+
+"Test_name.c", line 33: error: static assertion failed with ""
+      static_assert(sizeof(T) == 0, "");
+      ^
+"Test_name.c", line 33: note: the final comparison was 4 == 0
+      static_assert(sizeof(T) == 0, "");
+                              ^
+          detected during instantiation of "void direct_call_inline_out_of_class::C<T>::f() [with T=int]" at line 40
+
+"Test_name.c", line 50: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 50: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void explicit_instantiation::C<T>::f() [with T=int]" at line 56
+
+"Test_name.c", line 68: error: static assertion failed with ""
+      static_assert(sizeof(T) == 0, "");
+      ^
+"Test_name.c", line 68: note: the final comparison was 4 == 0
+      static_assert(sizeof(T) == 0, "");
+                              ^
+          detected during instantiation of "void explicit_instantiation_out_of_class::C<T>::f() [with T=int]" at line 72
+
+"Test_name.c", line 84: error: static assertion failed with ""
+      static_assert(sizeof(T) == 0, "");
+      ^
+"Test_name.c", line 84: note: the final comparison was 4 == 0
+      static_assert(sizeof(T) == 0, "");
+                              ^
+          detected during instantiation of "void explicit_instantiation_inline_out_of_class::C<T>::f() [with T=int]" at line 88
+
+"Test_name.c", line 97: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 97: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void derived_vtable::C<T>::f() [with T=int]" 
+
+"Test_name.c", line 121: error: static assertion failed with ""
+      static_assert(sizeof(T) == 0, "");
+      ^
+"Test_name.c", line 121: note: the final comparison was 4 == 0
+      static_assert(sizeof(T) == 0, "");
+                              ^
+          detected during instantiation of "void derived_vtable_inline_out_of_class::C<T>::f() [with T=int]" 
+
+"Test_name.c", line 207: error: static assertion failed with ""
+        static_assert(P == nullptr, "");
+        ^
+          detected during instantiation of "void internal_linkage_nontype_argument::C<P>::f() [with P=&internal_linkage_nontype_argument::value]" 
+
+"Test_name.c", line 223: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 223: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void direct_virtual_call::C<T>::f() [with T=int]" at line 232
+
+"Test_name.c", line 245: error: static assertion failed with ""
+      static_assert(sizeof(T) == 0, "");
+      ^
+"Test_name.c", line 245: note: the final comparison was 4 == 0
+      static_assert(sizeof(T) == 0, "");
+                              ^
+          detected during instantiation of "void direct_virtual_call_inline_out_of_class::C<T>::f() [with T=int]" at line 252
+
+"Test_name.c", line 262: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 262: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void specialized_nested_class::Base<T>::f() [with T=int]" 
+
+"Test_name.c", line 287: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 287: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void nontemplate_nested_class::Base<T>::f() [with T=int]" 
+
+"Test_name.c", line 314: error: static assertion failed with ""
+        static_assert(N != 2, "");
+        ^
+"Test_name.c", line 314: note: the final comparison was 2 != 2
+        static_assert(N != 2, "");
+                        ^
+          detected during instantiation of "void unsuppressed_specialization::C<N>::f() [with N=2]" 
+
+13 errors detected in the compilation of "Test_name.c".
