@@ -1,0 +1,18 @@
+[GH #428]
+Constant evaluation of a base-to-derived cast of a null pointer
+
+During constant evaluation, a base-to-derived pointer conversion of a null
+pointer value was sometimes rejected (with a note saying "attempt to access
+run-time storage") when the base class is at a nonzero offset in the derived
+class.  For example, with --c++20:
+
+  struct X { int x = 7; };
+  struct Y { int y = 0; };
+  struct Z : Y, X {};
+  constexpr bool f() {
+    const X* q = nullptr;
+    return static_cast<const Z*>(q) == nullptr;
+  }
+  static_assert(f());  // Previously failed.
+
+This is now fixed.

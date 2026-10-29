@@ -27791,9 +27791,16 @@ the value representation of the integer value.
           case eok_derived_class_cast:
             { a_constexpr_address  *src = (a_constexpr_address*)opnd1_value;
               if (is_runtime_data_address(src)) {
-                do_constexpr_fail(result);
-                info_with_pos(unknown_object_access_error(src),
-                              expr_pos(expr, ips), ips);
+                if (type_is(tp, tk_pointer) &&
+                    is_null_pointer_value(src->variant.addr_con)) {
+                  /* Casting a null pointer value results in a null pointer
+                     value. */
+                  clear_address(result_storage, (a_byte*)0);
+                } else {
+                  do_constexpr_fail(result);
+                  info_with_pos(unknown_object_access_error(src),
+                                expr_pos(expr, ips), ips);
+                }  /* if */
               } else if (src->address == NULL) {
                 *(a_constexpr_address*)result_storage = *src;
               } else if (!subobject_is_initialized(src->address,
