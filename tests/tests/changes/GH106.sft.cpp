@@ -13,6 +13,11 @@ const int& f2(long l) { return l; }       // Temporary from a conversion.
 const int& f3() { return S().x; }         // Member of a temporary.
 int&& f4() { return 1; }                  // Rvalue reference to a temporary.
 const int& f5() { int i = 0; return i; }  // Local variable: only a warning.
+S make();
+const int& f7() { return make().x; }      // Member of a call's result.
+int&& f8(bool b, int i) {                 // A "?" operand is a temporary.
+  return b ? static_cast<int&&>(i) : S().x;
+}
 
 // Core issue 2352: the reference binds directly to pp, so this is not
 // diagnosed as an error.

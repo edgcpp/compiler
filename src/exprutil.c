@@ -25174,6 +25174,24 @@ C mode.
 }  /* still_an_lvalue */
 
 
+static void record_local_auto_object(
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called from examine_expr_for_auto_object when the addressing path leads to a
+local variable or parameter.  Normally that ends the traversal.  When
+tblock->look_for_temporaries is TRUE, keep going, so that a temporary on
+another part of the path (e.g., the other operand of a "?" operator) is
+still found and reported instead.
+*/
+{
+  if (!tblock->is_temp) {
+    tblock->result = TRUE;
+    tblock->is_temp = FALSE;
+    if (!tblock->look_for_temporaries) tblock->terminate = TRUE;
+  }  /* if */
+}  /* record_local_auto_object */
+
+
 static void examine_expr_for_auto_object(
                                     an_expr_node_ptr                    expr,
                                     an_expr_or_stmt_traversal_block_ptr tblock)
@@ -25217,18 +25235,14 @@ that identifies an object or a prvalue that is a pointer to an object.
            from a scope enclosing a lambda), do not consider it local in this
            context. */
         if (var->source_corresp.enclosing_routine == curr_routine_or_null()) {
-          tblock->result = TRUE;
-          tblock->is_temp = FALSE;
-          tblock->terminate = TRUE;
+          record_local_auto_object(tblock);
         }  /* if */
       }  /* if */
     } else if (node_is(expr, enk_param_ref)) {
       /* An lvalue for a parameter outside an associated function
          definition.  An enk_param_ref for "this" won't get here because
          it's not an lvalue, but the answer would be right even if it did. */
-      tblock->result = TRUE;
-      tblock->is_temp = FALSE;
-      tblock->terminate = TRUE;
+      record_local_auto_object(tblock);
     } else if (node_is(expr, enk_temp_init)) {
       if (!expr->variant.init.dynamic_init->static_temp) {
         /* An lvalue for a nonstatic temporary. */
@@ -25236,6 +25250,13 @@ that identifies an object or a prvalue that is a pointer to an object.
         tblock->is_temp = TRUE;
         tblock->terminate = TRUE;
       }  /* if */
+    } else if (tblock->look_for_temporaries && !is_glvalue_node(expr)) {
+      /* A class prvalue (e.g., a function call) on the addressing path, for
+         example the object expression of "f().x": a temporary is
+         materialized for it. */
+      tblock->result = TRUE;
+      tblock->is_temp = TRUE;
+      tblock->terminate = TRUE;
     }  /* if */
   } else {
     /* The expression passed in is a pointer to an object. */
@@ -25273,6 +25294,7 @@ temporary (e.g., "S().x") is found.
     tblock.process_expr = examine_expr_for_auto_object;
     tblock.follow_addressing_path = TRUE;
     tblock.follow_class_rvalue_addressing_path = follow_prvalues;
+    tblock.look_for_temporaries = follow_prvalues;
     traverse_expr(expr, &tblock);
     is_auto_object = tblock.result;
     if (is_temp != NULL) *is_temp = tblock.is_temp;
