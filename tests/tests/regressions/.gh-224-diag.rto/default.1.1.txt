@@ -1,0 +1,23 @@
+fe_only -DTEST_NUMBER=1 --c++20 --g++ --gnu_version=150200 Test_name.c
+"Test_name.c", line 12: error: expression must have a constant value
+  static_assert(d1() == 4, "");  // Error.
+                ^
+"Test_name.c", line 11: note: access to uninitialized object
+  constexpr int d1() { vi4 a = {1, 2, 3, 4}; a.~vi4(); return a[3]; }
+                                                               ^
+
+"Test_name.c", line 15: error: expression must have a constant value
+  static_assert(d2() == 0, "");  // Error.
+                ^
+"Test_name.c", line 14: note: access to uninitialized object
+  constexpr int d2() { vl8 a = vl8(); a.~vl8(); return (int)a[7]; }
+                                                             ^
+
+"Test_name.c", line 19: error: expression must have a constant value
+  static_assert(d3() == 0, "");  // Error.
+                ^
+"Test_name.c", line 18: note: access to uninitialized object
+  constexpr int d3() { S s{}; s.v.~vl8(); return (int)s.v[7]; }
+                                                         ^
+
+3 errors detected in the compilation of "Test_name.c".

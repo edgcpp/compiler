@@ -4440,6 +4440,21 @@ given number of bytes.
 
 
 /*
+Produce TRUE if type tp has subobjects whose initialization is tracked
+individually (i.e., if a complete object of that type needs an initialization
+bitmap in its prefix).
+*/
+#if GNU_VECTOR_TYPES_ALLOWED
+#define has_tracked_subobjects(tp)                                           \
+  (is_immediate_class_type(tp) || type_is(tp, tk_array) ||                   \
+   type_is(tp, tk_vector))
+#else /* !GNU_VECTOR_TYPES_ALLOWED */
+#define has_tracked_subobjects(tp)                                           \
+  (is_immediate_class_type(tp) || type_is(tp, tk_array))
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
+
+
+/*
 Given a type utp and the size n_bytes required to represent its value, compute
 the number of bytes needed as a bookkeeping prefix for a complete object of
 that type.
@@ -4447,8 +4462,7 @@ that type.
 #define compute_prefix_size_for_type(utp, n_bytes, prefix_size)              \
 {                                                                            \
   a_byte_count  bitmap_size;                                                 \
-  if (is_immediate_class_type(utp) ||                                        \
-      utp->kind == (a_type_kind)tk_array) {                                  \
+  if (has_tracked_subobjects(utp)) {                                         \
     bitmap_size = compute_bitmap_size(n_bytes);                              \
   } else {                                                                   \
     bitmap_size = 0;                                                         \
@@ -4617,11 +4631,11 @@ static void mark_whole_subobject_initialized(
                                           a_byte                *complete_obj)
 /*
 If tp is a scalar type, this routine does the same work as
-mark_subobject_initialized.  If tp is a class or array type, it marks the
-indicated subobject and all its subobject as initialized.
+mark_subobject_initialized.  If tp is a class, array, or vector type, it marks
+the indicated subobject and all its subobjects as initialized.
 */
 {
-  if (is_immediate_class_type(tp) || tp->kind == (a_type_kind)tk_array) {
+  if (has_tracked_subobjects(tp)) {
     a_boolean     result = TRUE;
     a_byte_count  n_bytes = value_bytes_for_type(ips, tp, &result);
     a_byte_count  off = (a_byte_count)(subobj - complete_obj);
@@ -4668,15 +4682,15 @@ static a_boolean mark_whole_subobject_uninitialized(
                                           a_byte                *complete_obj)
 /*
 If tp is a scalar type, this routine does the same work as
-mark_subobject_uninitialized.  If tp is a class or array type, it marks the
-indicated subobject and all its subobjects as uninitialized.  Return TRUE if
-successful, FALSE if not (e.g., if the subobject type included a member with
-an error type).
+mark_subobject_uninitialized.  If tp is a class, array, or vector type, it
+marks the indicated subobject and all its subobjects as uninitialized.  Return
+TRUE if successful, FALSE if not (e.g., if the subobject type included a member
+with an error type).
 */
 {
   a_boolean  result = TRUE;
 
-  if (is_immediate_class_type(tp) || tp->kind == (a_type_kind)tk_array) {
+  if (has_tracked_subobjects(tp)) {
     a_byte_count  n_bytes = value_bytes_for_type(ips, tp, &result);
     if (result) {
       a_byte_count  off = (a_byte_count)(subobj - complete_obj);
