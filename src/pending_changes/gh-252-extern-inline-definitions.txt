@@ -1,0 +1,38 @@
+[GH #252]
+C-generating back end: inline-only definitions emitted as external ones
+
+When an inline function definition was to be used only for inlining (for
+example, a member of a class template specialization that is the subject of
+an explicit instantiation declaration), the C-generating back end emitted it
+as an "extern __inline__" definition for GCC and Clang.  That form is a
+definition only for inlining under the GNU C89 rules, but an external
+definition under the C99 rules that GCC uses by default since version 5.
+Every object file that used such a function then contained an external
+definition of it, and linking two such object files failed.  For example,
+with --c++17:
+
+  // a.h
+  template <class T> struct A {
+    int f() { return 1; }
+  };
+  extern template struct A<int>;
+
+  // a.cpp
+  #include "a.h"
+  int g1() { return A<int>().f(); }
+
+  // b.cpp
+  #include "a.h"
+  int g2() { return A<int>().f(); }  // Linking with a.cpp previously failed.
+
+  // c.cpp
+  #include "a.h"
+  template struct A<int>;
+
+The same problem affected GNU C89 "extern inline" functions, functions with
+the gnu_inline attribute in C99 and later C modes (which lost the "extern"
+keyword), and such definitions of functions with an ellipsis (which were not
+marked inline).  This is now fixed: The C-generating back end now adds the
+__gnu_inline__ attribute to "extern __inline__" definitions, keeps "extern"
+for functions with the gnu_inline attribute, and marks a definition only for
+inlining as inline even when the function has an ellipsis.

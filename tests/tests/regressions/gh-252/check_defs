@@ -1,0 +1,31 @@
+#!/bin/bash
+# Compile each source file to an object file, check that only inst.o (the
+# explicit instantiation) defines A<int>::f and A<int>::g, and then link the
+# object files.
+opts=
+objs=
+for arg in "$@"; do
+  case $arg in
+    *.c | *.C) objs="$objs ${arg%.*}.o" ;;
+    *) opts="$opts $arg" ;;
+  esac
+done
+eccp -c "$@" || exit $?
+status=0
+for obj in $objs; do
+  defs=`nm -g --defined-only $obj | grep -o '_ZN1AIiE1[fg]E[a-z]*' | sort`
+  defs=`echo $defs`
+  echo $obj: $defs
+  expected=
+  if [ $obj = inst.o ]; then
+    expected="_ZN1AIiE1fEv _ZN1AIiE1gEiz"
+  fi
+  if [ "$defs" != "$expected" ]; then
+    echo "FAIL: Expected '$expected'."
+    status=1
+  fi
+done
+if [ $status -ne 0 ]; then
+  exit $status
+fi
+exec eccp $opts $objs
