@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=3 --c++20 --clang_version=210000 Test_name.c
+"Test_name.c", line 14: error: no instance of function template "lambda_parameter_type_mismatch::f" matches the argument list
+            argument types are: (char (*)[4])
+      f<char>(&a);
+      ^
+"Test_name.c", line 8: note: function template "lambda_parameter_type_mismatch::f" does not match because argument #1 does not match parameter
+    void f(char (*)[sizeof([](T x) { return x; }(T{}))]) {}
+         ^
+
+"Test_name.c", line 26: error: no instance of function template "unnamed_lambda_parameter_mismatch::f" matches the argument list
+            argument types are: (char (*)[5])
+      f<int>(&a);
+      ^
+"Test_name.c", line 21: note: function template "unnamed_lambda_parameter_mismatch::f" does not match because argument #1 does not match parameter
+    void f(char (*)[sizeof([](T) { return T(); }(1))]) {}
+         ^
+
+"Test_name.c", line 38: error: no instance of function template "lambda_body_type_mismatch::f" matches the argument list
+            argument types are: (char (*)[5])
+      f<int>(&a);
+      ^
+"Test_name.c", line 33: note: function template "lambda_body_type_mismatch::f" does not match because argument #1 does not match parameter
+    void f(char (*)[sizeof([](int) { return T(); }(1))]) {}
+         ^
+
+"Test_name.c", line 52: error: no instance of function template "indirect_template_parameter_dependency::f" matches the argument list
+            argument types are: (long long, char (*)[8])
+      f(1LL, &a);
+      ^
+"Test_name.c", line 47: note: function template "indirect_template_parameter_dependency::f" does not match because argument #2 does not match parameter
+    void f(T x, char (*)[sizeof([](decltype(x) y) { return y; }(x))]) {}
+         ^
+
+"Test_name.c", line 66: error: no instance of function template "non_type_template_argument_mismatch::f" matches the argument list
+            argument types are: (non_type_template_argument_mismatch::A<2>)
+      f<1>(A<2>{});
+      ^
+"Test_name.c", line 60: note: function template "non_type_template_argument_mismatch::f" does not match because argument #1 does not match parameter
+    template<int N> void f(A<[] { return N; }()>) {}
+                         ^
+
+"Test_name.c", line 79: error: no instance of function template "nested_lambda_array_bound_mismatch::f" matches the argument list
+            argument types are: (char (*)[6])
+      f<1, int>(&b);
+      ^
+"Test_name.c", line 73: note: function template "nested_lambda_array_bound_mismatch::f" does not match because argument #1 does not match parameter
+    void f(char (*)[([] { return [] { return N + int(sizeof(T)); }(); }())]) {}
+         ^
+
+"Test_name.c", line 92: error: more than one instance of overloaded function "incomplete_template_arguments::f" matches the argument list:
+            function template "void incomplete_template_arguments::f<N>(const char (*)[<expression>])" (declared at line 88)
+            function template "void incomplete_template_arguments::f<N>(const char (*)[<expression>])" (declared at line 90)
+            argument types are: (const char (*)[6])
+    void test() { f<6>(&"hello"); }
+                  ^
+
+"Test_name.c", line 106: error: no instance of function template "undeduced_parameter_hides_outer_name::f" matches the argument list
+            argument types are: (char (*)[7], double)
+      f<6>(&a, 1.0);
+      ^
+"Test_name.c", line 101: note: function template "undeduced_parameter_hides_outer_name::f" does not match because argument #1 does not match parameter
+    void f(char (*)[([] { return N + sizeof(U); }())], U) {}
+         ^
+
+"Test_name.c", line 121: error: no instance of function template "enable_if_condition_not_satisfied::pick" matches the argument list
+            argument types are: (int)
+      pick(1);
+      ^
+
+9 errors detected in the compilation of "Test_name.c".

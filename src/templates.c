@@ -3122,6 +3122,8 @@ Otherwise it is zero.
                                *templ_arg_list, rout_templ_sym,
                                templ_param_list, ctws_options, param_count)) {
     /* Substitute the template arguments in the routine type. */
+    a_scope_depth       inst_scope_depth = NO_SCOPE_DEPTH;
+    a_template_arg_ptr  saved_deduced_template_args = NULL;
     if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&
         scope_stack_entry_for(depth_innermost_instantiation_scope)->
                                               template_sym == rout_templ_sym &&
@@ -3130,12 +3132,18 @@ Otherwise it is zero.
       /* We know the template arguments for this instance now; save them in
          the scope stack entry in case they are needed for the substitution
          below. */
-      scope_stack_entry_for(depth_innermost_instantiation_scope)->
-                                       deduced_template_args = *templ_arg_list;
+      inst_scope_depth = depth_innermost_instantiation_scope;
+      saved_deduced_template_args =
+                         scope_stack[inst_scope_depth].deduced_template_args;
+      scope_stack[inst_scope_depth].deduced_template_args = *templ_arg_list;
     }  /* if */
     new_type = substitute_template_arguments(rout_templ_sym, *templ_arg_list,
                                              (a_template_arg_ptr*)NULL,
                                              templ_param_list, ctws_options);
+    if (inst_scope_depth != NO_SCOPE_DEPTH) {
+      scope_stack[inst_scope_depth].deduced_template_args =
+                                                   saved_deduced_template_args;
+    }  /* if */
     if (new_type != NULL && (microsoft_mode || gpp_mode)) {
       /* Normally, a function type will have been considered invalid if
          a parameter or return type was an abstract class type, but in
@@ -11669,8 +11677,22 @@ is added to the substitution state.
   scope_pushed = !(scope_is(&scope_stack_top(), sck_function_access) &&
                    scope_stack_top().is_rescan &&
                    scope_stack_top().template_sym == template_sym);
+  a_scope_depth       inst_scope_depth = NO_SCOPE_DEPTH;
+  a_template_arg_ptr  saved_deduced_template_args = NULL;
   if (scope_pushed) {
     push_instantiation_scope_for_rescan(template_sym);
+    /* An access-checking scope may have been pushed above this scope. */
+    scope_stack[depth_innermost_instantiation_scope].deduced_template_args =
+                                                                         args;
+  } else if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&
+             scope_stack[depth_innermost_instantiation_scope].
+                                                   template_arg_list == NULL &&
+             scope_stack[depth_innermost_instantiation_scope].
+                                    template_decl_info->parameters == params) {
+    inst_scope_depth = depth_innermost_instantiation_scope;
+    saved_deduced_template_args =
+                           scope_stack[inst_scope_depth].deduced_template_args;
+    scope_stack[inst_scope_depth].deduced_template_args = args;
   }  /* if */
   clear_diag_list(&diag_list);
   init_ctws_state(&ctws_state);
@@ -11723,9 +11745,14 @@ is added to the substitution state.
     result = FALSE;
   }  /* if */
   free_list_of_variadic_param_info(ctws_state.variadic_param_info);
-  restore_default_template_params(params, FALSE);
   if (scope_pushed) {
     pop_instantiation_scope_for_rescan();
+  } else {
+    if (inst_scope_depth != NO_SCOPE_DEPTH) {
+      scope_stack[inst_scope_depth].deduced_template_args =
+                                                   saved_deduced_template_args;
+    }  /* if */
+    restore_template_param_symbols_for_param_list(params, depth_scope_stack);
   }  /* if */
   return result;
 }  /* requires_constraint_satisfied */
@@ -19247,11 +19274,23 @@ are flags passed down to the substitution routines.
          template argument list.  Create a new type. */
       a_ctws_state            ctws_state;
       a_scope_stack_entry_ptr ssep = &scope_stack_top();
+      a_scope_depth           inst_scope_depth = NO_SCOPE_DEPTH;
+      a_template_arg_ptr      saved_deduced_template_args = NULL;
       a_boolean               scope_pushed = FALSE;
       init_ctws_state(&ctws_state);
       ctws_state.preserve_deduced_packs = preserve_deduced_packs;
       templ_rout_type = skip_typerefs(tssp->variant.function.routine->type);
       ++(tssp->variant.function.pending_deductions);
+      if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&
+          scope_stack_entry_for(depth_innermost_instantiation_scope)->
+                                                   template_sym == templ_sym &&
+          scope_stack_entry_for(depth_innermost_instantiation_scope)->
+                                                   template_arg_list == NULL) {
+        inst_scope_depth = depth_innermost_instantiation_scope;
+        saved_deduced_template_args =
+                           scope_stack[inst_scope_depth].deduced_template_args;
+        scope_stack[inst_scope_depth].deduced_template_args = templ_arg_list;
+      }  /* if */
       /* Ensure any access checks can find the routine's friends.  If a
          function access scope has already been pushed for this template then
          there's no need to push another. */
@@ -19268,6 +19307,10 @@ are flags passed down to the substitution routines.
 	       					    &templ_sym->decl_position,
 						    ctws_options,
 						    &copy_error, &ctws_state);
+      if (inst_scope_depth != NO_SCOPE_DEPTH) {
+        scope_stack[inst_scope_depth].deduced_template_args =
+                                                   saved_deduced_template_args;
+      }  /* if */
       if (!(ctws_options & CTWS_IS_PARTIAL_ORDER_CHECK)) {
         if (concepts_enabled && !copy_error &&
             (ms_version_is(any_version) || clang_version_is(any_version)) &&

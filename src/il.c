@@ -20524,6 +20524,216 @@ TRUE.
 }  /* substituted_cast_is_valid */
 
 
+static void examine_type_for_instantiation_dependence(
+                                    a_type_ptr                          type,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called from traverse_expr to check whether the type is instantiation-dependent.
+*/
+{
+  if (is_instantiation_dependent_type(type)) {
+    tblock->result = TRUE;
+    tblock->terminate = TRUE;
+  }  /* if */
+}  /* examine_type_for_instantiation_dependence */
+
+
+static void examine_var_init_for_instantiation_dependence(
+                                    a_variable_ptr                      vp,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Helper function to determine whether a given expression or constant is
+instantiation-dependent.  Specifically, if the given variable is local to a
+function template, this function traverses the variable's initializer to see
+if it is instantiation-dependent.
+*/
+{
+  if (vp->is_prototype_instantiation ||
+      (vp->source_corresp.enclosing_routine != NULL &&
+       vp->source_corresp.enclosing_routine->is_prototype_instantiation)) {
+    an_init_kind        init_kind, saved_init_kind = vp->init_kind;
+    an_initializer_ptr  initializer;
+    get_variable_initializer(vp, (a_scope_ptr)NULL, &init_kind, &initializer);
+    /* Temporarily disable the initializer to avoid unbounded recursion. */
+    vp->init_kind = (an_init_kind)initk_none;
+    if (init_kind == (an_init_kind)initk_static) {
+      traverse_constant(initializer->constant, tblock);
+    } else if (init_kind == (an_init_kind)initk_dynamic) {
+      traverse_dynamic_init(initializer->dynamic, tblock);
+    } else if (init_kind == (an_init_kind)initk_binding) {
+      traverse_expr(initializer->bound_expr, tblock);
+    }  /* if */
+    vp->init_kind = saved_init_kind;
+  }  /* if */
+}  /* examine_var_init_for_instantiation_dependence */
+
+
+static void examine_constant_for_instantiation_dependence(
+                                    a_constant_ptr                      con,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called from traverse_expr to check whether the constant is
+instantiation-dependent.
+*/
+{
+  if (constant_is(con, ck_template_param) || con->is_generic_initializer) {
+    tblock->result = TRUE;
+    tblock->terminate = TRUE;
+  } else if (constant_is(con, ck_address)) {
+    if (con->variant.address.kind == (an_address_base_kind)abk_variable) {
+      /* Check if the given variable's initializer makes it instantiation-
+         dependent. */
+      a_variable  *vp = con->variant.address.variant.variable;
+      if (vp->source_corresp.is_class_member &&
+          parent_class_of(vp)->variant.class_struct_union.is_nonreal_class) {
+        tblock->result = TRUE;
+        tblock->terminate = TRUE;
+      } else {
+        examine_var_init_for_instantiation_dependence(vp, tblock);
+      }  /* if */
+    }  /* if */
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (constant_is(con, ck_aggregate) ||
+             constant_is(con, ck_dynamic_init) ||
+             constant_is(con, ck_init_repeat)) {
+     /* Aggregate constants can contain dynamic members, which might be
+        instantiation-dependent, so walk the subtree for those. */
+  } else {
+    /* Other constants are known not to be dependent. */
+    tblock->suppress_subtree_walk = TRUE;
+  }  /* if */
+}  /* examine_constant_for_instantiation_dependence */
+
+
+static void examine_expr_for_instantiation_dependence(
+                                    an_expr_node_ptr                    expr,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called from traverse_expr to check whether the expression is
+instantiation-dependent.
+*/
+{
+  a_boolean  skip_typecheck = FALSE;
+
+  /* Most cases are resolved by the type, but a routine node that is the
+     address of a static member of the current instantiation is not. */
+  if (expr_is_dep_static_member_of_current_instantiation(expr)) {
+    tblock->result = TRUE;
+    tblock->terminate = TRUE;
+  } else if (is_variable_node(expr)) {
+    /* Treat local variables of function templates as "instantiation
+       dependent". */
+    a_variable  *vp = node_variable(expr);
+    if (vp->is_nonreal) {
+      tblock->result = TRUE;
+      tblock->terminate = TRUE;
+    } else {
+      examine_var_init_for_instantiation_dependence(vp, tblock);
+    }  /* if */
+  } else if (node_is(expr, enk_type_operand)) {
+    /* enk_type_operand nodes have "void" type, but the instantiation
+       dependence is in the operand type. */
+    examine_type_for_instantiation_dependence(expr->variant.type_operand.type,
+                                              tblock);
+    skip_typecheck = TRUE;
+  }  /* if */
+  if (skip_typecheck || tblock->terminate) {
+    /* No need to check the type. */
+  } else {
+    examine_type_for_instantiation_dependence(expr->type, tblock);
+  }  /* if */
+}  /* examine_expr_for_instantiation_dependence */
+
+
+static void examine_dyn_init_for_instantiation_dependence(
+                                    a_dynamic_init_ptr                  dip,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Check if the given dynamic initializer is instantiation-dependent.  Called
+indirectly by expr_is_instantiation_dependent and
+lambda_body_is_instantiation_dependent.
+*/
+{
+  if (dyn_init_is(dip, dik_constructor)) {
+    if (dip->variant.constructor.ptr == NULL) {
+      /* An unknown constructor only occurs when it is template-dependent. */
+      tblock->result = TRUE;
+      tblock->terminate = TRUE;
+    }  /* if */
+  }  /* if */
+}  /* examine_dyn_init_for_instantiation_dependence */
+
+
+static void examine_statement_for_instantiation_dependence(
+                                    a_statement_ptr                     stmt,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called from traverse_statement to check declarations that are not otherwise
+visited by the expression and statement traversal.
+*/
+{
+  if (stmt->kind == stmk_decl) {
+    an_il_entity_list_entry_ptr  entry = stmt->variant.decl.entities;
+    for (; entry != NULL && !tblock->terminate; entry = entry->next) {
+      a_type_ptr  type = NULL;
+      switch (entry->entity.kind) {
+        case iek_type:
+          type = (a_type_ptr)entry->entity.ptr;
+          break;
+        case iek_variable:
+          type = ((a_variable_ptr)entry->entity.ptr)->type;
+          break;
+        case iek_routine:
+          type = ((a_routine_ptr)entry->entity.ptr)->type;
+          break;
+        default:
+          break;
+      }  /* switch */
+      if (entity_is_nonreal((a_source_correspondence_ptr)entry->entity.ptr,
+                             (an_il_entry_kind)entry->entity.kind)) {
+        tblock->result = TRUE;
+        tblock->terminate = TRUE;
+      } else if (type != NULL) {
+        examine_type_for_instantiation_dependence(type, tblock);
+      }  /* if */
+      if (!tblock->terminate && entry->entity.kind == iek_variable) {
+        traverse_variable_init((a_variable_ptr)entry->entity.ptr, tblock);
+      }  /* if */
+    }  /* for */
+  }  /* if */
+}  /* examine_statement_for_instantiation_dependence */
+
+
+static a_boolean lambda_body_is_instantiation_dependent(a_lambda_ptr lambda)
+/*
+Return TRUE if lambda is a non-generic lambda whose call operator body is
+instantiation-dependent.
+*/
+{
+  a_boolean  result = FALSE;
+
+  if (!lambda->is_generic && lambda->lambda_routine != NULL) {
+    a_scope_ptr func_scope = scope_for_routine_or_null(lambda->lambda_routine);
+    if (func_scope != NULL && func_scope->assoc_block != NULL) {
+      an_expr_or_stmt_traversal_block  tblock;
+      clear_expr_or_stmt_traversal_block(&tblock);
+      tblock.process_statement =
+                               examine_statement_for_instantiation_dependence;
+      tblock.process_expr = examine_expr_for_instantiation_dependence;
+      tblock.process_constant = examine_constant_for_instantiation_dependence;
+      tblock.process_dynamic_init =
+                                examine_dyn_init_for_instantiation_dependence;
+      tblock.process_type = examine_type_for_instantiation_dependence;
+      tblock.process_non_dynamic_constants = TRUE;
+      tblock.skip_expr_process_type = TRUE;
+      traverse_statement(func_scope->assoc_block, &tblock);
+      result = tblock.result;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* lambda_body_is_instantiation_dependent */
+
+
 static an_expr_node_ptr copy_template_param_lambda_expr(
                                   an_expr_node_ptr       expr,
                                   a_template_arg_ptr     template_arg_list,
@@ -20560,12 +20770,12 @@ copy_template_param_expr for the parameter descriptions.
        severe error cases).  Substitution cannot proceed. */
     subst_fail(*copy_error);
   } else {
-    an_operand                  result_operand;
-    an_expr_stack_entry         expr_stack_entry;
-    an_expr_stack_entry_ptr     saved_expr_stack;
-    a_boolean                   pushed_template_decl_scope = FALSE;
-    a_scope_ptr                 lambda_enclosing_scope = NULL;
-    a_scope_depth               scope_depth_before_local_reactivation =
+    an_operand                   result_operand;
+    an_expr_stack_entry          expr_stack_entry;
+    an_expr_stack_entry_ptr      saved_expr_stack;
+    a_rescan_param_binding_state param_binding_state;
+    a_scope_ptr                  lambda_enclosing_scope = NULL;
+    a_scope_depth                scope_depth_before_local_reactivation =
                                                                 NO_SCOPE_DEPTH;
     /* Set up a fresh expression and lexical context so that the lambda tokens
        can be rescanned without interfering with the surrounding state, then
@@ -20578,28 +20788,15 @@ copy_template_param_expr for the parameter descriptions.
     expr_stack_entry.suppress_diagnostics = TRUE;
     expr_stack_entry.possible_rescan_context = TRUE;
     push_lexical_state_stack();
-    if (template_param_list != NULL &&
-        template_param_list->cache.decl_info != NULL &&
-        template_param_list->param_symbol != NULL) {
-      /* Make the template parameters being substituted visible during the
-         rescan so that names that refer to them can be resolved.  The scope
-         is pushed reusing the original declaration scope number so that the
-         template parameter symbols are visible to ordinary name lookup. */
-      push_template_declaration_scope_full(
-                            template_param_list->cache.decl_info,
-                            template_param_list->param_symbol->decl_scope,
-                            /*is_template_template_param=*/FALSE,
-                            /*is_template_param_rescan=*/FALSE);
-      scope_stack_top().is_reactivation = TRUE;
-      pushed_template_decl_scope = TRUE;
-      /* Force the template parameter symbols to refer to the values
-         specified by the actual template arguments so that name
-         lookup of those parameters during the rescan returns the
-         substituted values directly (their state will be restored
-         by the enclosing instantiation scope when it is left). */
-      update_template_param_symbols(template_param_list,
-                                    template_arg_list);
-    }  /* if */
+    /* Bind any template parameters that have known arguments so that ordinary
+       name lookup during the rescan resolves them to their substituted values,
+       while leaving any not-yet-deduced parameters at their resting dependent
+       values. */
+    begin_rescan_param_binding(template_param_list, template_arg_list,
+                               /*push_decl_scope=*/TRUE,
+                               /*enable_variadic=*/
+                               (options & CTWS_PRESERVE_DEDUCED_PACKS) == 0,
+                               &param_binding_state);
     /* If the lambda was originally declared in a local scope (i.e., inside a
        function body), reactivate that scope so that local variables and other
        names declared in the enclosing function are visible to ordinary name
@@ -20649,13 +20846,29 @@ copy_template_param_expr for the parameter descriptions.
     scan_lambda_expression(&result_operand);
     if (is_immediate_class_type(result_operand.type) &&
         is_lambda_closure_type(result_operand.type)) {
-      /* Pushing a template declaration scope above (to reactivate the
-         template parameters) unfortunately causes make_closure_class to mark
-         the closure as nonreal.  In some situations with class template
-         argument deduction, we get a spuriously nonreal class even when we
-         didn't push the template declaration scope above.  Just reset
-         the flag here. */
-      result_operand.type->variant.class_struct_union.is_nonreal_class = FALSE;
+      /* In some situations with class template argument deduction, we get a
+         spuriously nonreal class.  Reset the flag here unless the rescanned
+         lambda body still references un-substituted template parameters, and
+         associate the new closure class with the cached tokens in case a
+         subsequent substitution pass needs to rescan it again. */
+      a_lambda_ptr  new_lambda = NULL;
+      if (is_expression_operand(&result_operand) &&
+          node_is(result_operand.variant.expression, enk_lambda)) {
+        new_lambda =
+                 result_operand.variant.expression->variant.init.source.lambda;
+      }  /* if */
+      if (new_lambda != NULL &&
+          lambda_body_is_instantiation_dependent(new_lambda)) {
+        result_operand.type->variant.class_struct_union.is_nonreal_class =
+                                                                          TRUE;
+        new_lambda->lambda_routine->is_prototype_instantiation = TRUE;
+      } else {
+        result_operand.type->variant.class_struct_union.is_nonreal_class =
+                                                                         FALSE;
+      }  /* if */
+      if (cached_lambdas->get(result_operand.type) == NULL) {
+        cached_lambdas->map(result_operand.type, tokens);
+      }  /* if */
     }  /* if */
     flush_past_token_cache_terminator();
     if (scope_depth_before_local_reactivation != NO_SCOPE_DEPTH) {
@@ -20664,9 +20877,7 @@ copy_template_param_expr for the parameter descriptions.
         pop_scope();
       }  /* while */
     }  /* if */
-    if (pushed_template_decl_scope) {
-      pop_scope();
-    }  /* if */
+    end_rescan_param_binding(&param_binding_state);
     pop_lexical_state_stack();
     pop_expr_stack();
     restore_expr_stack(saved_expr_stack);
@@ -22519,6 +22730,8 @@ options.
               /* con_copy and constant are already set correctly. */
             } else if ((!cpp11_sfinae_enabled && !expr_copy->is_lvalue) ||
                        (options & CTWS_IN_PARENT_SUBSTITUTION) != 0 ||
+                       ((options & CTWS_MAY_BE_RESCANNED) != 0 &&
+                        expr_is_instantiation_dependent(expr_copy)) ||
                        keep_tpck_expression) {
               /* The expression remains an expression.  If the expression
                  changed, make a new tpck_expression constant for it.  With
@@ -27329,87 +27542,6 @@ associated with the statement expression from its parent's scopes list.
 
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
 
-static void examine_type_for_instantiation_dependence(
-                                    a_type_ptr                          type,
-                                    an_expr_or_stmt_traversal_block_ptr tblock)
-/*
-Called from traverse_expr to check whether the type is instantiation-dependent.
-*/
-{
-  if (is_instantiation_dependent_type(type)) {
-    tblock->result = TRUE;
-    tblock->terminate = TRUE;
-  }  /* if */
-}  /* examine_type_for_instantiation_dependence */
-
-
-static void examine_var_init_for_instantiation_dependence(
-                                    a_variable_ptr                      vp,
-                                    an_expr_or_stmt_traversal_block_ptr tblock)
-/*
-Helper function to determine whether a given expression or constant is
-instantiation-dependent.  Specifically, if the given variable is local to a
-function template, this function traverses the variable's initializer to see
-if it is instantiation-dependent.
-*/
-{
-  if (vp->is_prototype_instantiation ||
-      (vp->source_corresp.enclosing_routine != NULL &&
-       vp->source_corresp.enclosing_routine->is_prototype_instantiation)) {
-    an_init_kind        init_kind, saved_init_kind = vp->init_kind;
-    an_initializer_ptr  initializer;
-    get_variable_initializer(vp, (a_scope_ptr)NULL, &init_kind, &initializer);
-    /* Temporarily disable the initializer to avoid unbounded recursion. */
-    vp->init_kind = (an_init_kind)initk_none;
-    if (init_kind == (an_init_kind)initk_static) {
-      traverse_constant(initializer->constant, tblock);
-    } else if (init_kind == (an_init_kind)initk_dynamic) {
-      traverse_dynamic_init(initializer->dynamic, tblock);
-    } else if (init_kind == (an_init_kind)initk_binding) {
-      traverse_expr(initializer->bound_expr, tblock);
-    }  /* if */
-    vp->init_kind = saved_init_kind;
-  }  /* if */
-}  /* examine_var_init_for_instantiation_dependence */
-
-
-static void examine_constant_for_instantiation_dependence(
-                                    a_constant_ptr                      con,
-                                    an_expr_or_stmt_traversal_block_ptr tblock)
-/*
-Called from traverse_expr to check whether the constant is
-instantiation-dependent.
-*/
-{
-  if (constant_is(con, ck_template_param) || con->is_generic_initializer) {
-    tblock->result = TRUE;
-    tblock->terminate = TRUE;
-  } else if (constant_is(con, ck_address)) {
-    if (con->variant.address.kind == (an_address_base_kind)abk_variable) {
-      /* Check if the given variable's initializer makes it instantiation-
-         dependent. */
-      a_variable  *vp = con->variant.address.variant.variable;
-      if (vp->source_corresp.is_class_member &&
-          parent_class_of(vp)->variant.class_struct_union.is_nonreal_class) {
-        tblock->result = TRUE;
-        tblock->terminate = TRUE;
-      } else {
-        examine_var_init_for_instantiation_dependence(vp, tblock);
-      }  /* if */
-    }  /* if */
-    tblock->suppress_subtree_walk = TRUE;
-  } else if (constant_is(con, ck_aggregate) ||
-             constant_is(con, ck_dynamic_init) ||
-             constant_is(con, ck_init_repeat)) {
-     /* Aggregate constants can contain dynamic members, which might be
-        instantiation-dependent, so walk the subtree for those. */
-  } else {
-    /* Other constants are known not to be dependent. */
-    tblock->suppress_subtree_walk = TRUE;
-  }  /* if */
-}  /* examine_constant_for_instantiation_dependence */
-
-
 a_boolean expr_is_dep_static_member_of_current_instantiation(
                                                          an_expr_node_ptr expr)
 /*
@@ -27431,64 +27563,6 @@ dependent.
   }  /* if */
   return is_dependent;
 }  /* expr_is_dep_static_member_of_current_instantiation */
-
-
-static void examine_expr_for_instantiation_dependence(
-                                    an_expr_node_ptr                    expr,
-                                    an_expr_or_stmt_traversal_block_ptr tblock)
-/*
-Called from traverse_expr to check whether the expression is
-instantiation-dependent.
-*/
-{
-  a_boolean  skip_typecheck = FALSE;
-
-  /* Most cases are resolved by the type, but a routine node that is the
-     address of a static member of the current instantiation is not. */
-  if (expr_is_dep_static_member_of_current_instantiation(expr)) {
-    tblock->result = TRUE;
-    tblock->terminate = TRUE;
-  } else if (is_variable_node(expr)) {
-    /* Treat local variables of function templates as "instantiation
-       dependent". */
-    a_variable  *vp = node_variable(expr);
-    if (vp->is_nonreal) {
-      tblock->result = TRUE;
-      tblock->terminate = TRUE;
-    } else {
-      examine_var_init_for_instantiation_dependence(vp, tblock);
-    }  /* if */
-  } else if (node_is(expr, enk_type_operand)) {
-    /* enk_type_operand nodes have "void" type, but the instantiation
-       dependence is in the operand type. */
-    examine_type_for_instantiation_dependence(expr->variant.type_operand.type,
-                                              tblock);
-    skip_typecheck = TRUE;
-  }  /* if */
-  if (skip_typecheck || tblock->terminate) {
-    /* No need to check the type. */
-  } else {
-    examine_type_for_instantiation_dependence(expr->type, tblock);
-  }  /* if */
-}  /* examine_expr_for_instantiation_dependence */
-
-
-static void examine_dyn_init_for_instantiation_dependence(
-                         a_dynamic_init_ptr                             dip,
-                         ARG_UNUSED an_expr_or_stmt_traversal_block_ptr tblock)
-/*
-Check if the given dynamic initializer is instantiation-dependent.  Called
-indirectly by expr_is_instantiation_dependent.
-*/
-{
-  if (dyn_init_is(dip, dik_constructor)) {
-    if (dip->variant.constructor.ptr == NULL) {
-      /* An unknown constructor only occurs when it is template-dependent. */
-      tblock->result = TRUE;
-      tblock->terminate = TRUE;
-    }  /* if */
-  }  /* if */
-}  /* examine_dyn_init_for_instantiation_dependence */
 
 
 a_boolean expr_is_instantiation_dependent(an_expr_node_ptr expr)

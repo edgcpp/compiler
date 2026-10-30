@@ -10785,9 +10785,26 @@ a left parenthesis in the source.
           sym = symbol_for(var);
         }  /* if */
       } else if (is_routine_node(member_op)) {
-        /* Static member function. */
+        /* Static member function or lambda call operator. */
         a_routine_ptr  rp = node_routine(member_op);
-        if (rp->assoc_template != NULL) {
+        if (rp->source_corresp.is_class_member &&
+            is_immediate_class_type(class_struct_union_type) &&
+            is_lambda_closure_type(class_struct_union_type) &&
+            parent_class_of(rp) != skip_typerefs(class_struct_union_type)) {
+          /* The object operand is a rescanned lambda closure with a newly
+             created closure class; look up the corresponding member (such as
+             operator()) in the new closure class. */
+          a_symbol_locator  loc;
+          clear_locator(&loc, qualified_member_position);
+          loc.symbol_header = symbol_for(rp)->header;
+          sym = look_up_selection_name(&loc, class_struct_union_type);
+          if (rp->is_template_function && rp->expl_template_arg_list_used &&
+              rp->template_arg_list != NULL) {
+            is_template_id = TRUE;
+            expl_templ_arg_list =
+                                copy_template_arg_list(rp->template_arg_list);
+          }  /* if */
+        } else if (rp->assoc_template != NULL) {
           sym = copy_template_routine_with_substitution(
                                     rp, rcblock->template_arg_list,
                                     rcblock->template_param_list,
@@ -18952,34 +18969,6 @@ used for the stack entry to be pushed.
 }  /* push_expr_stack_for_expr_rescan */
 
 
-static void restore_template_param_symbols_after_expr_rescan(
-                                      a_template_param_ptr template_param_list)
-/*
-Restore the template parameter symbols for template_param_list after a
-temporary update for an expression rescan.  If an enclosing instantiation for
-the same parameter list is active, restore those argument values; otherwise
-restore the default template parameter values.
-*/
-{
-  a_scope_depth  scope_depth;
-
-  for (scope_depth = depth_scope_stack; scope_depth >= 0; --scope_depth) {
-    if (scope_is(&scope_stack[scope_depth], sck_template_instantiation) &&
-        scope_stack[scope_depth].template_decl_info != NULL &&
-        scope_stack[scope_depth].template_decl_info->parameters ==
-                                                         template_param_list) {
-      break;
-    }  /* if */
-  }  /* for */
-  if (scope_depth != NO_SCOPE_DEPTH) {
-    update_template_param_symbols(template_param_list,
-                                  scope_stack[scope_depth].template_arg_list);
-  } else {
-    restore_default_template_params(template_param_list, FALSE);
-  }  /* if */
-}  /* restore_template_param_symbols_after_expr_rescan */
-
-
 a_type_ptr decltype_of_expr_with_substitution(
                                   a_type_ptr               type,
                                   an_expr_node_ptr         expr,
@@ -18999,12 +18988,12 @@ state block.  This routine is intended to be called from outside of the
 expression-processing routines.
 */
 {
-  a_type_ptr                  new_type;
-  a_rescan_control_block      rcblock;
-  a_saved_expr_rescan_context saved_context;
-  an_expr_stack_entry         expr_stack_entry;
-  a_boolean                   is_typeof = FALSE, is_splice = FALSE;
-  a_boolean                   updated_template_params = FALSE;
+  a_type_ptr                   new_type;
+  a_rescan_control_block       rcblock;
+  a_saved_expr_rescan_context  saved_context;
+  an_expr_stack_entry          expr_stack_entry;
+  a_rescan_param_binding_state param_binding_state;
+  a_boolean                    is_typeof = FALSE, is_splice = FALSE;
 
   /* __underlying_type constructs don't allow expression arguments. */
   check_assertion(type_is(type , tk_typeref) &&
@@ -19023,13 +19012,12 @@ expression-processing routines.
   rcblock.options = options;
   rcblock.ctws_state = ctws_state;
   rcblock.expr = expr;
-  if (template_param_list != NULL && template_arg_list != NULL) {
-    /* Some rescan paths, notably CTAD for a type template template parameter,
-       consult the template parameter symbols. */
-    update_template_param_symbols(template_param_list, template_arg_list,
-                                  /*partial_argument_list=*/TRUE);
-    updated_template_params = TRUE;
-  }  /* if */
+  /* Some rescan paths, notably CTAD for a type template template parameter or
+     a generic lambda call, consult the template parameter symbols. */
+  begin_rescan_param_binding(template_param_list, template_arg_list,
+                             /*push_decl_scope=*/FALSE,
+                             /*enable_variadic=*/FALSE,
+                             &param_binding_state);
   push_expr_rescan_context_if_necessary(&rcblock, &saved_context);
   push_expr_stack_for_expr_rescan((an_expression_kind)ek_sizeof,
                                   &rcblock,
@@ -19043,9 +19031,7 @@ expression-processing routines.
   }  /* if */
   pop_expr_stack();
   pop_expr_rescan_context_if_necessary(&saved_context);
-  if (updated_template_params) {
-    restore_template_param_symbols_after_expr_rescan(template_param_list);
-  }  /* if */
+  end_rescan_param_binding(&param_binding_state);
   if (rcblock.error_detected || is_error_type(new_type)) {
     *copy_error = TRUE;
   }  /* if */

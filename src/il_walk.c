@@ -3773,20 +3773,25 @@ list.
 }  /* traverse_local_expr_node_ref_list */
 
 
-static void traverse_variable_init(a_variable_ptr                      var,
-                                   an_expr_or_stmt_traversal_block_ptr tblock)
+void traverse_variable_init(a_variable_ptr                      var,
+                             an_expr_or_stmt_traversal_block_ptr tblock)
 /*
-The specified variable (which may be NULL) may have a dynamic initialization.
-Such dynamic initializations are not pointed to by stmk_init statements, so
-they are traversed here.  Call user-provided routines as specified in the
-control block.
+Traverse the initializer of the specified variable (which may be NULL).
+Some initializers are not pointed to by stmk_init statements and must be
+traversed through the variable instead.  Call user-provided routines as
+specified in the control block.
 */
 {
   if (var != NULL) {
-    if (var->initializer.dynamic != NULL) {
-      /* These variables should only have dynamic initialization. */
-      check_assertion(var->init_kind == (an_init_kind)initk_dynamic);
-      traverse_dynamic_init(var->initializer.dynamic, tblock);
+    an_init_kind        init_kind;
+    an_initializer_ptr  initializer;
+    get_variable_initializer(var, (a_scope_ptr)NULL, &init_kind, &initializer);
+    if (init_kind == (an_init_kind)initk_dynamic) {
+      traverse_dynamic_init(initializer->dynamic, tblock);
+    } else if (init_kind == (an_init_kind)initk_static) {
+      traverse_constant(initializer->constant, tblock);
+    } else if (init_kind == (an_init_kind)initk_binding) {
+      traverse_expr(initializer->bound_expr, tblock);
     }  /* if */
   }  /* if */
 }  /* traverse_variable_init */
