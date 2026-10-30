@@ -330,7 +330,7 @@ def _parse_envelope(response_message: DecodableMessage) -> ProtocolMessage:
     revision = response_json.get('r')
 
   if revision != PROTOCOL_REVISION:
-    raise IncompatibleProtocolVersion()
+    raise IncompatibleProtocolVersion(revision)
   return response_json
 
 def decode_response(
@@ -347,7 +347,24 @@ def decode_response(
   return (tag, value, response_json.get('s'))
 
 class IncompatibleProtocolVersion(Exception):
-  pass
+  '''The peer speaks another protocol revision: ``revision``, as it said
+  (the server's ``outdated-proto`` carries its own), if it said.
+  '''
+
+  def __init__(self, revision: Any = None) -> None:
+    self.revision = revision
+    super().__init__(
+      f"the peer speaks protocol revision {revision!r}, not "
+      f"{PROTOCOL_REVISION}"
+    )
+
+  @property
+  def peer_is_newer(self) -> bool:
+    '''Whether the peer is newer (this side must be updated), rather than
+    older, or saying no revision it could be compared by.
+    '''
+    return (isinstance(self.revision, int) and
+            self.revision > PROTOCOL_REVISION)
 
 class UnexpectedResponseTag(Exception):
   pass

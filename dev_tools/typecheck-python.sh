@@ -135,7 +135,7 @@ pushd pylibs/ > /dev/null
     check_types __init__.py
   popd > /dev/null
   pushd edgutil/ > /dev/null
-    check_types __init__.py
+    check_types_strict __init__.py
   popd > /dev/null
 popd > /dev/null
 

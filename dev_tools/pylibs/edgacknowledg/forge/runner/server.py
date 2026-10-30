@@ -14,7 +14,8 @@ containers see only the review trees (and, for builds, a staging directory
 to write), hold no secret, and have no network but the one they share with
 their client (see compose.yaml). ``client`` is the client.
 
-The client keeps one connection open, and sends requests on it (JSON text
+It serves a WebSocket at ``/`` (and health checks; see ``serving``). The
+client keeps one connection open, and sends requests on it (JSON text
 messages), each with an ``id`` of its choosing that the answers carry:
 
 - ``{"id", "op": "run", "argv": [...], "cwd", "env": {...}, "timeout"}``
@@ -51,9 +52,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence
 
-from websockets.asyncio.server import Server, ServerConnection, serve
-from websockets.exceptions import ConnectionClosed
+import quart.wrappers
 
+from quart import Blueprint, websocket
+from quart.wrappers import Websocket
+
+from edgacknowledg.forge import serving
 from edgacknowledg.forge.runner.roles import ROLES, RunnerPolicy
 
 _log = logging.getLogger('edgacknowledg.forge.runner.server')
@@ -68,6 +72,20 @@ ID_BYTES = 4
 
 class RequestError(Exception):
   '''A request the server refuses; the message says why.'''
+
+
+class _NeverRaised(Exception):
+  '''Stands in for an exception the installed Quart doesn't have.'''
+
+
+# What Quart raises when a client disconnects changed: from Quart 0.23
+# onward (Python 3.13+), ClientDisconnectedError is used.  Prior to this,
+# nothing is raised and Quart only cancels the handler.
+_ClientDisconnectedError: type[Exception] = getattr(
+  quart.wrappers,
+  'ClientDisconnectedError',
+  _NeverRaised
+)
 
 
 def _under_roots(value: str, roots: Sequence[Path]) -> bool:
@@ -189,96 +207,49 @@ def _empty_directory(path: Path) -> None:
       pass
 
 
-class RunnerServer:
-  '''Serves ``policy`` to its client.'''
-
-  def __init__(self,
-               policy: RunnerPolicy,
-               *,
-               container: bool = False) -> None:
-    self._policy = policy
-    self._container = container
-    self._commands = policy.resolved_commands()
-    self._active = 0
-
-  async def start(self, host: str, port: int) -> Server:
-    '''Start serving (port 0: any free one); close the server to stop.'''
-    return await serve(
-      self._handle,
-      host,
-      port,
-      max_size = MAX_REQUEST_BYTES
-    )
-
-  async def serve(self, host: str, port: int) -> None:
-    async with await self.start(host, port) as server:
-      await server.serve_forever()
-
-  async def _handle(self, connection: ServerConnection) -> None:
-    '''Serve one connection's requests until it goes, then kill whatever
-    it still runs.
-    '''
-    commands: dict[int, asyncio.Task[None]] = {}
-    try:
-      async for raw in connection:
-        try:
-          request = json.loads(raw)
-        except ValueError:
-          _log.warning('ignored a malformed request')
-          continue
-        request_id = request.get('id') if isinstance(request, dict) else None
-        if (not isinstance(request_id, int) or
-            not 0 <= request_id < 2 ** (8 * ID_BYTES)):
-          _log.warning('ignored a request without a valid id')
-          continue
-        op = request.get('op')
-        if op == 'cancel':
-          command = commands.get(request_id)
-          if command is not None:
-            command.cancel()
-          continue
-        try:
-          if op == 'describe':
-            await connection.send(json.dumps({
-              'id': request_id,
-              'description': self._policy.describe(),
-            }))
-          elif op == 'run':
-            job = check_request(request, self._policy, self._commands)
-            command = asyncio.create_task(
-              self._run(connection, request_id, job)
-            )
-            commands[request_id] = command
-
-            def forget(_: 'asyncio.Task[None]',
-                       request_id: int = request_id) -> None:
-              commands.pop(request_id, None)
-
-            command.add_done_callback(forget)
-          else:
-            raise RequestError(f"unknown operation: {op!r}")
-        except RequestError as ex:
-          _log.warning('refused a request: %s', ex)
-          await connection.send(json.dumps({
-            'id': request_id,
-            'error': str(ex),
-          }))
-    except ConnectionClosed:
-      pass
-    finally:
-      for command in list(commands.values()):
-        command.cancel()
-      await asyncio.gather(*commands.values(), return_exceptions = True)
-
-  async def _run(self,
-                 connection: ServerConnection,
+async def _relay(connection: Websocket,
                  request_id: int,
-                 job: Job) -> None:
+                 process: asyncio.subprocess.Process) -> None:
+  assert process.stdout is not None
+  prefix = request_id.to_bytes(ID_BYTES, 'big')
+  while True:
+    chunk = await process.stdout.read(OUTPUT_CHUNK)
+    if chunk == b'':
+      return
+    await connection.send(prefix + chunk)
+
+
+def _clean_up() -> None:
+  '''With no command running, leave nothing of one behind (only inside a
+  container of its own).
+  '''
+  for pid in stray_processes():
+    try:
+      os.kill(pid, signal.SIGKILL)
+    except (ProcessLookupError, PermissionError):
+      pass
+  _empty_directory(Path('/tmp'))
+
+
+def create_runner(policy: RunnerPolicy,
+                  *,
+                  container: bool = False) -> Blueprint:
+  '''The runner server serving ``policy`` to its client, over a WebSocket
+  at ``/``; with ``container``, cleaning up after its commands. Serve it
+  with ``serving``, taking messages of up to ``MAX_REQUEST_BYTES``.
+  '''
+  blueprint = Blueprint('runner', __name__)
+  commands_allowed = policy.resolved_commands()
+  # Commands running, over every connection.
+  active = 0
+
+  async def run(connection: Websocket, request_id: int, job: Job) -> None:
     '''Run ``job``, relaying its output, until it ends, times out, or is
     cancelled (by the client, or with its connection).
     '''
+    nonlocal active
     _log.info('running %s', shlex.join(job.argv))
-    self._active += 1
+    active += 1
     try:
       try:
         process = await asyncio.create_subprocess_exec(
@@ -300,7 +271,7 @@ class RunnerServer:
         timed_out = False
         try:
           await asyncio.wait_for(
-            self._relay(connection, request_id, process),
+            _relay(connection, request_id, process),
             job.timeout
           )
         except asyncio.TimeoutError:
@@ -319,35 +290,70 @@ class RunnerServer:
         if process.returncode is None:
           process.kill()
           await process.wait()
-    except ConnectionClosed:
+    except _ClientDisconnectedError:
       pass
     finally:
-      self._active -= 1
-      if self._active == 0:
-        self._clean_up()
+      active -= 1
+      if active == 0 and container:
+        _clean_up()
 
-  @staticmethod
-  async def _relay(connection: ServerConnection,
-                   request_id: int,
-                   process: asyncio.subprocess.Process) -> None:
-    assert process.stdout is not None
-    prefix = request_id.to_bytes(ID_BYTES, 'big')
-    while True:
-      chunk = await process.stdout.read(OUTPUT_CHUNK)
-      if chunk == b'':
-        return
-      await connection.send(prefix + chunk)
+  @blueprint.websocket('/')
+  async def serve_connection() -> None:
+    '''Serve one connection's requests until it goes (Quart cancels this),
+    then kill whatever it still runs.
+    '''
+    commands: dict[int, asyncio.Task[None]] = {}
+    try:
+      while True:
+        raw = await websocket.receive()
+        try:
+          request = json.loads(raw)
+        except ValueError:
+          _log.warning('ignored a malformed request')
+          continue
+        request_id = request.get('id') if isinstance(request, dict) else None
+        if (not isinstance(request_id, int) or
+            not 0 <= request_id < 2 ** (8 * ID_BYTES)):
+          _log.warning('ignored a request without a valid id')
+          continue
+        op = request.get('op')
+        if op == 'cancel':
+          command = commands.get(request_id)
+          if command is not None:
+            command.cancel()
+          continue
+        try:
+          if op == 'describe':
+            await websocket.send(json.dumps({
+              'id': request_id,
+              'description': policy.describe(),
+            }))
+          elif op == 'run':
+            job = check_request(request, policy, commands_allowed)
+            command = asyncio.create_task(run(websocket, request_id, job))
+            commands[request_id] = command
 
-  def _clean_up(self) -> None:
-    '''With no command running, leave nothing of one behind.'''
-    if not self._container:
-      return
-    for pid in stray_processes():
-      try:
-        os.kill(pid, signal.SIGKILL)
-      except (ProcessLookupError, PermissionError):
-        pass
-    _empty_directory(Path('/tmp'))
+            def forget(_: 'asyncio.Task[None]',
+                       request_id: int = request_id) -> None:
+              commands.pop(request_id, None)
+
+            command.add_done_callback(forget)
+          else:
+            raise RequestError(f"unknown operation: {op!r}")
+        except RequestError as ex:
+          _log.warning('refused a request: %s', ex)
+          await websocket.send(json.dumps({
+            'id': request_id,
+            'error': str(ex),
+          }))
+    except _ClientDisconnectedError:
+      pass
+    finally:
+      for command in list(commands.values()):
+        command.cancel()
+      await asyncio.gather(*commands.values(), return_exceptions = True)
+
+  return blueprint
 
 
 def main(role: str) -> None:
@@ -386,8 +392,12 @@ def main(role: str) -> None:
     home = args.home.absolute(),
     tools_dir = args.tools_dir.absolute()
   )
-  server = RunnerServer(policy, container = args.container)
   try:
-    asyncio.run(server.serve(args.host, args.port))
+    asyncio.run(serving.serve(
+      create_runner(policy, container = args.container),
+      host = args.host,
+      port = args.port,
+      max_message_size = MAX_REQUEST_BYTES
+    ))
   except KeyboardInterrupt:
     pass

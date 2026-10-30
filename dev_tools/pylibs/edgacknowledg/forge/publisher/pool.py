@@ -11,25 +11,33 @@ event loop, and with it every other reviewer and the AcknowlEDG connection.
 So the server keeps only section management, and answers each request in a
 pool process (``pool_process``):
 
-- ``AcknowledgPublisher`` registers a ``UnixSocketHandler`` per section,
+- ``acknowledg.publish`` registers a ``UnixSocketHandler`` per section,
   which stands in for the section's handler: it passes each request, with
   the section it is for, to the pool, and relays the replies.
 - ``ProcessPool`` keeps a fixed number of pool processes, each with one end
-  of a socket pair as its channel, and sends each request to the next one
-  in turn (round-robin). A process answers one request at a time; requests
-  for a busy one wait their turn.
-- A request has a deadline, counted from when its process starts on it. A
-  process that misses it is killed (with whatever it started) and replaced;
-  so is one that exits. Either way the request fails, and the client
-  library answers the reviewer with its failure reply.
+  of a socket pair as its channel. A process answers one request at a
+  time, so requests queue, in order, and each process has a dispatcher
+  task that takes the next one only once its process has answered the
+  last: no process is given a request while busy with another.
+- A request has a deadline, counted from when its process is given it (so
+  never including another's work). A process that misses it is killed
+  (with whatever it started) and replaced; so is one that exits. Either
+  way the request fails, and the client library answers the reviewer with
+  its failure reply.
+- A request abandoned (cancelled, say, as its section is removed) before
+  it is given to a process is skipped; one abandoned after is still
+  answered (its process stays busy with it until then), and the answer
+  dropped.
 
 Messages on a channel are JSON objects, one per line: a process first says
-``{"ready": true}``; then the server sends ``{"section": ..., "request":
-...}``, and the process answers ``{"replies": [...]}``, plus ``"error":
-"illegal-access" | "failed"`` (and ``"message"``, ``"reviewer_id"``) if the
-handler raised. A process that exits before it is ready has failed to
-start, and is retried after a delay, doubling from 1 s up to 60 s; until
-then, requests for it fail at once.
+``{"ready": true}``; then the server sends ``{"id", "section": ...,
+"request": ...}``, and the process answers ``{"id", "replies": [...]}``,
+plus ``"error": "illegal-access" | "failed"`` (and ``"message"``,
+``"reviewer_id"``) if the handler raised; an answer to another id means
+the two lost track, and the process is replaced. A process that exits
+before it is ready has failed to start, and is retried after a delay,
+doubling from 1 s up to 60 s; meanwhile, the other processes take the
+requests, and while none can, requests fail at once.
 '''
 
 import asyncio
@@ -47,11 +55,18 @@ from pathlib import Path
 from typing import Any, Optional
 
 from edgacknowledg import ProtocolMessage
-from edgacknowledg.client.shared import Channel, IllegalFileAccessError
+from edgacknowledg.client.shared import (
+  Channel,
+  IllegalFileAccessError,
+  reviewer_of,
+)
 from edgacknowledg.forge.config import ENV_PREFIX
 from edgacknowledg.forge.db import SectionRecord
 from edgacknowledg.forge.publisher import SUBSCRIPTION_TYPES
-from edgacknowledg.forge.publisher.protocol import MESSAGE_LIMIT, encode_section
+from edgacknowledg.forge.publisher.protocol import (
+  MESSAGE_LIMIT,
+  encode_section,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -69,8 +84,10 @@ _MAX_RESTART_DELAY_S = 60.0
 
 class PoolError(Exception):
   '''A request the pool couldn't answer: its process missed the deadline,
-  exited, or isn't running.
+  exited, or isn't running, or the handler failed. ``UnixSocketHandler``
+  records the reviewer who made it, whom the failure reply is for.
   '''
+  reviewer_id: Optional[str] = None
 
 
 def python_paths() -> list[Path]:
@@ -118,20 +135,39 @@ class Answer:
 
 
 @dataclass
+class _Job:
+  '''A request waiting for, or being answered by, a pool process.'''
+  id: int
+  section: SectionRecord
+  request: Any
+  answered: 'asyncio.Future[dict[str, Any]]'
+
+
+@dataclass
 class _Slot:
   '''One place in the pool, and the process filling it.'''
   index: int
-  # One request at a time; waiting requests queue here, in order.
-  lock: asyncio.Lock = field(default_factory = asyncio.Lock)
   process: Optional[asyncio.subprocess.Process] = None
   messages: Optional[asyncio.StreamReader] = None
   channel: Optional[asyncio.StreamWriter] = None
+  # The task giving its process requests, one at a time.
+  dispatcher: Optional['asyncio.Task[None]'] = None
   # Starts that failed in a row, and when the next may be tried.
   failed_starts: int = 0
   not_before: float = 0.0
 
   def running(self) -> bool:
-    return self.process is not None and self.process.returncode is None
+    '''Whether its process can take a request (``_kill`` closes the
+    channel at once, before the process is seen to exit).
+    '''
+    return (self.process is not None and self.process.returncode is None and
+            self.channel is not None)
+
+  def starting_later(self) -> bool:
+    '''Whether its process failed to start, and isn't to be tried again
+    yet.
+    '''
+    return not self.running() and time.monotonic() < self.not_before
 
 
 class ProcessPool:
@@ -150,17 +186,35 @@ class ProcessPool:
     self._tools_service_url = tools_service_url
     self._request_timeout = request_timeout
     self._slots = [_Slot(index) for index in range(processes)]
-    self._next = 0
+    # Requests not yet given to a process, in order.
+    self._jobs: asyncio.Queue[_Job] = asyncio.Queue()
+    self._next_id = 0
 
   async def start(self) -> None:
-    '''Start every process; raise ``PoolError`` if one fails to.'''
-    for slot in self._slots:
-      await self._start(slot)
+    '''Start every process, and its dispatcher; raise ``PoolError`` if a
+    process fails to start (its dispatcher tries again later).
+    '''
+    try:
+      for slot in self._slots:
+        await self._start(slot)
+    finally:
+      # Afterwards: a dispatcher starts its process itself, should it not
+      # be running.
+      for slot in self._slots:
+        slot.dispatcher = asyncio.create_task(self._dispatch(slot))
 
   async def close(self) -> None:
-    '''Stop every process.'''
+    '''Stop every dispatcher and process; fail the requests still queued.'''
     for slot in self._slots:
+      if slot.dispatcher is not None:
+        slot.dispatcher.cancel()
+        await asyncio.gather(slot.dispatcher, return_exceptions = True)
+        slot.dispatcher = None
       await self._stop(slot)
+    while not self._jobs.empty():
+      job = self._jobs.get_nowait()
+      if not job.answered.done():
+        job.answered.set_exception(PoolError('the pool is closing'))
 
   def pids(self) -> list[int]:
     return [slot.process.pid for slot in self._slots
@@ -169,56 +223,103 @@ class ProcessPool:
   async def answer(self,
                    section: SectionRecord,
                    request: Any) -> Answer:
-    '''Have the next process (round-robin) answer ``request`` for
-    ``section``; raise ``PoolError`` if it can't.
+    '''Have the next free process answer ``request`` for ``section``;
+    raise ``PoolError`` if it can't. Cancelling this abandons the request.
     '''
-    slot = self._slots[self._next]
-    self._next = (self._next + 1) % len(self._slots)
+    if all(slot.starting_later() for slot in self._slots):
+      raise PoolError('every pool process is restarting')
     if isinstance(request, bytes):
       request = request.decode()
-    async with slot.lock:
+    job = _Job(
+      id = self._next_id,
+      section = section,
+      request = request,
+      answered = asyncio.get_running_loop().create_future()
+    )
+    self._next_id += 1
+    self._jobs.put_nowait(job)
+    value = await job.answered
+    return Answer(
+      replies = list(value.get('replies', [])),
+      error = value.get('error'),
+      message = str(value.get('message', '')),
+      reviewer_id = value.get('reviewer_id')
+    )
+
+  async def _dispatch(self, slot: _Slot) -> None:
+    '''Give ``slot``'s process the queued requests, one at a time, each
+    once it has answered the last, until cancelled.
+    '''
+    while True:
+      # A running process first (replaced at once if it went), so it takes
+      # requests only when it can answer them; while it can't start, the
+      # others take them.
       if not slot.running():
-        await self._replace(slot)
-      assert slot.channel is not None and slot.messages is not None
+        try:
+          await self._replace(slot)
+        except PoolError:
+          await asyncio.sleep(max(slot.not_before - time.monotonic(), 0.1))
+          continue
+      job = await self._jobs.get()
+      if job.answered.done():
+        # Abandoned before its turn.
+        continue
       try:
-        slot.channel.write(
-          (json.dumps({
-            'section': encode_section(section),
-            'request': request,
-          }) + '\n').encode()
-        )
-        await slot.channel.drain()
-        line = await asyncio.wait_for(slot.messages.readline(),
-                                      self._request_timeout)
-      except asyncio.TimeoutError:
-        _log.error('pool process %d missed the %g s deadline; replacing it',
-                   slot.index, self._request_timeout)
+        value = await self._ask(slot, job)
+      except PoolError as ex:
+        # Its process is replaced before the next request (stopping one
+        # that couldn't start does nothing).
         await self._stop(slot)
-        # Not a failure to start: replace it at once.
-        slot.process = None
-        raise PoolError('the request timed out') from None
-      except (BrokenPipeError, ConnectionResetError, ValueError) as ex:
-        await self._stop(slot)
-        raise PoolError(f"pool process {slot.index} failed: {ex}") from ex
-      if line == b'':
-        returncode = await self._stop(slot)
-        _log.error('pool process %d exited (%s) while answering',
-                   slot.index, returncode)
-        raise PoolError('the pool process exited')
-      value = json.loads(line)
-      return Answer(
-        replies = list(value.get('replies', [])),
-        error = value.get('error'),
-        message = str(value.get('message', '')),
-        reviewer_id = value.get('reviewer_id')
+        if not job.answered.done():
+          job.answered.set_exception(ex)
+        continue
+      except BaseException:
+        if not job.answered.done():
+          job.answered.set_exception(PoolError('the pool is closing'))
+        raise
+      # Unless abandoned since it was given.
+      if not job.answered.done():
+        job.answered.set_result(value)
+
+  async def _ask(self, slot: _Slot, job: _Job) -> dict[str, Any]:
+    '''Have ``slot``'s process, idle, answer ``job``; raise ``PoolError``
+    if it can't (its process then at fault, unless it couldn't start).
+    '''
+    if not slot.running():
+      await self._replace(slot)
+    assert slot.channel is not None and slot.messages is not None
+    try:
+      slot.channel.write(
+        (json.dumps({
+          'id': job.id,
+          'section': encode_section(job.section),
+          'request': job.request,
+        }) + '\n').encode()
       )
+      await slot.channel.drain()
+      line = await asyncio.wait_for(slot.messages.readline(),
+                                    self._request_timeout)
+      value = json.loads(line) if line != b'' else None
+    except asyncio.TimeoutError:
+      _log.error('pool process %d missed the %g s deadline', slot.index,
+                 self._request_timeout)
+      raise PoolError('the request timed out') from None
+    except (BrokenPipeError, ConnectionResetError, ValueError) as ex:
+      # ValueError: an oversized or malformed answer.
+      raise PoolError(f"pool process {slot.index} failed: {ex}") from ex
+    if value is None:
+      _log.error('pool process %d exited while answering', slot.index)
+      raise PoolError('the pool process exited')
+    if not isinstance(value, dict) or value.get('id') != job.id:
+      raise PoolError(f"pool process {slot.index} answered another request")
+    return value
 
   async def _replace(self, slot: _Slot) -> None:
     '''Replace ``slot``'s process, which isn't running.'''
     if slot.process is not None:
       returncode = await self._stop(slot)
       slot.process = None
-      _log.warning('pool process %d exited (%s); replacing it',
+      _log.warning('pool process %d stopped (%s); replacing it',
                    slot.index, returncode)
     if time.monotonic() < slot.not_before:
       raise PoolError(f"pool process {slot.index} is restarting")
@@ -226,7 +327,25 @@ class ProcessPool:
 
   async def _start(self, slot: _Slot) -> None:
     '''Start ``slot``'s process and wait until it is ready; raise
-    ``PoolError`` (and delay the next try) if it isn't.
+    ``PoolError`` (and delay the next try) if it isn't, whatever the
+    reason (e.g. no process could be started at all).
+    '''
+    try:
+      await self._launch(slot)
+    except Exception as ex:
+      returncode = await self._stop(slot)
+      slot.process = None
+      slot.failed_starts += 1
+      delay = min(2.0 ** (slot.failed_starts - 1), _MAX_RESTART_DELAY_S)
+      slot.not_before = time.monotonic() + delay
+      _log.error('pool process %d failed to start (%s; exit status %s); '
+                 'trying again in %g s', slot.index, ex, returncode, delay)
+      raise PoolError(f"pool process {slot.index} failed to start") from ex
+    slot.failed_starts = 0
+
+  async def _launch(self, slot: _Slot) -> None:
+    '''Start ``slot``'s process and wait until it is ready; raise if it
+    isn't.
     '''
     parent_end, process_end = socket.socketpair()
     try:
@@ -242,44 +361,49 @@ class ProcessPool:
       raise
     finally:
       process_end.close()
-    slot.messages, slot.channel = await asyncio.open_unix_connection(
-      sock = parent_end,
-      limit = MESSAGE_LIMIT
-    )
+    # Recorded at once, so it is stopped whatever happens next.
     slot.process = process
     try:
+      slot.messages, slot.channel = await asyncio.open_unix_connection(
+        sock = parent_end,
+        limit = MESSAGE_LIMIT
+      )
       ready = await asyncio.wait_for(slot.messages.readline(),
                                      _READY_TIMEOUT_S)
     except asyncio.TimeoutError:
       ready = b''
+    except BaseException:
+      # Abandoned before it was ready: its ready line mustn't be taken for
+      # a request's answer.
+      self._kill(slot)
+      raise
     if ready.strip() != b'{"ready": true}':
-      returncode = await self._stop(slot)
-      slot.process = None
-      slot.failed_starts += 1
-      delay = min(2.0 ** (slot.failed_starts - 1), _MAX_RESTART_DELAY_S)
-      slot.not_before = time.monotonic() + delay
-      _log.error('pool process %d failed to start (%s); trying again in '
-                 '%g s', slot.index, returncode, delay)
-      raise PoolError(f"pool process {slot.index} failed to start")
-    slot.failed_starts = 0
+      raise PoolError('it never said it was ready')
     _log.info('started pool process %d (pid %d)', slot.index, process.pid)
+
+  def _kill(self, slot: _Slot) -> None:
+    '''Kill ``slot``'s process and whatever it started, and close its
+    channel, without waiting for it to exit (``_stop`` waits).
+    '''
+    if slot.channel is not None:
+      slot.channel.close()
+    slot.channel = None
+    slot.messages = None
+    process = slot.process
+    if process is not None and process.returncode is None:
+      try:
+        os.killpg(process.pid, signal.SIGKILL)
+      except (ProcessLookupError, PermissionError):
+        pass
 
   async def _stop(self, slot: _Slot) -> Optional[int]:
     '''Kill ``slot``'s process and whatever it started; return how it
     exited.
     '''
+    self._kill(slot)
     process = slot.process
-    if slot.channel is not None:
-      slot.channel.close()
-    slot.channel = None
-    slot.messages = None
     if process is None:
       return None
-    if process.returncode is None:
-      try:
-        os.killpg(process.pid, signal.SIGKILL)
-      except (ProcessLookupError, PermissionError):
-        pass
     return await process.wait()
 
 
@@ -310,12 +434,23 @@ class UnixSocketHandler:
 
   async def handle_request(self, channel: Channel) -> None:
     request = await channel.recv()
-    answer = await self._pool.answer(self._section, request)
+    reviewer_id = reviewer_of(request)
+    if reviewer_id is None:
+      # The server's (e.g. its error for a reply it refused), which the
+      # stock handlers don't answer: no need to bother a process.
+      return
+    try:
+      answer = await self._pool.answer(self._section, request)
+    except PoolError as ex:
+      ex.reviewer_id = reviewer_id
+      raise
     for reply in answer.replies:
       await channel.send(reply)
     if answer.error == 'illegal-access':
-      error = IllegalFileAccessError(answer.message)
-      error.reviewer_id = answer.reviewer_id
-      raise error
+      illegal = IllegalFileAccessError(answer.message)
+      illegal.reviewer_id = answer.reviewer_id
+      raise illegal
     if answer.error is not None:
-      raise PoolError(f"the request failed: {answer.message}")
+      failed = PoolError(f"the request failed: {answer.message}")
+      failed.reviewer_id = reviewer_id
+      raise failed

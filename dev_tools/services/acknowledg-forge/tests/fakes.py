@@ -20,11 +20,12 @@ from edgacknowledg.forge import (
   PullRequestInfo,
   PullRequestState,
 )
-from edgacknowledg.forge.db import SectionRecord
+from edgacknowledg.forge.db import ForgeStore, SectionRecord
 from edgacknowledg.forge.publisher import (
-  PublisherUnavailableError,
   ReviewIdentity,
+  review_identity,
 )
+from edgacknowledg.forge.sandbox_client import ServiceUnavailableError
 
 REPOSITORY = 'edg/compiler'
 
@@ -103,22 +104,54 @@ class FakeForge:
 
 
 class FakePublisher:
-  '''Records what would be served.'''
+  '''Records what would be served: what ``store`` stores for
+  ``forge_name``.
+  '''
 
-  def __init__(self) -> None:
+  def __init__(self, store: ForgeStore, forge_name: str) -> None:
+    self._store = store
+    self._forge_name = forge_name
     self.reviews: dict[uuid.UUID, list[SectionRecord]] = {}
     self.names: dict[uuid.UUID, RichName] = {}
     self.available = True
     self.sync_count = 0
 
-  async def wait_connected(self) -> None:
-    pass
+  async def sync_one(self, review_id: uuid.UUID) -> None:
+    if not self.available:
+      # Served on connecting (sync_all), as by ``PublisherClient``.
+      return
+    record = await self._store.find_pull_request_by_review(review_id)
+    assert record is not None
+    await self.sync(review_identity(record),
+                    await self._store.sections(record.id))
+
+  async def delist(self, review_id: uuid.UUID) -> None:
+    if not self.available:
+      raise ServiceUnavailableError('fake outage')
+    self.reviews.pop(review_id, None)
+
+  async def sync_all(self) -> None:
+    '''Serve what is stored, and nothing else, as ``PublisherClient`` does
+    on connecting.
+    '''
+    served = set()
+    for record in await self._store.open_pull_requests(self._forge_name):
+      sections = await self._store.sections(record.id)
+      if len(sections) == 0:
+        continue
+      if all(section.root.is_dir() for section in sections):
+        await self.sync(review_identity(record), sections)
+        served.add(record.review_id)
+      else:
+        await self._store.mark_dirty(record.id)
+    for review_id in set(self.reviews) - served:
+      del self.reviews[review_id]
 
   async def sync(self,
                  review: ReviewIdentity,
                  sections: Sequence[SectionRecord]) -> None:
     if not self.available:
-      raise PublisherUnavailableError('fake outage')
+      raise ServiceUnavailableError('fake outage')
     self.sync_count += 1
     for section in sections:
       assert section.root.is_dir(), section
@@ -127,9 +160,6 @@ class FakePublisher:
     else:
       self.reviews[review.review_id] = list(sections)
       self.names[review.review_id] = review.name
-
-  async def remove(self, review_id: uuid.UUID) -> None:
-    self.reviews.pop(review_id, None)
 
   def section_url(self,
                   review_id: uuid.UUID,

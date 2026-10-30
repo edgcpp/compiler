@@ -33,6 +33,7 @@ from edgacknowledg.client.shared import (
   ConfinedPathComponent,
   IllegalFileAccessError,
   SandboxContext,
+  reviewer_of,
   trunc_display_content,
 )
 import edgutil
@@ -280,7 +281,9 @@ async def run_bench_source_handler(channel: Channel,
   request_tag, request_value, _section = decode_response(await channel.recv())
 
   if request_value is None or 'reviewer_id' not in request_value:
-    await channel.send(message(RequestTags.INVALID_REQUEST))
+    # Not a reviewer's request (none names one) but the server's, e.g. its
+    # error for a reply it refused: answering would only bounce back and
+    # forth.
     return
 
   reviewer_id = request_value['reviewer_id']
@@ -340,8 +343,8 @@ async def run_bench_source_handler(channel: Channel,
         value = { 'reviewer_id': reviewer_id }
       ))
   except Exception as ex:
-    if isinstance(ex, IllegalFileAccessError):
-      ex.reviewer_id = reviewer_id
+    # Whom the failure reply (or the illegal-access report) is for.
+    setattr(ex, 'reviewer_id', reviewer_id)
     if sys.version_info >= (3, 11):
       ex.add_note(f"request triggered by reviewer: \"{reviewer_id}\"")
     raise ex
@@ -380,7 +383,10 @@ async def handle_bench_edit_request(session: BenchReviewSession,
         }
       )
 
-  return message(RequestTags.INVALID_REQUEST)
+  return message(
+    RequestTags.INVALID_REQUEST,
+    value = {'reviewer_id': request_value['reviewer_id']}
+  )
 
 
 class BenchSourceHandler:
@@ -441,6 +447,8 @@ class BenchEditHandler:
 
   async def handle_request(self, channel: Channel) -> None:
     request = await channel.recv()
+    if reviewer_of(request) is None:
+      return
 
     async def edit_job() -> None:
       reply = await handle_bench_edit_request(self._session, request)

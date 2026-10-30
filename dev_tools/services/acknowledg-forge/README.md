@@ -83,10 +83,10 @@ dependency:
 - a frozen `dev_tools/bin` and `dev_tools/pylibs`;
 - each service with its `uv.lock`-pinned Python dependencies.
 
-The host then needs only Docker Engine with the Compose plugin (2.17 or
-later), systemd, a reverse proxy for webhooks, network access to the forge
-and the AcknowlEDG API, and, for deploying from CI, `python3` (3.8 or
-later; the deploy helper uses only the standard library). It needs no
+The host then needs only Docker Engine (25 or later) with the Compose plugin
+(2.20.2 or later), systemd, a reverse proxy for webhooks, network access to
+the forge and the AcknowlEDG API, and, for deploying from CI, `python3` (3.8
+or later; the deploy helper uses only the standard library). It needs no
 unprivileged user namespaces, and no AppArmor changes.
 
 ## Configuration
@@ -103,7 +103,8 @@ from the environment variable shown as a fallback.
 | `ACKNOWLEDG_FORGE_BASE_BRANCHES` | `main` | Comma-separated target branches whose pull requests are served |
 | `ACKNOWLEDG_FORGE_API_URL` | github.com / gitlab.com | Forge API URL, e.g. `https://ghe.example/api/v3` or `https://gitlab.example/api/v4` |
 | `ACKNOWLEDG_FORGE_POLL_INTERVAL` | `300` | Seconds between polls; `0` polls only at startup |
-| `ACKNOWLEDG_FORGE_WEBHOOK_BIND` | (unset) | `host:port` to receive webhooks on (in `compose.yaml`: `service-frontend:2728`); unset runs no web server at all |
+| `ACKNOWLEDG_FORGE_SERVICE_BIND` | (unset; `compose.yaml`: `service-frontend:2728`) | `host:port` to serve the service's web app on, once the service has started: health checks (`GET /healthz`, for the container's healthcheck), and with webhooks, `POST /webhook`. Unset serves nothing |
+| `ACKNOWLEDG_FORGE_WEBHOOKS` | `0` | `1` receives webhooks on the service bind (needs the webhook secret) |
 | `ACKNOWLEDG_FORGE_CI_WORKFLOW` | (unset) | CI to track: the GitHub workflow file (e.g. `build-and-test-ci.yml`), or the GitLab pipeline name (`*` for any). Unset disables CI tracking (and the Failures and Bench sections) |
 | `ACKNOWLEDG_FORGE_TEST_ARTIFACT` | `test-results-all` | Test results artifact (GitLab: job) name |
 | `ACKNOWLEDG_FORGE_BENCH_ARTIFACT` | `bench-results` | Benchmark results artifact (GitLab: job) name |
@@ -136,7 +137,8 @@ from the environment variable shown as a fallback.
   individual events* and clear *Pushes*, which the service ignores; a push
   to a pull request arrives as a *Pull requests* event). Point it at
   `https://<host>/webhook`, typically behind a reverse proxy to
-  `ACKNOWLEDG_FORGE_WEBHOOK_BIND` (published on the host's `127.0.0.1`).
+  `ACKNOWLEDG_FORGE_SERVICE_BIND` (published on the host's `127.0.0.1`;
+  proxy only `/webhook`).
 - **CI:** set `ACKNOWLEDG_FORGE_CI_WORKFLOW=build-and-test-ci.yml`. Its
   `publish-test-results` job uploads `test-results-all`, including the
   `ci-meta.json` that records the tested (merge) commit. Benchmark results
@@ -277,7 +279,7 @@ URLs is configured here, by the host's administrator. As root:
    The webhook secret (the same value as in the forge's webhook settings; for
    example, generate one with `openssl rand -hex 32`). Webhooks are optional:
    to only poll, skip this, and remove the unit's `webhook-secret` line and
-   the settings' `ACKNOWLEDG_FORGE_WEBHOOK_BIND` (step 5), or the service
+   the settings' `ACKNOWLEDG_FORGE_WEBHOOKS` (step 5), or the service
    refuses to start:
 
    ```
@@ -349,7 +351,7 @@ URLs is configured here, by the host's administrator. As root:
    ACKNOWLEDG_FORGE_CI_WORKFLOW=build-and-test-ci.yml
    ACKNOWLEDG_FORGE_COMMENTS=1
    # Webhooks (with the webhook secret, step 4); remove to only poll.
-   ACKNOWLEDG_FORGE_WEBHOOK_BIND=service-frontend:2728
+   ACKNOWLEDG_FORGE_WEBHOOKS=1
    ```
 
 6. Optionally, use PostgreSQL instead of the default SQLite database (which
@@ -481,9 +483,9 @@ shared with the AcknowlEDG deploy, which builds the web client with it):
 | `ACKNOWLEDG_API_HOST` | Public AcknowlEDG API URL, e.g. `wss://acknowledg-api.example` |
 | `ACKNOWLEDG_UI_HOST` | Public AcknowlEDG UI URL, e.g. `https://acknowledg.example`, for links in comments |
 
-The host needs Docker Engine with Compose 2.17 or later (for several
-`--env-file`s)
-and systemd 250 or later (for encrypted credentials). The first published
+The host needs Docker Engine 25 or later and Compose 2.20.2 or later (for
+several `--env-file`s, and the healthchecks' `start_interval`), and systemd
+250 or later (for encrypted credentials). The first published
 package on GHCR is private; make it public in the package's settings so the
 host can pull it without logging in.
 

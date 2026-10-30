@@ -3,7 +3,8 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''Webhook receiver (optional): a small Quart app feeding the ingestor.
+'''Webhook receiver (optional): a Quart blueprint (``create_receiver``) of
+the service's app (``serving``) feeding the ingestor.
 
 Deliveries only identify what may have changed; the ingestor re-queries the
 forge for the actual state. Events are queued and deduplicated so a burst of
@@ -16,7 +17,8 @@ import logging
 from http import HTTPStatus
 from typing import Any
 
-from quart import Quart, request
+from quart import Blueprint, request
+from quart.blueprints import BlueprintSetupState
 
 from edgacknowledg.forge import (
   CIRunTouched,
@@ -64,11 +66,19 @@ class EventQueue:
         _log.exception('failed to handle %s', event)
 
 
-def create_app(webhooks: ForgeWebhooks, events: EventQueue) -> Quart:
-  app = Quart(__name__)
-  app.config['MAX_CONTENT_LENGTH'] = MAX_DELIVERY_BYTES
+def create_receiver(webhooks: ForgeWebhooks,
+                    events: EventQueue) -> Blueprint:
+  '''The receiver, at ``/webhook``, for the service's app (``serving``):
+  verifies and parses deliveries with ``webhooks``, and queues their events
+  on ``events``.
+  '''
+  blueprint = Blueprint('webhooks', __name__)
 
-  @app.post('/webhook')
+  @blueprint.record_once
+  def limit_deliveries(state: BlueprintSetupState) -> None:
+    state.app.config['MAX_CONTENT_LENGTH'] = MAX_DELIVERY_BYTES
+
+  @blueprint.post('/webhook')
   async def receive_webhook() -> Any:
     body = await request.get_data(cache = False, as_text = False)
     assert isinstance(body, bytes)
@@ -80,8 +90,4 @@ def create_app(webhooks: ForgeWebhooks, events: EventQueue) -> Quart:
       events.put(event)
     return '', HTTPStatus.ACCEPTED
 
-  @app.get('/healthz')
-  async def healthz() -> Any:
-    return 'ok\n', HTTPStatus.OK
-
-  return app
+  return blueprint

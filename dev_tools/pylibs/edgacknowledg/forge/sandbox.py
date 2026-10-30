@@ -83,8 +83,8 @@ class Sandbox:
     return self._tools
 
   async def check(self) -> None:
-    '''Raise ``SandboxUnavailableError`` unless this process's runners
-    answer.
+    '''Wait until this process's runners answer; raise
+    ``SandboxUnavailableError`` if there is none, or one refuses.
     '''
     clients = [c for c in (self._builder, self._tools) if c is not None]
     if len(clients) == 0:

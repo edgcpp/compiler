@@ -28,7 +28,11 @@ import edgifc.decoration
 from enum import IntEnum
 from pathlib import Path
 
-from PySide6 import QtCore, QtWidgets, QtGui  # type: ignore[import-not-found,import]
+from PySide6 import (  # type: ignore[import-not-found,import]
+  QtCore,
+  QtWidgets,
+  QtGui
+)
 
 from edgifc import (
   IFCReader,
@@ -383,7 +387,7 @@ class PartitionNodeFormatter:
         values.append(template_string.format(value.description))
       else:
         values.append(format_fn(value))
-    except:
+    except Exception:
       traceback.print_exc()
       values.append(edgifc.decoration.UNKNOWN_VALUE)
 
@@ -428,7 +432,7 @@ class PartitionNodeFormatter:
           stream_reader,
           tacit_field.name()
         )
-      except:
+      except Exception:
         traceback.print_exc()
         field_value = 0
 

@@ -25,7 +25,7 @@ import edgutil
 
 from enum import IntEnum
 from collections import OrderedDict
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import (
   Any, Callable, Dict, IO, Iterator, List, Mapping, NamedTuple, Optional,
   Pattern, Set, Tuple, cast
@@ -83,7 +83,7 @@ def get_matches_possible_names(test_suite_env: Dict[str, str],
   results.append(f"default.{case_number}.matches.txt")
   return results
 
-def get_bare_name(test_file_path: Path) -> str:
+def get_bare_name(test_file_path: PurePath) -> str:
   '''Return the test name without the file extension.'''
   return test_file_path.name.split('.')[0]
 
