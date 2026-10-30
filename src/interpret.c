@@ -23659,10 +23659,21 @@ after the constructor body has been interpreted.
       p_arg_ptr += 1;
       arg_size += 1;
     }  /* for */
-    if (dip->variant.constructor.value_initialization) {
-      /* If this is for value initialization, clear the storage first.
-         Do not, however, overwrite the first word (which may record the
-         inheritance hierarchy). */
+    if (!dip->variant.constructor.value_initialization) {
+      /* Nothing to do. */
+    } else if (!type_has_user_provided_default_constructor(class_type)) {
+      /* Value initialization of a class without a user-provided default
+         constructor zero-initializes the object before calling the
+         constructor, which need not initialize every subobject (e.g., a
+         member of a class whose implicit default constructor calls a
+         user-provided base class constructor).  Mark the subobjects as
+         initialized, so that reading them is valid. */
+      init_subobject_to_zero(ips, result_storage, class_type,
+                             complete_object);
+    } else {
+      /* Otherwise, the object is not zero-initialized, but clear the
+         storage anyway.  Do not, however, overwrite the first word (which
+         may record the inheritance hierarchy). */
       a_byte_count  n_class_bytes;
       a_boolean     dummy = TRUE;
       n_class_bytes = f_value_bytes_for_type(ips, class_type, &dummy);
@@ -31890,8 +31901,9 @@ the value representation of the integer value.
                 result_addr = *(a_constexpr_address*)opnd1_value;
               } else {
                 /* The first operand is a class rvalue: Create an address for
-                   it. */
-                mark_complete_object_initialized(opnd1_value);
+                   it.  Do not mark the object as fully initialized: since
+                   C++20, a constexpr constructor can leave members
+                   uninitialized, and reading those must be diagnosed. */
                 clear_address(&result_addr, opnd1_value);
                 result_addr.alloc_seq_number = ips->storage_stack.alloc_seq();
               }  /* if */
@@ -32015,8 +32027,9 @@ the value representation of the integer value.
                 result_addr = *(a_constexpr_address*)opnd1_value;
               } else {
                 /* The first operand is a class rvalue: Create an address for
-                   it. */
-                mark_complete_object_initialized(opnd1_value);
+                   it.  Do not mark the object as fully initialized: since
+                   C++20, a constexpr constructor can leave members
+                   uninitialized, and reading those must be diagnosed. */
                 clear_address(&result_addr, opnd1_value);
                 result_addr.alloc_seq_number = ips->storage_stack.alloc_seq();
               }  /* if */

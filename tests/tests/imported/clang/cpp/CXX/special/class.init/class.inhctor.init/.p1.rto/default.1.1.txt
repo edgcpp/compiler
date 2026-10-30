@@ -38,17 +38,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
               ^
           detected during implicit generation of "vbase::D::B(int, int)" at line 89
 
-"Test_name.c", line 125: error: expression must have a constant value
-    constexpr Wrap2 b = {};
-                        ^
-"Test_name.c", line 117: note: access to uninitialized object
-      constexpr Param(int c) : n(4 * b.a + b.b + c) {}
-                                      ^
-"Test_name.c", line 123: note: called from:
-    constexpr Wrap1::Wrap1() : B(1) {}
-                                 ^
-"Test_name.c", line 112: note: called from:
-    struct Wrap2 : Wrap1 {};
-           ^
-
-10 errors detected in the compilation of "Test_name.c".
+9 errors detected in the compilation of "Test_name.c".

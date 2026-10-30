@@ -30,16 +30,6 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   struct B { // expected-note {{in call to 'A()'}}
          ^
 
-"Test_name.c", line 22: error: expression must have a constant value
-  constexpr B b2 = B(); // ok
-                   ^
-"Test_name.c", line 7: note: access to uninitialized object
-    constexpr A() : a(b + 1), b(a + 1) {} // expected-note 5{{outside its lifetime}}
-                      ^
-"Test_name.c", line 11: note: called from:
-  struct B { // expected-note {{in call to 'A()'}}
-         ^
-
 "Test_name.c", line 30: error: const variable "c1" requires an initializer -- class "C" has no user-provided default constructor
   constexpr C c1; // expected-error {{without a user-provided default constructor}}
                 ^
@@ -60,16 +50,6 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 46: error: initialization is not constant
   constexpr E e1; // expected-error {{constant expression}} expected-note {{in call to 'E()'}}
               ^
-"Test_name.c", line 7: note: access to uninitialized object
-    constexpr A() : a(b + 1), b(a + 1) {} // expected-note 5{{outside its lifetime}}
-                      ^
-"Test_name.c", line 46: note: called from:
-  constexpr E e1; // expected-error {{constant expression}} expected-note {{in call to 'E()'}}
-                ^
-
-"Test_name.c", line 47: error: expression must have a constant value
-  constexpr E e2 = E();
-                   ^
 "Test_name.c", line 7: note: access to uninitialized object
     constexpr A() : a(b + 1), b(a + 1) {} // expected-note 5{{outside its lifetime}}
                       ^
@@ -118,4 +98,4 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   constexpr E e1; // expected-error {{constant expression}} expected-note {{in call to 'E()'}}
               ^
 
-12 errors detected in the compilation of "Test_name.c".
+10 errors detected in the compilation of "Test_name.c".

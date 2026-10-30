@@ -1,0 +1,20 @@
+[GH #90]
+GNU and Clang C++ modes: lifetime extension through a member of a temporary
+
+When emulating GCC 9 or later or Clang 4 or later, selecting a member of a
+class prvalue now produces an xvalue (Core issue 616), as it already did in
+standard C++14 and later modes.  Binding a reference to the member now
+extends the lifetime of the whole temporary.  For example, with
+--g++ --gnu_version=150000:
+
+  struct A { int b; ~A(); };
+  const int &r = A().b;  // A() was previously destroyed here.
+
+Constant evaluation also no longer treats every member of a class prvalue
+as initialized when one is selected with "." or ".*".  Since C++20, a
+constexpr constructor can leave members uninitialized, and reading such a
+member is now diagnosed instead of producing an indeterminate value.  For
+example, with --c++20:
+
+  struct W { int n; constexpr W() {} };
+  static_assert(W().n == 0);  // Error: n is uninitialized.

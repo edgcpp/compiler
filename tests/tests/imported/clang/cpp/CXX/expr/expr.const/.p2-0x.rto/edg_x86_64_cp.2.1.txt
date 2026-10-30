@@ -353,6 +353,13 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     constexpr volatile S f() { return S(); } // cxx20-warning {{volatile-qualified return type 'volatile S' is deprecated}}
                          ^
 
+"Test_name.c", line 362: error: expression must have a constant value
+    static_assert(f().i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                  ^
+"Test_name.c", line 362: note: attempt to read from volatile storage
+    static_assert(f().i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
+                     ^
+
 "Test_name.c", line 363: error: expression must have a constant value
     static_assert(((volatile const S&&)(S)0).i, ""); // expected-error {{constant expression}} expected-note {{read of volatile-qualified type}}
                   ^
@@ -1128,4 +1135,4 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     constexpr bool v8 = qv > (void*)&s.a;
                    ^
 
-93 errors detected in the compilation of "Test_name.c".
+94 errors detected in the compilation of "Test_name.c".

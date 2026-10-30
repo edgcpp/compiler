@@ -1,11 +1,4 @@
 fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
-"Test_name.c", line 16: error: expression must have a constant value
-      static_assert(B().x == 0);
-                    ^
-"Test_name.c", line 16: note: access to uninitialized object
-      static_assert(B().x == 0);
-                       ^
-
 "Test_name.c", line 27: error: class "P0960R3::A" has no suitable copy constructor
       A a1(va);
            ^
@@ -144,4 +137,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       D d8 = {vdd}; // expected-error {{no matching constructor for initialization of 'D'}}
               ^
 
-31 errors detected in the compilation of "Test_name.c".
+30 errors detected in the compilation of "Test_name.c".

@@ -25322,6 +25322,10 @@ is_temp can be NULL if that information is not needed.
     clear_expr_or_stmt_traversal_block(&tblock);
     tblock.process_expr = examine_expr_for_auto_object;
     tblock.follow_addressing_path = TRUE;
+    /* A prvalue.field xvalue (CWG 616) names a subobject of the class
+       prvalue, so the class object must be considered as well. */
+    tblock.follow_class_rvalue_addressing_path =
+                                         selection_from_prvalue_is_xvalue;
     traverse_expr(expr, &tblock);
     is_auto_object = tblock.result;
     if (is_temp != NULL) *is_temp = tblock.is_temp;
@@ -25372,6 +25376,10 @@ underlying entity is a temporary, return *is_temp set to TRUE.
     clear_expr_or_stmt_traversal_block(&tblock);
     tblock.process_expr = examine_expr_for_auto_object;
     tblock.follow_addressing_path = TRUE;
+    /* A pointer into a prvalue.field xvalue (CWG 616) addresses a
+       subobject of the class prvalue. */
+    tblock.follow_class_rvalue_addressing_path =
+                                         selection_from_prvalue_is_xvalue;
     traverse_expr(expr, &tblock);
     is_addr_of_auto = tblock.result;
     *is_temp = tblock.is_temp;  

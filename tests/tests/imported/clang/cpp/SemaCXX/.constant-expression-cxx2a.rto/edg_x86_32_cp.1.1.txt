@@ -261,14 +261,14 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                   ^
 "SemaCXX/constant-expression-cxx2a.cpp", line 586: note: access to uninitialized object
     static_assert(Y(0,0).z1.n == 0);
-                        ^
+                           ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 587: error: expression must have a constant value
     static_assert(Y(0,0).z3.n == 0);
                   ^
 "SemaCXX/constant-expression-cxx2a.cpp", line 587: note: access to uninitialized object
     static_assert(Y(0,0).z3.n == 0);
-                        ^
+                           ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 589: error: expression must have a constant value
     static_assert(copy(Y(0,0)).z2.n == 0);

@@ -267,10 +267,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       int _, _; // expected-warning {{placeholder variables are incompatible with C++ standards before C++2c}} \
              ^
 
-"Test_name.c", line 236: warning: expression has no effect
-      S{}._; // expected-error {{ambiguous reference to placeholder '_', which is defined multiple times}}
-      ^
-
 "Test_name.c", line 235: warning: variable "s" was declared but never referenced
       S s{._ =0}; // expected-error {{ambiguous reference to placeholder '_', which is defined multiple times}}
         ^

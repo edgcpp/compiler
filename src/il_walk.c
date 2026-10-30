@@ -3266,10 +3266,10 @@ Tips for proper use of the follow_addressing_path mode:
       switch (op) {
         case eok_dot_field:
           /* x.y:  Follow x. */
-          /* We don't have to test for the prvalue.field case here because its
-             result is a prvalue and therefore wouldn't get here, unless
-             follow_class_rvalue_addressing_path is TRUE, in which case
-             we want to keep going anyway. */
+          /* We don't have to test for the prvalue.field case here: it gets
+             here only if follow_class_rvalue_addressing_path is TRUE or if
+             its result is an xvalue (selection_from_prvalue_is_xvalue,
+             CWG 616), and in both cases we want to keep going. */
           traverse_expr(operand1, tblock);
           break;
         case eok_points_to_field:
@@ -3278,10 +3278,10 @@ Tips for proper use of the follow_addressing_path mode:
           break;
         case eok_pm_field:
           /* x.*pm:  Follow x. */
-          /* We don't have to test for the prvalue.*pm case here because its
-             result is a prvalue and therefore wouldn't get here, unless
-             follow_class_rvalue_addressing_path is TRUE, in which case
-             we want to keep going anyway. */
+          /* We don't have to test for the prvalue.*pm case here: it gets
+             here only if follow_class_rvalue_addressing_path is TRUE or if
+             its result is an xvalue (selection_from_prvalue_is_xvalue,
+             CWG 616), and in both cases we want to keep going. */
           traverse_expr(operand1, tblock);
           break;
         case eok_pm_points_to_field:
