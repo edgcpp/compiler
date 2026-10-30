@@ -4439,6 +4439,23 @@ given number of bytes.
   (((n_bytes)+CHAR_BIT-1)/CHAR_BIT)
 
 
+static EXPAND a_boolean has_tracked_subobjects(a_type_ptr tp)
+/*
+Return TRUE if type tp has subobjects whose initialization is tracked
+individually (i.e., if a complete object of that type needs an initialization
+bitmap in its prefix).
+*/
+{
+  a_boolean  result = is_immediate_class_type(tp) || type_is(tp, tk_array);
+#if GNU_VECTOR_TYPES_ALLOWED
+  if (type_is(tp, tk_vector)) {
+    result = TRUE;
+  }  /* if */
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
+  return result;
+}  /* has_tracked_subobjects */
+
+
 /*
 Given a type utp and the size n_bytes required to represent its value, compute
 the number of bytes needed as a bookkeeping prefix for a complete object of
@@ -4447,8 +4464,7 @@ that type.
 #define compute_prefix_size_for_type(utp, n_bytes, prefix_size)              \
 {                                                                            \
   a_byte_count  bitmap_size;                                                 \
-  if (is_immediate_class_type(utp) ||                                        \
-      utp->kind == (a_type_kind)tk_array) {                                  \
+  if (has_tracked_subobjects(utp)) {                                         \
     bitmap_size = compute_bitmap_size(n_bytes);                              \
   } else {                                                                   \
     bitmap_size = 0;                                                         \
@@ -4617,11 +4633,11 @@ static void mark_whole_subobject_initialized(
                                           a_byte                *complete_obj)
 /*
 If tp is a scalar type, this routine does the same work as
-mark_subobject_initialized.  If tp is a class or array type, it marks the
-indicated subobject and all its subobject as initialized.
+mark_subobject_initialized.  If tp is a class, array, or vector type, it marks
+the indicated subobject and all its subobjects as initialized.
 */
 {
-  if (is_immediate_class_type(tp) || tp->kind == (a_type_kind)tk_array) {
+  if (has_tracked_subobjects(tp)) {
     a_boolean     result = TRUE;
     a_byte_count  n_bytes = value_bytes_for_type(ips, tp, &result);
     a_byte_count  off = (a_byte_count)(subobj - complete_obj);
@@ -4668,15 +4684,15 @@ static a_boolean mark_whole_subobject_uninitialized(
                                           a_byte                *complete_obj)
 /*
 If tp is a scalar type, this routine does the same work as
-mark_subobject_uninitialized.  If tp is a class or array type, it marks the
-indicated subobject and all its subobjects as uninitialized.  Return TRUE if
-successful, FALSE if not (e.g., if the subobject type included a member with
-an error type).
+mark_subobject_uninitialized.  If tp is a class, array, or vector type, it
+marks the indicated subobject and all its subobjects as uninitialized.  Return
+TRUE if successful, FALSE if not (e.g., if the subobject type included a member
+with an error type).
 */
 {
   a_boolean  result = TRUE;
 
-  if (is_immediate_class_type(tp) || tp->kind == (a_type_kind)tk_array) {
+  if (has_tracked_subobjects(tp)) {
     a_byte_count  n_bytes = value_bytes_for_type(ips, tp, &result);
     if (result) {
       a_byte_count  off = (a_byte_count)(subobj - complete_obj);
@@ -7580,14 +7596,16 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
           for (k = 0; k<n_elems; k += 1) {
             if (elem_con == NULL) {
               /* Not all elements are covered.  Zero the remainder. */
-              memzero(elem_addr.address, size_t_arg((n_elems-k)*elem_size));
-              break;
+              init_subobject_to_zero(ips, elem_addr.address, etp,
+                                     complete_object);
+            } else {
+              if (!extract_value_from_constant(ips, elem_con, elem_addr)) {
+                do_constexpr_fail(result);
+                break;
+              }  /* if */
+              elem_con = elem_con->next;
+              mark_subobject_initialized(elem_addr.address, complete_object);
             }  /* if */
-            if (!extract_value_from_constant(ips, elem_con, elem_addr)) {
-              do_constexpr_fail(result);
-              break;
-            }  /* if */
-            elem_con = elem_con->next;
             elem_addr.address += elem_size;
           }  /* for */
 #endif /* GNU_VECTOR_TYPES_ALLOWED */
