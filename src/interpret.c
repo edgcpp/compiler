@@ -22891,10 +22891,9 @@ if *p_this_arg is not initialized.)
             /* The overrider is a member of outer_class. */
             this_val->address = outer_subobj;
           } else {
-            this_val->address =
-                       outer_subobj +
-                       compute_interpreter_base_offset(bcp,
-                                                       (a_base_class_ptr*)NULL);
+            this_val->address = outer_subobj +
+                                  compute_interpreter_base_offset(
+                                                 bcp, (a_base_class_ptr*)NULL);
           }  /* if */
           if (ret_base != NULL) {
             /* A covariant return override.  The return value will need
