@@ -26,3 +26,9 @@ void g(C c, P q) {
   bool z5 = q == q;    // Conversions to pointers: not diagnosed.
   bool z6 = +c == +c;  // Explicit decay: not diagnosed.
 }
+
+// A conversion function result compared with a const array: the operand
+// also goes through a qualification conversion.
+const int ca[2] = {};
+bool h1(C c) { return c == ca; }              // Two arrays: diagnosed.
+bool h2() { return (const int *)a == ca; }    // Explicit cast: not diagnosed.

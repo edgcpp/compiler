@@ -27,4 +27,8 @@ fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
     bool z3 = c == a;
                 ^
 
-7 errors detected in the compilation of "Test_name.c".
+"Test_name.c", line 33: error: comparison between two arrays is not allowed
+  bool h1(C c) { return c == ca; }              // Two arrays: diagnosed.
+                          ^
+
+8 errors detected in the compilation of "Test_name.c".

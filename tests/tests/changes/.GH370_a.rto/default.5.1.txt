@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=5 --c++17 --remarks Test_name.c
+"Test_name.c", line 13: remark: comparison between two arrays compares their addresses
+  bool x1 = a == b;  // Two arrays: diagnosed.
+              ^
+
+"Test_name.c", line 14: remark: comparison between two arrays compares their addresses
+  bool x2 = a != b;
+              ^
+
+"Test_name.c", line 15: remark: comparison between two arrays compares their addresses
+  bool x3 = a < b;
+              ^
+
+"Test_name.c", line 16: remark: comparison between two arrays compares their addresses
+  bool x4 = a >= b;
+              ^
+
+"Test_name.c", line 25: remark: comparison between two arrays compares their addresses
+    bool z1 = c == c;    // Two arrays: diagnosed.
+                ^
+
+"Test_name.c", line 26: remark: comparison between two arrays compares their addresses
+    bool z2 = c < c;
+                ^
+
+"Test_name.c", line 27: remark: comparison between two arrays compares their addresses
+    bool z3 = c == a;
+                ^
+
+"Test_name.c", line 25: remark: variable "z1" was declared but never referenced
+    bool z1 = c == c;    // Two arrays: diagnosed.
+         ^
+
+"Test_name.c", line 26: remark: variable "z2" was declared but never referenced
+    bool z2 = c < c;
+         ^
+
+"Test_name.c", line 27: remark: variable "z3" was declared but never referenced
+    bool z3 = c == a;
+         ^
+
+"Test_name.c", line 28: remark: variable "z4" was declared but never referenced
+    bool z4 = c == p;    // Array and pointer: not diagnosed.
+         ^
+
+"Test_name.c", line 29: remark: variable "z5" was declared but never referenced
+    bool z5 = q == q;    // Conversions to pointers: not diagnosed.
+         ^
+
+"Test_name.c", line 30: remark: variable "z6" was declared but never referenced
+    bool z6 = +c == +c;  // Explicit decay: not diagnosed.
+         ^
+
+"Test_name.c", line 36: remark: comparison between two arrays compares their addresses
+  bool h1(C c) { return c == ca; }              // Two arrays: diagnosed.
+                          ^
+
