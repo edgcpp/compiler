@@ -10892,9 +10892,11 @@ if this routine has a body (dump nothing if it has no body).
       if (!for_inlining_only) {
         storage_class = (a_storage_class)sc_extern;
         /* "extern inline" is a definition only for inlining under the GNU
-           C89 rules, but an external definition under the C99 rules (the
-           gcc default since 5.1), so request the former with the gnu_inline
-           attribute. */
+           C89 rules, but an external definition under the C99 rules (used
+           by gcc in C99 modes since 4.3, and by default since 5.1), so
+           request the former with the gnu_inline attribute.  As in
+           form_routine_attributes, omit it for gcc before 4.2, which does
+           not recognize it but always follows the GNU C89 rules. */
         need_gnu_inline_attr = TRUE;
 #if GCC_IS_GENERATED_CODE_TARGET
         if (gcc_is_generated_code_target &&
@@ -10903,7 +10905,11 @@ if this routine has a body (dump nothing if it has no body).
         }  /* if */
 #endif /* GCC_IS_GENERATED_CODE_TARGET */
 #if GNU_EXTENSIONS_ALLOWED
-        if (rout->gnu_c89_inline) need_gnu_inline_attr = FALSE;
+        if (rout->gnu_c89_inline) {
+          /* form_routine_attributes already puts out the gnu_inline
+             attribute for this routine. */
+          need_gnu_inline_attr = FALSE;
+        }  /* if */
 #endif /* GNU_EXTENSIONS_ALLOWED */
       }  /* if */
     }  /* if */
@@ -11165,12 +11171,13 @@ declare_routine:
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     if (gcc_or_clang_is_generated_code_target && rout->is_inline) {
       /* gcc will be used to compile this generated code, so we know how to
-         indicate an inline function. gcc ignores __inline__ on functions
-         with ellipses, so don't mark such functions as inline. Also,
-         recent versions of gcc issue an error for a function marked both
-         inline and weak, so don't mark a weak function as inline either */
-      if ((!f_skip_typerefs(rout->type)->variant.routine.extra_info->
-                                                               has_ellipsis ||
+         indicate an inline function. */
+      /* gcc ignores __inline__ on functions with ellipses, so don't
+         mark such functions as inline, except for a definition only for
+         inlining, which would otherwise be an external definition.  Recent
+         versions of gcc issue an error for a function marked both inline and
+         weak, so don't mark a weak function as inline, either. */
+      if ((!rout_type_supp(f_skip_typerefs(rout->type))->has_ellipsis ||
            inline_only_defn) &&
           !is_marked_weak) {
         write_tok_str("__inline__ ");
