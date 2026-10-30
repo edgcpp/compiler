@@ -1,5 +1,158 @@
 Version 7.1
 
+10/29/26 [GH #405]
+A suppressed note of a constant-evaluation error no longer stops the front end
+
+When constant evaluation fails, the front end attaches notes to the error
+"expression must have a constant value": "shift count is too large" (#63),
+"shift count is negative" (#62), "division by zero" (#39) and "integer
+operation result is out of range" (#61) among them.  A note takes the severity
+of its own error number, so when --diag_suppress or a diag_suppress pragma
+named the number of the note, the note had a severity that could not be
+displayed and the front end stopped with an internal error (in the text
+output; the SARIF output listed the suppressed note as a related location):
+
+  constexpr int z = 1 << 32;
+    // --diag_suppress=63: internal error: assertion failed:
+    // determine_severity_code: bad severity
+
+A suppressed note is now left out of the diagnostic, as a suppressed
+diagnostic always is, in the SARIF output too.  The error itself is still
+reported.
+
+
+10/29/26 [GH #174]
+C- and C++-generating back ends: placement of GCC loop pragmas
+
+The GCC loop pragmas "#pragma GCC unroll", "#pragma GCC ivdep", and
+"#pragma GCC novector" were previously recorded in the IL as pragmas of the
+enclosing block and so were emitted by the C-generating back end at the start
+of that block, rather than immediately in front of the loop to which they
+apply.  The back-end compiler then rejected the generated code.  For example:
+
+  void h();
+  void f(char *first, char *last) {
+    h();
+  #pragma GCC unroll 4    // Previously emitted in front of the call of h,
+    while (first != last) // causing a "for, while or do statement expected"
+      ++first;            // error from the back-end compiler.
+  }
+
+In C99 and later modes, the C++-generating back end emitted such a pragma in
+front of the implicit block that surrounds an iteration statement, rather than
+in front of the loop inside it.  A loop pragma that followed an iteration or
+selection statement was emitted inside that statement's implicit block.  In
+both cases, the generated code could not be compiled.
+
+When the loop has attributes (e.g., "[[likely]]"), the C++-generating back
+end now emits the loop pragmas after those attributes when the generated code
+is for GCC, which requires a loop pragma to immediately precede the loop
+keyword, and before them when it is for Clang, which requires that order.
+
+The argument of "#pragma GCC unroll" is now scanned and evaluated as an
+integral constant expression, and its value replaces the original text in the
+generated code.  Previously, the argument was copied unchanged, so one that
+used C++ constructs or template parameters made the generated C code invalid.
+For example:
+
+  template<int N> void g(int *p) {
+  #pragma GCC unroll(N)                  // Now emitted as "unroll 4" in g<4>.
+    for (int i = 0; i < N; ++i) p[i] = 0;
+  }
+  void h(int *p) {
+  #pragma GCC unroll sizeof(decltype(0)) // Now emitted as "unroll 4".
+    for (int i = 0; i < 4; ++i) p[i] = 0;
+    g<4>(p);
+  }
+
+An argument that is negative or not less than 65535 is now diagnosed, as GCC
+does.
+
+
+10/29/26 [GH #414]
+Class-type template parameter objects in function template signatures
+
+A nontype template parameter of class type denotes a template parameter
+object, which is a const lvalue.  When such a parameter was used in the
+signature of a function template, substituting template arguments treated
+it as a prvalue instead.  As a result, decltype applied to the
+parenthesized parameter name produced the class type rather than a const
+lvalue reference to it (causing a spurious "unexpected function type"
+error), member accesses through the parameter had the wrong value category,
+and taking the address of the parameter caused substitution to fail.  That
+is now fixed.  For example, with --c++20:
+
+  struct A { };
+  template <A V> void f(decltype((V)) v) { }
+  template <A V> auto g() -> decltype(&V);
+  void h() {
+    constexpr A a;
+    f<a>(a);  // Previously an "unexpected function type" error.
+    g<a>();   // Previously, no instance of g matched.
+  }
+
+
+10/29/26 [GH #397]
+Constant evaluation of virtual calls to an overrider in a base class
+
+During constant evaluation, a virtual function call whose final overrider is
+a member of an intermediate base class (rather than of the most derived
+class) was evaluated with the complete object as the object expression,
+instead of the base class subobject of which the overrider is a member.  For
+example, with --c++20:
+
+  struct A { constexpr virtual int f() const { return 1; } int a = 1; };
+  struct B : A { constexpr int f() const override { return a + 2; } };
+  struct E { int e = 0; };
+  struct F : E, B {};
+  constexpr int g() { F f; A& r = f; return r.f(); }
+  static_assert(g() == 3);  // Previously failed.
+
+This is now fixed.  In addition, the adjustment of the result of a call to
+an overrider with a covariant return type (e.g., from a pointer to a derived
+class to a pointer to its base class) was computed incorrectly, and was
+applied even to a null pointer result (which could cause the front end to
+crash); this is also fixed.
+
+
+10/29/26 [GH #324]
+Implicit "this" in a default member initializer with a nested aggregate
+
+When the default member initializer of an aggregate class contained an
+aggregate initialization of another object of the same class, an implicit use
+of "this" in the elements of that nested initialization referred to the
+nested object instead of to the object being initialized.  This affected
+initializations that are not folded to constants, such as those in
+new-expressions or return statements.  For example:
+
+  struct Y { unsigned k; unsigned n = Y{2, k}.n; };
+  Y *p = new Y{1};  // p->n is now 1 (previously 2).
+
+This is now fixed.
+
+
+10/29/26 [GH #412]
+Unrecognized attribute with a pack expansion in its arguments
+
+In a variadic template, an unrecognized attribute whose arguments referenced a
+parameter pack (e.g., in a pack expansion) was treated as a pack expansion of
+the attribute as a whole.  As a result, the C++-generating back end could put
+out a spurious "..." after the attribute when generating a template from its
+IL, and instantiations could receive the wrong number of copies of the
+attribute (e.g., one per pack element, or none for an empty pack).  For
+example, in Clang mode:
+
+  template <class... M> struct scoped_lock {
+    scoped_lock(M&... m) __attribute__((acquire_capability(m...))) {}
+  };
+
+could be generated as
+
+  scoped_lock(M &...m) __attribute((acquire_capability(m ... )...)) { }
+
+That is now fixed.
+
+
 10/28/26 [GH #400]
 Order of destruction of array elements in constant evaluation
 
