@@ -27,8 +27,12 @@ fe_only -DTEST_NUMBER=3 --c++26 --clang_version 190000 Test_name.c
     return b ? static_cast<int&&>(i) : S().x;
            ^
 
-"Test_name.c", line 25: warning: returning reference to local temporary
+"Test_name.c", line 22: error: returning reference to local temporary
+  A&& f9() { return A{1, 2}; }              // Array temporary.
+                    ^
+
+"Test_name.c", line 27: warning: returning reference to local temporary
   const int *const *const &f6() { return pp; }
                                          ^
 
-6 errors detected in the compilation of "Test_name.c".
+7 errors detected in the compilation of "Test_name.c".

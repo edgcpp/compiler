@@ -27,3 +27,7 @@ fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
     return b ? static_cast<int&&>(i) : S().x;
            ^
 
+"Test_name.c", line 21: warning: returning reference to local temporary
+  A&& f9() { return A{1, 2}; }              // Array temporary.
+                    ^
+
