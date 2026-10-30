@@ -25257,6 +25257,23 @@ that identifies an object or a prvalue that is a pointer to an object.
       tblock->result = TRUE;
       tblock->is_temp = TRUE;
       tblock->terminate = TRUE;
+    } else if (tblock->look_for_temporaries &&
+               is_operation_node(expr) &&
+               node_operator_is(expr, eok_indirect)) {
+      /* A reference bound to an array prvalue (e.g., "A{1, 2}" with "A" an
+         array type) is represented as "*" applied to the decayed array
+         temporary (under an eok_lvalue_adjust, skipped above). */
+      an_expr_node_ptr  ptr = expr->variant.operation.operands;
+      if (is_operation_node(ptr) &&
+          node_operator_is(ptr, eok_array_to_pointer)) {
+        an_expr_node_ptr  array = ptr->variant.operation.operands;
+        if (node_is(array, enk_temp_init) &&
+            !array->variant.init.dynamic_init->static_temp) {
+          tblock->result = TRUE;
+          tblock->is_temp = TRUE;
+          tblock->terminate = TRUE;
+        }  /* if */
+      }  /* if */
     }  /* if */
   } else {
     /* The expression passed in is a pointer to an object. */

@@ -17,6 +17,8 @@ const int& f7() { return make().x; }      // Member of a call's result.
 int&& f8(bool b, int i) {                 // A "?" operand is a temporary.
   return b ? static_cast<int&&>(i) : S().x;
 }
+using A = int[2];
+A&& f9() { return A{1, 2}; }              // Array temporary.
 
 // Core issue 2352: the reference binds directly to pp, so this is not
 // diagnosed as an error.
