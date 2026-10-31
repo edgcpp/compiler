@@ -32487,6 +32487,62 @@ different enum types (or, in C, have different affiliated enum types).
 }  /* diagnose_comparison_if_different_enum_types */
 
 
+static a_boolean is_array_comparison_operand(an_operand *opnd)
+/*
+Return TRUE if opnd, an operand of a built-in equality or relational operator,
+is an array: either it has array type, or it is a class operand that overload
+resolution converted to an array and then to a pointer (e.g., through a
+conversion function returning a reference to an array), possibly followed by
+an implicit qualification conversion.
+*/
+{
+  a_boolean is_array = is_array_type(opnd->type);
+
+  if (!is_array && is_expression_operand(opnd)) {
+    an_expr_node_ptr expr = opnd->variant.expression;
+    /* Skip implicit pointer conversions (e.g., "int *" to "const int *");
+       a cast written in the source ends the search. */
+    while (is_cast_operation_node(expr) && expr->compiler_generated &&
+           is_pointer_type(expr->type)) {
+      expr = expr->variant.operation.operands;
+    }  /* while */
+    is_array = is_operation_node(expr) &&
+               node_operator_is(expr, eok_array_to_pointer);
+  }  /* if */
+  return is_array;
+}  /* is_array_comparison_operand */
+
+
+static void check_for_array_comparison(an_operand         *opnd1,
+                                       an_operand         *opnd2,
+                                       a_source_position  *operator_pos)
+/*
+opnd1 and opnd2 are the operands of a built-in equality or relational
+operator at operator_pos, before the array-to-pointer conversion.  If both
+are arrays, issue a diagnostic: such comparisons are deprecated in C++20 and
+not allowed in C++26 (P2865).  Before C++20, issue a remark (a warning when
+emulating Clang 20 or later, which warns by default).
+*/
+{
+  if (!C_mode() && is_array_comparison_operand(opnd1) &&
+      is_array_comparison_operand(opnd2)) {
+    if (!cpp20_mode) {
+      expr_pos_diagnostic(clangcpp_version_is(>=200000) ? es_warning
+                                                        : es_remark,
+                          ec_array_comparison_compares_addresses,
+                          operator_pos);
+    } else if (cpp26_mode && !gpp_version_is(<150000) &&
+               !clangcpp_version_is(<200000)) {
+      /* GCC 15 and Clang 20 implement P2865.  Earlier versions only issue a
+         deprecation warning. */
+      expr_pos_error(ec_array_comparison_not_allowed, operator_pos);
+    } else {
+      expr_pos_warning(ec_array_comparison_deprecated, operator_pos);
+    }  /* if */
+  }  /* if */
+}  /* check_for_array_comparison */
+
+
 static void process_rel_operator(an_operand               *opnd1,
                                  an_operand               *opnd2,
                                  a_token_kind             operator_token,
@@ -32532,6 +32588,7 @@ describe the location of the operator.
   }  /* if */
   if (!processed) {
     /* Non-operator-function cases. */
+    check_for_array_comparison(opnd1, opnd2, operator_pos);
     /* The first operand must be an arithmetic or enum type or a pointer. */
     do_operand_transformations(opnd1, TOPT_NO_OPTIONS);
     opnd1_is_pointer = FALSE;
@@ -33036,6 +33093,7 @@ operator_tsn describe the location of the operator.
   }  /* if */
   if (!processed) {
     /* Non-operator-function cases. */
+    check_for_array_comparison(opnd1, opnd2, operator_pos);
     /* The first operand must be an arithmetic or enum type or a pointer. */
     do_operand_transformations(opnd1, TOPT_NO_OPTIONS);
     if (is_arithmetic_or_enum_type(opnd1->type)) {
