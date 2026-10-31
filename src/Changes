@@ -1,5 +1,257 @@
 Version 7.1
 
+10/30/26 [GH #401]
+break and continue in GNU statement expressions in constant evaluation
+
+In GNU modes, a break or continue statement inside a statement expression
+did not correctly transfer control out of the enclosing full-expression
+during constant evaluation: the evaluation of the enclosing expression
+continued with an indeterminate value for the statement expression, and the
+enclosing loop or switch statement was not exited.  For example, with
+--c++20 --gnu_version 130000:
+
+  constexpr int f(int v) {
+    int n = 0;
+    for (int i = 0; i < 5; ++i) {
+      n += ({ if (i == v) break; i; });
+    }
+    return n;
+  }
+  static_assert(f(3) == 3);  // Previously failed.
+
+This is now fixed.  To that end, the interpretation of control transfers
+(break, continue, and return statements, and the entry of a switch statement
+at a case label) and of loops was reorganized.
+
+
+10/30/26 [GH #421]
+Constant evaluation of virtual calls to an overrider in a derived class
+
+During constant evaluation, a virtual function call did not find the final
+overrider if the class of which it is a member is derived from the class of
+the called function through an intermediate class that does not itself
+override the function: The called function was not replaced.  For example,
+with --c++20:
+
+  struct A { constexpr virtual int f() const { return 1; } };
+  struct NA : A {};
+  struct B : NA { constexpr int f() const override { return 2; } };
+  constexpr int g() { B b; const A* p = &b; return p->f(); }
+  static_assert(g() == 2);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #399]
+Default-initialized local static constexpr variables in constant evaluation
+
+In C++23 mode, a default-initialized local "static constexpr" variable of
+class type caused the constant evaluation of the enclosing function to fail.
+For example, with --c++23:
+
+  struct Q { int q = 1; };
+  constexpr int f() { static constexpr Q q; return q.q; }
+  static_assert(f() == 1);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #398]
+dynamic_cast in constant evaluation requires public base class subobjects
+
+During constant evaluation, the run-time checks of a dynamic_cast did not
+require the operand to point to (or refer to) a public base class subobject
+of the destination object (for a cast to a derived class) or of the most
+derived object (for a cast to a sibling base class, which also requires the
+destination type to be a public base class of the most derived type).
+Instead, the accessibility of the base classes in the context of the cast
+was checked.  For example, with --c++20:
+
+  struct B { virtual void b() {} };
+  struct D : private B {};
+  struct F : D {};
+  constexpr F f;
+  static_assert(dynamic_cast<const D*>((const B*)&f) == nullptr);
+                                              // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #411]
+For loops entered through a case label in constant evaluation
+
+During constant evaluation, when a switch statement transferred control to a
+case label in the body of a for loop that was followed by other statements,
+the loop was not continued after the body completed: The loop condition was
+not evaluated again.  For example, with --c++20:
+
+  constexpr int f(int k) {
+    bool b = false;
+    int z = 0;
+    switch (k) {
+      for (; b;) {
+        return 5;
+      case 1:
+        b = true;
+        z = 9;
+      }
+      return z;
+    }
+    return -1;
+  }
+  static_assert(f(1) == 5);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #434]
+GNU statement expressions and switch statements
+
+In GNU modes, a break statement inside a statement expression that appears as
+the value a switch statement switches on was bound to that switch statement
+instead of (as with GCC and Clang) to the enclosing loop or switch statement.
+Similarly, a case or default label in such a statement expression was
+associated with that switch statement.  For example, with --g++ --c++20:
+
+  int f(int y, bool c) {
+    switch (y) {
+    case 0:
+      switch (({ if (c) break; 1; })) {
+      case 1:
+        return 10;
+      }
+      return 1;
+    }
+    return 2;
+  }
+
+f(0, true) returned 1 instead of 2.  Constant evaluation had the same
+problem, and also let a switch statement complete a break statement executed
+while computing the value it switches on.  This is now fixed.  Such a break
+statement is now diagnosed if there is no enclosing loop or switch
+statement, and such a case or default label now applies to an enclosing
+switch statement (and is diagnosed as a transfer of control into a statement
+expression).
+
+
+10/30/26 [GH #403]
+Lifetime of condition variables in constant evaluation
+
+During constant evaluation, a variable declared in the condition of an if-,
+switch-, while-, or for-statement was destroyed before the substatement
+(and, for a for-statement, the increment expression) was evaluated, instead
+of at the end of the statement (or, for a loop, of the iteration).  The same
+was true for a variable declared in the init-statement of an if- or
+switch-statement.  For example, with --c++20:
+
+  struct S {
+    int* p;
+    constexpr ~S() { *p = *p * 10 + 2; }
+    constexpr explicit operator bool() const { return true; }
+  };
+  constexpr int f() {
+    int n = 0;
+    if (S s{&n}) n = n * 10 + 1;
+    return n;
+  }
+  static_assert(f() == 12);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #404]
+Lifetime of the variable of a range-based for-statement in constant evaluation
+
+During constant evaluation, the variable declared by the for-range-declaration
+of a range-based for-statement was not destroyed at the end of each
+iteration.  For example, with --c++20:
+
+  struct R { int* p; constexpr ~R() { ++*p; } };
+  constexpr int g() {
+    int n = 0;
+    R a[2] = {{&n}, {&n}};
+    for (R r : a) {}
+    return n;
+  }
+  static_assert(g() == 2);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #438]
+Ptr_map::clear did not reset the element count
+
+Ptr_map::clear removed every entry but left the map's element count
+unchanged, so a cleared map reported a stale size and grew its table as
+though the removed entries were still present.  The impact was primarily
+on memory usage (e.g., the map of freed front-end memory after a
+precompiled header is loaded).
+
+
+10/30/26 [GH #426]
+Reproducible builds and generated code
+
+The new configuration macro BUILD_IDENTIFIER (with CMake,
+-DEDG_BUILD_IDENTIFIER=<string>) is a string literal that replaces the
+build date and time in the --version and --dump_configuration output and
+in the precompiled header identification string, so rebuilding the same
+sources produces identical executables.  The runtime library is likewise
+reproducible: its archives are deterministic, and its generated C files no
+longer pass through randomly named temporary directories.
+
+Temporaries in generated C and C++ are now named from a per-file counter
+(e.g., "__T1") rather than from IL addresses, so the output no longer
+varies with address space layout randomization.
+
+DEMO_VERSION_ID has been removed, and the --version copyright line now
+credits contributors.
+
+
+10/30/26 [GH #402]
+Variables declared before a case label in constant evaluation
+
+During constant evaluation, a variable declared (without initializer) after
+one case label of a switch statement and used after a subsequent case label
+was treated as inaccessible when the switch statement transferred control
+to the subsequent label.  The same happened for a variable declared without
+initializer in the init-statement of an if- or for-statement whose
+substatement contains the case label.  For example, with --c++20:
+
+  constexpr int f() {
+    switch (1) {
+      for (int x; ;) {
+      case 1:
+        x = 3;
+        return x;
+      }
+    }
+    return 0;
+  }
+  static_assert(f() == 3);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #431]
+Virtual function instantiation for suppressed class template specializations
+
+Previously, in IA-64 ABI configurations with ABI_COMPATIBILITY_VERSION >= 410,
+defining an inline member function of a class template specialization whose
+instantiation was suppressed could unnecessarily instantiate the class's
+virtual functions.  This no longer occurs when the specialization has external
+linkage and its virtual function table is suppressed.  A GNU "inline template"
+directive still requires the virtual functions.  For example, with
+--c++11 -tused:
+
+  template<int N> struct C {
+    virtual void f() {
+      static_assert(N != 1, "");  // Previously a spurious error, now okay.
+    }
+  };
+  extern template class C<1>;
+  C<1> c;
+
+
 10/29/26 [GH #405]
 A suppressed note of a constant-evaluation error no longer stops the front end
 

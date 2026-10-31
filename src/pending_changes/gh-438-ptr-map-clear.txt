@@ -1,8 +1,0 @@
-[GH #438]
-Ptr_map::clear did not reset the element count
-
-Ptr_map::clear removed every entry but left the map's element count
-unchanged, so a cleared map reported a stale size and grew its table as
-though the removed entries were still present.  The impact was primarily
-on memory usage (e.g., the map of freed front-end memory after a
-precompiled header is loaded).
