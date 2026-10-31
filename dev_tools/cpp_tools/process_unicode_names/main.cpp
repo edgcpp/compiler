@@ -11,7 +11,7 @@ machine for recognizing a Unicode character name and determining its
 associated code point.  The input data is taken from two files.  The first
 is assumed to be in the form of the file
 
-  https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt
+  https://www.unicode.org/Public/18.0.0/ucd/UnicodeData.txt
 
 where each line consists of
 
@@ -28,12 +28,13 @@ category define a range of characters, e.g.,
   4E00;<CJK Ideograph, First>;...
   9FFF;<CJK Ideograph, Last>;...
 
-Characters in the ranges for the CJK and Tangut ideographs, along with the
-Hangul syllables, are also added to the machine.
+Characters in the ranges for the CJK and Tangut ideographs, Jurchen and
+Small Seal characters, along with the Hangul syllables, are also added to
+the machine.
 
 The second file is assumed to be in the form of the file
 
-  https://www.unicode.org/Public/UCD/latest/ucd/NameAliases.txt
+  https://www.unicode.org/Public/18.0.0/ucd/NameAliases.txt
 
 which consists of empty lines, comment lines beginning with '#', and data
 lines of the form
@@ -352,7 +353,7 @@ semicolon is encountered, report an error and exit.
 Definitions related to the algorithmic generation of character names for
 the Hangul Syllable block.  The data and algorithm reflect those of the
 Hangul Character Name Generation pseudocode found in section 3.12 of
-www.unicode.org/versions/Unicode15.1.0/ch03.pdf.
+www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-3/.
 */
 
 #define Hangul_LCount 19	// Number of leading Jamo consonants
@@ -498,6 +499,18 @@ solely of data lines, no blank lines and no comments.
           static const char Tangut_prefix[] = "TANGUT IDEOGRAPH-";
           add_name_and_code_points(code_point, ending_point, Tangut_prefix,
                                    Tangut_prefix + sizeof(Tangut_prefix));
+        } else if (p[2] == 'J' &&
+                   strncmp(p + 2, "Jurchen Character",
+                           sizeof("Jurchen Character") - 1) == 0) {
+          static const char Jurchen_prefix[] = "JURCHEN CHARACTER-";
+          add_name_and_code_points(code_point, ending_point, Jurchen_prefix,
+                                   Jurchen_prefix + sizeof(Jurchen_prefix));
+        } else if (p[2] == 'S' &&
+                   strncmp(p + 2, "Seal Character",
+                           sizeof("Seal Character") - 1) == 0) {
+          static const char Seal_prefix[] = "SMALL SEAL CHARACTER-";
+          add_name_and_code_points(code_point, ending_point, Seal_prefix,
+                                   Seal_prefix + sizeof(Seal_prefix));
         }  /* if */
       }  /* if */
     } else {
@@ -949,7 +962,7 @@ const char *header_text[] = {
 "        0x23 /",
 "*/",
 "",
-"unsigned char unicode_name_fsm[] = {",
+"extern const unsigned char unicode_name_fsm[] = {",
 "",
 "/* The following table is created by a tool that processes the Unicode data",
 "   files and is not intended to be edited manually.  This table reflects"
@@ -959,7 +972,7 @@ const char *header_text[] = {
 const char *footer_text[] = {
 "}; /* unicode_name_fsm */",
 "",
-"sizeof_t size_of_unicode_name_fsm = sizeof(unicode_name_fsm);",
+"extern const sizeof_t size_of_unicode_name_fsm = sizeof(unicode_name_fsm);",
 "",
 "/* Conditionally close the \"edg\" namespace. */",
 "END_EDG_NAMESPACE",
