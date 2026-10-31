@@ -1,0 +1,21 @@
+[GH #224]
+Constant evaluation of GNU vector objects
+
+The constexpr interpreter tracks the initialization of each element of a GNU
+vector, but did not reserve space for that bookkeeping in complete objects of
+vector type.  Evaluating such an object (e.g., zero-initializing a 64-byte
+vector) could therefore corrupt memory and crash the front end.  In addition,
+initializing or destroying a whole vector subobject only updated the state of
+its first element, so that reading another element could give a spurious
+"access to uninitialized object" error (or fail to diagnose an access after
+destruction).  For example, with --g++ --c++20:
+
+  typedef char V64 __attribute__((vector_size(64)));
+  typedef int V4 __attribute__((vector_size(16)));
+  int main() {
+    V64 a = V64();  // Could previously crash.
+    return (int)a[0];
+  }
+  struct T { V4 v; };
+  constexpr int f() { T t; t.v = V4{1, 2, 3, 4}; return t.v[3]; }
+  static_assert(f() == 4, "");  // Previously a spurious error.
