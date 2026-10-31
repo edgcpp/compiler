@@ -20,6 +20,10 @@ int&& f8(bool b, int i) {                 // A "?" operand is a temporary.
 }
 using A = int[2];
 A&& f9() { return A{1, 2}; }              // Array temporary.
+const A& f10() { return A{1, 2}; }        // Array temporary.
+const int& f11() { return A{1, 2}[0]; }   // Element of an array temporary.
+const int& f12(int n) { return A{n, 2}[1]; }
+const int& f13() { return 0[A{1, 2}]; }
 
 // Core issue 2352: the reference binds directly to pp, so this is not
 // diagnosed as an error.

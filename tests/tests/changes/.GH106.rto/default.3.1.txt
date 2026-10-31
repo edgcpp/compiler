@@ -31,8 +31,24 @@ fe_only -DTEST_NUMBER=3 --c++26 --clang_version 190000 Test_name.c
   A&& f9() { return A{1, 2}; }              // Array temporary.
                     ^
 
-"Test_name.c", line 27: warning: returning reference to local temporary
+"Test_name.c", line 23: error: returning reference to local temporary
+  const A& f10() { return A{1, 2}; }        // Array temporary.
+                          ^
+
+"Test_name.c", line 24: error: returning reference to local temporary
+  const int& f11() { return A{1, 2}[0]; }   // Element of an array temporary.
+                            ^
+
+"Test_name.c", line 25: error: returning reference to local temporary
+  const int& f12(int n) { return A{n, 2}[1]; }
+                                 ^
+
+"Test_name.c", line 26: error: returning reference to local temporary
+  const int& f13() { return 0[A{1, 2}]; }
+                            ^
+
+"Test_name.c", line 31: warning: returning reference to local temporary
   const int *const *const &f6() { return pp; }
                                          ^
 
-7 errors detected in the compilation of "Test_name.c".
+11 errors detected in the compilation of "Test_name.c".

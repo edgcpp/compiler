@@ -3409,8 +3409,10 @@ Tips for proper use of the follow_addressing_path mode:
           traverse_expr(operand1, tblock);
           break;
         case eok_array_to_pointer:
-          /* Array-to-pointer decay.  Watch out for the array prvalue case. */
-          if (is_glvalue_node(operand1)) {
+          /* Array-to-pointer decay.  Watch out for the array prvalue case,
+             which is followed only when looking for temporaries (e.g., for
+             the "A{1, 2}" in "A{1, 2}[0]"). */
+          if (is_glvalue_node(operand1) || tblock->look_for_temporaries) {
             traverse_expr(operand1, tblock);
           }  /* if */
           break;

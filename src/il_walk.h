@@ -393,9 +393,9 @@ typedef struct an_expr_or_stmt_traversal_block {
   a_boolean	look_for_temporaries;
 			/* TRUE if a temporary anywhere on the addressing
 			   path (e.g., in either operand of a "?" operator,
-			   or a class prvalue whose member is selected)
-			   should be reported in preference to a local
-			   variable. */
+			   a class prvalue whose member is selected, or an
+			   array prvalue) should be reported in preference
+			   to a local variable. */
 #if HANDLE_VIRTUAL_BASES_IN_COMPLETE_CTOR_DTORS
   a_variable_ptr
 		orig_params;
