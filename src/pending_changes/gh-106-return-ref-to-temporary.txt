@@ -12,8 +12,10 @@ Clang versions before 19, which do the same).  For example, with --c++26:
 
 Returning a reference to a member of a temporary, as in g, was previously not
 diagnosed at all in the standard (non-GNU, non-Clang) modes; before C++26 it
-now gets the same warning as the other cases.  Returning a reference to a
-local variable is still only a warning.
+now gets the same warning as the other cases.  The same is true of returning
+a reference to an array temporary or to one of its elements (e.g.,
+"return A{1, 2};" or "return A{1, 2}[0];" with "using A = int[2];") in all
+modes.  Returning a reference to a local variable is still only a warning.
 
 As P2748 specifies, this does not apply to the conversion checked by
 std::is_convertible (e.g., __is_convertible_to(long, const int&) is still

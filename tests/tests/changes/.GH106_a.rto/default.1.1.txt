@@ -31,3 +31,19 @@ fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
   A&& f9() { return A{1, 2}; }              // Array temporary.
                     ^
 
+"Test_name.c", line 22: warning: returning reference to local temporary
+  const A& f10() { return A{1, 2}; }        // Array temporary.
+                          ^
+
+"Test_name.c", line 23: warning: returning reference to local temporary
+  const int& f11() { return A{1, 2}[0]; }   // Element of an array temporary.
+                            ^
+
+"Test_name.c", line 24: warning: returning reference to local temporary
+  const int& f12(int n) { return A{n, 2}[1]; }
+                                 ^
+
+"Test_name.c", line 25: warning: returning reference to local temporary
+  const int& f13() { return 0[A{1, 2}]; }
+                            ^
+

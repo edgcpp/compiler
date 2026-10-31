@@ -25204,9 +25204,11 @@ that identifies an object or a prvalue that is a pointer to an object.
 {
   if (is_glvalue_node(expr) ||
       (tblock->follow_class_rvalue_addressing_path &&
-       is_class_struct_union_type(expr->type))) {
+       is_class_struct_union_type(expr->type)) ||
+      (tblock->look_for_temporaries && is_array_type(expr->type))) {
     /* The expression passed in is a glvalue for an object (or a class
-       prvalue object). */
+       prvalue object, or, when looking for temporaries, an array
+       prvalue). */
     /* Skip some operation nodes (like value casts) that do not affect the
        underlying object. */
     while (is_operation_node(expr)) {
@@ -25251,8 +25253,8 @@ that identifies an object or a prvalue that is a pointer to an object.
         tblock->terminate = TRUE;
       }  /* if */
     } else if (tblock->look_for_temporaries && !is_glvalue_node(expr)) {
-      /* A class prvalue (e.g., a function call) on the addressing path, for
-         example the object expression of "f().x": a temporary is
+      /* A class or array prvalue (e.g., a function call) on the addressing
+         path, for example the object expression of "f().x": a temporary is
          materialized for it. */
       tblock->result = TRUE;
       tblock->is_temp = TRUE;
