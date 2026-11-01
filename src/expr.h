@@ -927,6 +927,7 @@ extern a_type_ptr scan_pack_index_type_specifier(
 
 extern a_type_ptr scan_typeof_operator(a_rescan_control_block *rcblock,
                                        a_decl_pos_block       *decl_pos_block);
+extern an_expr_node_ptr take_typeof_operands(a_type_ptr tp);
 
 #if GNU_EXTENSIONS_ALLOWED 
 

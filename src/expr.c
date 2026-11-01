@@ -19143,6 +19143,39 @@ called from outside of the expression-processing routines.
 }  /* scan_type_returning_type_trait_operator */
 
 
+an_expr_node_ptr take_typeof_operands(a_type_ptr  tp)
+/*
+Extract evaluated typeof operands before enclosing declarator bounds.
+Typedef uses do not repeat evaluation of their defining type specifier.
+*/
+{
+  an_expr_node_ptr  inits = NULL;
+
+  while (is_variably_modified_type(tp)) {
+    if (tp->kind == (a_type_kind)tk_typeref) {
+      if (typeref_is_typedef(tp)) break;
+      if (tp->variant.typeref.typeof_operand_pending) {
+        an_expr_node_ptr  expr = decltype_arg(tp);
+        check_assertion(expr != NULL);
+        tp->variant.typeref.typeof_operand_pending = FALSE;
+        if (expr->is_lvalue) expr = add_address_of_to_node(expr);
+        inits = inits == NULL ? expr : make_comma_node(inits, expr);
+      }  /* if */
+      tp = tp->variant.typeref.type;
+    } else if (tp->kind == (a_type_kind)tk_pointer) {
+      tp = tp->variant.pointer.type;
+    } else if (tp->kind == (a_type_kind)tk_array) {
+      tp = tp->variant.array.element_type;
+    } else if (tp->kind == (a_type_kind)tk_routine) {
+      tp = tp->variant.routine.return_type;
+    } else {
+      break;
+    }  /* if */
+  }  /* while */
+  return inits;
+}  /* take_typeof_operands */
+
+
 a_type_ptr scan_typeof_operator(a_rescan_control_block      *rcblock,
                                 ARG_UNUSED a_decl_pos_block *decl_pos_block)
 /*
@@ -19189,6 +19222,12 @@ the expression-processing routines.
   an_expr_node_ptr            saved_decltype_rescan_operand = NULL;
   a_boolean                   is_unqual_variant =
                                                curr_token == tok_typeof_unqual;
+  a_boolean                   runtime_operand = FALSE;
+  a_boolean                   cache_operand = C_mode() && vla_enabled &&
+                                               rcblock == NULL;
+  a_token_sequence_number     first_operand_token = NO_TOKEN_SEQUENCE_NUMBER;
+  unsigned long               saved_error_count =
+                                           diagnostic_counters.total.errors;
 
   parens_optional = gpp_mode && gnu_version >= 30400;
   /* Note that, unlike e.g. sizeof, typeof can appear directly in a declarative
@@ -19253,8 +19292,13 @@ the expression-processing routines.
       }  /* if */
     }  /* if */
   }  /* if */
+reparse_typeof_operand:
   if (!is_type) {
     /* typeof(expression) case. */
+    if (cache_operand && !runtime_operand) {
+      first_operand_token = curr_token_sequence_number;
+      begin_caching_fetched_tokens(/*include_curr_token=*/TRUE);
+    }  /* if */
     /* If we're in the file-scope memory region instead of a function-scope
        memory region because we're scanning something like a template argument,
        switch back.  If we're in a function, any expression nodes allocated
@@ -19264,7 +19308,9 @@ the expression-processing routines.
                                         &region_to_switch_back_to,
                                         &saved_object_lifetime);
     save_expr_stack(&saved_expr_stack);
-    push_expr_stack_with_rcblock((an_expression_kind)ek_sizeof,
+    push_expr_stack_with_rcblock(
+                                 runtime_operand ? ek_normal :
+                                 ek_sizeof,
                                  &expr_stack_entry,
                                  /*force_object_lifetime=*/FALSE,
                                  /*suppress_object_lifetime=*/
@@ -19348,6 +19394,29 @@ the expression-processing routines.
         result = make_unqualified_type(result);
       }  /* if */
     }  /* if */
+    if (cache_operand && !runtime_operand) {
+      end_caching_fetched_tokens();
+      if (is_variably_modified_type(result) &&
+          diagnostic_counters.total.errors == saved_error_count) {
+        a_token_cache  operand_tokens;
+
+        clear_token_cache(&operand_tokens, /*reusable=*/FALSE);
+        copy_tokens_from_cache(curr_lexical_state_cache(), first_operand_token,
+                               curr_token_sequence_number,
+                               /*include_last_token=*/FALSE, &operand_tokens);
+        expr_stack->unevaluated_expr_will_be_kept_in_il = FALSE;
+        pop_expr_stack();
+        restore_expr_stack(saved_expr_stack);
+        switch_back_region_and_lifetime(region_to_switch_back_to,
+                                        saved_object_lifetime);
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+        ssep = NULL;
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+        runtime_operand = TRUE;
+        rescan_cached_tokens(&operand_tokens);
+        goto reparse_typeof_operand;
+      }  /* if */
+    }  /* if */
   }  /* if */
   if (is_error_type(result)) {
     /* We'll just return the error type. */
@@ -19378,6 +19447,20 @@ the expression-processing routines.
         prep_generic_operand(&operand);
       }  /* if */
       expr = make_node_from_operand(&operand);
+      if (runtime_operand) {
+        if (saved_expr_stack == NULL) {
+          /* Declarative contexts evaluate the type specifier before any
+             following declarator bounds or initializers.  Expression
+             contexts defer evaluation to VLA lowering instead. */
+          a_statement_ptr  stmt = add_statement_at_stmt_pos(
+                                    stmk_expr,
+                                    &operand.position);
+          stmt->expr = expr;
+          set_expr_result_not_used(expr);
+        } else {
+          typeof_type->variant.typeref.typeof_operand_pending = TRUE;
+        }  /* if */
+      }  /* if */
       if (!dependent_arg) {
         /* Check for cases where the result type is not dependent but the
            expression is instantiation-dependent. */
@@ -30468,6 +30551,16 @@ just an expression in parentheses.  Return the scanned expression in
                                               &start_position,
                                               &type_position,
                                               type_cast_to);
+        }  /* if */
+        if (C_mode() && !err && is_variably_modified_type(type_cast_to)) {
+          an_expr_node_ptr  type_inits = take_typeof_operands(type_cast_to);
+          if (type_inits != NULL) {
+            /* Preserve the execution point before conditional folding. */
+            make_expression_operand(
+                      make_comma_node(type_inits,
+                                      make_node_from_operand(result)), result);
+            rule_out_expr_kinds(ROEK_INTEGRAL_CONSTANT, result);
+          }  /* if */
         }  /* if */
       }  /* if */
       set_operand_position(result, &start_position, &end_position,
