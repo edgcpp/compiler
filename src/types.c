@@ -11689,6 +11689,7 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
           std_conv->warning_suggested = warning_suggested;
           qualifiers_checked = TRUE;
         } else if ((!suppress_extensions || any_cfront_mode()) &&
+                   !gpp_mode &&
                     same_type_with_added_qualifiers(
                            source_type_pointed_to,
                            dest_type_pointed_to,
