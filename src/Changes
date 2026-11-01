@@ -1,5 +1,29 @@
 Version 7.1
 
+10/31/26 [GH #106]
+C++26: returning a reference bound to a temporary is not allowed
+
+A return statement that binds the returned reference to a temporary is not
+allowed in C++26 (P2748).  The front end only issued a warning.  It is now an
+error in C++26 (still a warning when emulating GCC versions before 14 or
+Clang versions before 19, which do the same).  For example, with --c++26:
+
+  struct S { int x; };
+  const int& f() { return 1; }      // Now an error.
+  const int& g() { return S().x; }  // Now an error.
+
+Returning a reference to a member of a temporary, as in g, was previously not
+diagnosed at all in the standard (non-GNU, non-Clang) modes; before C++26 it
+now gets the same warning as the other cases.  The same is true of returning
+a reference to an array temporary or to one of its elements (e.g.,
+"return A{1, 2};" or "return A{1, 2}[0];" with "using A = int[2];") in all
+modes.  Returning a reference to a local variable is still only a warning.
+
+As P2748 specifies, this does not apply to the conversion checked by
+std::is_convertible (e.g., __is_convertible_to(long, const int&) is still
+true).
+
+
 10/30/26 [GH #401]
 break and continue in GNU statement expressions in constant evaluation
 
