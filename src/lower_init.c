@@ -11022,6 +11022,8 @@ do_keep_constant:
       /* coverity[uninit_use] */
       if ((dip->kind == (a_dynamic_init_kind)dik_nonconstant_aggregate ||
            dip->kind == (a_dynamic_init_kind)dik_lambda) &&
+          /* Inner partial cleanups are handled by add_dyn_init_cleanup. */
+          !dip->overlaps_temps_in_inner_lifetime &&
           latest_initialization_on_entry !=
                                           eff_context->latest_initialization) {
         /* This is an aggregate for which some partial-aggregate

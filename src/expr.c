@@ -47957,11 +47957,13 @@ free the components prior to prev_icp.
   an_expr_stack_entry         *saved_expr_stack;
   an_expr_stack_entry         expr_stack_entry;
   an_object_lifetime          *saved_object_lifetime = curr_object_lifetime;
+  a_boolean                  saved_full_expressions;
 
   check_assertion(is_continuation_elem(prev_icp->next));
   continuation = prev_icp->next->variant.continuation.state;
   dps = continuation->decl_parse_state;
   check_assertion(dps != NULL && dps->init_state.pending_elements);
+  saved_full_expressions = dps->init_state.elements_are_full_expressions;
   if (continuation->resumable) {
     /* Free most init components preceding prev_icp, but keep the first one in
        case it is useful for diagnostic purposes. */
@@ -47996,6 +47998,7 @@ free the components prior to prev_icp.
                                     /*bundle=*/TRUE, &continuation);
   pop_expr_stack_for_initializer(saved_expr_stack, /*is_full_expr=*/TRUE,
                                  dps, (an_init_state *)NULL);
+  dps->init_state.elements_are_full_expressions = saved_full_expressions;
   if (continuation != NULL) {
     /* Parsing was suspended again.  Record additional state information to
        enable a subsequent call to this function. */
