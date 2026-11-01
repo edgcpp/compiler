@@ -1,0 +1,51 @@
+fe_only -DTEST_NUMBER=2 --c++26 --gnu_version 140000 Test_name.c
+"Test_name.c", line 13: warning: comparison between two arrays is deprecated
+  bool x1 = a == b;  // Two arrays: diagnosed.
+              ^
+
+"Test_name.c", line 14: warning: comparison between two arrays is deprecated
+  bool x2 = a != b;
+              ^
+
+"Test_name.c", line 15: warning: comparison between two arrays is deprecated
+  bool x3 = a < b;
+              ^
+
+"Test_name.c", line 16: warning: comparison between two arrays is deprecated
+  bool x4 = a >= b;
+              ^
+
+"Test_name.c", line 25: warning: comparison between two arrays is deprecated
+    bool z1 = c == c;    // Two arrays: diagnosed.
+                ^
+
+"Test_name.c", line 26: warning: comparison between two arrays is deprecated
+    bool z2 = c < c;
+                ^
+
+"Test_name.c", line 27: warning: comparison between two arrays is deprecated
+    bool z3 = c == a;
+                ^
+
+"Test_name.c", line 36: warning: comparison between two arrays is deprecated
+  bool h1(C c) { return c == ca; }              // Two arrays: diagnosed.
+                          ^
+
+"Test_name.c", line 40: warning: comparison between two arrays is deprecated
+  bool s1 = "abc" == "abc";
+                  ^
+
+"Test_name.c", line 44: warning: comparison between two arrays is deprecated
+  template<class T> bool t1(T) { return a == b; }
+                                          ^
+
+"Test_name.c", line 47: warning: comparison between two arrays is deprecated
+  template<class T> bool t2(T &x, T &y) { return x == y; }
+                                                   ^
+          detected during instantiation of "bool t2(T &, T &) [with T=int [2]]" at line 48
+
+"Test_name.c", line 50: warning: comparison between two arrays is deprecated
+  template<int N> bool t3(int (&x)[N], int (&y)[N]) { return x < y; }
+                                                               ^
+          detected during instantiation of "bool t3(int (&)[N], int (&)[N]) [with N=2]" at line 51
+
