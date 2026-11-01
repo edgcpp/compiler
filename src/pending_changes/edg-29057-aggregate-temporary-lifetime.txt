@@ -1,0 +1,5 @@
+[GH #458]
+Preserve aggregate initializer temporary lifetimes
+
+Temporaries created while initializing an aggregate now remain alive until
+the complete initialization ends, including nested aggregate initializers.
