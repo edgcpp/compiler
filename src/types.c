@@ -11689,6 +11689,7 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
           std_conv->warning_suggested = warning_suggested;
           qualifiers_checked = TRUE;
         } else if ((!suppress_extensions || any_cfront_mode()) &&
+                   !gpp_mode &&
                     same_type_with_added_qualifiers(
                            source_type_pointed_to,
                            dest_type_pointed_to,
@@ -14037,14 +14038,14 @@ well as C++ mode.
                                                                ) ||
               (is_nullptr(source_type) && !source_type->incomplete)) &&
              is_integral(dest_type) &&
-             (C_mode() || ms_extensions ||
+             (C_mode() || ms_extensions || gpp_mode ||
               dest_of_ptr_cast_big_enough(source_type, dest_type))) {
     /* Pointer or std::nullptr_t (but not the managed nullptr type,
        identified by being incomplete) --> integral is okay
          -- In C mode, always (size of destination is not an issue; see
             6.3.4 in the ISO C89 standard)
          -- In C++ mode, if (a) the integer is big enough or (b) it's
-            not big enough but we're compiling in Microsoft mode. */
+            not big enough but we're compiling in Microsoft or GNU mode. */
     okay = TRUE;
     if (!dest_of_ptr_cast_big_enough(source_type, dest_type)) {
       /* The destination is not large enough to hold all of the bits
