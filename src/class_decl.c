@@ -20662,7 +20662,13 @@ must be unsigned.
   a_constant_ptr smallest, largest;
   size_t         bits_needed, bits_needed_largest, bits_needed_smallest;
   a_constant_ptr enum_con;
+  a_boolean      fixed_scoped_base =
+                              integer_type_is_scoped_enum(bit_field_type);
 
+  if (fixed_scoped_base) {
+    use_signed = !enum_has_bool_underlying_type(bit_field_type) &&
+                 int_kind_is_signed[bit_field_type->variant.integer.int_kind];
+  }  /* if */
   enum_con = enum_constants(bit_field_type);
   if (enum_con == NULL) {
     /* There are no enumeration constants, so no bits are needed to
@@ -20689,7 +20695,7 @@ must be unsigned.
                         bits_required_to_represent_integer_constant(largest);
     /* See if the smallest value is negative. */
     smallest_is_negative = (sign_of_integer_constant(smallest) < 0);
-    if (targ_enum_bit_fields_are_always_unsigned) {
+    if (targ_enum_bit_fields_are_always_unsigned && !fixed_scoped_base) {
       /* Enum bit fields are always unsigned (many ABIs require this). */
       use_signed = FALSE;
       bits_needed = bits_needed_largest;
@@ -20699,7 +20705,9 @@ must be unsigned.
          for efficiency reasons: if the enum values just fit in the bit
          field size, an unsigned field might be necessary even though a 
          signed type was a good choice for the enum type. */
-      if (smallest_is_negative) {
+      if (fixed_scoped_base) {
+        /* Scoped enum bit fields retain their fixed underlying signedness. */
+      } else if (smallest_is_negative) {
         /* Some enum values are negative, so a signed type is required.
            The enum type must already be signed. */
         use_signed = TRUE;
@@ -20734,6 +20742,7 @@ must be unsigned.
       pos_warning(ec_enum_bit_field_too_small, &error_position);
     }  /* if */
     if (targ_enum_bit_fields_are_always_unsigned && smallest_is_negative &&
+        !fixed_scoped_base &&
         !bit_field_type->variant.integer.has_explicit_enum_base) {
       type_warning(ec_unsigned_enum_bit_field_with_signed_enumerator,
                    bit_field_type);
