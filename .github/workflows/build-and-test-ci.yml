@@ -38,7 +38,9 @@
 # the coverage report, with its line numbers moved to match the sources
 # being tested (.github/scripts/remap-gcovr-lines.py).
 # actions/cache scopes entries to the ref that saved them (plus the default
-# branch), so one pull request can never vouch for another's build.
+# branch), so one pull request can never vouch for another's build. The
+# merge queue's entries are saved again for main by promote-test-cache.yml
+# once the commit they tested lands, so later pull requests can reuse them.
 #
 # The bench job runs the cachegrind benchmarks the way
 # `edg-docker-bench --posture=release` does and uploads them as bench-results
