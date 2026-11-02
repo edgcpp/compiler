@@ -41,6 +41,13 @@ on:
         description: The hash of the test inputs (part of the test cache key)
         required: true
         type: string
+      reuse_results:
+        description: >-
+          Whether a test leg may skip its tests when an earlier run already
+          passed them (false runs every leg, e.g., for complete coverage)
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -224,32 +231,21 @@ jobs:
 
       - name: Look for an earlier passing run of this build
         id: tested
+        if: ${{ inputs.reuse_results }}
         uses: actions/cache/restore@v6
         with:
           key: ${{ steps.key.outputs.key }}
           path: .tmp/tested
 
-      # The earlier run may have tested different sources (the key ignores
-      # line numbers), so its coverage report's line numbers are moved to
-      # match these sources, using the copy of its sources saved with it.
-      # If they can't be, this leg contributes no coverage, rather than
-      # coverage of the wrong lines.
+      # A leg that reuses an earlier run contributes no coverage: that run
+      # may have tested different sources (the key ignores line numbers), so
+      # its coverage could point at the wrong lines.
       - name: Reuse earlier results
         if: ${{ steps.tested.outputs.cache-hit == 'true' }}
-        env:
-          CONFIG: ${{ matrix.config }}
         run: |
           echo "::notice::This build already passed with the same test" \
-               "inputs: $(cat .tmp/tested/ci-meta.json)"
-          mkdir -p coverage
-          if python3 .github/scripts/remap-gcovr-lines.py \
-               .tmp/tested/sources ".tmp/tested/coverage/${CONFIG}.json" \
-               "coverage/${CONFIG}.json"; then
-            echo "Moved the coverage lines to match these sources."
-          else
-            echo "::warning::Couldn't move the coverage lines of the" \
-                 "earlier run; this leg reports no coverage."
-          fi
+               "inputs, so this leg reports no coverage:" \
+               "$(cat .tmp/tested/ci-meta.json)"
 
       - name: Run edgy (${{ matrix.config }})
         id: edgy
@@ -286,8 +282,8 @@ jobs:
       # Coverage: the instrumented cpfe / cpfe-cp wrote .gcda files next to
       # the downloaded .gcno files under the build directory's src/. Each leg
       # saves a gcovr JSON report; the coverage job merges them and uploads
-      # to Codecov. Coverage problems must never fail the test leg, hence
-      # continue-on-error.
+      # to Codecov. A leg that reused an earlier run has none. Coverage
+      # problems must never fail the test leg, hence continue-on-error.
       - name: Install gcovr
         if: ${{ !cancelled() && steps.tested.outputs.cache-hit != 'true' }}
         continue-on-error: true
@@ -328,28 +324,18 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
-      # Record the pass (with its coverage report, so a run that skips edgy
-      # still contributes coverage, and the sources that report covers, so
-      # that its line numbers can be moved to match that run's sources).
-      # Without a report, don't record it.
+      # Record the pass (just which run it was; the record holds no
+      # coverage).
       - name: Prepare record of this passing run
         id: record
-        if: >-
-          ${{ steps.edgy.outcome == 'success' &&
-              hashFiles(format('coverage/{0}.json', matrix.config)) != '' }}
+        if: ${{ steps.edgy.outcome == 'success' }}
         env:
-          CONFIG: ${{ matrix.config }}
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           TESTED_SHA: ${{ github.sha }}
           CACHE_KEY: ${{ steps.key.outputs.key }}
         run: |
-          mkdir -p .tmp/tested/coverage .tmp/tested/sources
-          cp "coverage/${CONFIG}.json" .tmp/tested/coverage/
-          python3 -c 'import json, sys
-          for f in json.load(sys.stdin)["files"]: print(f["file"])' \
-            < "coverage/${CONFIG}.json" |
-            xargs -d '\n' cp --parents -t .tmp/tested/sources
+          mkdir -p .tmp/tested
           python3 - > .tmp/tested/ci-meta.json <<'EOF'
           import json, os
           print(json.dumps({

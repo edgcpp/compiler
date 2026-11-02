@@ -32,11 +32,11 @@
 # one configuration doesn't invalidate the others), and the git trees of the
 # other inputs it reads from the checkout (bases/, include_c++/,
 # util/eccp.sh, and the workflow files, computed once by the prepare job).
-# When a leg passes, it saves that entry along with its coverage report; a
-# later run on the same ref (a re-run, or a push that leaves the build
-# products and test inputs unchanged) restores it, skips edgy, and reuses
-# the coverage report, with its line numbers moved to match the sources
-# being tested (.github/scripts/remap-gcovr-lines.py).
+# When a leg passes, it saves that entry; a later run on the same ref (a
+# re-run, or a push that leaves the build products and test inputs
+# unchanged) restores it and skips edgy, and so reports no coverage (the
+# earlier run's coverage could point at lines that have since moved).
+# Scheduled and manual runs reuse nothing (see reuse_results).
 # actions/cache scopes entries to the ref that saved them (plus the default
 # branch), so one pull request can never vouch for another's build. The
 # merge queue's entries are saved again for main by promote-test-cache.yml
@@ -50,8 +50,11 @@
 # The debug builds are instrumented for gcov (EDG_CPFE_USE_GCOV) and ship
 # their .gcno files with the build products. Each test leg turns the .gcda
 # files its run produces into a gcovr JSON report for src/; the coverage job
-# merges the reports of all test legs and uploads one report to Codecov
-# (see .github/codecov.yml). The coverage steps never fail the run; only
+# merges the reports of the test legs that ran and uploads one report to
+# Codecov (see .github/codecov.yml), which compares nothing and posts
+# nothing on pull requests; a pull request links to its report through a
+# "coverage" commit status. The nightly scheduled run tests every leg, so it
+# gives main complete coverage. The coverage steps never fail the run; only
 # edgy's results do.
 
 name: Build & Test CI
@@ -59,6 +62,11 @@ name: Build & Test CI
 on:
   pull_request:
   merge_group:
+  # The nightly run tests every leg (no reused results), for complete
+  # coverage of main.
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -135,6 +143,9 @@ jobs:
       configs: ${{ matrix.configs }}
       run_timestamp: ${{ needs.prepare.outputs.run_timestamp }}
       test_inputs: ${{ needs.prepare.outputs.test_inputs }}
+      reuse_results: >-
+        ${{ github.event_name == 'pull_request' ||
+            github.event_name == 'merge_group' }}
 
   publish-test-results:
     name: Publish aggregated test results
@@ -191,6 +202,10 @@ jobs:
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      # To link a pull request to its coverage report.
+      statuses: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -232,11 +247,17 @@ jobs:
       # gcov run (plugins: noop) and its "file fixes" pass, which opens every
       # file git tracks and crashes on the dangling symlinks used as test
       # inputs (e.g. tests/.../embed___has_embed/embed___has_embed.c).
+      #
+      # The report covers the commit tested, which for a pull request is the
+      # merge commit, not the head commit the action would otherwise report
+      # it under, so name the commit explicitly.
       - name: Upload coverage to Codecov
+        id: upload
         if: ${{ hashFiles('coverage.xml') != '' }}
         continue-on-error: true
         uses: codecov/codecov-action@v7
         with:
+          override_commit: ${{ github.sha }}
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
           disable_search: true
@@ -245,6 +266,39 @@ jobs:
           plugins: noop
           fail_ci_if_error: true
           verbose: true
+
+      # Codecov posts no comment or checks (see .github/codecov.yml), so link
+      # the report from a commit status instead. The report is filed under
+      # the commit tested, but the status goes on the pull request's head
+      # commit, as the pull request shows only that commit's statuses. A pull
+      # request from a fork gets a read-only token and can't set the status;
+      # the job summary has the link either way.
+      - name: Link coverage report
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPLOADED: ${{ steps.upload.outcome == 'success' }}
+          IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
+          TESTED_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ "${UPLOADED}" != true ]; then
+            echo "No coverage report: every test leg reused an earlier" \
+                 "run's results, or coverage failed (see above)." \
+                 >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+          url="https://app.codecov.io/gh/${GITHUB_REPOSITORY}/commit/${TESTED_SHA}"
+          echo "[Coverage report](${url}) of the test legs this run ran" \
+               "(legs that reused earlier results add none)." \
+               >> "${GITHUB_STEP_SUMMARY}"
+          if [ "${IS_PULL_REQUEST}" = true ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+              -f state=success -f context=coverage \
+              -f description='Coverage of the tests this run ran' \
+              -f target_url="${url}" > /dev/null
+          fi
 
   bench:
     name: Benchmark linux-gcc-release
