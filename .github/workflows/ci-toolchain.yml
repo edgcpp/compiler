@@ -6,7 +6,7 @@
 # Builds one toolchain's preset and tests it with each of its configurations.
 # Called once per toolchain by build-and-test-ci.yml, which describes the
 # overall job graph, the test cache, and coverage; each test leg waits only on
-# this workflow's build, so the toolchains are independent of one another.
+# this workflow's builds, so the toolchains are independent of one another.
 #
 # There is deliberately no concurrency group here: in a called workflow,
 # github.workflow is the caller's name, so a group would make the toolchains
@@ -101,9 +101,73 @@ jobs:
           retention-days: 1
           compression-level: 6
 
+  # Builds the same preset again, without debug info, ASan, or gcov and with
+  # __LINE__ defined as 0, and hashes the products for the test cache key;
+  # the build itself is thrown away. The instrumented build can't serve for
+  # the key: its debug info, ASan's stack descriptions, gcov's checksums, the
+  # .gcno files, and the assertions' __LINE__ arguments all record line
+  # numbers, so changes that merely move code would change its products.
+  hash:
+    name: Hash ${{ inputs.preset }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: *ci-runner-image
+    defaults: *container-defaults
+    outputs:
+      build_hash: ${{ steps.hash.outputs.build_hash }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # The Release build type leaves out the debug info (and ASan); the
+      # preset's macro configuration, which a single-configuration generator
+      # uses whatever the build type, keeps the front end's debug code, and
+      # -O0 replaces Release's optimization (and its -DNDEBUG, which the
+      # front end doesn't use). The -fmacro-prefix-map keeps __FILE__
+      # relative, as the debug build types do (the step starts in the
+      # checkout, and pwd -P gives the path CMake records for it).
+      #
+      # __LINE__ is defined as 0 because the front end's assertions
+      # (check_assertion and the like in src/checking.h, compiled in whenever
+      # CHECKING is on, which is the default) pass __LINE__ to
+      # assertion_failed. Without this, every assertion below a line that is
+      # added or removed would pass a different line number, and the build
+      # products would change even though no code did. GCC warns about
+      # redefining __LINE__ even with -Wno-builtin-macro-redefined, so this
+      # build's warnings are turned off (-w); the build job still shows them.
+      - name: Configure ${{ env.CI_PRESET }} (uninstrumented)
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/${{ env.CI_BASE }}
+        run: >-
+          cmake --preset "${CI_PRESET}" -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_CXX_FLAGS_RELEASE=-O0 -DEDG_BUILD_IDENTIFIER=ci
+          "-DCMAKE_CXX_FLAGS=-D__LINE__=0 -w
+          -fmacro-prefix-map=$(pwd -P)=."
+
+      - name: Build ${{ env.CI_PRESET }} (uninstrumented)
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/${{ env.CI_BASE }}
+        run: cmake --build "${CI_BUILD_DIR}"
+
+      - name: Hash build products
+        id: hash
+        run: |
+          # Hash the names and contents of what the build job uploads (other
+          # than the .gcno files).
+          build="$(cd "${CI_BUILD_DIR}" &&
+                   find bin lib lib_linux_* lib_win* environment.sh \
+                        -type f -print0 | LC_ALL=C sort -z |
+                   xargs -0 sha256sum | sha256sum | cut -c1-64)"
+          echo "Build products: ${build}"
+          echo "build_hash=${build}" >> "${GITHUB_OUTPUT}"
+
   test:
     name: Test ${{ matrix.config }}
-    needs: build
+    needs: [build, hash]
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
@@ -140,6 +204,7 @@ jobs:
         env:
           CONFIG: ${{ matrix.config }}
           TEST_INPUTS: ${{ inputs.test_inputs }}
+          BUILD_HASH: ${{ needs.hash.outputs.build_hash }}
         run: |
           # Hash the test files this configuration can read, using the
           # image's tools (like edgy itself, so the selection rules match).
@@ -150,12 +215,11 @@ jobs:
           tests="$(EDG_TEST_HOME="${GITHUB_WORKSPACE}/tests" \
                    edg-test-inputs-hash --config "${CONFIG}")"
           echo "Test files: ${tests}"
-          # Hash the names and contents of the downloaded build products.
-          build="$(cd "${CI_BUILD_DIR}" &&
-                   find . -type f -print0 | LC_ALL=C sort -z |
-                   xargs -0 sha256sum | sha256sum | cut -c1-64)"
-          echo "Build products: ${build}"
-          echo "key=tested-${CONFIG}-${TEST_INPUTS}-${tests}-${build}" \
+          # The build products are represented by the hash job's hash of
+          # the uninstrumented build, not by the instrumented build tested
+          # here (see the hash job).
+          echo "Build products: ${BUILD_HASH}"
+          echo "key=tested-${CONFIG}-${TEST_INPUTS}-${tests}-${BUILD_HASH}" \
             >> "${GITHUB_OUTPUT}"
 
       - name: Look for an earlier passing run of this build
@@ -165,13 +229,27 @@ jobs:
           key: ${{ steps.key.outputs.key }}
           path: .tmp/tested
 
+      # The earlier run may have tested different sources (the key ignores
+      # line numbers), so its coverage report's line numbers are moved to
+      # match these sources, using the copy of its sources saved with it.
+      # If they can't be, this leg contributes no coverage, rather than
+      # coverage of the wrong lines.
       - name: Reuse earlier results
         if: ${{ steps.tested.outputs.cache-hit == 'true' }}
+        env:
+          CONFIG: ${{ matrix.config }}
         run: |
           echo "::notice::This build already passed with the same test" \
                "inputs: $(cat .tmp/tested/ci-meta.json)"
           mkdir -p coverage
-          cp .tmp/tested/coverage/*.json coverage/ || true
+          if python3 .github/scripts/remap-gcovr-lines.py \
+               .tmp/tested/sources ".tmp/tested/coverage/${CONFIG}.json" \
+               "coverage/${CONFIG}.json"; then
+            echo "Moved the coverage lines to match these sources."
+          else
+            echo "::warning::Couldn't move the coverage lines of the" \
+                 "earlier run; this leg reports no coverage."
+          fi
 
       - name: Run edgy (${{ matrix.config }})
         id: edgy
@@ -251,7 +329,9 @@ jobs:
           retention-days: 1
 
       # Record the pass (with its coverage report, so a run that skips edgy
-      # still contributes coverage). Without a report, don't record it.
+      # still contributes coverage, and the sources that report covers, so
+      # that its line numbers can be moved to match that run's sources).
+      # Without a report, don't record it.
       - name: Prepare record of this passing run
         id: record
         if: >-
@@ -263,8 +343,12 @@ jobs:
           RUN_ATTEMPT: ${{ github.run_attempt }}
           TESTED_SHA: ${{ github.sha }}
         run: |
-          mkdir -p .tmp/tested/coverage
+          mkdir -p .tmp/tested/coverage .tmp/tested/sources
           cp "coverage/${CONFIG}.json" .tmp/tested/coverage/
+          python3 -c 'import json, sys
+          for f in json.load(sys.stdin)["files"]: print(f["file"])' \
+            < "coverage/${CONFIG}.json" |
+            xargs -d '\n' cp --parents -t .tmp/tested/sources
           python3 - > .tmp/tested/ci-meta.json <<'EOF'
           import json, os
           print(json.dumps({
