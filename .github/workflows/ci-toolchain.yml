@@ -342,6 +342,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           TESTED_SHA: ${{ github.sha }}
+          CACHE_KEY: ${{ steps.key.outputs.key }}
         run: |
           mkdir -p .tmp/tested/coverage .tmp/tested/sources
           cp "coverage/${CONFIG}.json" .tmp/tested/coverage/
@@ -355,6 +356,7 @@ jobs:
             'tested_sha': os.environ['TESTED_SHA'],
             'run_id': int(os.environ['RUN_ID']),
             'run_attempt': int(os.environ['RUN_ATTEMPT']),
+            'cache_key': os.environ['CACHE_KEY'],
           }))
           EOF
 
@@ -364,3 +366,20 @@ jobs:
         with:
           key: ${{ steps.key.outputs.key }}
           path: .tmp/tested
+
+      # A merge queue run's cache entries are visible only to its own
+      # temporary ref, so the record is also published for
+      # promote-test-cache.yml, which saves it again for main (where every
+      # pull request can see it) once the tested commit lands.
+      - name: Publish record for main
+        if: >-
+          ${{ steps.record.outcome == 'success' &&
+              github.event_name == 'merge_group' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: tested-record-${{ matrix.config }}
+          path: .tmp/tested
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+          overwrite: true
