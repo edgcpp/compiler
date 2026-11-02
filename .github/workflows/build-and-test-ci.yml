@@ -8,11 +8,12 @@
 #   edg-docker-test --posture=extensive --non-interactive
 #
 # inside the ghcr.io/edgcpp/ci-runner image. Each toolchain runs
-# ci-toolchain.yml, which builds its preset and then runs one test leg per
-# configuration; a test leg waits only on its own toolchain's build:
+# ci-toolchain.yml, which builds its preset (twice: instrumented, for the
+# tests, and uninstrumented, for the test cache key) and then runs one test
+# leg per configuration; a test leg waits only on its own toolchain's builds:
 #
-#   prepare ─┬─► linux-gcc-debug:      build ─► Test ×2 ─┬─► publish (on failure)
-#            └─► linux-i686-gcc-debug: build ─► Test ×2 ─┴─► coverage
+#   prepare ─┬─► linux-gcc-debug:      build, hash ─► Test ×2 ─┬─► publish (on failure)
+#            └─► linux-i686-gcc-debug: build, hash ─► Test ×2 ─┴─► coverage
 #   bench (pull requests only; independent)
 #
 # The prepare job computes the shared run timestamp and test-input hash that
@@ -24,7 +25,9 @@
 #
 # The builds set EDG_BUILD_IDENTIFIER so that identical sources produce
 # byte-identical build products. Each test leg keys a cache entry on the
-# SHA-256 of the build products it downloaded, the test files its
+# SHA-256 of the products of its toolchain's uninstrumented build (which
+# leaves out line numbers, so that changes that merely move code don't change
+# the key; see the hash job in ci-toolchain.yml), the test files its
 # configuration can read (edg-test-inputs-hash, so re-recording a test for
 # one configuration doesn't invalidate the others), and the git trees of the
 # other inputs it reads from the checkout (bases/, include_c++/,
@@ -32,7 +35,8 @@
 # When a leg passes, it saves that entry along with its coverage report; a
 # later run on the same ref (a re-run, or a push that leaves the build
 # products and test inputs unchanged) restores it, skips edgy, and reuses
-# the coverage report.
+# the coverage report, with its line numbers moved to match the sources
+# being tested (.github/scripts/remap-gcovr-lines.py).
 # actions/cache scopes entries to the ref that saved them (plus the default
 # branch), so one pull request can never vouch for another's build.
 #
