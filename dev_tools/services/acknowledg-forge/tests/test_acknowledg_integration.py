@@ -247,6 +247,25 @@ async def test_publish_heal_and_survive_bad_requests(
     async with websockets.connect(
         f"ws://127.0.0.1:{server.port}/review/{review.review_id}"
         ) as reviewer:
+      # A malformed line range is rejected by the server (the connection and
+      # the section carry on).
+      for bad_range in ({'line': 3}, {'context': 3},
+                        {'line': 0, 'context': 3},
+                        {'line': 3, 'context': -1},
+                        {'line': 3, 'context': 51},
+                        {'line': True, 'context': 3},
+                        {'line': 3, 'context': True}):
+        await reviewer.send(encode_message(message(
+          'test.src.show-src',
+          value = {'id': 'suite/x.sft.cpp', 'assoc_file': None, **bad_range},
+          section = 'test-changes'
+        )))
+        tag = None
+        while tag != 'invalid':
+          tag, _, _ = decode_response(
+            await asyncio.wait_for(reviewer.recv(), 10)
+          )
+          assert tag != 'test.src.show-src', bad_range
       await reviewer.send(encode_message(message(
         'test.src.list-statuses',
         section = 'test-changes'

@@ -19,10 +19,18 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   import { protocolMessage } from './sockets.js'
   import { computeGradientStyleForConfigs } from './config-color.js'
   import { formatTestAnchor, parseTestAnchor } from './review-anchor.js'
+  import {
+    parseDiagnostics,
+    DEFAULT_PRIMARY_SOURCE_NAME,
+    parseDiffDiagnostics,
+    resolveDiagnosticFile
+  } from './diagnostics.js'
 
   import DiffLine from './DiffLine.vue'
   import LoadingSpinner from './LoadingSpinner.vue'
+  import NumberedSource from './NumberedSource.vue'
   import ScrollableContentArea from './ScrollableContentArea.vue'
+  import SourcePopover from './SourcePopover.vue'
   import TestStatus from './TestStatus.vue'
   import AppButton from './AppButton.vue'
   import AppSelect from './AppSelect.vue'
@@ -42,6 +50,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   const displayedDiffHash = ref("")
   const displayedGroupConfigs = ref([])
   const displayedTestAssocFiles = ref(null)
+  // How the primary source file is named in diagnostics (from the same reply
+  // as the associated files, so valid when those are non-null).
+  const displayedTestPrimaryName = ref(DEFAULT_PRIMARY_SOURCE_NAME)
   const displayedTestAssocFileName = ref(null)
   const displayTruncated = ref(false)
   const currDiffDivergenceNotice = ref(null)
@@ -61,7 +72,138 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
   const clearContentArea = () => {
     displayedOutput.value = null
+    closeSourcePopover()
   }
+
+  // Lines of context shown on each side of a diagnostic's line.
+  const POPOVER_CONTEXT_LINES = 10
+
+  // The source popover opened from a diagnostic marker in the output view.
+  // `source` is null while loading, see SourcePopover.vue.
+  const sourcePopover = ref({
+    open: false,
+    anchor: null,
+    location: null,
+    request: null,
+    source: null
+  })
+  // Fetched snippets, per displayed test.
+  const sourceSnippetCache = new Map()
+
+  const closeSourcePopover = () => {
+    sourcePopover.value = {
+      open: false,
+      anchor: null,
+      location: null,
+      request: null,
+      source: null
+    }
+  }
+
+  const snippetKey = (assocFile, line) => {
+    return JSON.stringify(
+      [displayedTestName.value, assocFile, line, POPOVER_CONTEXT_LINES]
+    )
+  }
+
+  // The diff views' markers, by zero-based line.
+  const markersByDiffLine = computed(() => {
+    return new Map(
+      isDiffMode.value ?
+        outputMarkers.value.map((marker) => [marker.line - 1, marker]) : []
+    )
+  })
+
+  const openSourcePopover = (marker, anchor) => {
+    if (marker.disabled) {
+      return
+    }
+    const request = {
+      assocFile: marker.assocFile,
+      line: marker.location.line
+    }
+    const cached = sourceSnippetCache.get(
+      snippetKey(request.assocFile, request.line)
+    )
+    sourcePopover.value = {
+      open: true,
+      anchor,
+      location: marker.location,
+      request,
+      source: cached ?? null
+    }
+    if (cached === undefined) {
+      sendSectionMessage('test.src.show-src', {
+        'id': displayedTestName.value,
+        'assoc_file': request.assocFile,
+        'line': request.line,
+        'context': POPOVER_CONTEXT_LINES
+      })
+    }
+  }
+
+  // Applies a ranged `test.src.show-src` reply.  Replies for a popover that
+  // has since been closed or moved on are cached but not shown.
+  const onSourceSnippetReply = (reply) => {
+    if (reply.id !== displayedTestName.value) {
+      return
+    }
+    const source = reply.content === null ?
+      { missing: true } :
+      { content: reply.content, firstLine: reply.first_line }
+    sourceSnippetCache.set(snippetKey(reply.assoc_file, reply.line), source)
+    const request = sourcePopover.value.request
+    if (sourcePopover.value.open && request !== null &&
+        request.assocFile === reply.assoc_file &&
+        request.line === reply.line) {
+      sourcePopover.value = { ...sourcePopover.value, source }
+    }
+  }
+
+  const isDiffMode = computed(() => {
+    return outputViewModeTarget.value === 'test.src.show-diff' ||
+      outputViewModeTarget.value === 'test.src.show-diff-curr'
+  })
+
+  // Diagnostic markers for the compiler output view, and for the added lines
+  // of the diff views.
+  const outputMarkers = computed(() => {
+    if (typeof displayedOutput.value !== 'string') {
+      return []
+    }
+    let diagnostics
+    if (outputViewModeTarget.value === 'test.src.show-output') {
+      diagnostics = parseDiagnostics(displayedOutput.value)
+    } else if (isDiffMode.value) {
+      diagnostics = parseDiffDiagnostics(displayedOutput.value)
+    } else {
+      return []
+    }
+    return diagnostics.map((diagnostic) => {
+      const resolved = resolveDiagnosticFile(
+        diagnostic.file,
+        displayedTestAssocFiles.value,
+        displayedTestPrimaryName.value
+      )
+      const location = {
+        file: diagnostic.file,
+        line: diagnostic.line,
+        col: diagnostic.col
+      }
+      const what = `${diagnostic.file}, line ${diagnostic.line}`
+      // Until the file list arrives nothing but the primary file resolves.
+      const listPending = displayedTestAssocFiles.value === null
+      return {
+        line: diagnostic.outputLine + 1,
+        location,
+        assocFile: resolved === null ? null : resolved.assocFile,
+        disabled: resolved === null,
+        title: resolved !== null ? `Show source at ${what}` :
+          listPending ? `${what}: locating source files...` :
+          `${what}: source file not available`
+      }
+    })
+  })
 
   const configuredIdForDisplayedTest = () => {
     return `(${displayedTestConfig.value}) ${displayedTestName.value}`
@@ -83,15 +225,16 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
   const requestContentAreaUpdate = () => {
     clearContentArea()
+    if (displayedTestAssocFiles.value === null) {
+      // Every view needs the associated files: the source view lists them,
+      // and diagnostic markers locate sources among them.  Fetched once per
+      // test.
+      sendSectionMessage(
+        'test.src.list-assoc-files',
+        displayedTestName.value
+      )
+    }
     if (outputViewModeTarget.value === 'test.src.show-src') {
-      if (displayedTestAssocFiles.value === null) {
-        // If this is the first time seeing the test source for this test,
-        // fetch the list of associated files.
-        sendSectionMessage(
-          'test.src.list-assoc-files',
-          displayedTestName.value
-        )
-      }
       sendSectionMessage('test.src.show-src', {
         'id': displayedTestName.value,
         'assoc_file': displayedTestAssocFileName.value
@@ -115,7 +258,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
         displayedDiffHash.value !== group.diff_hash) {
       // Wipe out the state for the associated files.
       displayedTestAssocFiles.value = null
+      displayedTestPrimaryName.value = DEFAULT_PRIMARY_SOURCE_NAME
       displayedTestAssocFileName.value = null
+      sourceSnippetCache.clear()
       // Update the displayed selection.
       displayedTestName.value = testName
       displayedDiffHash.value = group.diff_hash
@@ -279,7 +424,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       isMultiConfig.value = message.v.configs.length > 1
       testStatuses.value = message.v.statuses
       applyHashSelection()
-    } else if (message.t === "test.src.show-diff" || message.t === "test.src.show-diff-curr" ||
+    } else if (message.t === "test.src.show-diff" ||
+               message.t === "test.src.show-diff-curr" ||
                message.t === "test.src.show-output") {
       if (message.v.id === configuredIdForDisplayedTest()) {
         displayTruncated.value = false
@@ -303,7 +449,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     } else if (message.t === "test.src.list-assoc-files") {
       if (message.v.id === displayedTestName.value) {
         displayedTestAssocFiles.value = message.v.files
+        displayedTestPrimaryName.value =
+          message.v.primary_name ?? DEFAULT_PRIMARY_SOURCE_NAME
       }
+    } else if (message.t === "test.src.show-src" &&
+               message.v.line !== undefined) {
+      onSourceSnippetReply(message.v)
     } else if (message.t === "test.src.show-src") {
       if (message.v.id === displayedTestName.value) {
         displayTruncated.value = false
@@ -462,7 +613,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
             </app-button>
           </div>
         </div>
-        <div v-if="outputViewModeTarget === 'test.src.show-src'" class="assoc-file-list">
+        <div v-if="outputViewModeTarget === 'test.src.show-src'"
+             class="assoc-file-list">
           <div v-if="displayedTestAssocFiles === null">
             <loading-spinner />
           </div>
@@ -499,21 +651,33 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
            style="overflow: visible; display: grid;">
         <template v-if="outputViewModeTarget === 'test.src.show-diff' ||
                         outputViewModeTarget === 'test.src.show-diff-curr'">
-          <diff-line v-for="lineText in displayedOutput.split('\n')"
-                     :line-text="lineText" />
+          <diff-line v-for="(lineText, index) in displayedOutput.split('\n')"
+                     :line-text="lineText"
+                     :marker="markersByDiffLine.get(index) ?? null"
+                     @marker-click="openSourcePopover" />
         </template>
-        <template v-if="outputViewModeTarget === 'test.src.show-output' ||
-                        outputViewModeTarget === 'test.src.show-src'">
-          <pre>{{ displayedOutput }}</pre>
-        </template>
+        <numbered-source v-if="outputViewModeTarget === 'test.src.show-src'"
+                         :text="displayedOutput" />
+        <numbered-source v-if="outputViewModeTarget === 'test.src.show-output'"
+                         :text="displayedOutput"
+                         :show-numbers="false"
+                         :markers="outputMarkers"
+                         @marker-click="openSourcePopover" />
       </div>
+      <source-popover :anchor="sourcePopover.anchor"
+                      :open="sourcePopover.open"
+                      :location="sourcePopover.location"
+                      :source="sourcePopover.source"
+                      @close="closeSourcePopover" />
     </scrollable-content-area>
-    <div v-if="!displayedTestName" class="cell cell-colors content-width content">
+    <div v-if="!displayedTestName"
+         class="cell cell-colors content-width content">
       <div style="text-align: center; margin: 5em">
         Select a test status difference to continue...
       </div>
     </div>
-    <div v-if="displayedTestName" class="cell cell-colors content-width content-footer">
+    <div v-if="displayedTestName"
+         class="cell cell-colors content-width content-footer">
       <div class="cell-content">
         <app-button
             keyshortcuts="P K"
@@ -539,9 +703,14 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   </div>
   <div v-if="socketOpen && !sectionAvailable"
        class="cell cell-colors connection-loss">
-    No test source is connected for this review.
-    Start <code>edgy-review</code> with the same review UUID, or open the
-    Benchmarks tab if a benchmark source is available.
+    <!-- This box is a flex container, which would make each piece of text
+         and inline element below a separate flex item and drop the
+         whitespace between them.  This div keeps them one inline flow. -->
+    <div>
+      No test source is connected for this review.
+      Start <code>edgy-review</code> with the same review UUID, or open the
+      Benchmarks tab if a benchmark source is available.
+    </div>
   </div>
 </template>
 

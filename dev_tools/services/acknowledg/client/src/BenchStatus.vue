@@ -6,8 +6,16 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 -->
 
 <script setup>
-  import { computed, inject, nextTick, onMounted, useTemplateRef, watch } from 'vue'
+  import {
+    computed,
+    inject,
+    nextTick,
+    onMounted,
+    useTemplateRef,
+    watch
+  } from 'vue'
 
+  import AppButton from './AppButton.vue'
   import {
     formChangeComment,
     isFaster
@@ -25,7 +33,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   const benchSortMode = inject('benchSortMode')
 
   const containerDivRef = useTemplateRef('container-div')
-  const isActive = computed(() => activeBenchmarkId.value === props.benchmark.id)
+  const isActive = computed(
+    () => activeBenchmarkId.value === props.benchmark.id
+  )
 
   const scrollIntoView = () => {
     containerDivRef.value?.scrollIntoView({
@@ -60,7 +70,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       class="bench-status-container"
       ref="container-div"
       :class="{ 'active-bench': isActive }">
-    <button
+    <app-button
+        bare
         class="bench-status-inner-container"
         @click="emitStatusClick">
       <div class="bench-id" :title="benchmark.id">{{ benchmark.id }}</div>
@@ -69,7 +80,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
                     ? 'faster' : 'slower'">
         {{ formChangeComment(benchmark.baseline_ops, benchmark.run_ops) }}
       </div>
-    </button>
+    </app-button>
   </div>
 </template>
 

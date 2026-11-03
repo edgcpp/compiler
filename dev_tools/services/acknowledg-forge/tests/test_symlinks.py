@@ -597,6 +597,97 @@ async def test_show_source_reads_only_what_is_shown(
   assert reads == [65]
 
 
+async def test_show_source_range(tmp_path: Path, secret: Path) -> None:
+  home, root = _test_tree(tmp_path, secret)
+  (home / 'tests' / 'suite' / 'ten.sft.cpp').write_text(
+    ''.join(f'line {n}\n' for n in range(1, 11))
+  )
+  context = SandboxContext(home, allow_symlinks = False)
+  handler = test_provider.TestSourceHandler(
+    'Test',
+    'test',
+    context,
+    context.subpath(home),
+    context.subpath(root)
+  )
+
+  async def ask(test_id: str, line: int, ctx: int) -> dict[str, Any]:
+    channel = FakeChannel(message(
+      RequestTags.TEST_SHOW_SOURCE,
+      value = {'id': test_id, 'assoc_file': None, 'line': line,
+               'context': ctx, 'reviewer_id': 'r'}
+    ))
+    await handler.handle_request(channel)  # type: ignore[arg-type]
+    [reply] = channel.sent
+    response: dict[str, Any] = reply['v']['client_response']
+    return response
+
+  # The window is returned, and the request echoed.
+  response = await ask('suite/ten.sft.cpp', 5, 2)
+  assert response['content'] == 'line 3\nline 4\nline 5\nline 6\nline 7'
+  assert response['first_line'] == 3 and response['total_lines'] == 10
+  assert response['line'] == 5 and response['context'] == 2
+  assert 'truncated' not in response
+
+  # ...clamped at either end of the file.
+  response = await ask('suite/ten.sft.cpp', 1, 2)
+  assert response['content'] == 'line 1\nline 2\nline 3'
+  assert response['first_line'] == 1
+  response = await ask('suite/ten.sft.cpp', 10, 3)
+  assert response['content'] == 'line 7\nline 8\nline 9\nline 10'
+  assert response['first_line'] == 7
+
+  # A missing file is reported as such.
+  response = await ask('suite/missing.sft.cpp', 5, 2)
+  assert response['content'] is None and response['line'] == 5
+
+  # Without a range the whole file comes back, as before.
+  channel = FakeChannel(message(
+    RequestTags.TEST_SHOW_SOURCE,
+    value = {'id': 'suite/ten.sft.cpp', 'assoc_file': None,
+             'reviewer_id': 'r'}
+  ))
+  await handler.handle_request(channel)  # type: ignore[arg-type]
+  [reply] = channel.sent
+  response = reply['v']['client_response']
+  assert response['content'].count('\n') == 10
+  assert 'first_line' not in response and 'line' not in response
+
+
+async def test_list_assoc_files_reports_primary_name(
+    tmp_path: Path,
+    secret: Path) -> None:
+  home, root = _test_tree(tmp_path, secret)
+  suite = home / 'tests' / 'suite'
+  (suite / 'default.sft.cpp').write_text('int x;\n')
+  (suite / 'renamed.sft.cpp').write_text(
+    '//name:t\u00e9st.cpp\n//options:\nint x;\n'
+  )
+  context = SandboxContext(home, allow_symlinks = False)
+  handler = test_provider.TestSourceHandler(
+    'Test',
+    'test',
+    context,
+    context.subpath(home),
+    context.subpath(root)
+  )
+
+  async def primary_name_of(test_id: str) -> Any:
+    channel = FakeChannel(message(
+      RequestTags.TEST_LIST_ASSOC_FILES,
+      value = {'id': test_id, 'reviewer_id': 'r'}
+    ))
+    await handler.handle_request(channel)  # type: ignore[arg-type]
+    [reply] = channel.sent
+    return reply['v']['client_response']['primary_name']
+
+  # The //name: directive names the primary file in diagnostics...
+  assert await primary_name_of('suite/renamed.sft.cpp') == 't\u00e9st.cpp'
+  # ...otherwise it is the default.
+  assert await primary_name_of('suite/default.sft.cpp') == 'Test_name.c'
+  assert await primary_name_of('suite/missing.sft.cpp') == 'Test_name.c'
+
+
 async def test_sandbox_context_commands(tmp_path: Path) -> None:
   (tmp_path / 'home').mkdir()
   (tmp_path / 'home' / 'file').write_text('contents\n')

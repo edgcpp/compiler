@@ -220,7 +220,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
                   <circle cx="8" cy="9" r="1.1"/>
                 </svg>
               </span>
-              <span v-else class="orphan">{{ describeReviewtype(review) }}</span>
+              <span v-else class="orphan">
+                {{ describeReviewtype(review) }}
+              </span>
             </td>
           </tr>
         </transition-group>
