@@ -4917,6 +4917,7 @@ in *bound_function_selector.
   an_expr_node_ptr              expr_copy = NULL;
   a_boolean                     rescanned_case = FALSE;
   a_boolean                     is_template_param_object = FALSE;
+  a_boolean                     is_template_param_lvalue = FALSE;
   a_constant_ptr                constant = local_constant();
   a_constant_ptr                alloc_con = NULL;
   an_expr_rescan_info_entry_ptr eriep;
@@ -4997,6 +4998,21 @@ in *bound_function_selector.
         } else {
           /* The result is a constant, so return a constant operand. */
           make_constant_operand(cp, operand);
+          if (constant_is(cp, ck_template_param) &&
+              is_operation_node(orig_expr) &&
+              node_operator_is(orig_expr, eok_lvalue) &&
+              orig_expr->variant.operation.operands == expr) {
+            /* A reference to a C++20 nontype template parameter of class
+               type that is still a template parameter after substitution
+               (e.g., when an enclosing template is instantiated): Keep it
+               an lvalue, as it was originally (see make_sym_constant_operand),
+               so that it can later be identified as an id-expression
+               designating the template parameter object. */
+            change_template_param_constant_operand_to_lvalue(
+                                        operand,
+                                        !is_template_dependent_type(cp->type));
+            is_template_param_lvalue = TRUE;
+          }  /* if */
         }  /* if */
       } else {
         /* Return an expression operand. */
@@ -5020,7 +5036,8 @@ in *bound_function_selector.
       /* Normal case: restore everything. */
       restore_operand_info_from_expr_rescan_info_entry(operand, eriep);
     }  /* if */
-    if (is_template_param_object && orig_expr->extra.rescan_info != NULL) {
+    if ((is_template_param_object || is_template_param_lvalue) &&
+        orig_expr->extra.rescan_info != NULL) {
       /* The rescan information on the template parameter constant was
          saved before the reference was identified as an id-expression
          (possibly parenthesized).  That is recorded on the node that makes
