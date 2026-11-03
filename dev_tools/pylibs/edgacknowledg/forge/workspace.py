@@ -45,6 +45,13 @@ import edgtest
 import edgutil
 
 from edgacknowledg.forge import Forge, PullRequestInfo
+from edgacknowledg.forge.config import (
+  DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES,
+  DEFAULT_MAX_ARTIFACT_ENTRIES,
+  DEFAULT_MAX_DIFF_BYTES,
+  DEFAULT_MAX_PATTERNS,
+  ENV_PREFIX,
+)
 from edgacknowledg.forge.runner.roles import BUILD_STAGING_DIR, REVIEWS_DIR
 from edgtest.runtest import get_bare_name
 
@@ -61,21 +68,6 @@ _TEST_HOME_PATTERNS = ('/tests/.edgy/', '/tests/expectations/')
 
 BENCH_BASELINE_PATTERNS = ('/benchmarks/baselines/',)
 
-# The most sparse-checkout patterns a checkout may have: matching costs
-# patterns x paths, and they are built from pull request content. Their
-# total size must also stay within a small multiple of the diff's (see
-# MAX_DIFF_BYTES): a test gets at most two patterns, each about as long as
-# its path, and the only text that is part of many patterns, a suite's
-# name, is short.
-MAX_PATTERNS = 20_000
-# The largest diff (of tests/, in bytes) a pull request may have: it is
-# held in memory, and copied and split into lines more than once.
-MAX_DIFF_BYTES = 16 * 1024 * 1024
-# The most entries an artifact may have (its zip's, and its tarballs'
-# together), and the largest its zip's central directory may be: zipfile
-# reads all of that directory into memory, before we can count.
-MAX_ARTIFACT_ENTRIES = 100_000
-MAX_CENTRAL_DIRECTORY_BYTES = 16 * 1024 * 1024
 # Seconds a git process being stopped has to clean up (e.g. remove its lock
 # files) before it is killed; well within docker stop's default 10.
 _TERMINATE_ALLOWANCE = 5.0
@@ -106,7 +98,7 @@ def patterns_for_test(test_path: PurePosixPath) -> list[str]:
   as 'tests/tests/suite/dir/name.sft.cpp'): the test file and its recordings
   (where the test runner keeps them, '.<bare name>.rto'), or the whole
   directory of a multi-file test. At most two, each about as long as the
-  path, however it is named (see MAX_PATTERNS).
+  path, however it is named (see config.DEFAULT_MAX_PATTERNS).
   '''
   directory = _escape_pattern(str(test_path.parent))
   if '.mft.' in test_path.name:
@@ -148,9 +140,12 @@ def changed_paths(diff: str) -> list[str]:
   return paths
 
 
-def changes_patterns(diff: str) -> list[str]:
+def changes_patterns(diff: str,
+                     *,
+                     max_patterns: int = DEFAULT_MAX_PATTERNS) -> list[str]:
   '''Sparse-checkout patterns for rematerializing ``diff`` (of tests/) on
-  the base tree: the test home and every affected test.
+  the base tree: the test home and every affected test; at most
+  ``max_patterns``.
   '''
   patterns = dict.fromkeys(_TEST_HOME_PATTERNS)
   current_suite: Optional[str] = None
@@ -160,12 +155,16 @@ def changes_patterns(diff: str) -> list[str]:
       path = PurePosixPath(match.group(1))
       current_suite = None
       if path.parts[:2] == ('tests', 'tests'):
-        _add_patterns(patterns, _patterns_for_changed_test_file(path))
+        _add_patterns(
+          patterns,
+          _patterns_for_changed_test_file(path),
+          max_patterns
+        )
       elif (path.parts[:2] == ('tests', 'expectations') and
             path.suffix == '.log'):
         # Expectation lines name tests relative to the suite, so its name is
-        # part of the patterns of each (see MAX_PATTERNS). A file whose name
-        # no suite may have (e.g. too long) names no tests.
+        # part of the patterns of each (see config.DEFAULT_MAX_PATTERNS). A
+        # file whose name no suite may have (e.g. too long) names no tests.
         if edgtest.is_valid_suite_name(path.stem):
           current_suite = path.stem
       continue
@@ -174,33 +173,43 @@ def changes_patterns(diff: str) -> list[str]:
     if line.startswith(('-', '+')):
       test_name = line[1:].split(':')[0].strip()
       if test_name:
-        _add_patterns(patterns, patterns_for_test(
-          PurePosixPath('tests', 'tests', current_suite, test_name)
-        ))
+        _add_patterns(
+          patterns,
+          patterns_for_test(
+            PurePosixPath('tests', 'tests', current_suite, test_name)
+          ),
+          max_patterns
+        )
   return list(patterns)
 
 
-def failures_patterns(test_ids: Iterable[str]) -> list[str]:
+def failures_patterns(test_ids: Iterable[str],
+                      *,
+                      max_patterns: int = DEFAULT_MAX_PATTERNS) -> list[str]:
   '''Sparse-checkout patterns for serving CI results naming ``test_ids``
-  ('<suite>/<path>', as in .elist files), plus bench baselines.
+  ('<suite>/<path>', as in .elist files), plus bench baselines; at most
+  ``max_patterns``.
   '''
   patterns = dict.fromkeys([*_TEST_HOME_PATTERNS, *BENCH_BASELINE_PATTERNS])
   for test_id in test_ids:
     test_path = PurePosixPath('tests', 'tests', test_id)
     if '..' in test_path.parts or test_path.is_absolute():
       continue
-    _add_patterns(patterns, patterns_for_test(test_path))
+    _add_patterns(patterns, patterns_for_test(test_path), max_patterns)
   return list(patterns)
 
 
-def _add_patterns(patterns: dict[str, None], more: list[str]) -> None:
+def _add_patterns(patterns: dict[str, None],
+                  more: list[str],
+                  max_patterns: int) -> None:
   '''Add ``more`` to ``patterns`` (an ordered set), within
-  ``MAX_PATTERNS``.
+  ``max_patterns``.
   '''
   patterns.update(dict.fromkeys(more))
-  if len(patterns) > MAX_PATTERNS:
+  if len(patterns) > max_patterns:
     raise WorkspaceError(
-      f"more than {MAX_PATTERNS} sparse-checkout patterns (too many tests)"
+      f"more than {max_patterns} sparse-checkout patterns (too many tests; "
+      f"{ENV_PREFIX}MAX_SPARSE_PATTERNS)"
     )
 
 
@@ -293,9 +302,10 @@ def remove_tree(path: Path) -> None:
 
 class _Budget:
   '''What extracting an artifact may still spend: bytes, and entries.'''
-  def __init__(self, max_bytes: int) -> None:
+  def __init__(self, max_bytes: int, max_entries: int) -> None:
     self.bytes = max_bytes
-    self.entries = MAX_ARTIFACT_ENTRIES
+    self.max_entries = max_entries
+    self.entries = max_entries
 
   def spend(self, count: int) -> None:
     self.bytes -= count
@@ -306,7 +316,8 @@ class _Budget:
     self.entries -= 1
     if self.entries < 0:
       raise UnsafeArchiveError(
-        f"artifact has more than {MAX_ARTIFACT_ENTRIES} entries"
+        f"artifact has more than {self.max_entries} entries "
+        f"({ENV_PREFIX}MAX_ARTIFACT_ENTRIES)"
       )
 
 
@@ -353,24 +364,24 @@ def _check_inner_tarball(path: Path, budget: _Budget) -> None:
     raise UnsafeArchiveError(f"{path.name} is not a valid tarball") from ex
 
 
-def extract_artifact(zip_path: Path,
-                     destination: Path,
-                     *,
-                     max_bytes: int) -> None:
+def extract_artifact(
+      zip_path: Path, destination: Path, *, max_bytes: int,
+      max_entries: int = DEFAULT_MAX_ARTIFACT_ENTRIES,
+      max_directory_bytes: int = DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES) -> None:
   '''Safely extract a CI artifact zip into the (new, empty) ``destination``.
 
-  Rejects absolute or escaping paths and symlinks, and stops once more than
-  ``max_bytes`` would be written, or ``MAX_ARTIFACT_ENTRIES`` entries made
-  (counting inner tarballs' contents too).
+  Rejects absolute or escaping paths and symlinks, and a zip whose central
+  directory is over ``max_directory_bytes``, and stops once more than
+  ``max_bytes`` would be written, or ``max_entries`` entries made (counting
+  inner tarballs' contents too).
   '''
   directory_size = _central_directory_size(zip_path)
-  if (directory_size is not None and
-      directory_size > MAX_CENTRAL_DIRECTORY_BYTES):
+  if directory_size is not None and directory_size > max_directory_bytes:
     raise UnsafeArchiveError(
-      f"artifact's central directory is over "
-      f"{MAX_CENTRAL_DIRECTORY_BYTES} bytes"
+      f"artifact's central directory is over {max_directory_bytes} bytes "
+      f"({ENV_PREFIX}MAX_ARTIFACT_DIRECTORY_BYTES)"
     )
-  budget = _Budget(max_bytes)
+  budget = _Budget(max_bytes, max_entries)
   tarballs = []
   try:
     with zipfile.ZipFile(zip_path) as archive:
@@ -406,11 +417,18 @@ def extract_artifact(zip_path: Path,
 
 
 class Workspaces:
-  '''Clones and worktrees under ``home`` for one forge.'''
+  '''Clones and worktrees under ``home`` for one forge; a diff (``diff``)
+  may be at most ``max_diff_bytes``.
+  '''
 
-  def __init__(self, home: Path, forge: Forge) -> None:
+  def __init__(self,
+               home: Path,
+               forge: Forge,
+               *,
+               max_diff_bytes: int = DEFAULT_MAX_DIFF_BYTES) -> None:
     self._home = home
     self._forge = forge
+    self._max_diff_bytes = max_diff_bytes
     self._repos_dir = home / 'repos' / forge.name
     self._reviews_dir = home / REVIEWS_DIR
     self._locks: dict[str, asyncio.Lock] = {}
@@ -597,7 +615,7 @@ class Workspaces:
         'diff', '--no-renames', '--no-color', '--no-ext-diff', '--no-textconv',
         base, head, '--', *paths,
         git_dir = self.clone_dir(repository),
-        max_output = MAX_DIFF_BYTES
+        max_output = self._max_diff_bytes
       )
       return result.stdout
 

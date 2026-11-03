@@ -426,6 +426,38 @@ def test_webhooks_need_the_service_bind(tmp_path: Path) -> None:
     make_config(tmp_path / 'home', WEBHOOK_BIND = '127.0.0.1:0')
 
 
+@pytest.mark.parametrize('setting, problem', [
+  ('MAX_DIFF_BYTES', "git diff's output is over 1 bytes"),
+  ('MAX_SPARSE_PATTERNS', 'MAX_SPARSE_PATTERNS'),
+  ('MAX_ARTIFACT_ENTRIES', 'MAX_ARTIFACT_ENTRIES'),
+  ('MAX_ARTIFACT_DIRECTORY_BYTES', 'MAX_ARTIFACT_DIRECTORY_BYTES'),
+])
+async def test_limits_are_settings(tmp_path: Path,
+                                   origin: Origin,
+                                   forge: FakeForge,
+                                   store: ForgeStore,
+                                   clock: Clock,
+                                   setting: str,
+                                   problem: str) -> None:
+  # A pull request (with CI results) within the defaults...
+  config = make_config(tmp_path / 'home', **{setting: '1'})
+  harness = Harness(store, forge, config, clock)
+  await harness.start()
+  head = origin.push_pull_request(1, PR_FILES)
+  forge.set_pull_request(pull_request_info(1, head, origin.main_sha))
+  artifact = tmp_path / 'results.zip'
+  make_test_artifact(artifact, head, ['suite/b.sft.cpp'])
+  forge.artifact_files['a1'] = artifact
+  forge.runs[head] = ci_run(head, artifacts = (
+    ArtifactInfo('test-results-all', 'a1', 1, None, False),
+  ))
+  await harness.step()
+  # ...is over the one set lowest.
+  record = await store.find_pull_request('fake', REPOSITORY, 1)
+  assert record is not None and record.last_error is not None
+  assert problem in record.last_error
+
+
 async def test_bench_sections_from_ci_artifact(tmp_path: Path,
                                                origin: Origin,
                                                forge: FakeForge,

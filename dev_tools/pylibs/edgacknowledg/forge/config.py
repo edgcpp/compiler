@@ -20,6 +20,27 @@ from edgacknowledg.client import (
 
 ENV_PREFIX = 'ACKNOWLEDG_FORGE_'
 
+# The defaults of the limits on what a pull request and its CI artifacts
+# may make the service do (``workspace``), which the settings may raise for
+# large ones, given the memory (and time) they take.
+#
+# The most sparse-checkout patterns a checkout may have: matching costs
+# patterns x paths, and they are built from pull request content. Their
+# total size must also stay within a small multiple of the diff's (see
+# DEFAULT_MAX_DIFF_BYTES): a test gets at most two patterns, each about as
+# long as its path, and the only text that is part of many patterns, a
+# suite's name, is short.
+DEFAULT_MAX_PATTERNS = 20_000
+# The largest diff (of tests/, in bytes) a pull request may have: it is
+# held in memory, and copied and split into lines more than once.
+DEFAULT_MAX_DIFF_BYTES = 64 * 1024 * 1024
+# The most entries an artifact may have (its zip's, and its tarballs'
+# together), and the largest its zip's central directory may be: zipfile
+# reads all of that directory into memory, before we can count. CI's test
+# results reach about 170,000 entries, of about 106 bytes each there.
+DEFAULT_MAX_ARTIFACT_ENTRIES = 500_000
+DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES = 64 * 1024 * 1024
+
 
 class ConfigError(Exception):
   '''Raised for a missing or malformed setting.'''
@@ -102,6 +123,10 @@ class ForgeServiceConfig:
   bench_artifact: str
   max_artifact_bytes: int
   max_extracted_bytes: int
+  max_artifact_entries: int
+  max_artifact_directory_bytes: int
+  max_diff_bytes: int
+  max_sparse_patterns: int
   max_concurrency: int
   rematerialize_timeout: float
   unsandboxed: bool
@@ -239,6 +264,19 @@ class ForgeServiceConfig:
       ),
       max_extracted_bytes = int(
         get_number('MAX_EXTRACTED_BYTES', 2 * 1024 * 1024 * 1024)
+      ),
+      max_artifact_entries = int(
+        get_number('MAX_ARTIFACT_ENTRIES', DEFAULT_MAX_ARTIFACT_ENTRIES)
+      ),
+      max_artifact_directory_bytes = int(get_number(
+        'MAX_ARTIFACT_DIRECTORY_BYTES',
+        DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES
+      )),
+      max_diff_bytes = int(
+        get_number('MAX_DIFF_BYTES', DEFAULT_MAX_DIFF_BYTES)
+      ),
+      max_sparse_patterns = int(
+        get_number('MAX_SPARSE_PATTERNS', DEFAULT_MAX_PATTERNS)
       ),
       max_concurrency = max_concurrency,
       rematerialize_timeout = get_number('REMATERIALIZE_TIMEOUT', 15 * 60),

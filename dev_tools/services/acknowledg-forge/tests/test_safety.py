@@ -17,11 +17,10 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from edgacknowledg.forge import processor, workspace
+from edgacknowledg.forge import processor
 from edgacknowledg.forge.processor import _changes_test_ids, _read_ci_metadata
 from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
 from edgacknowledg.forge.workspace import (
-  MAX_PATTERNS,
   UnsafeArchiveError,
   WorkspaceError,
   _central_directory_size,
@@ -90,14 +89,17 @@ def test_extract_caps_inner_tarballs(tmp_path: Path) -> None:
     extract_artifact(archive, destination, max_bytes = 10_000)
 
 
-def test_extract_caps_entries(tmp_path: Path,
-                              monkeypatch: pytest.MonkeyPatch) -> None:
-  monkeypatch.setattr(workspace, 'MAX_ARTIFACT_ENTRIES', 3)
+def test_extract_caps_entries(tmp_path: Path) -> None:
   destination = tmp_path / 'out'
   destination.mkdir()
   archive = _zip(tmp_path / 'a.zip', {f"{n}.txt": b'' for n in range(4)})
   with pytest.raises(UnsafeArchiveError, match = 'more than 3 entries'):
-    extract_artifact(archive, destination, max_bytes = 10_000)
+    extract_artifact(
+      archive,
+      destination,
+      max_bytes = 10_000,
+      max_entries = 3
+    )
 
   # Inner tarballs' entries count too.
   payload = io.BytesIO()
@@ -111,22 +113,35 @@ def test_extract_caps_entries(tmp_path: Path,
   destination = tmp_path / 'out2'
   destination.mkdir()
   with pytest.raises(UnsafeArchiveError, match = 'more than 3 entries'):
-    extract_artifact(archive, destination, max_bytes = 10_000)
+    extract_artifact(
+      archive,
+      destination,
+      max_bytes = 10_000,
+      max_entries = 3
+    )
 
 
-def test_extract_caps_the_central_directory(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch) -> None:
+def test_extract_caps_the_central_directory(tmp_path: Path) -> None:
   # zipfile would read it all before the entries could be counted.
   archive = _zip(tmp_path / 'a.zip', {f"{n}.txt": b'' for n in range(10)})
   size = _central_directory_size(archive)
   assert size is not None
-  monkeypatch.setattr(workspace, 'MAX_CENTRAL_DIRECTORY_BYTES', size - 1)
   destination = tmp_path / 'out'
   destination.mkdir()
   with pytest.raises(UnsafeArchiveError, match = 'central directory'):
-    extract_artifact(archive, destination, max_bytes = 10_000)
+    extract_artifact(
+      archive,
+      destination,
+      max_bytes = 10_000,
+      max_directory_bytes = size - 1
+    )
   assert list(destination.iterdir()) == []
+  extract_artifact(
+    archive,
+    destination,
+    max_bytes = 10_000,
+    max_directory_bytes = size
+  )
 
 
 def _zipfile_directory_size(path: Path) -> int:
@@ -239,7 +254,8 @@ def test_changes_patterns_skip_suites_no_suite_may_be_named() -> None:
       '+a.sft.cpp: PASS',
     ])
 
-  assert '/tests/tests/cwg/a.sft.cpp' in changes_patterns(expectations('cwg'))
+  patterns = changes_patterns(expectations('cwg'))
+  assert '/tests/tests/cwg/a.sft.cpp' in patterns
   for suite in ['s' * 65, 'a.b', 'a b']:
     assert changes_patterns(expectations(suite)) == [
       '/tests/.edgy/', '/tests/expectations/',
@@ -247,16 +263,22 @@ def test_changes_patterns_skip_suites_no_suite_may_be_named() -> None:
 
 
 def test_patterns_are_capped() -> None:
+  cap = 100
   # Repeats aren't counted.
-  failures_patterns(['s/a.sft.cpp'] * (MAX_PATTERNS + 1))
+  failures_patterns(['s/a.sft.cpp'] * (cap + 1), max_patterns = cap)
   with pytest.raises(WorkspaceError, match = 'sparse-checkout patterns'):
-    failures_patterns([f"s/{n}.sft.cpp" for n in range(MAX_PATTERNS)])
+    failures_patterns(
+      [f"s/{n}.sft.cpp" for n in range(cap)],
+      max_patterns = cap
+    )
   diff = '\n'.join([
     'diff --git a/tests/expectations/x/s.log b/tests/expectations/x/s.log',
-    *(f"+{n}.sft.cpp: FAIL" for n in range(MAX_PATTERNS)),
+    *(f"+{n}.sft.cpp: FAIL" for n in range(cap)),
   ])
   with pytest.raises(WorkspaceError, match = 'sparse-checkout patterns'):
-    changes_patterns(diff)
+    changes_patterns(diff, max_patterns = cap)
+  # Within a higher cap.
+  changes_patterns(diff, max_patterns = 3 * cap)
 
 
 async def test_git_output_can_be_bounded() -> None:

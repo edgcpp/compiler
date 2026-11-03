@@ -301,7 +301,11 @@ class Harness:
       builder.start()
       _builder_clients.append(builder)
     self.sandbox = Sandbox(builder = builder)
-    self.workspaces = Workspaces(config.home, forge)
+    self.workspaces = Workspaces(
+      config.home,
+      forge,
+      max_diff_bytes = config.max_diff_bytes
+    )
     self.ingestor = Ingestor(
       store,
       forge,

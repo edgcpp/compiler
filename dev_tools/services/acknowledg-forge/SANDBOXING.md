@@ -526,6 +526,9 @@ them. Several layers keep the service from reading through one:
 | Resource | Limit |
 | --- | --- |
 | Artifact download | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_BYTES` (256 MiB), also counting the decompressed size of inner tarballs |
+| Artifact entries | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` (500,000), counting inner tarballs' too; and its zip's central directory, `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` (64 MiB), checked before zipfile reads it |
+| A pull request's diff of `tests/` | `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` (64 MiB) |
+| A review worktree's sparse-checkout patterns | `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` (20,000) |
 | A file read for a reviewer | 64 MiB; a larger one fails the request |
 | A source shown to a reviewer | only as much as can be displayed is read |
 | Each container's `/tmp` | 512 MiB tmpfs; copies made for diffing are streamed there |
