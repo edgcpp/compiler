@@ -11,7 +11,7 @@ import json
 
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import httpx
 import pytest
@@ -235,3 +235,79 @@ async def test_commenter_finds_only_its_own_marked_comment() -> None:
   assert posted == [{'body': 'hello'}]
   assert await commenter.find_comment(REPO, 1, 'MARK') == '2'
   assert await commenter.find_comment(REPO, 1, 'OTHER') is None
+
+
+async def test_responses_are_read_only_so_far(
+    monkeypatch: pytest.MonkeyPatch) -> None:
+  from edgacknowledg.forge import ForgeError
+  from edgacknowledg.forge import http as forge_http
+  import gzip
+
+  def handler(request: httpx.Request) -> httpx.Response:
+    if request.url.path == '/small':
+      # Compressed, and paginated: decoded once, links kept.
+      return httpx.Response(
+        200,
+        headers = [
+          (b'content-encoding', b'gzip'),
+          (b'link', f'<{API}/small?page=2>; rel="next"'.encode('ascii')),
+          (b'x-note', b'caf\xe9'),
+          (b'x-note', b'second value'),
+        ],
+        content = gzip.compress(json.dumps({'ok': True}).encode())
+      )
+    return httpx.Response(200, json = {'pad': 'x' * 1000})
+
+  client = forge_http.ForgeHttpClient(
+    base_url = API,
+    headers = {},
+    transport = httpx.MockTransport(handler)
+  )
+  try:
+    monkeypatch.setattr(forge_http, 'MAX_RESPONSE_BYTES', 100)
+    response = await client.request('GET', '/small')
+    assert response.json() == {'ok': True}
+    assert response.links['next']['url'] == f"{API}/small?page=2"
+    assert [value for name, value in response.headers.raw
+            if name == b'x-note'] == [b'caf\xe9', b'second value']
+    with pytest.raises(ForgeError, match = 'over 100 bytes'):
+      await client.get_json('/large')
+  finally:
+    await client.aclose()
+
+
+@pytest.mark.parametrize('match_page', [1, 2, None])
+async def test_comment_lookup_stops_fetching_pages(
+                                    match_page: Optional[int]) -> None:
+  pages: list[int] = []
+  path = f"/repos/{REPO}/issues/1/comments"
+
+  def handler(request: httpx.Request) -> httpx.Response:
+    if request.url.path.endswith('/user'):
+      return httpx.Response(200, json = {'login': 'bot'})
+    page = int(request.url.params.get('page', '1'))
+    pages.append(page)
+    headers = {}
+    if page < 3:
+      headers['link'] = f'<{API}{path}?page={page + 1}>; rel="next"'
+    return httpx.Response(
+      200,
+      headers = headers,
+      json = [{
+        'id': page,
+        'user': {'login': 'bot'},
+        'body': 'MARK' if page == match_page else 'other',
+      }]
+    )
+
+  client = GitHubClient(
+    api_url = API,
+    token = 't',
+    transport = httpx.MockTransport(handler)
+  )
+  try:
+    result = await GitHubCommenter(client).find_comment(REPO, 1, 'MARK')
+    assert result == (str(match_page) if match_page is not None else None)
+    assert pages == list(range(1, (match_page or 3) + 1))
+  finally:
+    await client.aclose()

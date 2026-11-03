@@ -306,6 +306,89 @@ def find_changes_files(run_dir: Path) -> Dict[str, Path]:
     changes_files[dir_entry] = changes_file
   return changes_files
 
+def _remove_run_tree(path: Path) -> int:
+  '''Remove the directory path (of a test run) whole; return how many
+  .rt.tar files it held.
+  '''
+  count = 0
+  for _, _, file_names in os.walk(path):
+    count += sum(
+      1 for file_name in file_names
+      if file_name.endswith(runtest.RUN_TEST_OUTPUT_SUFFIX)
+    )
+  shutil.rmtree(path)
+  return count
+
+def prune_run_archives(run_dir: Path) -> Tuple[int, int, int]:
+  '''Prune the run in run_dir down to what a review of it reads (the .rt.tar
+  files changes.elist names; see _scan_changes_file), e.g., to keep CI's
+  uploads small.  The replays directory is removed whole.  In each
+  configuration, a suite with no test changes.elist names (every suite,
+  without a changes.elist) is removed whole: its directory, and its
+  suite-<name> logs.  Of the other suites, the .rt.tar files changes.elist
+  doesn't name are removed.  Return how many .rt.tar files were kept, how
+  many removed, and how many suites were removed.
+  '''
+  kept = 0
+  removed = 0
+  suites = 0
+  for dir_entry in os.listdir(run_dir):
+    config_dir = run_dir / dir_entry
+    if not config_dir.is_dir() or config_dir.is_symlink():
+      continue
+    if dir_entry == 'replays':
+      removed += _remove_run_tree(config_dir)
+      continue
+    if dir_entry in ('recording-updates', 'patched-tests'):
+      continue
+
+    # The .rt.tar files changes.elist names, by suite.
+    named: Dict[str, Set[Path]] = {}
+    changes_file = config_dir / 'changes.elist'
+    if changes_file.is_file():
+      with open(changes_file, 'r') as file_handle:
+        test_ids = [
+          test_id for test_id in (line.strip() for line in file_handle)
+          if test_id != ''
+        ]
+      for test_id in test_ids:
+        test_path = PurePosixPath(test_id)
+        if (test_path.is_absolute() or '..' in test_path.parts or
+            len(test_path.parts) < 2):
+          raise ValueError(f"invalid test id in {changes_file}: {test_id!r}")
+        named.setdefault(test_path.parts[0], set()).add(
+          config_dir / test_path.with_suffix(runtest.RUN_TEST_OUTPUT_SUFFIX)
+        )
+
+    # Each suite edgy ran (and logged) in the configuration.
+    for log_path in config_dir.glob('suite-*.elog'):
+      suite = log_path.stem[len('suite-'):]
+      suite_dir = config_dir / suite
+      walkable = suite_dir.is_dir() and not suite_dir.is_symlink()
+      if suite not in named:
+        if walkable:
+          removed += _remove_run_tree(suite_dir)
+        log_path.unlink()
+        try:
+          log_path.with_suffix('.log').unlink()
+        except FileNotFoundError:
+          pass
+        suites += 1
+        continue
+      if not walkable:
+        continue
+      for root, _, file_names in os.walk(suite_dir):
+        for file_name in file_names:
+          if not file_name.endswith(runtest.RUN_TEST_OUTPUT_SUFFIX):
+            continue
+          file_path = Path(root, file_name)
+          if file_path in named[suite]:
+            kept += 1
+          else:
+            file_path.unlink()
+            removed += 1
+  return kept, removed, suites
+
 def describe_rt_path(rt_file_path: Path, run_dir: Path) -> Tuple[str, str]:
   '''Return (relative_rt_path, config_name) for an .rt.tar under the run.
 

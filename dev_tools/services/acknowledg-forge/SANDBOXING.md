@@ -529,15 +529,39 @@ them. Several layers keep the service from reading through one:
 | Extracted artifact | `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` (2 GiB), counting the stored size of inner tarballs, not their unextracted contents |
 | Artifact entries | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` (500,000) for ZIP entries, 10,000 per inner tarball when opened; and its zip's central directory, `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` (64 MiB), checked before zipfile reads it |
 | Inner tarball member | 64 MiB per member when a reviewer opens a tarball |
-| A pull request's diff of `tests/` | `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` (64 MiB) |
+| A pull request's diff of `tests/` | `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` (512 MiB) |
 | A review worktree's sparse-checkout patterns | `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` (20,000) |
 | A file read for a reviewer | 64 MiB; a larger one fails the request |
-| A source shown to a reviewer | only as much as can be displayed is read |
+| A source shown to a reviewer | reads stop at the response content limit (8 MiB for ASCII text, counted in characters) plus one read piece, even for an unterminated long line; the response is marked truncated |
 | Each container's `/tmp` | 512 MiB tmpfs; copies made for diffing are streamed there |
 | Build commands | `ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT` (15 min) |
 | Reviewer commands | 2 min |
 | A reviewer's request | 150 s in a pool process, which is then replaced |
 | Each container | `mem_limit` (the service, builder, and publisher 2 GiB, tools 1 GiB) and 512 processes ([`compose.yaml`](compose.yaml)) |
+
+### Accepted HTTP decompression limitation
+
+REST API responses are limited to 32 MiB, checked after each decoded
+chunk. Artifact downloads also check decoded chunks against their size
+limit. HTTPX decompresses a chunk before either check runs, so these
+checks bound accepted content, not peak decompression memory. A chunk can
+temporarily exceed the limit before the response is rejected.
+
+We trust the configured GitHub or GitLab server, authenticated by TLS, to
+serve ordinary API responses. The service authenticates its requests with
+the forge token; this does not make user-authored comment bodies trusted.
+The REST calls fetch metadata and paginated comments, not file contents or
+diffs. Comment lookup processes one page at a time and stops at the bot's
+marked comment. Large individual pages remain possible, particularly on
+GitLab.
+
+We accept the assumption that exhausting memory before the size check
+would require substantial abuse: enough highly compressible content to
+expand an individual chunk beyond the service's available memory before
+the check can reject the response. This is an operational assumption, not
+a guarantee supplied by authentication or pagination. Bounded
+decompression can be added if this becomes a problem; the deployed
+container memory limit remains the outer bound.
 
 ## Secrets
 

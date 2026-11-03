@@ -17,7 +17,7 @@ import time
 
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Mapping, Optional
+from typing import Any, AsyncIterator, Mapping, Optional
 
 import httpx
 
@@ -26,6 +26,10 @@ from edgacknowledg.forge import ArtifactTooLargeError, ForgeError
 _log = logging.getLogger(__name__)
 
 PAGE_SIZE = 100
+# API response limit, checked after each decoded chunk; downloads have
+# their own limit. HTTPX can allocate a larger chunk during decompression.
+# See the accepted HTTP decompression limitation in SANDBOXING.md.
+MAX_RESPONSE_BYTES = 32 * 1024 * 1024
 MAX_RATE_LIMIT_WAIT = 15 * 60.0
 MAX_ATTEMPTS = 4
 
@@ -88,17 +92,19 @@ class ForgeHttpClient:
                     params: Optional[Mapping[str, Any]] = None,
                     json_body: Optional[Any] = None) -> httpx.Response:
     '''Send a request, retrying transient failures and waiting out rate
-    limits; raise ``ForgeError`` on failure.
+    limits; raise ``ForgeError`` on failure, or for a response over
+    ``MAX_RESPONSE_BYTES`` (checked after each decoded chunk).
     '''
     for attempt in range(MAX_ATTEMPTS):
       last_attempt = attempt + 1 == MAX_ATTEMPTS
       try:
-        response = await self._client.request(
+        request = self._client.build_request(
           method,
           path,
           params = params,
           json = json_body
         )
+        response = await _send_capped(self._client, request, method, path)
       except httpx.HTTPError as ex:
         if last_attempt:
           raise ForgeError(f"{method} {path} failed: {ex}") from ex
@@ -129,13 +135,12 @@ class ForgeHttpClient:
 
   async def paginate(self,
                      path: str,
-                     params: Optional[Mapping[str, Any]] = None,
-                     *,
-                     key: Optional[str] = None) -> list[Any]:
-    '''Collect every page of a list endpoint (``key`` selects the list in
-    wrapped responses such as ``{"workflow_runs": [...]}``).
+                     params: Optional[Mapping[str, Any]] = None, *,
+                     key: Optional[str] = None) -> AsyncIterator[Any]:
+    '''Yield list items as pages are requested, without accumulating pages.
+    ``key`` selects the list in wrapped responses such as
+    ``{"workflow_runs": [...]}``. Stopping iteration avoids later requests.
     '''
-    items: list[Any] = []
     next_path: Optional[str] = path
     next_params: Optional[Mapping[str, Any]] = {
       **(params or {}),
@@ -144,11 +149,11 @@ class ForgeHttpClient:
     while next_path is not None:
       response = await self.request('GET', next_path, params = next_params)
       payload = response.json()
-      items += payload[key] if key is not None else payload
+      for item in payload[key] if key is not None else payload:
+        yield item
       # The next link is absolute and carries its own query.
       next_path = response.links.get('next', {}).get('url')
       next_params = None
-    return items
 
   async def download(self,
                      path: str,
@@ -177,6 +182,45 @@ class ForgeHttpClient:
         await _write_capped(stream, destination, max_bytes, path)
     except httpx.HTTPError as ex:
       raise ForgeError(f"download of {path} failed: {ex}") from ex
+
+
+async def _send_capped(client: httpx.AsyncClient,
+                       request: httpx.Request,
+                       method: str,
+                       path: str) -> httpx.Response:
+  '''Send ``request``; accumulate decoded chunks, raising ``ForgeError``
+  when the accumulated size exceeds ``MAX_RESPONSE_BYTES``.
+  HTTPX decompresses each chunk before this check, so this is not a hard
+  bound on peak memory usage.
+  '''
+  response = await client.send(request, stream = True)
+  try:
+    body = bytearray()
+    async for chunk in response.aiter_bytes():
+      body += chunk
+      if len(body) > MAX_RESPONSE_BYTES:
+        raise ForgeError(
+          f"{method} {path}: the response is over {MAX_RESPONSE_BYTES} bytes"
+        )
+  finally:
+    await response.aclose()
+  # The same response with its body in place; it is decoded already, so
+  # without the headers that describe how it was sent.
+  headers = [
+    (name, value) for name, value in response.headers.raw
+    if name.lower() not in (
+      b'content-encoding',
+      b'content-length',
+      b'transfer-encoding',
+    )
+  ]
+  return httpx.Response(
+    response.status_code,
+    headers = headers,
+    content = bytes(body),
+    request = request,
+    extensions = response.extensions
+  )
 
 
 async def _write_capped(stream: httpx.Response,

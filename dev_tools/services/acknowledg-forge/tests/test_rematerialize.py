@@ -12,8 +12,20 @@ import subprocess
 import sys
 
 from pathlib import Path, PurePosixPath
+from typing import Any
+
+import pytest
 
 import edgtest
+import edgutil
+
+# (Not 'from ... import TestSourceHandler', which pytest would collect.)
+import edgacknowledg.client.test as test_provider
+
+from edgacknowledg import RequestTags, message
+from edgacknowledg.client.shared import SandboxContext
+
+from test_symlinks import FakeChannel
 
 DEV_TOOLS = Path(__file__).resolve().parents[3]
 REMATERIALIZE = DEV_TOOLS / 'bin' / 'edg-rematerialize-test-run'
@@ -155,7 +167,16 @@ def test_rematerialize_writes_changes_elist(tmp_path: Path) -> None:
       edgtest.runtest.RUN_TEST_OUTPUT_SUFFIX
     )
     with edgtest.runtest.RunTestOutput(rt_path) as rt_output:
-      return ''.join(rt_output.combined_static_diff())
+      text = ''.join(rt_output.combined_static_diff())
+      # As pieces (for display), the same, header lines fitting in one.
+      for limit in (len('--- Expected Output\n'), 1000):
+        assert ''.join(
+          piece for piece, _ in rt_output.iter_static_diff_pieces(limit)
+        ) == text
+        assert ''.join(
+          piece for piece, _ in rt_output.iter_raw_output_pieces(limit)
+        ) == ''.join(rt_output.combined_raw_output())
+      return text
 
   c_diff = static_diff('suite/c.sft.cpp')
   assert '# cpfe -DTEST_NUMBER=1 Test_name.c\n' in c_diff
@@ -179,3 +200,166 @@ def test_rematerialize_writes_changes_elist(tmp_path: Path) -> None:
     for config, changes_file in changes_files.items()
     for test in changes_file.read_text().split()
   )
+
+
+def _rematerialize_change(tmp_path: Path,
+                          change: dict[str, str]) -> tuple[
+                            subprocess.CompletedProcess[str], Path]:
+  '''Run the tool on the diff ``change`` makes to a small test home; return
+  its result and the run's directory.
+  '''
+  repo = tmp_path / 'repo'
+  repo.mkdir()
+  git(repo, 'init', '--quiet', '--initial-branch=main')
+  write_files(repo, {
+    'tests/.edgy/config.json': '{}\n',
+    'tests/expectations/edg_x86_64/suite.log': '',
+    'tests/expectations/edg_x86_64_cp/suite.log': '',
+    'tests/tests/suite/a.sft.cpp': '//type:cp\nint a;\n',
+    'tests/tests/suite/.a.rto/default.1.1.txt': (
+      'cpfe -DTEST_NUMBER=1 Test_name.c\nold output\n'
+    ),
+  })
+  git(repo, 'add', '-A')
+  git(repo, 'commit', '--quiet', '-m', 'base')
+  write_files(repo, change)
+  git(repo, 'add', '-A')
+  git(repo, 'commit', '--quiet', '-m', 'change')
+  diff_file = tmp_path / 'pr.diff'
+  diff_file.write_text(git(
+    repo, 'diff', '--no-renames', '--no-color', 'HEAD~1', 'HEAD', '--', 'tests'
+  ))
+  git(repo, 'checkout', '--quiet', 'HEAD~1')
+
+  runs_dir = tmp_path / 'runs'
+  timestamp = '2026.01.02-03.04.05'
+  env = dict(os.environ)
+  env['EDG_TEST_HOME'] = str(repo / 'tests')
+  env['PYTHONPATH'] = str(DEV_TOOLS / 'pylibs')
+  env.pop('RUN_TEST_DEFAULT_CONFIG', None)
+  result = subprocess.run(
+    [sys.executable, str(REMATERIALIZE),
+     '--runs-dir', str(runs_dir),
+     '--run-timestamp', timestamp,
+     str(diff_file)],
+    cwd = repo,
+    env = env,
+    capture_output = True,
+    text = True
+  )
+  return result, runs_dir / timestamp
+
+
+def test_rematerialize_passes_huge_lines_through(tmp_path: Path) -> None:
+  # Far longer than a line is ever held whole; written (and patched) in
+  # full.
+  huge = 'h' * (5 * edgutil.MAX_LINE_CHARS)
+  result, run_dir = _rematerialize_change(tmp_path, {
+    'tests/tests/suite/.a.rto/default.1.1.txt': (
+      f"cpfe -DTEST_NUMBER=1 Test_name.c\n{huge}\n"
+    ),
+  })
+  assert result.returncode == 0, result.stdout + result.stderr
+  rt_path = (run_dir / 'edg_x86_64' / 'suite/a.sft.cpp').with_suffix(
+    edgtest.runtest.RUN_TEST_OUTPUT_SUFFIX
+  )
+  with edgtest.runtest.RunTestOutput(rt_path) as rt_output:
+    static_diff = ''.join(rt_output.combined_static_diff())
+  assert f"+{huge}\n" in static_diff
+
+
+def test_rematerialize_refuses_huge_expectation_lines(tmp_path: Path) -> None:
+  result, _ = _rematerialize_change(tmp_path, {
+    'tests/expectations/edg_x86_64/suite.log': (
+      'a.sft.cpp:cp:-DTEST_NUMBER=1:FAIL:' +
+      'r' * edgutil.MAX_LINE_CHARS + '\n'
+    ),
+  })
+  assert result.returncode == 1
+  assert (
+    'tests/expectations/edg_x86_64/suite.log: a changed line is longer than'
+  ) in result.stderr
+
+
+async def test_curr_diff_is_shown_and_compared(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+  result, run_dir = _rematerialize_change(tmp_path, {
+    'tests/tests/suite/.a.rto/default.1.1.txt': (
+      'cpfe -DTEST_NUMBER=1 Test_name.c\nnew output\n'
+    ),
+    # Brings the other configuration into the run (which inherits the
+    # recording's change).
+    'tests/expectations/edg_x86_64_cp/suite.log': (
+      'a.sft.cpp:cp:-DTEST_NUMBER=1:FAIL:\n'
+    ),
+  })
+  assert result.returncode == 0, result.stdout + result.stderr
+  context = SandboxContext(tmp_path)
+  handler = test_provider.TestSourceHandler(
+    'Test',
+    'test',
+    context,
+    context.subpath(tmp_path / 'repo' / 'tests'),
+    context.subpath(run_dir)
+  )
+
+  async def show_curr_diff(
+      configs: tuple[str, ...] = ('edg_x86_64', 'edg_x86_64_cp')
+      ) -> dict[str, Any]:
+    channel = FakeChannel(message(
+      RequestTags.TEST_SHOW_CURR_DIFF,
+      value = {
+        'id': '(edg_x86_64) suite/a.sft.cpp',
+        'configs': list(configs),
+        'reviewer_id': 'r',
+      }
+    ))
+    await handler.handle_request(channel)  # type: ignore[arg-type]
+    [reply] = channel.sent
+    response: dict[str, Any] = reply['v']['client_response']
+    return response
+
+  # Observed against the run's (the pull request's) recordings, which it
+  # was made from: no difference.
+  response = await show_curr_diff()
+  assert response['content'] == ''
+  assert 'divergent_configs' not in response
+
+  # Recordings changed since: the difference is shown, the same for both
+  # configurations (the other uses the default recording).
+  recordings = run_dir / 'patched-tests' / 'suite' / '.a.rto'
+  (recordings / 'default.1.1.txt').write_text(
+    'cpfe -DTEST_NUMBER=1 Test_name.c\nnewer output\n'
+  )
+  response = await show_curr_diff()
+  assert response['content'] == (
+    '--- Expected Output\n'
+    '+++ Observed Output\n'
+    '# cpfe -DTEST_NUMBER=1 Test_name.c\n'
+    '@@ -1 +1 @@\n'
+    '-newer output\n'
+    '+new output\n'
+  )
+  assert 'divergent_configs' not in response
+
+  # A recording of its own makes the other configuration's differ.
+  (recordings / 'edg_x86_64_cp.1.1.txt').write_text(
+    'cpfe -DTEST_NUMBER=1 Test_name.c\nnew output\n'
+  )
+  response = await show_curr_diff()
+  assert '-newer output\n+new output' in response['content']
+  assert response['divergent_configs'] == ['edg_x86_64_cp']
+
+  compared: list[Path] = []
+  original_cmp = test_provider.filecmp.cmp
+
+  def cmp(first: Path, second: Path, *, shallow: bool) -> bool:
+    compared.append(second)
+    return original_cmp(first, second, shallow = shallow)
+
+  monkeypatch.setattr(test_provider.filecmp, 'cmp', cmp)
+  await show_curr_diff(
+    ('edg_x86_64', 'edg_x86_64_cp', 'edg_x86_64_cp')
+  )
+  assert len(compared) == 2
+  assert compared[0] != compared[1]

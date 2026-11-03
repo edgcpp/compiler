@@ -138,9 +138,14 @@ async def test_publisher_outage_leaves_serving_to_connecting(
   record = await store.find_pull_request('fake', REPOSITORY, 1)
   assert record is not None
   assert not record.is_dirty and record.error_count == 0
-  assert [s.name for s in await store.sections(record.id)] == [
+  sections = await store.sections(record.id)
+  assert [s.name for s in sections] == [
     'Test - Changes'
   ]
+  # The completed run contains only its results, with no temporary diff.
+  [section] = sections
+  assert list(section.root.parent.iterdir()) == [section.root]
+  assert list(harness.workspaces.build_staging_dir.iterdir()) == []
   assert harness.publisher.served_names(record.review_id) == []
 
   harness.publisher.available = True
@@ -427,7 +432,7 @@ def test_webhooks_need_the_service_bind(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize('setting, problem', [
-  ('MAX_DIFF_BYTES', "git diff's output is over 1 bytes"),
+  ('MAX_DIFF_BYTES', 'MAX_DIFF_BYTES'),
   ('MAX_SPARSE_PATTERNS', 'MAX_SPARSE_PATTERNS'),
   ('MAX_ARTIFACT_ENTRIES', 'MAX_ARTIFACT_ENTRIES'),
   ('MAX_ARTIFACT_DIRECTORY_BYTES', 'MAX_ARTIFACT_DIRECTORY_BYTES'),

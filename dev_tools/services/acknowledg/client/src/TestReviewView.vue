@@ -25,6 +25,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     parseDiffDiagnostics,
     resolveDiagnosticFile
   } from './diagnostics.js'
+  import { displayLines } from './display-content.js'
 
   import DiffLine from './DiffLine.vue'
   import LoadingSpinner from './LoadingSpinner.vue'
@@ -55,10 +56,16 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   const displayedTestPrimaryName = ref(DEFAULT_PRIMARY_SOURCE_NAME)
   const displayedTestAssocFileName = ref(null)
   const displayTruncated = ref(false)
+  // 1-based numbers of the displayed lines the provider cut.
+  const displayedLinesTruncated = ref([])
   const currDiffDivergenceNotice = ref(null)
   const displayedOutput = ref("")
   const outputViewModeTarget = ref("test.src.show-diff")
   const isMultiConfig = ref(false)
+
+  const displayedOutputLines = computed(() => {
+    return displayLines(displayedOutput.value, displayedLinesTruncated.value)
+  })
 
   const displayedTestConfig = computed(() => {
     return displayedGroupConfigs.value[0] ?? ""
@@ -150,7 +157,15 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     }
     const source = reply.content === null ?
       { missing: true } :
-      { content: reply.content, firstLine: reply.first_line }
+      {
+        content: displayLines(
+          reply.content,
+          reply.lines_truncated ?? []
+        ).join('\n'),
+        firstLine: reply.first_line,
+        linesTruncated: reply.lines_truncated ?? [],
+        truncated: reply.truncated ?? false
+      }
     sourceSnippetCache.set(snippetKey(reply.assoc_file, reply.line), source)
     const request = sourcePopover.value.request
     if (sourcePopover.value.open && request !== null &&
@@ -444,6 +459,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
                message.t === "test.src.show-output") {
       if (message.v.id === configuredIdForDisplayedTest()) {
         displayTruncated.value = false
+        displayedLinesTruncated.value = []
         currDiffDivergenceNotice.value = null
         if (message.v.content === null) {
           displayedOutput.value = "Missing .rt.tar file!"
@@ -451,6 +467,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
           if (message.v.truncated) {
             displayTruncated.value = true
           }
+          displayedLinesTruncated.value = message.v.lines_truncated ?? []
           displayedOutput.value = message.v.content
         }
         if (message.t === "test.src.show-diff-curr" &&
@@ -473,6 +490,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     } else if (message.t === "test.src.show-src") {
       if (message.v.id === displayedTestName.value) {
         displayTruncated.value = false
+        displayedLinesTruncated.value = []
         currDiffDivergenceNotice.value = null
         if (message.v.content === null) {
           displayedOutput.value = "File not found!"
@@ -480,6 +498,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
           if (message.v.truncated) {
             displayTruncated.value = true
           }
+          displayedLinesTruncated.value = message.v.lines_truncated ?? []
           displayedOutput.value = message.v.content
         }
       }
@@ -655,6 +674,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
              class="content-notice">
           Content Too Long: Display Truncated
         </div>
+        <div v-if="displayedOutput !== null &&
+                   displayedLinesTruncated.length > 0"
+             class="content-notice">
+          Some Lines Truncated
+        </div>
         <div v-if="displayedOutput !== null && currDiffDivergenceNotice"
              class="content-notice">
           {{ currDiffDivergenceNotice }}
@@ -673,15 +697,15 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
                   padding-left: 0; --content-inset: 5px;">
         <template v-if="outputViewModeTarget === 'test.src.show-diff' ||
                         outputViewModeTarget === 'test.src.show-diff-curr'">
-          <diff-line v-for="(lineText, index) in displayedOutput.split('\n')"
+          <diff-line v-for="(lineText, index) in displayedOutputLines"
                      :line-text="lineText"
                      :marker="markersByDiffLine.get(index) ?? null"
                      @marker-click="openSourcePopover" />
         </template>
         <numbered-source v-if="outputViewModeTarget === 'test.src.show-src'"
-                         :text="displayedOutput" />
+                         :text="displayedOutputLines.join('\n')" />
         <numbered-source v-if="outputViewModeTarget === 'test.src.show-output'"
-                         :text="displayedOutput"
+                         :text="displayedOutputLines.join('\n')"
                          :show-numbers="false"
                          :markers="outputMarkers"
                          @marker-click="openSourcePopover" />
