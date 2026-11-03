@@ -4289,7 +4289,7 @@ kind indicates which of the above is being processed.
 
 static a_boolean process_gnu_diagnostic_pragma(a_pending_pragma_ptr  ppp)
 /*
-Handle "#pragma GCC diagnostic push/pop" (GCC 4.6 and later) and
+Handle "#pragma GCC diagnostic push/pop" (GCC 4.6 and later, and clang) and
 "#pragma GCC diagnostic kind "option"", where kind is "error", "warning",
 "ignored", "fatal" (clang only), or "ignored_attributes" (GCC 12 and later).
 The pragmas are only accepted: they do not affect the front end's own
@@ -4303,7 +4303,7 @@ form is not recognized by the compiler being emulated.
   (void)get_token();
   if (curr_token == tok_identifier) {
     a_const_char *str = locator_for_curr_id.symbol_header->identifier;
-    if (gnu_version >= 40600 &&
+    if ((clang_mode || gnu_version >= 40600) &&
         (strcmp(str, "push") == 0 || strcmp(str, "pop") == 0)) {
       recognized = TRUE;
     } else if (strcmp(str, "error") == 0 ||
@@ -4361,7 +4361,6 @@ Process a "#pragma GCC ..." construct.
     } else if (gnu_version >= 40400 && strcmp(str, "reset_options") == 0) {
       process_gnu_options_pragma(ppp, (a_gcc_pragma_kind)gcc_pk_reset_options);
     } else if (strcmp(str, "diagnostic") == 0) {
-      ignore_in_back_end = FALSE;
       recognized = process_gnu_diagnostic_pragma(ppp);
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
     } else if (target_is_arm_based() && target_is_64_bits() &&
