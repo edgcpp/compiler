@@ -9,7 +9,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   import { computed, ref, provide, onUnmounted, watch } from 'vue'
   import { useRoute, useRouter, RouterView } from 'vue-router'
 
+  import AnchoredPopover from './AnchoredPopover.vue'
   import AppButton from './AppButton.vue'
+  import LoadingSpinner from './LoadingSpinner.vue'
   import Notice from './Notice.vue'
   import RichName from './RichName.vue'
   import { acquireSocketForReview } from './sockets.js'
@@ -21,12 +23,20 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   const socket = acquireSocketForReview(reviewId)
 
   const socketOpen = ref(true)
+  // Whether the server has told us which sources and editors are connected
+  // yet.  Until then "no source is connected" would be a guess.
+  const connectionStateReceived = ref(false)
   const connectionState = ref({
     name: [],
     sources: [],
     editors: []
   })
   const notices = ref([])
+
+  // The review-info popover is toggled by clicking the icon (it closes on
+  // Escape or a click elsewhere, see AnchoredPopover.vue).
+  const reviewInfoRef = ref(null)
+  const reviewInfoOpen = ref(false)
   const pendingTasks = ref({})
   let notificationIdCounter = 0
 
@@ -151,6 +161,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     const message = JSON.parse(event.data)
     if (message.t === 'review.connection-state') {
       connectionState.value = message.v
+      connectionStateReceived.value = true
     } else if (message.t === 'test.edit.update-diff') {
       completePendingTask('test.recording-update')
       const sectionLabel = sectionNameForSlug(message.s, 'test')
@@ -240,20 +251,27 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 <template>
   <div class="notice-block">
-    <notice v-for="notice in notices" :message="notice.text" :type="notice.type"
+    <notice v-for="notice in notices"
+            :message="notice.text"
+            :type="notice.type"
             :key="notice.id" />
   </div>
   <div v-if="socketOpen" class="shell">
     <nav class="tabs cell-colors" aria-label="Review sections">
-      <div class="review-info"
-           tabindex="0"
-           aria-label="Review information"
-           aria-describedby="review-info-popover">
+      <app-button bare
+                  class="review-info"
+                  ref="reviewInfoRef"
+                  aria-label="Review information"
+                  :aria-expanded="reviewInfoOpen"
+                  @click="reviewInfoOpen = !reviewInfoOpen">
         <span class="review-info-icon" aria-hidden="true">i</span>
-        <div id="review-info-popover" class="review-info-popover cell-colors">
-          <rich-name :name="reviewName" />
-        </div>
-      </div>
+      </app-button>
+      <anchored-popover :anchor="reviewInfoRef?.$el"
+                        label="Review name"
+                        :open="reviewInfoOpen"
+                        @close="reviewInfoOpen = false">
+        <rich-name :name="reviewName" />
+      </anchored-popover>
       <app-button
           v-for="source in sectionSources"
           :key="`${source.kind}:${source.slug}`"
@@ -278,20 +296,27 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
         </app-button>
       </div>
     </nav>
-    <div class="tab-body">
+    <div v-if="connectionStateReceived" class="tab-body">
       <RouterView />
+    </div>
+    <div v-else class="initial-loader">
+      <loading-spinner />
     </div>
   </div>
   <div v-if="!socketOpen" class="cell cell-colors connection-loss">
-    Connection to session could not be established;
-    please reload the page and try again or
-    <app-button
-        :to="{ name: 'reviews' }"
-        class="inline-link-btn"
-        aria-label="All open reviews">
-      go back to the list of open reviews
-    </app-button>
-    .
+    <!-- This box is a flex container, which would make each piece of text
+         and inline element below a separate flex item and drop the
+         whitespace between them.  This div keeps them one inline flow. -->
+    <div>
+      Connection to session could not be established;
+      please reload the page and try again or
+      <app-button
+          :to="{ name: 'reviews' }"
+          class="inline-link-btn"
+          aria-label="All open reviews">
+        go back to the list of open reviews
+      </app-button>.
+    </div>
   </div>
 </template>
 
@@ -319,7 +344,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     border-bottom: 1px solid rgba(127, 127, 127, 0.35);
   }
   .review-info {
-    position: relative;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
     display: flex;
     align-items: center;
     margin-left: 4px;
@@ -341,45 +369,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     text-align: center;
     color: white;
     background-color: darkgrey;
-    cursor: default;
+    cursor: pointer;
     transition: background-color .4s;
   }
   .review-info:hover .review-info-icon,
-  .review-info:focus-within .review-info-icon {
+  .review-info:focus-visible .review-info-icon,
+  .review-info[aria-expanded="true"] .review-info-icon {
     background-color: black;
-  }
-  .review-info-popover {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 100;
-    width: max-content;
-    max-width: min(600px, 70vw);
-    padding: 6px 12px;
-    border: 1px solid rgba(127, 127, 127, 0.35);
-    border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    font-size: 14px;
-    overflow-wrap: anywhere;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity .2s, visibility .2s;
-  }
-  /* Spans the gap to the icon, so the pointer can move onto the popover
-     (e.g. to follow a link) without it closing. */
-  .review-info-popover::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 100%;
-    height: 8px;
-  }
-  /* Kept open while focus is inside it, e.g. on a link. */
-  .review-info:hover .review-info-popover,
-  .review-info:focus-within .review-info-popover {
-    visibility: visible;
-    opacity: 1;
   }
   .tabs-end {
     margin-left: auto;
@@ -404,6 +400,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     position: relative;
     flex: 1;
     min-height: 0;
+  }
+  .initial-loader {
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
   }
   .connection-loss {
     height: 100vh;

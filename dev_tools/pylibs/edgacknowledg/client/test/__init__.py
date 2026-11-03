@@ -41,6 +41,7 @@ from edgacknowledg.client.shared import (
   IllegalFileAccessError,
   SandboxContext,
   reviewer_of,
+  slice_source_range,
   trunc_display_content,
 )
 from edgutil import eprint
@@ -491,19 +492,41 @@ async def run_test_source_handler(channel: Channel,
 
           file_list.sort()
 
+        # The name the primary file is compiled (and so shown in
+        # diagnostics) as: "Test_name.c" unless the test's //name: directive
+        # says otherwise.
+        if test_path.exists():
+          primary_name = edgtest.runtest.load_single_description(
+            test_path.path
+          ).name
+        else:
+          primary_name = edgtest.runtest.TestDescription().name
+
         await channel.send(message(
           RequestTags.TEST_LIST_ASSOC_FILES,
           value = {
             'reviewer_id': reviewer_id,
             'client_response': {
               'id': test_id,
-              'files': file_list
+              'files': file_list,
+              'primary_name': primary_name
             }
           }
         ))
       elif request_tag == RequestTags.TEST_SHOW_SOURCE:
         test_id = request_value['id']
         test_path = test_id_to_path(test_id)
+        # Both present for a ranged request, otherwise neither.
+        range_line: Optional[int] = request_value.get('line')
+        range_context: Optional[int] = request_value.get('context')
+        is_ranged = range_line is not None and range_context is not None
+        reply_base: Dict[str, Any] = {
+          'id': test_id,
+          'assoc_file': request_value.get('assoc_file')
+        }
+        if is_ranged:
+          reply_base['line'] = range_line
+          reply_base['context'] = range_context
 
         path_to_show: Optional[ConfinedPath] = None
         if ('assoc_file' in request_value and
@@ -515,18 +538,9 @@ async def run_test_source_handler(channel: Channel,
         else:
           path_to_show = test_path
 
+        reply_fields: Dict[str, Any]
         if path_to_show is None or not path_to_show.exists():
-          await channel.send(message(
-            RequestTags.TEST_SHOW_SOURCE,
-            value = {
-              'reviewer_id': reviewer_id,
-              'client_response': {
-                'id': test_id,
-                'assoc_file': request_value.get('assoc_file'),
-                'content': None
-              }
-            }
-          ))
+          reply_fields = { 'content': None }
         elif path_to_show.suffix == '.ifc':
           result = await context.run_command('ifc-dump', str(path_to_show))
           if result.timed_out:
@@ -536,34 +550,37 @@ async def run_test_source_handler(channel: Channel,
             )
           else:
             ifc_dump_output = result.output.decode(errors = 'replace')
-
-          await channel.send(message(
-            RequestTags.TEST_SHOW_SOURCE,
-            value = {
-              'reviewer_id': reviewer_id,
-              'client_response': {
-                'id': test_id,
-                'assoc_file': request_value.get('assoc_file'),
-                **trunc_display_content(ifc_dump_output)
-              }
-            }
-          ))
+          if is_ranged:
+            assert range_line is not None and range_context is not None
+            reply_fields = slice_source_range(
+              ifc_dump_output.splitlines(),
+              range_line,
+              range_context
+            )
+          else:
+            reply_fields = trunc_display_content(ifc_dump_output)
+        elif is_ranged:
+          assert range_line is not None and range_context is not None
+          with path_to_show.open(errors = 'replace') as file_handle:
+            reply_fields = slice_source_range(
+              file_handle,
+              range_line,
+              range_context
+            )
         else:
           # Only as much as can be shown is read (one character more marks
           # the content as truncated).
           with path_to_show.open(errors = 'replace') as file_handle:
             shown = file_handle.read(MAX_DISPLAY_CONTENT_SIZE + 1)
-          await channel.send(message(
-            RequestTags.TEST_SHOW_SOURCE,
-            value = {
-              'reviewer_id': reviewer_id,
-              'client_response': {
-                'id': test_id,
-                'assoc_file': request_value.get('assoc_file'),
-                **trunc_display_content(shown)
-              }
-            }
-          ))
+          reply_fields = trunc_display_content(shown)
+
+        await channel.send(message(
+          RequestTags.TEST_SHOW_SOURCE,
+          value = {
+            'reviewer_id': reviewer_id,
+            'client_response': { **reply_base, **reply_fields }
+          }
+        ))
       else:
         await channel.send(message(
           RequestTags.INVALID_REQUEST,

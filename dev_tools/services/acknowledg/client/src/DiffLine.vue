@@ -8,7 +8,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 <script setup>
   import { defineProps } from 'vue'
 
-  const props = defineProps(["lineText"])
+  import MarkerButton from './MarkerButton.vue'
+
+  // `marker`, when set, is a diagnostic marker (see NumberedSource.vue) shown
+  // as an eye button in the gutter before the line.
+  const props = defineProps(["lineText", "marker"])
+  const emit = defineEmits(["marker-click"])
 
   const colorClass = (line) => {
     if (line.startsWith("#")) {
@@ -23,7 +28,15 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 </script>
 
 <template>
-  <pre :class="colorClass(props.lineText)">{{ props.lineText }}</pre>
+  <div class="diff-row">
+    <span class="gutter">
+      <marker-button v-if="props.marker"
+                     class="marker-slot"
+                     :marker="props.marker"
+                     @activate="(m, el) => emit('marker-click', m, el)" />
+    </span>
+    <pre :class="colorClass(props.lineText)">{{ props.lineText }}</pre>
+  </div>
 </template>
 
 <style scoped>
@@ -40,5 +53,19 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   }
   pre {
     margin: 0px;
+    flex: 1;
+  }
+  .diff-row {
+    display: flex;
+  }
+  .gutter {
+    flex: none;
+    width: 22px;
+    display: flex;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .marker-slot {
+    margin-left: 2px;
   }
 </style>

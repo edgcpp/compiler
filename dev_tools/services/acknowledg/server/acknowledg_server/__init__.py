@@ -449,15 +449,21 @@ class ReviewDescriptor:
 
   async def send_test_source_to(self, slug: str, reviewer_id: uuid.UUID,
                                 test_id: str,
-                                assoc_file: Optional[str]) -> None:
+                                assoc_file: Optional[str],
+                                line: Optional[int] = None,
+                                context: Optional[int] = None) -> None:
+    value: dict[str, Any] = {
+      'id': test_id,
+      'assoc_file': assoc_file,
+      'reviewer_id': reviewer_id
+    }
+    if line is not None:
+      value['line'] = line
+      value['context'] = context
     await self.send_to_test_source(
       slug,
       RequestTags.TEST_SHOW_SOURCE,
-      {
-        'id': test_id,
-        'assoc_file': assoc_file,
-        'reviewer_id': reviewer_id
-      }
+      value
     )
 
   async def update_test_diff_for(self, slug: str, reviewer_id: uuid.UUID,
@@ -813,12 +819,18 @@ async def _dispatch_reviewer_request(
         test_id
       )
     case (RequestTags.TEST_SHOW_SOURCE,
-          ShowTestSourceRequest(id = test_id, assoc_file = assoc_file)):
+          ShowTestSourceRequest(id = test_id, assoc_file = assoc_file,
+                                line = line, context = context) as request):
+      if not request.is_valid_range():
+        await send(message(RequestTags.INVALID_REQUEST))
+        return
       await run_descr.send_test_source_to(
         section,
         reviewer_id,
         test_id,
-        assoc_file
+        assoc_file,
+        line,
+        context
       )
     case (RequestTags.TEST_UPDATE_DIFF,
           UpdateDiffRequest(id = test_id, configs = configs)):

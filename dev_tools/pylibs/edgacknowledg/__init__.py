@@ -121,12 +121,16 @@ ALLOWED_REVIEWER_REQUEST_TAGS = (
   ALLOWED_BENCH_EDIT_TAGS
 )
 
-PROTOCOL_REVISION = 19
+PROTOCOL_REVISION = 20
 
 # 10MiB
 MAX_MESSAGE_SIZE = 10485760
 # 8MiB
 MAX_DISPLAY_CONTENT_SIZE = 8388608
+
+# Most lines shown on each side of the requested line by a ranged
+# ``test.src.show-src`` request.
+MAX_SOURCE_RANGE_CONTEXT = 50
 
 WebSocketsMessageType = Union[str, bytes]
 ProtocolMessage = Dict[str, Any]

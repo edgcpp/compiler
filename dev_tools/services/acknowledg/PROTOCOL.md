@@ -3,7 +3,7 @@
 This document describes the WebSocket protocol used by the AcknowlEDG server,
 the Vue client, and the `edgy-review` / `edg-bench-review` /
 `edg-acknowledg-cli` providers.
-The current protocol revision is **19**.
+The current protocol revision is **20**.
 
 All frames are JSON text. Implementations live in `edgacknowledg`
 (`dev_tools/pylibs/edgacknowledg`) and must stay in sync with the JavaScript
@@ -74,15 +74,15 @@ work can flow immediately. Providers may optionally send identity updates at
 any time (on dedicated sockets or nested in `batch.event`):
 
 ```json
-{ "t": "meta.section.name", "r": 19, "v": "<tab label>" }
+{ "t": "meta.section.name", "r": 20, "v": "<tab label>" }
 ```
 
 ```json
-{ "t": "meta.review.name", "r": 19, "v": [ <rich name segments> ] }
+{ "t": "meta.review.name", "r": 20, "v": [ <rich name segments> ] }
 ```
 
 ```json
-{ "t": "meta.review.timestamp", "r": 19, "v": "<ISO-8601 datetime>" }
+{ "t": "meta.review.timestamp", "r": 20, "v": "<ISO-8601 datetime>" }
 ```
 
 - `meta.section.name` sets the display name for the section tab (shown in
@@ -267,7 +267,7 @@ adding `reviewer_id` so the reply can be routed back to this reviewer.
 | `test.src.show-diff-curr` | `{ "id", "configs": [string] }` | test source |
 | `test.src.show-output` | string test id | test source |
 | `test.src.list-assoc-files` | string test id | test source |
-| `test.src.show-src` | `{ "id", "assoc_file": string \| null }` | test source |
+| `test.src.show-src` | `{ "id", "assoc_file": string \| null, "line"?: int, "context"?: int }` | test source |
 | `test.edit.update-diff` | `{ "id", "configs": [string] }` | test editor |
 | `bench.src.list-statuses` | empty | bench source |
 | `bench.src.show-annotate` | string bench id | bench source |
@@ -329,7 +329,7 @@ content that isn't the provider user's own, one reached through a symlink),
 the provider doesn't answer the request. It reports the reviewer instead:
 
 ```json
-{ "t": "illegal-access", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+{ "t": "illegal-access", "r": 20, "v": { "reviewer_id": "<uuid>" } }
 ```
 
 The server then closes that reviewer's socket with code **3001**, without
@@ -345,7 +345,7 @@ access), it doesn't answer the request either. It tells the reviewer it
 failed, through the server, and keeps serving the section:
 
 ```json
-{ "t": "invalid", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+{ "t": "invalid", "r": 20, "v": { "reviewer_id": "<uuid>" } }
 ```
 
 The server sends `invalid` to that reviewer alone, with `v` `null` and `s`
@@ -402,8 +402,17 @@ match the representative.
 **`test.src.list-assoc-files`**
 
 ```json
-{ "id": "<test id>", "files": ["relative/posix/path", "..."] }
+{
+  "id": "<test id>",
+  "files": ["relative/posix/path", "..."],
+  "primary_name": "<name>"
+}
 ```
+
+`primary_name` is the file name the primary source appears under in
+diagnostics (`Test_name.c` unless the test's `//name:` directive overrides it;
+any Unicode name is allowed). The primary file itself is not in `files`; it is
+`assoc_file: null` in `test.src.show-src`.
 
 **`test.src.show-src`**
 
@@ -415,6 +424,14 @@ match the representative.
   "truncated": false
 }
 ```
+
+The request may carry `line` (1-based, ≥ 1) and `context` (0 to 50), both or
+neither (otherwise the server answers `invalid`). Then `content` holds only
+lines `line - context` through `line + context` (clamped to the file, joined
+with `\n`, no trailing newline), `line` and `context` are echoed back so the
+reviewer can match the reply, and the reply adds `first_line` (the 1-based
+number of the first returned line) and `total_lines`. `truncated` is not
+sent. A missing file still yields `content: null`.
 
 **`bench.src.list-statuses`**
 

@@ -19,6 +19,7 @@ from typing import (
   Dict,
   List,
   IO,
+  Iterable,
   Iterator,
   NamedTuple,
   Optional,
@@ -37,6 +38,7 @@ except ImportError:
 
 from edgacknowledg import (
   MAX_DISPLAY_CONTENT_SIZE,
+  MAX_SOURCE_RANGE_CONTEXT,
   ProtocolMessage,
   RequestTags,
   RichName,
@@ -148,6 +150,30 @@ async def announce_section(channel: Channel,
     value = review.timestamp
   ))
 
+
+def source_range_window(line: int, context: int) -> Tuple[int, int]:
+  '''First and last (1-based, inclusive) lines of a ranged request.'''
+  context = max(0, min(context, MAX_SOURCE_RANGE_CONTEXT))
+  return max(1, line - context), max(1, line) + context
+
+def slice_source_range(lines: Iterable[str], line: int,
+                       context: int) -> Dict[str, Union[str, int]]:
+  '''Reply fields for the window around ``line`` of ``lines``.
+
+  ``lines`` may be a lazy iterable (such as an open file).  It is consumed
+  in full to count the lines, but only the window is kept in memory.
+  '''
+  first, last = source_range_window(line, context)
+  shown: List[str] = []
+  total = 0
+  for total, text in enumerate(lines, start = 1):
+    if first <= total <= last:
+      shown.append(text.rstrip('\n'))
+  return {
+    'content': '\n'.join(shown),
+    'first_line': min(first, max(total, 1)),
+    'total_lines': total
+  }
 
 def trunc_display_content(content: str) -> Dict[str, Union[str, bool]]:
   '''Truncate ``content`` for UI display; may set ``truncated``.'''
