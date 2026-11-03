@@ -10,9 +10,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   // marker that was clicked.  The parent fetches the lines and passes the
   // state in `source`:
   //
-  //   null                      -> still loading
-  //   { missing: true }         -> the file cannot be shown
-  //   { content, firstLine }    -> the lines to show
+  //   Still loading:
+  //     null
+  //   The file cannot be shown:
+  //     { missing: true }
+  //   The lines to show:
+  //     { content, firstLine, linesTruncated, truncated }
   import AnchoredPopover from './AnchoredPopover.vue'
   import LoadingSpinner from './LoadingSpinner.vue'
   import NumberedSource from './NumberedSource.vue'
@@ -39,13 +42,23 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       {{ location.file }}:{{ location.line
       }}<template v-if="location.col !== null">:{{ location.col }}</template>
     </div>
-    <div v-if="source === null" class="status"><loading-spinner /></div>
+    <div v-if="source === null" class="status loading">
+      <loading-spinner />
+    </div>
     <div v-else-if="source.missing" class="status">
       {{ source.reason ?? 'File not found!' }}
     </div>
-    <numbered-source v-else :text="source.content"
-                     :first-line="source.firstLine"
-                     :highlight-line="location ? location.line : null" />
+    <template v-else>
+      <div v-if="source.truncated" class="content-notice">
+        Source Read Limit Reached: Display Truncated
+      </div>
+      <div v-if="source.linesTruncated?.length > 0" class="content-notice">
+        Some Lines Truncated
+      </div>
+      <numbered-source :text="source.content"
+                       :first-line="source.firstLine"
+                       :highlight-line="location ? location.line : null" />
+    </template>
   </anchored-popover>
 </template>
 
@@ -59,5 +72,16 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   .status {
     padding: 8px 0;
     text-align: center;
+  }
+  .loading {
+    font-size: 28px;
+  }
+  .content-notice {
+    color: white;
+    background-color: orange;
+    border-radius: 10px;
+    text-align: center;
+    padding: 5px;
+    margin-bottom: 8px;
   }
 </style>

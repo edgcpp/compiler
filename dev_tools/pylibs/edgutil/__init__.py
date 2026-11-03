@@ -27,7 +27,9 @@ from typing import (
   Callable,
   Coroutine,
   Dict,
+  IO,
   Iterable,
+  Iterator,
   List,
   Optional,
   Set,
@@ -192,6 +194,53 @@ class CurrentWorkingDirectorySwap:
 
 def eprint(msg: str) -> None:
   print(msg, file = sys.stderr)
+
+def iter_line_pieces(handle: IO[str],
+                     limit: int) -> Iterator[Tuple[str, bool]]:
+  '''Yield ``(piece, at_line_start)`` for the text ``handle``, a line at a
+  time but never holding more than ``limit`` characters of one: a longer
+  line comes as several pieces, only the first of which has
+  ``at_line_start`` set. Concatenating the pieces gives back the text
+  exactly.
+  '''
+  at_line_start = True
+  while True:
+    piece = handle.readline(limit)
+    if not piece:
+      break
+    yield piece, at_line_start
+    at_line_start = piece.endswith('\n')
+
+class LineTooLongError(ValueError):
+  '''Raised by ``iter_limited_lines`` for a line over its limit.'''
+
+  def __init__(self, line_number: int, limit: int) -> None:
+    super().__init__(
+      f"line {line_number} is longer than {limit} characters"
+    )
+    self.line_number = line_number
+    self.limit = limit
+
+def iter_limited_lines(handle: IO[str], limit: int) -> Iterator[str]:
+  '''Yield each line of the text ``handle``, with its line end ('\\n') if
+  it has one; raise ``LineTooLongError`` for a line longer than ``limit``
+  characters (its end not counted), having read only ``limit + 1`` of
+  them.
+  '''
+  # Every piece up to an overlong line's first is a whole line.
+  for line_number, (line, _) in enumerate(
+    iter_line_pieces(handle, limit + 1),
+    start = 1
+  ):
+    text_length = len(line) - (1 if line.endswith('\n') else 0)
+    if text_length > limit:
+      raise LineTooLongError(line_number, limit)
+    yield line
+
+# The longest line a reader of untrusted line-oriented text (a pull
+# request's diff, a CI artifact's files) need hold: far more than any path,
+# test name, or status line, and small enough not to matter in memory.
+MAX_LINE_CHARS = 64 * 1024
 
 def indent_text_block(text_block: str, n_times: int = 1) -> str:
   indent = '  ' * n_times

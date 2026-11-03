@@ -137,7 +137,8 @@ def write_recording_file(dest: Path, command: str, body_file: Path) -> None:
   '''Write a recording as command line + observed body content.'''
   dest.parent.mkdir(parents = True, exist_ok = True)
   with open(dest, 'wb') as out_handle, open(body_file, 'rb') as body_handle:
-    out_handle.write(f"{command}\n".encode('utf-8'))
+    command_line = runtest.format_cmd_for_display(command)
+    out_handle.write(f"{command_line}\n".encode('utf-8'))
     shutil.copyfileobj(body_handle, out_handle)
 
 async def check_output_mismatch(
@@ -257,6 +258,7 @@ def make_status_message_with_explicit_status(test_path: Path,
                                              case_tag: str,
                                              status: str) -> str:
   test_type_str = runtest.test_type_to_string(test_type)
+  case_tag = runtest.format_cmd_for_display(case_tag)
   return f"{test_path}:{test_type_str}:{case_tag}:{status}:{test_remark}"
 
 def make_requirements_not_met_status(test_path: Path,

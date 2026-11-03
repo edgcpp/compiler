@@ -10,9 +10,10 @@ import json
 from datetime import datetime, timezone
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import httpx
+import pytest
 
 from edgacknowledg.forge import (
   ArtifactInfo,
@@ -226,3 +227,42 @@ async def test_commenter_uses_merge_request_notes() -> None:
   commenter = GitLabCommenter(client)
   assert await commenter.post_comment(PROJECT, 4, 'hi') == '7'
   assert await commenter.find_comment(PROJECT, 4, 'MARK') == '6'
+
+
+@pytest.mark.parametrize('match_page', [1, 2, None])
+async def test_comment_lookup_stops_fetching_pages(
+                                    match_page: Optional[int]) -> None:
+  pages: list[int] = []
+
+  def handler(request: httpx.Request) -> httpx.Response:
+    if request.url.path.endswith('/user'):
+      return httpx.Response(200, json = {'username': 'bot'})
+    page = int(request.url.params.get('page', '1'))
+    pages.append(page)
+    headers = {}
+    if page < 3:
+      headers['link'] = (
+        f'<{API}/projects/{ENCODED}/merge_requests/1/notes'
+        f'?page={page + 1}>; rel="next"'
+      )
+    return httpx.Response(
+      200,
+      headers = headers,
+      json = [{
+        'id': page,
+        'author': {'username': 'bot'},
+        'body': 'MARK' if page == match_page else 'other',
+      }]
+    )
+
+  client = GitLabClient(
+    api_url = API,
+    token = 't',
+    transport = httpx.MockTransport(handler)
+  )
+  try:
+    result = await GitLabCommenter(client).find_comment(PROJECT, 1, 'MARK')
+    assert result == (str(match_page) if match_page is not None else None)
+    assert pages == list(range(1, (match_page or 3) + 1))
+  finally:
+    await client.aclose()
