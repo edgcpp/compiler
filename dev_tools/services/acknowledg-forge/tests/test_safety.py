@@ -23,6 +23,8 @@ from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
 from edgacknowledg.forge.workspace import (
   UnsafeArchiveError,
   WorkspaceError,
+  Workspaces,
+  _OutputTooLarge,
   _central_directory_size,
   _communicate_bounded,
   changes_patterns,
@@ -31,6 +33,9 @@ from edgacknowledg.forge.workspace import (
   failures_patterns,
   patterns_for_test,
 )
+
+from conftest import Origin, pull_request_info
+from fakes import REPOSITORY, FakeForge
 
 def _zip(path: Path, entries: dict[str, bytes]) -> Path:
   with zipfile.ZipFile(path, 'w') as archive:
@@ -226,7 +231,7 @@ def test_changes_patterns_cover_recordings_and_expectations() -> None:
     '-dir/b.sft.cpp: PASS',
     '+dir/b.sft.cpp: FAIL',
   ])
-  patterns = changes_patterns(diff)
+  patterns = changes_patterns(diff.splitlines())
   assert '/tests/tests/s/.a.rto/' in patterns
   assert '/tests/tests/s/a.*' in patterns
   assert '/tests/tests/other/dir/b.sft.cpp' in patterns
@@ -254,10 +259,10 @@ def test_changes_patterns_skip_suites_no_suite_may_be_named() -> None:
       '+a.sft.cpp: PASS',
     ])
 
-  patterns = changes_patterns(expectations('cwg'))
+  patterns = changes_patterns(expectations('cwg').splitlines())
   assert '/tests/tests/cwg/a.sft.cpp' in patterns
   for suite in ['s' * 65, 'a.b', 'a b']:
-    assert changes_patterns(expectations(suite)) == [
+    assert changes_patterns(expectations(suite).splitlines()) == [
       '/tests/.edgy/', '/tests/expectations/',
     ]
 
@@ -276,32 +281,78 @@ def test_patterns_are_capped() -> None:
     *(f"+{n}.sft.cpp: FAIL" for n in range(cap)),
   ])
   with pytest.raises(WorkspaceError, match = 'sparse-checkout patterns'):
-    changes_patterns(diff, max_patterns = cap)
+    changes_patterns(diff.splitlines(), max_patterns = cap)
   # Within a higher cap.
-  changes_patterns(diff, max_patterns = 3 * cap)
+  changes_patterns(diff.splitlines(), max_patterns = 3 * cap)
 
 
 async def test_git_output_can_be_bounded() -> None:
-  async def run(*argv: str, limit: int) -> object:
-    process = await asyncio.create_subprocess_exec(
-      *argv,
-      stdout = asyncio.subprocess.PIPE,
-      stderr = asyncio.subprocess.PIPE
-    )
-    result = await _communicate_bounded(process, limit)
-    assert process.returncode is not None
-    return result
-
-  assert await run('sh', '-c', 'printf out; printf err >&2',
-                   limit = 3) == (b'out', b'err')
+  # Stdout goes to the sink as it comes; stderr is returned.
+  sunk: list[bytes] = []
+  process = await asyncio.create_subprocess_exec(
+    'sh', '-c', 'printf out; printf err >&2',
+    stdout = asyncio.subprocess.PIPE,
+    stderr = asyncio.subprocess.PIPE
+  )
+  assert await _communicate_bounded(process, 3, sunk.append) == b'err'
+  assert process.returncode is not None
+  assert b''.join(sunk) == b'out'
   # One that would never stop is stopped (letting it clean up).
   process = await asyncio.create_subprocess_exec(
     'yes',
     stdout = asyncio.subprocess.PIPE,
     stderr = asyncio.subprocess.PIPE
   )
-  assert await _communicate_bounded(process, 1024 * 1024) is None
+  with pytest.raises(_OutputTooLarge):
+    await _communicate_bounded(process, 1024 * 1024, sunk.append)
   assert process.returncode == -signal.SIGTERM
+
+
+async def test_diffs_are_written_as_they_come(tmp_path: Path,
+                                             origin: Origin,
+                                             forge: FakeForge) -> None:
+  # Longer than a chunk git's output comes in, with characters of several
+  # bytes across them.
+  lines = [f"{n}.sft.cpp: {'é€😀' * 10}" for n in range(2000)]
+  head = origin.push_pull_request(1, {
+    'tests/expectations/x/s.log': ''.join(f"{line}\n" for line in lines),
+  })
+  workspaces = Workspaces(tmp_path / 'home', forge)
+  info = pull_request_info(1, head, origin.main_sha)
+  head, _ = await workspaces.fetch_pull_request(info)
+  diff_file = tmp_path / 'pull-request.diff'
+  await workspaces.diff(
+    REPOSITORY,
+    origin.main_sha,
+    head,
+    ['tests/'],
+    diff_file
+  )
+  diff = diff_file.read_text(encoding = 'utf-8')
+  assert len(diff_file.read_bytes()) > 64 * 1024
+  assert '\ufffd' not in diff
+  added = [
+    line[1:] for line in diff.splitlines()
+    if line.startswith('+') and not line.startswith('+++')
+  ]
+  assert added == lines
+  # Its patterns, read from the file as from the text.
+  with open(diff_file, encoding = 'utf-8') as handle:
+    assert changes_patterns(handle) == changes_patterns(diff.splitlines())
+  assert '/tests/tests/s/1999.sft.cpp' in changes_patterns(diff.splitlines())
+
+  # Too long: refused.
+  workspaces = Workspaces(tmp_path / 'home', forge, max_diff_bytes = 1024)
+  with pytest.raises(
+      WorkspaceError,
+      match = r'over 1024 bytes \(ACKNOWLEDG_FORGE_MAX_DIFF_BYTES\)'):
+    await workspaces.diff(
+      REPOSITORY,
+      origin.main_sha,
+      head,
+      ['tests/'],
+      tmp_path / 'too-long.diff'
+    )
 
 
 async def test_cancelled_git_output_reads_stop_git() -> None:
@@ -312,7 +363,9 @@ async def test_cancelled_git_output_reads_stop_git() -> None:
     stdout = asyncio.subprocess.PIPE,
     stderr = asyncio.subprocess.PIPE
   )
-  reading = asyncio.create_task(_communicate_bounded(process, 1 << 40))
+  reading = asyncio.create_task(
+    _communicate_bounded(process, 1 << 40, lambda chunk: None)
+  )
   await asyncio.sleep(0.2)
   reading.cancel()
   await asyncio.wait_for(asyncio.gather(reading, return_exceptions = True), 10)
