@@ -104,7 +104,11 @@ async def _run_components(config: ForgeServiceConfig,
   try:
     wake = asyncio.Event()
     ingestor = Ingestor(store, forge, config, wake = wake)
-    workspaces = Workspaces(config.home, forge)
+    workspaces = Workspaces(
+      config.home,
+      forge,
+      max_diff_bytes = config.max_diff_bytes
+    )
     # Serving reviewers happens in the publisher container.
     publisher = PublisherClient(
       url = publisher_service_url,

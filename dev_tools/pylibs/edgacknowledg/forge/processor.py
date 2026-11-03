@@ -411,7 +411,10 @@ class Processor:
       record.review_id,
       'base',
       merge_base,
-      changes_patterns(diff)
+      changes_patterns(
+        diff,
+        max_patterns = self._config.max_sparse_patterns
+      )
     )
     runs_dir = ensure_real_directory(worktree, PurePosixPath('tests', 'runs'))
     run_dir = runs_dir / f"remat-{_sha256(source_key.encode())[:16]}"
@@ -509,7 +512,9 @@ class Processor:
           extract_artifact,
           zip_path,
           staging,
-          max_bytes = self._config.max_extracted_bytes
+          max_bytes = self._config.max_extracted_bytes,
+          max_entries = self._config.max_artifact_entries,
+          max_directory_bytes = self._config.max_artifact_directory_bytes
         )
       finally:
         zip_path.unlink(missing_ok = True)
@@ -649,7 +654,10 @@ class Processor:
         record.review_id,
         'head',
         tested_sha,
-        failures_patterns(failed_tests)
+        failures_patterns(
+          failed_tests,
+          max_patterns = self._config.max_sparse_patterns
+        )
       )
 
       sections: list[SectionRecord] = []
