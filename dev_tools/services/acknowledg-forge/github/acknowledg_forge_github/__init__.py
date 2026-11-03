@@ -126,11 +126,13 @@ class GitHubForge:
 
   async def list_open_pull_requests(self,
                                     repository: str) -> list[PullRequestInfo]:
-    payloads = await self._client.paginate(
+    payloads = self._client.paginate(
       f"/repos/{repository}/pulls",
       {'state': 'open'}
     )
-    return [self._pull_request(repository, payload) for payload in payloads]
+    return [
+      self._pull_request(repository, payload) async for payload in payloads
+    ]
 
   async def get_pull_request(self,
                              repository: str,
@@ -165,7 +167,7 @@ class GitHubForge:
         str(run.get('conclusion')),
         CIConclusion.OTHER
       )
-      artifacts = tuple(
+      artifacts = tuple([
         ArtifactInfo(
           name = str(artifact['name']),
           id = str(artifact['id']),
@@ -173,11 +175,11 @@ class GitHubForge:
           digest = artifact.get('digest'),
           expired = bool(artifact.get('expired', False)),
         )
-        for artifact in await self._client.paginate(
+        async for artifact in self._client.paginate(
           f"/repos/{repository}/actions/runs/{run['id']}/artifacts",
           key = 'artifacts'
         )
-      )
+      ])
     else:
       status = (
         CIStatus.RUNNING if run['status'] == 'in_progress'
@@ -281,8 +283,9 @@ class GitHubCommenter:
                          number: int,
                          marker: str) -> Optional[str]:
     login = await self._own_login()
-    for comment in await self._client.paginate(
-        f"/repos/{repository}/issues/{number}/comments"):
+    async for comment in self._client.paginate(
+      f"/repos/{repository}/issues/{number}/comments"
+    ):
       author = (comment.get('user') or {}).get('login')
       if login is not None and author != login:
         continue

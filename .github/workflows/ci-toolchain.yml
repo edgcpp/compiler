@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: &ci-runner-image ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
+      image: &ci-runner-image ghcr.io/edgcpp/ci-runner@sha256:daae67adf04085b9ae54a816b35053b79086070434d2da4aafd6662f6ecb0bf7
     defaults: &container-defaults
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
@@ -266,6 +266,17 @@ jobs:
           EOF
 
           edg-prefix-env-loader .tmp/extensive-ci.edgivk
+
+      # Reviews (acknowledg-forge, edgy-review) read only the .rt.tar.gz
+      # files changes.elist names; edgy -A archives every test's. Pruning
+      # must never keep the results from being uploaded, hence
+      # continue-on-error.
+      - name: Prune .rt.tar.gz results changes.elist doesn't name
+        if: ${{ failure() }}
+        continue-on-error: true
+        env:
+          RUN_TIMESTAMP: ${{ inputs.run_timestamp }}
+        run: edg-prune-test-run "tests/runs/${RUN_TIMESTAMP}"
 
       - name: Upload partial elist, elog, and .rt.tar.gz results
         if: ${{ failure() }}

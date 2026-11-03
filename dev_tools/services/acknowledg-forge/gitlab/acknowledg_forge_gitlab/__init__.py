@@ -134,11 +134,13 @@ class GitLabForge:
 
   async def list_open_pull_requests(self,
                                     repository: str) -> list[PullRequestInfo]:
-    payloads = await self._client.paginate(
+    payloads = self._client.paginate(
       f"/projects/{_project(repository)}/merge_requests",
       {'state': 'opened'}
     )
-    return [self._merge_request(repository, payload) for payload in payloads]
+    return [
+      self._merge_request(repository, payload) async for payload in payloads
+    ]
 
   async def get_pull_request(self,
                              repository: str,
@@ -203,8 +205,9 @@ class GitLabForge:
                            ) -> tuple[ArtifactInfo, ...]:
     now = self._clock()
     artifacts = []
-    for job in await self._client.paginate(
-        f"/projects/{project}/pipelines/{pipeline_id}/jobs"):
+    async for job in self._client.paginate(
+      f"/projects/{project}/pipelines/{pipeline_id}/jobs"
+    ):
       name = str(job['name'])
       if name not in self._artifact_jobs:
         continue
@@ -309,9 +312,10 @@ class GitLabCommenter:
                          number: int,
                          marker: str) -> Optional[str]:
     username = await self._own_username()
-    for note in await self._client.paginate(
-        f"/projects/{_project(repository)}/merge_requests/{number}/notes",
-        {'sort': 'asc'}):
+    async for note in self._client.paginate(
+      f"/projects/{_project(repository)}/merge_requests/{number}/notes",
+      {'sort': 'asc'}
+    ):
       author = (note.get('author') or {}).get('username')
       if username is not None and author != username:
         continue

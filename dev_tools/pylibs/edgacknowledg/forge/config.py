@@ -32,8 +32,9 @@ ENV_PREFIX = 'ACKNOWLEDG_FORGE_'
 # suite's name, is short.
 DEFAULT_MAX_PATTERNS = 20_000
 # The largest diff (of tests/, in bytes) a pull request may have: it is
-# held in memory, and copied and split into lines more than once.
-DEFAULT_MAX_DIFF_BYTES = 64 * 1024 * 1024
+# kept with the review's rematerialized run (on disk, never in memory
+# whole), and the builder applies all of it.
+DEFAULT_MAX_DIFF_BYTES = 512 * 1024 * 1024
 # The most entries an artifact zip may have, and the largest its central
 # directory may be: zipfile reads all of that directory into memory, before
 # we can count. CI's test results reach about 170,000 entries, of about 106
