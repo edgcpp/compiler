@@ -2147,6 +2147,10 @@ extern void make_constant_operand(a_constant *constant,
 extern void make_sym_constant_operand(a_symbol_ptr sym,
                                       an_operand   *operand);
 
+extern void make_template_param_object_variable_operand(
+                                                     a_variable_ptr  vp,
+                                                     an_operand      *operand);
+
 extern void make_string_constant_operand(a_constant *constant,
                                          an_operand *operand);
 

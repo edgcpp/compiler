@@ -8540,6 +8540,18 @@ allocated in the file scope memory region.
     template_param_objects->map(ch, vp);
     sym->variant.variable.ptr = vp;
   }  /* if */
+  make_template_param_object_variable_operand(vp, operand);
+}  /* make_template_param_object_operand */
+
+
+void make_template_param_object_variable_operand(a_variable_ptr  vp,
+                                                 an_operand      *operand)
+/*
+Make operand a (const) lvalue expression operand for the template parameter
+object vp.
+*/
+{
+  check_assertion(vp->is_template_param_object);
   /* Making an operand for the object is a use of it and because the object
      is an inline variable its definition must then be emitted here.  The
      usual symbol reference path does not record that because the object is
@@ -8553,7 +8565,7 @@ allocated in the file scope memory region.
   check_assertion(is_expression_operand(operand));
   operand->variant.expression->type = operand->type;
   (void)make_node_from_operand(operand);
-}  /* make_template_param_object_operand */
+}  /* make_template_param_object_variable_operand */
 
 
 void make_sym_constant_operand(a_symbol_ptr sym,
