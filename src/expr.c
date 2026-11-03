@@ -54667,7 +54667,7 @@ is TRUE if the expression is the immediate operand of an "&" operator.
           if (csp != NULL && symbol_is(csp, sk_constant)) {
             make_sym_constant_operand(csp, result);
           } else {
-            make_constant_operand(cp, result);
+            make_template_param_object_variable_operand(var, result);
           }  /* if */
         } else {
           sym = symbol_for(var);
