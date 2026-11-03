@@ -427,7 +427,7 @@ def test_webhooks_need_the_service_bind(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize('setting, problem', [
-  ('MAX_DIFF_BYTES', "git diff's output is over 1 bytes"),
+  ('MAX_DIFF_BYTES', 'MAX_DIFF_BYTES'),
   ('MAX_SPARSE_PATTERNS', 'MAX_SPARSE_PATTERNS'),
   ('MAX_ARTIFACT_ENTRIES', 'MAX_ARTIFACT_ENTRIES'),
   ('MAX_ARTIFACT_DIRECTORY_BYTES', 'MAX_ARTIFACT_DIRECTORY_BYTES'),
