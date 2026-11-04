@@ -58,14 +58,26 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   .diff-row {
     display: flex;
   }
+  /* Stays in view on horizontal scroll (see NumberedSource.vue). */
   .gutter {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: white;
     flex: none;
     width: 22px;
+    /* See --content-inset in TestReviewView.vue. */
+    padding-left: var(--content-inset, 0);
     display: flex;
     user-select: none;
     -webkit-user-select: none;
   }
   .marker-slot {
     margin-left: 2px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .gutter {
+      background-color: #181A1B;
+    }
   }
 </style>

@@ -100,9 +100,20 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     line-height: var(--line-height);
     white-space: pre;
   }
+  /* The gutter stays in view when the text is scrolled horizontally; it
+     needs an opaque background for the text to pass beneath it.  It is
+     stretched to the text's height since a markers-only gutter (raw
+     output) has no in-flow content to give it one. */
   .gutter {
+    align-self: stretch;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: white;
     display: flex;
     flex: none;
+    /* See --content-inset in TestReviewView.vue. */
+    padding-left: var(--content-inset, 0);
     padding-right: 10px;
     user-select: none;
     -webkit-user-select: none;
@@ -122,6 +133,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     left: 2px;
     height: var(--line-height);
   }
+  .code:first-child {
+    /* See --content-inset in TestReviewView.vue. */
+    padding-left: var(--content-inset, 0);
+  }
   .code {
     position: relative;
     flex: 1 0 auto;
@@ -133,5 +148,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     height: var(--line-height);
     background-color: rgba(255, 190, 0, 0.25);
     pointer-events: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    .gutter {
+      background-color: #181A1B;
+    }
   }
 </style>

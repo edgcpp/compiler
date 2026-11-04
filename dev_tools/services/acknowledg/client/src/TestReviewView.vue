@@ -663,8 +663,14 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       <div v-if="displayedOutput === null" class="loader-container">
         <loading-spinner />
       </div>
+      <!-- The gutters of NumberedSource and DiffLine stick to the left edge
+           on horizontal scroll.  This container's left padding would scroll
+           out from under them, shifting them left, so it is passed down as
+           --content-inset instead: the gutters (or, without a gutter, the
+           text) apply it as their own left padding. -->
       <div v-if="displayedOutput !== null" class="cell-content"
-           style="overflow: visible; display: grid;">
+           style="overflow: visible; display: grid;
+                  padding-left: 0; --content-inset: 5px;">
         <template v-if="outputViewModeTarget === 'test.src.show-diff' ||
                         outputViewModeTarget === 'test.src.show-diff-curr'">
           <diff-line v-for="(lineText, index) in displayedOutput.split('\n')"
@@ -771,6 +777,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     position: sticky;
     top: 0px;
     left: 0px;
+    /* Above the content's sticky gutters and positioned highlights. */
+    z-index: 2;
     padding-top: 10px;
     padding-bottom: 10px;
   }
