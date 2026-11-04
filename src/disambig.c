@@ -1999,9 +1999,11 @@ cache passed by the caller are flushed.
 
 a_token_kind find_for_loop_separator(void)
 /*
-A helper routine for is_start_of_range_based_for that returns tok_colon or
-tok_semicolon according to which is found first in the token stream (skipping
-over any tok_colon tokens that are paired with tok_quest_mark).
+A helper routine for the scanning of "for" and expansion statement headers
+that returns tok_colon or tok_semicolon according to which is found first in
+the token stream (skipping over any tok_colon tokens that are paired with
+tok_quest_mark).  A top-level tok_rparen (the closing ")" of the header) and
+the end of source also stop the scan and are returned as the result.
 */
 {
   a_token_set_array	stop_token_array;
@@ -2017,6 +2019,7 @@ over any tok_colon tokens that are paired with tok_quest_mark).
   incr_token_set_array_element(stop_token_array, tok_quest_mark);
   incr_token_set_array_element(stop_token_array, tok_colon);
   incr_token_set_array_element(stop_token_array, tok_semicolon);
+  incr_token_set_array_element(stop_token_array, tok_rparen);
   for (;;) {
     cache_token_stream_full((a_token_cache_ptr)NULL, stop_token_array,
                             CTS_NO_OPTIONS);
@@ -2029,8 +2032,8 @@ over any tok_colon tokens that are paired with tok_quest_mark).
         result = tok_colon;
         break;
       }  /* if */
-    } else if (curr_token == tok_end_of_source) {
-      result = tok_end_of_source;
+    } else if (curr_token == tok_rparen || curr_token == tok_end_of_source) {
+      result = curr_token;
       break;
     } else {
       check_assertion(curr_token == tok_semicolon);

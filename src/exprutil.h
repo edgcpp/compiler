@@ -1074,6 +1074,9 @@ typedef struct an_expr_stack_entry {
   a_bit_field	is_enumerator_value:1;
 			/* TRUE if this is the expression for an explicit
 			   enumerator value.  E.g., "enum E { e = x+1 };". */
+  a_bit_field	expansion_initializer:1;
+			/* TRUE while binding an expansion initializer whose
+			   temporaries persist through its element or range. */
   a_const_eval_reattempt_state
 		const_eval_reattempt_state;
 			/* The current constant evaluation reattempt state
@@ -2624,6 +2627,11 @@ explicit source construct (as opposed, for example, to an implied conversion).
 extern an_expr_rescan_info_entry_ptr get_expr_rescan_info(
                                        an_expr_node_ptr          expr,
                                        an_expr_rescan_info_entry *rescan_info);
+
+extern void make_operand_from_copied_expr(an_expr_node_ptr          expr,
+                                          an_expr_copy_options_set  options,
+                                          an_operand                *operand);
+
 extern void make_rescan_operand_full(
                             an_expr_node_ptr         expr,
                             a_rescan_control_block   *rcblock,
@@ -2651,6 +2659,9 @@ extern void make_call_rescan_operands(
                              a_source_position       *operator_position,
                              a_token_sequence_number *operator_tok_seq_number,
                              a_source_position       *closing_paren_position);
+
+extern an_init_component_ptr copy_designator_init_component(
+                                                   an_init_component_ptr  icp);
 
 extern an_init_component_ptr rescan_init_component(
                                             an_init_component_ptr  icp,
@@ -3068,6 +3079,12 @@ extern void mark_init_component_list_as_permanently_allocated(
 
 extern void make_braced_init_list_operand(an_arg_list_elem_ptr alep,
                                           an_operand           *result);
+
+extern void make_braced_init_operand_from_list(
+                                      an_init_component_ptr  list,
+                                      an_operand             *position_operand,
+                                      an_operand             *operand);
+extern an_expr_node_ptr alloc_braced_init_list_expr(an_arg_list_elem_ptr alep);
 
 extern an_expr_node_ptr make_expr_from_argument(an_arg_list_elem_ptr arg);
 

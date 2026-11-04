@@ -235,6 +235,28 @@ Set the "value_has_been_set" flag of the variable symbol pointed to by sym.
 }  /* mark_variable_value_set */
 
 
+void mark_expansion_variable_used(a_variable_ptr  variable)
+/*
+Mark variable and its structured bindings as used by the expansion machinery.
+*/
+{
+  mark_variable_value_set(symbol_for(variable));
+  mark_referenced(symbol_for(variable),
+                  &variable->source_corresp.decl_position);
+  variable->used = TRUE;
+  if (variable->is_struct_binding_container) {
+    an_il_entity_list_entry_ptr  ielep;
+    for (ielep = variable->variant.bindings; ielep != NULL;
+         ielep = ielep->next) {
+      if (ielep->entity.kind == iek_variable) {
+        a_variable_ptr  binding = (a_variable_ptr)ielep->entity.ptr;
+        mark_expansion_variable_used(binding);
+      }  /* if */
+    }  /* for */
+  }  /* if */
+}  /* mark_expansion_variable_used */
+
+
 static void mark_static_data_member_value_set(a_symbol_ptr  sym)
 /*
 Set the "value_has_been_set" flag of the static data member symbol pointed to

@@ -1772,6 +1772,7 @@ as in a decltype.
   new_entry->range_based_for_range |= old_entry->range_based_for_range;
   new_entry->in_constant_array_dimension |=
                                        old_entry->in_constant_array_dimension;
+  new_entry->expansion_initializer |= old_entry->expansion_initializer;
   if (direct) {
     new_entry->evaluated = old_entry->evaluated;
     new_entry->potentially_evaluated = old_entry->potentially_evaluated;
@@ -1896,6 +1897,7 @@ is pushed regardless of any of the other factors.
   new_entry->range_based_for_range = FALSE;
   new_entry->in_constant_array_dimension = FALSE;
   new_entry->is_enumerator_value = FALSE;
+  new_entry->expansion_initializer = FALSE;
   new_entry->const_eval_reattempt_state = {};
   new_entry->dynamic_init_dtor_fixup_list = NULL;
   new_entry->nested_construct_depth = 0;
@@ -4893,6 +4895,31 @@ rescan_info is NULL or no default information is available, abort.
 }  /* get_expr_rescan_info */
 
 
+void make_operand_from_copied_expr(an_expr_node_ptr          expr,
+                                   an_expr_copy_options_set  options,
+                                   an_operand                *operand)
+/*
+Make *operand from expr, which has already been analyzed, copying it with
+options.  A copied constant remains a constant operand so that, e.g., null
+pointer constants and string literals keep their classification.  Any operand
+information recorded for a possible rescan is restored; the caller sets the
+operand position.
+*/
+{
+  an_expr_node_ptr               copy = copy_expr_tree(expr, options);
+  an_expr_rescan_info_entry_ptr  eriep = expr->extra.rescan_info;
+
+  if (is_constant_node(copy)) {
+    make_constant_operand(node_constant(copy), operand);
+  } else {
+    make_lvalue_or_rvalue_expression_operand(copy, operand);
+  }  /* if */
+  if (eriep != NULL) {
+    restore_operand_info_from_expr_rescan_info_entry(operand, eriep);
+  }  /* if */
+}  /* make_operand_from_copied_expr */
+
+
 void make_rescan_operand_full(
                              an_expr_node_ptr         expr,
                              a_rescan_control_block   *rcblock,
@@ -5840,6 +5867,21 @@ information on the template parameter substitutions to be done.
 }  /* rescan_expr_as_arg_list_elem */
 
 
+an_init_component_ptr copy_designator_init_component(an_init_component_ptr icp)
+/*
+Return a newly allocated copy of the designator component icp.  Field and
+array designations can be shared with the original component because they
+do not require substitution.
+*/
+{
+  an_init_component_ptr  copy_icp = alloc_init_component(ick_designator);
+
+  check_assertion(is_designator_component(icp));
+  copy_icp->variant.designator = icp->variant.designator;
+  return copy_icp;
+}  /* copy_designator_init_component */
+
+
 static an_init_component_ptr rescan_init_component_list(
                                             an_init_component_ptr  list_icp,
                                             a_rescan_control_block *rcblock)
@@ -5873,9 +5915,7 @@ list, not an argument list, so it may include designators.
            in terms of a name (symbol header pointer) it doesn't need to
            be substituted.  Likewise the array designator just has an index
            number (or two), which isn't changed by substitution. */
-        copy_icp = alloc_init_component(
-                                      (an_init_component_kind)ick_designator);
-        copy_icp->variant.designator = icp->variant.designator;
+        copy_icp = copy_designator_init_component(icp);
       } else {
         /* Other kinds of entries; rescan in the usual way. */
         copy_icp = rescan_init_component(icp, rcblock);
@@ -6371,7 +6411,7 @@ the current context.
      expression will need to be successfully interpreted later on anyway. */
   if (!expr_stack->suppress_constexpr_call_folding &&
       ((curr_expr_is_evaluated() &&
-        ((!is_prototype_instantiation_context() &&
+        ((!is_prototype_instantiation_or_expansion_context() &&
           curr_expr_kind() >= (int)ek_template_arg) ||
          scope_is(&scope_stack_top(), sck_template_declaration))) ||
        (expr_stack->in_noexcept_operand_expression &&
@@ -6494,12 +6534,8 @@ the given operand to a prvalue (without updating the original expression tree).
     }  /* if */
     restore_operand_details(operand, &orig_operand);
     result = TRUE;
-  } else if ((is_prototype_instantiation_context() ||
-             (microsoft_mode && in_ms_nonreal_class_instantiation()) ||
-              scope_stack_top().alias_in_template_decl ||
-              (scope_stack_top().in_nonreal_instantiation &&
-               !scope_stack_top().is_rescan)) &&
-               operand_is_instantiation_dependent(operand)) {
+  } else if (is_uninstantiated_dependent_expr_context() &&
+             operand_is_instantiation_dependent(operand)) {
     /* In template-dependent contexts, assume the expression might become
        constant after instantiation. */
     make_template_param_expr_constant_operand(operand);
@@ -6508,10 +6544,7 @@ the given operand to a prvalue (without updating the original expression tree).
     result = FALSE;
     if (must_be_constant) {
       if (expr_error_should_be_issued()) {
-        a_diagnostic_ptr  dp;
-        dp = pos_start_error(ec_expr_not_constant, &operand->position);
-        add_more_info_list(dp, &diag_list);
-        end_diagnostic(dp);
+        error_with_notes(ec_expr_not_constant, &operand->position, &diag_list);
       }  /* if */
       make_error_operand(operand);
     }  /* if */
@@ -6818,20 +6851,14 @@ Extract the constant value from the operand *operand and place it in
           if (!curr_expr_kind_is_one_in_which_const_exprs_are_recorded()) {
             constant->expr = NULL;
           }  /* if */
-        } else if ((is_prototype_instantiation_context() ||
-                    (microsoft_mode && in_ms_nonreal_class_instantiation()) ||
-                    scope_stack_top().alias_in_template_decl ||
-                   (scope_stack_top().in_nonreal_instantiation &&
-                     !scope_stack_top().is_rescan)) &&
+        } else if (is_uninstantiated_dependent_expr_context() &&
                    operand_is_instantiation_dependent(operand)) {
           make_template_param_constant_from_operand(operand, constant,
                                                     (a_type_ptr)NULL);
         } else {
           if (expr_error_should_be_issued()) {
-            a_diagnostic_ptr  dp;
-            dp = pos_start_error(ec_expr_not_constant, &operand->position);
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_expr_not_constant, &operand->position,
+                             &diag_list);
           }  /* if */
           set_error_constant(constant);
         }  /* if */
@@ -7287,7 +7314,8 @@ the description of the remaining parameters.
        /* Exclude constant-expressions, because those will be handled when
           the expression is complete. */
        (!curr_expr_kind_is_const() || check_constexpr)) ||
-      ctor->is_consteval) {
+      (ctor->is_consteval &&
+       !is_prototype_instantiation_or_expansion_context())) {
     a_boolean need_backing_expr =
                      curr_expr_kind_is_one_in_which_const_exprs_are_recorded();
     if (fold_constexpr_ctor(ctor_dip, need_backing_expr, check_constexpr,
@@ -10192,15 +10220,15 @@ Convert the indicated operand (which must be an indefinite function) to
 a constant operand representing an unknown dependent function.  The
 value category of the operand is preserved unless force_to_rvalue is
 TRUE, in which case the result is a prvalue.  This is used in
-prototype instantiations when the function to be selected is not
-known.
+prototype instantiations and retained expansion initializers when the
+function to be selected is not known.  An expansion initializer need not be
+in a template-dependent context, so only the operand kind is checked here.
 */
 {
   a_boolean  was_lvalue = is_a_function_designator(operand);
   an_operand orig_operand;
 
-  check_assertion(is_indefinite_function_operand(operand) &&
-                  is_template_dependent_context());
+  check_assertion(is_indefinite_function_operand(operand));
   orig_operand = *operand;
   make_unknown_dependent_function_operand(operand->symbol,
                                           (a_boolean)operand->is_template_id,
@@ -14210,7 +14238,7 @@ lvalue.  If there is an error, change the operand to an error operand.
       (!is_const_qualified_type(type) ||
        ((gpp_version_is(<140000) || clang_version_is(<100000) ||
          microsoft_mode) &&
-        is_prototype_instantiation_context()))) {
+        is_prototype_instantiation_or_expansion_context()))) {
 #if MICROSOFT_EXTENSIONS_ALLOWED
     a_boolean is_static_initonly_field;
     if (cli_or_cx_enabled &&
@@ -16442,14 +16470,38 @@ enclosed list.
 }  /* make_braced_init_list_operand */
 
 
-static an_expr_node_ptr make_braced_init_expr_from_arg_list_elem(
-                                                     an_arg_list_elem_ptr alep)
+void make_braced_init_operand_from_list(
+                                      an_init_component_ptr  list,
+                                      an_operand             *position_operand,
+                                      an_operand             *operand)
 /*
-Make an enk_braced_init_list expression node from the given argument list
-entry (which is an ick_braced entry) and return a pointer to it.
-enk_braced_init_list nodes are used in template prototype
-instantiations; in other contexts initializer lists always resolve to
-some other kind of expression (e.g., a constructor call).
+Make an ok_braced_init_list operand whose brace-enclosed list is list.  The
+brace positions are taken from position_operand, the saved operand for the
+corresponding enk_braced_init_list expression.
+*/
+{
+  an_init_component_ptr  icp = alloc_init_component(ick_braced);
+
+  /* Rescan information can subsequently replace the original braced-init-list
+     operand with an expression operand. */
+  if (is_braced_init_list_operand(position_operand)) {
+    icp->contains_designator = position_operand->variant.braced_init_list
+                                               ->contains_designator;
+  }  /* if */
+  icp->variant.braced.list = list;
+  icp->variant.braced.start_pos = position_operand->position;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  icp->variant.braced.end_pos = position_operand->end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+  make_braced_init_list_operand(icp, operand);
+}  /* make_braced_init_operand_from_list */
+
+
+an_expr_node_ptr alloc_braced_init_list_expr(an_arg_list_elem_ptr alep)
+/*
+Allocate an enk_braced_init_list expression node for the braced init
+component alep and set its type, positions, pack-expansion indication, and
+rescan information.  The caller fills in the element list.
 */
 {
   an_expr_node_ptr   node;
@@ -16460,9 +16512,7 @@ some other kind of expression (e.g., a constructor call).
 
   check_assertion(is_braced_init_component(alep));
   node = alloc_expr_node((an_expr_node_kind)enk_braced_init_list);
-  node->variant.braced_init_list =
-              make_expr_list_from_argument_list(alep->variant.braced.list,
-                                                /*dependent_expression=*/TRUE);
+  node->variant.braced_init_list = NULL;
   node->type = type_of_unknown_templ_param_nontype;
   if (alep->pack_expansion_descr != NULL) {
     node->is_pack_expansion = TRUE;
@@ -16476,6 +16526,22 @@ some other kind of expression (e.g., a constructor call).
     dummy_operand.pack_expansion_descr = alep->pack_expansion_descr;
     save_operand_info_in_expr_rescan_info_entry(&dummy_operand, node);
   }  /* if */
+  return node;
+}  /* alloc_braced_init_list_expr */
+
+
+static an_expr_node_ptr make_braced_init_expr_from_arg_list_elem(
+                                                     an_arg_list_elem_ptr alep)
+/*
+Make an enk_braced_init_list expression node from the braced argument list
+entry alep for a template prototype instantiation and return a pointer to it.
+*/
+{
+  an_expr_node_ptr  node = alloc_braced_init_list_expr(alep);
+
+  node->variant.braced_init_list =
+              make_expr_list_from_argument_list(alep->variant.braced.list,
+                                                /*dependent_expression=*/TRUE);
   return node;
 }  /* make_braced_init_expr_from_arg_list_elem */
 
@@ -17743,6 +17809,12 @@ be returned for a C mode const variable.
        specializations (but not out-of-class definitions) so to more
        closely match their behavior we accept out-of-class definitions if
        they are constexpr. */
+  } else if (var->is_expansion_iterator &&
+             scope_stack_top().in_expansion_statement_body) {
+    /* A name introduced by the for-range-declaration of an expansion statement
+       is value-dependent (N5050 [temp.dep.constexpr]/2.4). */
+    con_val = alloc_constant(ck_template_param);
+    make_template_param_expr_constant(var_rvalue_expr(var), con_val);
   } else if ((!C_mode() || allow_C_mode_const_var) &&
               is_potentially_constant_valued_variable(var)) {
     if (var->source_corresp.is_class_member &&
@@ -18726,8 +18798,9 @@ If it indicates a destructor, add it to the current object lifetime.
        on the assumption that a back end will generate the dead code, but we
        don't need to put the entry on the destructions list or generate the
        cleanup code. */
-    a_boolean  block_lifetime = expr_stack->range_based_for_range &&
-                                extended_range_based_for_lifetime;
+    a_boolean  block_lifetime = expr_stack->expansion_initializer ||
+                                (expr_stack->range_based_for_range &&
+                                 extended_range_based_for_lifetime);
     if (curr_expr_kind_is_const()) {
       /* In constant-expression contexts, we do not have to generate code for
          the destruction either.  (Pre-C++11 that is an error if the
@@ -19900,7 +19973,7 @@ set to reflect whether the call was folded or not.
         if (is_gnu_builtin_function(rp) &&
             is_foldable_gnu_builtin_function(rp, (a_boolean *)NULL)) {
           /* Some __builtin_xxx functions act as constant-expressions. */
-          if (!is_prototype_instantiation_context() ||
+          if (!is_prototype_instantiation_or_expansion_context() ||
               !operand_is_instantiation_dependent(result)) {
             call_folded_to_constant = fold_gnu_call_if_possible(
                                                   result, function_call_node);
@@ -27458,11 +27531,8 @@ p_fatal and p_copy_error are NULL by default.
   if (!result && *p_fatal && diagnose_here) {
     /* A non-SFINAE error occurred, and the caller will not emit the associated
        diagnostic.  So diagnose the issue here. */
-    a_diagnostic_ptr  dp;
-    dp = pos_start_error(ec_template_constraint_not_satisfied,
-                         &error_position);
-    add_more_info_list(dp, diag_list);
-    end_diagnostic(dp);
+    error_with_notes(ec_template_constraint_not_satisfied, &error_position,
+                     diag_list);
   }  /* if */
   if (p_copy_error != NULL) *p_copy_error = copy_error;
   return result;
@@ -27813,10 +27883,8 @@ subst_pairs is successful.  ctws_state is a substitution state block pointer
                                  /*force_prvalue=*/TRUE, cp, &diag_list)) {
                 result = !is_false_constant(cp);
               } else {
-                a_diagnostic_ptr  dp = pos_start_error(ec_expr_not_constant,
-                                                       &expr->position);
-                add_more_info_list(dp, &diag_list);
-                end_diagnostic(dp);
+                error_with_notes(ec_expr_not_constant, &expr->position,
+                                 &diag_list);
               }  /* if */
               release_local_constant(&cp);
             }  /* if */

@@ -14085,7 +14085,8 @@ mangling routine for type lists.  When orphan lists have been generated,
 use them; otherwise, visit the local scopes from the routine scope.
 */
 {
-  process_local_types(il_header.primary_scope, list_mangling_routine);
+  process_local_types(il_header.primary_scope, list_mangling_routine,
+                      /*skip_expansion_prototypes=*/TRUE);
 }  /* do_local_name_mangling */
 
 #if ONLY_MANGLE_TYPES_NEEDED_FOR_EXTERNAL_NAMES
@@ -14522,10 +14523,16 @@ also does type name mangling.
         variable_templates_may_be_enabled) {
       /* Generally, file-scope variables are not mangled, but variable
          templates, variables with the GNU abi_tag attribute, and structured
-         bindings require mangling. */
+         bindings require mangling.  With IL lowering, skip nonreal and
+         prototype instances, which are not lowered. */
       for (variable = scope->variables;
            variable != NULL;
            variable = variable->next) {
+#if DO_IL_LOWERING
+        if (variable->is_nonreal || variable->is_prototype_instantiation) {
+          continue;
+        }  /* if */
+#endif /* DO_IL_LOWERING */
         if (!variable->source_corresp.name_has_been_mangled) {
           mangle_variable_name(variable);
         }  /* if */
@@ -14565,10 +14572,16 @@ also does type name mangling.
     /* For a class or namespace scope, visit the member variables
        and constants. */
     /* Look for static data members/namespace member variables and mangle
-       their names. */
+       their names, except for nonreal and prototype instances when IL
+       lowering is done (see the file-scope walk above). */
     for (variable = scope->variables;
          variable != NULL;
          variable = variable->next) {
+#if DO_IL_LOWERING
+      if (variable->is_nonreal || variable->is_prototype_instantiation) {
+        continue;
+      }  /* if */
+#endif /* DO_IL_LOWERING */
       mangle_variable_name(variable);
     }  /* for */
     /* Look for member constants (an extension in classes) and mangle their

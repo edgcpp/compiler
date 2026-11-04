@@ -256,6 +256,7 @@ enum a_struct_stmt_kind {
   ssk_do,		/* do {} while (...); statement. */
   ssk_for,		/* for (...; ...; ...) {} statement. */
   ssk_range_based_for,  /* for (... : ...) {} statement. */
+  ssk_expansion,	/* C++26 template for (... : ...) {} statement. */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   ssk_for_each,		/* for each (...) {} statement. */
   ssk_microsoft_try,	/* Microsoft try-except or try-finally. */
@@ -610,6 +611,11 @@ extern a_boolean inside_finally_clause(void);
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
 extern a_boolean in_switch_statement(void);
+
+extern a_struct_stmt_stack_entry_ptr find_enclosing_struct_stmt(
+                                                 a_boolean  find_switch,
+                                                 a_boolean  find_loop,
+                                                 a_boolean  stop_at_expansion);
 
 extern void record_entity_in_decl_stmt_if_needed(a_symbol_ptr  sym);
 

@@ -4214,7 +4214,7 @@ defined.  Detailed position information is recorded in *decl_pos_block.
 		   of the enclosing class should itself be treated as a
 		   prototype instantiation. */
                 class_type->variant.class_struct_union.is_specialized = TRUE;
-                if (is_prototype_instantiation_context()) {
+                if (is_prototype_instantiation_or_expansion_context()) {
                   class_type->variant.class_struct_union.
                                              is_prototype_instantiation = TRUE;
                 }  /* if */
@@ -4773,7 +4773,8 @@ defined.  Detailed position information is recorded in *decl_pos_block.
       add_to_types_list(class_type, effective_decl_level);
     }  /* if */
     if (is_local_class &&
-        scope_stack[effective_decl_level].in_prototype_instantiation) {
+        (scope_stack[effective_decl_level].in_prototype_instantiation ||
+         scope_stack[effective_decl_level].in_expansion_statement_body)) {
       /* Mark a local class of a prototype instantiation as nonreal.
          Otherwise, an instantiation over that type can end up on the list of
          file scope types even when prototype instantiations are not recorded
@@ -7016,6 +7017,7 @@ template.  dsi_flags is the set of input flags passed to decl_specifiers.
     enum_type = alloc_type((a_type_kind)tk_integer);
     enum_type->incomplete = TRUE;
     if (scope_stack[effective_decl_level].in_prototype_instantiation ||
+        scope_stack[effective_decl_level].in_expansion_statement_body ||
         scope_stack[effective_decl_level].in_nonreal_instantiation) {
       enum_type->variant.integer.is_nonreal = TRUE;
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -10939,7 +10941,7 @@ attribute.
   /* Skip over the left parenthesis. */
   (void)get_token();
   add_stop_token(tok_rparen);
-  if (is_prototype_instantiation_context() &&
+  if (is_prototype_instantiation_or_expansion_context() &&
       !ssep->in_template_deduction_context) {
     /* This is a member template or a member of a class template: The
        expression may therefore need to be rescanned during deduction.

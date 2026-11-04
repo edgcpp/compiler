@@ -2087,6 +2087,22 @@ do_set_proper_definition_needed_flag:
 #undef eptr
       }
       break;
+    case iek_expansion_stmt_info:
+      {
+#define eptr ((an_expansion_stmt_info_ptr)entry_ptr)
+        walk_ptr(eptr->initialization, a_statement_ptr, iek_statement);
+        remap_ptr(eptr->iterator, a_variable_ptr, iek_variable);
+        walk_ptr(eptr->expansion_scope, a_scope_ptr, iek_scope);
+        walk_ptr(eptr->iterator_scope, a_scope_ptr, iek_scope);
+        conditionally_clear_fe_pointer(eptr->decl_token_cache);
+        conditionally_clear_fe_pointer(eptr->body_token_cache);
+        conditionally_clear_fe_pointer(eptr->definition_info);
+        walk_list_not_needed(eptr->initializer, an_expr_node_ptr,
+                             iek_expr_node);
+        walk_ptr(eptr->expanded_statement, a_statement_ptr, iek_statement);
+#undef eptr
+      }
+      break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case iek_for_each_loop:
       {
@@ -2332,6 +2348,12 @@ do_set_proper_definition_needed_flag:
                      a_range_based_for_loop_ptr, iek_range_based_for_loop);
             walk_ptr(eptr->variant.range_based_for_loop.statement,
                      a_statement_ptr, iek_statement);
+            break;
+          case stmk_expansion_statement:
+            walk_ptr(expn_info_of(eptr),
+                     an_expansion_stmt_info_ptr, iek_expansion_stmt_info);
+            walk_ptr_not_needed(eptr->variant.expansion_statement.statement,
+                                a_statement_ptr, iek_statement);
             break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
           case stmk_for_each:
@@ -4329,6 +4351,8 @@ of each kind.
   walk_orphan_entry_list_for_entry_kind(a_for_loop_ptr, iek_for_loop);
   walk_orphan_entry_list_for_entry_kind(a_range_based_for_loop_ptr,
                                         iek_range_based_for_loop);
+  walk_orphan_entry_list_for_entry_kind(an_expansion_stmt_info_ptr,
+                                        iek_expansion_stmt_info);
 #if MICROSOFT_EXTENSIONS_ALLOWED
   walk_orphan_entry_list_for_entry_kind(a_for_each_loop_ptr,
                                         iek_for_each_loop);

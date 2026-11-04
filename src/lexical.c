@@ -4683,13 +4683,15 @@ pragma entries, it is possible for there to be no actual token.
     if (!token->is_pragma()) {
       break;
     }  /* if */
-    /* Set the current token pragma list to point to the pragmas associated
-       with the cached token. */
-    check_assertion_str(!suppress_pragma_processing,
+    if (!curr_lexical_state_stack_entry->flushing_tokens) {
+      /* Set the current token pragma list to point to the pragmas associated
+         with the cached token. */
+      check_assertion_str(!suppress_pragma_processing,
                     "get_token_from...: pragma found in suppress_pragma mode");
-    for (a_shared_pending_pragma &spp : *token->get_pragma_list()) {
-      curr_token_pragmas->push_back(spp);
-    }  /* for */
+      for (a_shared_pending_pragma &spp : *token->get_pragma_list()) {
+        curr_token_pragmas->push_back(spp);
+      }  /* for */
+    }  /* if */
     if (cached_token_rescan_stack->is_empty()) {
       *no_tokens_on_stack = TRUE;
       curr_token = tok_error;
@@ -19599,86 +19601,153 @@ when suppress_warning is TRUE.
 }  /* flush_to_end_of_source */
 
 
-static INLINE void flush_statement_header()
+static INLINE void advance_statement_token(a_token_cache_ptr cache)
 /*
-Flush the parenthesized header of a statement such as "while", "for",
-"switch" or "catch".  The current token is the token after the keyword (and
-after any "co_await"), which should be the opening parenthesis.  On return,
-the current token is the token following the closing parenthesis (e.g., the
-start of the controlled substatement).
-
-Note: The caller is responsible for having set flushing_tokens to TRUE.
+Consume the current token, adding it to cache if cache is non-NULL.
 */
 {
-  if (curr_token == tok_lparen) {
-    flush_until_matching_token_full(/*limit_flush=*/FALSE);
-    if (curr_token != tok_end_of_source) {
-      /* Skip the closing parenthesis. */
-      (void)get_token();
-    }  /* if */
+  if (cache != NULL) cache_curr_token(cache);
+  (void)get_token();
+}  /* advance_statement_token */
+
+
+static a_boolean skip_statement_group(a_token_cache_ptr cache)
+/*
+Skip a balanced group, leaving its closing token current and uncached.
+Cache the preceding tokens if cache is non-NULL; otherwise flush them.
+Return FALSE if the closing token was not found.
+*/
+{
+  a_boolean  matched;
+
+  if (cache != NULL) {
+    matched = !cache_token_stream_until_matching_token(cache, CTS_NO_OPTIONS);
   } else {
-    pos_error(ec_exp_lparen, &error_position);
+    flush_until_matching_token_full(/*limit_flush=*/FALSE);
+    matched = TRUE;
   }  /* if */
-}  /* flush_statement_header */
+  return matched && curr_token != tok_end_of_source;
+}  /* skip_statement_group */
 
 
-static void flush_one_statement()
+static a_boolean skip_statement_header(a_token_cache_ptr cache)
 /*
-Flush the tokens of exactly one statement.  The current token is the first
-token of the statement.
-
-On return, the current token is the last token of the statement.  It is left
-unconsumed so that the caller can fetch the next token after leaving the
-flushing lexical state, which preserves pragma state (see
-flush_if_or_else_statement).
-
-Note: The caller is responsible for having set flushing_tokens to TRUE.
+Skip the parenthesized header of a statement such as "while", "for",
+"switch" or "catch", caching it if cache is non-NULL.  The current token
+should be the opening parenthesis.  On success, leave the token following
+the closing parenthesis current and return TRUE.  In flushing mode, recover
+from a missing opening parenthesis by treating the current token as the
+start of the controlled statement.  In caching mode, leave diagnostics to
+the subsequent replay.
 */
 {
-  /* Note this routine is recursive because many statements have substatements,
+  a_boolean  result = FALSE;
+
+  if (curr_token == tok_lparen) {
+    if (skip_statement_group(cache)) {
+      advance_statement_token(cache);
+      result = TRUE;
+    }  /* if */
+  } else if (cache == NULL) {
+    pos_error(ec_exp_lparen, &error_position);
+    result = TRUE;
+  }  /* if */
+  return result;
+}  /* skip_statement_header */
+
+
+static a_token_kind next_try_clause_token(void)
+/*
+Return the kind of the token following the current try block or handler.
+Recognize the context-sensitive C++/CLI "finally" keyword when followed by
+"{".  Preserve pragmas on following tokens, even when flushing a discarded
+statement.
+*/
+{
+  a_token_kind          next_tok;
+  a_pending_pragma_list saved_pragmas = *curr_token_pragmas;
+
+  push_lexical_state_stack();
+  caching_tokens = TRUE;
+  next_tok = next_token();
+#if MICROSOFT_EXTENSIONS_ALLOWED
+  if (cli_or_cx_enabled && next_tok == tok_identifier) {
+    a_tiny_scanning_token_cache  aux_cache;
+
+    cache_curr_token(aux_cache.ptr());
+    (void)get_token();
+    if (curr_token_is_identifier_string("finally") &&
+        next_token() == tok_lbrace) {
+      next_tok = tok_finally;
+    }  /* if */
+    rescan_cached_tokens(aux_cache.ptr());
+  }  /* if */
+#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+  pop_lexical_state_stack();
+  /* The pop clears cached pragmas, but the closing brace is still current. */
+  *curr_token_pragmas = saved_pragmas;
+  return next_tok;
+}  /* next_try_clause_token */
+
+
+static a_boolean skip_one_statement(a_token_cache_ptr cache)
+/*
+Skip exactly one statement without semantic analysis.  The current token is
+its first token.  Cache consumed tokens if cache is non-NULL; otherwise flush
+them.  The caller sets caching_tokens or flushing_tokens as appropriate.
+
+Leave the last token current and uncached, so that the caller can leave the
+lexical state (or replay the cache) before fetching beyond the statement.
+This preserves pragma state (see flush_if_or_else_statement).  Return TRUE
+if the current token belongs to the statement, FALSE if scanning stopped on
+an enclosing token or end-of-source in an error case.
+*/
+{
+  a_boolean  last_token_in_statement = FALSE;
+
+  /* This routine is recursive because many statements have substatements,
      e.g., "while (a) while (b) { }" is a single statement. */
-  /* Skip a leading attribute-specifier-seq. */
-  while (curr_token == tok_lbracket && next_token() == tok_lbracket) {
-    flush_until_matching_token_full(/*limit_flush=*/FALSE);
-    (void)get_token();
+  /* Skip a leading attribute-specifier-seq, including GNU attributes. */
+  while (std_attribute_tokens_next() || curr_token == tok_attribute) {
+    if (curr_token == tok_attribute) {
+      advance_statement_token(cache);
+      if (curr_token == tok_lparen && !skip_statement_group(cache)) {
+        goto done;
+      }  /* if */
+    } else if (cache != NULL) {
+      cache_std_attribute(cache, /*add_tokens_to_cache=*/TRUE);
+      if (curr_token == tok_end_of_source) goto done;
+    } else if (!skip_statement_group(cache)) {
+      goto done;
+    }  /* if */
+    advance_statement_token(cache);
   }  /* while */
-  /* Skip the "template" of a C++26 "template for" expansion statement.  The
-     rest of the statement is scanned like an ordinary "for" statement. */
+  /* The rest of a C++26 expansion statement is scanned like a "for". */
   if (curr_token == tok_template && next_token() == tok_for) {
-    (void)get_token();
+    advance_statement_token(cache);
   }  /* if */
   switch (curr_token) {
     case tok_lbrace:
       /* Compound statement. */
-      flush_until_matching_token_full(/*limit_flush=*/FALSE);
+      last_token_in_statement = skip_statement_group(cache);
       break;
     case tok_if:
-      /* Special handling is needed for nested "if" statements so that
-         substatements that are "else if" statements are handled properly. */
-      (void)get_token();
+      advance_statement_token(cache);
       if (curr_token == tok_not && next_token() == tok_consteval) {
-        /* Skip the "not" token only if it is followed by "consteval". */
-        (void)get_token();
+        advance_statement_token(cache);
       }  /* if */
       if (curr_token == tok_consteval) {
-        (void)get_token();
+        advance_statement_token(cache);
       } else {
-        if (curr_token == tok_constexpr) (void)get_token();
-        if (curr_token == tok_lparen) {
-          flush_until_matching_token_full(/*limit_flush=*/FALSE);
-          (void)get_token();
-        } else {
-          pos_error(ec_exp_lparen, &error_position);
-        }  /* if */
+        if (curr_token == tok_constexpr) advance_statement_token(cache);
+        if (!skip_statement_header(cache)) break;
       }  /* if */
-      flush_one_statement();
-      if (next_token() == tok_else) {
-        /* Consume the final token of the statement skipped by
-           flush_one_statement. */
-        (void)get_token();
-        /* Consume the "else". */
-        (void)get_token();
-        flush_one_statement();
+      last_token_in_statement = skip_one_statement(cache);
+      if (last_token_in_statement && next_token() == tok_else) {
+        /* Consume the substatement's final token, then the "else". */
+        advance_statement_token(cache);
+        advance_statement_token(cache);
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
     case tok_while:
@@ -19686,10 +19755,10 @@ Note: The caller is responsible for having set flushing_tokens to TRUE.
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case tok_for_each:
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
-      /* The controlled substatement is a statement in its own right. */
-      (void)get_token();
-      flush_statement_header();
-      flush_one_statement();
+      advance_statement_token(cache);
+      if (skip_statement_header(cache)) {
+        last_token_in_statement = skip_one_statement(cache);
+      }  /* if */
       break;
 #if UPC_EXTENSIONS_ALLOWED
     case tok_upc_forall:
@@ -19697,75 +19766,78 @@ Note: The caller is responsible for having set flushing_tokens to TRUE.
       FALLTHROUGH
 #endif /* UPC_EXTENSIONS_ALLOWED */
     case tok_for:
-      /* For statement and range-based for statement, which may have a
-         "co_await" between the "for" and the opening parenthesis. */
-      (void)get_token();
-      if (curr_token == tok_coroutine_await) (void)get_token();
-      flush_statement_header();
-      flush_one_statement();
+      /* A range-based for may have "co_await" before its header. */
+      advance_statement_token(cache);
+      if (curr_token == tok_coroutine_await) advance_statement_token(cache);
+      if (skip_statement_header(cache)) {
+        last_token_in_statement = skip_one_statement(cache);
+      }  /* if */
       break;
     case tok_do:
       /* "do statement while ( expression ) ;" */
-      (void)get_token();
-      flush_one_statement();
-      if (next_token() == tok_while) {
-        /* Consume the final token of the statement skipped by
-           flush_one_statement. */
-        (void)get_token();
-        /* Consume the "while". */
-        (void)get_token();
-        /* Leaves the current token on the ";" following the ")". */
-        flush_statement_header();
+      advance_statement_token(cache);
+      last_token_in_statement = skip_one_statement(cache);
+      if (last_token_in_statement && next_token() == tok_while) {
+        advance_statement_token(cache);
+        advance_statement_token(cache);
+        last_token_in_statement = skip_statement_header(cache) &&
+                                 curr_token == tok_semicolon;
       }  /* if */
       break;
     case tok_try:
-      /* "try compound-statement handler-seq" */
-      (void)get_token();
-      if (curr_token == tok_lbrace) {
-        flush_until_matching_token_full(/*limit_flush=*/FALSE);
-      }  /* if */
-      while (next_token() == tok_catch) {
-        /* Consume the final token of the preceding compound statement (the
-           "try" block or the previous handler). */
-        (void)get_token();
-        /* Consume the "catch". */
-        (void)get_token();
-        flush_statement_header();
+      { a_token_kind  next_tok = tok_error;
+
+        /* "try compound-statement handler-seq" */
+        advance_statement_token(cache);
         if (curr_token == tok_lbrace) {
-          flush_until_matching_token_full(/*limit_flush=*/FALSE);
+          last_token_in_statement = skip_statement_group(cache);
         }  /* if */
-      }  /* while */
-      break;
+        while (last_token_in_statement &&
+               (next_tok = next_try_clause_token()) == tok_catch) {
+          /* Consume the preceding block's final token, then the "catch". */
+          advance_statement_token(cache);
+          advance_statement_token(cache);
+          last_token_in_statement = skip_statement_header(cache) &&
+                                    curr_token == tok_lbrace &&
+                                    skip_statement_group(cache);
+        }  /* while */
+        #if MICROSOFT_EXTENSIONS_ALLOWED
+        if (last_token_in_statement && cli_or_cx_enabled &&
+            next_tok == tok_finally) {
+          advance_statement_token(cache);
+          advance_statement_token(cache);
+          last_token_in_statement = curr_token == tok_lbrace &&
+                                    skip_statement_group(cache);
+        }  /* if */
+#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+        break;
+      }
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case tok_microsoft_try:
       /* "__try compound-statement __except ( expression ) compound-statement"
          or "__try compound-statement __finally compound-statement". */
-      (void)get_token();
+      advance_statement_token(cache);
       if (curr_token == tok_lbrace) {
-        flush_until_matching_token_full(/*limit_flush=*/FALSE);
+        last_token_in_statement = skip_statement_group(cache);
       }  /* if */
-      if (next_token() == tok_except) {
-        /* Consume the final token of the "__try" compound statement. */
-        (void)get_token();
-        /* Consume the "__except". */
-        (void)get_token();
-        flush_statement_header();
-      } else if (next_token() == tok_finally) {
-        /* Consume the final token of the "__try" compound statement. */
-        (void)get_token();
-        /* Consume the "__finally". */
-        (void)get_token();
+      if (last_token_in_statement && next_token() == tok_except) {
+        advance_statement_token(cache);
+        advance_statement_token(cache);
+        last_token_in_statement = skip_statement_header(cache);
+      } else if (last_token_in_statement && next_token() == tok_finally) {
+        advance_statement_token(cache);
+        advance_statement_token(cache);
       }  /* if */
-      if (curr_token == tok_lbrace) {
-        flush_until_matching_token_full(/*limit_flush=*/FALSE);
+      if (last_token_in_statement && curr_token == tok_lbrace) {
+        last_token_in_statement = skip_statement_group(cache);
       }  /* if */
       break;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case tok_case: {
-      /* A case label labels the statement that follows it.  Skip to the
-         ":", allowing for conditional expressions in the case value. */
+      /* Find the label's ":", allowing conditional expressions. */
       unsigned long  quest_mark_count = 0;
-      (void)get_token();
+
+      advance_statement_token(cache);
       while (curr_token != tok_end_of_source && curr_token != tok_semicolon &&
              curr_token != tok_rbrace &&
              (curr_token != tok_colon || quest_mark_count != 0)) {
@@ -19775,52 +19847,71 @@ Note: The caller is responsible for having set flushing_tokens to TRUE.
           quest_mark_count--;
         } else if (curr_token == tok_lparen || curr_token == tok_lbracket ||
                    curr_token == tok_lbrace) {
-          flush_until_matching_token_full(/*limit_flush=*/FALSE);
+          if (!skip_statement_group(cache)) goto done;
         }  /* if */
-        (void)get_token();
+        advance_statement_token(cache);
       }  /* while */
       if (curr_token == tok_colon) {
-        (void)get_token();
-        flush_one_statement();
+        advance_statement_token(cache);
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
     }
     case tok_default:
       /* "default :" labels the statement that follows it. */
       if (next_token() == tok_colon) {
-        (void)get_token();
-        (void)get_token();
-        flush_one_statement();
+        advance_statement_token(cache);
+        advance_statement_token(cache);
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
+#if MICROSOFT_EXTENSIONS_ALLOWED
+    case tok_if_exists:
+    case tok_if_not_exists:
+      /* The directive ends at its closing brace, not a following ";". */
+      advance_statement_token(cache);
+      last_token_in_statement = skip_statement_header(cache) &&
+                                curr_token == tok_lbrace &&
+                                skip_statement_group(cache);
+      break;
+    case tok_microsoft_asm:
+      /* The complete asm statement is represented by a single token. */
+      last_token_in_statement = TRUE;
+      break;
+#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case tok_identifier:
       if (next_token() == tok_colon) {
         /* A label definition labels the statement that follows it. */
-        (void)get_token();
-        (void)get_token();
-        flush_one_statement();
+        advance_statement_token(cache);
+        advance_statement_token(cache);
+        last_token_in_statement = skip_one_statement(cache);
         break;
       }  /* if */
-      /* Otherwise this is an expression or declaration statement. */
       FALLTHROUGH
     default:
-      { /* An expression statement, declaration, jump statement, empty
-           statement, etc.  Such statements end at the first ";" that isn't
-           nested within parentheses, brackets or braces.  Initialize a local
-           stop token set.  Also stop on right brace and end of source for
-           error cases. */
+      { /* Expression, declaration, jump and empty statements end at the first
+           ";" not nested in parentheses, brackets or braces.  Also stop on
+           right brace and end-of-source for error cases. */
         a_token_set_array  stop_tokens;
+
         clear_token_set_array(stop_tokens);
         incr_token_set_array_element(stop_tokens, tok_end_of_source);
         incr_token_set_array_element(stop_tokens, tok_rbrace);
         incr_token_set_array_element(stop_tokens, tok_semicolon);
-        flush_tokens_with_stop_tokens_and_warning_flag(
+        if (cache != NULL) {
+          cache_token_stream(cache, stop_tokens);
+        } else {
+          flush_tokens_with_stop_tokens_and_warning_flag(
                                                     stop_tokens,
                                                     /*suppress_warning=*/TRUE);
+        }  /* if */
+        last_token_in_statement = curr_token == tok_semicolon;
       }
       break;
   }  /* switch */
-}  /* flush_one_statement */
+done:
+  return last_token_in_statement;
+}  /* skip_one_statement */
 
 
 void flush_if_or_else_statement(void)
@@ -19834,7 +19925,7 @@ flushed.  On return the current token is the first token after the statement.
 {
   push_lexical_state_stack();
   curr_lexical_state_stack_entry->flushing_tokens = TRUE;
-  flush_one_statement();
+  (void)skip_one_statement(/*cache=*/NULL);
   pop_lexical_state_stack();
   if (curr_token != tok_end_of_source) (void)get_token();
 }  /* flush_if_or_else_statement */
@@ -19850,8 +19941,9 @@ for matching_msg at the position given by matching_pos.
 */
 {
   a_diag_list       diag_list;
-  a_diagnostic_ptr  dp = pos_start_error(msg, &error_position);
   a_source_position pos = *matching_pos;
+
+  clear_diag_list(&diag_list);
 
 #if FULLY_RESOLVED_MACRO_POSITIONS
   if (pos.seq != pos.orig_seq) {
@@ -19862,7 +19954,6 @@ for matching_msg at the position given by matching_pos.
   }  /* if */
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
   if (pos.seq != 0) {
-    clear_diag_list(&diag_list);
     more_info_diagnostic(matching_msg, &pos, &diag_list);
 #if FULLY_RESOLVED_MACRO_POSITIONS
     if (matching_pos->seq != matching_pos->orig_seq) {
@@ -19871,9 +19962,8 @@ for matching_msg at the position given by matching_pos.
       more_info_diagnostic(ec_macro_invocation, matching_pos, &diag_list);
     }  /* if */
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
-    add_more_info_list(dp, &diag_list);
   }  /* if */
-  end_diagnostic(dp);
+  error_with_notes(msg, &error_position, &diag_list);
 }  /* report_missing_closing_delimiter */
 
 
@@ -22121,7 +22211,7 @@ next_builtin_pack_element:
           underlying_sym = symbol_for(underlying_templ);
           if (symbol_is(underlying_sym, sk_class_template) &&
               is_alias_template_symbol(underlying_sym) &&
-              is_prototype_instantiation_context()) {
+              is_prototype_instantiation_or_expansion_context()) {
             /* The direction of Core issue 1430 (still open) is that a pack
                expansion cannot be an argument for a non-pack parameter of an
                alias template. */
@@ -22938,7 +23028,7 @@ a routine to lookup the appropriate instance (or generate one if needed).
         } else if (microsoft_bugs &&
                    (options & GID_IS_TAG_NAME) == 0 &&
                    ssep->kind == (a_scope_kind)sck_class_struct_union &&
-                   is_prototype_instantiation_context()) {
+                   is_prototype_instantiation_or_expansion_context()) {
           /* In the definition of a class template, the Microsoft compiler
              accepts use a reference such as A::i, where A is a different
              class template and something like A<T>::i should be used.
@@ -24254,7 +24344,7 @@ original type or namespace that was specified.
 
   check_assertion(qualifier_sym != NULL || decltype_type != NULL);
   if (!prototype_instantiations_in_il &&
-      is_prototype_instantiation_context() &&
+      is_prototype_instantiation_or_expansion_context() &&
       !scope_stack_top().record_dependent_name_references &&
       (!create_template_deduction_name_references ||
        !is_template_deduction_context())) {
@@ -24456,7 +24546,8 @@ describes the name specified by "locator".
   nrp->is_template_id = locator->is_template_id;
   nrp->is_super_qualified = locator->is_super_qualified;
   nrp->is_decltype_qualified = locator->is_decltype_qualified;
-  nrp->from_prototype_instantiation = is_prototype_instantiation_context();
+  nrp->from_prototype_instantiation =
+                             is_prototype_instantiation_or_expansion_context();
   if (is_dtor_like_locator(*locator)) {
     a_type_ptr	dtor_type = locator->variant.destructor_type;
     if (dtor_type != NULL) {
@@ -24516,7 +24607,7 @@ a previously created entry that can be reused.
 
   check_assertion(!C_mode());
   if (!prototype_instantiations_in_il &&
-      is_prototype_instantiation_context() &&
+      is_prototype_instantiation_or_expansion_context() &&
       (!create_template_deduction_name_references ||
        !is_template_deduction_context())) {
     /* Don't build name reference information for prototype instantiations
@@ -26187,8 +26278,8 @@ selection operator, in which case it points to the type of the left operand.
                 is_template_dependent_type(qualifier_type))) {
             invalid_qualifier_sym = TRUE;
             if (!is_or_contains_error_type(decltype_type)) {
-              pos_ty_error(ec_bad_decltype_qualifier, &type_position,
-                           decltype_type);
+              expr_pos_ty_error(ec_bad_decltype_qualifier, &type_position,
+                                decltype_type);
             }  /* if */
             err = TRUE;
           }  /* if */
@@ -27376,8 +27467,8 @@ See also coalesce_and_lookup_generalized_identifier.
            from the decltype is not a class or enumeration type.  For cases
            like "decltype(something)::x::name", this will have been diagnosed
            when the identifier was coalesced. */
-        pos_ty_error(ec_bad_decltype_qualifier, &pos_curr_token,
-                     qualifier_type);
+        expr_pos_ty_error(ec_bad_decltype_qualifier, &pos_curr_token,
+                          qualifier_type);
         set_to_error_locator(locator_for_curr_id);
         *err = TRUE;
       } else {
@@ -28122,6 +28213,25 @@ error cases.
   }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 }  /* cache_function_try_block_clauses */
+
+
+a_boolean cache_expansion_statement_body(a_token_cache_ptr cache)
+/*
+Lexically prescan an expansion statement body into cache, leaving its last
+token current.  Return TRUE if the current token was cached and should be
+consumed after prototype replay; in error cases it may instead be a token
+of the enclosing statement.  The caller terminates and replays the cache.
+*/
+{
+  a_boolean  last_token_cached;
+
+  push_lexical_state_stack();
+  caching_tokens = TRUE;
+  last_token_cached = skip_one_statement(cache);
+  if (last_token_cached) cache_curr_token(cache);
+  pop_lexical_state_stack();
+  return last_token_cached;
+}  /* cache_expansion_statement_body */
 
 
 static void cache_ctor_initializers(

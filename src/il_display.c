@@ -3222,6 +3222,9 @@ Display the indicated variable.
   if (ptr->is_enhanced_for_iterator) {
     disp_boolean("is_enhanced_for_iterator", TRUE);
   }  /* if */
+  if (ptr->is_expansion_iterator) {
+    disp_boolean("is_expansion_iterator", TRUE);
+  }  /* if */
   if (ptr->initializer_in_class) {
     disp_boolean("initializer_in_class", TRUE);
   }  /* if */
@@ -5458,6 +5461,34 @@ Display a range-based-for statement.
 }  /* disp_range_based_for_statement */
 
 
+static void disp_expansion_statement(a_statement_ptr ptr)
+/*
+Display an expansion statement.
+*/
+{
+  an_expansion_stmt_info_ptr  extra_info = expn_info_of(ptr);
+
+  (void)fprintf(f_display, "stmk_expansion_statement\n");
+  disp_ptr("statement", (char *)ptr->variant.expansion_statement.statement,
+           iek_statement);
+  disp_ptr("initialization", (char *)extra_info->initialization,
+           iek_statement);
+  disp_ptr("iterator", (char *)extra_info->iterator,
+           iek_variable);
+  disp_ptr("expansion_scope", (char *)extra_info->expansion_scope,
+           iek_scope);
+  disp_ptr("iterator_scope", (char *)extra_info->iterator_scope,
+           iek_scope);
+  if (extra_info->initializer_is_list) {
+    disp_boolean("initializer_is_list", TRUE);
+  }  /* if */
+  disp_ptr("initializer", (char *)extra_info->initializer,
+           iek_expr_node);
+  disp_ptr("expanded_statement", (char *)extra_info->expanded_statement,
+           iek_statement);
+}  /* disp_expansion_statement */
+
+
 static void disp_constexpr_if_statement(a_statement_ptr ptr)
 /*
 Display a C++17 constexpr if statement.
@@ -5731,6 +5762,9 @@ do_label:
       break;
     case stmk_range_based_for:
       disp_range_based_for_statement(ptr);
+      break;
+    case stmk_expansion_statement:
+      disp_expansion_statement(ptr);
       break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case stmk_for_each:
@@ -7103,6 +7137,9 @@ do_assoc_type:
   if (ptr->needed_walk_done) {
     disp_boolean("needed_walk_done", TRUE);
   }  /* if */
+  if (ptr->is_expansion_prototype) {
+    disp_boolean("is_expansion_prototype", TRUE);
+  }  /* if */
   disp_ptr("assoc_block", (char *)ptr->assoc_block, iek_statement);
   disp_ptr("lifetime", (char *)ptr->lifetime, iek_object_lifetime);
   disp_ptr("constants", (char *)ptr->constants, iek_constant);
@@ -8237,6 +8274,9 @@ Display the indicated a_scope_orphaned_list_header entry.
 {
   disp_ptr("next", (char *)ptr->next, iek_scope_orphaned_list_header);
   disp_ptr("assoc_routine", (char *)ptr->assoc_routine, iek_routine);
+  if (ptr->in_expansion_prototype) {
+    disp_boolean("in_expansion_prototype", TRUE);
+  }  /* if */
   disp_ptr("orphaned_types", (char *)ptr->orphaned_types, iek_type);
   disp_ptr("orphaned_variables", (char *)ptr->orphaned_variables,
            iek_variable);
@@ -8273,6 +8313,7 @@ This routine is called during IL walking.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case iek_for_loop:
     case iek_range_based_for_loop:
+    case iek_expansion_stmt_info:
     case iek_constexpr_if:
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case iek_for_each_loop:

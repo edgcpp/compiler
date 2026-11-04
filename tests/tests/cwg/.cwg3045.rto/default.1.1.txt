@@ -1,14 +1,10 @@
 fe_only -DTEST_NUMBER=1 -A -tused --c++26 Test_name.c
-"Test_name.c", line 7: error: explicit instantiation is not allowed in the current scope
-    template for (auto x : { }) {
-    ^
+"Test_name.c", line 8: error: "x", declared in the for-range-declaration of an expansion statement, may not be redeclared in this scope
+      int x = 42;                 // error
+          ^
 
-"Test_name.c", line 10: warning: parsing restarts here after previous syntax error
-  }
-  ^
+"Test_name.c", line 8: warning: variable "x" was declared but never referenced
+      int x = 42;                 // error
+          ^
 
-"Test_name.c", line 10: error: expected a ";"
-  }
-  ^
-
-2 errors detected in the compilation of "Test_name.c".
+1 error detected in the compilation of "Test_name.c".

@@ -4917,6 +4917,8 @@ extern void check_for_generation_of_pch_on_return_to_primary_file(void);
 
 extern void skip_function_body(a_boolean is_constructor);
 
+extern a_boolean cache_expansion_statement_body(a_token_cache_ptr cache);
+
 extern a_boolean cache_function_body(
 				a_token_cache		*p_token_cache,
 				a_boolean		is_constructor,

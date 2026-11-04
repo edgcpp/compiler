@@ -4466,6 +4466,7 @@ default mode (e.g., exception handling).
     if (!constexpr_exceptions_flag_used) {
       constexpr_exceptions_enabled = TRUE;
     }  /* if */
+    expansion_statements_enabled = TRUE;
   }  /* if */
   /* Disable "false" as a null pointer constant in C++11 mode (as per Core
      issue 903). */
@@ -13892,6 +13893,7 @@ variables declared in cmd_line.h.
   pack_indexing_enabled = FALSE;
   constexpr_exceptions_enabled = FALSE;
   constexpr_exceptions_flag_used = FALSE;
+  expansion_statements_enabled = FALSE;
 }  /* cmd_line_static_var_init */
 
 

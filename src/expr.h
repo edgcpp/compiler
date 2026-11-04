@@ -645,6 +645,11 @@ extern void scan_previously_decl_iterator_name(
 extern void scan_range_based_for_expression(a_statement_ptr   statement,
                                             a_source_position *expr_position);
 
+extern void scan_expansion_initializer(a_statement_ptr   statement);
+extern void set_expansion_element_binding(
+                                  a_variable_ptr   variable,
+                                  an_expr_node_ptr initializer_expr,
+                                  a_boolean        extend_temporaries = FALSE);
 extern
 a_boolean call_via_reflections(a_reflection_value             *target_rv,
                                Dyn_array<a_reflection_value>  *arg_rvs,

@@ -1,14 +1,6 @@
 fe_only -DTEST_NUMBER=1 -A -tused --c++26 Test_name.c
-"Test_name.c", line 8: error: explicit instantiation is not allowed in the current scope
+"Test_name.c", line 8: error: expected a "{"
     template for (auto x : s) { }
-    ^
+                           ^
 
-"Test_name.c", line 9: error: expected a ";"
-  }
-  ^
-
-"Test_name.c", line 7: warning: variable "s" was declared but never referenced
-    S s;
-      ^
-
-2 errors detected in the compilation of "Test_name.c".
+1 error detected in the compilation of "Test_name.c".

@@ -2953,7 +2953,9 @@ pointed to from virtual function tables.
   for (solhp = il_header.scope_orphaned_list_headers;
        solhp != NULL;
        solhp = solhp->next) {
-    generate_type_list_typeinfo_vars(solhp->orphaned_types);
+    if (!solhp->in_expansion_prototype) {
+      generate_type_list_typeinfo_vars(solhp->orphaned_types);
+    }  /* if */
   }  /* for */
   /* Also visit types on the list of nontag exception handling/RTTI types. */
   generate_type_list_typeinfo_vars(

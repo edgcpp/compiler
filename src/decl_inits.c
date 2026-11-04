@@ -1004,10 +1004,7 @@ remove_any_extraneous_braces:
           if (!interpret_dynamic_init(elem_is.init_dip, diag_pos, dest_type,
                                       /*is_constant_evaluated=*/TRUE,
                                       folded_value, &diag_list)) {
-            a_diagnostic_ptr  dp;
-            dp = pos_start_error(ec_expr_not_constant, diag_pos);
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_expr_not_constant, diag_pos, &diag_list);
           } else {
             /* This could happen if the interpreter ran into an error node.
                (The interpreter "succeeds" with an error constants in such
@@ -1093,7 +1090,7 @@ of the whole initialization (*is) as appropriate.
   a_boolean  pack_expansion = is_pack_expansion_component(icp);
 
   check_assertion(is_template_param_or_nonreal_class_type(gtype) ||
-                  is_prototype_instantiation_context() ||
+                  is_prototype_instantiation_or_expansion_context() ||
                   is_error_type(gtype));
   if (is_designator_component(icp)) {
     if (is_error_type(gtype)) {
@@ -1876,6 +1873,20 @@ size.
 }  /* try_string_literal_init */
 
 
+static a_boolean try_string_literal_array_init(an_init_component_ptr  icp,
+                                               a_type_ptr             *p_type,
+                                               an_init_state          *is)
+/*
+If icp is a string literal that can initialize *p_type, record the constant
+initializer in *is (as try_string_literal_init does) and return TRUE.
+Otherwise return FALSE.
+*/
+{
+  return may_be_string_type(*p_type) &&
+         try_string_literal_init(icp, p_type, is, &is->init_con);
+}  /* try_string_literal_array_init */
+
+
 static a_boolean try_whole_array_init(an_init_component_ptr  icp,
                                       a_type_ptr             array_type,
                                       a_constant_ptr         *result)
@@ -2543,9 +2554,10 @@ for this array initialization).  *is describes the initialization as a whole.
          the destination to reflect the actual number of initializer
          elements.  In prototype instantiation contexts where a pack expansion
          has been seen, assume the count is unknown. */
-      set_initialized_array_size(&atype, icount,
-                                 is->pack_expansion_handled &&
-                                   is_prototype_instantiation_context());
+      set_initialized_array_size(
+                          &atype, icount,
+                          (is->pack_expansion_handled &&
+                           is_prototype_instantiation_or_expansion_context()));
       if (*init_con != NULL) (*init_con)->type = atype;
       if (!is->non_top_level_aggregate) {
         /* An aggregate initializer for a top-level incomplete array type.
@@ -4397,6 +4409,40 @@ are TRUE.
 }  /* prep_initializer_result */
 
 
+static a_routine_ptr aggr_init_array_with_dtor(
+                                           an_init_component_ptr  *p_icp,
+                                           a_type_ptr             *p_type,
+                                           an_init_state          *is,
+                                           a_source_position      *diag_pos,
+                                           a_boolean              fill_in_dtor,
+                                           a_type_ptr             orig_type)
+/*
+Initialize the array of type *p_type from *p_icp, recording its constant
+initializer in *is and advancing *p_icp past the consumed components.  Update
+*p_type if the initializer determines an unknown bound.  orig_type is the
+original specified type, including typedefs, or NULL.  If fill_in_dtor is
+TRUE, return the destructor for the array elements, or NULL if none is
+needed.  Use diag_pos for diagnostics.  The caller applies any additional
+bound restrictions and records the constant or dynamic initialization.
+*/
+{
+  a_routine_ptr  dtor_rp = NULL;
+
+  aggr_init_array(p_icp, p_type, is, diag_pos, &is->init_con, orig_type);
+  if (is_error_type(*p_type)) {
+    is->init_error = TRUE;
+    if (!is->no_diagnostics) expect_error();
+  } else {
+    a_type_ptr  etype = underlying_array_element_type(*p_type);
+    etype = skip_typerefs(etype);
+    if (fill_in_dtor && is_immediate_class_type(etype)) {
+      dtor_rp = get_init_destructor(etype, is, diag_pos);
+    }  /* if */
+  }  /* if */
+  return dtor_rp;
+}  /* aggr_init_array_with_dtor */
+
+
 void prep_aggr_initializer(an_init_component_ptr        icp,
                            a_type_ptr                   *p_type,
                            an_init_state                *is,
@@ -4467,16 +4513,9 @@ the type pointed to is opaque to declaration processing.
       /* Arrays are aggregates. */
       unknown_bound_array = is_incomplete_array_type(dtype);
       is->initializer_can_dimension_array = TRUE;
-      aggr_init_array(&icp, &dtype, is, diag_pos, &is->init_con, orig_dtype);
-      if (is_error_type(dtype)) {
-        is->init_error = TRUE;
-        if (!is->no_diagnostics) expect_error();
-      } else {
-        a_type_ptr  etype = underlying_array_element_type(dtype);
-        etype = skip_typerefs(etype);
-        if (fill_in_dtor && is_immediate_class_type(etype)) {
-          dtor_rp = get_init_destructor(etype, is, diag_pos);
-        }  /* if */
+      dtor_rp = aggr_init_array_with_dtor(&icp, &dtype, is, diag_pos,
+                                          fill_in_dtor, orig_dtype);
+      if (!is_error_type(dtype)) {
         if (unknown_bound_array && is->init_con != NULL) {
           /* The destination type is incomplete, but the initializer constant
              should reflect the actual number of elements. */
@@ -4518,7 +4557,7 @@ the type pointed to is opaque to declaration processing.
     case tk_struct:
     case tk_union:
       if (dtype->variant.class_struct_union.is_nonreal_class ||
-          (is_prototype_instantiation_context() &&
+          (is_prototype_instantiation_or_expansion_context() &&
            arg_list_is_dependent(icp))) {
         /* Treat nonreal classes like a template parameter since we don't
            really know their structure.  Similarly, do not try to match up a
@@ -4568,6 +4607,82 @@ the type pointed to is opaque to declaration processing.
   }  /* if */
   is->arg_match = saved_arg_match;
 }  /* prep_aggr_initializer */
+
+
+static void prep_array_initializer(an_init_component_ptr  icp,
+                                   a_type_ptr             *p_type,
+                                   an_init_state          *is)
+/*
+Prepare the initialization of an array of type *p_type from icp, returning
+its constant or dynamic initializer in *is.  An unknown bound in *p_type is
+updated from the initializer.  The caller supplies the initialization state
+in *is (including any request for a dynamic initializer) and records any
+required end-of-lifetime destruction.  Braced initializers use the aggregate
+initialization machinery and its narrowing checks; only a string literal is
+accepted for a non-braced component.
+*/
+{
+  check_assertion(is_array_type(*p_type));
+  if (is_braced_init_component(icp)) {
+    /* prep_aggr_initializer handles arrays, including an unknown bound. */
+    prep_aggr_initializer(icp, p_type, is, (an_arg_match_summary *)NULL,
+                          /*fill_in_dtor=*/TRUE);
+  } else {
+    /* Only a string literal is valid here. */
+    if (!try_string_literal_array_init(icp, p_type, is)) {
+      is->init_error = TRUE;
+      is->init_con = alloc_error_constant();
+      if (!is->no_diagnostics) {
+        pos_error(ec_missing_initializer_list, init_component_pos(icp));
+      }  /* if */
+      if (is_incomplete_array_type(*p_type)) *p_type = error_type();
+    }  /* if */
+    if (!is->check_validity_only) {
+      prep_initializer_result(is, /*dtor_rp=*/NULL);
+      if (is->init_dip != NULL) {
+        is->init_dip->is_braced_initializer = FALSE;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+}  /* prep_array_initializer */
+
+
+a_dynamic_init_ptr prep_array_variable_initializer(a_decl_parse_state *dps,
+                                                   an_operand         *operand)
+/*
+Prepare the initialization of the array variable described by dps from
+operand (a braced-init-list or a string literal) and return the dynamic
+initialization that records it.  dps gives the variable (through its sym) and
+its current type; an unknown bound is put back into the variable when the
+initializer determines it.  The caller links dps to the scope stack and
+records the returned dynamic initialization as for any other variable
+initialization.
+*/
+{
+  a_variable_ptr         vp = variable_for_symbol(dps->sym);
+  an_init_state          *is = &dps->init_state;
+  an_init_component_ptr  icp;
+  a_boolean              is_braced;
+
+  check_assertion(vp != NULL && is_array_type(vp->type));
+  is_braced = is_braced_init_list_operand(operand);
+  if (is_braced) {
+    icp = operand->variant.braced_init_list;
+  } else {
+    icp = alloc_arg_list_elem_for_operand(operand);
+  }  /* if */
+  is->elements_are_full_expressions = TRUE;
+  is->force_dynamic_init = TRUE;
+  prep_array_initializer(icp, &dps->type, is);
+  /* A braced list belongs to the caller; only free a component allocated
+     here. */
+  if (!is_braced) free_init_component_list(icp);
+  if (dps->type != vp->type) {
+    put_type_back_into_variable(vp, dps->sym, &dps->declarator_pos,
+                                idl_none, dps->type);
+  }  /* if */
+  return is->init_dip;
+}  /* prep_array_variable_initializer */
 
 
 static void process_simple_init_component(an_init_component_ptr  icp,
@@ -4664,7 +4779,7 @@ a template-dependent type).
     an_init_component_ptr  list = icp->variant.braced.list;
     if (list != NULL && is_last_elem(list) && is_expression_component(list)) {
       a_type_ptr  etp = operand_of_arg_list_elem(list)->type;
-      special_singleton = (is_prototype_instantiation_context() &&
+      special_singleton = (is_prototype_instantiation_or_expansion_context() &&
                            is_or_contains_template_param(etp)) ||
                           are_reference_related(dtype, etp);
     }  /* if */
@@ -4770,22 +4885,13 @@ initializer, already copied and substituted.
         record_init_for_array_struct_binding(dps, icp);
       } else {
         a_type_ptr  atype = dtype;
-        aggr_init_array(&icp, &atype, is, diag_pos, &is->init_con);
+        dtor_rp = aggr_init_array_with_dtor(&icp, &atype, is, diag_pos,
+                                            fill_in_dtor, (a_type_ptr)NULL);
         if (atype != dtype) {
           /* Presumably an incomplete array type whose length is now known.
              Update the recorded type. */
           check_assertion(dps != NULL);
           dps->type = atype;
-        }  /* if */
-        if (is_error_type(atype)) {
-          is->init_error = TRUE;
-          if (!is->no_diagnostics) expect_error();
-        } else {
-          a_type_ptr  etype = underlying_array_element_type(atype);
-          etype = skip_typerefs(etype);
-          if (fill_in_dtor && is_immediate_class_type(etype)) {
-            dtor_rp = get_init_destructor(etype, is, diag_pos);
-          }  /* if */
         }  /* if */
       }  /* if */
       break;
@@ -4820,7 +4926,7 @@ initializer, already copied and substituted.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       /* Do not insert code here. */
       if (dtype->variant.class_struct_union.is_nonreal_class ||
-          (is_prototype_instantiation_context() &&
+          (is_prototype_instantiation_or_expansion_context() &&
            (gpp_mode || arg_list_is_dependent(icp)))) {
         /* Treat nonreal classes like a template parameter since we don't
            really know their structure.  Similarly, do not try to match up a
@@ -5076,9 +5182,7 @@ position is available.
       /* Something like "auto [x, y]( array );".  The array in the parentheses
          must be copied (this is unusual for built-in arrays). */
       record_init_for_array_struct_binding(dps, expr_icp);
-    } else if (may_be_string_type(dps->type) &&
-               try_string_literal_init(expr_icp, &dps->type, is,
-                                       &is->init_con)) {
+    } else if (try_string_literal_array_init(expr_icp, &dps->type, is)) {
       /* String initialization. */
     } else {
       /* Ordinary initialization. */
@@ -5213,9 +5317,7 @@ to use for diagnostics by default.
   } else if (is_array_var && dps->is_struct_binding_decl) {
     /* This is a case where an array has to be copied. */
     record_init_for_array_struct_binding(dps, expr_icp);
-  } else if (is_string_var &&
-             try_string_literal_init(expr_icp, &dps->type, is,
-                                     &is->init_con)) {
+  } else if (try_string_literal_array_init(expr_icp, &dps->type, is)) {
     /* String initialization. */
   } else if (is_gnu_array_fill) {
     a_type_ptr      atype = dps->type;
@@ -5429,6 +5531,31 @@ variable.
 }  /* addresses_dllimport_variable */
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+
+
+static a_boolean dynamic_init_is_dependent(a_dynamic_init_ptr  dip)
+/*
+Return TRUE if dip is an expression initialization, or has a constructor
+argument, that is instantiation-dependent.
+*/
+{
+  a_boolean  result = FALSE;
+
+  if (dyn_init_is(dip, dik_expression)) {
+    result = expr_is_instantiation_dependent(dip->variant.expression);
+  } else if (dyn_init_is(dip, dik_constructor)) {
+    for (an_expr_node_ptr  arg = dip->variant.constructor.args;
+         arg != NULL;
+         arg = arg->next) {
+      if (expr_is_instantiation_dependent(arg)) {
+        result = TRUE;
+        break;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  return result;
+}  /* dynamic_init_is_dependent */
+
 
 void initializer(a_decl_parse_state  *dps,
                  a_source_position   *source_pos,
@@ -6093,7 +6220,7 @@ returned set to TRUE.
                   dtor, init_dip, !dps->init_state.not_potentially_evaluated);
       }  /* if */
     } else if (constexpr_enabled &&
-               !(scope_stack_top().in_prototype_instantiation ||
+               !(is_prototype_instantiation_or_expansion_context() ||
                  in_ms_nonreal_class_instantiation()) &&
                !init_err) {
       /* See if the initializer can be evaluated as a constant expression. */
@@ -6167,17 +6294,20 @@ returned set to TRUE.
                                     move_local_constant_to_il(&folded_con));
         }  /* if */
       } else {
-        if (dps->init_state.initializer_must_be_constant ||
-            is_consteval_init ||
-            (vp->declared_constinit &&
-             !(dyn_init_is(init_dip, dik_constant) ||
-               dyn_init_is(init_dip, dik_zero) ||
-               dyn_init_is(init_dip, dik_none)))) {
+        if (is_uninstantiated_dependent_expr_context() &&
+            dynamic_init_is_dependent(init_dip)) {
+          /* The initialization is instantiation-dependent.  Leave the
+             initialization unfolded; it is checked when the enclosing
+             definition is instantiated or, for an expansion, when the
+             compound-statement is rescanned for each element. */
+        } else if (dps->init_state.initializer_must_be_constant ||
+                   is_consteval_init ||
+                   (vp->declared_constinit &&
+                    !(dyn_init_is(init_dip, dik_constant) ||
+                      dyn_init_is(init_dip, dik_zero) ||
+                      dyn_init_is(init_dip, dik_none)))) {
           /* A constant was required: Issue a diagnostic. */
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, &pos_first_token);
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, &pos_first_token, &diag_list);
           init_err = TRUE;
           init_con = alloc_error_constant();
           init_dip = NULL;
@@ -6337,6 +6467,7 @@ returned set to TRUE.
                                is_template_dependent_type(tp) ||
                                scope_stack_top().in_prototype_instantiation ||
                                scope_stack_top().in_nonreal_instantiation ||
+                               scope_stack_top().in_expansion_statement_body ||
                                (is_immediate_class_type(tp) &&
                                 !class_symbol_supp(symbol_for(tp))
                                        ->has_nontrivial_default_constructor &&
@@ -6425,8 +6556,7 @@ field declaration and dtype is the type of the field.
                                          /*allow_empty_pack_expansion=*/FALSE);
   an_init_state          *is = &dps->init_state;
 
-  if (may_be_string_type(dtype) &&
-      try_string_literal_init(expr_icp, &dtype, is, &is->init_con)) {
+  if (try_string_literal_array_init(expr_icp, &dtype, is)) {
     /* A string literal initializer for a string type. */
     prep_initializer_result(is, /*dtor_rp=*/NULL);
   } else {
@@ -6691,7 +6821,7 @@ members of managed class types in some Microsoft modes.
     scope_stack_top().in_field_initializer = saved_in_field_initializer;
     field_for_curr_field_initializer = saved_field;
   }  /* if */
-  if (is_prototype_instantiation_context() &&
+  if (is_prototype_instantiation_or_expansion_context() &&
       class_type->variant.class_struct_union.is_prototype_instantiation &&
       class_type->variant.class_struct_union.is_template_class &&
       (is_field || is_var_templ || gpp_mode)) {
@@ -6782,8 +6912,7 @@ memory).
     /* Parenthesized initialization.  Since this is an auto-deduced
        initialization, it's just a single component to convert. */
     is->direct_init = TRUE;
-    if (may_be_string_type(dps->type) &&
-        try_string_literal_init(icp_tree, &dps->type, is, &is->init_con)) {
+    if (try_string_literal_array_init(icp_tree, &dps->type, is)) {
       /* String initialization. */
     } else {
       /* Ordinary initialization. */
@@ -7193,10 +7322,8 @@ FALSE is returned) for non-class objects.
               cp = NULL;
             } else {
               /* A constant was required: Issue a diagnostic. */
-              a_diagnostic_ptr  dp;
-              dp = pos_start_error(ec_initializer_not_constant, err_pos);
-              add_more_info_list(dp, &diag_list);
-              end_diagnostic(dp);
+              error_with_notes(ec_initializer_not_constant, err_pos,
+                               &diag_list);
               cp = alloc_error_constant();
             }  /* if */
             release_local_constant(&folded_con);
@@ -10870,7 +10997,7 @@ declaration that has internal linkage because of the explicit presence of a
               }  /* if */
             }  /* if */
             if (gpp_mode && !vp->is_constexpr &&
-                is_prototype_instantiation_context()) {
+                is_prototype_instantiation_or_expansion_context()) {
               /* g++ fails to diagnose a missing initializer for a
                  non-constexpr variable at template definition time.  An
                  error is issued if the template is instantiated. */
