@@ -1,5 +1,54 @@
 Version 7.1
 
+11/3/26  [GH #423]
+Class-type template parameters of enclosing templates in member templates
+
+When an enclosing template (e.g., a class template) was instantiated, a
+reference to one of its nontype template parameters of class type in the
+signature of a member template was replaced by the template parameter
+object.  When the member template's own template arguments were
+substituted, that reference was then treated as a prvalue instead of as a
+const lvalue.  As a result, taking its address caused deduction to fail, and
+other uses (e.g., in a decltype operand) caused a spurious "unexpected
+function type" error.  That is now fixed.  For example, with --c++20:
+
+  struct A { int i = 0; };
+  constexpr A a1{1};
+  template <A V> struct S {
+    template <typename T> static auto f(T t) -> decltype(t, &V);
+    template <typename T> static auto g(T t) -> decltype(t, V);
+  };
+  using R1 = decltype(S<a1>::f(0));  // Previously, no instance matched.
+  using R2 = decltype(S<a1>::g(0));  // Previously, "unexpected function
+                                     // type" error.
+
+
+11/3/26  [GH #462]
+decltype of template parameters in requires-expression parameter types
+
+When a requires-expression appeared in a template other than a concept
+definition (e.g., in a variable template initializer or a function template
+body), decltype applied to a template parameter in the type of one of its
+parameters was not substituted correctly.  The parameter then got an
+unusable type, so that any requirement using it in an operation (e.g., a
+call) was considered unsatisfied.  Similarly, in a member template of a class
+template, decltype applied to a class-type template parameter of the class
+template produced the const type of the template parameter object (rather
+than the declared type of the template parameter) once the class template
+was instantiated.  That is now fixed.  For example, with --c++20:
+
+  struct A { int operator()() { return 0; } };
+  template <auto F>
+  constexpr bool b = requires(decltype(F) f) { f(); };
+  static_assert(b<A{}>);  // Previously failed.
+  template <auto F> struct S {
+    template <int I> static constexpr bool m() {
+      return requires(decltype(F) f) { f(); };
+    }
+  };
+  static_assert(S<A{}>::m<1>());  // Previously failed.
+
+
 10/31/26 [GH #106]
 C++26: returning a reference bound to a temporary is not allowed
 
