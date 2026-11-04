@@ -4473,6 +4473,12 @@ an error if a default argument expression is encountered.
   }
   remove_stop_token(tok_rparen);
   scope_stack_top().outside_parameter_list = TRUE;
+  if (state->is_lambda && parent_type != NULL && func_info != NULL &&
+      (state->is_abbr_func_template || func_info->lambda == NULL)) {
+    /* The parameter list of a generic lambda's call operator was scanned
+       (func_info->lambda is NULL when rescanning that call operator). */
+    end_of_generic_lambda_params(parent_type);
+  }  /* if */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   if (ms_extensions) {
     a_boolean  managed_member = cli_or_cx_enabled && parent_type != NULL &&
