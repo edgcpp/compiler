@@ -1,14 +1,6 @@
 fe_only -DTEST_NUMBER=1 -A --c++26 Test_name.c
-"Test_name.c", line 12: error: explicit instantiation is not allowed in the current scope
+"Test_name.c", line 12: error: expected a "{"
     template for (auto x : X{0}) {
-    ^
+                           ^
 
-"Test_name.c", line 15: warning: parsing restarts here after previous syntax error
-  }
-  ^
-
-"Test_name.c", line 15: error: expected a ";"
-  }
-  ^
-
-2 errors detected in the compilation of "Test_name.c".
+1 error detected in the compilation of "Test_name.c".

@@ -177,6 +177,8 @@ extern void record_using_decl(a_symbol_ptr       sym,
 
 extern void mark_variable_value_set(a_symbol_ptr  sym);
 
+extern void mark_expansion_variable_used(a_variable_ptr  variable);
+
 extern void reference_to_implicitly_invoked_function
                                     (a_symbol_ptr       sym,
                                      a_source_position  *pos,

@@ -1922,6 +1922,26 @@ typedef struct a_func_info_block {
 
 
 /*
+Persistent information recorded while checking a template definition and used
+when its tokens are replayed.  Ordinary templates and expansion statement
+bodies share this information; only ordinary templates have parameters and
+instantiation scopes.  Traversal cursors belong to active scans, not here.
+*/
+typedef struct a_definition_replay_info {
+  a_decl_sequence_number
+                decl_seq;
+                        /* Definition-time lookup boundary. */
+  a_nondependent_call_info_ptr
+                nondependent_calls, last_entry_added;
+                        /* Token-ordered overload resolution results and the
+                           most recent insertion point. */
+  a_pack_expansion_descr_list
+                pack_expansions;
+                        /* Persistent pack expansion descriptors. */
+} a_definition_replay_info;
+
+
+/*
 Structure that contains the information about a template declaration that
 is needed to recreate the context in which tokens from the declaration
 should be rescanned when creating an instantiation.
@@ -1972,37 +1992,13 @@ typedef struct a_template_decl_info {
 		n_params;
 			/* The number of entries in the parameters list. */
   a_decl_sequence_number
-		decl_seq;
-			/* The declaration sequence number at the point of
-			   the template declaration.  Used during lookup
-			   to exclude names not visible at the point of
-			   template definition. */
-  a_decl_sequence_number
 		starting_decl_seq;
 			/* For class templates, the declaration sequence
 			   number at the point of the template declaration. */
-  a_nondependent_call_info_ptr
-		nondependent_calls;
-			/* A list of entries that describe the nondependent
-			   calls within this template.  NULL if no such list
-			   exists.  The list is maintained in token sequence
-			   number order.  For class templates, this includes
-			   the nondependent calls for default argument
-			   expressions and bodies of nontemplate member
-			   functions. */
-  a_nondependent_call_info_ptr
-		last_entry_added;
-			/* Pointer to the entry most recently added to the
-			   list. */
-  a_pack_expansion_descr_ptr
-		pack_expansions;
-			/* For a variadic template, a list of entries that
-			   describe the contexts in which any pack expansions
-			   occur.  NULL for non-variadic templates or if
-			   no pack expansions are used. */
-  a_pack_expansion_descr_ptr
-		last_pack_expansion;
-			/* Pointer to the end of the pack expansion list. */
+  a_definition_replay_info
+                definition_info;
+                        /* Shared definition/replay information, including
+                           calls and packs in expansion statement bodies. */
   a_hash_table_ptr
 		constexpr_if_hash_table;
 			/* A hash table used at instantiation time to find
@@ -5109,6 +5105,8 @@ extern an_out_of_class_partial_spec_ptr alloc_out_of_class_partial_spec(void);
 extern a_template_decl_info_ptr alloc_template_decl_info(void);
 
 extern void free_template_decl_info(a_template_decl_info_ptr tdip);
+
+extern a_definition_replay_info_ptr alloc_definition_replay_info(void);
 
 extern a_nondependent_call_info_ptr get_nondependent_call_info(
                                 a_token_sequence_number         tsn,

@@ -937,6 +937,10 @@ extern void more_info_sym_tap_diagnostic(an_error_code     error_code,
                                          a_template_arg    *tap,
                                          a_diag_list_ptr   diag_list);
 
+extern void error_with_notes(an_error_code      main_code,
+                             a_source_position  *main_pos,
+                             a_diag_list        *notes);
+
 extern void add_more_info_list(a_diagnostic_ptr		dp,
 			       a_diag_list_ptr		dlp);
 

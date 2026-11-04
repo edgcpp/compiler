@@ -1603,7 +1603,8 @@ declaration on which the exception specification appears.
       esp->arg_cached = TRUE;
       esp->variant.token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
       cache_token_stream(esp->variant.token_cache, stop_tokens);
-      if (is_template_dependent_context()) {
+      if (is_template_dependent_context() &&
+          !in_expansion_prototype_without_enclosing_template()) {
         a_template_cache_segment_ptr  tcsp;
         last_tsn = curr_token_sequence_number - 1;
         /* When there is no argument, the computed last token number could be
@@ -9046,7 +9047,7 @@ the parameters.
                                       DI_IS_DEDUCTION_GUIDE)),
                       "declarator: parent class is NULL for ctor");
   state->declarator_start_pos = pos_curr_token;
-  if (is_prototype_instantiation_context()) {
+  if (is_prototype_instantiation_or_expansion_context()) {
     /* See if the type being used is a type nested in a prototype
        instantiation. */
     use_nonreal_type_for_nested_prototype_type(state);

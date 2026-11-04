@@ -1,29 +1,13 @@
 fe_only -DTEST_NUMBER=1 -A -tused --c++26 Test_name.c
-"Test_name.c", line 20: error: explicit instantiation is not allowed in the current scope
+"Test_name.c", line 20: error: expected a "{"
     template for (constexpr int s : arr) { // OK, iterating expansion statement
-    ^
-
-"Test_name.c", line 23: warning: parsing restarts here after previous syntax error
-    return result;
-                 ^
-
-"Test_name.c", line 24: warning: missing return statement at end of non-void function "f"
-  }
-  ^
-
-"Test_name.c", line 18: warning: variable "arr" was declared but never referenced
-    constexpr std::array<int, 3> arr {1, 2, 3};
-                                 ^
-
-"Test_name.c", line 19: warning: variable "result" was declared but never referenced
-    int result = 0;
-        ^
+                                    ^
 
 "Test_name.c", line 26: error: expression must have a constant value
   static_assert(f() == 6);
                 ^
-"Test_name.c", line 24: note: missing return value
-  }
-  ^
+"Test_name.c", line 20: note: statement cannot be interpreted
+    template for (constexpr int s : arr) { // OK, iterating expansion statement
+    ^
 
 2 errors detected in the compilation of "Test_name.c".

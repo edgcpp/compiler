@@ -4409,7 +4409,12 @@ the scope must be the file scope.
     for (solhp = il_header.scope_orphaned_list_headers;
          solhp != NULL;
          solhp = solhp->next) {
-      if (ignore_routine_in_back_end(solhp->assoc_routine)) continue;
+      if (solhp->in_expansion_prototype ||
+          ignore_routine_in_back_end(solhp->assoc_routine)) {
+        /* In addition to routines ignored by the back end, expansion statement
+           prototype scopes do not contribute types to the generated code. */
+        continue;
+      }  /* if */
       for (type = solhp->orphaned_types;
            type != NULL;
            type = type->next) {

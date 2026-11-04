@@ -10818,18 +10818,15 @@ is_definition is TRUE if the new attribute (new_ap) appears on a definition.
 */
 {
   a_diag_list       diag_list;
-  a_diagnostic_ptr  dp;
 
   if (is_definition) {
     if (new_ap == NULL) {
       /* If a previous declaration specified an alignment but the
          definition does not, give an error. */
       clear_diag_list(&diag_list);
-      dp = pos_start_error(ec_no_alignment_on_definition, def_pos);
       more_info_diagnostic(ec_attribute_declared_here, &old_ap->position,
                            &diag_list);
-      add_more_info_list(dp, &diag_list);
-      end_diagnostic(dp);
+      error_with_notes(ec_no_alignment_on_definition, def_pos, &diag_list);
     } else {
       /* There may be multiple alignment attributes on both the prior
          declaration as well as the current one.  Look for the strictest
@@ -10854,11 +10851,10 @@ is_definition is TRUE if the new attribute (new_ap) appears on a definition.
              equivalent values). */
           if (old_align != new_align) {
             clear_diag_list(&diag_list);
-            dp = pos_start_error(ec_align_not_equivalent, &new_ap->position);
             more_info_diagnostic(ec_attribute_declared_here, &old_ap->position,
                                  &diag_list);
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_align_not_equivalent, &new_ap->position,
+                             &diag_list);
             err = TRUE;
           }  /* if */
         }  /* if */
