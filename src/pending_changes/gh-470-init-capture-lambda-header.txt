@@ -1,0 +1,20 @@
+[GH #470]
+GNU, Clang, and Microsoft compatibility: Init-captures in lambda headers
+
+P2579 (adopted as a defect report) makes init-captures visible throughout a
+lambda header, and the front end implemented that in all modes.  However, GCC
+before version 16, Clang before version 17, and MSVC before version 19.50 (or
+in pre-C++20 modes) make init-captures visible only in the lambda body: In
+the lambda header (e.g., in a parameter type, an exception specification, or
+a trailing return type), the name of an init-capture refers to an entity of
+the enclosing scope instead.  (In pre-C++20 modes, MSVC does make
+init-captures visible in the exception specification and trailing return type
+of a generic lambda.)  The front end now emulates that in the corresponding
+modes.  For example, with --g++ --gnu_version=130300 --c++14:
+
+  struct X { int value; };
+  void f() {
+    X x = {2};
+    auto lm = [x = 10]() -> decltype(x) { return {}; };
+                      // Previously the return type was int.  Now it is X.
+  }

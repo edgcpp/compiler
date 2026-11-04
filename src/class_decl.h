@@ -288,6 +288,8 @@ extern a_lambda_capture_ptr find_lambda_capture(a_lambda_ptr    lambda,
 extern a_field_ptr field_for_lambda_capture(a_lambda_ptr          lambda,
                                             a_lambda_capture_ptr  lcp);
 
+extern void end_of_generic_lambda_params(a_type_ptr  closure_class);
+
 extern a_lambda_capture_ptr lambda_capture_for_variable(
                                           a_variable_ptr         vp,
                                           a_source_position_ptr  pos,

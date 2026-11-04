@@ -2385,6 +2385,47 @@ lambdas.
 }  /* field_for_lambda_capture */
 
 
+static void set_init_capture_visibility_if_needed(a_type_ptr  closure_class,
+                                                  a_boolean   visible)
+/*
+P2579 makes init-captures visible throughout the lambda header.  GCC before
+version 16, Clang before version 17, and MSVC (except version 19.50 and later
+in C++20 and later modes) make them visible only in the lambda body: In those
+modes, make the fields for the init-captures of the given closure class
+invisible to lookup if visible is FALSE (when starting to scan the lambda
+header), and visible again if visible is TRUE (when done scanning it).
+*/
+{
+  if (gpp_version_is(<160000) || clang_version_is(<170000) ||
+      ms_version_is(<1950) || (microsoft_mode && !cpp20_mode)) {
+    a_field_ptr  fp;
+    for (fp = fields_of(closure_class); fp != NULL; fp = fp->next) {
+      if (fp->is_init_capture) {
+        a_symbol_ptr  sym = symbol_for(fp);
+        if (sym != NULL) sym->is_invisible = !visible;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+}  /* set_init_capture_visibility_if_needed */
+
+
+void end_of_generic_lambda_params(a_type_ptr  closure_class)
+/*
+Called right after the parameter list of the call operator of a generic lambda
+has been scanned (when the lambda is first scanned, and when that call operator
+is instantiated).  closure_class is the closure class of that lambda.  In
+pre-C++20 modes, MSVC finds init-captures in the remainder of the header of a
+generic lambda (its exception specification and trailing return type), though
+not in its parameter types.  Emulate that by making the init-captures visible
+again.
+*/
+{
+  if (microsoft_mode && !cpp20_mode) {
+    set_init_capture_visibility_if_needed(closure_class, /*visible=*/TRUE);
+  }  /* if */
+}  /* end_of_generic_lambda_params */
+
+
 static a_lambda_capture_ptr alloc_capture_for_lambda(a_lambda_ptr  lambda)
 /*
 Allocate and initialize a lambda capture entry and return a pointer to it.
@@ -30343,8 +30384,10 @@ flag if error recovery should be performed as if the specifier didn't occur.
   } else if (dps->is_lambda) {
     /* A generic lambda declarator rescan. */
     check_assertion(is_member_template_rescan);
+    set_init_capture_visibility_if_needed(class_type, /*visible=*/FALSE);
     scan_lambda_declarator(dps, func_info, (a_tmpl_decl_state*)NULL,
                            &decl_info->decl_pos_block);
+    set_init_capture_visibility_if_needed(class_type, /*visible=*/TRUE);
     *is_function = dps->type->kind == (a_type_kind)tk_routine;
   } else if (no_decl_specifiers && !decl_info->is_constructor &&
              !decl_info->is_destructor &&
@@ -35952,8 +35995,10 @@ For example:
   push_closure_class(lambda, &class_state);
   decl_lambda_capture_fields(lambda, /*init_captures=*/TRUE);
   /* Parse the "declarator" part of the lambda (the parameter list, etc.). */
+  set_init_capture_visibility_if_needed(closure_class, /*visible=*/FALSE);
   scan_optional_lambda_declarator(lambda, &func_info, &decl_info,
                                   &templ_state);
+  set_init_capture_visibility_if_needed(closure_class, /*visible=*/TRUE);
   record_end_of_lambda_header(lambda);
   /* Declare the call operator for the closure class. */
   decl_call_operator_for_lambda(lambda, &class_state, &decl_info, &func_info,
