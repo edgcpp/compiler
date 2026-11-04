@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 --no_warnings Test_name.c
+"Test_name.c", line 34: error: "co_return" is only allowed in coroutines
+      co_return;
+      ^
+
+"Test_name.c", line 41: error: "co_return" is only allowed in coroutines
+      co_return;
+      ^
+
+"Test_name.c", line 48: error: "return" is not permitted in a coroutine (use "co_return" instead)
+      template for (int x : {}) { return; }
+                                  ^
+
+"Test_name.c", line 55: error: "return" is not permitted in a coroutine (use "co_return" instead)
+      template for (int x : {0}) { return; }
+                                   ^
+
+"Test_name.c", line 62: error: "return" is not permitted in a coroutine (use "co_return" instead)
+      return;
+      ^
+
+"Test_name.c", line 69: error: "return" is not permitted in a coroutine (use "co_return" instead)
+      return;
+      ^
+
+"Test_name.c", line 76: error: "co_return" is only allowed in coroutines
+      template for (int x : {}) { co_return; }
+                                  ^
+
+"Test_name.c", line 83: error: "co_return" is only allowed in coroutines
+      template for (int x : {0}) { co_return; }
+                                   ^
+
+8 errors detected in the compilation of "Test_name.c".

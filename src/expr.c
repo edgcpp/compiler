@@ -667,7 +667,7 @@ TRUE and FALSE is returned.
   expr_stack_entry.consteval_call_need_not_fold = for_template_arg &&
                                                   constexpr_enabled;
   if (scope_stack_top().is_rescan || source_pos == NULL ||
-      (is_prototype_instantiation_context() &&
+      (is_prototype_instantiation_or_expansion_context() &&
        (microsoft_mode || gpp_version_is(any_version)))) {
     /* During function template deductions, do not issue diagnostics.  MSVC and
        GCC appear to also not diagnose failures when deducing placeholders in
@@ -13291,7 +13291,7 @@ and return the result in *result (or an error indication in *rcblock).
         /* No further checking here. */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       } else if ((gpp_version_is(any_version) || ms_version_is(any_version)) &&
-                 is_prototype_instantiation_context() &&
+                 is_prototype_instantiation_or_expansion_context() &&
                  !is_const_qualified_type(operand.type)) {
         /* GCC and MSVC accept cases such as the following:
              template<typename T> struct S {
@@ -20192,18 +20192,16 @@ where <typename-or-default> is either a type name or the keyword "default".
                previously cached tokens as an unevaluated expression. */
             if (match_type_arg->variant.type_operand.type != NULL) {
               /* It wasn't the default case after all: Issue an error. */
-              a_diagnostic_ptr  dp;
               a_diag_list       diag_list;
               clear_diag_list(&diag_list);
               err = TRUE;
-              dp = pos_start_error(ec_ambiguous_c11_generic, &type_pos);
               more_info_type_diagnostic(
                                     ec_ambiguous_c11_generic_previous_match,
                                     &match_type_arg->position,
                                     match_type_arg->variant.type_operand.type,
                                     &diag_list);
-              add_more_info_list(dp, &diag_list);
-              end_diagnostic(dp);
+              error_with_notes(ec_ambiguous_c11_generic, &type_pos,
+                               &diag_list);
               discard_more_info_list(&diag_list);
             } else {
               check_assertion(default_seen);
@@ -22255,7 +22253,7 @@ indication in *rcblock).
         if (!is_incomplete_type(underlying_cast_type)) {
           cast_type_okay = TRUE;
         } else if (!strict_ansi_mode &&
-                   is_prototype_instantiation_context()) {
+                   is_prototype_instantiation_or_expansion_context()) {
           /* The type might be complete at some later point when a real
              instantiation is done, so let it by. */
           cast_type_okay = TRUE;
@@ -22349,7 +22347,7 @@ indication in *rcblock).
             if (!is_incomplete_type(underlying_operand_type)) {
               operand_type_okay = TRUE;
             } else if (!strict_ansi_mode &&
-                       is_prototype_instantiation_context()) {
+                       is_prototype_instantiation_or_expansion_context()) {
               /* The type might be complete at some later point when a real
                  instantiation is done, so let it by. */
               operand_type_okay = TRUE;
@@ -24764,11 +24762,12 @@ Return the matching operator "new" symbol, if found.
   }  /* if */
   if (gpp_mode && gnu_version >= 30400) {
     /* g++ 3.4 and above always treat a "new" operator as dependent. */
-    if (is_prototype_instantiation_context()) {
+    if (is_prototype_instantiation_or_expansion_context()) {
       /* During a prototype instantiation, suppress the lookup. */
       nps->unknown_dependent_new = TRUE;
     }  /* if */
-  } else if (microsoft_mode && is_prototype_instantiation_context()) {
+  } else if (microsoft_mode &&
+             is_prototype_instantiation_or_expansion_context()) {
     /* Microsoft compilers do very limited processing of templates in
        general.  If we perform prototype instantiations in Microsoft mode,
        we treat this case as dependent to reduce the amount of checking
@@ -31189,7 +31188,7 @@ freed by this routine.
                                          skip_reference_type(type_cast_to) :
                                          type_cast_to);
   if (gpp_mode && !clang_mode && !could_be_dependent &&
-      is_prototype_instantiation_context() &&
+      is_prototype_instantiation_or_expansion_context() &&
       ((!expr_stack->possible_rescan_context &&
         (is_local_scope_kind(scope_stack_top().kind) ||
          (scope_is(&scope_stack_top(), sck_func_prototype) &&
@@ -32963,7 +32962,7 @@ operator_position describe the location of the operator in the token stream.
          or function types), and null pointer constants and "void *" pointers
          are specially handled (ANSI C 3.3.9).  Ditto in C++. */
       if ((gnu_version_is(any_version) || ms_version_is(any_version)) &&
-          is_prototype_instantiation_context()) {
+          is_prototype_instantiation_or_expansion_context()) {
         /* GCC and MSVC do not perform full type checking in templates. */
       } else {
         (void)check_compatibility_of_pointer_operands(
@@ -32980,7 +32979,7 @@ operator_position describe the location of the operator in the token stream.
       /* At least one operand is a pointer to member.  See if the operands
          are compatible. */
       if ((gnu_version_is(any_version) || ms_version_is(any_version)) &&
-          is_prototype_instantiation_context()) {
+          is_prototype_instantiation_or_expansion_context()) {
         /* GCC and MSVC do not perform full type checking in templates. */
       } else {
         (void)check_ptr_to_member_operands_for_compatibility(
@@ -34096,7 +34095,9 @@ Set the initializer for the variable vp from the operand "operand".
   /* Copy the operand so if its type changes the caller will not be
      affected. */
   copy_operand(operand, &local_operand);
-  if (is_class_struct_union_type(vp->type)) {
+  if (is_array_type(vp->type)) {
+    dip = prep_array_variable_initializer(&dps, &local_operand);
+  } else if (is_class_struct_union_type(vp->type)) {
     /* See if we can elide the copy for class-typed variables. */
     prep_elision_initializer_operand(&local_operand, vp->type,
                                      /*fill_in_dtor=*/TRUE,
@@ -40406,10 +40407,7 @@ the result is not constant) set *fatal to TRUE.
     val = is_concept_satisfied(node, tap, &diag_list, CTWS_NO_OPTIONS,
                                (a_ctws_state_ptr)NULL, fatal);
     if (*fatal) {
-      a_diagnostic  *dp = pos_start_error(ec_invalid_concept_id,
-                                          &node->position);
-      add_more_info_list(dp, &diag_list);
-      end_diagnostic(dp);
+      error_with_notes(ec_invalid_concept_id, &node->position, &diag_list);
     } else {
       discard_more_info_list(&diag_list);
     }  /* if */
@@ -40561,7 +40559,7 @@ if rescan_is_template_id is TRUE, and return the result in *operand
     ntoken = next_token_with_seq_number(&paren_tok_seq_number);
     name_followed_by_left_paren = (ntoken == tok_lparen);
     if (do_dependent_name_processing &&
-        is_nonspecialized_instantiation_context() &&
+        is_nondependent_call_reuse_context() &&
         !is_template_dependent_context() &&
         arg_dependent_lookup_enabled &&
         !locator.is_qualified_name &&
@@ -41634,7 +41632,7 @@ type_identifier_case:
                 /* In contexts that aren't constraint expressions, produce a
                    constant entry. */
                 a_constant_ptr        con = local_constant();
-                if ((is_prototype_instantiation_context() ||
+                if ((is_prototype_instantiation_or_expansion_context() ||
                      is_alias_in_template_decl_context() ||
                      (scope_stack_top().in_nonreal_instantiation &&
                       !scope_stack_top().is_rescan)) &&
@@ -42456,7 +42454,7 @@ text buffer so the caller should copy it quickly.
       name_str = "";
     }  /* if */
 #if BACK_END_IS_CP_GEN_BE
-  } else if (is_prototype_instantiation_context()) {
+  } else if (is_prototype_instantiation_or_expansion_context()) {
     /* Return the spelling of the function name token, not the function
        name, so that the definition of the function template can be
        accurately reconstructed. */
@@ -42564,7 +42562,7 @@ subsequent string literals.
   curr_token = scan_string_literal(lit_kind | SCLK_FUNCTION_NAME);
   curr_char_loc = saved_curr_char_loc;
 #if BACK_END_IS_CP_GEN_BE
-  if (is_prototype_instantiation_context()) {
+  if (is_prototype_instantiation_or_expansion_context()) {
     /* Indicate that this is the spelling of the function name token, not
        the function name, and treat it as template-dependent. */
     const_for_curr_token.variant.string.func_name_tok = TRUE;
@@ -42702,7 +42700,7 @@ which of the various keywords was used.
     switch_to_file_scope_region(&region_to_switch_back_to);
     name_string = alloc_unshared_constant(&const_for_curr_token);
     switch_back_to_original_region(region_to_switch_back_to);
-    if (is_prototype_instantiation_context()) {
+    if (is_prototype_instantiation_or_expansion_context()) {
       /* Ensure that __func__ in a template context is treated as a template-
          dependent (i.e., type-dependent) expression.  To achieve this, the
          string literal is cast to type_of_unknown_templ_param_nontype. */
@@ -45181,7 +45179,7 @@ see expr.h).
 #if MICROSOFT_EXTENSIONS_ALLOWED
   if (microsoft_bugs && curr_token == tok_typename && 
       (is_real_instantiation_context() &&
-       !is_prototype_instantiation_context())) {
+       !is_prototype_instantiation_or_expansion_context())) {
     /* Normally "typename X::Y ..." is taken to be a functional-notation cast,
        but in Microsoft mode the thing after "typename" need not actually
        be a typename, so the typename is just discarded. */
@@ -47306,11 +47304,7 @@ be recorded that the final comparison was 5 == 4.
       if (!curr_expr_kind_is_one_in_which_const_exprs_are_recorded()) {
         constant->expr = NULL;
       }  /* if */
-    } else if ((is_prototype_instantiation_context() ||
-                (microsoft_mode && in_ms_nonreal_class_instantiation()) ||
-                scope_stack_top().alias_in_template_decl ||
-               (scope_stack_top().in_nonreal_instantiation &&
-                 !scope_stack_top().is_rescan)) &&
+    } else if (is_uninstantiated_dependent_expr_context() &&
                expr_is_instantiation_dependent(expr)) {
       make_template_param_expr_constant(expr, constant);
       discard_more_info_list(diag_list);
@@ -47322,10 +47316,7 @@ be recorded that the final comparison was 5 == 4.
       }  /* if */
     } else {
       if (expr_error_should_be_issued()) {
-        a_diagnostic_ptr  dp;
-        dp = pos_start_error(ec_expr_not_constant, &result.position);
-        add_more_info_list(dp, diag_list);
-        end_diagnostic(dp);
+        error_with_notes(ec_expr_not_constant, &result.position, diag_list);
       }  /* if */
       discard_more_info_list(diag_list);
       set_error_constant(constant);
@@ -49459,6 +49450,61 @@ end_of_routine:
 }  /* generate_enhanced_for_ne_and_incr_expressions */
 
 
+static void bind_enhanced_for_variable(a_variable_ptr   variable,
+                                       an_operand       *operand,
+                                       a_boolean        *expr_stack_popped)
+/*
+Bind the iterator variable (or structured-binding container variable) of an
+enhanced for-like construct (a range-based-for or an expansion statement) to
+the given operand: Deduce the placeholder type if needed and record the
+initializer (any implicit conversion is handled by prep_initializer_operand in
+set_variable_initializer).  In most cases set_variable_initializer can be used,
+but the case of an array structured-binding container must be handled
+separately; record_init_for_array_struct_binding pushes its own expression
+stack, so in that case the currently active expression stack is popped and
+*expr_stack_popped is set to TRUE so that the caller does not pop it again.
+*/
+{
+  deduce_auto_type_in_enhanced_for_if_needed(variable, operand);
+  if (variable->is_struct_binding_container &&
+      !is_any_reference_type(variable->type) &&
+      is_array_type(operand->type)) {
+    /* Reconstruct a declaration parse state for the variable and an
+       initializer component for the initializer, and call
+       record_init_for_array_struct_binding with those structures. */
+    a_decl_parse_state     dps;
+    an_init_component_ptr  icp;
+    pop_expr_stack();
+    *expr_stack_popped = TRUE;
+    init_decl_parse_state(&dps);
+    dps.sym = symbol_for(variable);
+    dps.type = variable->type;
+    dps.declarator_pos = variable->source_corresp.decl_position;
+    icp = alloc_arg_list_elem_for_operand(operand);
+    record_init_for_array_struct_binding(&dps, icp);
+    free_init_component_list(icp);
+    variable->init_kind = initk_dynamic;
+    variable->initializer.dynamic = dps.init_state.init_dip;
+    /* The dynamic init entry should point at the variable (as is done in
+       gen_dynamic_initialization); record_init_for_array_struct_binding
+       does not set the field (in the ordinary declaration path its caller
+       does).  The link is needed when the initialization is lowered from an
+       stmk_init statement added by
+       add_init_statement_for_variable_dynamic_init. */
+    dps.init_state.init_dip->variable = variable;
+  } else {
+    set_variable_initializer(variable, operand);
+  }  /* if */
+  /* Now that we are sure that we know the variable type, check any
+     remaining requirements. */
+  if (relaxed_constexpr_allowed() && innermost_function_scope != NULL &&
+      innermost_function_scope->variant.routine.ptr->is_constexpr) {
+    check_var_in_constexpr_function(
+                     variable, &variable->source_corresp.decl_position);
+  }  /* if */
+}  /* bind_enhanced_for_variable */
+
+
 static a_boolean fill_in_range_based_for_loop_constructs(
                                      a_range_based_for_loop_ptr rbflp,
                                      a_source_position          *expr_position,
@@ -49543,44 +49589,7 @@ FALSE otherwise.
       /* Add the initializer to the iterator variable. */
       a_variable_ptr  iter_var = rbflp->iterator;
       if (iter_var != NULL) {
-        deduce_auto_type_in_enhanced_for_if_needed(iter_var, &operand);
-        /* Record the initializer for the iterator variable.  In most cases,
-           we can just call set_variable_initializer here, but the case of
-           array structured bindings must be handled separately. There may be
-           an implicit conversion here, but prep_initializer_operand in
-           set_variable_initializer will handle that. */
-        if (iter_var->is_struct_binding_container &&
-            !is_any_reference_type(iter_var->type) &&
-            is_array_type(operand.type)) {
-          /* Reconstruct a declaration parse state for the variable and an
-             initializer component for the initializer, and call
-             record_init_for_array_struct_binding with those structures. */
-          a_decl_parse_state     dps;
-          an_init_component_ptr  icp;
-          /* The call to record_init_for_array_struct_binding pushed its own
-             expression stack.  So pop the currently active expression stack
-             and set a flag to avoid popping it again later on. */
-          pop_expr_stack();
-          expr_stack_popped = TRUE;
-          init_decl_parse_state(&dps);
-          dps.sym = symbol_for(iter_var);
-          dps.type = iter_var->type;
-          dps.declarator_pos = iter_var->source_corresp.decl_position;
-          icp = alloc_arg_list_elem_for_operand(&operand);
-          record_init_for_array_struct_binding(&dps, icp);
-          free_init_component_list(icp);
-          iter_var->init_kind = (an_init_kind)initk_dynamic;
-          iter_var->initializer.dynamic = dps.init_state.init_dip;
-        } else {
-          set_variable_initializer(iter_var, &operand);
-        }  /* if */
-        /* Now that we are sure that we know the iterator variable type, check
-           any remaining requirements. */
-        if (relaxed_constexpr_allowed() && innermost_function_scope != NULL &&
-            innermost_function_scope->variant.routine.ptr->is_constexpr) {
-          check_var_in_constexpr_function(
-                           iter_var, &iter_var->source_corresp.decl_position);
-        }  /* if */
+        bind_enhanced_for_variable(iter_var, &operand, &expr_stack_popped);
       }  /* if */
     }  /* if */
   }  /* if */
@@ -49723,12 +49732,11 @@ is the selector object; it can be a handle.  *type is set to indicate the
 return type of the member call expression (which may be an error type).
 is_for_each is TRUE if the statement being processed is a for-each statement
 (otherwise it's a range-based-for statement).  *expr_position is the source
-position for the collection expression.  tok_seq_number is the token for the
-start of the loop expression.  Returns TRUE (and creates *loop_var
-with the appropriate initializer) if an appropriate member function is
-found; otherwise issues an error message (and *loop_var is unmodified).
-Returns FALSE (without issuing any error messages) in the template
-dependent case.
+position for the collection expression. tok_seq_number is the token for the
+start of the loop expression.  Returns TRUE (and creates *loop_var with the
+appropriate initializer) if an appropriate member function is found; otherwise
+issues an error message (and *loop_var is unmodified).  Returns FALSE (without
+issuing any error messages) in the template dependent case.
 
 When use_await is TRUE, the "co_await" operator should be applied to the
 initializer of *loop_var.
@@ -51369,11 +51377,11 @@ specified by function_name.  range_var is the sole argument in the function
 call, and argument-dependent lookup is used (with namespace std as an
 associated namespace) for the purposes of the lookup.  *expr_position is the
 source position for the range expression.  tok_seq_number is the sequence
-number of the range-based-for expression.  Returns TRUE
-(and creates *variable with a proper initializer) if an appropriate function
-was found; otherwise reports an error and returns FALSE (with *variable
-unmodified).  Note also that this routine will return FALSE (and not issue any
-errors) in the case where the expression is template dependent.
+number of the range-based-for expression.  Returns TRUE (and creates *variable
+with a proper initializer) if an appropriate function was found; otherwise
+reports an error and returns FALSE (with *variable unmodified).  Note also that
+this routine will return FALSE (and not issue any errors) in the case where the
+expression is template dependent.
 
 When use_await is TRUE, the "co_await" operator should be applied to the
 initializer of *variable.
@@ -51918,6 +51926,309 @@ expression.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   db_exit();
 }  /* scan_range_based_for_expression */
+
+
+static an_expr_node_ptr expansion_initializer_element_node(an_operand *operand)
+/*
+Record the value uses of the variables whose transformations were suppressed
+when operand was scanned, to avoid spurious set-but-never-used warnings, and
+return operand as a node for the expansion-initializer.  A rescan context
+preserves operand properties needed for initialization, including literal
+constants and unresolved overload sets.
+*/
+{
+  an_expr_node_ptr  node;
+  a_boolean         saved_rescan_context;
+  an_operand        orig_operand;
+
+  saved_rescan_context = expr_stack->possible_rescan_context;
+  copy_operand(operand, &orig_operand);
+  for (a_ref_entry_ptr  rep = operand->ref_entries_list;
+       rep != NULL;
+       rep = rep->next_operand_ref) {
+    if (symbol_is(rep->symbol, sk_variable)) {
+      record_symbol_reference(SRK_USE, rep->symbol, &rep->position,
+                              /*update_il_entry=*/TRUE);
+    }  /* if */
+  }  /* for */
+  if (is_braced_init_list_operand(operand)) {
+    an_init_component_ptr  icp = operand->variant.braced_init_list;
+    an_expr_node_ptr       *p_next;
+    node = alloc_braced_init_list_expr(icp);
+    p_next = &node->variant.braced_init_list;
+    for (icp = icp->variant.braced.list; icp != NULL; icp = icp->next) {
+      an_operand             elem_operand, *elem_op;
+      an_expr_node_ptr       elem;
+      an_init_component_ptr  allocated_icp = NULL;
+      if (is_designator_component(icp)) {
+        /* Keep a generic constant for IL generation.  The original designator
+           is restored from the saved components during binding. */
+        allocated_icp = copy_designator_init_component(icp);
+        prep_generic_argument(allocated_icp);
+        elem_op = operand_of_arg_list_elem(allocated_icp);
+      } else if (is_braced_init_component(icp)) {
+        make_braced_init_list_operand(icp, &elem_operand);
+        elem_op = &elem_operand;
+      } else {
+        elem_op = operand_of_arg_list_elem(icp);
+      }  /* if */
+      elem = expansion_initializer_element_node(elem_op);
+      if (allocated_icp != NULL) free_init_component_list(allocated_icp);
+      *p_next = elem;
+      p_next = &elem->next;
+    }  /* for */
+    free_init_component_list(operand->variant.braced_init_list);
+  } else {
+    if (is_indefinite_function_operand(operand)) {
+      /* The element's target type is not available until binding. */
+      conv_indefinite_function_to_unknown_dependent_function(
+                                         operand, /*force_to_rvalue=*/FALSE);
+    } else {
+      eliminate_unusual_operand_kinds(operand);
+    }  /* if */
+    expr_stack->possible_rescan_context = TRUE;
+    node = make_node_from_operand_for_expr_list(operand);
+    if (is_indefinite_function_operand(&orig_operand)) {
+      node->extra.rescan_info = save_operand_info_in_rescan_info_entry(
+                                      &orig_operand, node->extra.rescan_info);
+    }  /* if */
+    expr_stack->possible_rescan_context = saved_rescan_context;
+  }  /* if */
+  return node;
+}  /* expansion_initializer_element_node */
+
+
+void scan_expansion_initializer(a_statement_ptr  statement)
+/*
+Scan the expansion-initializer of statement (N5050 [stmt.expand]) and record
+it in its supplement.  List elements are separate full-expressions, linked
+through their next fields; an empty list is represented by NULL.
+*/
+{
+  an_expansion_stmt_info_ptr
+                       expn_info = expn_info_of(statement);
+  an_operand           result;
+  an_expr_stack_entry  *saved_expr_stack;
+  an_expr_stack_entry  expr_stack_entry;
+  a_transformation_options_set
+                       options;
+
+  db_enter(3, "scan_expansion_initializer");
+  save_expr_stack(&saved_expr_stack);
+  /* Keep overload sets unresolved until the element's target type is known,
+     and do not decay arrays or convert lvalues to rvalues. */
+  options = TOPT_SUPPRESS_CHECK_FOR_INDEFINITE_FUNCTION |
+            TOPT_SUPPRESS_FUNCTION_TO_POINTER_CONVERSION |
+            TOPT_SUPPRESS_ARRAY_TO_POINTER_CONVERSION |
+            TOPT_SUPPRESS_LVALUE_TO_RVALUE_CONVERSION;
+  if (curr_token == tok_lbrace) {
+    /* The expansion-initializer is an expansion-init-list. */
+    expn_info->initializer_is_list = TRUE;
+    (void)get_token();
+    add_stop_token(tok_rbrace);
+    if (curr_token != tok_rbrace) {
+      /* A trailing comma is permitted after the last element. */
+      an_operand         elem;
+      an_expr_node_ptr   elem_node;
+      an_expr_node_ptr   *p_next_element = &expn_info->initializer;
+      a_boolean          more_elements = TRUE;
+      while (more_elements) {
+        a_pack_expansion_stack_entry_ptr  pesep;
+        a_boolean                         pack_index_expr;
+        a_boolean                         any_more;
+        /* Scan pack expansions as in a braced initializer list: once per
+           pack element, or as one dependent element in a prototype scan. */
+        pack_index_expr = pack_index_next();
+        any_more = begin_potential_pack_expansion_context(&pesep);
+        while (any_more) {
+          a_pack_expansion_descr_ptr  pedep;
+          if (curr_token == tok_integer_pack) {
+            an_init_component_ptr  pack_list =
+                                          scan_integer_pack_init_components();
+            an_init_component_ptr  icp;
+
+            for (icp = pack_list; icp != NULL; icp = icp->next) {
+              push_expr_stack(ek_normal, &expr_stack_entry,
+                              /*force_object_lifetime=*/FALSE,
+                              /*suppress_object_lifetime=*/FALSE);
+              elem_node = wrap_up_full_expression(
+                                expansion_initializer_element_node(
+                                              operand_of_arg_list_elem(icp)));
+              pop_expr_stack();
+              *p_next_element = elem_node;
+              p_next_element = &elem_node->next;
+            }  /* for */
+            free_init_component_list(pack_list);
+            /* The integer pack has already consumed its trailing ellipsis. */
+            (void)end_potential_pack_expansion_context(
+                                            pesep, /*is_declarator=*/FALSE);
+            any_more = advance_to_next_pack_element(pesep);
+            continue;
+          }  /* if */
+          /* Give each element its own full-expression lifetime. */
+          push_expr_stack(ek_normal, &expr_stack_entry,
+                          /*force_object_lifetime=*/FALSE,
+                          /*suppress_object_lifetime=*/FALSE);
+          expr_stack_entry.possible_rescan_context = TRUE;
+          if (curr_token == tok_lbrace) {
+            scan_braced_init_list_as_operand(&elem);
+          } else {
+            scan_expr(&elem, PREC_LOWEST, EOPT_DISALLOW_COMMA_OPERATOR);
+            do_operand_transformations(&elem, options);
+          }  /* if */
+          /* Record the value uses of variables suppressed by the
+             transformations above and make the expression node. */
+          elem_node = wrap_up_full_expression(
+                                    expansion_initializer_element_node(&elem));
+          pop_expr_stack();
+          *p_next_element = elem_node;
+          p_next_element = &elem_node->next;
+          pedep = end_comma_separated_pack_element_scan(pack_index_expr,
+                                                        pesep, &any_more);
+          if (pedep != NULL) {
+            /* Mark an unexpanded pack element, as in an argument list. */
+            elem_node->is_pack_expansion = TRUE;
+          }  /* if */
+        }  /* while */
+        if (curr_token == tok_comma) {
+          (void)get_token();
+          if (curr_token == tok_rbrace) {
+            more_elements = FALSE;
+          }  /* if */
+        } else {
+          more_elements = FALSE;
+        }  /* if */
+      }  /* while */
+    }  /* if */
+    (void)required_token(tok_rbrace, ec_exp_rbrace);
+    remove_stop_token(tok_rbrace);
+  } else {
+    expn_info->initializer_is_list = FALSE;
+    push_expr_stack(ek_normal, &expr_stack_entry,
+                    /*force_object_lifetime=*/FALSE,
+                    /*suppress_object_lifetime=*/FALSE);
+    scan_expr(&result, PREC_LOWEST, EOPT_NO_OPTIONS);
+    do_operand_transformations(&result, options);
+    expn_info->initializer = wrap_up_full_expression(
+                                  expansion_initializer_element_node(&result));
+    pop_expr_stack();
+  }  /* if */
+  restore_expr_stack(saved_expr_stack);
+  db_exit();
+}  /* scan_expansion_initializer */
+
+
+static void expansion_initializer_operand(an_expr_node_ptr          expr,
+                                          an_expr_copy_options_set  options,
+                                          an_operand                *operand)
+/*
+Reconstruct operand from the retained expansion initializer expr, copying
+its expressions with options.  Preserve operand properties without redoing
+name lookup or semantic analysis in the element's scope.
+*/
+{
+  an_expr_rescan_info_entry_ptr  rescan_info = expr->extra.rescan_info;
+
+  if (has_saved_indefinite_function_operand(expr)) {
+    copy_operand(&rescan_info->saved_operand, operand);
+  } else if (node_is(expr, enk_braced_init_list)) {
+    an_init_component_ptr  list = NULL;
+    an_init_component_ptr  *p_next = &list;
+    an_init_component_ptr  orig_icp;
+    an_expr_node_ptr       elem = expr->variant.braced_init_list;
+    check_assertion(rescan_info != NULL);
+    orig_icp = rescan_info->saved_operand.variant.braced_init_list;
+    check_assertion(is_braced_init_component(orig_icp));
+    for (orig_icp = orig_icp->variant.braced.list;
+         orig_icp != NULL; orig_icp = next_elem(orig_icp)) {
+      an_operand             elem_operand;
+      an_init_component_ptr  elem_icp;
+      check_assertion(elem != NULL);
+      if (is_designator_component(orig_icp)) {
+        check_assertion(is_constant_node(elem) &&
+                        node_constant_is(elem, ck_designator));
+        elem_icp = copy_designator_init_component(orig_icp);
+      } else {
+        expansion_initializer_operand(elem, options, &elem_operand);
+        if (is_braced_init_list_operand(&elem_operand)) {
+          elem_icp = elem_operand.variant.braced_init_list;
+        } else {
+          elem_icp = alloc_arg_list_elem_for_operand(&elem_operand);
+        }  /* if */
+      }  /* if */
+      elem = elem->next;
+      *p_next = elem_icp;
+      p_next = &elem_icp->next;
+    }  /* for */
+    check_assertion(elem == NULL);
+    make_braced_init_operand_from_list(list, &rescan_info->saved_operand,
+                                       operand);
+  } else {
+    /* A retained constant stays a constant operand (see
+       make_operand_from_copied_expr). */
+    make_operand_from_copied_expr(expr, options, operand);
+  }  /* if */
+  operand->position = expr->position;
+}  /* expansion_initializer_operand */
+
+
+void set_expansion_element_binding(a_variable_ptr   variable,
+                                   an_expr_node_ptr element_expr,
+                 /* Defaulted: */  a_boolean        extend_temporaries)
+/*
+Initialize variable from a copy of element_expr, deducing any placeholder
+type (see bind_enhanced_for_variable).  variable is a per-element copy of the
+for-range-declaration.  Copying keeps the retained expansion-initializer
+separate from lowered code.  When extend_temporaries is TRUE (as for the
+elements of an enumerating expansion), those temporaries persist through the
+element block.  The caller defines any structured bindings after this
+initialization.
+*/
+{
+  an_operand            operand;
+  an_expr_node_ptr      initializer_expr;
+  an_expr_stack_entry   *saved_expr_stack;
+  an_expr_stack_entry   expr_stack_entry;
+  a_boolean             expr_stack_popped = FALSE;
+
+  db_enter(3, "set_expansion_element_binding");
+  /* Strip scan-time lifetime wrappers; binding recreates temporaries in
+     the destination scope. */
+  initializer_expr = skip_object_lifetimes(element_expr);
+  save_expr_stack(&saved_expr_stack);
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/extend_temporaries);
+  expr_stack_entry.expansion_initializer = extend_temporaries;
+  expr_stack_entry.destructions_preceding_expr =
+                                            curr_object_lifetime->destructions;
+  expansion_initializer_operand(initializer_expr,
+                         extend_temporaries ? CE_EXTEND_INITIALIZER_TEMPORARIES
+                                            : CE_NO_OPTIONS, &operand);
+  /* Object arrays are initialized by set_variable_initializer.  Reference
+     initialization handles a braced-init-list itself, including binding a
+     reference to an array temporary. */
+  if (is_braced_init_list_operand(&operand) &&
+      !is_array_type(variable->type) &&
+      !is_any_reference_type(variable->type) &&
+      !var_declared_with_placeholder_type(variable)) {
+    an_operand converted;
+    prep_list_initializer(operand.variant.braced_init_list, variable->type,
+                          /*is_direct_init=*/FALSE,
+                          /*check_narrowing=*/TRUE,
+                          /*warning_on_narrowing=*/FALSE,
+                          CCO_INITIALIZING_VARIABLE,
+                          /*fill_in_dtor=*/TRUE,
+                          /*force_temp=*/FALSE,
+                          /*make_lvalue_temp=*/FALSE, &converted,
+                          (an_init_state *)NULL, (an_arg_match_summary *)NULL);
+    copy_operand(&converted, &operand);
+  }  /* if */
+  bind_enhanced_for_variable(variable, &operand, &expr_stack_popped);
+  if (!expr_stack_popped) pop_expr_stack();
+  restore_expr_stack(saved_expr_stack);
+  db_exit();
+}  /* set_expansion_element_binding */
 
 
 /*
@@ -52560,7 +52871,8 @@ function has no effect for prototype instantiations (i.e., their return types
 are left unaffected).
 */
 {
-  if (!rp->is_prototype_instantiation) {
+  check_assertion(rp == current_routine_entry());
+  if (!is_prototype_instantiation_or_expansion_context()) {
     a_type_ptr  declared_return_type, deduced_return_type, tp;
     a_boolean   is_decltype_auto_case = FALSE;
     check_assertion(depth_innermost_function_scope != NO_SCOPE_DEPTH &&
@@ -52922,7 +53234,7 @@ make_coroutine_result_expression.)
       goto done;
     }  /* if */
     if (curr_routine->has_deducible_return_type &&
-        !curr_routine->is_prototype_instantiation) {
+        !is_prototype_instantiation_or_expansion_context()) {
       /* A braced-init-list cannot be used for a lambda with an implicit
          return type, as it does not provide a type. */
       expr_pos_error(curr_routine->is_lambda_body ?
@@ -52980,7 +53292,7 @@ make_coroutine_result_expression.)
       return_by_cctor_case = TRUE;
       expr_stack->in_cctor_elision_initializer = TRUE;
     } else if (curr_routine->has_deducible_return_type &&
-               !curr_routine->is_prototype_instantiation) {
+               !is_prototype_instantiation_or_expansion_context()) {
         /* The return type will be set from the returned expression's type.
            Suppress addition of a destructor on any dynamic initialization
            until we know whether it's going to be optimized away. */
@@ -53847,7 +54159,7 @@ memory region).  Do various error checks.
     }  /* if */
     if ((microsoft_mode || (gpp_mode && !clang_mode)) &&
         !is_constant_operand(operand) &&
-        is_prototype_instantiation_context()) {
+        is_prototype_instantiation_or_expansion_context()) {
       /* GCC doesn't always fold template arguments in template-dependent
          contexts. */
       make_template_param_constant_from_operand(operand, constant,
@@ -54645,7 +54957,7 @@ also has an error_detected flag, which is set to TRUE if any
 error is detected during the processing.
 */
 {
-  an_arg_list_elem_ptr          list, alep;
+  an_arg_list_elem_ptr          list;
   an_expr_node_ptr              init_list;
   an_expr_rescan_info_entry_ptr eriep;
 
@@ -54659,13 +54971,7 @@ error is detected during the processing.
     init_list = expr->variant.braced_init_list;
   }  /* if */
   list = rescan_expr_list(init_list, rcblock);
-  alep = alloc_init_component(ick_braced);
-  alep->variant.braced.list = list;
-  alep->variant.braced.start_pos = eriep->saved_operand.position;
-#if EXTRA_SOURCE_POSITIONS_IN_IL
-  alep->variant.braced.end_pos = eriep->saved_operand.end_position;
-#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
-  make_braced_init_list_operand(alep, result);
+  make_braced_init_operand_from_list(list, &eriep->saved_operand, result);
 }  /* rescan_braced_init_list */
 
 
@@ -55641,9 +55947,7 @@ element operand.
                                               rcblock->template_arg_list))) {
     /* Preserve the generic form so unresolved packs can still be deduced
        during a later substitution pass. */
-    an_expr_node_ptr expr_copy = copy_expr_tree(expr, CE_PRESERVE_RESCAN_INFO);
-    make_lvalue_or_rvalue_expression_operand(expr_copy, result);
-    restore_operand_info_from_expr_rescan_info_entry(result, eriep);
+    make_operand_from_copied_expr(expr, CE_PRESERVE_RESCAN_INFO, result);
   } else {
     any_more = begin_rescan_pack_expansion_context(
                                            pedep, rcblock->template_param_list,
@@ -56475,10 +56779,8 @@ standard form).  Assumes copy-initialization ("="-form).
         if (!interpret_dynamic_init(dip, init_component_pos(icp), dps->type,
                                     /*is_constant_evaluated=*/TRUE,
                                     constant, &diag_list)) {
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, init_component_pos(icp));
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, init_component_pos(icp),
+                           &diag_list);
           set_error_constant(constant);
         }  /* if */
         discard_more_info_list(&diag_list);

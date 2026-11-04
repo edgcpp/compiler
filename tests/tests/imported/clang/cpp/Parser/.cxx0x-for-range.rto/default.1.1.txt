@@ -23,33 +23,13 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     for (auto foo   =     a) // expected-error {{range-based 'for' statement uses ':', not '='}}
                            ^
 
-"Test_name.c", line 49: error: expected an expression
-    for (auto foo   =     a) // expected-error {{range-based 'for' statement uses ':', not '='}}
-                           ^
-
-"Test_name.c", line 49: error: expected a ";"
-    for (auto foo   =     a) // expected-error {{range-based 'for' statement uses ':', not '='}}
-                           ^
-
-"Test_name.c", line 49: warning: variable "foo" was set but never used
-    for (auto foo   =     a) // expected-error {{range-based 'for' statement uses ':', not '='}}
-              ^
-
-"Test_name.c", line 54: error: expected a ";"
-        v) // expected-error@-1 {{range-based 'for' statement uses ':', not '='}}
-         ^
-
-"Test_name.c", line 54: error: expected an expression
-        v) // expected-error@-1 {{range-based 'for' statement uses ':', not '='}}
-         ^
-
-"Test_name.c", line 54: error: expected a ";"
-        v) // expected-error@-1 {{range-based 'for' statement uses ':', not '='}}
-         ^
-
-"Test_name.c", line 52: warning: variable "i" was set but never used
+"Test_name.c", line 52: error: expression must have bool type (or be convertible to bool)
     for (auto i
               ^
+
+"Test_name.c", line 54: error: expected a ";"
+        v) // expected-error@-1 {{range-based 'for' statement uses ':', not '='}}
+         ^
 
 "Test_name.c", line 60: error: expected a ";"
     FORRANGE(i, a) {  // expected-error {{range-based 'for' statement uses ':', not '='}}
@@ -147,4 +127,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       int a[] = {1, 2, 3, 4, 5};
           ^
 
-30 errors detected in the compilation of "Test_name.c".
+27 errors detected in the compilation of "Test_name.c".

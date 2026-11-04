@@ -2691,8 +2691,8 @@ created return NULL and:
       /* The variable is not valid.  err_code explains why. */
     } else if (!lambda->has_capture_default) {
       /* No capture default, so implicit captures are not allowed.  However,
-         if the variable is constant-valued, the use of the constant value
-         does not require capture. */
+         a use of the constant value of a constant-valued variable does not
+         require capture. */
       if (vp != NULL && vp->constant_valued && rvalue_only != NULL) {
         *rvalue_only = TRUE;
       } else {
@@ -2700,12 +2700,15 @@ created return NULL and:
                         ec_not_captured_this_in_lambda :
                         ec_not_captured_local_var_in_lambda;
       }  /* if */
-    } else if (rp->is_template_function && !rp->is_prototype_instantiation) {
+    } else if (rp->is_template_function && !rp->is_prototype_instantiation &&
+               !scope_stack_top().in_expansion_statement_body) {
       /* We're attempting to capture during the real instantiation of a
          generic lambda, but all captures should have been determined during
-         the prototype instantiation.  A valid program can get here if there
-         is a capture default, but the variable is constant-valued and only
-         used as a prvalue.  Otherwise, this is an error. */
+         the prototype instantiation (not in the prototype scan of an
+         expansion statement body, whose real lambdas are created by the
+         per-element rescans).  A valid program can get here if there is a
+         capture default, but the variable is constant-valued and only used
+         as a prvalue.  Otherwise, this is an error. */
       if (vp != NULL) {
         if (vp->constant_valued && rvalue_only != NULL) {
           *rvalue_only = TRUE;
@@ -3059,11 +3062,12 @@ done:
 void early_eh_spec_fixup(a_routine_ptr                   rp,
                          an_exception_specification_ptr  esp)
 /*
-rp is a non-template member function with a pending fixup to scan the operand
-of its noexcept specifier.  Ordinarily, that would be scanned when the class
-and its parent classes are completed, but a member declaration has triggered
-the need for the exception specification to be determined earlier.  Perform
-the delayed scan of the noexcept operand now.
+rp is a member function with a pending class fixup to scan the operand of its
+noexcept specifier, represented by esp.  It is either a non-template function
+or an expansion-only prototype without a template declaration cache.
+Ordinarily, the operand would be scanned when the class and its parent classes
+are completed, but a member declaration requires the exception specification
+to be determined earlier.  Perform the delayed scan of the operand now.
 */
 {
   a_token_cache_ptr   cache = esp->variant.token_cache;
@@ -4048,7 +4052,8 @@ nested class.
                class. */
             tssp = template_supplement_for_symbol(sym);
             check_assertion(tssp != NULL);
-            tssp->cache->decl_info->decl_seq = class_end_decl_seq;
+            tssp->cache->decl_info->definition_info.decl_seq =
+                                                            class_end_decl_seq;
           }  /* if */
           if (prototype_instantiation_should_be_done_for_function(sym) &&
               (!defer_function_prototype_instantiations ||
@@ -6468,7 +6473,7 @@ the overridden symbol.
   if (compatible) {
     /* Nothing more to do. */
   } else if ((gpp_mode || microsoft_mode) &&
-             is_prototype_instantiation_context()) {
+             is_prototype_instantiation_or_expansion_context()) {
     /* GNU and Microsoft compilers appear not to check return type
        compatibility during prototype instantiations. */
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -16916,15 +16921,18 @@ implicitly declared member functions.
            template cache information, as well as an entry to perform a
            prototype instantiation when the complete definition of the
            enclosing class has been seen. */
-        a_template_decl_info_ptr  tdip =
+        if (!in_expansion_prototype_without_enclosing_template()) {
+          a_template_decl_info_ptr  tdip =
                           get_specified_template_decl_info(/*innermost=*/TRUE);
-        a_reusable_token_cache    reusable_cache(
+          a_reusable_token_cache    reusable_cache(
                            rtsp->exception_specification->variant.token_cache);
-
-        set_template_cache_info(
+          set_template_cache_info(
                                tssp->variant.function.exception_spec_arg_cache,
                                reusable_cache,
                                tdip);
+        }  /* if */
+        /* Expansion-only prototypes use the class fixup and element replay,
+           not a template declaration cache. */
         check_assertion(curr_routine_fixup != NULL);
         curr_routine_fixup->process_exception_spec = TRUE;
       }  /* if */
@@ -25482,8 +25490,9 @@ templates from that base template.
                                    /*is_template_template_param_rescan*/FALSE);
     new_tpl = copy_template_param_list(btpl);
     templ_decl_state.decl_info->parameters = new_tpl;
-    templ_decl_state.decl_info->pack_expansions =
-                btssp->variant.function.decl_cache->decl_info->pack_expansions;
+    templ_decl_state.decl_info->definition_info.pack_expansions.head =
+       btssp->variant.function.decl_cache->decl_info->
+                                          definition_info.pack_expansions.head;
     templ_decl_state.number_of_template_decl_scopes += 1;
     /* Save a pointer to the template declaration information in the scope
        stack entry. */
@@ -31023,7 +31032,7 @@ block of information that is provided if this is a member template declaration.
       /* We ran into "auto" parameters: Reparse the declaration as a template
          (i.e., this is an abbreviated function template). */
       a_token_kind  final_token = tok_semicolon;
-      if (is_prototype_instantiation_context()) {
+      if (is_prototype_instantiation_or_expansion_context()) {
         /* There is an enclosing template and when that is instantiated, we
            will see the abbreviated function template again.  Rather than
            perform two parses again, we will reuse the information we found
@@ -33543,14 +33552,15 @@ classes.
                                        scope_stack_top().default_name_linkage;
 #endif /* BACK_END_IS_CP_GEN_BE */
     if (is_prototype_instantiation_or_cli_generic_type(class_type) ||
-        scope_stack_top().in_prototype_instantiation ||
+        in_prototype_instantiation_or_expansion_scan() ||
         scope_stack_top().in_generic_definition) {
-      /* This is a prototype instantiation, C++/CLI generic definition, or
+      /* This is a prototype instantiation (including the prototype scan
+         of an expansion statement body), C++/CLI generic definition, or
          an instantiation of a local class type, so the resulting class
          is "nonreal" (i.e., based on template arguments that include
          the dummy types and constants of template parameters rather than
          real types and constants). */
-      if (scope_stack_top().in_prototype_instantiation) {
+      if (in_prototype_instantiation_or_expansion_scan()) {
         class_state.is_nonreal_instantiation = TRUE;
         class_type->variant.class_struct_union.is_nonreal_class = TRUE;
       } else if (scope_stack_top().in_generic_definition) {
@@ -34944,8 +34954,17 @@ caller has already moved past the '[', and this routine leaves the trailing
               if (symbol_is(sym, sk_variable)) {
                 an_error_code  diag = ec_no_error;
                 var = sym->variant.variable.ptr;
-                if (!check_var_for_lambda_capture(var, /*implicit=*/FALSE,
-                                                  by_ref, &diag)) {
+                if (var->compiler_generated && !var->is_struct_binding &&
+                    var->source_corresp.is_local_to_function &&
+                    type_is(var->type, tk_template_param)) {
+                  /* The dummy parameter variable for an empty expansion
+                     of a function parameter pack (see decl_parameter) is
+                     not itself capturable; the real captures are created
+                     when the enclosing context is expanded. */
+                  var = NULL;
+                } else if (!check_var_for_lambda_capture(var,
+                                                       /*implicit=*/FALSE,
+                                                       by_ref, &diag)) {
                   pos_error(diag, &error_position);
                   var = NULL;
                 } else if (diag != ec_no_error) {
@@ -35538,8 +35557,9 @@ decl_info/locator/func_info the member to be declared.
                                                                     parameters;
     new_tpl = copy_template_param_list(call_op_tpl);
     templ_decl_state.decl_info->parameters = new_tpl;
-    templ_decl_state.decl_info->pack_expansions =
-         call_op_tssp->variant.function.decl_cache->decl_info->pack_expansions;
+    templ_decl_state.decl_info->definition_info.pack_expansions.head =
+                           call_op_tssp->variant.function.decl_cache->decl_info
+                                       ->definition_info.pack_expansions.head;
     templ_decl_state.number_of_template_decl_scopes += 1;
     /* Save a pointer to the template declaration information in the scope
        stack entry. */

@@ -3897,6 +3897,13 @@ routine.
       }  /* if */
     }  /* if */
     if (sym != NULL) break;
+    if (do_dependent_name_processing &&
+        ssep->definition_lookup_decl_seq != NO_DECL_SEQUENCE_NUMBER) {
+      /* Locals created by this replay remain visible.  Beyond the scan root,
+         ignore declarations introduced by later element replays.  Enclosing
+         ordinary instantiation scopes impose their own definition boundary. */
+      lookup_state->decl_seq = ssep->definition_lookup_decl_seq;
+    }  /* if */
     if (lookup_state->is_linkage_lookup) {
       /* When doing a linkage lookup, stop when we encounter the first
          namespace scope. */
@@ -7716,7 +7723,7 @@ current scope.
        visible. */
     decl_seq_number = ssep->template_sym->decl_seq-1;
   } else {
-    decl_seq_number = ssep->template_decl_info->decl_seq;
+    decl_seq_number = ssep->definition_replay_info->decl_seq;
   }  /* if */
   if (decl_seq_number != NO_DECL_SEQUENCE_NUMBER && ssep->is_generic_lambda &&
       ssep->assoc_routine != NULL && ssep->assoc_routine->is_lambda_body &&
@@ -7734,10 +7741,11 @@ current scope.
     while (encl != NULL) {
       if (scope_is(encl, sck_template_instantiation) &&
           !encl->in_nonreal_instantiation) {
-        if (encl->template_decl_info != NULL &&
-            encl->template_decl_info->decl_seq != NO_DECL_SEQUENCE_NUMBER &&
-            encl->template_decl_info->decl_seq < decl_seq_number) {
-          decl_seq_number = encl->template_decl_info->decl_seq;
+        if (encl->definition_replay_info != NULL &&
+            encl->definition_replay_info->decl_seq !=
+                                                NO_DECL_SEQUENCE_NUMBER &&
+            encl->definition_replay_info->decl_seq < decl_seq_number) {
+          decl_seq_number = encl->definition_replay_info->decl_seq;
         }  /* if */
         break;
       }  /* if */

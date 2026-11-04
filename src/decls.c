@@ -6237,7 +6237,7 @@ flag when is_declaration is TRUE.
              scp->name_linkage == (a_name_linkage_kind)nlk_external) {
     /* Static entities and entities with "C" linkage are allowed to use
        types without linkage. */
-  } else if (is_prototype_instantiation_context()) {
+  } else if (is_prototype_instantiation_or_expansion_context()) {
     /* Suppress this check in prototype instantiations. */
   } else if (is_declaration || type_without_linkage_flag_set) {
     /* We are either in a declaration or this is the second call for an
@@ -7644,7 +7644,7 @@ for use in generating cross-reference output describing this declaration.
   }  /* if */
   *ext_sym = NULL;
   if (alloc_at_file_scope && !redeclaration &&
-      !(scope_stack_top().in_prototype_instantiation &&
+      !(in_prototype_instantiation_or_expansion_scan() &&
         is_template_dependent_type(type_ptr))) {
     /* The symbol has external or internal linkage.  Find or create an
        external symbol entry for the identifier name, to check that the
@@ -7700,7 +7700,7 @@ for use in generating cross-reference output describing this declaration.
     source_corresp_ptr = &variable_ptr->source_corresp;
     if (*ext_sym == NULL) {
       dps->first_decl = TRUE;
-      if (scope_stack_top().in_prototype_instantiation) {
+      if (in_prototype_instantiation_or_expansion_scan()) {
         variable_ptr->is_prototype_instantiation = TRUE;
       }  /* if */ 
     } else if ((*ext_sym)->variant.extern_symbol_descr
@@ -10165,7 +10165,7 @@ skip_overloading:;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   *ext_sym = NULL;
   if (linkage != idl_none && !redeclaration &&
-      !(scope_stack[depth_scope_stack].in_prototype_instantiation &&
+      !(in_prototype_instantiation_or_expansion_scan() &&
         is_template_dependent_type(type_ptr))) {
     /* Create an external symbol for the present linkable declaration. */
     *ext_sym = create_external_symbol_for_routine(
@@ -10237,7 +10237,7 @@ skip_overloading:;
     }  /* if */
     if (*ext_sym == NULL) {
       dps->first_decl = TRUE;
-      if (scope_stack_top().in_prototype_instantiation) {
+      if (in_prototype_instantiation_or_expansion_scan()) {
         routine_ptr->is_prototype_instantiation = TRUE;
       }  /* if */
     } else if (!linked_redecl_error && *ext_sym != NULL &&
@@ -15585,7 +15585,7 @@ final token.
                       (is_local_scope_kind(scope_stack_top().kind) ||
                        inside_local_class)))) :
                   /* New criteria (post-CWG2518): */
-                  !(scope_stack_top().in_prototype_instantiation ||
+                  !(is_prototype_instantiation_or_expansion_context() ||
                     (microsoft_mode &&
                      scope_stack_top().in_nonreal_instantiation)))) {
       /* The assertion failed: Issue an error. */
@@ -19281,25 +19281,28 @@ given position unless for_decltype is TRUE.
 }  /* check_simple_struct_for_binding */
 
 
-static a_variable_ptr declare_struct_binding_variable(a_decl_parse_state  *dps)
+static a_variable_ptr declare_struct_binding_variable(
+                                                  a_decl_parse_state  *dps,
+                                                  a_symbol_locator    *locator)
 /*
 dps represents a structured binding declaration (and the container variable,
 which has just been declared, in particular).  Declare a variable representing
-an individual structured binding.
+an individual structured binding.  locator is the locator identifying the
+name of the new variable.
 */
 {
   a_variable_ptr      vp;
   a_decl_parse_state  binding_dps = *dps;
 
-  binding_dps.start_pos = pos_curr_token;
-  binding_dps.declarator_pos = pos_curr_token;
+  binding_dps.start_pos = locator->source_position;
+  binding_dps.declarator_pos = locator->source_position;
   binding_dps.is_struct_binding_decl = FALSE;
   binding_dps.has_pack_ellipsis = FALSE;
   if (binding_dps.auto_type == NULL) {
     /* If no "auto" type was specified on the container declaration, create
        such a type for the binding now. */
     expect_error();
-    binding_dps.auto_type = make_auto_type(&pos_curr_token,
+    binding_dps.auto_type = make_auto_type(&locator->source_position,
                                            /*is_decltype_auto=*/FALSE);
   }  /* if */
   binding_dps.specifiers_type = binding_dps.auto_type;
@@ -19318,7 +19321,7 @@ an individual structured binding.
                                            &source_sequence_entries_disallowed,
                                            TRUE);
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
-  decl_variable(&locator_for_curr_id, &binding_dps,
+  decl_variable(locator, &binding_dps,
                 SRK_DECLARATION | SRK_DEFINITION | SRK_INITIALIZATION,
                 &linkage, &ext_sym, (a_decl_pos_block*)NULL);
   if (binding_dps.sym == NULL || !symbol_is(binding_dps.sym, sk_variable)) {
@@ -19375,7 +19378,9 @@ early so that cases like "auto [x] = x;" are diagnosed.
       if (has_pack_ellipsis) {
         pos_error(ec_multiple_structured_binding_packs, &error_position);
       } else if (!is_template_dependent_context() &&
-                 !is_real_instantiation_context()) {
+                 !is_real_instantiation_context() &&
+                 !scope_stack_top().in_expansion_range_decl &&
+                 !scope_stack_top().in_expansion_element_rescan) {
         pos_error(ec_non_template_structured_binding_pack, &error_position);
       } else {
         a_scope_stack_entry_ptr  ssep = &scope_stack_top();
@@ -19394,15 +19399,18 @@ early so that cases like "auto [x] = x;" are diagnosed.
       continue;
     }  /* if */
     /* Declare the variable representing the binding. */
-    vp = declare_struct_binding_variable(dps);
+    vp = declare_struct_binding_variable(dps, &locator_for_curr_id);
     if (vp != NULL) {
       /* Mark the binding variable as such and link it with its container. */
       an_il_entity_list_entry_ptr  list_entry = alloc_il_entity_list_entry();
       if (is_pack) {
         vp->is_pack = TRUE;
-        /* In a real instantiation context we still add the pack itself as a
-           dummy variable. */
-        vp->compiler_generated = is_real_instantiation_context();
+        /* In a real instantiation context, an expansion element rescan, or
+           for the for-range-declaration of an expansion statement, we still
+           add the pack itself as a dummy variable. */
+        vp->compiler_generated =
+                        scope_stack_top().in_expansion_range_decl ||
+                        is_real_instantiation_or_expansion_element_context();
       }  /* if */
       vp->variant.container = container;
       vars_being_deduced->map(vp, TRUE);
@@ -19509,7 +19517,9 @@ can be fully determined.
     an_init_component   *icp = NULL;
     if (err || dependent_case) {
       /* Don't keep a count. */
-    } else if (vp->is_pack && !is_real_instantiation_context()) {
+    } else if (vp->is_pack &&
+               !is_real_instantiation_or_expansion_element_context() &&
+               !scope_stack_top().in_expansion_range_decl) {
       n += pack_elements;
       if (struct_case) {
         /* Skip over any pack elements in a non-real instantiation. */
@@ -19541,7 +19551,9 @@ can be fully determined.
     if (err) {
       btype = error_type();
     } else if (dependent_case ||
-               (vp->is_pack && !is_real_instantiation_context())) {
+               (vp->is_pack &&
+                !is_real_instantiation_or_expansion_element_context() &&
+                !scope_stack_top().in_expansion_range_decl)) {
       btype = type_of_unknown_templ_param_nontype;
     } else if (array_case) {
       btype = array_element_type(container_type);
@@ -19584,17 +19596,23 @@ can be fully determined.
     }  /* if */
     /* Update the type of the variable describing the binding. */
     if (!err && !dependent_case && vp->is_pack &&
-        is_real_instantiation_context()) {
+        (is_real_instantiation_or_expansion_element_context() ||
+         scope_stack_top().in_expansion_range_decl)) {
       an_il_entity_list_entry_ptr  list_entry;
+      a_symbol_ptr                 pack_sym = symbol_for(vp);
+      a_symbol_locator             pack_locator;
       if (in_file_scope(container)) {
         switch_to_file_scope_region(&region_to_switch_back_to);
         switched_region = TRUE;
       }  /* if */
       /* Declare the variable representing the expanded binding and add it to
-         the list of bindings. */
+         the list of bindings.  Use a locator built from the pack's symbol
+         header and declaration position. */
       list_entry = alloc_il_entity_list_entry();
-      locator_for_curr_id.symbol_header = symbol_for(vp)->header;
-      vp = declare_struct_binding_variable(dps);
+      clear_locator(&pack_locator, &vp->source_corresp.decl_position);
+      pack_locator.symbol_header = pack_sym->header;
+      vp = declare_struct_binding_variable(dps, &pack_locator);
+      symbol_for(vp)->token_sequence_number = pack_sym->token_sequence_number;
       vp->is_pack_element = TRUE;
       vp->variant.container = container;
       if (switched_region) {
@@ -19621,7 +19639,8 @@ can be fully determined.
     binding_dps.storage_class = vp->storage_class;
     scope_stack_top().decl_parse_state = &binding_dps;
     if (err || dependent_case ||
-        (vp->is_pack && !is_real_instantiation_context())) {
+        (vp->is_pack &&
+         !is_real_instantiation_or_expansion_element_context())) {
       /* No initializer to record. */
     } else if (array_case) {
       record_struct_binding_expr_for_array_element(container, vp, n-1);
@@ -19648,6 +19667,24 @@ can be fully determined.
     pos_error(ec_missing_bindings, &dps->declarator_pos);
   }  /* if */
   if (!err) {
+#if NEED_NAME_MANGLING
+    if (container->storage_class == sc_static &&
+        container->source_corresp.is_local_to_function &&
+        !in_prototype_instantiation_or_expansion_scan() &&
+#if ABI_COMPATIBILITY_VERSION < 520
+        /* Preserve legacy names except for newly supported expansions. */
+        scope_stack_top().in_expansion_element_rescan &&
+#endif /* ABI_COMPATIBILITY_VERSION < 520 */
+        /* An empty binding pack may have removed all bindings. */
+        container->variant.bindings != NULL) {
+      /* Give the container the same name-collision discriminator as its
+         first binding. */
+      a_variable_ptr  first =
+                       (a_variable_ptr)container->variant.bindings->entity.ptr;
+      symbol_for(container)->variant.variable.discriminator =
+                             symbol_for(first)->variant.variable.discriminator;
+    }  /* if */
+#endif /* NEED_NAME_MANGLING */
     /* Discard the name of the container variable in the IL (to avoid
        misleading back ends). */
     container->source_corresp.name = NULL;
@@ -20312,6 +20349,8 @@ if one is present.
   copy_source_position(locator->source_position, error_position);
   if (var_ptr != NULL && !is_error_locator(*locator)) {
     if (is_incomplete_type(var_ptr->type) &&
+        !(scope_stack_top().in_expansion_range_decl &&
+          is_incomplete_array_type(var_ptr->type)) &&
         !(reflection_enabled && is_immediate_class_type(var_ptr->type) &&
           scope_stack_top().in_prototype_instantiation)) {
       /* Issue an error on a variable defined with an incomplete type.  Also,

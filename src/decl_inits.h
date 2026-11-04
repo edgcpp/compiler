@@ -57,6 +57,10 @@ extern void aggr_init_cli_array(an_init_component_ptr  icp,
                                 an_expr_node_ptr       *dim_exprs);
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+extern a_dynamic_init_ptr prep_array_variable_initializer(
+                                                a_decl_parse_state  *dps,
+                                                an_operand          *operand);
+
 extern void initializer(a_decl_parse_state  *state,
                         a_source_position   *source_pos,
                         an_id_linkage_kind  linkage,
