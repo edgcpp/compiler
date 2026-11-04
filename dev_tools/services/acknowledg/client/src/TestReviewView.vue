@@ -323,10 +323,25 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
   // Recordings are updated by the section's editor; a section without one
   // (e.g. served by acknowledg-forge) is read-only.
-  const canRerecord = computed(() => {
+  const hasTestEditor = computed(() => {
     return (connectionState.value.editors ?? []).some((editor) => {
       return editor.kind === 'test' && editor.slug === reviewSectionSlug.value
     })
+  })
+  const canRerecord = hasTestEditor
+
+  // We approximate canShowCurrentDiff with hasTestEditor because, in the
+  // AcknowlEDG stack today, the only way to have a meaningful current diff
+  // is to have an editor.  This may change in the future.
+  const canShowCurrentDiff = hasTestEditor
+
+  // The view mode outlives the editor (and the section), so fall back to the
+  // plain diff when the current diff view is no longer available.
+  watch(canShowCurrentDiff, (available) => {
+    if (!available &&
+        outputViewModeTarget.value === 'test.src.show-diff-curr') {
+      setOutputMode('test.src.show-diff')
+    }
   })
 
   const rerecord = () => {
@@ -526,7 +541,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       previous()
     } else if (event.key === "z") {
       setOutputMode("test.src.show-diff")
-    } else if (event.key === "x") {
+    } else if (event.key === "x" && canShowCurrentDiff.value) {
       setOutputMode("test.src.show-diff-curr")
     } else if (event.key === "c") {
       setOutputMode("test.src.show-output")
@@ -586,11 +601,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
             <app-button
                 :pressed="outputViewModeTarget === 'test.src.show-diff'"
                 keyshortcuts="Z"
-                aria-label="Static Diff"
+                :aria-label="canShowCurrentDiff ? 'Static Diff' : 'Diff'"
                 @click="setOutputMode('test.src.show-diff')">
-              Static Diff (z)
+              {{ canShowCurrentDiff ? 'Static Diff' : 'Diff' }} (z)
             </app-button>
             <app-button
+                v-if="canShowCurrentDiff"
                 :pressed="outputViewModeTarget === 'test.src.show-diff-curr'"
                 keyshortcuts="X"
                 aria-label="Current Diff"
