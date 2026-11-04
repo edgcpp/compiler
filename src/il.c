@@ -2945,6 +2945,8 @@ Dump a statement kind, for debug purposes.
     case stmk_end_test_while:   s = "end-test-while";    break;
     case stmk_for:              s = "for";               break;
     case stmk_range_based_for:  s = "range-based-for";   break;
+    case stmk_expansion_statement:
+                                s = "expansion";         break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case stmk_for_each:         s = "for each";          break;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -3166,6 +3168,13 @@ the dump (this one counts as the first).
           break;
         case stmk_range_based_for:
           db_statement_list(sp->variant.range_based_for_loop.statement,
+                            indent+2, "", how_deep-1);
+          break;
+        case stmk_expansion_statement:
+          db_statement_list(sp->variant.expansion_statement.statement,
+                            indent+2, "", how_deep-1);
+          db_statement_list(sp->variant.expansion_statement.extra_info->
+                                                            expanded_statement,
                             indent+2, "", how_deep-1);
           break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -5077,7 +5086,8 @@ members), and does not enter those.
 #if !STANDALONE_UTILITY_PROGRAM
 
 static void r_add_scope_orphaned_il_lists(a_scope_ptr   scope,
-                                          a_routine_ptr routine)
+                                          a_routine_ptr routine,
+                                          a_boolean     in_expansion_prototype)
 /*
 If the indicated scope (a function or block scope) contains non-empty
 lists that are in the file scope memory region (e.g., local types or
@@ -5086,7 +5096,8 @@ those pointers in the file scope so that orphan processing can be
 done on the lists later.  Also use recursion to visit all block scopes
 under this scope to do the same processing.  routine indicates the
 function this scope is part of.  This routine does the recursive
-processing for add_scope_orphaned_il_lists.
+processing for add_scope_orphaned_il_lists.  in_expansion_prototype is TRUE
+if an enclosing scope is an expansion statement prototype.
 */
 {
   a_type_ptr            types = scope->types;
@@ -5097,6 +5108,8 @@ processing for add_scope_orphaned_il_lists.
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
   a_scope_ptr           block_scope;
 
+  in_expansion_prototype = in_expansion_prototype ||
+                           scope->is_expansion_prototype;
   if (types != NULL || variables != NULL ||
 #if GENERATE_SOURCE_SEQUENCE_LISTS
       sublists != NULL ||
@@ -5110,6 +5123,7 @@ processing for add_scope_orphaned_il_lists.
     solhp = alloc_scope_orphaned_list_header(routine, scope->number);
     solhp->assoc_routine = routine;
     solhp->scope_number = scope->number;
+    solhp->in_expansion_prototype = in_expansion_prototype;
     solhp->orphaned_types = types;
     solhp->orphaned_variables = variables;
     solhp->orphaned_namespaces = namespaces;
@@ -5129,7 +5143,8 @@ processing for add_scope_orphaned_il_lists.
   for (block_scope = scope->scopes;
        block_scope != NULL;
        block_scope = block_scope->next) {
-    r_add_scope_orphaned_il_lists(block_scope, routine);
+    r_add_scope_orphaned_il_lists(block_scope, routine,
+                                  in_expansion_prototype);
   }  /* for */
 }  /* r_add_scope_orphaned_il_lists */
 
@@ -5144,7 +5159,8 @@ the lists later.  Also visit all block scopes attached to this scope
 and do the same processing.
 */
 {
-  r_add_scope_orphaned_il_lists(scope, scope->variant.routine.ptr);
+  r_add_scope_orphaned_il_lists(scope, scope->variant.routine.ptr,
+                                /*in_expansion_prototype=*/FALSE);
 }  /* add_scope_orphaned_il_lists */
 
 #endif /* !STANDALONE_UTILITY_PROGRAM */
@@ -5960,8 +5976,7 @@ statements.
 {
   a_boolean	result = TRUE;
 
-  if (is_prototype_instantiation_context() ||
-      is_template_declaration_context()) {
+  if (is_prototype_instantiation_or_expansion_context()) {
     /* Do not instantiate things referenced from contexts such as prototype
        instantiations. */
     result = FALSE;
@@ -15130,7 +15145,11 @@ function scope is non-NULL and if it is the function containing that
 expression, return a pointer to that expression.  Otherwise, return NULL.
 (The expression pointer is determined by searching a list of
 a_local_expr_node_ref entries.  kind represents the kind of entry that is
-expected to hold a pointer to the expression being searched for.)
+expected to hold a pointer to the expression being searched for.)  NULL is
+also returned if the enclosing function is a plain (non-template) function
+whose memory region has been reclaimed (e.g., for a dependent template
+argument recorded during the prototype scan of an expansion statement
+body, whose mangled name is requested after the region is freed).
 */
 {
   a_source_correspondence  *scp = (a_source_correspondence*)referrer;
@@ -15138,7 +15157,7 @@ expected to hold a pointer to the expression being searched for.)
 
   if (scp->enclosing_routine->function_def_number !=
                                                    NULL_function_def_number) {
-    a_scope_ptr  scope = scope_for_routine(scp->enclosing_routine);
+    a_scope_ptr  scope = scope_for_routine_or_null(scp->enclosing_routine);
     result = find_local_expr_node_in_scope(referrer, kind, scope);
   } else {
     result = NULL;
@@ -15380,6 +15399,11 @@ the caller must ensure the class type is complete before calling this routine.
         result = ptr->range_based_for_scope;
       }
       break;
+    case iek_expansion_statement:
+      { an_expansion_statement_ptr ptr = (an_expansion_statement_ptr)entity;
+        result = ptr->expansion_scope;
+      }
+      break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case iek_for_each_loop:
       { a_for_each_loop_ptr ptr = (a_for_each_loop_ptr)entity;
@@ -15409,6 +15433,10 @@ the caller must ensure the class type is complete before calling this routine.
           case stmk_range_based_for:
             entity = (char*)ptr->variant.range_based_for_loop.extra_info;
             kind = iek_range_based_for_loop;
+            break;
+          case stmk_expansion_statement:
+            entity = (char*)ptr->variant.expansion_statement.extra_info;
+            kind = iek_expansion_statement;
             break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
           case stmk_for_each:
@@ -16955,6 +16983,7 @@ options for the copy.  cblock is a control block for the copy.
      on the object lifetime stack. */
   init_expr_lifetime = dip->init_expr_lifetime; 
   if (init_expr_lifetime != NULL &&
+      !(options & CE_EXTEND_INITIALIZER_TEMPORARIES) &&
       curr_object_lifetime->kind !=
                                  (an_object_lifetime_kind)olk_expr_temporary) {
     push_object_lifetime(iek_dynamic_init, (char *)new_dip,
@@ -17042,14 +17071,19 @@ options for the copy.  cblock is a control block for the copy.
                                     options & CE_COPYING_DEFAULT_MEMBER_INIT);
     } else {
       a_boolean  static_lifetime = FALSE;
+      a_boolean  block_lifetime =
+                            (options & CE_EXTEND_INITIALIZER_TEMPORARIES) != 0;
       if (dip->lifetime != NULL) {
         static_lifetime = is_static_object_lifetime_kind(dip->lifetime->kind);
       }  /* if */
       if (dip->destruction_is_for_partially_constructed_aggregate) {
         static_lifetime = FALSE;
       }  /* if */
+      if (block_lifetime) {
+        new_dip->has_temporary_lifetime = FALSE;
+      }  /* if */
       record_end_of_lifetime_destruction(new_dip, static_lifetime,
-                                         /*block_lifetime=*/FALSE);
+                                         block_lifetime);
       if (saved_overlaps_temps_in_inner_lifetime) {
         /* The original entry had this flag set.  We need to re-establish
            the overlapping lifetime relationship in the copy. */
@@ -23623,7 +23657,8 @@ copied again.
                             "i_copy_expr_tree: curr_object_lifetime is NULL");
         check_assertion_str(expr->variant.object_lifetime.ptr != NULL,
                     "i_copy_expr_tree: enk_object_lifetime has NULL lifetime");
-        if (curr_object_lifetime->kind ==
+        if ((options & CE_EXTEND_INITIALIZER_TEMPORARIES) ||
+            curr_object_lifetime->kind ==
                                  (an_object_lifetime_kind)olk_expr_temporary) {
           check_assertion(expr->variant.object_lifetime.ptr->kind ==
                                  (an_object_lifetime_kind)olk_expr_temporary);
@@ -27157,54 +27192,59 @@ statement, which is being eliminated from the IL.  tblock is ignored.
     label->next = NULL;
     stmt->variant.label.ptr = NULL;
     if (stmt->variant.label.lifetime != NULL) {
-      unlink_object_lifetime(stmt->variant.label.lifetime);
+      an_object_lifetime_ptr  olp = stmt->variant.label.lifetime;
+      /* Implicit labels refer to an enclosing block lifetime, which is
+         shared with statements outside the discarded subtree. */
+      if (olp->kind == olk_block_after_label) {
+        unlink_object_lifetime(olp);
+      }  /* if */
       stmt->variant.label.lifetime = NULL;
     }  /* if */
   }  /* if */
 }  /* remove_pragmas_associated_with_statement */
 
 
-static void remove_statement_expr_pragmas_from_expr(
+static void remove_statement_subtree_pragmas_from_expr(
                       an_expr_node_ptr                                expr,
                       ARG_UNUSED an_expr_or_stmt_traversal_block_ptr  tblock);
 
-static void remove_statement_expr_pragmas_from_constant(
+static void remove_statement_subtree_pragmas_from_constant(
                      a_constant_ptr                                  con,
                      ARG_UNUSED an_expr_or_stmt_traversal_block_ptr   tblock);
 
-static void remove_statement_expr_pragmas(a_statement_ptr  stmt)
+void eliminate_statement_pragmas(a_statement_ptr  stmt)
 /*
-Remove any pragmas associated with statements in the indicated GNU statement
-expression, which is being eliminated from the IL.
+Remove any pragmas associated with stmt and the statements in its subtree,
+which is being eliminated from the IL.
 */
 {
   an_expr_or_stmt_traversal_block tblock;
 
   clear_expr_or_stmt_traversal_block(&tblock);
   tblock.process_statement = remove_pragmas_associated_with_statement;
-  tblock.process_expr = remove_statement_expr_pragmas_from_expr;
-  tblock.process_constant = remove_statement_expr_pragmas_from_constant;
+  tblock.process_expr = remove_statement_subtree_pragmas_from_expr;
+  tblock.process_constant = remove_statement_subtree_pragmas_from_constant;
   tblock.process_non_dynamic_constants = TRUE;
   traverse_statement(stmt, &tblock);
-}  /* remove_statement_expr_pragmas */
+}  /* eliminate_statement_pragmas */
 
 
-static void remove_statement_expr_pragmas_from_expr(
+static void remove_statement_subtree_pragmas_from_expr(
                                   an_expr_node_ptr                     expr,
                                   an_expr_or_stmt_traversal_block_ptr  tblock)
 /*
-Called from traverse_expr to remove pragmas associated with statements in GNU
-statement expressions.
+Called from traverse_expr to remove pragmas from the statement subtrees of
+GNU statement expressions.
 */
 {
   if (expr->kind == enk_statement) {
-    remove_statement_expr_pragmas(expr->variant.statement);
+    eliminate_statement_pragmas(expr->variant.statement);
     tblock->suppress_subtree_walk = TRUE;
   }  /* if */
-}  /* remove_statement_expr_pragmas_from_expr */
+}  /* remove_statement_subtree_pragmas_from_expr */
 
 
-static void remove_statement_expr_pragmas_from_constant(
+static void remove_statement_subtree_pragmas_from_constant(
                        a_constant_ptr                                  con,
                        ARG_UNUSED an_expr_or_stmt_traversal_block_ptr  tblock)
 /*
@@ -27215,20 +27255,20 @@ GNU statement expressions in a folded constant's backing expression.
   if (con->expr != NULL && con->folded_statement_expression) {
     eliminate_statement_expr_pragmas(con->expr);
   }  /* if */
-}  /* remove_statement_expr_pragmas_from_constant */
+}  /* remove_statement_subtree_pragmas_from_constant */
 
 
 void eliminate_statement_expr_pragmas(an_expr_node_ptr expr)
 /*
 Traverse expr looking for GNU statement expressions and remove any pragmas
-associated with statements they point to.  tblock is ignored.
+associated with their statement subtrees.
 */
 {
   an_expr_or_stmt_traversal_block tblock;
 
   clear_expr_or_stmt_traversal_block(&tblock);
-  tblock.process_expr = remove_statement_expr_pragmas_from_expr;
-  tblock.process_constant = remove_statement_expr_pragmas_from_constant;
+  tblock.process_expr = remove_statement_subtree_pragmas_from_expr;
+  tblock.process_constant = remove_statement_subtree_pragmas_from_constant;
   tblock.process_non_dynamic_constants = TRUE;
   traverse_expr(expr, &tblock);
 }  /* eliminate_statement_expr_pragmas */
@@ -27263,7 +27303,7 @@ with any statement expression.
       a_block_ptr      block = stmt->variant.block.extra_info;
       a_scope_ptr      scope = block->assoc_scope;
 #if !STANDALONE_UTILITY_PROGRAM
-      remove_statement_expr_pragmas(stmt);
+      eliminate_statement_pragmas(stmt);
 #endif /* !STANDALONE_UTILITY_PROGRAM */
       if (scope != NULL && scope->lifetime != NULL &&
           !is_at_least_one_error()) {
@@ -27450,14 +27490,20 @@ instantiation-dependent.
     tblock->terminate = TRUE;
   } else if (is_variable_node(expr)) {
     /* Treat local variables of function templates as "instantiation
-       dependent". */
+       dependent", and treat the for-range-declaration variable of an expansion
+       statement as value-dependent (N5050 [temp.dep.constexpr]/2.4). */
     a_variable  *vp = node_variable(expr);
-    if (vp->is_nonreal) {
+    if (vp->is_nonreal || vp->is_expansion_iterator) {
       tblock->result = TRUE;
       tblock->terminate = TRUE;
     } else {
       examine_var_init_for_instantiation_dependence(vp, tblock);
     }  /* if */
+  } else if (node_is(expr, enk_braced_init_list)) {
+    /* An enk_braced_init_list node has a placeholder type (see
+       make_braced_init_expr_from_arg_list_elem), so only its
+       initializer-clauses can carry dependence. */
+    skip_typecheck = TRUE;
   } else if (node_is(expr, enk_type_operand)) {
     /* enk_type_operand nodes have "void" type, but the instantiation
        dependence is in the operand type. */
@@ -28191,6 +28237,20 @@ original statement.
       break;
     case stmk_range_based_for:
       to->variant.range_based_for_loop.statement->parent = to;
+      break;
+    case stmk_expansion_statement:
+      if (to->variant.expansion_statement.statement != NULL) {
+        to->variant.expansion_statement.statement->parent = to;
+      }  /* if */
+      { an_expansion_statement_ptr  expn_stmt;
+        expn_stmt = to->variant.expansion_statement.extra_info;
+        if (expn_stmt->expanded_statement != NULL) {
+          expn_stmt->expanded_statement->parent = to;
+        }  /* if */
+        if (expn_stmt->initialization != NULL) {
+          expn_stmt->initialization->parent = to;
+        }  /* if */
+      }  /* if */
       break;
     case stmk_switch:
       /* If the statement is a switch statement, make sure all of the case
@@ -33454,21 +33514,24 @@ routine is either inline or constexpr); otherwise, return FALSE.
 
 /*
 Helper macro used by type_is_nonreal.  Return TRUE if type is a nonreal
-class, nonreal alias template instantiation, or template parameter type.
+class, nonreal integer (enumeration) type, nonreal alias template
+instantiation, or template parameter type.
 */
 #define type_is_nonreal_no_typerefs(type)				\
   ((is_immediate_class_type(type) &&					\
     (type)->variant.class_struct_union.is_nonreal_class) ||		\
-   (type->kind == (a_type_kind)tk_typeref &&				\
+   ((type)->kind == tk_integer &&					\
+    (type)->variant.integer.is_nonreal) ||				\
+   (type->kind == tk_typeref &&						\
     ((type)->variant.typeref.is_nonreal ||				\
      (type)->variant.typeref.is_dependent)) ||				\
-   ((type)->kind == (a_type_kind)tk_template_param && !is_auto_type(type)))
+   ((type)->kind == tk_template_param && !is_auto_type(type)))
 
 
 a_boolean type_is_nonreal(a_type_ptr	type)
 /*
-Return TRUE if type is a nonreal class or typeref (i.e., for dependent
-template entities).
+Return TRUE if type is a nonreal class, nonreal integer type, or typeref
+(i.e., for dependent template entities).
 */
 {
   a_type_ptr type_without_typerefs = skip_typerefs(type);

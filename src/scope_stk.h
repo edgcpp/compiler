@@ -606,55 +606,57 @@ typedef struct a_pack_expansion_stack_entry {
 			/* In rescan contexts, a copy of the supplied
 			   template argument list is made.  This points to
 			   that copy of the list.  NULL otherwise. */
-  a_byte_boolean
-		is_rescan;
+  a_bit_field	is_rescan:1;
 			/* TRUE when the expansion is being done in an
 			   expression rescan context.  In such contexts the
 			   current values of the packs are maintained, but
 			   no token manipulation or checking is done. */
-  a_byte_boolean
-		is_deduction;
+  a_bit_field	is_deduction:1;
 			/* TRUE when the expansion is being done in an
 			   template argument deduction context.  In such
 			   contexts a new template argument is created for
 			   each pack element produced by the deduction
 			   process, but no token manipulation or checking
 			   is done. */
-  a_byte_boolean
-		is_suppression;
+  a_bit_field	is_suppression:1;
 			/* TRUE when the processing of expansion contexts
 			   is being suppressed.  This only suppresses
 			   expansions from tokens, not rescans. */
-  a_byte_boolean
-		expansion_with_no_packs_diagnostic_issued;
+  a_bit_field	expansion_with_no_packs_diagnostic_issued:1;
 			/* TRUE if suppress_expansion_with_no_packs_diagnostic
 			   was called to indicate that the caller already
 			   issued a diagnostic for an expansion with no
 			   packs. */
-  a_byte_boolean
-		is_lookahead;
+  a_bit_field	is_lookahead:1;
 			/* TRUE if this context is being pushed to
 			   distinguish between two contexts.  When this
 			   is TRUE, it is assumed that another begin...
 			   call will be done for the same starting position,
 			   and that context will be responsible for the
 			   end... and advance... calls. */
-  a_byte_boolean
-		enclosing_packs_reset;
+  a_bit_field	enclosing_packs_reset:1;
 			/* TRUE for a pack expansion of a template declaration
 			   in a real instantiation (see call of
 			   reset_enclosing_pack_values in
 			   begin_potential_pack_expansion_context_full for
 			   more information). */
-  a_boolean
-		preserve_deduced_packs;
+  a_bit_field	preserve_deduced_packs:1;
 			/* TRUE if is_rescan is TRUE and deduced parameter
 			   packs should be retained in the substituted type. */
-  a_byte_boolean
-		contains_pack_reference;
+  a_bit_field	contains_pack_reference:1;
 			/* TRUE during prototype instantiations if any
 			   pack references were recorded while this entry
 			   was at the top of the pack expansion stack. */
+  a_bit_field	recorded_pack_expansion:1;
+			/* TRUE when a pack expansion descriptor recorded in
+			   an earlier scan was found for this context, which
+			   is being scanned without pack instantiation
+			   (e.g., the prototype scan of an expansion
+			   statement body during an instantiation, where
+			   lookups yield substituted symbols and no pack
+			   references can be re-derived).  The descriptor is
+			   then used as evidence that the pattern contains a
+			   pack. */
 } a_pack_expansion_stack_entry;
 
 
@@ -814,6 +816,37 @@ typedef struct a_scope_stack_entry {
 			   what is being instantiated is the prototype for a
 			   class template.  Also true for scopes nested within
 			   a prototype instantiation. */
+  a_bit_field	in_expansion_statement_body:1;
+			/* TRUE while the for-range-declaration or the body
+			   of a C++26 expansion statement is scanned in
+			   prototype form, and propagated to nested scopes.
+			   The body is a template definition (N5050
+			   [temp.decls.general]/3), so this scan is handled as
+			   a template-dependent context.  Per-element rescans
+			   do not set this flag. */
+  a_bit_field	in_expansion_range_decl:1;
+			/* TRUE while the for-range-declaration of a C++26
+			   expansion statement is being scanned (both for the
+			   prototype declaration and for the per-element
+			   rescans done when the statement is expanded).  Used
+			   to permit structured binding packs outside
+			   templates and to expand them during the per-element
+			   rescans.  Not propagated to nested scopes. */
+  a_bit_field	in_expansion_element_rescan:1;
+			/* TRUE during a per-element rescan of the
+			   for-range-declaration or body, and propagated to
+			   nested scopes.  Used to skip discarded
+			   constexpr-if branches. */
+  a_bit_field	in_expansion_element_body:1;
+			/* TRUE if this scope is the per-element block of a
+			   C++26 expansion statement, set while the
+			   compound-statement is rescanned for one element of
+			   the expansion-initializer (see
+			   expand_expansion_statement).  Used to add
+			   diagnostic context lines to errors reported during
+			   the rescan (see the expansion_element_number field
+			   at the end of this structure).  Not propagated to
+			   nested scopes. */
   a_bit_field	in_nonreal_instantiation:1;
 			/* TRUE for instantiations based on template-dependent
 			   template arguments and for rescan operations (to
@@ -1633,23 +1666,40 @@ typedef struct a_scope_stack_entry {
 			   is slightly more general than "pending template
 			   argument lists", because "<" delimiters also appear
 			   in new-style cast constructs.) */
+  a_decl_sequence_number
+		definition_lookup_decl_seq;
+			/* Lookup boundary outside an expansion scan root.
+			   Separate from a template's boundary: declarations
+			   instantiated in enclosing local scopes are
+			   visible. */
+  a_definition_replay_info_ptr
+		definition_replay_info;
+			/* Persistent state used by this definition scan or
+			   replay.  Set on template and expansion scan roots;
+			   ordinary nested scopes do not copy the cursors. */
   a_nondependent_call_info_ptr
 		next_nondependent_call;
-			/* When doing dependent name processing, this
-			   field is present for template instantiation scopes
-			   and points to the next nondependent call entry
-			   for the current instantiation.  During a real
-			   instantiation this list is used to determine
-			   whether a given call is dependent. */
+			/* Per-scan cursor into recorded nondependent calls.
+			   Present on ordinary instantiation scopes and on
+			   expansion definition/element scan roots. */
   a_pack_expansion_descr_ptr
 		last_pack_expansion_used;
-			/* In real instantiation scopes for variadic
-			   templates, this points to the last entry on the
-			   list of pack expansions that was used.  This is
-			   used to find the pack expansion entry for a given
-			   point within the actual instantiation.  It is
-			   initialized with the first pack expansion for the
-			   template. */
+			/* Per-scan cursor into persistent pack descriptors.
+			   Definition and element scans have independent
+			   cursors even when they share an enclosing template
+			   or expansion's records.  Traversal does not modify
+			   the list. */
+  a_statement_ptr
+		expansion_statement;
+			/* The C++26 expansion statement whose outer scope
+			   this entry represents (containing the declarations
+			   from the init-statement and generated expansion
+			   declarations), or NULL.  Set even when its
+			   descriptors belong to an outer template or
+			   expansion prototype.  Identifies the statement for
+			   recording, lookup, and tentative rollback, but
+			   does not select the owner for the current context.
+			   Not inherited by nested scopes. */
   a_pack_expansion_descr_ptr
 		saved_last_pack_expansion_used;
 			/* Used to save and potentially restore the value
@@ -1745,6 +1795,14 @@ typedef struct a_scope_stack_entry {
 		*injections;
 			/* Token sequence entries scheduled for injection
 			   in this scope. */
+  a_source_position
+		expansion_statement_position;
+			/* Position of the statement being expanded when
+			   in_expansion_element_body is TRUE. */
+  a_targ_size_t	expansion_element_number;
+			/* When in_expansion_element_body is TRUE: The 1-based
+			   number of the element for which the
+			   compound-statement is being rescanned. */
 } a_scope_stack_entry;
 
 EXTERN_THREAD a_scope_stack_entry_ptr
@@ -1898,12 +1956,14 @@ Return TRUE if sp is either NULL or a placeholder scope, FALSE otherwise.
 TRUE if we are in a context in which template dependent types need to
 be handled in contexts such as expressions.  Typically, this is in
 a prototype instantiation, but can also occur in template declaration
-scopes.  It is also TRUE when in_nonreal_instantiation is TRUE.
+scopes.  It is also TRUE when in_nonreal_instantiation is TRUE and
+during the prototype scan of an expansion statement body.
 */
 #define is_template_dependent_context()                                 \
   (depth_template_declaration_scope != NO_SCOPE_DEPTH ||                \
    scope_stack[depth_scope_stack].in_prototype_instantiation ||         \
    scope_stack[depth_scope_stack].in_nonreal_instantiation ||           \
+   scope_stack[depth_scope_stack].in_expansion_statement_body ||        \
    scope_stack[depth_scope_stack].kind == sck_module_isolated)
 
 /*
@@ -1921,10 +1981,12 @@ when the original template is scanned and during a real instantiation.
    scope_stack[depth_scope_stack].in_variadic_template : FALSE)
 
 /*
-TRUE if we are in the context of the definition of a variadic template.
+TRUE if we are in the context of the definition of a variadic template,
+including an expansion statement body within one.
 */
 #define is_variadic_definition_context()				\
-  (is_variadic_template_context() && is_prototype_instantiation_context())
+  (is_variadic_template_context() &&					\
+   is_prototype_instantiation_or_expansion_context())
 
 /*
 TRUE if implicit typename processing should be done.
@@ -2037,21 +2099,43 @@ and/or template argument substitution into an expression.
 
 
 /*
-TRUE if we are in a template prototype instantiation context, which
-includes template declaration scopes.  This is similar to
-is_template_dependent_context, but excludes nonreal instantiations.
+TRUE if we are in an ordinary template declaration or prototype
+instantiation context.  This is similar to is_template_dependent_context,
+but excludes nonreal instantiations and expansion statement bodies.
+Expansion state alone does not make this true or provide template
+declaration information; use is_prototype_instantiation_or_expansion_context
+for semantic paths that must also allow expansion prototypes.
 */
 #define is_prototype_instantiation_context()				\
   (depth_template_declaration_scope != NO_SCOPE_DEPTH ||		\
    scope_stack[depth_scope_stack].in_prototype_instantiation)
 
 /*
+TRUE if we are in a context in which an expression that is not currently a
+constant expression may still become one later, so that an
+instantiation-dependent expression is recorded as a dependent constant instead
+of producing an error: a prototype instantiation or template declaration
+context (awaiting a real instantiation), a Microsoft nonreal instantiation, an
+alias-declaration in a template declaration, a nonreal instantiation that is
+not a rescan, or an expansion prototype scan (awaiting the per-element
+rescans).
+*/
+#define is_uninstantiated_dependent_expr_context()			\
+  (is_prototype_instantiation_or_expansion_context() ||			\
+   (microsoft_mode && in_ms_nonreal_class_instantiation()) ||		\
+   scope_stack[depth_scope_stack].alias_in_template_decl ||		\
+   (scope_stack[depth_scope_stack].in_nonreal_instantiation &&		\
+    !scope_stack[depth_scope_stack].is_rescan))
+
+/*
 TRUE if we are in an uninstantiated pack expansion context.  This is either a
-prototype instantiation context or a nonreal instantiation of a default
-template argument that is enclosed by a prototype instantiation context.
+prototype instantiation context, a nonreal instantiation of a default template
+argument that is enclosed by a prototype instantiation context, or an expansion
+prototype scan (pack expansions are not instantiated there; the per-element
+rescans do that).
 */
 #define is_uninstantiated_pack_expansion_context()			\
-  (is_prototype_instantiation_context() ||				\
+  (is_prototype_instantiation_or_expansion_context() ||			\
    (scope_stack[depth_scope_stack].in_nonreal_instantiation &&		\
     scope_stack[depth_scope_stack].is_default_template_arg &&		\
     enclosing_scope_is_prototype_instantiation_context()))
@@ -2089,6 +2173,54 @@ scope.
    depth_template_declaration_scope != NO_SCOPE_DEPTH)
 
 /*
+TRUE if we are in an ordinary template declaration or prototype instantiation
+context or in an expansion prototype.  This is the predicate to use for
+semantic paths that must allow later instantiation or expansion, including
+checks that previously tested is_prototype_instantiation_context but should
+also apply to expansion statement bodies.  When this is true only because of an
+expansion body, it does not imply an ordinary template symbol, template
+parameter list, instantiation scope, or template declaration information; use
+definition_recording_scope rather than the template-dependent-context
+accessors.  Nonreal instantiations alone do not constitute prototype analysis.
+*/
+#define is_prototype_instantiation_or_expansion_context()		\
+  (is_prototype_instantiation_context() ||				\
+   (depth_scope_stack != NO_SCOPE_DEPTH &&				\
+    scope_stack_top().in_expansion_statement_body))
+
+/*
+TRUE if the current scan is a prototype instantiation or an expansion prototype
+scan (that is, the current scope has in_prototype_instantiation or
+in_expansion_statement_body set).  Unlike
+is_prototype_instantiation_or_expansion_context, this does not include template
+declaration scopes.  Used when creating prototype entities and for
+prototype IL bookkeeping.
+*/
+#define in_prototype_instantiation_or_expansion_scan()			\
+  (scope_stack_top().in_prototype_instantiation ||			\
+   scope_stack_top().in_expansion_statement_body)
+
+/*
+Access definition replay state without requiring template-specific data.
+The returned scope owns per-scan cursors; its persistent info survives it.
+*/
+extern a_scope_stack_entry_ptr definition_recording_scope(a_boolean innermost);
+extern a_scope_stack_entry_ptr definition_replay_scope(void);
+extern a_boolean is_nondependent_call_recording_context(void);
+extern a_boolean is_nondependent_call_reuse_context(void);
+
+extern void begin_expansion_definition_scan(an_expansion_statement_ptr esp);
+extern void begin_expansion_element_scan(an_expansion_statement_ptr esp);
+
+/*
+TRUE if the current expansion prototype has no enclosing template
+declaration, prototype instantiation, or nonreal instantiation context.
+A real instantiation does not prevent this from being TRUE; callers that
+must distinguish one should test is_real_instantiation_context first.
+*/
+extern a_boolean in_expansion_prototype_without_enclosing_template(void);
+
+/*
 TRUE if we are in an instantiation that is not a prototype or nonreal
 instantiation.
 */
@@ -2096,6 +2228,15 @@ instantiation.
   (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&		\
    !scope_stack[depth_scope_stack].in_prototype_instantiation &&	\
    !scope_stack[depth_scope_stack].in_nonreal_instantiation)
+
+/*
+TRUE if we are in a real instantiation or in a per-element rescan of an
+expansion statement, where discarded constexpr-if branches are not
+instantiated and binding packs can be expanded.
+*/
+#define is_real_instantiation_or_expansion_element_context()		\
+  (is_real_instantiation_context() ||					\
+   scope_stack_top().in_expansion_element_rescan)
 
 /*
 TRUE if we are in an instantiation that is a prototype or nonreal

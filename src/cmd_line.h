@@ -3016,6 +3016,10 @@ EXTERN_THREAD a_boolean
 		pack_indexing_enabled;
 			/* TRUE if C++26 pack indexing is supported. */
 
+EXTERN_THREAD a_boolean
+		expansion_statements_enabled;
+			/* TRUE if C++26 expansion statements are supported. */
+
 /*
 Macro that determines whether CTAD for alias templates should be accepted.
 Alias-template CTAD is a standard feature in C++20 mode (and the global
@@ -3035,6 +3039,15 @@ warning in recent GNU and Clang C++ modes.
 #define pack_indexing_allowed                                                \
   (pack_indexing_enabled ||                                                  \
    gpp_version_is(>=150000) || clangcpp_version_is(>=190000))
+
+/*
+Macro that determines whether expansion statements should be accepted.
+Expansion statements are a standard feature in C++26 mode (and the global
+variable expansion_statements_enabled is TRUE in that case) that is also
+accepted with a warning in GNU C++ modes emulating GCC 16 or later.
+*/
+#define expansion_statements_allowed                                         \
+  (expansion_statements_enabled || gpp_version_is(>=160000))
 
 /* Process the command line arguments. */
 extern void proc_command_line(int argc, char *argv[]);

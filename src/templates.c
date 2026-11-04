@@ -4471,7 +4471,7 @@ p_ambiguous is non-NULL.
 
   if (psc_list->next != NULL &&
       defer_function_prototype_instantiations &&
-      is_prototype_instantiation_context()) {
+      is_prototype_instantiation_or_expansion_context()) {
     /* When we are deferring function prototype instantiations (e.g., in
        g++ mode in typical configurations), if there is an ambiguity, discard
        any partial specializations that were declared after the point of
@@ -6613,7 +6613,7 @@ declaration (which could be for an explicit specialization, etc.).
     error_code = ec_abstract_class_object_not_allowed;
   } else if (is_use && tp->incomplete) {
     if (type_is(tp, tk_array) && array_type_has_no_bound(tp) &&
-        (is_extern || is_prototype_instantiation_context())) {
+        (is_extern || is_prototype_instantiation_or_expansion_context())) {
       /* Allow an incomplete array on an extern declaration and also in a
          prototype instantiation because it could be completed in an
          out-of-class definition. */
@@ -7195,8 +7195,9 @@ supplement already associated with ft_symbol.
     /* Copy the befriending class list. */
     tssp->befriending_classes = orig_tssp->befriending_classes;
     /* Get the declaration sequence number from the prototype template. */
-    decl_state->decl_info->decl_seq =
-                   orig_tssp->variant.function.decl_cache->decl_info->decl_seq;
+    decl_state->decl_info->definition_info.decl_seq =
+                                orig_tssp->variant.function.decl_cache
+                                         ->decl_info->definition_info.decl_seq;
     { a_routine_ptr	rp = tssp->variant.function.routine;
       a_routine_ptr	orig_rp = orig_tssp->variant.function.routine;;
       /* Copy the information that determines whether this function is inline
@@ -21471,7 +21472,7 @@ mode in-class specialization.
        too. */
     if (in_class_specialization) {
       rp->is_in_class_specialization = TRUE;
-      if (is_prototype_instantiation_context()) {
+      if (is_prototype_instantiation_or_expansion_context()) {
         ps_options |= PS_PROTOTYPE_INSTANTIATION;
       }  /* if */
     }  /* if */
@@ -31797,8 +31798,9 @@ a real instantiation.
         /* Set the declaration sequence number of this declaration based on
            the value from the prototype friend declaration. */
         proto_friend_tssp = template_supplement_for_symbol(proto_friend_sym);
-        decl_state->decl_info->decl_seq =
-           proto_friend_tssp->variant.function.decl_cache->decl_info->decl_seq;
+        decl_state->decl_info->definition_info.decl_seq =
+             proto_friend_tssp->variant.function.decl_cache->decl_info->
+                                                      definition_info.decl_seq;
       }  /* if */
     }  /* if */
   }  /* if */
@@ -31922,7 +31924,7 @@ instantiation.
         /* Record the declaration sequence number for the default argument.
            This is done here because the value for the containing declaration
            has not been set yet. */
-        decl_state->decl_info->decl_seq = ++decl_seq_counter;
+        decl_state->decl_info->definition_info.decl_seq = ++decl_seq_counter;
         default_arg_prototype_instantiation(
                                           template_sym, curr_default_args,
                                           decl_state->prototype_scope_symbols,
@@ -33532,7 +33534,8 @@ alias
         keep_token_cache = FALSE;
         /* Set the declaration sequence number based on the value from the
            prototype template. */
-        tdip->decl_seq = cache_for_template(tssp)->decl_info->decl_seq;
+        tdip->definition_info.decl_seq =
+                 cache_for_template(tssp)->decl_info->definition_info.decl_seq;
       }  /* if */
     }  /* if */
   }  /* if */
@@ -34166,12 +34169,13 @@ parameter lists that were scanned.
   if (decl_state->decl_info != NULL) {
     /* Record the current declaration sequence number.  This is used
        to restrict name visibility during template instantiation. */
-    if (decl_state->decl_info->decl_seq == NO_DECL_SEQUENCE_NUMBER) {
+    if (decl_state->decl_info->definition_info.decl_seq ==
+                                                   NO_DECL_SEQUENCE_NUMBER) {
       /* Only set it if it was not already set.  For subordinate function
          templates, it will have been set based on the prototype (but note
          that this is only used for the decl_cache, the body cache is
          actually used directly from the prototype template). */
-      decl_state->decl_info->decl_seq = ++decl_seq_counter;
+      decl_state->decl_info->definition_info.decl_seq = ++decl_seq_counter;
     }  /* if */
   }  /* if */
   /* Extract the bodies of any member functions, nested classes, or
@@ -37402,7 +37406,7 @@ with the lambda declarator.
   /* Record the default name linkage at the point of declaration. */
   template_decl_info->name_linkage =
         enum_cast<a_name_linkage_kind>(scope_stack_top().default_name_linkage);
-  template_decl_info->decl_seq = ++decl_seq_counter;
+  template_decl_info->definition_info.decl_seq = ++decl_seq_counter;
   push_template_declaration_scope(template_decl_info,
                                   /*is_template_param_rescan=*/FALSE);
   templ_state->number_of_template_decl_scopes += 1;
@@ -43155,7 +43159,7 @@ assumed if the return type is omitted.
 
   /* Ignore an instantiation pragma in a prototype instantiation.  It will
      be evaluated in a real instantiation. */
-  if (is_prototype_instantiation_context()) goto done;
+  if (is_prototype_instantiation_or_expansion_context()) goto done;
   /* The instantiation mode is set to "none" while the pragma processing is
      performed to ensure that no other instantiations are implicitly
      requested as a consequence of scanning the pragma. */
@@ -43297,7 +43301,7 @@ directive_start_pos points to the beginning of the directive (e.g., for
     /* If a Microsoft class-scope "extern template" is present, ignore it
        if we are in prototype instantiation. */
     discard = severity == es_error ||
-              is_prototype_instantiation_context();
+              is_prototype_instantiation_or_expansion_context();
   }  /* if */
   if (discard) {
     flush_tokens();
@@ -44824,7 +44828,8 @@ identical).
                                                ctor_sym, orig_ct_sym);
   sym->decl_position = ctor_sym->decl_position;
   sym->decl_seq = ctor_sym->decl_seq;
-  sym->variant.template_info->cache->decl_info->decl_seq = sym->decl_seq;
+  sym->variant.template_info->cache->decl_info->definition_info.decl_seq =
+                                                                 sym->decl_seq;
   /* Add the template parameters of the class to the new template parameter
      list that is being created. */
   orig_class_templ_params = tcp->decl_info->parameters,

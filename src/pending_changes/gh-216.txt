@@ -1,0 +1,19 @@
+//allowed_words: destructuring
+[GH #216]
+Initial support for C++26 enumerating expansion statements (IL CHANGE)
+
+The front end now supports enumerating expansion statements in C++26 mode.  For
+example, with --c++26:
+
+  constexpr int f() {
+    int n = 0;
+    template for (auto i : {1, 2, 3}) {
+      n += i;
+    }
+    return n;
+  }
+  static_assert(f() == 6);
+
+Expansion statements are also accepted with a warning in GNU C++ modes
+emulating GCC 16 or later.  Iterating and destructuring expansion statements
+are not yet implemented.

@@ -9040,7 +9040,7 @@ the parameters.
                                       DI_IS_DEDUCTION_GUIDE)),
                       "declarator: parent class is NULL for ctor");
   state->declarator_start_pos = pos_curr_token;
-  if (is_prototype_instantiation_context()) {
+  if (is_prototype_instantiation_or_expansion_context()) {
     /* See if the type being used is a type nested in a prototype
        instantiation. */
     use_nonreal_type_for_nested_prototype_type(state);

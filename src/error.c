@@ -3758,12 +3758,15 @@ Return TRUE if this scope stack entry has context information that should
 be processed, otherwise return FALSE.  When TRUE is returned *context_sym
 is set to point to a symbol that provides the context information,
 *context_error_code is set to the appropriate error code, and
-context_source_pos (if not NULL) is set to the position to be reported.  When
-add_detected_prefix is TRUE, the error code returned will refer to
-a message that includes the text (e.g., "detected during ") that is
-used when only a single line of context information is being supplied.
-When multiple context lines are being displayed, the "detected during"
-message appears by itself on a separate line.
+context_source_pos (if not NULL) is set to the position to be reported.  The
+body scope of an expansion statement element has no symbol: In that case
+*context_sym is set to NULL, and the caller instead identifies the element
+by the element number and expansion statement position recorded in the scope
+stack entry.  When add_detected_prefix is TRUE, the error code returned will
+refer to a message that includes the text (e.g., "detected during ") that is
+used when only a single line of context information is being supplied.  When
+multiple context lines are being displayed, the "detected during" message
+appears by itself on a separate line.
 */
 {
   a_boolean		result = FALSE;
@@ -3773,6 +3776,13 @@ message appears by itself on a separate line.
 
   if (ssep->exclude_from_context_output) {
     /* Don't include this scope in the context output. */
+  } else if (ssep->in_expansion_element_body) {
+    /* Expansion statements need additional context, but don't have a
+       symbol. */
+    error_code = add_detected_prefix ?
+                                    ec_det_during_expansion_statement_context :
+                                    ec_expansion_statement_context;
+    result = TRUE;
   } else if (ssep->kind == (a_scope_kind)sck_template_instantiation) {
     /* Template instantiations (except for prototype instantiations)
        need additional context information. */
@@ -3843,7 +3853,9 @@ message appears by itself on a separate line.
     }  /* if */
   }  /* if */
 #if CHECKING
-  if (result && sym == NULL) {
+  if (result && sym == NULL && !ssep->in_expansion_element_body) {
+    /* The expansion-element context is the one case with no symbol to
+       report. */
     internal_error("include_in_context_output: no sym for context info");
   }  /* if */
 #endif /* CHECKING */
@@ -5418,6 +5430,23 @@ Add a context diagnostic with a numeric fill-in to primary_dp.
 }  /* add_number_context_diag */
 
 
+static void add_expansion_context_diag(a_diagnostic_ptr         primary_dp,
+                                       an_error_code            error_code,
+                                       a_scope_stack_entry_ptr  ssep)
+/*
+Add to primary_dp an expansion context diagnostic using error_code.  ssep
+identifies the element and the position of its expansion statement.
+*/
+{
+  a_diagnostic_ptr  dp;
+
+  dp = create_diagnostic_entry(primary_dp, dck_context, error_code,
+                               (a_source_position*)NULL, es_none);
+  add_number_fill_in(dp, (int32_t)ssep->expansion_element_number);
+  add_position_fill_in(dp, &ssep->expansion_statement_position);
+}  /* add_expansion_context_diag */
+
+
 static void add_context_diag(a_diagnostic_ptr	primary_dp,
 			     a_diagnostic_kind	kind,
 			     an_error_code	error_code)
@@ -5575,8 +5604,13 @@ create the diagnostic entries for the context.
                                 contexts_skipped);
         contexts_skipped = 0;
       }  /* if */
-      add_symbol_pos_context_diag(dp, dck_context, context_error_code, sym, sd,
-                                  &context_source_pos);
+      if (context_error_code == ec_expansion_statement_context ||
+          context_error_code == ec_det_during_expansion_statement_context) {
+        add_expansion_context_diag(dp, context_error_code, ssep);
+      } else {
+        add_symbol_pos_context_diag(dp, dck_context, context_error_code,
+                                    sym, sd, &context_source_pos);
+      }  /* if */
     }  /* for */
     if (pos_is_in_secondary_trans_unit) {
       display_trans_unit_context(dp,

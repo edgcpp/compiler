@@ -13872,6 +13872,8 @@ to the mangled name.
       mangled_name_with_length(unmangled_name_of(sb_scp), mctl);
     }  /* for */
     add_to_mangled_name('E', mctl);
+    /* Include any discriminator assigned to the container. */
+    add_discriminator_if_necessary(scp, mctl);
   } else if (kind == iek_variable &&
              ((a_variable_ptr)scp)->is_template_param_object) {
     /* Special "TA" mangling for a template parameter object.  We know the
@@ -14085,7 +14087,8 @@ mangling routine for type lists.  When orphan lists have been generated,
 use them; otherwise, visit the local scopes from the routine scope.
 */
 {
-  process_local_types(il_header.primary_scope, list_mangling_routine);
+  process_local_types(il_header.primary_scope, list_mangling_routine,
+                      /*skip_expansion_prototypes=*/TRUE);
 }  /* do_local_name_mangling */
 
 #if ONLY_MANGLE_TYPES_NEEDED_FOR_EXTERNAL_NAMES
@@ -14522,11 +14525,15 @@ also does type name mangling.
         variable_templates_may_be_enabled) {
       /* Generally, file-scope variables are not mangled, but variable
          templates, variables with the GNU abi_tag attribute, and structured
-         bindings require mangling. */
+         bindings require mangling.  Skip nonreal (template-dependent)
+         instances: Their template arguments are not known, so they have
+         no mangled name of their own. */
       for (variable = scope->variables;
            variable != NULL;
            variable = variable->next) {
-        if (!variable->source_corresp.name_has_been_mangled) {
+        if (!variable->is_nonreal &&
+            !variable->is_prototype_instantiation &&
+            !variable->source_corresp.name_has_been_mangled) {
           mangle_variable_name(variable);
         }  /* if */
       }  /* for */
@@ -14565,11 +14572,14 @@ also does type name mangling.
     /* For a class or namespace scope, visit the member variables
        and constants. */
     /* Look for static data members/namespace member variables and mangle
-       their names. */
+       their names.  Skip nonreal (template-dependent) instances, which
+       have no mangled name of their own (see the file-scope walk above). */
     for (variable = scope->variables;
          variable != NULL;
          variable = variable->next) {
-      mangle_variable_name(variable);
+      if (!variable->is_nonreal && !variable->is_prototype_instantiation) {
+        mangle_variable_name(variable);
+      }  /* if */
     }  /* for */
     /* Look for member constants (an extension in classes) and mangle their
        names. */

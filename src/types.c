@@ -18937,7 +18937,7 @@ to the caller.  If no modification is done return the original type.
       force_strip_nonreal = TRUE;
     }  /* if */
   }  /* if */
-  keep_local = is_prototype_instantiation_context() &&
+  keep_local = is_prototype_instantiation_or_expansion_context() &&
                in_generic_lambda_in_prototype_instantiation();
   while (type->kind == (a_type_kind)tk_typeref) {
     a_boolean  is_nonreal = FALSE;

@@ -554,6 +554,7 @@ routine and scope number, and return a pointer to it.
   solhp = alloc_il_of_type(a_scope_orphaned_list_header);
   solhp->assoc_routine = assoc_routine;
   solhp->scope_number = scope_number;
+  solhp->in_expansion_prototype = FALSE;
   solhp->orphaned_types = NULL;
   solhp->orphaned_variables = NULL;
   solhp->orphaned_namespaces = NULL;
@@ -2586,6 +2587,7 @@ Clear the fields of the given variable to default values.
   vp->is_initonly                 = FALSE;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   vp->is_enhanced_for_iterator    = FALSE;
+  vp->is_expansion_iterator       = FALSE;
   vp->initializer_in_class        = FALSE;
   vp->constant_valued             = FALSE;
   vp->is_immutable                = FALSE;
@@ -3916,6 +3918,24 @@ Clear the indicated range-based-for loop entry.
   rbflp->use_await = FALSE;
 }  /* clear_range_based_for_loop */
 
+
+static void clear_expansion_statement(an_expansion_statement_ptr esp)
+/*
+Clear the indicated expansion statement entry.
+*/
+{
+  esp->initialization = NULL;
+  esp->iterator = NULL;
+  esp->expansion_scope = NULL;
+  esp->iterator_scope = NULL;
+  esp->expanded_statement = NULL;
+  esp->decl_token_cache = NULL;
+  esp->body_token_cache = NULL;
+  esp->definition_info = NULL;
+  esp->initializer = NULL;
+  esp->initializer_is_list = FALSE;
+}  /* clear_expansion_statement */
+
 #if MICROSOFT_EXTENSIONS_ALLOWED
 
 void set_for_each_loop_kind(a_for_each_loop_ptr     felp,
@@ -4093,6 +4113,8 @@ fields to default values.
   a_for_loop_ptr       flip;
   a_range_based_for_loop_ptr
                        rbflp;
+  an_expansion_statement_ptr
+                       esp;
 #if MICROSOFT_EXTENSIONS_ALLOWED
   a_for_each_loop_ptr  felp;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -4150,6 +4172,12 @@ fields to default values.
       sp->variant.range_based_for_loop.extra_info = rbflp =
                                      alloc_cil_of_type(a_range_based_for_loop);
       clear_range_based_for_loop(rbflp);
+      break;
+    case stmk_expansion_statement:
+      sp->variant.expansion_statement.statement = NULL;
+      sp->variant.expansion_statement.extra_info = esp =
+                                     alloc_cil_of_type(an_expansion_statement);
+      clear_expansion_statement(esp);
       break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case stmk_for_each:
@@ -4700,6 +4728,7 @@ points to the associated routine if the kind is sck_function.
   sp->is_stmt_expr_block = FALSE;
   sp->is_placeholder_scope = FALSE;
   sp->needed_walk_done = FALSE;
+  sp->is_expansion_prototype = FALSE;
   set_scope_kind(sp, kind, assoc_routine);
   sp->assoc_block                 = NULL;
   sp->lifetime                    = NULL;

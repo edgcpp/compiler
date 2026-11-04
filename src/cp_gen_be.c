@@ -20304,6 +20304,52 @@ Generate code for the indicated range-based-for statement.
   gen_statement(statement->variant.range_based_for_loop.statement);
 }  /* gen_range_based_for_statement */
 
+
+static void gen_expansion_statement(a_statement_ptr statement)
+/*
+Generate code for the indicated expansion statement.
+*/
+{
+  a_boolean  saved_prototype_context;
+  an_expansion_statement_ptr
+             esp = statement->variant.expansion_statement.extra_info;
+
+  write_tok_str("template for (");
+  if (esp->initialization != NULL) {
+    /* Generate the initialization statement. */
+    gen_init_statement_or_statement(
+                                  get_for_init_statement(esp->initialization));
+  }  /* if */
+  gen_variable_decl(/*is_condition=*/FALSE, /*is_iterator=*/TRUE,
+                    /*for_init=*/FALSE, /*suppress_specifiers=*/FALSE,
+                    (a_boolean *)NULL);
+  write_tok_str(" : ");
+  if (esp->initializer_is_list) {
+    /* Generate the initializer list. */
+    write_tok_ch('{');
+    for (an_expr_node_ptr expr = esp->initializer;
+         expr != NULL;
+         expr = expr->next) {
+      if (expr != esp->initializer) {
+        write_tok_str(", ");
+      }  /* if */
+      gen_expression(expr);
+    }  /* for */
+    write_tok_ch('}');
+  } else {
+    /* Generate the initializer expression. */
+    check_assertion(esp->initializer != NULL);
+    gen_expression(esp->initializer);
+  }  /* if */
+  write_tok_str(") ");
+  /* The body is a template definition even outside an ordinary template;
+     generate it in prototype form. */
+  saved_prototype_context = in_prototype_instantiation_context;
+  in_prototype_instantiation_context = TRUE;
+  gen_statement(statement->variant.expansion_statement.statement);
+  in_prototype_instantiation_context = saved_prototype_context;
+}  /* gen_expansion_statement */
+
 #if MICROSOFT_EXTENSIONS_ALLOWED
 
 static void gen_for_each_statement(a_statement_ptr statement)
@@ -22650,6 +22696,10 @@ one that yields the value) of a statement expression.
     case stmk_range_based_for:
       /* range-based-for statement. */
       gen_range_based_for_statement(statement);
+      break;
+    case stmk_expansion_statement:
+      /* Expansion statement. */
+      gen_expansion_statement(statement);
       break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case stmk_for_each:

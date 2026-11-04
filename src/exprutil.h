@@ -1074,6 +1074,9 @@ typedef struct an_expr_stack_entry {
   a_bit_field	is_enumerator_value:1;
 			/* TRUE if this is the expression for an explicit
 			   enumerator value.  E.g., "enum E { e = x+1 };". */
+  a_bit_field	expansion_initializer:1;
+			/* TRUE while binding an expansion initializer whose
+			   temporaries persist through its element or range. */
   a_const_eval_reattempt_state
 		const_eval_reattempt_state;
 			/* The current constant evaluation reattempt state
