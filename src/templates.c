@@ -16139,13 +16139,40 @@ If there is an error in the copying, set *copy_error to TRUE.
              template <typename T = int, typename S = C<T> > class A {};
       */
       if (new_list != NULL && tpp->def_arg_involves_template_param) {
+        a_boolean           pushed_rescan_scope = FALSE;
+        a_ctws_options_set  def_arg_options = options;
+        if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH &&
+            scope_stack[depth_innermost_instantiation_scope].is_rescan &&
+            scope_stack[depth_innermost_instantiation_scope].template_sym !=
+                                                                template_sym) {
+          /* The default argument belongs to template_sym, so names in it
+             must be looked up in the context of template_sym, not in the
+             context of an enclosing rescan (e.g., of a partial
+             specialization declared before entities that the default
+             argument refers to). */
+          push_instantiation_scope_for_rescan(template_sym);
+          pushed_rescan_scope = TRUE;
+          if (scope_is(&scope_stack_top(), sck_function_access)) {
+            /* A default template argument is not part of the template, so
+               the friends of the template do not have access to it. */
+            scope_stack_top().template_sym = NULL;
+          }  /* if */
+          /* Pushing an instantiation scope clears the expression stack.
+             Also, a deduced pack would already have been added to the new
+             template argument list. */
+          def_arg_options &= ~(CTWS_INSIDE_EXPR_RESCAN |
+                               CTWS_PRESERVE_DEDUCED_PACKS);
+        }  /* if */
         substitute_template_argument(tap, tpp, new_list,
                                      param_list_for_copy,
                                      new_list, param_list_for_copy,
                                      source_pos,
-                                     options,
+                                     def_arg_options,
                                      is_generic,
                                      copy_error, ctws_state);
+        if (pushed_rescan_scope) {
+          pop_instantiation_scope_for_rescan();
+        }  /* if */
         if (*copy_error) goto done;
       }  /* if */
       if (new_list == NULL) {
