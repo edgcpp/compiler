@@ -114,7 +114,7 @@ from the environment variable shown as a fallback.
 | `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` | 2 GiB | Largest extracted artifact (including inner tarballs) |
 | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` | `500000` | Most entries in an artifact (including inner tarballs'). CI's test results reach about 170,000 |
 | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` | 64 MiB | Largest artifact zip central directory, which is read into memory whole (about 106 bytes per entry in CI's test results) |
-| `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` | 64 MiB | Largest diff of a pull request's `tests/`, which is held in memory and copied more than once: raising it may need a higher `mem_limit` for the service ([`compose.yaml`](compose.yaml)) |
+| `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` | 512 MiB | Largest diff of a pull request's `tests/`. It is streamed to disk, not held in memory, and kept with the review's rematerialized run; the builder applies all of it within `ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT` |
 | `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` | `20000` | Most sparse-checkout patterns in a review's worktree (up to two per test). Checking out takes time proportional to patterns times paths |
 | `ACKNOWLEDG_FORGE_MAX_CONCURRENCY` | `2` | Pull requests processed at once |
 | `ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT` | `900` | Seconds `edg-rematerialize-test-run` may run |

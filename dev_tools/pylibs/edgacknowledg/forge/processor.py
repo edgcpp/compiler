@@ -397,42 +397,54 @@ class Processor:
     if reused is not None:
       return reused
 
-    diff = await self._workspaces.diff(
-      info.repository,
-      merge_base,
-      head_sha,
-      ['tests/']
-    )
-    if diff.strip() == '':
-      return None
-
-    worktree = await self._workspaces.checkout(
-      info,
-      record.review_id,
-      'base',
-      merge_base,
-      changes_patterns(
-        diff,
-        max_patterns = self._config.max_sparse_patterns
-      )
-    )
-    runs_dir = ensure_real_directory(worktree, PurePosixPath('tests', 'runs'))
-    run_dir = runs_dir / f"remat-{_sha256(source_key.encode())[:16]}"
-    remove_tree(run_dir)
-
     # The builder sees the worktree read-only, so it writes elsewhere (on
     # the same file system, for the rename into place).
+    run_name = f"remat-{_sha256(source_key.encode())[:16]}"
     staging_root = ensure_real_directory(
       self._workspaces.build_staging_dir.parent,
       PurePosixPath(self._workspaces.build_staging_dir.name)
     )
     staging = Path(tempfile.mkdtemp(
-      prefix = f"{record.review_id}-{run_dir.name}-",
+      prefix = f"{record.review_id}-{run_name}-",
       dir = staging_root
     ))
     try:
+      # Only ever in this file, never held in memory whole: it may be large.
       diff_file = staging / 'pull-request.diff'
-      diff_file.write_text(diff, encoding = 'utf-8')
+      await self._workspaces.diff(
+        info.repository,
+        merge_base,
+        head_sha,
+        ['tests/'],
+        diff_file
+      )
+      if diff_file.stat().st_size == 0:
+        remove_tree(staging)
+        return None
+      with open(diff_file, encoding = 'utf-8') as handle:
+        patterns = changes_patterns(
+          handle,
+          max_patterns = self._config.max_sparse_patterns
+        )
+
+      worktree = await self._workspaces.checkout(
+        info,
+        record.review_id,
+        'base',
+        merge_base,
+        patterns
+      )
+      # Prepare where the run goes once built: tests/runs/<run name> in the
+      # worktree (through real directories only, not links the pull request
+      # committed), cleared of any earlier attempt so that the staging
+      # directory can be renamed into place.
+      runs_dir = ensure_real_directory(
+        worktree,
+        PurePosixPath('tests', 'runs')
+      )
+      run_dir = runs_dir / run_name
+      remove_tree(run_dir)
+
       timestamp = self._clock().strftime(edgutil.RUN_TIMESTAMP_FORMAT)
       result = await self._sandbox.run(
         [
@@ -477,6 +489,7 @@ class Processor:
         )
         remove_tree(staging)
         return None
+      fingerprint = await asyncio.to_thread(_file_sha256, diff_file)
       staging.rename(run_dir)
     except BaseException:
       remove_tree(staging)
@@ -487,7 +500,7 @@ class Processor:
       name = CHANGES_NAME,
       slug = section_slug(CHANGES_NAME),
       source_key = source_key,
-      content_fingerprint = _sha256(diff.encode()),
+      content_fingerprint = fingerprint,
       root = run_dir / timestamp,
       home = worktree / 'tests',
       details = {'run_dir': str(run_dir)},
