@@ -154,7 +154,7 @@ async def test_an_abandoned_requests_answer_is_dropped(
     make_pool: Any) -> None:
   pool = await make_pool(processes = 1)
   [pid] = pool.pids()
-  # Cancelled while its process works on it (as when its section is
+  # Canceled while its process works on it (as when its section is
   # removed): the process still answers it...
   medium = asyncio.create_task(
     pool.answer(env.section, _show_source('suite/medium.ifc'))

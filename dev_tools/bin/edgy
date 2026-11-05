@@ -1661,7 +1661,7 @@ class DynamicLoadingTestRunner:
         # Yield back to the event loop to work on other work if possible.
         await asyncio.sleep(0)
       except asyncio.CancelledError:
-        # This task cannot be cancelled; it must complete so that the
+        # This task cannot be canceled; it must complete so that the
         # expectations can be written correctly.
         pass
 

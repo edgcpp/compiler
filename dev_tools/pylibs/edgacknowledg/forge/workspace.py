@@ -705,7 +705,7 @@ async def _communicate_bounded(process: asyncio.subprocess.Process,
                                limit: int) -> Optional[tuple[bytes, bytes]]:
   '''``process``'s output (stdout, stderr), once it exits; ``None``, having
   stopped it, should its stdout be over ``limit`` bytes. Should this be
-  cancelled (or fail), it is stopped too, rather than left writing to a
+  canceled (or fail), it is stopped too, rather than left writing to a
   pipe no one reads.
   '''
   assert process.stdout is not None and process.stderr is not None

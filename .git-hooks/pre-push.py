@@ -50,6 +50,7 @@ sys.path.insert(
 )
 
 import edgchanges
+import edgshell
 import edgutil
 
 if platform.system() == 'Windows':
@@ -94,7 +95,9 @@ EXCLUDES_PATH_PREFIXES = [
   'src/error_msg.txt',
   # Don't check AGENT files.
   'AGENTS.md',
-  '.agents/'
+  '.agents/',
+  # Don't check the spelling allowlist; it is made of words aspell rejects.
+  'dev_tools/spelling_allowlist.json'
 ]
 
 def _is_excluded_file_path(path_str: str) -> bool:
@@ -230,9 +233,20 @@ class PrePushChecker:
     remote_head = f"{first_new_commit}~1"
     print('Checking changed files:')
 
-    changed_files = git_output(
-      ['diff', '--no-commit-id', '--name-only', '-r', f"{remote_head}..HEAD"]
-    ).splitlines()
+    # Use -z so that git doesn't C-quote paths with unusual characters (e.g.,
+    # non-ASCII ones): the quoted form isn't a usable path.
+    changed_files = [
+      path for path in run_git(
+        ['diff', '--no-commit-id', '--name-only', '-r', '-z',
+         f"{remote_head}..HEAD"]
+      ).stdout.split('\0') if path
+    ]
+
+    # Binary files have no text to check, so don't extract them.  Ask git
+    # rather than sniffing the contents so that .gitattributes is honored.
+    binary_files = edgshell.list_binary_files_in_git_diff(
+      f"{remote_head}..HEAD"
+    )
 
     mono_repo_dir = edgutil.find_mono_repo_or_exit()
     containing_tmp_dir = mono_repo_dir / '.tmp'
@@ -241,6 +255,8 @@ class PrePushChecker:
       input_spec = {}
       for file_path_str in changed_files:
         if _is_excluded_file_path(file_path_str):
+          continue
+        if file_path_str in binary_files:
           continue
 
         file_path = Path(file_path_str)

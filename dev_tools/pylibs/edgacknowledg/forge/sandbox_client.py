@@ -148,7 +148,7 @@ class ForgeSandboxClient:
     return None
 
   async def _keep_connected(self) -> None:
-    '''Keep a connection to the server, until cancelled.'''
+    '''Keep a connection to the server, until canceled.'''
     async for connection in connect(
         self.url,
         open_timeout = self._open_timeout,

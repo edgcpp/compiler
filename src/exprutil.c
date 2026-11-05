@@ -25706,7 +25706,7 @@ conjunction of two constraints X and Y, if it is at least as constrained as
 each one separately (which matches intuition).  The second rule is similarly
 intuitive: For a disjunction of two constraints X and Y to be at least as
 constrained as a constraint Z, each alternative (X and Y) has to be as
-constrainted as Z.
+constrained as Z.
 
 Consider constraints E1 and E2 expressed through conjunctions (AND) and
 disjunctions (OR) of atomic constraints.  Let E1[k] be the set of all

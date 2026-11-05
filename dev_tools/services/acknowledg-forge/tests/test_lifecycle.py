@@ -67,7 +67,7 @@ async def test_motivating_example(tmp_path: Path,
   ]
 
   # The base worktree only has what's needed: the touched test, not its
-  # neighbours or the big unrelated directory.
+  # neighbors or the big unrelated directory.
   changes = harness.publisher.reviews[review_id][0]
   visible = (changes.root / 'visible.txt').read_text().split()
   assert 'tests/suite/a.sft.cpp' in visible

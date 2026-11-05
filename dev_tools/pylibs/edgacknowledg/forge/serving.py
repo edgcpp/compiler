@@ -92,14 +92,14 @@ class Listening:
 
   async def wait(self) -> None:
     '''Until serving stops (with ``close``, or failing).'''
-    # Shielded: a waiter giving up (being cancelled) mustn't cut the serving
-    # off; ``close`` stops it gracefully (as ``serve`` does once cancelled).
+    # Shielded: a waiter giving up (being canceled) mustn't cut the serving
+    # off; ``close`` stops it gracefully (as ``serve`` does once canceled).
     await asyncio.shield(self._task)
 
   async def close(self) -> None:
     self._stop.set()
     try:
-      # Shielded: if this is cancelled, the shutdown just started still
+      # Shielded: if this is canceled, the shutdown just started still
       # finishes; only running out of time cuts it short (below).
       await asyncio.wait_for(asyncio.shield(self._task), _CLOSE_TIMEOUT)
     except asyncio.TimeoutError:
@@ -161,7 +161,7 @@ async def serve(*blueprints: Blueprint,
                 host: str,
                 port: int,
                 max_message_size: Optional[int] = None) -> None:
-  '''Serve the app of ``blueprints`` (as ``start``) until cancelled.'''
+  '''Serve the app of ``blueprints`` (as ``start``) until canceled.'''
   listening = await start(*blueprints, host = host, port = port,
                           max_message_size = max_message_size)
   try:

@@ -150,7 +150,7 @@ class RunnerClient:
     '''Run ``argv`` in the runner (stdout and stderr together), which ends
     it after ``timeout`` seconds. Its output beyond ``MAX_OUTPUT_BYTES``
     is dropped from the middle.
-    Cancelling this kills the command.
+    Canceling this kills the command.
     '''
     output = _Output()
     value = await self._request(
@@ -229,7 +229,7 @@ class RunnerClient:
       await connection.send(json.dumps({'id': request_id, **request}))
       value = await pending.answer
     except asyncio.CancelledError:
-      # The caller gave up: kill the command.  Shielded, so being cancelled
+      # The caller gave up: kill the command.  Shielded, so being canceled
       # again can't keep the kill from being sent.
       await asyncio.shield(self._cancel(connection, request_id))
       raise

@@ -450,7 +450,7 @@ else:
       if not task.done()
     }
 
-# The tasks ``_stop_asyncio_loop`` cancelled, which ``_finish_asyncio_tasks``
+# The tasks ``_stop_asyncio_loop`` canceled, which ``_finish_asyncio_tasks``
 # doesn't cancel again: that would cut their cleanup short.
 _stopped_asyncio_tasks: 'weakref.WeakSet[asyncio.Task]' = weakref.WeakSet()
 
@@ -463,10 +463,10 @@ def _stop_asyncio_loop(loop: asyncio.AbstractEventLoop) -> None:
     task.cancel()
 
 def _finish_asyncio_tasks(loop: asyncio.AbstractEventLoop) -> None:
-  '''Run ``loop`` until every task on it has finished, cancelling those
+  '''Run ``loop`` until every task on it has finished, canceling those
   ``_stop_asyncio_loop`` hasn't (e.g. those started as others cleaned up),
   as ``asyncio.run`` does; report what failed other than by being
-  cancelled.
+  canceled.
   '''
   tasks = _active_asyncio_tasks(loop)
   while tasks:
@@ -522,11 +522,11 @@ def run_asyncio_loop(
   task_consumer is a lambda function consuming the created loop and returning
   the initial async function asyncio.
 
-  If that task raises ``AsyncLoopFatalError``, remaining tasks are cancelled
+  If that task raises ``AsyncLoopFatalError``, remaining tasks are canceled
   the same way a SIGINT/SIGTERM would cancel them, and the error is
   re-raised to the caller.  Either way, once stopped, the loop runs until
-  every task has finished (cancelling any started meanwhile), so each
-  cancelled task's cleanup completes.
+  every task has finished (canceling any started meanwhile), so each
+  canceled task's cleanup completes.
 
   Pass ``install_signal_handlers=False`` when the caller already registers
   process-level handlers and must not have them replaced by the event loop.
@@ -563,7 +563,7 @@ async def async_terminate_within(process: asyncio.subprocess.Process,
     try:
       await asyncio.wait_for(process.wait(), allowance)
     except BaseException as ex:
-      # Out of time, or cancelled while waiting: kill it either way.
+      # Out of time, or canceled while waiting: kill it either way.
       with contextlib.suppress(ProcessLookupError):
         process.kill()
       if not isinstance(ex, asyncio.TimeoutError):

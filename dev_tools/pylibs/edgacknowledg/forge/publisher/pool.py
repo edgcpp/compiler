@@ -24,7 +24,7 @@ pool process (``pool_process``):
   (with whatever it started) and replaced; so is one that exits. Either
   way the request fails, and the client library answers the reviewer with
   its failure reply.
-- A request abandoned (cancelled, say, as its section is removed) before
+- A request abandoned (canceled, say, as its section is removed) before
   it is given to a process is skipped; one abandoned after is still
   answered (its process stays busy with it until then), and the answer
   dropped.
@@ -224,7 +224,7 @@ class ProcessPool:
                    section: SectionRecord,
                    request: Any) -> Answer:
     '''Have the next free process answer ``request`` for ``section``;
-    raise ``PoolError`` if it can't. Cancelling this abandons the request.
+    raise ``PoolError`` if it can't. Canceling this abandons the request.
     '''
     if all(slot.starting_later() for slot in self._slots):
       raise PoolError('every pool process is restarting')
@@ -248,7 +248,7 @@ class ProcessPool:
 
   async def _dispatch(self, slot: _Slot) -> None:
     '''Give ``slot``'s process the queued requests, one at a time, each
-    once it has answered the last, until cancelled.
+    once it has answered the last, until canceled.
     '''
     while True:
       # A running process first (replaced at once if it went), so it takes

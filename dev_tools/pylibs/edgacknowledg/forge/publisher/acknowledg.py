@@ -218,7 +218,7 @@ async def publish(wanted: Wanted,
                   api_key: Optional[str],
                   pool: ProcessPool,
                   reviews_dir: Optional[Path] = None) -> None:
-  '''Publish what ``wanted`` asks for, until cancelled; raise should the
+  '''Publish what ``wanted`` asks for, until canceled; raise should the
   session stop (``IncompatibleProtocolVersion``: AcknowlEDG is newer).
   '''
   async with BatchClient(

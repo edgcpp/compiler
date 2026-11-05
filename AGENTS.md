@@ -149,5 +149,6 @@ If an agent does not auto-load skills, open the matching
 | `edg-cpfe-style` | [`.agents/skills/edg-cpfe-style/SKILL.md`](.agents/skills/edg-cpfe-style/SKILL.md) | Front-end coding style (`doc/source/code_style.rst`) |
 | `edg-python-style` | [`.agents/skills/edg-python-style/SKILL.md`](.agents/skills/edg-python-style/SKILL.md) | Python under `dev_tools/` (no formal RST; match in-tree) |
 | `edg-changes-example` | [`.agents/skills/edg-changes-example/SKILL.md`](.agents/skills/edg-changes-example/SKILL.md) | Adding a Changes entry (`pending_changes/`); encoding non-UTF-8 examples in any `Changes` file |
+| `edg-spelling-allowlist` | [`.agents/skills/edg-spelling-allowlist/SKILL.md`](.agents/skills/edg-spelling-allowlist/SKILL.md) | Spell check reports from pre-push or `edg-collect-changes --check`; adding words to `dev_tools/spelling_allowlist.json` |
 | `acknowledg-client` | [`.agents/skills/acknowledg-client/SKILL.md`](.agents/skills/acknowledg-client/SKILL.md) | Batch/Direct client, reconnect, provider CLIs |
 | `acknowledg-bench` | [`.agents/skills/acknowledg-bench/SKILL.md`](.agents/skills/acknowledg-bench/SKILL.md) | `.cgout` / Ir / baselines / bench review |

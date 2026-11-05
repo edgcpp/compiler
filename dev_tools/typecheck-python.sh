@@ -122,6 +122,9 @@ pushd pylibs/ > /dev/null
   pushd edgshell/ > /dev/null
     check_types __init__.py
   popd > /dev/null
+  pushd edgspelling/ > /dev/null
+    check_types_strict __init__.py
+  popd > /dev/null
   pushd edgtest/ > /dev/null
     check_types_strict __init__.py
     pushd inputs/ > /dev/null
