@@ -199,7 +199,7 @@ class Processor:
 
   async def run(self) -> None:
     '''Clean up after a restart, then process changes forever (until
-    cancelled, which cancels what is being processed).
+    canceled, which cancels what is being processed).
     '''
     await self.restore()
     last_maintenance = self._clock()
@@ -218,7 +218,7 @@ class Processor:
         except asyncio.TimeoutError:
           pass
     finally:
-      # Stopping: what is being processed is cancelled (and its attempt
+      # Stopping: what is being processed is canceled (and its attempt
       # refunded) now, while the store, the forge, and the builder are
       # still open.
       await self._cancel_in_flight()

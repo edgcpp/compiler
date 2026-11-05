@@ -245,7 +245,7 @@ def create_runner(policy: RunnerPolicy,
 
   async def run(connection: Websocket, request_id: int, job: Job) -> None:
     '''Run ``job``, relaying its output, until it ends, times out, or is
-    cancelled (by the client, or with its connection).
+    canceled (by the client, or with its connection).
     '''
     nonlocal active
     _log.info('running %s', shlex.join(job.argv))

@@ -293,7 +293,7 @@ The function clean-up entry contains
 
 A region is associated with a specific sequence of clean-up actions that would
 be required should an exception occur.  A new region is typically started
-whenever a destructable object comes into or goes out of scope.
+whenever a destructible object comes into or goes out of scope.
 
 The global variable ``__eh_curr_region`` records the region number currently
 being executed.  It is saved each time a new function entry or ``try`` block is

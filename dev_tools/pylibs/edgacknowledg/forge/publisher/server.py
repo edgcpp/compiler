@@ -108,7 +108,7 @@ async def _keep_publishing(settings: 'asyncio.Queue[_Settings]',
                            wanted: Wanted,
                            pool: ProcessPool) -> str:
   '''Publish what ``wanted`` asks for with the latest ``settings`` a client
-  sent, until cancelled: from the first ones on; again with new ones, or
+  sent, until canceled: from the first ones on; again with new ones, or
   should publishing fail (what it published goes with it; the clients
   serve it all again on connecting). Except should AcknowlEDG be newer:
   then it returns why, publishing nothing more until this publisher is

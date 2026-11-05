@@ -87,7 +87,7 @@ _PROGRAM = textwrap.dedent('''
     try:
       await asyncio.sleep(100)
     except asyncio.CancelledError:
-      # Starting a task while stopping: it's cancelled, and awaited, too.
+      # Starting a task while stopping: it's canceled, and awaited, too.
       loop.create_task(clean_up_slowly('latecomer'))
       if scenario == 'sigint':
         raise

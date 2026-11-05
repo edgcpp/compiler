@@ -3,7 +3,7 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''Cancelling AcknowlEDG client requests undoes them, as failing does;
+'''Canceling AcknowlEDG client requests undoes them, as failing does;
 losing the connection fails them.
 '''
 
@@ -200,7 +200,7 @@ async def test_subscribes_answered_as_cancelled_are_released() -> None:
   while len(connection.sent) == 0:
     await asyncio.sleep(0.01)
 
-  # Answered, then cancelled before it resumes to take the answer.
+  # Answered, then canceled before it resumes to take the answer.
   subscription_id = str(uuid.uuid4())
   (future,) = session._pending_subscribe.values()
   future.set_result({**payload, 'subscription_id': subscription_id})
@@ -228,7 +228,7 @@ async def test_sections_cancelled_once_subscribed_are_released() -> None:
     return subscription_id
 
   session._subscribe = subscribe  # type: ignore[method-assign]
-  # Cancelled while announcing the section, after it was subscribed.
+  # Canceled while announcing the section, after it was subscribed.
   adding = asyncio.create_task(review.add_section(_Handler()))  # type: ignore
   await _cancel_once_sent(session, adding)
   assert review.sections() == []

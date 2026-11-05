@@ -19040,7 +19040,7 @@ Hang on GCC target pragma with multiple string arguments
 
 Previously, passing multiple string arguments to the GCC target pragma had
 caused the front end to hang.  A change has been made to enable string literal
-concatentation when parsing GCC pragmas so the following is now accepted in
+concatenation when parsing GCC pragmas so the following is now accepted in
 GNU emulation modes:
 
   _Pragma("GCC push_options")
@@ -25262,14 +25262,14 @@ Consider:
     template<class T> X &operator<<(const T &);
   };
   template<typename T, typename U>
-    concept Outable = requires(U &s, T const &x) { s << x; };
+    concept Writable = requires(U &s, T const &x) { s << x; };
   template<typename T>
-    void operator<<(X &x, const T &o) requires (!Outable<T, X>) {
+    void operator<<(X &x, const T &o) requires (!Writable<T, X>) {
     x << 0;  // Error now caught earlier.
   }
 
 This example is ill-formed because the constraint that must be checked for
-the expression x << 0 depends on itself (via the concept Outable, which will
+the expression x << 0 depends on itself (via the concept Writable, which will
 recursively substitute the non-member operator<< candidate).  Previously, the
 front end caught this via a general mechanism that limits the number of
 recursive substitutions.  If the limit is set too high, however, that can
@@ -31646,7 +31646,7 @@ list.  This is now fixed.  For example, with --g++:
 
 
 6/2/21   [EDGcpfe/24389]
-Spurious consteval failure in temmplated contexts
+Spurious consteval failure in templated contexts
 
 Consider:
 
@@ -35283,7 +35283,7 @@ EDGcpfe/15168,EDGcpfe/20235) were enabled in clang mode were not correct.
 As noted in the original description, the feature was supported only in
 C++14 and newer modes and when gnu_version was at least 40900.  In clang
 mode, the restriction to C++14 mode was incorrect, and the dependency on
-gnu_version was unobvious.  The front end has now been changed to enable
+gnu_version was not obvious.  The front end has now been changed to enable
 the feature in clang mode for C++11 and newer modes when clang_version is
 at least 30400, regardless of the value of gnu_version.  For example, with
 --c++11 --clang_version=30400:
@@ -39724,7 +39724,7 @@ C++-generating back end: template arguments involving local types
 
 In C++-generating back end configurations in which
 CLASS_TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS is TRUE, a use of a
-template with a template type argment that is an array, pointer, or
+template with a template type argument that is an array, pointer, or
 reference involving a local type resulted in a generated explicit
 specialization for that template instance in which the template argument
 referred to the local type from a point at which it is not in scope.  This
@@ -41828,7 +41828,7 @@ This is now fixed.
 
 
 3/18/20  [EDGcpfe/22298]
-Coroutines: Adjust behaviour of implicit try/catch block
+Coroutines: Adjust behavior of implicit try/catch block
 
 C++ Committee document P1971R0 changed how a coroutine's implicit try/catch
 block is handled.  The initial suspend point has been moved inside the try
@@ -48100,7 +48100,7 @@ GNU compatibility: Default constructors for classes with const members
 
 GCC versions earlier than 4.9.0 did not implement the requirement that
 constructors for classes with uninitialized const members be defined as
-deleted (see EDGcpfe/14040).  GCC versions 4.9.0 and newer do fulfil this
+deleted (see EDGcpfe/14040).  GCC versions 4.9.0 and newer do fulfill this
 requirement.  Clang always fulfilled this requirement.  For example:
 
   struct A {
@@ -48745,22 +48745,22 @@ expression occurred in a default template argument.  Now fixed.
 
 
 5/16/19  [EDGcpfe/21259]
-Use Berkley SoftFloat library for floating-point arithmetic
+Use Berkeley SoftFloat library for floating-point arithmetic
 
 Previously, the front end could only support floating-point types that were
 also supported by the host compiler (because the front end needs to be able
 to fold floating-point operations at compile time).  A change has been made
-to optionally use the Berkley SoftFloat library to perform all floating-point
+to optionally use the Berkeley SoftFloat library to perform all floating-point
 arithmetic.  This option can be selected by setting the new USE_SOFTFLOAT
 configuration macro to TRUE (the default is FALSE).  In such configurations,
 the build process must be suitably modified to include the SoftFloat headers
 and library.
 
-The front end was tested with Release 3e of the Berkley SoftFloat distribution.
-See http://www.jhauser.us/arithmetic/SoftFloat.html for documentation and
-licensing information.  Performing floating-point operations in software is
-slower than performing them in hardware.  See the SoftFloat documentation for
-details.
+The front end was tested with Release 3e of the Berkeley SoftFloat
+distribution.  See http://www.jhauser.us/arithmetic/SoftFloat.html for
+documentation and licensing information.  Performing floating-point operations
+in software is slower than performing them in hardware.  See the SoftFloat
+documentation for details.
 
 In configurations where USE_SOFTFLOAT is TRUE, USE_HOST_FP_CONVERSION_ROUTINES
 must be set to FALSE (see the Changes entry for EDGcpfe/21236).  This provides
@@ -124094,7 +124094,7 @@ name of a member function.  Now fixed (an error is issued).
 Abort on decltype of nontype template parameter
 
 The front end aborted in decltype_from_operand in expr.c on a use of
-decltype applied to a nontype template parameter identitier.  Now fixed.
+decltype applied to a nontype template parameter identifier.  Now fixed.
 
   template <class U, U I> inline void f() {
     auto x2 = sizeof (decltype(I));  // Formerly caused an abort
@@ -136132,7 +136132,7 @@ numbered N1791).
 Various GNU C features are lowered using C99 lowering.  It was previously
 possible to configure the front end with DO_IL_LOWERING and
 GNU_EXTENSIONS_ALLOWED set to TRUE and DO_C99_IL_LOWERING set to FALSE.
-Ths combination left some IL constructs unlowered, which could result in
+This combination left some IL constructs unlowered, which could result in
 aborts in the C-generating back end.  Attempting to use this configuration
 now results in a build-time error.  (As part of this change, consistency
 checking between DO_C99_IL_LOWERING and other configuration settings has
@@ -140042,7 +140042,7 @@ as a pattern satisfying the operator.
 
 8/23/05  Microsoft compatibility: dropping cv-qualifiers on "?" operator
 
-Microsoft mode nows allows dropping cv-qualifiers (e.g., const) when
+Microsoft mode now allows dropping cv-qualifiers (e.g., const) when
 converting the second or third operand of a "?" operator to the other
 operand type, if the conversion is from derived to base.
 
@@ -140592,7 +140592,7 @@ with external linkage involving class types or enumeration types without
 linkage.  Now such declarations are always diagnosed (an error in strict mode;
 otherwise, a warning for functions or a remark for variables).  For example:
 
-  enum { no, yes } anwer;  // Previously silently accepted; now a diagnostic.
+  enum { no, yes } answer;  // Previously silently accepted; now a diagnostic.
   struct S {
     typedef struct {} *P;
     static P x;  // Previously silently accepted; now a diagnostic.
@@ -143130,7 +143130,7 @@ old-style cast, i.e.,
       Inner2(const Inner1& r = ((Inner1)(s)));
 
 thus triggering the MSVC++ 6.0 bug.  Now, when msvc_is_generated_code_target
-is TRUE and msvc_target_version_number is 1200, the default argment will be
+is TRUE and msvc_target_version_number is 1200, the default argument will be
 generated as a functional cast with no enclosing parentheses:
 
       Inner2(const Inner1& t = Inner1(s));
@@ -143322,7 +143322,7 @@ therefore issues no error on such cases.
   A<int> y;  // I is complete when A<int> instantiation is done
 
 2/8/05   Spurious error on template static data member with dependent
-         parenthesised initializer
+         parenthesized initializer
 
 A spurious error was issued if a template static data member was initialized
 with a parenthesized initializer of the form "T::<name>".  The error would
@@ -144143,7 +144143,7 @@ currently-standard behavior for GNU C++ mode and MSVC++ 7.0.
 
 12/21/04 Microsoft compatibility: mixed void/non-void operands to "?" operator
 
-Microsoft C++ mode nows allows mixed void/non-void operands to the "?"
+Microsoft C++ mode now allows mixed void/non-void operands to the "?"
 operator, with a result type of void.  A previous emulation of this
 feature (see Changes entry of 7/1/96) was found to match the behavior
 of MSVC++ only in C mode and only up to version 6.0, and therefore
@@ -165294,7 +165294,7 @@ an lvalue.  It is now an rvalue.
 
 9/1/00   Abort on array rvalue selected from base class of class rvalue
 
-The front end no longers aborts on passing an array rvalue as
+The front end no longer aborts on passing an array rvalue as
 an argument, when the array rvalue is produced by creating a class
 rvalue and selecting an array member of a base class of that value.
 
@@ -169037,7 +169037,7 @@ line).
 
 11/2/99  Pointer conversions not allowed on nontype template argument
 
-Inplicit null pointer conversions, related-class conversions, and
+Implicit null pointer conversions, related-class conversions, and
 conversions to "void *" are no longer allowed on a nontype template
 argument.  See [temp.arg.nontype] paragraph 5 in the C++ standard.
 
@@ -191946,7 +191946,7 @@ which have been corrected:
   address into the slot of the object address table indexed by the region
   table number (rather than the index number for the object address table).
   By coincidence, the runtime was looking for the conditional flag address
-  in the same wrong place, so the bugs often cancelled out, particularly
+  in the same wrong place, so the bugs often canceled out, particularly
   in small test programs.
 - When destroying unordered temporaries, the values placed in
   __eh_curr_region during the destructions were wrong and would
@@ -194059,7 +194059,7 @@ could result in a compiler abort.  This has been fixed.
     T3<xxx> t3;  // Abort on this line
   };
 
-6/29/94  Overridding the severity of diagnostic messages
+6/29/94  Overriding the severity of diagnostic messages
 
 Command line options have been added that allow a user to override the
 severity of specified diagnostics.  The new severity may only be used to
@@ -194070,7 +194070,7 @@ overriding mechanism.
 
 6/29/94  Option to display error numbers
 
-When using the severity overridding mechanism, it is sometimes helpful to
+When using the severity overriding mechanism, it is sometimes helpful to
 know the error number of a given diagnostic.  The --display_error_number
 command line option causes the error number to be displayed as part of the
 diagnostic output.
@@ -200177,9 +200177,9 @@ issued in strict ANSI mode.
 Now a remark is issued (instead of a warning) on duplicate friend
 declarations.
 
-3/23/93 IL walk routines speeded up
+3/23/93 IL walk routines sped up
 
-The routines that walk the intermediate language tree have been speeded
+The routines that walk the intermediate language tree have been sped
 up.  This was accomplished largely by moving a lot of code from il_walk.c
 out to a new file walk_entry.h, and then compiling it twice with
 different macro settings so as to avoid a lot of extra testing during

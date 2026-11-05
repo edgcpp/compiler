@@ -141,7 +141,11 @@ Steps:
    in. `edg-exec` runs it in the dev-env container, which has `aspell`.) For
    misspellings that are really identifiers or terms, add them to an
    `//allowed_words:` line at the very top of the entry, as the failure
-   message shows; fix real misspellings instead.
+   message shows; fix real misspellings instead. `edgspelling.preprocess`
+   leaves an identifier like `getXValue` whole because it contains a
+   one-letter part. If aspell reports such an identifier whole, add the
+   whole identifier to `//allowed_words:`; adding only its parts (`get`,
+   `X`, `Value`) will not suppress the warning.
 5. Optionally preview the result without changing anything:
    `edg-collect-changes --dry-run src/Changes src/pending_changes`.
 

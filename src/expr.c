@@ -24316,7 +24316,7 @@ static void deduce_new_array_size(a_new_parse_state  *nps,
                                   a_decl_parse_state *dps)
 /*
 C++20 allows for the deduction of a new array size from the provided braced
-initializer to match direct-initialization behaviour.  For example:
+initializer to match direct-initialization behavior.  For example:
         int foo[]{1,2,3}
         new int[]{1,2,3}
 should both produce a 3-element array of integers, initialized to 1, 2 and 3.

@@ -488,7 +488,7 @@ class _BatchClientReview:
         except NotConnectedError:
           pass
         except BaseException:
-          # Failed or cancelled: not added.
+          # Failed or canceled: not added.
           self._review.discard_handler(handler)
           raise
 
@@ -576,8 +576,8 @@ class _BatchClientReview:
       channel = self._client._make_channel(subscription_id)
       await announce_section(channel, handler, self._review)
     except BaseException:
-      # Failed or cancelled: claimed by no one.  Shielded, so being
-      # cancelled again can't keep the release from being sent.
+      # Failed or canceled: claimed by no one.  Shielded, so being
+      # canceled again can't keep the release from being sent.
       await asyncio.shield(self._client._release(subscription_id))
       raise
     loop = get_running_event_loop()
@@ -670,7 +670,7 @@ class _DirectClientReview:
     try:
       await self.subscribe_section(handler)
     except BaseException:
-      # Failed or cancelled: not added.
+      # Failed or canceled: not added.
       self._review.discard_handler(handler)
       raise
 
@@ -775,7 +775,7 @@ class BatchClient:
 
   ``async with BatchClient(...) as session`` starts the connection and yields
   a ``BatchClientSession``. The ``with`` block waits until ``session.stop()``
-  unless cancelled or an exception is raised.
+  unless canceled or an exception is raised.
 
   A server speaking another protocol revision stops the session; with
   ``wait_for_server_update``, one speaking an older one doesn't: the
@@ -1109,13 +1109,13 @@ class BatchClientSession:
       # (which its keepalive pings notice) fails it.
       echo = await future
     except BaseException:
-      # Failed or cancelled: no longer awaited.
+      # Failed or canceled: no longer awaited.
       if self._pending_subscribe.get(key) is future:
         del self._pending_subscribe[key]
       if (future.done() and not future.cancelled() and
           future.exception() is None):
         # Answered all the same: claimed by no one.  Shielded, so being
-        # cancelled again can't keep the release from being sent.
+        # canceled again can't keep the release from being sent.
         await asyncio.shield(self._release(
           uuid.UUID(str(future.result()['subscription_id']))
         ))
@@ -1137,7 +1137,7 @@ class BatchClientSession:
       # Untimed, as subscribing is.
       await future
     except BaseException:
-      # Failed or cancelled: no longer awaited.
+      # Failed or canceled: no longer awaited.
       self._pending_unsubscribe.pop(subscription_id, None)
       if not future.done():
         future.cancel()
@@ -1191,7 +1191,7 @@ class DirectClient:
   '''Async context manager for dedicated ``/source`` and ``/edit`` sessions.
 
   ``async with DirectClient(...) as session`` yields a ``DirectClientSession``.
-  The ``with`` block waits until ``session.stop()`` unless cancelled or an
+  The ``with`` block waits until ``session.stop()`` unless canceled or an
   exception is raised.
   '''
 

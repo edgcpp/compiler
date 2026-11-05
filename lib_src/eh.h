@@ -177,7 +177,7 @@ typedef struct an_eh_array_supplement {
 } an_eh_array_supplement;
 
 
-/* Structure that describes a single destructable object. */
+/* Structure that describes a single destructible object. */
 typedef struct an_eh_region_descr *an_eh_region_descr_ptr;
 typedef struct an_eh_region_descr {
   a_void_function_ptr

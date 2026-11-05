@@ -11474,7 +11474,7 @@ definition of a member function of a class template.
         !locator->is_error) {
       /* Normally, we let add_to_routines_list determine which scope to add
          the routine to, but for proxy members nominated in friends, that
-         would yield a nonexisting scope; instead we just put those on the
+         would yield a nonexistent scope; instead we just put those on the
          file scope list.  Similarly for friend function templates encountered
          in Microsoft nonreal class template instantiations. */
       a_scope_depth  scope_depth;

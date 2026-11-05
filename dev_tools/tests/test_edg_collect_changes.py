@@ -27,6 +27,8 @@ import unittest
 import edgchanges
 import edgutil
 
+from tool_tree import make_tool_tree
+
 from pathlib import Path
 from typing import Any, Dict
 
@@ -544,6 +546,8 @@ class CheckFileChangesTests(unittest.TestCase):
     input_file.write_text(
       json.dumps({repo_path: [str(old_file), str(new_file)]})
     )
+    # An empty allowlist keeps the result independent of the shipped one.
+    pylibs_dir = make_tool_tree(self.tmp_dir, {})
     # The checker looks for the entry's Changes file relative to its working
     # directory.
     subprocess.run(
@@ -551,7 +555,7 @@ class CheckFileChangesTests(unittest.TestCase):
        str(output_file)],
       check = True,
       cwd = str(self.tmp_dir),
-      env = dict(os.environ, PYTHONPATH = str(DEV_TOOLS_DIR / 'pylibs'))
+      env = dict(os.environ, PYTHONPATH = str(pylibs_dir))
     )
     return json.loads(output_file.read_text())[repo_path]
 
