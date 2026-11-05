@@ -105,7 +105,32 @@ def _is_excluded_file_path(path_str: str) -> bool:
     path_str.startswith(prefix) for prefix in EXCLUDES_PATH_PREFIXES
   )
 
+def pause_delegate_window() -> None:
+  '''When running as a relaunch delegate, wait for the user before the
+  standalone console window closes so that failure output can be read.'''
+  if os.environ.get('EDG_PREPUSH_DELEGATE') != '1':
+    return
+
+  try:
+    input('Push checks failed; press Enter to close this window. ')
+  except EOFError:
+    pass
+
 TOOL_PATH_GIT = shutil.which('git')
+
+def find_dev_tool(name):
+  '''Return the path of the dev tool called name on PATH, or exit with an
+  error if the environment lacks it (e.g., direnv isn't applied).'''
+  tool_path = shutil.which(name)
+  if tool_path is None:
+    print(
+      f"error: the environment is missing the required tool '{name}'; "
+      'put dev_tools/bin on PATH (e.g., via direnv) and push again.',
+      file = sys.stderr
+    )
+    pause_delegate_window()
+    sys.exit(1)
+  return tool_path
 
 def run_git(args, *, check = True, text = True):
   '''Run a git command and return the completed process.'''
@@ -292,7 +317,7 @@ class PrePushChecker:
       if use_docker:
         file_change_check_proc = subprocess.run(
           [
-            shutil.which('edg-exec'),
+            find_dev_tool('edg-exec'),
             '--',
             'edg-check-file-changes',
             str(input_file.relative_to(mono_repo_dir).as_posix()),
@@ -304,7 +329,7 @@ class PrePushChecker:
       else:
         file_change_check_proc = subprocess.run(
           [
-            shutil.which('edg-check-file-changes'),
+            find_dev_tool('edg-check-file-changes'),
             str(input_file),
             str(output_file)
           ],
@@ -418,16 +443,12 @@ class PrePushChecker:
 
     return 0 if (self.errors == 0 and not self.abort) else 1
 
-def pause_delegate_window() -> None:
-  '''When running as a relaunch delegate, wait for the user before the
-  standalone console window closes so that failure output can be read.'''
-  if os.environ.get('EDG_PREPUSH_DELEGATE') != '1':
-    return
-
-  try:
-    input('Push checks failed; press Enter to close this window. ')
-  except EOFError:
-    pass
+def wait_for_minimum_run_time() -> None:
+  '''Sleep until the hook has been running for MIN_RUN_SECONDS.'''
+  remaining = MIN_RUN_SECONDS - (time.monotonic() - START_TIME)
+  if remaining > 0:
+    print(f"Pushing in {remaining:.0f}s (Ctrl-C to cancel)...")
+    time.sleep(remaining)
 
 def main():
   checker = PrePushChecker()
