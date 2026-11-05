@@ -5439,11 +5439,13 @@ identifies the element and the position of its expansion statement.
 */
 {
   a_diagnostic_ptr  dp;
+  an_expansion_element_context
+                    *expn_context = ssep->expansion_element_context;
 
   dp = create_diagnostic_entry(primary_dp, dck_context, error_code,
                                (a_source_position*)NULL, es_none);
-  add_number_fill_in(dp, (int32_t)ssep->expansion_element_number);
-  add_position_fill_in(dp, &ssep->expansion_statement_position);
+  add_number_fill_in(dp, (int32_t)expn_context->element_number);
+  add_position_fill_in(dp, &expn_context->position);
 }  /* add_expansion_context_diag */
 
 
@@ -7735,6 +7737,21 @@ a diagnostic have no severity to give such an entry.
   /* Clear the entries in the list passed in. */
   clear_diag_list(dlp);
 }  /* add_more_info_list */
+
+
+void error_with_notes(an_error_code      main_code,
+                      a_source_position  *main_pos,
+                      a_diag_list        *notes)
+/*
+Issue main_code at main_pos with the more-information diagnostics in notes.
+The entries in notes are consumed, leaving the list empty.
+*/
+{
+  a_diagnostic_ptr  dp = pos_start_error(main_code, main_pos);
+
+  add_more_info_list(dp, notes);
+  end_diagnostic(dp);
+}  /* error_with_notes */
 
 
 void splice_diag_list(a_diag_list_ptr   src,

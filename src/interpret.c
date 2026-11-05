@@ -8790,8 +8790,7 @@ its element block.  A "return" or a thrown exception propagates.
 */
 {
   a_statement_ptr             stmt = (a_statement_ptr)item->il_entry;
-  an_expansion_statement_ptr  esp =
-                                  stmt->variant.expansion_statement.extra_info;
+  an_expansion_stmt_info_ptr  expn_info = expn_info_of(stmt);
   a_boolean                   result = work_completed_normally(ips);
   a_boolean                   pop_when_done = TRUE;
 
@@ -8802,13 +8801,13 @@ its element block.  A "return" or a thrown exception propagates.
     save_storage_stack(ips, item->variant.expansion.saved_stack);
     item->needs_cleanup = TRUE;
     item->variant.expansion.next_stmt =
-             esp->expanded_statement->variant.block.statements;
+             expn_info->expanded_statement->variant.block.statements;
     item->phase = iwp_2nd_resume;
-    result = init_constexpr_scope_variables(ips, esp->expansion_scope);
-    if (result && esp->initialization != NULL) {
+    result = init_constexpr_scope_variables(ips, expn_info->expansion_scope);
+    if (result && expn_info->initialization != NULL) {
       /* Run the init-statement first. */
       item->phase = iwp_1st_resume;
-      push_stmt_work(ips, esp->initialization);
+      push_stmt_work(ips, expn_info->initialization);
       pop_when_done = FALSE;
       goto done;
     }  /* if */
@@ -9824,8 +9823,7 @@ transfer, or perform their cleanup and let it propagate further.
         goto resume;
       }
     case stmk_expansion_statement:
-      if (stmt->variant.expansion_statement.extra_info->
-                                                  expanded_statement == NULL) {
+      if (expn_info_of(stmt)->expanded_statement == NULL) {
         /* The compile-time expansion was not done (a dependent or
            unsupported case); the statement cannot be interpreted. */
         info_with_pos(ec_constexpr_statement_cannot_be_interpreted,
@@ -9834,11 +9832,10 @@ transfer, or perform their cleanup and let it propagate further.
       } else {
         /* The compile-time expansion has been done: Interpret the
            equivalent compound-statement, including the init-statement (see
-           process_expansion_work and an_expansion_statement). */
+           process_expansion_work and an_expansion_stmt_info). */
         item->kind = iwk_expansion;
         item->phase = iwp_start;
-        item->variant.expansion.scope =
-                 stmt->variant.expansion_statement.extra_info->expansion_scope;
+        item->variant.expansion.scope = expn_info_of(stmt)->expansion_scope;
         pop_when_done = FALSE;
         goto done;
       }  /* if */

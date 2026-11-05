@@ -6506,10 +6506,7 @@ the given operand to a prvalue (without updating the original expression tree).
     result = FALSE;
     if (must_be_constant) {
       if (expr_error_should_be_issued()) {
-        a_diagnostic_ptr  dp;
-        dp = pos_start_error(ec_expr_not_constant, &operand->position);
-        add_more_info_list(dp, &diag_list);
-        end_diagnostic(dp);
+        error_with_notes(ec_expr_not_constant, &operand->position, &diag_list);
       }  /* if */
       make_error_operand(operand);
     }  /* if */
@@ -6822,10 +6819,8 @@ Extract the constant value from the operand *operand and place it in
                                                     (a_type_ptr)NULL);
         } else {
           if (expr_error_should_be_issued()) {
-            a_diagnostic_ptr  dp;
-            dp = pos_start_error(ec_expr_not_constant, &operand->position);
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_expr_not_constant, &operand->position,
+                             &diag_list);
           }  /* if */
           set_error_constant(constant);
         }  /* if */
@@ -17739,7 +17734,7 @@ be returned for a C mode const variable.
        closely match their behavior we accept out-of-class definitions if
        they are constexpr. */
   } else if (var->is_expansion_iterator &&
-             scope_stack[depth_scope_stack].in_expansion_statement_body) {
+             scope_stack_top().in_expansion_statement_body) {
     /* A name introduced by the for-range-declaration of an expansion statement
        is value-dependent (N5050 [temp.dep.constexpr]/2.4). */
     con_val = alloc_constant(ck_template_param);
@@ -27442,11 +27437,8 @@ p_fatal and p_copy_error are NULL by default.
   if (!result && *p_fatal && diagnose_here) {
     /* A non-SFINAE error occurred, and the caller will not emit the associated
        diagnostic.  So diagnose the issue here. */
-    a_diagnostic_ptr  dp;
-    dp = pos_start_error(ec_template_constraint_not_satisfied,
-                         &error_position);
-    add_more_info_list(dp, diag_list);
-    end_diagnostic(dp);
+    error_with_notes(ec_template_constraint_not_satisfied, &error_position,
+                     diag_list);
   }  /* if */
   if (p_copy_error != NULL) *p_copy_error = copy_error;
   return result;
@@ -27797,10 +27789,8 @@ subst_pairs is successful.  ctws_state is a substitution state block pointer
                                  /*force_prvalue=*/TRUE, cp, &diag_list)) {
                 result = !is_false_constant(cp);
               } else {
-                a_diagnostic_ptr  dp = pos_start_error(ec_expr_not_constant,
-                                                       &expr->position);
-                add_more_info_list(dp, &diag_list);
-                end_diagnostic(dp);
+                error_with_notes(ec_expr_not_constant, &expr->position,
+                                 &diag_list);
               }  /* if */
               release_local_constant(&cp);
             }  /* if */

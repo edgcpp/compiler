@@ -3919,21 +3919,21 @@ Clear the indicated range-based-for loop entry.
 }  /* clear_range_based_for_loop */
 
 
-static void clear_expansion_statement(an_expansion_statement_ptr esp)
+static void clear_expansion_statement(an_expansion_stmt_info_ptr expn_info)
 /*
-Clear the indicated expansion statement entry.
+Clear the expansion statement supplement expn_info.
 */
 {
-  esp->initialization = NULL;
-  esp->iterator = NULL;
-  esp->expansion_scope = NULL;
-  esp->iterator_scope = NULL;
-  esp->expanded_statement = NULL;
-  esp->decl_token_cache = NULL;
-  esp->body_token_cache = NULL;
-  esp->definition_info = NULL;
-  esp->initializer = NULL;
-  esp->initializer_is_list = FALSE;
+  expn_info->initialization = NULL;
+  expn_info->iterator = NULL;
+  expn_info->expansion_scope = NULL;
+  expn_info->iterator_scope = NULL;
+  expn_info->expanded_statement = NULL;
+  expn_info->decl_token_cache = NULL;
+  expn_info->body_token_cache = NULL;
+  expn_info->definition_info = NULL;
+  expn_info->initializer = NULL;
+  expn_info->initializer_is_list = FALSE;
 }  /* clear_expansion_statement */
 
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -4113,8 +4113,8 @@ fields to default values.
   a_for_loop_ptr       flip;
   a_range_based_for_loop_ptr
                        rbflp;
-  an_expansion_statement_ptr
-                       esp;
+  an_expansion_stmt_info_ptr
+                       expn_info;
 #if MICROSOFT_EXTENSIONS_ALLOWED
   a_for_each_loop_ptr  felp;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -4175,9 +4175,8 @@ fields to default values.
       break;
     case stmk_expansion_statement:
       sp->variant.expansion_statement.statement = NULL;
-      sp->variant.expansion_statement.extra_info = esp =
-                                     alloc_cil_of_type(an_expansion_statement);
-      clear_expansion_statement(esp);
+      expn_info_of(sp) = expn_info = alloc_cil_of_type(an_expansion_stmt_info);
+      clear_expansion_statement(expn_info);
       break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case stmk_for_each:

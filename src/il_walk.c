@@ -2309,7 +2309,7 @@ running them through the indicated remapping function.
   remap_orphan_entry_first(iek_expr_node);
   remap_orphan_entry_first(iek_for_loop);
   remap_orphan_entry_first(iek_range_based_for_loop);
-  remap_orphan_entry_first(iek_expansion_statement);
+  remap_orphan_entry_first(iek_expansion_stmt_info);
 #if MICROSOFT_EXTENSIONS_ALLOWED
   remap_orphan_entry_first(iek_for_each_loop);
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -2413,7 +2413,7 @@ running them through the indicated remapping function.
   remap_orphan_entry_last(iek_expr_node);
   remap_orphan_entry_last(iek_for_loop);
   remap_orphan_entry_last(iek_range_based_for_loop);
-  remap_orphan_entry_last(iek_expansion_statement);
+  remap_orphan_entry_last(iek_expansion_stmt_info);
 #if MICROSOFT_EXTENSIONS_ALLOWED
   remap_orphan_entry_last(iek_for_each_loop);
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -3953,13 +3953,12 @@ as specified in the control block.
       }
       break;
     case stmk_expansion_statement:
-      { an_expansion_statement_ptr esp =
-                             statement->variant.expansion_statement.extra_info;
+      { an_expansion_stmt_info_ptr expn_info = expn_info_of(statement);
         check_assertion(statement->expr == NULL);
-        traverse_expr_list(esp->initializer, tblock);
+        traverse_expr_list(expn_info->initializer, tblock);
         if (tblock->terminate) goto end_of_routine;
-        if (esp->initialization != NULL) {
-          traverse_statement(esp->initialization, tblock);
+        if (expn_info->initialization != NULL) {
+          traverse_statement(expn_info->initialization, tblock);
           if (tblock->terminate) goto end_of_routine;
         }  /* if */
         if (statement->variant.expansion_statement.statement != NULL) {
@@ -3967,9 +3966,9 @@ as specified in the control block.
                              tblock);
           if (tblock->terminate) goto end_of_routine;
         }  /* if */
-        if (esp->expanded_statement != NULL) {
+        if (expn_info->expanded_statement != NULL) {
           /* The equivalent compound-statement (if the expansion was done). */
-          traverse_statement(esp->expanded_statement, tblock);
+          traverse_statement(expn_info->expanded_statement, tblock);
           if (tblock->terminate) goto end_of_routine;
         }  /* if */
       }

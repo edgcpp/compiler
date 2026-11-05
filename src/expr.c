@@ -20152,18 +20152,16 @@ where <typename-or-default> is either a type name or the keyword "default".
                previously cached tokens as an unevaluated expression. */
             if (match_type_arg->variant.type_operand.type != NULL) {
               /* It wasn't the default case after all: Issue an error. */
-              a_diagnostic_ptr  dp;
               a_diag_list       diag_list;
               clear_diag_list(&diag_list);
               err = TRUE;
-              dp = pos_start_error(ec_ambiguous_c11_generic, &type_pos);
               more_info_type_diagnostic(
                                     ec_ambiguous_c11_generic_previous_match,
                                     &match_type_arg->position,
                                     match_type_arg->variant.type_operand.type,
                                     &diag_list);
-              add_more_info_list(dp, &diag_list);
-              end_diagnostic(dp);
+              error_with_notes(ec_ambiguous_c11_generic, &type_pos,
+                               &diag_list);
               discard_more_info_list(&diag_list);
             } else {
               check_assertion(default_seen);
@@ -40308,10 +40306,7 @@ the result is not constant) set *fatal to TRUE.
     val = is_concept_satisfied(node, tap, &diag_list, CTWS_NO_OPTIONS,
                                (a_ctws_state_ptr)NULL, fatal);
     if (*fatal) {
-      a_diagnostic  *dp = pos_start_error(ec_invalid_concept_id,
-                                          &node->position);
-      add_more_info_list(dp, &diag_list);
-      end_diagnostic(dp);
+      error_with_notes(ec_invalid_concept_id, &node->position, &diag_list);
     } else {
       discard_more_info_list(&diag_list);
     }  /* if */
@@ -47220,10 +47215,7 @@ be recorded that the final comparison was 5 == 4.
       }  /* if */
     } else {
       if (expr_error_should_be_issued()) {
-        a_diagnostic_ptr  dp;
-        dp = pos_start_error(ec_expr_not_constant, &result.position);
-        add_more_info_list(dp, diag_list);
-        end_diagnostic(dp);
+        error_with_notes(ec_expr_not_constant, &result.position, diag_list);
       }  /* if */
       discard_more_info_list(diag_list);
       set_error_constant(constant);
@@ -51839,7 +51831,7 @@ static an_expr_node_ptr expansion_initializer_element_node(an_operand *operand)
 /*
 Record the value uses of the variables whose transformations were suppressed
 when operand was scanned, to avoid spurious set-but-never-used warnings, and
-return operand as an expression node for the expansion-initializer.  A
+return operand as a full-expression node for the expansion-initializer.  A
 braced-init-list element is built in a rescan context, as in an argument
 list.
 */
@@ -51862,6 +51854,7 @@ list.
   } else {
     node = make_node_from_operand_for_expr_list(operand);
   }  /* if */
+  node = wrap_up_full_expression(node);
   return node;
 }  /* expansion_initializer_element_node */
 
@@ -51873,13 +51866,13 @@ it in its supplement.  List elements are separate full-expressions, linked
 through their next fields; an empty list is represented by NULL.
 */
 {
-  an_expansion_statement_ptr
-                      esp = statement->variant.expansion_statement.extra_info;
-  an_operand          result;
-  an_expr_stack_entry *saved_expr_stack;
-  an_expr_stack_entry expr_stack_entry;
+  an_expansion_stmt_info_ptr
+                       expn_info = expn_info_of(statement);
+  an_operand           result;
+  an_expr_stack_entry  *saved_expr_stack;
+  an_expr_stack_entry  expr_stack_entry;
   a_transformation_options_set
-                      options;
+                       options;
 
   db_enter(3, "scan_expansion_initializer");
   save_expr_stack(&saved_expr_stack);
@@ -51888,7 +51881,7 @@ through their next fields; an empty list is represented by NULL.
             TOPT_SUPPRESS_LVALUE_TO_RVALUE_CONVERSION;
   if (curr_token == tok_lbrace) {
     /* The expansion-initializer is an expansion-init-list. */
-    esp->initializer_is_list = TRUE;
+    expn_info->initializer_is_list = TRUE;
     (void)get_token();
     add_stop_token(tok_rbrace);
     if (curr_token != tok_rbrace) {
@@ -51920,10 +51913,9 @@ through their next fields; an empty list is represented by NULL.
           /* Record the value uses of variables suppressed by the
              transformations above and make the expression node. */
           elem_node = expansion_initializer_element_node(&elem);
-          elem_node = wrap_up_full_expression(elem_node);
           pop_expr_stack();
           if (tail == NULL) {
-            esp->initializer = elem_node;
+            expn_info->initializer = elem_node;
           } else {
             tail->next = elem_node;
           }  /* if */
@@ -51948,14 +51940,13 @@ through their next fields; an empty list is represented by NULL.
     (void)required_token(tok_rbrace, ec_exp_rbrace);
     remove_stop_token(tok_rbrace);
   } else {
-    esp->initializer_is_list = FALSE;
+    expn_info->initializer_is_list = FALSE;
     push_expr_stack(ek_normal, &expr_stack_entry,
                     /*force_object_lifetime=*/FALSE,
                     /*suppress_object_lifetime=*/FALSE);
     scan_expr(&result, PREC_LOWEST, EOPT_NO_OPTIONS);
     do_operand_transformations(&result, options);
-    esp->initializer = wrap_up_full_expression(
-                          expansion_initializer_element_node(&result));
+    expn_info->initializer = expansion_initializer_element_node(&result);
     pop_expr_stack();
   }  /* if */
   restore_expr_stack(saved_expr_stack);
@@ -52673,8 +52664,8 @@ function has no effect for prototype instantiations (i.e., their return types
 are left unaffected).
 */
 {
-  if (!rp->is_prototype_instantiation &&
-      !scope_stack_top().in_expansion_statement_body) {
+  check_assertion(rp == current_routine_entry());
+  if (!is_prototype_instantiation_or_expansion_context()) {
     a_type_ptr  declared_return_type, deduced_return_type, tp;
     a_boolean   is_decltype_auto_case = FALSE;
     check_assertion(depth_innermost_function_scope != NO_SCOPE_DEPTH &&
@@ -53036,8 +53027,7 @@ make_coroutine_result_expression.)
       goto done;
     }  /* if */
     if (curr_routine->has_deducible_return_type &&
-        !curr_routine->is_prototype_instantiation &&
-        !scope_stack_top().in_expansion_statement_body) {
+        !is_prototype_instantiation_or_expansion_context()) {
       /* A braced-init-list cannot be used for a lambda with an implicit
          return type, as it does not provide a type. */
       expr_pos_error(curr_routine->is_lambda_body ?
@@ -53095,8 +53085,7 @@ make_coroutine_result_expression.)
       return_by_cctor_case = TRUE;
       expr_stack->in_cctor_elision_initializer = TRUE;
     } else if (curr_routine->has_deducible_return_type &&
-               !curr_routine->is_prototype_instantiation &&
-               !scope_stack_top().in_expansion_statement_body) {
+               !is_prototype_instantiation_or_expansion_context()) {
         /* The return type will be set from the returned expression's type.
            Suppress addition of a destructor on any dynamic initialization
            until we know whether it's going to be optimized away. */
@@ -56591,10 +56580,8 @@ standard form).  Assumes copy-initialization ("="-form).
         if (!interpret_dynamic_init(dip, init_component_pos(icp), dps->type,
                                     /*is_constant_evaluated=*/TRUE,
                                     constant, &diag_list)) {
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, init_component_pos(icp));
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, init_component_pos(icp),
+                           &diag_list);
           set_error_constant(constant);
         }  /* if */
         discard_more_info_list(&diag_list);

@@ -1004,10 +1004,7 @@ remove_any_extraneous_braces:
           if (!interpret_dynamic_init(elem_is.init_dip, diag_pos, dest_type,
                                       /*is_constant_evaluated=*/TRUE,
                                       folded_value, &diag_list)) {
-            a_diagnostic_ptr  dp;
-            dp = pos_start_error(ec_expr_not_constant, diag_pos);
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_expr_not_constant, diag_pos, &diag_list);
           } else {
             /* This could happen if the interpreter ran into an error node.
                (The interpreter "succeeds" with an error constants in such
@@ -6206,10 +6203,7 @@ returned set to TRUE.
                       dyn_init_is(init_dip, dik_zero) ||
                       dyn_init_is(init_dip, dik_none)))) {
           /* A constant was required: Issue a diagnostic. */
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, &pos_first_token);
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, &pos_first_token, &diag_list);
           init_err = TRUE;
           init_con = alloc_error_constant();
           init_dip = NULL;
@@ -7226,10 +7220,8 @@ FALSE is returned) for non-class objects.
               cp = NULL;
             } else {
               /* A constant was required: Issue a diagnostic. */
-              a_diagnostic_ptr  dp;
-              dp = pos_start_error(ec_initializer_not_constant, err_pos);
-              add_more_info_list(dp, &diag_list);
-              end_diagnostic(dp);
+              error_with_notes(ec_initializer_not_constant, err_pos,
+                               &diag_list);
               cp = alloc_error_constant();
             }  /* if */
             release_local_constant(&folded_con);

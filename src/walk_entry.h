@@ -2087,9 +2087,9 @@ do_set_proper_definition_needed_flag:
 #undef eptr
       }
       break;
-    case iek_expansion_statement:
+    case iek_expansion_stmt_info:
       {
-#define eptr ((an_expansion_statement_ptr)entry_ptr)
+#define eptr ((an_expansion_stmt_info_ptr)entry_ptr)
         walk_ptr(eptr->initialization, a_statement_ptr, iek_statement);
         remap_ptr(eptr->iterator, a_variable_ptr, iek_variable);
         walk_ptr(eptr->expansion_scope, a_scope_ptr, iek_scope);
@@ -2350,8 +2350,8 @@ do_set_proper_definition_needed_flag:
                      a_statement_ptr, iek_statement);
             break;
           case stmk_expansion_statement:
-            walk_ptr(eptr->variant.expansion_statement.extra_info,
-                     an_expansion_statement_ptr, iek_expansion_statement);
+            walk_ptr(expn_info_of(eptr),
+                     an_expansion_stmt_info_ptr, iek_expansion_stmt_info);
             walk_ptr_not_needed(eptr->variant.expansion_statement.statement,
                                 a_statement_ptr, iek_statement);
             break;
@@ -4351,8 +4351,8 @@ of each kind.
   walk_orphan_entry_list_for_entry_kind(a_for_loop_ptr, iek_for_loop);
   walk_orphan_entry_list_for_entry_kind(a_range_based_for_loop_ptr,
                                         iek_range_based_for_loop);
-  walk_orphan_entry_list_for_entry_kind(an_expansion_statement_ptr,
-                                        iek_expansion_statement);
+  walk_orphan_entry_list_for_entry_kind(an_expansion_stmt_info_ptr,
+                                        iek_expansion_stmt_info);
 #if MICROSOFT_EXTENSIONS_ALLOWED
   walk_orphan_entry_list_for_entry_kind(a_for_each_loop_ptr,
                                         iek_for_each_loop);

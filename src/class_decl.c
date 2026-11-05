@@ -2651,10 +2651,8 @@ created return NULL and:
     } else if (!lambda->has_capture_default) {
       /* No capture default, so implicit captures are not allowed.  However,
          a use of the constant value of a constant-valued variable does not
-         require capture, and neither does an expansion statement iterator
-         in the prototype scan of the body. */
-      if (vp != NULL && rvalue_only != NULL &&
-          (vp->constant_valued || vp->is_expansion_iterator)) {
+         require capture. */
+      if (vp != NULL && vp->constant_valued && rvalue_only != NULL) {
         *rvalue_only = TRUE;
       } else {
         err_code = (vp != NULL && vp->is_this_parameter) ?
@@ -2662,7 +2660,7 @@ created return NULL and:
                         ec_not_captured_local_var_in_lambda;
       }  /* if */
     } else if (rp->is_template_function && !rp->is_prototype_instantiation &&
-               !scope_stack[depth_scope_stack].in_expansion_statement_body) {
+               !scope_stack_top().in_expansion_statement_body) {
       /* We're attempting to capture during the real instantiation of a
          generic lambda, but all captures should have been determined during
          the prototype instantiation (not in the prototype scan of an

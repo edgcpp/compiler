@@ -4410,7 +4410,11 @@ the scope must be the file scope.
          solhp != NULL;
          solhp = solhp->next) {
       if (solhp->in_expansion_prototype ||
-          ignore_routine_in_back_end(solhp->assoc_routine)) continue;
+          ignore_routine_in_back_end(solhp->assoc_routine)) {
+        /* In addition to routines ignored by the back end, expansion statement
+           prototype scopes do not contribute types to the generated code. */
+        continue;
+      }  /* if */
       for (type = solhp->orphaned_types;
            type != NULL;
            type = type->next) {

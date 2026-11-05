@@ -19609,9 +19609,9 @@ Consume the current token, adding it to cache if cache is non-NULL.
 }  /* advance_statement_token */
 
 
-static a_boolean scan_statement_group(a_token_cache_ptr cache)
+static a_boolean skip_statement_group(a_token_cache_ptr cache)
 /*
-Scan a balanced group, leaving its closing token current and uncached.
+Skip a balanced group, leaving its closing token current and uncached.
 Cache the preceding tokens if cache is non-NULL; otherwise flush them.
 Return FALSE if the closing token was not found.
 */
@@ -19625,12 +19625,12 @@ Return FALSE if the closing token was not found.
     matched = TRUE;
   }  /* if */
   return matched && curr_token != tok_end_of_source;
-}  /* scan_statement_group */
+}  /* skip_statement_group */
 
 
-static a_boolean scan_statement_header(a_token_cache_ptr cache)
+static a_boolean skip_statement_header(a_token_cache_ptr cache)
 /*
-Scan the parenthesized header of a statement such as "while", "for",
+Skip the parenthesized header of a statement such as "while", "for",
 "switch" or "catch", caching it if cache is non-NULL.  The current token
 should be the opening parenthesis.  On success, leave the token following
 the closing parenthesis current and return TRUE.  In flushing mode, recover
@@ -19642,7 +19642,7 @@ the subsequent replay.
   a_boolean  result = FALSE;
 
   if (curr_token == tok_lparen) {
-    if (scan_statement_group(cache)) {
+    if (skip_statement_group(cache)) {
       advance_statement_token(cache);
       result = TRUE;
     }  /* if */
@@ -19651,12 +19651,12 @@ the subsequent replay.
     result = TRUE;
   }  /* if */
   return result;
-}  /* scan_statement_header */
+}  /* skip_statement_header */
 
 
-static a_boolean scan_one_statement(a_token_cache_ptr cache)
+static a_boolean skip_one_statement(a_token_cache_ptr cache)
 /*
-Scan exactly one statement without semantic analysis.  The current token is
+Skip exactly one statement without semantic analysis.  The current token is
 its first token.  Cache consumed tokens if cache is non-NULL; otherwise flush
 them.  The caller sets caching_tokens or flushing_tokens as appropriate.
 
@@ -19675,13 +19675,13 @@ an enclosing token or end-of-source in an error case.
   while (std_attribute_tokens_next() || curr_token == tok_attribute) {
     if (curr_token == tok_attribute) {
       advance_statement_token(cache);
-      if (curr_token == tok_lparen && !scan_statement_group(cache)) {
+      if (curr_token == tok_lparen && !skip_statement_group(cache)) {
         goto done;
       }  /* if */
     } else if (cache != NULL) {
       cache_std_attribute(cache, /*add_tokens_to_cache=*/TRUE);
       if (curr_token == tok_end_of_source) goto done;
-    } else if (!scan_statement_group(cache)) {
+    } else if (!skip_statement_group(cache)) {
       goto done;
     }  /* if */
     advance_statement_token(cache);
@@ -19693,7 +19693,7 @@ an enclosing token or end-of-source in an error case.
   switch (curr_token) {
     case tok_lbrace:
       /* Compound statement. */
-      last_token_in_statement = scan_statement_group(cache);
+      last_token_in_statement = skip_statement_group(cache);
       break;
     case tok_if:
       advance_statement_token(cache);
@@ -19704,14 +19704,14 @@ an enclosing token or end-of-source in an error case.
         advance_statement_token(cache);
       } else {
         if (curr_token == tok_constexpr) advance_statement_token(cache);
-        if (!scan_statement_header(cache)) break;
+        if (!skip_statement_header(cache)) break;
       }  /* if */
-      last_token_in_statement = scan_one_statement(cache);
+      last_token_in_statement = skip_one_statement(cache);
       if (last_token_in_statement && next_token() == tok_else) {
         /* Consume the substatement's final token, then the "else". */
         advance_statement_token(cache);
         advance_statement_token(cache);
-        last_token_in_statement = scan_one_statement(cache);
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
     case tok_while:
@@ -19720,8 +19720,8 @@ an enclosing token or end-of-source in an error case.
     case tok_for_each:
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       advance_statement_token(cache);
-      if (scan_statement_header(cache)) {
-        last_token_in_statement = scan_one_statement(cache);
+      if (skip_statement_header(cache)) {
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
 #if UPC_EXTENSIONS_ALLOWED
@@ -19733,18 +19733,18 @@ an enclosing token or end-of-source in an error case.
       /* A range-based for may have "co_await" before its header. */
       advance_statement_token(cache);
       if (curr_token == tok_coroutine_await) advance_statement_token(cache);
-      if (scan_statement_header(cache)) {
-        last_token_in_statement = scan_one_statement(cache);
+      if (skip_statement_header(cache)) {
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
     case tok_do:
       /* "do statement while ( expression ) ;" */
       advance_statement_token(cache);
-      last_token_in_statement = scan_one_statement(cache);
+      last_token_in_statement = skip_one_statement(cache);
       if (last_token_in_statement && next_token() == tok_while) {
         advance_statement_token(cache);
         advance_statement_token(cache);
-        last_token_in_statement = scan_statement_header(cache) &&
+        last_token_in_statement = skip_statement_header(cache) &&
                                  curr_token == tok_semicolon;
       }  /* if */
       break;
@@ -19752,15 +19752,15 @@ an enclosing token or end-of-source in an error case.
       /* "try compound-statement handler-seq" */
       advance_statement_token(cache);
       if (curr_token == tok_lbrace) {
-        last_token_in_statement = scan_statement_group(cache);
+        last_token_in_statement = skip_statement_group(cache);
       }  /* if */
       while (last_token_in_statement && next_token() == tok_catch) {
         /* Consume the preceding block's final token, then the "catch". */
         advance_statement_token(cache);
         advance_statement_token(cache);
-        last_token_in_statement = scan_statement_header(cache) &&
+        last_token_in_statement = skip_statement_header(cache) &&
                                  curr_token == tok_lbrace &&
-                                 scan_statement_group(cache);
+                                 skip_statement_group(cache);
       }  /* while */
 #if MICROSOFT_EXTENSIONS_ALLOWED
       if (cache != NULL && last_token_in_statement && cli_or_cx_enabled &&
@@ -19778,14 +19778,14 @@ an enclosing token or end-of-source in an error case.
         if (finally_next) {
           advance_statement_token(cache);
           advance_statement_token(cache);
-          last_token_in_statement = scan_statement_group(cache);
+          last_token_in_statement = skip_statement_group(cache);
         }  /* if */
       } else if (cache != NULL && last_token_in_statement &&
                  cli_or_cx_enabled && next_token() == tok_finally) {
         advance_statement_token(cache);
         advance_statement_token(cache);
         last_token_in_statement = curr_token == tok_lbrace &&
-                                  scan_statement_group(cache);
+                                  skip_statement_group(cache);
       }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       break;
@@ -19795,18 +19795,18 @@ an enclosing token or end-of-source in an error case.
          or "__try compound-statement __finally compound-statement". */
       advance_statement_token(cache);
       if (curr_token == tok_lbrace) {
-        last_token_in_statement = scan_statement_group(cache);
+        last_token_in_statement = skip_statement_group(cache);
       }  /* if */
       if (last_token_in_statement && next_token() == tok_except) {
         advance_statement_token(cache);
         advance_statement_token(cache);
-        last_token_in_statement = scan_statement_header(cache);
+        last_token_in_statement = skip_statement_header(cache);
       } else if (last_token_in_statement && next_token() == tok_finally) {
         advance_statement_token(cache);
         advance_statement_token(cache);
       }  /* if */
       if (last_token_in_statement && curr_token == tok_lbrace) {
-        last_token_in_statement = scan_statement_group(cache);
+        last_token_in_statement = skip_statement_group(cache);
       }  /* if */
       break;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -19824,13 +19824,13 @@ an enclosing token or end-of-source in an error case.
           quest_mark_count--;
         } else if (curr_token == tok_lparen || curr_token == tok_lbracket ||
                    curr_token == tok_lbrace) {
-          if (!scan_statement_group(cache)) goto done;
+          if (!skip_statement_group(cache)) goto done;
         }  /* if */
         advance_statement_token(cache);
       }  /* while */
       if (curr_token == tok_colon) {
         advance_statement_token(cache);
-        last_token_in_statement = scan_one_statement(cache);
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
     }
@@ -19839,7 +19839,7 @@ an enclosing token or end-of-source in an error case.
       if (next_token() == tok_colon) {
         advance_statement_token(cache);
         advance_statement_token(cache);
-        last_token_in_statement = scan_one_statement(cache);
+        last_token_in_statement = skip_one_statement(cache);
       }  /* if */
       break;
     case tok_identifier:
@@ -19847,7 +19847,7 @@ an enclosing token or end-of-source in an error case.
         /* A label definition labels the statement that follows it. */
         advance_statement_token(cache);
         advance_statement_token(cache);
-        last_token_in_statement = scan_one_statement(cache);
+        last_token_in_statement = skip_one_statement(cache);
         break;
       }  /* if */
       FALLTHROUGH
@@ -19874,7 +19874,7 @@ an enclosing token or end-of-source in an error case.
   }  /* switch */
 done:
   return last_token_in_statement;
-}  /* scan_one_statement */
+}  /* skip_one_statement */
 
 
 void flush_if_or_else_statement(void)
@@ -19888,7 +19888,7 @@ flushed.  On return the current token is the first token after the statement.
 {
   push_lexical_state_stack();
   curr_lexical_state_stack_entry->flushing_tokens = TRUE;
-  (void)scan_one_statement(/*cache=*/NULL);
+  (void)skip_one_statement(/*cache=*/NULL);
   pop_lexical_state_stack();
   if (curr_token != tok_end_of_source) (void)get_token();
 }  /* flush_if_or_else_statement */
@@ -19904,8 +19904,9 @@ for matching_msg at the position given by matching_pos.
 */
 {
   a_diag_list       diag_list;
-  a_diagnostic_ptr  dp = pos_start_error(msg, &error_position);
   a_source_position pos = *matching_pos;
+
+  clear_diag_list(&diag_list);
 
 #if FULLY_RESOLVED_MACRO_POSITIONS
   if (pos.seq != pos.orig_seq) {
@@ -19916,7 +19917,6 @@ for matching_msg at the position given by matching_pos.
   }  /* if */
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
   if (pos.seq != 0) {
-    clear_diag_list(&diag_list);
     more_info_diagnostic(matching_msg, &pos, &diag_list);
 #if FULLY_RESOLVED_MACRO_POSITIONS
     if (matching_pos->seq != matching_pos->orig_seq) {
@@ -19925,9 +19925,8 @@ for matching_msg at the position given by matching_pos.
       more_info_diagnostic(ec_macro_invocation, matching_pos, &diag_list);
     }  /* if */
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
-    add_more_info_list(dp, &diag_list);
   }  /* if */
-  end_diagnostic(dp);
+  error_with_notes(msg, &error_position, &diag_list);
 }  /* report_missing_closing_delimiter */
 
 
@@ -28191,7 +28190,7 @@ of the enclosing statement.  The caller terminates and replays the cache.
 
   push_lexical_state_stack();
   caching_tokens = TRUE;
-  last_token_cached = scan_one_statement(cache);
+  last_token_cached = skip_one_statement(cache);
   if (last_token_cached) cache_curr_token(cache);
   pop_lexical_state_stack();
   return last_token_cached;

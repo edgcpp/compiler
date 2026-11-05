@@ -11449,11 +11449,11 @@ Without a template, nested expansion prototypes share their outermost owner.
     if (owner->definition_replay_info == NULL) {
       /* The special for-range-declaration scan can record packs or calls
          before the body definition scan begins. */
-      an_expansion_statement_ptr esp = owner->expansion_statement->
+      an_expansion_stmt_info_ptr expn_info = owner->expansion_statement->
                                         variant.expansion_statement.extra_info;
-      esp->definition_info = alloc_definition_replay_info();
-      esp->definition_info->decl_seq = decl_seq_counter;
-      owner->definition_replay_info = esp->definition_info;
+      expn_info->definition_info = alloc_definition_replay_info();
+      expn_info->definition_info->decl_seq = decl_seq_counter;
+      owner->definition_replay_info = expn_info->definition_info;
     }  /* if */
   } else {
     owner = innermost ? get_innermost_template_dependent_context() :
@@ -11533,7 +11533,7 @@ Start an independent traversal of persistent definition records.
 }  /* initialize_definition_scan_cursors */
 
 
-void begin_expansion_definition_scan(an_expansion_statement_ptr esp)
+void begin_expansion_definition_scan(an_expansion_stmt_info_ptr expn_info)
 /*
 Enter definition checking on the reactivated iterator block, retaining the
 actual enclosing function and its return/lookup context.  The header has
@@ -11544,7 +11544,7 @@ already been scanned; its special declaration handling is independent.
   a_scope_stack_entry_ptr expansion_scope =
                                          previous_scope_of(&scope_stack_top());
 
-  check_assertion(scope_stack_top().il_scope == esp->iterator_scope);
+  check_assertion(scope_stack_top().il_scope == expn_info->iterator_scope);
   /* Capture the boundary before checking the body.  Replays must not use the
      later counter value after earlier elements have been instantiated. */
   expansion_scope->definition_lookup_decl_seq = decl_seq_counter;
@@ -11564,8 +11564,8 @@ already been scanned; its special declaration handling is independent.
     owner = definition_recording_scope(/*innermost=*/TRUE);
   }  /* if */
   scope_stack_top().definition_replay_info = owner->definition_replay_info;
-  if (esp->definition_info != NULL) {
-    esp->definition_info->decl_seq =
+  if (expn_info->definition_info != NULL) {
+    expn_info->definition_info->decl_seq =
                                    expansion_scope->definition_lookup_decl_seq;
   }  /* if */
   scope_stack_top().definition_lookup_decl_seq =
@@ -11574,7 +11574,7 @@ already been scanned; its special declaration handling is independent.
 }  /* begin_expansion_definition_scan */
 
 
-void begin_expansion_element_scan(an_expansion_statement_ptr esp)
+void begin_expansion_element_scan(an_expansion_stmt_info_ptr expn_info)
 /*
 Enter one element replay in its generated block.  Use the statement's own
 state when available, otherwise the active enclosing definition's records.
@@ -11582,12 +11582,12 @@ Each element starts fresh cursors, so nested rescans do not consume an outer
 scan's traversal state.
 */
 {
-  a_definition_replay_info_ptr  info = esp->definition_info;
+  a_definition_replay_info_ptr  info = expn_info->definition_info;
   a_scope_stack_entry_ptr       expansion_scope = &scope_stack_top();
 
   while (expansion_scope->expansion_statement == NULL ||
          expansion_scope->expansion_statement->
-             variant.expansion_statement.extra_info != esp) {
+             variant.expansion_statement.extra_info != expn_info) {
     expansion_scope = previous_scope_of(expansion_scope);
     check_assertion(expansion_scope != NULL);
   }  /* while */
@@ -11598,7 +11598,7 @@ scan's traversal state.
   }  /* if */
   scope_stack_top().definition_replay_info = info;
   scope_stack_top().definition_lookup_decl_seq =
-                         esp->definition_info != NULL ? info->decl_seq :
+                         expn_info->definition_info != NULL ? info->decl_seq :
                                    expansion_scope->definition_lookup_decl_seq;
   scope_stack_top().in_expansion_element_rescan = TRUE;
   scope_stack_top().slow_lookup_required = TRUE;

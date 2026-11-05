@@ -20310,27 +20310,25 @@ static void gen_expansion_statement(a_statement_ptr statement)
 Generate code for the indicated expansion statement.
 */
 {
-  a_boolean  saved_prototype_context;
-  an_expansion_statement_ptr
-             esp = statement->variant.expansion_statement.extra_info;
+  an_expansion_stmt_info_ptr  expn_info = expn_info_of(statement);
 
   write_tok_str("template for (");
-  if (esp->initialization != NULL) {
+  if (expn_info->initialization != NULL) {
     /* Generate the initialization statement. */
     gen_init_statement_or_statement(
-                                  get_for_init_statement(esp->initialization));
+                            get_for_init_statement(expn_info->initialization));
   }  /* if */
   gen_variable_decl(/*is_condition=*/FALSE, /*is_iterator=*/TRUE,
                     /*for_init=*/FALSE, /*suppress_specifiers=*/FALSE,
                     (a_boolean *)NULL);
   write_tok_str(" : ");
-  if (esp->initializer_is_list) {
+  if (expn_info->initializer_is_list) {
     /* Generate the initializer list. */
     write_tok_ch('{');
-    for (an_expr_node_ptr expr = esp->initializer;
+    for (an_expr_node_ptr expr = expn_info->initializer;
          expr != NULL;
          expr = expr->next) {
-      if (expr != esp->initializer) {
+      if (expr != expn_info->initializer) {
         write_tok_str(", ");
       }  /* if */
       gen_expression(expr);
@@ -20338,16 +20336,15 @@ Generate code for the indicated expansion statement.
     write_tok_ch('}');
   } else {
     /* Generate the initializer expression. */
-    check_assertion(esp->initializer != NULL);
-    gen_expression(esp->initializer);
+    check_assertion(expn_info->initializer != NULL);
+    gen_expression(expn_info->initializer);
   }  /* if */
   write_tok_str(") ");
   /* The body is a template definition even outside an ordinary template;
      generate it in prototype form. */
-  saved_prototype_context = in_prototype_instantiation_context;
-  in_prototype_instantiation_context = TRUE;
+  Value_saver<a_boolean>  prototype_context_saver(
+                                    &in_prototype_instantiation_context, TRUE);
   gen_statement(statement->variant.expansion_statement.statement);
-  in_prototype_instantiation_context = saved_prototype_context;
 }  /* gen_expansion_statement */
 
 #if MICROSOFT_EXTENSIONS_ALLOWED

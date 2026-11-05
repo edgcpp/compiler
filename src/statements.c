@@ -1913,7 +1913,7 @@ statement, whose initializers are bound after their declarations are scanned
   /* If this dynamic init appears after some executable code in its block,
      set a flag to that effect in the dynamic init entry (it identifies the
      initialization as a C++ case). */
-  if (struct_stmt_stack[depth_stmt_stack].any_exec_statement_seen) {
+  if (struct_stmt_stack_top().any_exec_statement_seen) {
     vp->initializer.dynamic->follows_an_exec_statement = TRUE;
   }  /* if */
   init_stmt = add_statement_at_stmt_pos(stmk_init,
@@ -4403,10 +4403,7 @@ The syntax is:
         value_known = FALSE;
         if (!is_template_dependent_context() &&
             expr_error_should_be_issued()) {
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, &expr_pos);
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, &expr_pos, &diag_list);
         }  /* if */
       }  /* if */
       discard_more_info_list(&diag_list);
@@ -5997,12 +5994,12 @@ The affinity can be an expression or the keyword "continue".
 
 
 static a_boolean expansion_statement_is_expandable(
-                                       an_expansion_statement_ptr esp,
+                                       an_expansion_stmt_info_ptr expn_info,
                                        a_decl_parse_state         *dps,
                                        a_boolean                  *p_erroneous,
                                        a_boolean                  *p_deferred)
 /*
-Return TRUE if the expansion statement described by esp (with *dps the
+Return TRUE if the expansion statement described by expn_info (with *dps the
 declaration parse state of its for-range-declaration) can be expanded at
 scan time.  The caller must have checked for earlier errors.  The initializer
 must be non-dependent, both token caches must be available, and the statement
@@ -6016,7 +6013,7 @@ an enclosing template.
 
   *p_erroneous = FALSE;
   *p_deferred = FALSE;
-  if (esp->initializer == NULL && !esp->initializer_is_list) {
+  if (expn_info->initializer == NULL && !expn_info->initializer_is_list) {
     /* An error occurred while scanning the expansion-initializer. */
     expandable = FALSE;
     *p_erroneous = TRUE;
@@ -6027,16 +6024,17 @@ an enclosing template.
        the statement in its prototype form. */
     expandable = FALSE;
     *p_erroneous = TRUE;
-  } else if (esp->iterator == NULL) {
+  } else if (expn_info->iterator == NULL) {
     /* An error occurred while scanning the for-range-declaration. */
     expandable = FALSE;
     *p_erroneous = TRUE;
-  } else if (esp->decl_token_cache == NULL || esp->body_token_cache == NULL) {
+  } else if (expn_info->decl_token_cache == NULL ||
+             expn_info->body_token_cache == NULL) {
     /* The tokens needed for the rescans are not available (an error must
        have been diagnosed). */
     expandable = FALSE;
     *p_erroneous = TRUE;
-  } else if (is_error_type(esp->iterator->type)) {
+  } else if (is_error_type(expn_info->iterator->type)) {
     expandable = FALSE;
     *p_erroneous = TRUE;
   } else if (struct_stmt_stack_top().contains_user_label) {
@@ -6053,7 +6051,7 @@ an enclosing template.
     expandable = FALSE;
     *p_deferred = TRUE;
   } else {
-    for (expr = esp->initializer; expr != NULL; expr = expr->next) {
+    for (expr = expn_info->initializer; expr != NULL; expr = expr->next) {
       if (is_error_node(expr)) {
         /* An erroneous element: The statement was already diagnosed. */
         expandable = FALSE;
@@ -6110,42 +6108,18 @@ the first token of the declaration, and the caller must have added
 }  /* expansion_element_binding_declaration */
 
 
-static void mark_expansion_variable_used(a_variable_ptr variable)
-/*
-Mark variable and its structured bindings as used by the expansion machinery.
-*/
-{
-  mark_variable_value_set(symbol_for(variable));
-  mark_referenced(symbol_for(variable),
-                  &variable->source_corresp.decl_position);
-  variable->used = TRUE;
-  if (variable->is_struct_binding_container) {
-    an_il_entity_list_entry_ptr  ielep;
-    for (ielep = variable->variant.bindings; ielep != NULL;
-         ielep = ielep->next) {
-      if (ielep->entity.kind == iek_variable) {
-        a_variable_ptr  binding = (a_variable_ptr)ielep->entity.ptr;
-        mark_variable_value_set(symbol_for(binding));
-        mark_referenced(symbol_for(binding),
-                        &binding->source_corresp.decl_position);
-        binding->used = TRUE;
-      }  /* if */
-    }  /* for */
-  }  /* if */
-}  /* mark_expansion_variable_used */
-
 
 static an_expr_node_ptr expansion_initializer_expression(
-                                            an_expansion_statement_ptr esp)
+                                         an_expansion_stmt_info_ptr  expn_info)
 /*
-Return the expression of the expansion-initializer of esp with any
+Return the expression of the expansion-initializer of expn_info with any
 enk_object_lifetime wrappers removed.  The initializer is scanned as a full
 expression, so the underlying expression provides the type as well as the
 position to use for diagnostics and synthesized entities (the wrapper node
 has no position).
 */
 {
-  an_expr_node_ptr  expr = esp->initializer;
+  an_expr_node_ptr  expr = expn_info->initializer;
 
   while (node_is(expr, enk_object_lifetime)) {
     expr = expr->variant.object_lifetime.expr;
@@ -6153,19 +6127,6 @@ has no position).
   return expr;
 }  /* expansion_initializer_expression */
 
-
-static void report_expansion_not_constant(a_source_position *pos,
-                                          a_diag_list       *diag_list)
-/*
-Issue the "expression must have a constant value" diagnostic for pos,
-attaching the more-information notes accumulated in diag_list.
-*/
-{
-  a_diagnostic_ptr  dp = pos_start_error(ec_expr_not_constant, pos);
-
-  add_more_info_list(dp, diag_list);
-  end_diagnostic(dp);
-}  /* report_expansion_not_constant */
 
 
 static a_boolean check_expansion_initialization_is_constant(
@@ -6188,7 +6149,7 @@ diagnostics.  Return TRUE if the initialization is a constant expression.
                              con, diag_list)) {
     result = TRUE;
   } else {
-    report_expansion_not_constant(pos, diag_list);
+    error_with_notes(ec_expr_not_constant, pos, diag_list);
     result = FALSE;
   }  /* if */
   return result;
@@ -6215,18 +6176,20 @@ on the scope stack, but the iterator scope is not, so the rescans are not in a
 dependent context.
 */
 {
-  an_expansion_statement_ptr  esp;
-  a_statement_ptr             wrapper, elem_stmt;
-  an_expr_node_ptr            expr;
-  a_targ_size_t               element_no = 0;
-  a_reachability_summary      fallthrough_reachability;
-  a_reachability_summary      exit_reachability;
+  an_expansion_stmt_info_ptr    expn_info;
+  a_statement_ptr               wrapper, elem_stmt;
+  an_expr_node_ptr              expr;
+  a_targ_size_t                 element_no = 0;
+  an_expansion_element_context  element_context;
+  a_reachability_summary        fallthrough_reachability;
+  a_reachability_summary        exit_reachability;
 #if GENERATE_SOURCE_SEQUENCE_LISTS
-  a_boolean                   saved_global_flag, saved_scope_flag;
+  a_boolean                     saved_global_flag, saved_scope_flag;
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
 
   db_enter(3, "expand_expansion_statement");
-  esp = sp->variant.expansion_statement.extra_info;
+  expn_info = expn_info_of(sp);
+  element_context.position = sp->position;
   fallthrough_reachability = entry_reachability;
   set_unreachable(exit_reachability);
 #if GENERATE_SOURCE_SEQUENCE_LISTS
@@ -6242,7 +6205,7 @@ dependent context.
      (not into the current statement list). */
   wrapper = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
   wrapper->parent = sp;
-  esp->expanded_statement = wrapper;
+  expn_info->expanded_statement = wrapper;
   wrapper->variant.block.extra_info->end_of_block_reachable = TRUE;
   /* Push a structured statement stack entry so that the per-element
      blocks are added to the wrapper block's statement list. */
@@ -6268,7 +6231,7 @@ dependent context.
     elem_stmt = start_block_statement(/*generated_statement=*/TRUE,
                                       /*is_statement_expr=*/FALSE,
                                       (an_object_lifetime_ptr)NULL);
-    begin_expansion_element_scan(esp);
+    begin_expansion_element_scan(expn_info);
     /* Push an ssk_expansion entry so that break and continue statements in
        the rescanned body resolve to the expansion statement.  A break in
        the rescanned body shares the already-defined break label; a
@@ -6284,7 +6247,7 @@ dependent context.
     /* Rescan the for-range-declaration tokens and create the declaration
        statement for the per-element variable. */
     add_stop_token(tok_colon);
-    rescan_persistent_reusable_cache(esp->decl_token_cache);
+    rescan_persistent_reusable_cache(expn_info->decl_token_cache);
     /* Mark the scope for the per-element rescan of the
        for-range-declaration (see a_scope_stack_entry). */
     scope_stack_top().in_expansion_range_decl = TRUE;
@@ -6298,8 +6261,8 @@ dependent context.
         variable->is_constexpr = TRUE;
       }  /* if */
       set_expansion_element_binding(
-                          variable, binding_expr,
-                          /*extend_temporaries=*/esp->initializer_is_list);
+                        variable, binding_expr,
+                        /*extend_temporaries=*/expn_info->initializer_is_list);
       /* As for an ordinary initialized declaration, record whether the
          variable is constant-valued (e.g., so that a constexpr element can
          be used in constant expressions); this must precede the addition
@@ -6350,13 +6313,13 @@ dependent context.
          compound-statement is rescanned for this element get a context
          line identifying the element by number (see error.c). */
       scope_stack_top().in_expansion_element_body = TRUE;
-      scope_stack_top().expansion_element_number = element_no;
-      scope_stack_top().expansion_statement_position = sp->position;
+      element_context.element_number = element_no;
+      scope_stack_top().expansion_element_context = &element_context;
     }  /* if */
     scope_stack_top().in_expansion_range_decl = FALSE;
     if (!constexpr_failed) {
       /* Rescan the compound-statement tokens into the element block. */
-      rescan_persistent_reusable_cache(esp->body_token_cache);
+      rescan_persistent_reusable_cache(expn_info->body_token_cache);
       dependent_statement();
       flush_past_token_cache_terminator();
       /* Reload the structured statement stack entry pointer (the rescans
@@ -6388,7 +6351,7 @@ dependent context.
         /* A break exits the expansion scope as well as the element scope. */
         an_object_lifetime_ptr  label_olp =
           innermost_block_object_lifetime(
-                              esp->expansion_scope->lifetime->parent_lifetime);
+                        expn_info->expansion_scope->lifetime->parent_lifetime);
         for (cfdp = brk_statements; cfdp != NULL;
              cfdp = cfdp->variant.goto_statement.prev_goto) {
           a_statement_ptr  goto_stmt = cfdp->variant.goto_statement.ptr;
@@ -6450,21 +6413,21 @@ break_label and entry_reachability are passed to expand_expansion_statement.
 *p_erroneous and *p_deferred report why the statement was not expanded.
 */
 {
-  an_expansion_statement_ptr  esp = sp->variant.expansion_statement.extra_info;
+  an_expansion_stmt_info_ptr  expn_info = expn_info_of(sp);
 
   db_enter(3, "check_expansion_statement");
   if (accepted && !*p_erroneous &&
-      expansion_statement_is_expandable(esp, dps, p_erroneous, p_deferred)) {
-    if (esp->initializer_is_list) {
+      expansion_statement_is_expandable(expn_info, dps, p_erroneous,
+                                        p_deferred)) {
+    if (expn_info->initializer_is_list) {
       /* An enumerating expansion statement (N5050 [stmt.expand]/4.1). */
-      expand_expansion_statement(sp, esp->initializer, break_label,
+      expand_expansion_statement(sp, expn_info->initializer, break_label,
                                  entry_reachability,
                                  /*check_constexpr=*/TRUE);
     } else {
       /* Only enumerating expansion statements are supported for now. */
-      an_expr_node_ptr  init_expr = expansion_initializer_expression(esp);
-
-      pos_error(ec_exp_lbrace, &init_expr->position);
+      pos_error(ec_exp_lbrace,
+                &expansion_initializer_expression(expn_info)->position);
       *p_erroneous = TRUE;
     }  /* if */
   }  /* if */
@@ -6475,7 +6438,7 @@ break_label and entry_reachability are passed to expand_expansion_statement.
 static void expansion_statement(void)
 /*
 Scan a C++26 expansion statement and add it to the current statement sequence
-(see an_expansion_statement for the syntax and prototype/rescan model).
+(see an_expansion_stmt_info for the syntax and prototype/rescan model).
 check_expansion_statement performs the expansion when possible; erroneous
 and dependent cases retain only the prototype form.  The prototype scan
 reports non-dependent errors; per-element rescans report dependent errors
@@ -6483,7 +6446,7 @@ with element context lines and retain per-element unused-entity warnings.
 */
 {
   a_statement_ptr             sp;
-  an_expansion_statement_ptr  esp;
+  an_expansion_stmt_info_ptr  expn_info;
   a_for_loop_ptr              flip;
   a_decl_parse_state          dps;
   a_scope_pointers_block      pointers_block, iterator_pointers_block;
@@ -6499,8 +6462,8 @@ with element context lines and retain per-element unused-entity warnings.
   a_boolean                   last_token_cached;
   db_enter(3, "expansion_statement");
   /* Expansion statements are a C++26 feature: They are always accepted
-     in C++26 mode and are accepted with a warning in GNU C++ modes that
-     emulate GCC 16 or later; other modes reject them. */
+     in C++26 mode and are accepted with a warning in GNU C++11 and later
+     modes that emulate GCC 16 or later; other modes reject them. */
   accepted = expansion_statements_allowed;
   if (!cpp26_mode) {
     if (accepted) {
@@ -6563,18 +6526,17 @@ with element context lines and retain per-element unused-entity warnings.
   }  /* if */
   flip = sp->variant.for_loop.extra_info;
   set_statement_kind(sp, stmk_expansion_statement);
-  esp = sp->variant.expansion_statement.extra_info;
+  expn_info = expn_info_of(sp);
   /* Copy any initialization scanned for the init-statement, and the scope
      containing the init-statement declaration, if any (flip will not be
      part of the IL). */
-  esp->initialization = flip->initialization;
-  esp->expansion_scope = flip->for_init_scope;
-  if (esp->expansion_scope == NULL) {
+  expn_info->initialization = flip->initialization;
+  expn_info->expansion_scope = flip->for_init_scope;
+  if (expn_info->expansion_scope == NULL) {
     /* No optional initialization statement was present, so no scope has been
        created for this statement yet; create the outermost scope. */
-    esp->expansion_scope =
-                             start_fabricated_block_scope_for_enhanced_for(
-                                                              &pointers_block);
+    expn_info->expansion_scope =
+                start_fabricated_block_scope_for_enhanced_for(&pointers_block);
   }  /* if */
   scope_stack_top().is_for_init_block = FALSE;
   /* Record the expansion statement on the scope stack entry of the
@@ -6584,10 +6546,9 @@ with element context lines and retain per-element unused-entity warnings.
      and get_pack_expansion_for_curr_context in scope_stk.c). */
   scope_stack_top().expansion_statement = sp;
   /* Push the inner scope before scanning the for-range-declaration. */
-  esp->iterator_scope =
-                          start_fabricated_block_scope_for_enhanced_for(
-                                                     &iterator_pointers_block);
-  esp->iterator_scope->is_expansion_prototype = TRUE;
+  expn_info->iterator_scope =
+       start_fabricated_block_scope_for_enhanced_for(&iterator_pointers_block);
+  expn_info->iterator_scope->is_expansion_prototype = TRUE;
   /* Add a control flow entry to represent the expansion block. */
   cfdp = alloc_control_flow_descr(cfdk_block);
   cfdp->source_pos = pos_curr_token;
@@ -6610,7 +6571,7 @@ with element context lines and retain per-element unused-entity warnings.
       scope_stack_top().in_expansion_statement_body = saved_prototype;
     }
     scope_stack_top().in_expansion_range_decl = FALSE;
-    if (esp->initialization != NULL && dps.sym != NULL) {
+    if (expn_info->initialization != NULL && dps.sym != NULL) {
       /* The name declared by the for-range-declaration is declared in a
          scope nested inside the scope of the declarations of the
          init-statement; per N5050 [basic.scope.block]/2, it may not conflict
@@ -6632,36 +6593,40 @@ with element context lines and retain per-element unused-entity warnings.
       }  /* for */
     }  /* if */
     end_caching_fetched_tokens();
-    esp->decl_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+    expn_info->decl_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
     copy_tokens_from_cache(curr_lexical_state_cache(), decl_first_tsn,
                            last_token_sequence_number_of_token,
                            /*include_last_token=*/TRUE,
-                           esp->decl_token_cache);
-    terminate_token_cache(esp->decl_token_cache);
+                           expn_info->decl_token_cache);
+    terminate_token_cache(expn_info->decl_token_cache);
 #if DEBUG
     if (db_flag_is_set("expansion_stmt")) {
-      db_token_cache(esp->decl_token_cache,
+      db_token_cache(expn_info->decl_token_cache,
                      "expansion statement for-range-declaration");
     }  /* if */
 #endif /* DEBUG */
     if (dps.sym != NULL && symbol_is(dps.sym, sk_variable)) {
-      esp->iterator = dps.sym->variant.variable.ptr;
-      if (esp->iterator != NULL) {
-        esp->iterator->is_enhanced_for_iterator = TRUE;
+      expn_info->iterator = dps.sym->variant.variable.ptr;
+      if (expn_info->iterator != NULL) {
+        expn_info->iterator->is_enhanced_for_iterator = TRUE;
         /* Mark the variable so that uses of it in the prototype scan of
            the compound-statement are treated as value-dependent
            (N5050 [temp.dep.constexpr]/2.4; the per-element copies declared by
            the rescans of the declaration are not so marked -- their
            initializers are bound and fully checked). */
-        esp->iterator->is_expansion_iterator = TRUE;
+        expn_info->iterator->is_expansion_iterator = TRUE;
+        /* As for template prototypes, allow a potentially constant-valued
+           iterator to become constant-valued after instantiation. */
+        expn_info->iterator->constant_valued =
+                  is_potentially_constant_valued_variable(expn_info->iterator);
       }  /* if */
     }  /* if */
     /* The entity declared in the for-range-declaration is not used until
        the expansion is done; mark it as referenced and having a value set,
        as check_range_based_for_statement does for the range-based-for, to
        avoid spurious warnings. */
-    if (esp->iterator != NULL) {
-      mark_expansion_variable_used(esp->iterator);
+    if (expn_info->iterator != NULL) {
+      mark_expansion_variable_used(expn_info->iterator);
     }  /* if */
     /* Pop the scope to get back to the scope in which the
        expansion-initializer needs to be scanned.  The scope will be
@@ -6688,8 +6653,9 @@ with element context lines and retain per-element unused-entity warnings.
   (void)required_token(tok_rparen, ec_exp_rparen);
   remove_stop_token(tok_rparen);
   /* Return to the iterator scope for the compound-statement. */
-  push_block_reactivation_scope(esp->iterator_scope, &iterator_pointers_block);
-  begin_expansion_definition_scan(esp);
+  push_block_reactivation_scope(expn_info->iterator_scope,
+                                &iterator_pointers_block);
+  begin_expansion_definition_scan(expn_info);
   if (dps.is_struct_binding_decl) {
     /* Define the structured bindings of the for-range-declaration, as is
        done for the range-based-for. */
@@ -6715,13 +6681,14 @@ with element context lines and retain per-element unused-entity warnings.
   /* Prescan independently of deferred member bodies and discarded branches.
      Keep the last body token current until after any prototype replay, so
      pragmas and macros following the statement are not processed early. */
-  esp->body_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
-  last_token_cached = cache_expansion_statement_body(esp->body_token_cache);
-  terminate_token_cache(esp->body_token_cache);
+  expn_info->body_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+  last_token_cached =
+                  cache_expansion_statement_body(expn_info->body_token_cache);
+  terminate_token_cache(expn_info->body_token_cache);
   if (is_prototype_instantiation_context() ||
       (!is_nonspecialized_instantiation_context() &&
        !scope_stack_top().in_expansion_element_rescan)) {
-    rescan_persistent_reusable_cache(esp->body_token_cache);
+    rescan_persistent_reusable_cache(expn_info->body_token_cache);
     dependent_statement();
     flush_past_token_cache_terminator();
   } else {
@@ -6735,7 +6702,7 @@ with element context lines and retain per-element unused-entity warnings.
   if (last_token_cached) (void)get_token();
 #if DEBUG
   if (db_flag_is_set("expansion_stmt")) {
-    db_token_cache(esp->body_token_cache, "expansion statement body");
+    db_token_cache(expn_info->body_token_cache, "expansion statement body");
   }  /* if */
 #endif /* DEBUG */
   /* Define the "continue" label, if it is needed: A continue in the body jumps
@@ -6764,7 +6731,7 @@ with element context lines and retain per-element unused-entity warnings.
      for the cases that can be handled at scan time. */
   check_expansion_statement(sp, &dps, break_label, entry_reachability,
                             &erroneous, &deferred, accepted);
-  if (esp->expanded_statement == NULL) {
+  if (expn_info->expanded_statement == NULL) {
     /* The compile-time expansion was not done (an erroneous or deferred case;
        see check_expansion_statement): The reachability state still reflects
        the end of the prototype compound-statement (e.g., a "return" in it),
@@ -6792,7 +6759,7 @@ with element context lines and retain per-element unused-entity warnings.
      (its problem has been diagnosed; see check_expansion_statement and
      expansion_statement_is_expandable) or deferred to the instantiation of an
      enclosing template. */
-  check_assertion(esp->expanded_statement != NULL ||
+  check_assertion(expn_info->expanded_statement != NULL ||
                   !accepted || erroneous || deferred);
   db_exit();
 }  /* expansion_statement */

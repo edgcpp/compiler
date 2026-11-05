@@ -25,6 +25,21 @@ namespace simple_enumerating
   static_assert(f(2) == 24);
 }
 
+namespace mutable_iterator
+{
+  constexpr int f()
+  {
+    int n = 0;
+    template for (int i : { 1, 2 })
+    {
+      ++i;
+      n += i;
+    }
+    return n;
+  }
+  static_assert(f() == 5);
+}
+
 namespace empty_enumerating
 {
   void f()
@@ -144,6 +159,21 @@ namespace template_binding_pack_enumerating
 
   static_assert(f(1) == 6);
   static_assert(f(2) == 12);
+}
+
+namespace empty_binding_pack
+{
+  struct S { };
+  template<typename T> void f()
+  {
+    static auto [ ...p ] = T{ };
+    template for (auto i : { 1 })
+    {
+      static auto [ ...q ] = T{ };
+      (void)i;
+    }
+  }
+  template void f<S>();
 }
 
 namespace simple_expanding_enumerating
@@ -283,6 +313,34 @@ namespace iterator_lambda_capture
   }
 
   static_assert(h<10>() == 23);   // (1+10) + (2+10)
+}
+
+namespace deferred_capture
+{
+  constexpr int f()
+  {
+    int n = 0;
+    template for (constexpr int i : { 1, 2 })
+    {
+      n += [] { return i; }();
+    }
+    return n;
+  }
+  static_assert(f() == 3);
+}
+
+namespace nested_deferred_capture
+{
+  constexpr int f()
+  {
+    int n = 0;
+    template for (constexpr int i : { 1, 2 })
+    {
+      n += [] { return [=] { return i; }(); }();
+    }
+    return n;
+  }
+  static_assert(f() == 3);
 }
 
 namespace static_assert_in_empty_expansion

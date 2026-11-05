@@ -735,6 +735,15 @@ using a_template_cache_segment_list = Dyn_array<a_template_cache_segment_ptr>;
 			/* The type used for a list of template cache
 			   segments. */
 
+/* Diagnostic state local to one expansion element rescan. */
+typedef struct an_expansion_element_context {
+  a_source_position
+		position;
+			/* Position of the expansion statement. */
+  a_targ_size_t	element_number;
+			/* The 1-based element number. */
+} an_expansion_element_context;
+
 /* Scope stack, containing an entry for each currently-active scope. */
 typedef struct a_scope_stack_entry *a_scope_stack_entry_ptr;
 typedef struct a_scope_stack_entry {
@@ -844,7 +853,7 @@ typedef struct a_scope_stack_entry {
 			   the expansion-initializer (see
 			   expand_expansion_statement).  Used to add
 			   diagnostic context lines to errors reported during
-			   the rescan (see the expansion_element_number field
+			   the rescan (see the expansion_element_context field
 			   at the end of this structure).  Not propagated to
 			   nested scopes. */
   a_bit_field	in_nonreal_instantiation:1;
@@ -1795,14 +1804,11 @@ typedef struct a_scope_stack_entry {
 		*injections;
 			/* Token sequence entries scheduled for injection
 			   in this scope. */
-  a_source_position
-		expansion_statement_position;
-			/* Position of the statement being expanded when
-			   in_expansion_element_body is TRUE. */
-  a_targ_size_t	expansion_element_number;
-			/* When in_expansion_element_body is TRUE: The 1-based
-			   number of the element for which the
-			   compound-statement is being rescanned. */
+  an_expansion_element_context
+                *expansion_element_context;
+                        /* Diagnostic state for the current element rescan
+                           when in_expansion_element_body is TRUE.  Points
+                           to a local in expand_expansion_statement. */
 } a_scope_stack_entry;
 
 EXTERN_THREAD a_scope_stack_entry_ptr
@@ -2120,11 +2126,11 @@ alias-declaration in a template declaration, a nonreal instantiation that is
 not a rescan, or an expansion prototype scan (awaiting the per-element
 rescans).
 */
-#define is_uninstantiated_dependent_expr_context()			\
-  (is_prototype_instantiation_or_expansion_context() ||			\
-   (microsoft_mode && in_ms_nonreal_class_instantiation()) ||		\
-   scope_stack[depth_scope_stack].alias_in_template_decl ||		\
-   (scope_stack[depth_scope_stack].in_nonreal_instantiation &&		\
+#define is_uninstantiated_dependent_expr_context()                      \
+  (is_prototype_instantiation_or_expansion_context() ||                 \
+   (microsoft_mode && in_ms_nonreal_class_instantiation()) ||           \
+   scope_stack[depth_scope_stack].alias_in_template_decl ||             \
+   (scope_stack[depth_scope_stack].in_nonreal_instantiation &&          \
     !scope_stack[depth_scope_stack].is_rescan))
 
 /*
@@ -2134,10 +2140,10 @@ argument that is enclosed by a prototype instantiation context, or an expansion
 prototype scan (pack expansions are not instantiated there; the per-element
 rescans do that).
 */
-#define is_uninstantiated_pack_expansion_context()			\
-  (is_prototype_instantiation_or_expansion_context() ||			\
-   (scope_stack[depth_scope_stack].in_nonreal_instantiation &&		\
-    scope_stack[depth_scope_stack].is_default_template_arg &&		\
+#define is_uninstantiated_pack_expansion_context()                      \
+  (is_prototype_instantiation_or_expansion_context() ||                 \
+   (scope_stack[depth_scope_stack].in_nonreal_instantiation &&          \
+    scope_stack[depth_scope_stack].is_default_template_arg &&           \
     enclosing_scope_is_prototype_instantiation_context()))
 
 /*
@@ -2183,9 +2189,9 @@ parameter list, instantiation scope, or template declaration information; use
 definition_recording_scope rather than the template-dependent-context
 accessors.  Nonreal instantiations alone do not constitute prototype analysis.
 */
-#define is_prototype_instantiation_or_expansion_context()		\
-  (is_prototype_instantiation_context() ||				\
-   (depth_scope_stack != NO_SCOPE_DEPTH &&				\
+#define is_prototype_instantiation_or_expansion_context()               \
+  (is_prototype_instantiation_context() ||                              \
+   (depth_scope_stack != NO_SCOPE_DEPTH &&                              \
     scope_stack_top().in_expansion_statement_body))
 
 /*
@@ -2196,12 +2202,14 @@ is_prototype_instantiation_or_expansion_context, this does not include template
 declaration scopes.  Used when creating prototype entities and for
 prototype IL bookkeeping.
 */
-#define in_prototype_instantiation_or_expansion_scan()			\
-  (scope_stack_top().in_prototype_instantiation ||			\
+#define in_prototype_instantiation_or_expansion_scan()                  \
+  (scope_stack_top().in_prototype_instantiation ||                      \
    scope_stack_top().in_expansion_statement_body)
 
 /*
 Access definition replay state without requiring template-specific data.
+A scan root is the scope at which a template or expansion definition scan or
+replay begins; nested scopes use its recording state and traversal cursors.
 The returned scope owns per-scan cursors; its persistent info survives it.
 */
 extern a_scope_stack_entry_ptr definition_recording_scope(a_boolean innermost);
@@ -2209,8 +2217,9 @@ extern a_scope_stack_entry_ptr definition_replay_scope(void);
 extern a_boolean is_nondependent_call_recording_context(void);
 extern a_boolean is_nondependent_call_reuse_context(void);
 
-extern void begin_expansion_definition_scan(an_expansion_statement_ptr esp);
-extern void begin_expansion_element_scan(an_expansion_statement_ptr esp);
+extern void begin_expansion_definition_scan(
+                                         an_expansion_stmt_info_ptr expn_info);
+extern void begin_expansion_element_scan(an_expansion_stmt_info_ptr expn_info);
 
 /*
 TRUE if the current expansion prototype has no enclosing template

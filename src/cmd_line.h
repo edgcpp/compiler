@@ -3044,10 +3044,11 @@ warning in recent GNU and Clang C++ modes.
 Macro that determines whether expansion statements should be accepted.
 Expansion statements are a standard feature in C++26 mode (and the global
 variable expansion_statements_enabled is TRUE in that case) that is also
-accepted with a warning in GNU C++ modes emulating GCC 16 or later.
+accepted with a warning in GNU C++11 and later modes emulating GCC 16 or
+later.
 */
 #define expansion_statements_allowed                                         \
-  (expansion_statements_enabled || gpp_version_is(>=160000))
+  (expansion_statements_enabled || (cpp11_mode && gpp_version_is(>=160000)))
 
 /* Process the command line arguments. */
 extern void proc_command_line(int argc, char *argv[]);

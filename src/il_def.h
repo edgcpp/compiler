@@ -623,8 +623,8 @@ enum an_il_entry_kind : a_byte {
   iek_for_loop,         /* a_for_loop */
   iek_range_based_for_loop,
                         /* a_range_based_for_loop */
-  iek_expansion_statement,
-                        /* an_expansion_statement */
+  iek_expansion_stmt_info,
+                        /* an_expansion_stmt_info */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   iek_for_each_loop,    /* a_for_each_loop */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -846,7 +846,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, il_entry_kind_names, iek_last + 1)
 /* iek_expr_node */			"expr-node",
 /* iek_for_loop */			"for-loop",
 /* iek_range_based_for_loop */		"range-based-for-loop",
-/* iek_expansion_statement */		"expansion-statement",
+/* iek_expansion_stmt_info */		"expansion-stmt-info",
 #if MICROSOFT_EXTENSIONS_ALLOWED
 /* iek_for_each_loop */			"for-each-loop",
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -11425,9 +11425,11 @@ typedef struct a_variable {
 			/* TRUE if this variable represents the prototype
 			   instantiation of a variable template or a static
 			   data member of a class template.  Also TRUE for a
-			   variable declared during the prototype
-			   instantiation of a function template, unless that
-			   variable has linkage and a nondependent type. */
+			   variable declared during the prototype instantiation
+			   of a function template or the prototype scan of an
+			   expansion statement (including its iterator), unless
+			   that variable has linkage and a nondependent
+			   type. */
   a_bit_field	is_nonreal:1;
 			/* TRUE if this is a variable template instance that
 			   resulted from an instantiation using a dependent
@@ -11717,9 +11719,9 @@ typedef struct a_variable {
 			/* TRUE for variables of a const type initialized with
 			   a constant expression so that uses of the variable's
 			   value are permitted in constant-expressions.  Also
-			   TRUE for variables in prototype instantiations that
-			   might end up with those properties after template
-			   instantiation.  Only set in C++. */
+			   TRUE for variables in prototype instantiations or
+			   expansion prototypes that might end up with those
+			   properties after instantiation.  Only set in C++. */
   a_bit_field	is_immutable:1;
 			/* TRUE if the variable is of a const type that does
 			   not contain a mutable subobject. */
@@ -16077,8 +16079,8 @@ A non-dependent enumerating expansion is done at scan time (see
 expansion_statement_is_expandable in statements.c); otherwise the statement is
 erroneous or deferred to the instantiation of the enclosing template.
 */
-typedef struct an_expansion_statement *an_expansion_statement_ptr;
-typedef struct an_expansion_statement {
+typedef struct an_expansion_stmt_info *an_expansion_stmt_info_ptr;
+typedef struct an_expansion_stmt_info {
   a_statement_ptr
                 initialization;
                         /* Pointer to an init-statement if the expansion
@@ -16144,7 +16146,7 @@ typedef struct an_expansion_statement {
                         /* TRUE if the expansion-initializer is an
                            expansion-init-list ({ } or { expression-list }),
                            FALSE if it is a single expression. */
-} an_expansion_statement;
+} an_expansion_stmt_info;
 
 #if MICROSOFT_EXTENSIONS_ALLOWED
 /*
@@ -16814,7 +16816,7 @@ typedef struct a_statement {
                            instantiation of an enclosing template function or
                            during a per-element expansion rescan; the body is
                            then instantiated only for actual elements. */
-      an_expansion_statement_ptr
+      an_expansion_stmt_info_ptr
                 extra_info;
                         /* Information about the expansion statement.  The
                            expr field in the statement is unused. */
@@ -17104,7 +17106,7 @@ typedef struct a_scope_orphaned_list_header {
   a_scope_number
 		scope_number;
 			/* The scope number for the scope. */
-  a_boolean	in_expansion_prototype;
+  a_bit_field	in_expansion_prototype:1;
 			/* TRUE if this scope is part of the prototype of an
 			   expansion statement, not an expanded element. */
   a_type_ptr	orphaned_types;
@@ -19484,7 +19486,7 @@ EXTERN_CONSTINIT_ARRAY(sizeof_t, sizeof_il_entry, iek_last)
   sizeof(an_expr_node),
   sizeof(a_for_loop),
   sizeof(a_range_based_for_loop),
-  sizeof(an_expansion_statement),
+  sizeof(an_expansion_stmt_info),
 #if MICROSOFT_EXTENSIONS_ALLOWED
   sizeof(a_for_each_loop),
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */

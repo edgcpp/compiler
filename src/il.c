@@ -3173,8 +3173,7 @@ the dump (this one counts as the first).
         case stmk_expansion_statement:
           db_statement_list(sp->variant.expansion_statement.statement,
                             indent+2, "", how_deep-1);
-          db_statement_list(sp->variant.expansion_statement.extra_info->
-                                                            expanded_statement,
+          db_statement_list(expn_info_of(sp)->expanded_statement,
                             indent+2, "", how_deep-1);
           break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -15399,8 +15398,8 @@ the caller must ensure the class type is complete before calling this routine.
         result = ptr->range_based_for_scope;
       }
       break;
-    case iek_expansion_statement:
-      { an_expansion_statement_ptr ptr = (an_expansion_statement_ptr)entity;
+    case iek_expansion_stmt_info:
+      { an_expansion_stmt_info_ptr ptr = (an_expansion_stmt_info_ptr)entity;
         result = ptr->expansion_scope;
       }
       break;
@@ -15435,8 +15434,8 @@ the caller must ensure the class type is complete before calling this routine.
             kind = iek_range_based_for_loop;
             break;
           case stmk_expansion_statement:
-            entity = (char*)ptr->variant.expansion_statement.extra_info;
-            kind = iek_expansion_statement;
+            entity = (char*)expn_info_of(ptr);
+            kind = iek_expansion_stmt_info;
             break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
           case stmk_for_each:
@@ -23861,11 +23860,8 @@ copied again.
           } else if (!is_template_dependent_context() &&
                      expr_error_should_be_issued() &&
                      !is_consteval_diag_deferred()) {
-            a_diagnostic_ptr dp = pos_start_error(ec_expr_not_constant,
-                                                  &wrapped->position);
-
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_expr_not_constant, &wrapped->position,
+                             &diag_list);
             expr_copy = error_node();
           }  /* if */
           release_local_constant(&constant);
@@ -27493,6 +27489,7 @@ instantiation-dependent.
        dependent", and treat the for-range-declaration variable of an expansion
        statement as value-dependent (N5050 [temp.dep.constexpr]/2.4). */
     a_variable  *vp = node_variable(expr);
+    /* Nonreal variables and expansion iterators are always dependent. */
     if (vp->is_nonreal || vp->is_expansion_iterator) {
       tblock->result = TRUE;
       tblock->terminate = TRUE;
@@ -28239,16 +28236,15 @@ original statement.
       to->variant.range_based_for_loop.statement->parent = to;
       break;
     case stmk_expansion_statement:
-      if (to->variant.expansion_statement.statement != NULL) {
-        to->variant.expansion_statement.statement->parent = to;
-      }  /* if */
-      { an_expansion_statement_ptr  expn_stmt;
-        expn_stmt = to->variant.expansion_statement.extra_info;
-        if (expn_stmt->expanded_statement != NULL) {
-          expn_stmt->expanded_statement->parent = to;
+      { an_expansion_stmt_info_ptr  expn_info = expn_info_of(to);
+        if (to->variant.expansion_statement.statement != NULL) {
+          to->variant.expansion_statement.statement->parent = to;
         }  /* if */
-        if (expn_stmt->initialization != NULL) {
-          expn_stmt->initialization->parent = to;
+        if (expn_info->expanded_statement != NULL) {
+          expn_info->expanded_statement->parent = to;
+        }  /* if */
+        if (expn_info->initialization != NULL) {
+          expn_info->initialization->parent = to;
         }  /* if */
       }  /* if */
       break;
@@ -33520,12 +33516,12 @@ instantiation, or template parameter type.
 #define type_is_nonreal_no_typerefs(type)				\
   ((is_immediate_class_type(type) &&					\
     (type)->variant.class_struct_union.is_nonreal_class) ||		\
-   ((type)->kind == tk_integer &&					\
+   (type_is(type, tk_integer) &&					\
     (type)->variant.integer.is_nonreal) ||				\
-   (type->kind == tk_typeref &&						\
+   (type_is(type, tk_typeref) &&					\
     ((type)->variant.typeref.is_nonreal ||				\
      (type)->variant.typeref.is_dependent)) ||				\
-   ((type)->kind == tk_template_param && !is_auto_type(type)))
+   (type_is(type, tk_template_param) && !is_auto_type(type)))
 
 
 a_boolean type_is_nonreal(a_type_ptr	type)

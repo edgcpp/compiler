@@ -37,6 +37,19 @@ namespace dependent_return_type
   static_assert(same<decltype(f()), int>);
 }
 
+namespace deduced_return
+{
+  constexpr auto f()
+  {
+    template for (auto i : { 1 }) { return i; }
+  }
+  auto g()
+  {
+    template for (auto i : { 1 }) { return; }
+  }
+  static_assert(f() == 1);
+}
+
 namespace nested_element_initializers
 {
   constexpr int f()

@@ -11706,7 +11706,6 @@ is added to the substitution state.
                                  CTWS_NO_OPTIONS, &ctws_state, &fatal)) {
     if (!is_empty_diag_list(&diag_list)) {
       if (diagnose || (fatal && !clang_mode)) {
-        a_diagnostic_ptr   dp;
         a_diag_list        lead_note;
         clear_diag_list(&lead_note);
         more_info_tap_diagnostic(
@@ -11714,9 +11713,8 @@ is added to the substitution state.
                               &constraint->position, args, &lead_note);
         splice_diag_list(&lead_note, &diag_list,
                          /*insert_after=*/(a_diagnostic_ptr)NULL);
-        dp = pos_start_error(ec_template_constraint_not_satisfied, &diag_pos);
-        add_more_info_list(dp, &diag_list);
-        end_diagnostic(dp);
+        error_with_notes(ec_template_constraint_not_satisfied, &diag_pos,
+                         &diag_list);
       } else {
         discard_more_info_list(&diag_list);
       }  /* if */
@@ -11786,7 +11784,6 @@ type; otherwise, parent_type is NULL.
     } else {
       result = FALSE;
       if (diag_pos != NULL) {
-        a_diagnostic_ptr  dp;
         a_diag_list       lead_note;
         clear_diag_list(&lead_note);
         more_info_type_diagnostic(ec_type_constraint_failed,
@@ -11794,9 +11791,8 @@ type; otherwise, parent_type is NULL.
                                   &lead_note);
         splice_diag_list(&lead_note, p_diag_list,
                          /*insert_after=*/(a_diagnostic_ptr)NULL);
-        dp = pos_start_error(ec_template_constraint_not_satisfied, diag_pos);
-        add_more_info_list(dp, p_diag_list);
-        end_diagnostic(dp);
+        error_with_notes(ec_template_constraint_not_satisfied, diag_pos,
+                         p_diag_list);
       }  /* if */
     }  /* if */
   }  /* if */
@@ -24563,13 +24559,10 @@ system headers.
     an_attribute_ptr ap = find_attribute(ak_no_specializations, attributes);
     if (ap != NULL && !seq_is_in_system_header(err_pos->seq)) {
       a_diag_list       diag_list;
-      a_diagnostic_ptr  dp;
       clear_diag_list(&diag_list);
-      dp = pos_start_error(ec_cannot_be_specialized, err_pos);
       more_info_diagnostic(ec_attribute_declared_here, &ap->position,
                            &diag_list);
-      add_more_info_list(dp, &diag_list);
-      end_diagnostic(dp);
+      error_with_notes(ec_cannot_be_specialized, err_pos, &diag_list);
     }  /* if */
   }  /* if */
 #endif /* GNU_EXTENSIONS_ALLOWED */

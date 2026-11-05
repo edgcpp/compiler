@@ -19663,6 +19663,7 @@ can be fully determined.
     if (container->storage_class == sc_static &&
         container->source_corresp.is_local_to_function &&
         !in_prototype_instantiation_or_expansion_scan() &&
+        /* An empty binding pack may have removed all bindings. */
         container->variant.bindings != NULL) {
       /* Give the container the same name-collision discriminator as its
          first binding. */

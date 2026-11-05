@@ -3222,6 +3222,9 @@ Display the indicated variable.
   if (ptr->is_enhanced_for_iterator) {
     disp_boolean("is_enhanced_for_iterator", TRUE);
   }  /* if */
+  if (ptr->is_expansion_iterator) {
+    disp_boolean("is_expansion_iterator", TRUE);
+  }  /* if */
   if (ptr->initializer_in_class) {
     disp_boolean("initializer_in_class", TRUE);
   }  /* if */
@@ -5457,8 +5460,7 @@ static void disp_expansion_statement(a_statement_ptr ptr)
 Display an expansion statement.
 */
 {
-  an_expansion_statement_ptr
-                      extra_info = ptr->variant.expansion_statement.extra_info;
+  an_expansion_stmt_info_ptr  extra_info = expn_info_of(ptr);
 
   (void)fprintf(f_display, "stmk_expansion_statement\n");
   disp_ptr("statement", (char *)ptr->variant.expansion_statement.statement,
@@ -8305,7 +8307,7 @@ This routine is called during IL walking.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case iek_for_loop:
     case iek_range_based_for_loop:
-    case iek_expansion_statement:
+    case iek_expansion_stmt_info:
     case iek_constexpr_if:
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case iek_for_each_loop:
