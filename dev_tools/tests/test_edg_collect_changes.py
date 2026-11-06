@@ -85,6 +85,40 @@ No changes.
 def _fragment(tags: str, summary: str, body: str = 'Body.') -> str:
   return f"{tags}\n{summary}\n\n{body}\n"
 
+def _correction(tags: str, summary: str) -> str:
+  return '//correction: true\n' + _fragment(tags, summary)
+
+WRAPPED_TAGS = [f"GH #{number}" for number in range(4, 15)]
+
+# The current version (7.1) has three entries, the last with a wrapped tag
+# block; GH #20 is only in the released version.
+CORRECTABLE_HEADER = 'Version 7.1\n\n'
+CORRECTABLE_FIRST = '10/20/26 [GH #1]\nFirst\n\nFirst body.\n\n\n'
+CORRECTABLE_SECOND = (
+  '10/19/26 [GH #2,GH #3]\nSecond\n\nSecond body.\n\n  Example.\n\n\n'
+)
+CORRECTABLE_WRAPPED = (
+  '\n'.join(edgchanges.format_tag_lines('10/18/26', WRAPPED_TAGS)) +
+  '\nWrapped\n\nWrapped body.\n\n\n'
+)
+CORRECTABLE_RELEASED = (
+  f"{'-' * 79}\n"
+  'Version 7.0, September 28, 2026\n'
+  '\n'
+  '9/1/26   [GH #20]\n'
+  'Released entry\n'
+  '\n'
+  'Released body.\n'
+)
+CORRECTABLE_CHANGES = (
+  CORRECTABLE_HEADER + CORRECTABLE_FIRST + CORRECTABLE_SECOND +
+  CORRECTABLE_WRAPPED + CORRECTABLE_RELEASED
+)
+
+def _collected(tags: str, summary: str) -> str:
+  '''Return a _fragment(tags, summary) entry as collected on 10/21/26.'''
+  return f"10/21/26 {tags}\n{summary}\n\nBody.\n\n\n"
+
 class FakeTree:
   '''A scratch tree of Changes files and pending_changes/ directories.'''
 
@@ -405,11 +439,11 @@ class CollectTests(TreeTestCase):
     # line that doesn't follow a separator.
     lines = OPEN_CHANGES.split('\n')
     self.assertEqual(
-      collect_tool._find_newest_version_header(lines[2:] + lines[:2]),
+      edgchanges.find_newest_version_header(lines[2:] + lines[:2]),
       lines[2:].index('Version 7.0, September 28, 2026')
     )
     self.assertIsNone(
-      collect_tool._find_newest_version_header(['', 'Version 7.1'])
+      edgchanges.find_newest_version_header(['', 'Version 7.1'])
     )
 
   def test_sort_tie_break(self) -> None:
@@ -475,6 +509,255 @@ class CollectTests(TreeTestCase):
         collect_tool.check(self.tree.root / 'src' / 'pending_changes')
       )
     self.assertIn('notes.md: not a pending Changes entry', output.getvalue())
+
+class CorrectionTests(TreeTestCase):
+
+  def _collect(self, *fragments: str, dry_run: bool = False) -> bool:
+    self.changes_path = self.tree.add_changes('src', CORRECTABLE_CHANGES)
+    self.fragment_paths = [
+      self.tree.add_fragment('src', f"f{index}.txt", text)
+      for index, text in enumerate(fragments)
+    ]
+    return self.tree.collect(dry_run = dry_run)
+
+  def _changes_text(self) -> str:
+    return self.changes_path.read_text(encoding = 'utf-8')
+
+  def test_parse(self) -> None:
+    root = self.tree.root
+    root.joinpath('a.txt').write_text(_correction('[GH #1]', 'A'))
+    entry, errors = edgchanges.parse_fragment(root / 'a.txt')
+    self.assertEqual(errors, [])
+    self.assertTrue(entry.is_correction)
+
+    root.joinpath('b.txt').write_text(_fragment('[GH #1]', 'B'))
+    entry, errors = edgchanges.parse_fragment(root / 'b.txt')
+    self.assertFalse(entry.is_correction)
+
+    root.joinpath('c.txt').write_text(
+      '//allowed_words: x\n//correction: false\n' +
+      _fragment('[GH #1]', 'C')
+    )
+    entry, errors = edgchanges.parse_fragment(root / 'c.txt')
+    self.assertIsNone(entry)
+    self.assertEqual(
+      errors,
+      [
+        edgchanges.FormatError(
+          2,
+          "invalid //correction: value 'false'; use '//correction: true'"
+        )
+      ]
+    )
+
+    root.joinpath('d.txt').write_text(
+      '//correction: true\n' + _correction('[GH #1]', 'D')
+    )
+    entry, errors = edgchanges.parse_fragment(root / 'd.txt')
+    self.assertIsNone(entry)
+    self.assertEqual(
+      errors,
+      [edgchanges.FormatError(2, '//correction: is repeated')]
+    )
+
+  def test_read_current_entries(self) -> None:
+    lines = CORRECTABLE_CHANGES.split('\n')
+    entries = edgchanges.read_current_entries(lines)
+    assert entries is not None
+    self.assertEqual(
+      [(entry.tags, entry.summary) for entry in entries],
+      [
+        (['GH #1'], 'First'),
+        (['GH #2', 'GH #3'], 'Second'),
+        (WRAPPED_TAGS, 'Wrapped')
+      ]
+    )
+    self.assertIsNone(
+      edgchanges.read_current_entries(RELEASED_CHANGES.split('\n'))
+    )
+
+    # An open version with no entries (as just after a release) has none;
+    # the released version's entries don't count.
+    empty_open_lines = (
+      f"Version 7.2\n\nNo changes.\n\n\n{'-' * 79}\n" +
+      CORRECTABLE_CHANGES.replace(
+        'Version 7.1\n',
+        'Version 7.1, November 1, 2026\n'
+      )
+    ).split('\n')
+    self.assertEqual(edgchanges.read_current_entries(empty_open_lines), [])
+
+    # Entries are found by their dated first lines alone, so two missing
+    # the blank lines between them are still told apart.  Body lines that
+    # look like a Version header or a separator don't end the section.
+    tricky_lines = (
+      'Version 7.1\n'
+      '\n'
+      '10/20/26 [GH #1]\n'
+      'First\n'
+      '\n'
+      'Version 7.0 of the front end did this.\n'
+      '10/19/26 [GH #2]\n'
+      'Second\n'
+      '\n'
+      f"{'-' * 20}\n"
+      'Not a header.\n'
+      '\n'
+      '\n' +
+      CORRECTABLE_RELEASED
+    ).split('\n')
+    entries = edgchanges.read_current_entries(tricky_lines)
+    assert entries is not None
+    self.assertEqual(
+      [(entry.start, entry.end, entry.tags, entry.summary)
+       for entry in entries],
+      [(2, 6, ['GH #1'], 'First'), (6, 13, ['GH #2'], 'Second')]
+    )
+    self.assertEqual(
+      edgchanges.find_corrected_entries(tricky_lines, ['GH #1']),
+      ([entries[0]], [])
+    )
+
+  def test_replace_one(self) -> None:
+    self.assertTrue(self._collect(_correction('[GH #1]', 'New first')))
+    self.assertEqual(
+      self._changes_text(),
+      CORRECTABLE_HEADER + _collected('[GH #1]', 'New first') +
+      CORRECTABLE_SECOND + CORRECTABLE_WRAPPED + CORRECTABLE_RELEASED
+    )
+    self.assertFalse(self.fragment_paths[0].exists())
+
+  def test_replace_several(self) -> None:
+    # One correction can merge several entries; other entries are collected
+    # as usual alongside it.
+    self.assertTrue(
+      self._collect(
+        _correction('[GH #3,GH #1,GH #2]', 'Merged'),
+        _fragment('[GH #30]', 'Unrelated')
+      )
+    )
+    self.assertEqual(
+      self._changes_text(),
+      CORRECTABLE_HEADER + _collected('[GH #3,GH #1,GH #2]', 'Merged') +
+      _collected('[GH #30]', 'Unrelated') + CORRECTABLE_WRAPPED +
+      CORRECTABLE_RELEASED
+    )
+
+  def test_replace_wrapped_last(self) -> None:
+    # The last entry before the separator, with a wrapped tag block.
+    tags = '[' + ',\n '.join(WRAPPED_TAGS) + ']'
+    self.assertTrue(self._collect(_correction(tags, 'New wrapped')))
+    self.assertEqual(
+      self._changes_text(),
+      CORRECTABLE_HEADER +
+      '\n'.join(edgchanges.format_tag_lines('10/21/26', WRAPPED_TAGS)) +
+      '\nNew wrapped\n\nBody.\n\n\n' +
+      CORRECTABLE_FIRST + CORRECTABLE_SECOND + CORRECTABLE_RELEASED
+    )
+
+  def test_replace_all(self) -> None:
+    tags = '[' + ',\n '.join(['GH #1', 'GH #2', 'GH #3'] + WRAPPED_TAGS) + ']'
+    self.assertTrue(self._collect(_correction(tags, 'Everything')))
+    text = self._changes_text()
+    self.assertTrue(text.startswith(CORRECTABLE_HEADER + '10/21/26 [GH #1,'))
+    self.assertTrue(
+      text.endswith('\nEverything\n\nBody.\n\n\n' + CORRECTABLE_RELEASED)
+    )
+
+  def _assert_rejected(self, expected_error: str, *fragments: str) -> None:
+    with contextlib.redirect_stderr(io.StringIO()) as output:
+      changes_path = self.tree.add_changes('src', CORRECTABLE_CHANGES)
+      for index, text in enumerate(fragments):
+        self.tree.add_fragment('src', f"f{index}.txt", text)
+      succeeded = collect_tool.collect(
+        changes_path,
+        self.tree.root / 'src' / 'pending_changes',
+        datetime.date(2026, 10, 21),
+        None,
+        dry_run = False
+      )
+    self.assertFalse(succeeded)
+    self.assertIn(expected_error, output.getvalue())
+    self.assertEqual(
+      changes_path.read_text(encoding = 'utf-8'),
+      CORRECTABLE_CHANGES
+    )
+    for index in range(len(fragments)):
+      self.assertTrue(
+        (self.tree.root / 'src' / 'pending_changes' / f"f{index}.txt")
+        .exists()
+      )
+    shutil.rmtree(self.tree.root / 'src')
+
+  def test_errors(self) -> None:
+    self._assert_rejected(
+      "no entry in the current version has the tag 'GH #20'",
+      _correction('[GH #20]', 'Released')
+    )
+    self._assert_rejected(
+      'issue fixed in a prior release is usually a new issue',
+      _correction('[GH #20]', 'Released')
+    )
+    self._assert_rejected(
+      "no entry in the current version has the tag 'GH #99'",
+      _correction('[GH #1,GH #99]', 'Unknown')
+    )
+    self._assert_rejected(
+      'the entry it replaces, "Second", also has \'GH #3\'; add it',
+      _correction('[GH #2]', 'Partial')
+    )
+    self._assert_rejected(
+      'corrections replacing the same entry, "First"',
+      _correction('[GH #1]', 'One'),
+      _correction('[GH #1]', 'Two')
+    )
+
+  def test_bad_correction_left_in_place(self) -> None:
+    # A bad correction doesn't keep the other entries from being collected.
+    self.assertFalse(
+      self._collect(
+        _correction('[GH #2]', 'Partial'),
+        _fragment('[GH #30]', 'Unrelated')
+      )
+    )
+    self.assertTrue(self.fragment_paths[0].exists())
+    self.assertFalse(self.fragment_paths[1].exists())
+    self.assertEqual(
+      self._changes_text(),
+      CORRECTABLE_HEADER + _collected('[GH #30]', 'Unrelated') +
+      CORRECTABLE_CHANGES[len(CORRECTABLE_HEADER):]
+    )
+
+  def test_released_version(self) -> None:
+    changes_path = self.tree.add_changes('lib_src', RELEASED_CHANGES)
+    fragment = self.tree.add_fragment(
+      'lib_src', 'a.txt', _correction('[GH #1]', 'A')
+    )
+    self.assertFalse(self.tree.collect('lib_src', version = '7.1'))
+    self.assertTrue(fragment.exists())
+    self.assertEqual(
+      changes_path.read_text(encoding = 'utf-8'),
+      RELEASED_CHANGES
+    )
+
+  def test_dry_run(self) -> None:
+    with contextlib.redirect_stdout(io.StringIO()) as output:
+      self.changes_path = self.tree.add_changes('src', CORRECTABLE_CHANGES)
+      fragment = self.tree.add_fragment(
+        'src', 'a.txt', _correction('[GH #2,GH #3]', 'New second')
+      )
+      self.assertTrue(
+        collect_tool.collect(
+          self.changes_path,
+          self.tree.root / 'src' / 'pending_changes',
+          datetime.date(2026, 10, 21),
+          None,
+          dry_run = True
+        )
+      )
+    self.assertIn('(deleted: [GH #2,GH #3] Second)', output.getvalue())
+    self.assertTrue(fragment.exists())
+    self.assertEqual(self._changes_text(), CORRECTABLE_CHANGES)
 
 class FragmentPathTests(unittest.TestCase):
 
@@ -583,6 +866,48 @@ class CheckFileChangesTests(unittest.TestCase):
     results = self._check('src/pending_changes/a.txt',
                           _fragment('[GH #1]', 'Summary', 'x' * 80))
     self.assertEqual(list(results['overlong_lines']), ['4'])
+
+  def test_correction(self) -> None:
+    (self.tmp_dir / 'src').mkdir()
+    (self.tmp_dir / 'src' / 'Changes').write_text(CORRECTABLE_CHANGES)
+
+    results = self._check(
+      'src/pending_changes/a.txt',
+      _correction('[GH #2,GH #3]', 'Summary')
+    )
+    self.assertEqual(results['format_errors'], [])
+
+    results = self._check(
+      'src/pending_changes/a.txt',
+      _correction('[GH #20]', 'Summary')
+    )
+    self.assertEqual(
+      results['format_errors'],
+      [
+        [None, "correction: no entry in the current version has the tag "
+               "'GH #20'"],
+        [None, edgchanges._PRIOR_RELEASE_HINT]
+      ]
+    )
+
+    # Without the directive, the tags aren't checked against the Changes
+    # file.
+    results = self._check(
+      'src/pending_changes/a.txt',
+      _fragment('[GH #20]', 'Summary')
+    )
+    self.assertEqual(results['format_errors'], [])
+
+    # The target Changes file has to exist.
+    results = self._check(
+      'util/pending_changes/a.txt',
+      _correction('[GH #1]', 'Summary')
+    )
+    self.assertEqual(len(results['format_errors']), 1)
+    self.assertIn(
+      "can't read the Changes file",
+      results['format_errors'][0][1]
+    )
 
   @unittest.skipUnless(_aspell_works(), 'aspell is not available')
   def test_allowed_words(self) -> None:

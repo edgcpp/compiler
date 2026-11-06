@@ -244,6 +244,26 @@ def _check_overlong_lines(new_file: Path,
 
   return overlong_lines
 
+def _check_correction(repo_path: str, entry: edgchanges.ChangesEntry
+                      ) -> List[edgchanges.FormatError]:
+  '''Return the reasons the correction entry (the pending Changes entry
+  repo_path) can't replace entries in its Changes file.'''
+  # As for the spell check, the Changes file is found relative to the
+  # working directory.
+  target_path = edgchanges.target_changes_path(Path.cwd() / repo_path)
+  try:
+    with open(target_path, 'r', encoding = 'utf-8') as file_handle:
+      changes_lines = file_handle.read().split('\n')
+  except (OSError, UnicodeDecodeError) as ex:
+    return [
+      edgchanges.FormatError(
+        None,
+        f"correction: can't read the Changes file ({ex})"
+      )
+    ]
+  _, errors = edgchanges.find_corrected_entries(changes_lines, entry.tags)
+  return [edgchanges.FormatError(None, error) for error in errors]
+
 def check_changes_fragment(repo_path: str, new_file: Path) -> Any:
   '''Check new_file, the contents of the pending Changes entry repo_path.
 
@@ -251,12 +271,15 @@ def check_changes_fragment(repo_path: str, new_file: Path) -> Any:
   spelling is checked against the Changes file it will be collected into, not
   against an old version of the entry (see _check_fragment_spelling), and
   trailing whitespace (stripped when the entry is collected) doesn't count
-  toward the line length.
+  toward the line length.  A correction is checked against that Changes file
+  too (see edgchanges.find_corrected_entries).
   '''
-  _, format_errors = edgchanges.parse_fragment(
+  entry, format_errors = edgchanges.parse_fragment(
     new_file,
     check_line_length = False
   )
+  if entry is not None and entry.is_correction:
+    format_errors += _check_correction(repo_path, entry)
   _, prose_lines = edgchanges.read_prose(new_file)
   return {
     'format_errors': format_errors,

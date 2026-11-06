@@ -18,9 +18,10 @@ conflict with every other), a change adds one *.txt entry there:
   Previously, ...
 
 The leading //key: value directives are optional (//allowed_words: lists
-words the spell check should accept).  Then comes the tag block, one or more
-comma-separated "GH #N" tags in brackets (it may wrap onto several lines), the
-summary line, a blank line, and the description (see edgchanges).
+words the spell check should accept, and "//correction: true" marks a
+correction, below).  Then comes the tag block, one or more comma-separated
+"GH #N" tags in brackets (it may wrap onto several lines), the summary line, a
+blank line, and the description (see edgchanges).
 
 Given a Changes file and its pending_changes/ directory, this tool moves
 every entry into the Changes file, just below the newest "Version x.y" line,
@@ -30,9 +31,15 @@ released (its header has a date), a new section is opened for the next
 version (--version or --version-from).  A nightly job runs it for each Changes
 file (see .github/workflows/collect-changes.yml).
 
+A correction replaces the entries in the newest (open) version that have any
+of its tags: they're deleted, and it's added like any other entry.  Each of
+its tags must be on such an entry, and it must have all of their tags;
+otherwise (or if another correction replaces one of the same entries) it's
+reported and left in place, like a malformed entry.
+
 With --check, the entries are only checked, by running edg-check-file-changes
-on them (format, spelling, typos, line length), the same check the pre-push
-hook does.
+on them (format, spelling, typos, line length, and whether corrections can
+be applied), the same check the pre-push hook does.
 '''
 
 import argparse
@@ -47,19 +54,12 @@ import edgchanges
 import edgutil
 
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 PENDING_CHANGES_KEEP_FILE_NAME = '.gitignore'
 
 SEPARATOR_LINE = '-' * edgchanges.MAX_LINE_LENGTH
 NO_CHANGES_LINE = 'No changes.'
-
-# An open version is "Version 7.1"; a released one is
-# "Version 7.0, September 28, 2026".
-VERSION_HEADER_REGEX = re.compile(
-  r'^Version ([0-9]+\.[0-9]+)(, [A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})?$'
-)
-SEPARATOR_REGEX = re.compile(r'^-+$')
 
 def list_pending_dir(pending_dir: Path) -> Tuple[List[Path], List[Path]]:
   '''Return the entries in pending_dir, and the other files there (apart
@@ -79,31 +79,16 @@ def _describe_misnamed(path: Path) -> str:
     f"*{edgchanges.FRAGMENT_SUFFIX})"
   )
 
-def _find_newest_version_header(lines: List[str]) -> Optional[int]:
-  '''Return the index of the newest Version header line.
-
-  Body text can also start with "Version", so a header must be the first line
-  of the file or directly follow a separator line.
-  '''
-  for line_index, line in enumerate(lines):
-    follows_separator = (
-      line_index == 0 or
-      SEPARATOR_REGEX.match(lines[line_index - 1]) is not None
-    )
-    if follows_separator and VERSION_HEADER_REGEX.match(line) is not None:
-      return line_index
-  return None
-
 def read_open_version(changes_path: Path) -> Optional[str]:
   '''Return the newest version of changes_path if it's still open (i.e., its
   header has no release date).'''
   with open(changes_path, 'r', encoding = 'utf-8') as file_handle:
     lines = file_handle.read().split('\n')
 
-  header_index = _find_newest_version_header(lines)
+  header_index = edgchanges.find_newest_version_header(lines)
   if header_index is None:
     return None
-  header_match = VERSION_HEADER_REGEX.match(lines[header_index])
+  header_match = edgchanges.VERSION_HEADER_REGEX.match(lines[header_index])
   assert header_match is not None
   if header_match.group(2) is not None:
     return None
@@ -122,10 +107,10 @@ def insert_entries(changes_text: str,
   ValueError if there's nowhere to put the entries.
   '''
   lines = changes_text.split('\n')
-  header_index = _find_newest_version_header(lines)
+  header_index = edgchanges.find_newest_version_header(lines)
   if header_index is None:
     raise ValueError('no "Version x.y" line found')
-  header_match = VERSION_HEADER_REGEX.match(lines[header_index])
+  header_match = edgchanges.VERSION_HEADER_REGEX.match(lines[header_index])
   assert header_match is not None
 
   entry_lines: List[str] = []
@@ -156,6 +141,62 @@ def insert_entries(changes_text: str,
     )
 
   return '\n'.join(new_lines), inserted_lines
+
+def remove_entries(changes_text: str,
+                   removed_entries: List[edgchanges.CollectedEntry]) -> str:
+  '''Return changes_text without removed_entries (entries in it).'''
+  lines = changes_text.split('\n')
+  for entry in sorted(removed_entries, key = lambda entry: -entry.start):
+    del lines[entry.start:entry.end]
+  return '\n'.join(lines)
+
+def find_corrections(changes_text: str,
+                     entries: List[edgchanges.ChangesEntry]
+                     ) -> Tuple[List[edgchanges.CollectedEntry], List[str]]:
+  '''Find the entries in changes_text that the corrections among entries
+  replace.
+
+  Returns those entries and the errors found.  A correction that can't be
+  applied (see edgchanges.find_corrected_entries), or that replaces an entry
+  another one also replaces, is removed from entries.
+  '''
+  changes_lines = changes_text.split('\n')
+  errors = []
+  bad_entries = []
+  # The corrections replacing each entry, by its first line.
+  correctors: Dict[int, List[edgchanges.ChangesEntry]] = {}
+  corrected_entries: Dict[int, edgchanges.CollectedEntry] = {}
+  for entry in entries:
+    if not entry.is_correction:
+      continue
+    corrected, correction_errors = edgchanges.find_corrected_entries(
+      changes_lines,
+      entry.tags
+    )
+    if len(correction_errors) != 0:
+      errors += [f"{entry.path}: {error}" for error in correction_errors]
+      bad_entries.append(entry)
+      continue
+    for corrected_entry in corrected:
+      correctors.setdefault(corrected_entry.start, []).append(entry)
+      corrected_entries[corrected_entry.start] = corrected_entry
+
+  for start, entry_correctors in correctors.items():
+    if len(entry_correctors) > 1:
+      paths = ', '.join(str(entry.path) for entry in entry_correctors)
+      errors.append(
+        f"{paths}: corrections replacing the same entry, "
+        f"\"{corrected_entries[start].summary}\""
+      )
+      bad_entries += entry_correctors
+
+  removed_entries = [
+    corrected_entries[start]
+    for start, entry_correctors in correctors.items()
+    if not any(entry in bad_entries for entry in entry_correctors)
+  ]
+  entries[:] = [entry for entry in entries if entry not in bad_entries]
+  return removed_entries, errors
 
 def _run_file_checks(fragment_paths: List[Path]) -> Any:
   '''Run edg-check-file-changes on fragment_paths and return its results.
@@ -251,9 +292,10 @@ def collect(changes_path: Path, pending_dir: Path, date: datetime.date,
             next_version: Optional[str], *, dry_run: bool) -> bool:
   '''Move the entries in pending_dir into changes_path.
 
-  Malformed entries are reported and left in place; the others are still
-  collected.  Returns True if every entry was collected.  Raises ValueError
-  if changes_path has nowhere to put them.
+  The entries that corrections replace are deleted from changes_path.
+  Malformed entries, and corrections that can't be applied, are reported and
+  left in place; the others are still collected.  Returns True if every entry
+  was collected.  Raises ValueError if changes_path has nowhere to put them.
   '''
   fragment_paths, other_paths = list_pending_dir(pending_dir)
   for path in other_paths:
@@ -268,18 +310,27 @@ def collect(changes_path: Path, pending_dir: Path, date: datetime.date,
     ]
     if entry is not None:
       entries.append(entry)
+
+  removed_entries: List[edgchanges.CollectedEntry] = []
+  if len(entries) != 0:
+    with open(changes_path, 'r', encoding = 'utf-8') as file_handle:
+      changes_text = file_handle.read()
+    removed_entries, correction_errors = find_corrections(
+      changes_text,
+      entries
+    )
+    errors += correction_errors
+
   for error in errors:
     edgutil.eprint(error)
   if len(errors) != 0:
-    edgutil.eprint('Malformed entries were left in place.')
+    edgutil.eprint('Entries with errors were left in place.')
   if len(entries) == 0:
     return len(errors) == 0
 
-  with open(changes_path, 'r', encoding = 'utf-8') as file_handle:
-    changes_text = file_handle.read()
   try:
     new_text, inserted_lines = insert_entries(
-      changes_text,
+      remove_entries(changes_text, removed_entries),
       entries,
       edgchanges.format_date(date),
       next_version
@@ -289,6 +340,11 @@ def collect(changes_path: Path, pending_dir: Path, date: datetime.date,
 
   if dry_run:
     print(f"=== {changes_path}")
+    for removed_entry in removed_entries:
+      print(
+        f"(deleted: [{','.join(removed_entry.tags)}] "
+        f"{removed_entry.summary})"
+      )
     print('\n'.join(inserted_lines))
   else:
     # Only drop the entries once they're safely in the Changes file.
@@ -297,9 +353,14 @@ def collect(changes_path: Path, pending_dir: Path, date: datetime.date,
       file_handle.write(new_text)
     for entry in entries:
       entry.path.unlink()
+    removed_text = (
+      '' if len(removed_entries) == 0 else
+      f" (replacing {len(removed_entries)} corrected "
+      f"{'entry' if len(removed_entries) == 1 else 'entries'})"
+    )
     print(
       f"{changes_path}: collected {len(entries)} "
-      f"{'entry' if len(entries) == 1 else 'entries'}"
+      f"{'entry' if len(entries) == 1 else 'entries'}{removed_text}"
     )
 
   return len(errors) == 0

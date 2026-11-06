@@ -145,9 +145,43 @@ Steps:
 5. Optionally preview the result without changing anything:
    `edg-collect-changes --dry-run src/Changes src/pending_changes`.
 
-Edit a `Changes` file directly only to correct an entry that has already
-been collected; then write it as **UTF-8** and verify the file still decodes
-(raises on failure):
+## Correcting an entry in the current version
+
+To replace entries that were already collected into the current (newest,
+still open) version, write a pending entry whose first line is the
+`//correction: true` directive:
+
+```text
+//correction: true
+[GH #12,GH #34]
+Corrected summary
+
+Corrected description.
+```
+
+When the entry is collected, every entry in the current version that has
+any of its tags is deleted, and the correction is added like any other
+entry, dated the day it is collected. Its tags come from its own tag block.
+The `--check` step and the pre-push hook report an error, and the nightly
+job leaves the entry in place, when any of these holds:
+
+- One of its tags is on no entry in the current version. Corrections do not
+  reach across releases, so this also covers the case where the newest
+  version is already released.
+- An entry it replaces has a tag that the correction lacks. Merge every tag
+  of the replaced entries into the correction's tag block.
+- Another pending correction replaces the same entry.
+
+`--dry-run` lists the entries a correction would delete.
+
+A problem with an issue fixed in a prior release is usually a new issue,
+not a correction. Give it its own ordinary entry, and in the description
+reference the old issue and the release it was fixed in (for example, "The
+fix for GH #12 in version 7.0 ...").
+
+Edit a `Changes` file directly only to correct the text of an entry in a
+released version. Write it as **UTF-8** and verify that the file still
+decodes. The command raises on failure:
 
 ```bash
 python3 -c "open('path/to/Changes', encoding='utf-8').read()"
