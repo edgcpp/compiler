@@ -121,12 +121,17 @@ ALLOWED_REVIEWER_REQUEST_TAGS = (
   ALLOWED_BENCH_EDIT_TAGS
 )
 
-PROTOCOL_REVISION = 19
+PROTOCOL_REVISION = 20
 
 # 10MiB
 MAX_MESSAGE_SIZE = 10485760
 # 8MiB
 MAX_DISPLAY_CONTENT_SIZE = 8388608
+# 16Ki characters: a longer line is cut for display (see lines_truncated).
+MAX_DISPLAY_LINE_SIZE = 16384
+# 1Ki characters: a longer label (e.g. a status line's variant, at most a few
+# hundred in practice) is cut for display, ending in an ellipsis.
+MAX_DISPLAY_LABEL_SIZE = 1024
 
 WebSocketsMessageType = Union[str, bytes]
 ProtocolMessage = Dict[str, Any]

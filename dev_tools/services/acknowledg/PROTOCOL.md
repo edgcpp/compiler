@@ -3,7 +3,7 @@
 This document describes the WebSocket protocol used by the AcknowlEDG server,
 the Vue client, and the `edgy-review` / `edg-bench-review` /
 `edg-acknowledg-cli` providers.
-The current protocol revision is **19**.
+The current protocol revision is **20**.
 
 All frames are JSON text. Implementations live in `edgacknowledg`
 (`dev_tools/pylibs/edgacknowledg`) and must stay in sync with the JavaScript
@@ -74,15 +74,15 @@ work can flow immediately. Providers may optionally send identity updates at
 any time (on dedicated sockets or nested in `batch.event`):
 
 ```json
-{ "t": "meta.section.name", "r": 19, "v": "<tab label>" }
+{ "t": "meta.section.name", "r": 20, "v": "<tab label>" }
 ```
 
 ```json
-{ "t": "meta.review.name", "r": 19, "v": [ <rich name segments> ] }
+{ "t": "meta.review.name", "r": 20, "v": [ <rich name segments> ] }
 ```
 
 ```json
-{ "t": "meta.review.timestamp", "r": 19, "v": "<ISO-8601 datetime>" }
+{ "t": "meta.review.timestamp", "r": 20, "v": "<ISO-8601 datetime>" }
 ```
 
 - `meta.section.name` sets the display name for the section tab (shown in
@@ -329,7 +329,7 @@ content that isn't the provider user's own, one reached through a symlink),
 the provider doesn't answer the request. It reports the reviewer instead:
 
 ```json
-{ "t": "illegal-access", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+{ "t": "illegal-access", "r": 20, "v": { "reviewer_id": "<uuid>" } }
 ```
 
 The server then closes that reviewer's socket with code **3001**, without
@@ -345,7 +345,7 @@ access), it doesn't answer the request either. It tells the reviewer it
 failed, through the server, and keeps serving the section:
 
 ```json
-{ "t": "invalid", "r": 19, "v": { "reviewer_id": "<uuid>" } }
+{ "t": "invalid", "r": 20, "v": { "reviewer_id": "<uuid>" } }
 ```
 
 The server sends `invalid` to that reviewer alone, with `v` `null` and `s`
@@ -361,6 +361,19 @@ Display payloads that carry file text use `content` (string or `null` if
 missing) and may set `truncated: true` when the body exceeds 8 MiB
 (`MAX_DISPLAY_CONTENT_SIZE`). Protocol messages themselves are capped at
 10 MiB (`MAX_MESSAGE_SIZE`).
+
+Each line of `content` is at most 16 Ki characters
+(`MAX_DISPLAY_LINE_SIZE`). A provider cuts a longer line to that length and
+lists its 1-based line number in `lines_truncated` (sorted ascending, and
+omitted when no line was cut). Nothing in `content` itself marks a cut. The
+reviewer UI appends `…` (U+2026) to each listed line and shows a "Some Lines
+Truncated" notice. Line cuts happen before the 8 MiB cap, so `truncated` and
+`lines_truncated` may both be set; `lines_truncated` lists only lines
+present in `content`.
+
+Single-line labels (the `qualifier`, `variant`, and `status` of
+`test.src.list-statuses` lines, and its `remark`) are cut to 1 Ki characters
+(`MAX_DISPLAY_LABEL_SIZE`), ending in `…`.
 
 **`test.src.list-statuses`**
 
@@ -392,7 +405,12 @@ missing) and may set `truncated: true` when the body exceeds 8 MiB
 **`test.src.show-diff`**, **`test.src.show-output`**
 
 ```json
-{ "id": "<configured test id>", "content": "<text or null>", "truncated": false }
+{
+  "id": "<configured test id>",
+  "content": "<text or null>",
+  "truncated": false,
+  "lines_truncated": [1]
+}
 ```
 
 **`test.src.show-diff-curr`** — same as above, plus optional
@@ -412,7 +430,8 @@ match the representative.
   "id": "<test id>",
   "assoc_file": "<path or null>",
   "content": "<text or null>",
-  "truncated": false
+  "truncated": false,
+  "lines_truncated": [1]
 }
 ```
 
@@ -434,7 +453,12 @@ match the representative.
 **`bench.src.show-annotate`**
 
 ```json
-{ "id": "<bench id>", "content": "<text or null>", "truncated": false }
+{
+  "id": "<bench id>",
+  "content": "<text or null>",
+  "truncated": false,
+  "lines_truncated": [1]
+}
 ```
 
 ### Editor `v` as seen by the reviewer

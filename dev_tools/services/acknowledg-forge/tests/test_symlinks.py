@@ -557,7 +557,6 @@ async def test_show_source_reads_only_what_is_shown(
     monkeypatch: pytest.MonkeyPatch) -> None:
   home, root = _test_tree(tmp_path, secret)
   (home / 'tests' / 'suite' / 'big.sft.cpp').write_text('int x;\n' * 1000)
-  monkeypatch.setattr(test_provider, 'MAX_DISPLAY_CONTENT_SIZE', 64)
   monkeypatch.setattr(shared, 'MAX_DISPLAY_CONTENT_SIZE', 64)
   reads: list[int] = []
   real_open = shared.ConfinedPath.open
@@ -566,12 +565,17 @@ async def test_show_source_reads_only_what_is_shown(
                            *args: Any,
                            **kwargs: Any) -> Any:
     handle = real_open(self, *args, **kwargs)
-    real_read = handle.read
+    real_readline = handle.readline
+
+    def readline(size: int = -1) -> Any:
+      line = real_readline(size)
+      reads.append(len(line))
+      return line
 
     def read(size: int = -1) -> Any:
-      reads.append(size)
-      return real_read(size)
+      raise AssertionError('read whole')
 
+    handle.readline = readline
     handle.read = read
     return handle
 
@@ -594,7 +598,8 @@ async def test_show_source_reads_only_what_is_shown(
   response = reply['v']['client_response']
   assert response['truncated'] and len(response['content']) <= 64
   assert response['content'].startswith('int x;\n')
-  assert reads == [65]
+  # A line at a time, and no more than one past what fits.
+  assert reads == [7] * 10
 
 
 async def test_sandbox_context_commands(tmp_path: Path) -> None:

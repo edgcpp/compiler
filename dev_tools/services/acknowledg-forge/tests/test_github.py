@@ -235,3 +235,38 @@ async def test_commenter_finds_only_its_own_marked_comment() -> None:
   assert posted == [{'body': 'hello'}]
   assert await commenter.find_comment(REPO, 1, 'MARK') == '2'
   assert await commenter.find_comment(REPO, 1, 'OTHER') is None
+
+
+async def test_responses_are_read_only_so_far(
+    monkeypatch: pytest.MonkeyPatch) -> None:
+  from edgacknowledg.forge import ForgeError
+  from edgacknowledg.forge import http as forge_http
+  import gzip
+
+  def handler(request: httpx.Request) -> httpx.Response:
+    if request.url.path == '/small':
+      # Compressed, and paginated: decoded once, links kept.
+      return httpx.Response(
+        200,
+        headers = {
+          'content-encoding': 'gzip',
+          'link': f'<{API}/small?page=2>; rel="next"',
+        },
+        content = gzip.compress(json.dumps({'ok': True}).encode())
+      )
+    return httpx.Response(200, json = {'pad': 'x' * 1000})
+
+  client = forge_http.ForgeHttpClient(
+    base_url = API,
+    headers = {},
+    transport = httpx.MockTransport(handler)
+  )
+  try:
+    monkeypatch.setattr(forge_http, 'MAX_RESPONSE_BYTES', 100)
+    response = await client.request('GET', '/small')
+    assert response.json() == {'ok': True}
+    assert response.links['next']['url'] == f"{API}/small?page=2"
+    with pytest.raises(ForgeError, match = 'over 100 bytes'):
+      await client.get_json('/large')
+  finally:
+    await client.aclose()

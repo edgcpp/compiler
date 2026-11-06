@@ -5,7 +5,7 @@ See https://edgcpp.org/LICENSE.txt for license information.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 */
 
-const PROTOCOL_REVISION = 19
+const PROTOCOL_REVISION = 20
 
 const getSocketHost = () => {
   if (process.env.NODE_ENV === "development") {
@@ -26,7 +26,9 @@ export const acquireSocketForReview = (reviewId) => {
   )
 }
 
-export const protocolMessage = (tag, value = undefined, section = undefined) => {
+export const protocolMessage = (tag,
+                                value = undefined,
+                                section = undefined) => {
   const message = { t: tag, r: PROTOCOL_REVISION }
   if (value !== undefined) {
     message.v = value

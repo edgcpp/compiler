@@ -17,6 +17,10 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+import edgutil
+
+from edgacknowledg.forge import workspace
+
 from edgacknowledg.forge import processor
 from edgacknowledg.forge.processor import _changes_test_ids, _read_ci_metadata
 from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
@@ -231,7 +235,7 @@ def test_changes_patterns_cover_recordings_and_expectations() -> None:
     '-dir/b.sft.cpp: PASS',
     '+dir/b.sft.cpp: FAIL',
   ])
-  patterns = changes_patterns(diff.splitlines())
+  patterns = changes_patterns(io.StringIO(diff))
   assert '/tests/tests/s/.a.rto/' in patterns
   assert '/tests/tests/s/a.*' in patterns
   assert '/tests/tests/other/dir/b.sft.cpp' in patterns
@@ -248,6 +252,63 @@ def test_test_patterns_are_linear_in_the_path() -> None:
   ]
 
 
+def test_line_pieces_are_bounded_and_lose_nothing() -> None:
+  text = (
+    'diff --git a/tests/tests/s/a.sft.cpp b/tests/tests/s/a.sft.cpp\n'
+    '+' + 'x' * 1000 + '\n\n+last'
+  )
+  pieces = list(edgutil.iter_line_pieces(io.StringIO(text), 16))
+  assert ''.join(piece for piece, _ in pieces) == text
+  assert all(len(piece) <= 16 for piece, _ in pieces)
+  # Only a line's first piece starts it.
+  assert [piece for piece, at_line_start in pieces if at_line_start] == [
+    'diff --git a/tes', '+xxxxxxxxxxxxxxx', '\n', '+last'
+  ]
+
+
+def test_limited_lines_refuse_overlong_lines() -> None:
+  # Up to the limit (its end not counted), lines come whole.
+  text = '0123456789\nshort\n' + 'y' * 11 + '\nnever read\n'
+  lines = edgutil.iter_limited_lines(io.StringIO(text), 10)
+  assert next(lines) == '0123456789\n'
+  assert next(lines) == 'short\n'
+  with pytest.raises(edgutil.LineTooLongError,
+                     match = 'line 3 is longer than 10 characters'):
+    next(lines)
+  # A last line without an end is checked too.
+  def limited(text: str) -> list[str]:
+    return list(edgutil.iter_limited_lines(io.StringIO(text), 10))
+
+  assert limited('a\n' + 'b' * 10) == ['a\n', 'b' * 10]
+  with pytest.raises(edgutil.LineTooLongError):
+    limited('a\n' + 'b' * 11)
+
+
+def test_changes_patterns_pass_over_huge_lines_in_pieces() -> None:
+  # A line far over the limit, in an expectations file, names no test (and
+  # is never held whole); the lines after it still count.
+  diff = (
+    'diff --git a/tests/expectations/x/s.log b/tests/expectations/x/s.log\n'
+    '+++ b/tests/expectations/x/s.log\n'
+    '+big.sft.cpp:' + 'q' * (4 * edgutil.MAX_LINE_CHARS) + '\n'
+    '+ok.sft.cpp:cp:-DTEST_NUMBER=1:PASS:\n'
+  )
+  handle = io.StringIO(diff)
+  real_readline = handle.readline
+  sizes: list[int] = []
+
+  def readline(size: int = -1) -> str:
+    piece = real_readline(size)
+    sizes.append(len(piece))
+    return piece
+
+  handle.readline = readline  # type: ignore[method-assign]
+  patterns = changes_patterns(handle)
+  assert '/tests/tests/s/ok.sft.cpp' in patterns
+  assert not any('big' in pattern for pattern in patterns)
+  assert max(sizes) <= edgutil.MAX_LINE_CHARS + 1
+
+
 def test_changes_patterns_skip_suites_no_suite_may_be_named() -> None:
   # A suite is in the patterns of every test its expectation file names.
   def expectations(suite: str) -> str:
@@ -259,10 +320,10 @@ def test_changes_patterns_skip_suites_no_suite_may_be_named() -> None:
       '+a.sft.cpp: PASS',
     ])
 
-  patterns = changes_patterns(expectations('cwg').splitlines())
+  patterns = changes_patterns(io.StringIO(expectations('cwg')))
   assert '/tests/tests/cwg/a.sft.cpp' in patterns
   for suite in ['s' * 65, 'a.b', 'a b']:
-    assert changes_patterns(expectations(suite).splitlines()) == [
+    assert changes_patterns(io.StringIO(expectations(suite))) == [
       '/tests/.edgy/', '/tests/expectations/',
     ]
 
@@ -281,9 +342,9 @@ def test_patterns_are_capped() -> None:
     *(f"+{n}.sft.cpp: FAIL" for n in range(cap)),
   ])
   with pytest.raises(WorkspaceError, match = 'sparse-checkout patterns'):
-    changes_patterns(diff.splitlines(), max_patterns = cap)
+    changes_patterns(io.StringIO(diff), max_patterns = cap)
   # Within a higher cap.
-  changes_patterns(diff.splitlines(), max_patterns = 3 * cap)
+  changes_patterns(io.StringIO(diff), max_patterns = 3 * cap)
 
 
 async def test_git_output_can_be_bounded() -> None:
@@ -306,6 +367,39 @@ async def test_git_output_can_be_bounded() -> None:
   with pytest.raises(_OutputTooLarge):
     await _communicate_bounded(process, 1024 * 1024, sunk.append)
   assert process.returncode == -signal.SIGTERM
+
+
+async def test_git_stdin_is_written_and_stderr_bounded() -> None:
+  sunk: list[bytes] = []
+  # It reads its input (larger than a pipe holds) while writing more
+  # stderr than is kept.
+  process = await asyncio.create_subprocess_exec(
+    'sh', '-c', 'cat; head -c 1000000 /dev/zero | tr "\\0" e >&2',
+    stdin = asyncio.subprocess.PIPE,
+    stdout = asyncio.subprocess.PIPE,
+    stderr = asyncio.subprocess.PIPE
+  )
+  data = b'pattern\n' * 100_000
+  stderr = await _communicate_bounded(
+    process,
+    len(data),
+    sunk.append,
+    data
+  )
+  assert process.returncode == 0
+  assert b''.join(sunk) == data
+  assert stderr == b'e' * workspace._MAX_GIT_STDERR_BYTES
+
+
+async def test_git_results_are_bounded(tmp_path: Path,
+                                       forge: FakeForge,
+                                       monkeypatch: pytest.MonkeyPatch
+                                       ) -> None:
+  workspaces = Workspaces(tmp_path / 'home', forge)
+  assert (await workspaces.git('version')).stdout.startswith('git version')
+  monkeypatch.setattr(workspace, '_MAX_GIT_OUTPUT_BYTES', 4)
+  with pytest.raises(WorkspaceError, match = 'wrote over 4 bytes'):
+    await workspaces.git('version')
 
 
 async def test_diffs_are_written_as_they_come(tmp_path: Path,
@@ -336,10 +430,9 @@ async def test_diffs_are_written_as_they_come(tmp_path: Path,
     if line.startswith('+') and not line.startswith('+++')
   ]
   assert added == lines
-  # Its patterns, read from the file as from the text.
+  # Its patterns, read from the file.
   with open(diff_file, encoding = 'utf-8') as handle:
-    assert changes_patterns(handle) == changes_patterns(diff.splitlines())
-  assert '/tests/tests/s/1999.sft.cpp' in changes_patterns(diff.splitlines())
+    assert '/tests/tests/s/1999.sft.cpp' in changes_patterns(handle)
 
   # Too long: refused.
   workspaces = Workspaces(tmp_path / 'home', forge, max_diff_bytes = 1024)
@@ -399,6 +492,16 @@ def test_ci_reads_are_capped(tmp_path: Path,
   metadata.write_text('{"tested_sha": "' + 'a' * 40 + '"}')
   with pytest.raises(WorkspaceError, match = 'over 30 bytes'):
     _read_ci_metadata(metadata)
+
+
+def test_ci_test_ids_skip_overlong_lines(tmp_path: Path) -> None:
+  elist = tmp_path / 'a.elist'
+  elist.write_text(
+    's/a.sft.cpp\n' +
+    's/' + 'x' * processor.MAX_TEST_ID_CHARS + '\n' +
+    's/b.sft.cpp\n'
+  )
+  assert _changes_test_ids([elist]) == ['s/a.sft.cpp', 's/b.sft.cpp']
 
 
 def test_failures_patterns_ignore_escaping_ids() -> None:

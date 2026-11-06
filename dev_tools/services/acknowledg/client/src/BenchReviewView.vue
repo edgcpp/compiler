@@ -22,6 +22,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   } from './bench-metrics.js'
   import { formatBenchAnchor, parseBenchAnchor } from './review-anchor.js'
   import { protocolMessage } from './sockets.js'
+  import { displayLines } from './display-content.js'
   import AppButton from './AppButton.vue'
   import AppSelect from './AppSelect.vue'
   import BenchStatus from './BenchStatus.vue'
@@ -47,7 +48,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   ]
   const selectedBenchmarkId = ref(null)
   const displayTruncated = ref(false)
+  // 1-based numbers of the displayed lines the provider cut.
+  const displayedLinesTruncated = ref([])
   const displayedOutput = ref(null)
+
+  const displayedOutputLines = computed(() => {
+    return displayLines(displayedOutput.value, displayedLinesTruncated.value)
+  })
 
   provide('activeBenchmarkId', selectedBenchmarkId)
   provide('benchSortMode', sortMode)
@@ -177,7 +184,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     const sorted = benchmarks.value.slice()
     sorted.sort((left, right) => {
       const leftChange = computePercentChange(left.baseline_ops, left.run_ops)
-      const rightChange = computePercentChange(right.baseline_ops, right.run_ops)
+      const rightChange = computePercentChange(right.baseline_ops,
+                                               right.run_ops)
       if (sortMode.value === 'greatest-speedup') {
         return rightChange - leftChange
       }
@@ -212,12 +220,14 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     } else if (message.t === 'bench.src.show-annotate') {
       if (message.v.id === selectedBenchmarkId.value) {
         displayTruncated.value = false
+        displayedLinesTruncated.value = []
         if (message.v.content === null) {
           displayedOutput.value = 'Annotation unavailable!'
         } else {
           if (message.v.truncated) {
             displayTruncated.value = true
           }
+          displayedLinesTruncated.value = message.v.lines_truncated ?? []
           displayedOutput.value = message.v.content
         }
       }
@@ -353,7 +363,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
             <div class="summary-label">Average Change (OPs)</div>
             <div class="summary-value">
               {{ formatSignedOps(Math.round(mean(sampleOpDeltas))) }}
-              σ {{ Math.round(populationStdev(sampleOpDeltas)).toLocaleString() }}
+              σ {{ Math.round(populationStdev(sampleOpDeltas))
+                     .toLocaleString() }}
             </div>
           </div>
           <div class="summary-row">
@@ -404,15 +415,21 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
              class="truncation-warning">
           Content Too Long: Display Truncated
         </div>
+        <div v-if="displayedOutput !== null &&
+                   displayedLinesTruncated.length > 0"
+             class="truncation-warning">
+          Some Lines Truncated
+        </div>
       </div>
       <div v-if="displayedOutput === null" class="loader-container">
         <loading-spinner />
       </div>
       <div v-if="displayedOutput !== null" class="cell-content">
-        <pre>{{ displayedOutput }}</pre>
+        <pre>{{ displayedOutputLines.join('\n') }}</pre>
       </div>
     </scrollable-content-area>
-    <div v-if="!selectedBenchmarkId" class="cell cell-colors content-width content">
+    <div v-if="!selectedBenchmarkId"
+         class="cell cell-colors content-width content">
       <div style="text-align: center; margin: 5em">
         Select a benchmark to continue...
       </div>

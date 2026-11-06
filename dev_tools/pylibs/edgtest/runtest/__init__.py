@@ -12,6 +12,7 @@ import filecmp
 import functools
 import hashlib
 import io
+import itertools
 import json
 import os
 import re
@@ -27,8 +28,8 @@ from enum import IntEnum
 from collections import OrderedDict
 from pathlib import Path, PurePath
 from typing import (
-  Any, Callable, Dict, IO, Iterator, List, Mapping, NamedTuple, Optional,
-  Pattern, Set, Tuple, cast
+  Any, Callable, Dict, Generator, IO, Iterator, List, Mapping, NamedTuple,
+  Optional, Pattern, Set, Tuple, cast
 )
 
 def get_default_config_name(env: Optional[Dict[str, str]] = None) -> str:
@@ -1195,6 +1196,59 @@ def format_collapsed_case_diffs(
     result.extend(emit_one(group['commands'], group['diff_lines']))
   return result
 
+# A text that is opened when (and if) it is read.
+TextOpener = Callable[[], IO[str]]
+
+def _hash_text_stream(open_text: TextOpener) -> str:
+  '''``hash_diff_text`` of the text ``open_text`` opens, read in chunks.'''
+  digest = hashlib.sha256()
+  with open_text() as handle:
+    while True:
+      chunk = handle.read(64 * 1024)
+      if not chunk:
+        break
+      digest.update(chunk.encode('utf-8', errors = 'replace'))
+  return digest.hexdigest()
+
+def iter_collapsed_case_diff_pieces(
+    command_diff_entries: List[Tuple[Dict[str, Any], TextOpener]],
+    limit: int) -> Generator[Tuple[str, bool], None, None]:
+  '''The collapsed ``format_collapsed_case_diffs`` of
+  ``command_diff_entries`` (with their stored labels), whose diffs are
+  opened rather than given as lines, as ``edgutil.iter_line_pieces`` pieces
+  of at most ``limit`` characters (each ``# command`` comment is one piece,
+  however long). A diff is read only as far as the pieces are taken, so
+  neither a long line nor a long diff is held whole.
+  '''
+  # First-seen order of unique diff bodies (keyed by stored hash).
+  groups: Dict[str, Tuple[List[Dict[str, Any]], TextOpener]] = (
+    OrderedDict()
+  )
+  for command, open_text in command_diff_entries:
+    group_key = command.get('diff_hash') or _hash_text_stream(open_text)
+    if group_key not in groups:
+      groups[group_key] = ([], open_text)
+    groups[group_key][0].append(command)
+
+  for commands, open_text in groups.values():
+    with open_text() as handle:
+      pieces = edgutil.iter_line_pieces(handle, limit)
+      # The ---/+++ header, if it has one, comes before the comments; its
+      # lines are short (labels), so each must be one piece: a diff whose
+      # first lines are longer has no header (and isn't held to look).
+      head = list(itertools.islice(pieces, 2))
+      if (len(head) == 2 and
+          all(at_line_start and piece.endswith('\n')
+              for piece, at_line_start in head) and
+          head[0][0].startswith('---') and
+          head[1][0].startswith('+++')):
+        yield from head
+        head = []
+      for command in commands:
+        yield f"# {case_command_from_metadata(command)}\n", True
+      yield from head
+      yield from pieces
+
 class RtTarContents:
   '''Manifest of filesystem files to pack into a .rt.tar[.gz].
 
@@ -1349,6 +1403,16 @@ class RunTestOutput:
   def _read_lines(self, member_name: str) -> List[str]:
     return _read_tar_lines_member(self._require_tar(), member_name)
 
+  def open_text_member(self, member_name: str) -> IO[str]:
+    '''Open a member as text (UTF-8, errors replaced), read as it is
+    decompressed: nothing is held but what is read.
+    '''
+    return io.TextIOWrapper(
+      _extract_tar_member(self._require_tar(), member_name),
+      encoding = 'utf-8',
+      errors = 'replace'
+    )
+
   @property
   def metadata(self) -> Dict[str, Any]:
     if self._metadata is None:
@@ -1430,9 +1494,9 @@ class RunTestOutput:
     for _entry, diff_lines in self.iter_command_diff_entries():
       yield diff_lines
 
-  def iter_command_diff_entries(
-      self) -> Iterator[Tuple[Dict[str, Any], List[str]]]:
-    '''Yield (annotation metadata, change.diff lines) for diffs.
+  def iter_command_diff_members(
+      self) -> Iterator[Tuple[Dict[str, Any], str]]:
+    '''Yield (annotation metadata, change.diff member name) for diffs.
 
     Command diffs use the stored command metadata. Matches diffs use a
     synthetic command string ``Matches for case N``.
@@ -1443,21 +1507,29 @@ class RunTestOutput:
         case.get('commands', []),
         start = 1
       ):
-        diff_lines = self.command_diff(case_number, command_number)
-        if diff_lines is not None:
-          yield command, diff_lines
+        member = f"cases/{case_number}/{command_number}/change.diff"
+        if member in self.member_names:
+          yield command, member
 
       matches = case.get('matches')
       if matches is None:
         continue
-      matches_diff_lines = self.case_matches_diff(case_number)
-      if matches_diff_lines is None:
+      member = f"cases/{case_number}/matches/change.diff"
+      if member not in self.member_names:
         continue
       matches_entry = {
         'command': case_matches_annotation(case_number),
         'diff_hash': matches.get('diff_hash')
       }
-      yield matches_entry, matches_diff_lines
+      yield matches_entry, member
+
+  def iter_command_diff_entries(
+      self) -> Iterator[Tuple[Dict[str, Any], List[str]]]:
+    '''Yield (annotation metadata, change.diff lines) for diffs (see
+    ``iter_command_diff_members``).
+    '''
+    for entry, member in self.iter_command_diff_members():
+      yield entry, self._read_lines(member)
 
   def combined_static_diff(self,
                            *,
@@ -1474,6 +1546,48 @@ class RunTestOutput:
       to_label = to_label,
       collapse = collapse
     )
+
+  def iter_static_diff_pieces(
+      self,
+      limit: int) -> Generator[Tuple[str, bool], None, None]:
+    '''``combined_static_diff()`` (collapsed, with the stored labels) as
+    ``edgutil.iter_line_pieces`` pieces of at most ``limit`` characters,
+    each member read only as far as the pieces are taken.
+    '''
+    return iter_collapsed_case_diff_pieces(
+      [
+        (entry, functools.partial(self.open_text_member, member))
+        for entry, member in self.iter_command_diff_members()
+      ],
+      limit
+    )
+
+  def iter_raw_output_pieces(
+      self,
+      limit: int) -> Generator[Tuple[str, bool], None, None]:
+    '''``combined_raw_output()`` as ``edgutil.iter_line_pieces`` pieces of
+    at most ``limit`` characters (each ``# `` header line is one piece,
+    however long), each member read only as far as the pieces are taken.
+    '''
+    for case_number, case in enumerate(self.metadata.get('cases', []),
+                                       start = 1):
+      for command_number, command in enumerate(
+        case.get('commands', []),
+        start = 1
+      ):
+        command_str = case_command_from_metadata(command)
+        if command_str:
+          yield f"# {command_str}\n", True
+        with self.open_text_member(
+          f"cases/{case_number}/{command_number}/output.txt"
+        ) as handle:
+          yield from edgutil.iter_line_pieces(handle, limit)
+
+      matches_member = f"cases/{case_number}/matches/output.txt"
+      if matches_member in self.member_names:
+        yield f"# {case_matches_annotation(case_number)}\n", True
+        with self.open_text_member(matches_member) as handle:
+          yield from edgutil.iter_line_pieces(handle, limit)
 
   def combined_raw_output(self) -> List[str]:
     '''Concatenate command lines from metadata with each command's body.

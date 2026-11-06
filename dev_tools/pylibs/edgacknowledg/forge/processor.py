@@ -76,6 +76,9 @@ CI_METADATA_FILE = 'ci-meta.json'
 # message.
 MAX_CI_METADATA_BYTES = 64 * 1024
 MAX_TEST_IDS_BYTES = 4 * 1024 * 1024
+# The longest test id taken from CI (a path within a suite); a longer line
+# names no test, and is skipped rather than carried along.
+MAX_TEST_ID_CHARS = 4096
 
 # Retries for a failing pull request: 1 min, 2 min, ... up to 1 h; give up
 # after this many attempts until the pull request changes again.
@@ -117,7 +120,8 @@ def _reusable(section: Optional[SectionRecord],
 
 def _changes_test_ids(changes_elists: Iterable[Path]) -> list[str]:
   '''The test ids ``changes_elists`` name, within ``MAX_TEST_IDS_BYTES``
-  (together, both as read and as JSON); ``WorkspaceError`` beyond.
+  (together, both as read and as JSON); ``WorkspaceError`` beyond. A line
+  longer than ``MAX_TEST_ID_CHARS`` is skipped.
   '''
   test_ids = []
   remaining = MAX_TEST_IDS_BYTES
@@ -130,7 +134,14 @@ def _changes_test_ids(changes_elists: Iterable[Path]) -> list[str]:
         f"CI's changes.elist files are over {MAX_TEST_IDS_BYTES} bytes"
       )
     text = content.decode('utf-8', errors = 'replace')
-    test_ids += [line.strip() for line in text.splitlines() if line.strip()]
+    for line in text.splitlines():
+      if len(line) > MAX_TEST_ID_CHARS:
+        _log.warning('skipped a changes.elist line of %d characters',
+                     len(line))
+        continue
+      test_id = line.strip()
+      if test_id:
+        test_ids.append(test_id)
   # JSON escapes control and non-ASCII characters (e.g. the U+FFFD of bytes
   # that aren't UTF-8), up to six bytes each.
   if len(json.dumps(test_ids)) > MAX_TEST_IDS_BYTES:

@@ -40,7 +40,7 @@ import zipfile
 
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-from typing import Callable, Iterable, Optional, Sequence
+from typing import IO, Callable, Iterable, Optional, Sequence
 
 import edgtest
 import edgutil
@@ -72,6 +72,14 @@ BENCH_BASELINE_PATTERNS = ('/benchmarks/baselines/',)
 # Seconds a git process being stopped has to clean up (e.g. remove its lock
 # files) before it is killed; well within docker stop's default 10.
 _TERMINATE_ALLOWANCE = 5.0
+
+# The most output a git command run for its result (not one whose output
+# goes to a sink) may have; far more than a rev-parse or for-each-ref of a
+# pull request's refs has.
+_MAX_GIT_OUTPUT_BYTES = 16 * 1024 * 1024
+# How much of a git command's stderr is kept (the rest is read, and
+# dropped): a fetch relays what the remote says, which needn't be short.
+_MAX_GIT_STDERR_BYTES = 64 * 1024
 
 
 class WorkspaceError(Exception):
@@ -135,28 +143,26 @@ def _patterns_for_changed_test_file(path: PurePosixPath) -> list[str]:
   return [f"/{_escape_pattern(str(path.parent))}/"]
 
 
-def changed_paths(diff: str) -> list[str]:
-  '''Return the paths a ``git diff --no-renames`` output touches.'''
-  paths = []
-  for line in diff.splitlines():
-    match = _DIFF_HEADER.match(line)
-    if match is not None:
-      paths.append(match.group(1))
-  return paths
-
-
-def changes_patterns(lines_iter: Iterable[str],
+def changes_patterns(diff: IO[str],
                      *,
                      max_patterns: int = DEFAULT_MAX_PATTERNS) -> list[str]:
-  '''Sparse-checkout patterns for rematerializing the diff (of tests/) of
-  ``lines_iter`` (with or without their line ends, e.g. a file's) on the
-  base tree: the test home and every affected test; at most
-  ``max_patterns``.
+  '''Sparse-checkout patterns for rematerializing the diff (of tests/) read
+  from ``diff`` on the base tree: the test home and every affected test; at
+  most ``max_patterns``.
   '''
   patterns = dict.fromkeys(_TEST_HOME_PATTERNS)
   current_suite: Optional[str] = None
-  for line in lines_iter:
-    line = line.rstrip('\n')
+  limit = edgutil.MAX_LINE_CHARS
+  for piece, at_line_start in edgutil.iter_line_pieces(diff, limit + 1):
+    # Only whole lines within edgutil.MAX_LINE_CHARS matter: no header or
+    # expectation line is longer, and a longer one (e.g. of a recording) is
+    # passed over in pieces, never held whole.
+    if not at_line_start:
+      continue
+    text_length = len(piece) - (1 if piece.endswith('\n') else 0)
+    if text_length > limit:
+      continue
+    line = piece.rstrip('\n')
     match = _DIFF_HEADER.match(line)
     if match is not None:
       path = PurePosixPath(match.group(1))
@@ -491,7 +497,9 @@ class Workspaces:
     '''Run git; with ``stdout_sink``, its output goes there as it comes,
     rather than into the result, and may be at most ``max_output`` bytes
     (it is stopped, and ``_OutputTooLarge`` raised, beyond: the caller
-    knows which limit that is).
+    knows which limit that is). Without, its output goes into the result,
+    and may be at most ``_MAX_GIT_OUTPUT_BYTES`` (``WorkspaceError``
+    beyond). Only the start of its stderr is kept.
     '''
     command = ['git']
     if git_dir is not None:
@@ -508,14 +516,30 @@ class Workspaces:
       cwd = cwd,
       env = self._git_env()
     )
+    stdin_bytes = stdin.encode() if stdin is not None else None
     if stdout_sink is None:
       assert max_output is None
-      stdout, stderr = await process.communicate(
-        stdin.encode() if stdin is not None else None
-      )
+      collected = bytearray()
+      try:
+        stderr = await _communicate_bounded(
+          process,
+          _MAX_GIT_OUTPUT_BYTES,
+          collected.extend,
+          stdin_bytes
+        )
+      except _OutputTooLarge:
+        raise WorkspaceError(
+          f"git {' '.join(args)} wrote over {_MAX_GIT_OUTPUT_BYTES} bytes"
+        ) from None
+      stdout = bytes(collected)
     else:
-      assert stdin is None and max_output is not None
-      stderr = await _communicate_bounded(process, max_output, stdout_sink)
+      assert max_output is not None
+      stderr = await _communicate_bounded(
+        process,
+        max_output,
+        stdout_sink,
+        stdin_bytes
+      )
       stdout = b''
     assert process.returncode is not None
     result = GitResult(
@@ -736,17 +760,49 @@ class Workspaces:
       await self.git('gc', '--auto', '--quiet', git_dir = clone_dir)
 
 
+async def _read_start(stream: asyncio.StreamReader, keep: int) -> bytes:
+  '''Read ``stream`` to its end; return its first ``keep`` bytes (the rest
+  is dropped as it comes).
+  '''
+  kept = bytearray()
+  while chunk := await stream.read(64 * 1024):
+    kept += chunk[:max(0, keep - len(kept))]
+  return bytes(kept)
+
+
+async def _write_stdin(process: asyncio.subprocess.Process,
+                       data: bytes) -> None:
+  '''Write ``data`` to ``process``'s stdin, then close it.'''
+  assert process.stdin is not None
+  try:
+    process.stdin.write(data)
+    await process.stdin.drain()
+  except (BrokenPipeError, ConnectionResetError):
+    # It exited without reading it all; its exit status tells.
+    pass
+  finally:
+    process.stdin.close()
+
+
 async def _communicate_bounded(process: asyncio.subprocess.Process,
                                limit: int,
-                               sink: Callable[[bytes], None]) -> bytes:
+                               sink: Callable[[bytes], None],
+                               stdin: Optional[bytes] = None) -> bytes:
   '''Pass ``process``'s stdout to ``sink`` as it comes, in chunks (none held
-  here); return its stderr once it exits. Should its stdout be over
-  ``limit`` bytes, it is stopped, and ``_OutputTooLarge`` raised. Should
-  this be cancelled (or fail), it is stopped too, rather than left writing
-  to a pipe no one reads.
+  here), having written ``stdin`` (if any) to it; return the start of its
+  stderr (``_MAX_GIT_STDERR_BYTES``) once it exits. Should its stdout be
+  over ``limit`` bytes, it is stopped, and ``_OutputTooLarge`` raised.
+  Should this be cancelled (or fail), it is stopped too, rather than left
+  writing to a pipe no one reads.
   '''
   assert process.stdout is not None and process.stderr is not None
-  reading_stderr = asyncio.create_task(process.stderr.read())
+  reading_stderr = asyncio.create_task(
+    _read_start(process.stderr, _MAX_GIT_STDERR_BYTES)
+  )
+  writing_stdin = (
+    asyncio.create_task(_write_stdin(process, stdin))
+    if stdin is not None else None
+  )
   size = 0
   try:
     while chunk := await process.stdout.read(64 * 1024):
@@ -754,6 +810,8 @@ async def _communicate_bounded(process: asyncio.subprocess.Process,
       if size > limit:
         raise _OutputTooLarge()
       sink(chunk)
+    if writing_stdin is not None:
+      await writing_stdin
     stderr = await reading_stderr
     await process.wait()
     return stderr
@@ -762,6 +820,8 @@ async def _communicate_bounded(process: asyncio.subprocess.Process,
     raise
   finally:
     reading_stderr.cancel()
+    if writing_stdin is not None:
+      writing_stdin.cancel()
 
 
 def basic_auth_header(user: str, password: str) -> str:

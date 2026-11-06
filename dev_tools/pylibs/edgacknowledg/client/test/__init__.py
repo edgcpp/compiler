@@ -6,6 +6,9 @@
 '''AcknowlEDG test-review provider package.'''
 
 import asyncio
+import contextlib
+import filecmp
+import functools
 import os
 import re
 import shutil
@@ -27,7 +30,7 @@ from typing import (
 )
 
 from edgacknowledg import (
-  MAX_DISPLAY_CONTENT_SIZE,
+  MAX_DISPLAY_LINE_SIZE,
   ProtocolMessage,
   RequestTags,
   WebSocketsMessageType,
@@ -40,8 +43,11 @@ from edgacknowledg.client.shared import (
   ConfinedPath,
   IllegalFileAccessError,
   SandboxContext,
+  display_content,
+  display_text,
   reviewer_of,
   trunc_display_content,
+  trunc_display_label,
 )
 from edgutil import eprint
 
@@ -70,7 +76,13 @@ def _create_status_dict(elog_file_paths: List[ConfinedPath], *,
   for elog_file_path in elog_file_paths:
     config_name = elog_file_path.parent.name
     with elog_file_path.open() as file_handle:
-      for line in file_handle:
+      # edgutil.MAX_LINE_CHARS is far more than any genuine status line
+      # needs, so a longer line is refused (failing the request, as a line
+      # that isn't a status line does), without being held whole.
+      for line in edgutil.iter_limited_lines(
+        file_handle,
+        edgutil.MAX_LINE_CHARS
+      ):
         key, parsed_diff = (
           edgtest.runtest.parse_test_status_diff(line)
         )
@@ -79,7 +91,7 @@ def _create_status_dict(elog_file_paths: List[ConfinedPath], *,
           pending[key] = {}
           lines_by_test_config[key] = {}
           if parsed_diff.remark:
-            remarks[key] = parsed_diff.remark
+            remarks[key] = trunc_display_label(parsed_diff.remark)
 
         if config_name not in pending[key]:
           rt_file_path = _rt_path_for(elog_file_path.parent, key)
@@ -89,9 +101,9 @@ def _create_status_dict(elog_file_paths: List[ConfinedPath], *,
           lines_by_test_config[key][config_name] = []
 
         lines_by_test_config[key][config_name].append({
-          "qualifier": parsed_diff.qualifier,
-          "variant": parsed_diff.variant,
-          "status": parsed_diff.status.full_status
+          "qualifier": trunc_display_label(parsed_diff.qualifier),
+          "variant": trunc_display_label(parsed_diff.variant),
+          "status": trunc_display_label(parsed_diff.status.full_status)
         })
 
   keyed_statuses: _StatusDict = {}
@@ -286,13 +298,17 @@ async def run_test_source_handler(channel: Channel,
           ))
           return
 
-        async def form_curr_diff_text(config_name: str,
-                                      case_rt_path: ConfinedPath) -> str:
-          '''Live-diff observed vs recordings per command.
+        async def write_curr_diff(config_name: str,
+                                  case_rt_path: ConfinedPath,
+                                  out_path: Path) -> None:
+          '''Write the live diff of observed output vs recordings to
+          ``out_path``.
 
-          Per-command body content is diffed (recording command line stripped),
-          then equal bodies are collapsed with # command comments — same
-          presentation as static.
+          Per-command body content is diffed (recording command line
+          stripped), then equal bodies are collapsed with # command
+          comments, the same presentation as static. The per-command diffs
+          are files of its own, gone once ``out_path`` is written; none is
+          held in memory.
           '''
           suite_name = test_id.split('/')[0]
           suite_path = test_home / 'tests' / suite_name
@@ -311,8 +327,7 @@ async def run_test_source_handler(channel: Channel,
 
           with tempfile.TemporaryDirectory() as tmp_dir_name:
             tmp_dir = Path(tmp_dir_name)
-            entries: List[Tuple[Dict[str, Any], List[str]]] = []
-
+            entries: List[Tuple[Dict[str, Any], Path]] = []
             with edgtest.runtest.RunTestOutput(case_rt_path.path) as rt_output:
               for case_number, case in enumerate(
                 rt_output.metadata.get('cases', []),
@@ -355,13 +370,9 @@ async def run_test_source_handler(channel: Channel,
                   if diff_hash is None:
                     continue
 
-                  with open(change_diff_path, 'r',
-                            errors = 'replace') as file_handle:
-                    diff_lines = file_handle.readlines()
-
                   command_entry = dict(command)
                   command_entry['diff_hash'] = diff_hash
-                  entries.append((command_entry, diff_lines))
+                  entries.append((command_entry, change_diff_path))
 
                 if case.get('matches') is None:
                   continue
@@ -395,57 +406,80 @@ async def run_test_source_handler(channel: Channel,
                 if matches_diff_hash is None:
                   continue
 
-                with open(matches_change_diff, 'r',
-                          errors = 'replace') as file_handle:
-                  matches_diff_lines = file_handle.readlines()
-
                 matches_entry = {
                   'command': edgtest.runtest.case_matches_annotation(
                     case_number
                   ),
                   'diff_hash': matches_diff_hash
                 }
-                entries.append((matches_entry, matches_diff_lines))
+                entries.append((matches_entry, matches_change_diff))
 
-            return ''.join(
-              edgtest.runtest.format_collapsed_case_diffs(entries)
-            )
+            with open(out_path, 'w', encoding = 'utf-8') as out_handle:
+              with contextlib.closing(
+                edgtest.runtest.iter_collapsed_case_diff_pieces(
+                  [
+                    (entry,
+                     functools.partial(open, path, 'r', errors = 'replace'))
+                    for entry, path in entries
+                  ],
+                  edgutil.MAX_LINE_CHARS
+                )
+              ) as pieces:
+                for piece, _ in pieces:
+                  out_handle.write(piece)
 
+        # What is shown is read only as far as it is shown: never a whole
+        # member of the run artifact, or a whole line of one.
+        piece_limit = MAX_DISPLAY_LINE_SIZE + 1
         if request_tag == RequestTags.TEST_SHOW_DIFF:
           with edgtest.runtest.RunTestOutput(rt_file_path.path) as rt_output:
-            static_text = ''.join(rt_output.combined_static_diff())
+            with contextlib.closing(
+              rt_output.iter_static_diff_pieces(piece_limit)
+            ) as pieces:
+              shown = display_content(pieces)
           client_response = {
             'id': configured_test_id,
-            **trunc_display_content(static_text)
+            **shown
           }
         elif request_tag == RequestTags.TEST_SHOW_RAW_OUTPUT:
           with edgtest.runtest.RunTestOutput(rt_file_path.path) as rt_output:
-            raw_output = ''.join(rt_output.combined_raw_output())
+            with contextlib.closing(
+              rt_output.iter_raw_output_pieces(piece_limit)
+            ) as pieces:
+              shown = display_content(pieces)
           client_response = {
             'id': configured_test_id,
-            **trunc_display_content(raw_output)
+            **shown
           }
         elif request_tag == RequestTags.TEST_SHOW_CURR_DIFF:
           rep_config = changes_file_path.parent.name
           group_configs = request_value.get('configs') or [rep_config]
-          rep_curr_text = await form_curr_diff_text(rep_config, rt_file_path)
 
           divergent_configs: List[str] = []
-          for config_name in group_configs:
-            if config_name == rep_config:
-              continue
-            sibling_changes = changes_files[config_name]
-            sibling_rt = _rt_path_for(sibling_changes.parent, test_id)
-            if not sibling_rt.exists():
-              divergent_configs.append(config_name)
-              continue
-            sibling_text = await form_curr_diff_text(config_name, sibling_rt)
-            if sibling_text != rep_curr_text:
-              divergent_configs.append(config_name)
+          with tempfile.TemporaryDirectory() as tmp_dir_name:
+            rep_path = Path(tmp_dir_name, 'curr.diff')
+            await write_curr_diff(rep_config, rt_file_path, rep_path)
+            for config_name in group_configs:
+              if config_name == rep_config:
+                continue
+              sibling_changes = changes_files[config_name]
+              sibling_rt = _rt_path_for(sibling_changes.parent, test_id)
+              if not sibling_rt.exists():
+                divergent_configs.append(config_name)
+                continue
+              # Compared a chunk at a time, then gone.
+              sibling_path = Path(tmp_dir_name, 'sibling-curr.diff')
+              await write_curr_diff(config_name, sibling_rt, sibling_path)
+              if not filecmp.cmp(rep_path, sibling_path, shallow = False):
+                divergent_configs.append(config_name)
+              sibling_path.unlink()
+
+            with open(rep_path, encoding = 'utf-8') as curr_diff_handle:
+              shown = display_text(curr_diff_handle)
 
           client_response = {
             'id': configured_test_id,
-            **trunc_display_content(rep_curr_text)
+            **shown
           }
 
           if len(divergent_configs) != 0:
@@ -549,10 +583,9 @@ async def run_test_source_handler(channel: Channel,
             }
           ))
         else:
-          # Only as much as can be shown is read (one character more marks
-          # the content as truncated).
+          # Only as much as can be shown is read.
           with path_to_show.open(errors = 'replace') as file_handle:
-            shown = file_handle.read(MAX_DISPLAY_CONTENT_SIZE + 1)
+            shown = display_text(file_handle)
           await channel.send(message(
             RequestTags.TEST_SHOW_SOURCE,
             value = {
@@ -560,7 +593,7 @@ async def run_test_source_handler(channel: Channel,
               'client_response': {
                 'id': test_id,
                 'assoc_file': request_value.get('assoc_file'),
-                **trunc_display_content(shown)
+                **shown
               }
             }
           ))

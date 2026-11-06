@@ -19,6 +19,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   import { protocolMessage } from './sockets.js'
   import { computeGradientStyleForConfigs } from './config-color.js'
   import { formatTestAnchor, parseTestAnchor } from './review-anchor.js'
+  import { displayLines } from './display-content.js'
 
   import DiffLine from './DiffLine.vue'
   import LoadingSpinner from './LoadingSpinner.vue'
@@ -44,10 +45,16 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   const displayedTestAssocFiles = ref(null)
   const displayedTestAssocFileName = ref(null)
   const displayTruncated = ref(false)
+  // 1-based numbers of the displayed lines the provider cut.
+  const displayedLinesTruncated = ref([])
   const currDiffDivergenceNotice = ref(null)
   const displayedOutput = ref("")
   const outputViewModeTarget = ref("test.src.show-diff")
   const isMultiConfig = ref(false)
+
+  const displayedOutputLines = computed(() => {
+    return displayLines(displayedOutput.value, displayedLinesTruncated.value)
+  })
 
   const displayedTestConfig = computed(() => {
     return displayedGroupConfigs.value[0] ?? ""
@@ -279,10 +286,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       isMultiConfig.value = message.v.configs.length > 1
       testStatuses.value = message.v.statuses
       applyHashSelection()
-    } else if (message.t === "test.src.show-diff" || message.t === "test.src.show-diff-curr" ||
+    } else if (message.t === "test.src.show-diff" ||
+               message.t === "test.src.show-diff-curr" ||
                message.t === "test.src.show-output") {
       if (message.v.id === configuredIdForDisplayedTest()) {
         displayTruncated.value = false
+        displayedLinesTruncated.value = []
         currDiffDivergenceNotice.value = null
         if (message.v.content === null) {
           displayedOutput.value = "Missing .rt.tar file!"
@@ -290,6 +299,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
           if (message.v.truncated) {
             displayTruncated.value = true
           }
+          displayedLinesTruncated.value = message.v.lines_truncated ?? []
           displayedOutput.value = message.v.content
         }
         if (message.t === "test.src.show-diff-curr" &&
@@ -307,6 +317,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     } else if (message.t === "test.src.show-src") {
       if (message.v.id === displayedTestName.value) {
         displayTruncated.value = false
+        displayedLinesTruncated.value = []
         currDiffDivergenceNotice.value = null
         if (message.v.content === null) {
           displayedOutput.value = "File not found!"
@@ -314,6 +325,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
           if (message.v.truncated) {
             displayTruncated.value = true
           }
+          displayedLinesTruncated.value = message.v.lines_truncated ?? []
           displayedOutput.value = message.v.content
         }
       }
@@ -462,7 +474,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
             </app-button>
           </div>
         </div>
-        <div v-if="outputViewModeTarget === 'test.src.show-src'" class="assoc-file-list">
+        <div v-if="outputViewModeTarget === 'test.src.show-src'"
+             class="assoc-file-list">
           <div v-if="displayedTestAssocFiles === null">
             <loading-spinner />
           </div>
@@ -487,6 +500,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
              class="content-notice">
           Content Too Long: Display Truncated
         </div>
+        <div v-if="displayedOutput !== null &&
+                   displayedLinesTruncated.length > 0"
+             class="content-notice">
+          Some Lines Truncated
+        </div>
         <div v-if="displayedOutput !== null && currDiffDivergenceNotice"
              class="content-notice">
           {{ currDiffDivergenceNotice }}
@@ -499,21 +517,23 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
            style="overflow: visible; display: grid;">
         <template v-if="outputViewModeTarget === 'test.src.show-diff' ||
                         outputViewModeTarget === 'test.src.show-diff-curr'">
-          <diff-line v-for="lineText in displayedOutput.split('\n')"
+          <diff-line v-for="lineText in displayedOutputLines"
                      :line-text="lineText" />
         </template>
         <template v-if="outputViewModeTarget === 'test.src.show-output' ||
                         outputViewModeTarget === 'test.src.show-src'">
-          <pre>{{ displayedOutput }}</pre>
+          <pre>{{ displayedOutputLines.join('\n') }}</pre>
         </template>
       </div>
     </scrollable-content-area>
-    <div v-if="!displayedTestName" class="cell cell-colors content-width content">
+    <div v-if="!displayedTestName"
+         class="cell cell-colors content-width content">
       <div style="text-align: center; margin: 5em">
         Select a test status difference to continue...
       </div>
     </div>
-    <div v-if="displayedTestName" class="cell cell-colors content-width content-footer">
+    <div v-if="displayedTestName"
+         class="cell cell-colors content-width content-footer">
       <div class="cell-content">
         <app-button
             keyshortcuts="P K"

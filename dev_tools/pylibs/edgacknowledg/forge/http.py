@@ -26,6 +26,9 @@ from edgacknowledg.forge import ArtifactTooLargeError, ForgeError
 _log = logging.getLogger(__name__)
 
 PAGE_SIZE = 100
+# The largest API response read (decoded): far more than a page of
+# PAGE_SIZE items; downloads have their own limit.
+MAX_RESPONSE_BYTES = 32 * 1024 * 1024
 MAX_RATE_LIMIT_WAIT = 15 * 60.0
 MAX_ATTEMPTS = 4
 
@@ -88,17 +91,19 @@ class ForgeHttpClient:
                     params: Optional[Mapping[str, Any]] = None,
                     json_body: Optional[Any] = None) -> httpx.Response:
     '''Send a request, retrying transient failures and waiting out rate
-    limits; raise ``ForgeError`` on failure.
+    limits; raise ``ForgeError`` on failure, or for a response over
+    ``MAX_RESPONSE_BYTES`` (read only that far).
     '''
     for attempt in range(MAX_ATTEMPTS):
       last_attempt = attempt + 1 == MAX_ATTEMPTS
       try:
-        response = await self._client.request(
+        request = self._client.build_request(
           method,
           path,
           params = params,
           json = json_body
         )
+        response = await _send_capped(self._client, request, method, path)
       except httpx.HTTPError as ex:
         if last_attempt:
           raise ForgeError(f"{method} {path} failed: {ex}") from ex
@@ -177,6 +182,40 @@ class ForgeHttpClient:
         await _write_capped(stream, destination, max_bytes, path)
     except httpx.HTTPError as ex:
       raise ForgeError(f"download of {path} failed: {ex}") from ex
+
+
+async def _send_capped(client: httpx.AsyncClient,
+                       request: httpx.Request,
+                       method: str,
+                       path: str) -> httpx.Response:
+  '''Send ``request``; return its response, its body read (decoded) as it
+  comes, and only to ``MAX_RESPONSE_BYTES``: ``ForgeError`` beyond.
+  '''
+  response = await client.send(request, stream = True)
+  try:
+    body = bytearray()
+    async for chunk in response.aiter_bytes():
+      body += chunk
+      if len(body) > MAX_RESPONSE_BYTES:
+        raise ForgeError(
+          f"{method} {path}: the response is over {MAX_RESPONSE_BYTES} bytes"
+        )
+  finally:
+    await response.aclose()
+  # The same response with its body in place; it is decoded already, so
+  # without the headers that describe how it was sent.
+  headers = [
+    (name, value) for name, value in response.headers.multi_items()
+    if name.lower() not in ('content-encoding', 'content-length',
+                            'transfer-encoding')
+  ]
+  return httpx.Response(
+    response.status_code,
+    headers = headers,
+    content = bytes(body),
+    request = request,
+    extensions = response.extensions
+  )
 
 
 async def _write_capped(stream: httpx.Response,

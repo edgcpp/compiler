@@ -7,6 +7,7 @@
 
 import asyncio
 import errno
+import io
 import os
 import signal
 import stat
@@ -19,6 +20,7 @@ from typing import (
   Dict,
   List,
   IO,
+  Iterable,
   Iterator,
   NamedTuple,
   Optional,
@@ -37,6 +39,8 @@ except ImportError:
 
 from edgacknowledg import (
   MAX_DISPLAY_CONTENT_SIZE,
+  MAX_DISPLAY_LABEL_SIZE,
+  MAX_DISPLAY_LINE_SIZE,
   ProtocolMessage,
   RequestTags,
   RichName,
@@ -82,6 +86,8 @@ else:
   ReviewIdentity = Any  # type: ignore[misc,assignment]
   ReviewClientHandler = Any  # type: ignore[misc,assignment]
 
+
+import edgutil
 
 from edgutil import get_running_event_loop, is_path_relative_to
 
@@ -149,32 +155,111 @@ async def announce_section(channel: Channel,
   ))
 
 
-def trunc_display_content(content: str) -> Dict[str, Union[str, bool]]:
-  '''Truncate ``content`` for UI display; may set ``truncated``.'''
-  max_content_size = MAX_DISPLAY_CONTENT_SIZE
-  if len(content) > max_content_size:
-    # Attempt to truncate at line boundaries.
-    #
-    # To save time, find the newline closest to the boundary before walking
-    # the file size back.
-    last_newline_permitted = content.find('\n', max_content_size)
-    if last_newline_permitted != -1:
-      content = content[:last_newline_permitted]
-    # Now walk the file size back.
-    while len(content) > max_content_size:
-      last_new_line_idx = content.rfind('\n')
-      if last_new_line_idx != -1:
-        content = content[:(last_new_line_idx - 1)]
-      else:
-        # If there are no more newlines, resort to truncating within
-        # the line.
-        content = content[:(max_content_size - 4)]
-        content += '...'
-    return {
-      'truncated': True,
-      'content': content
-    }
-  return { 'content': content }
+def trunc_display_label(text: str) -> str:
+  '''``text`` (one line, e.g. a status) cut for UI display to
+  ``MAX_DISPLAY_LABEL_SIZE`` characters, a cut ending in an ellipsis.
+  '''
+  if len(text) > MAX_DISPLAY_LABEL_SIZE:
+    text = text[:MAX_DISPLAY_LABEL_SIZE - 1] + '\N{HORIZONTAL ELLIPSIS}'
+  return text
+
+
+def _display_lines(
+    pieces: Iterable[Tuple[str, bool]]) -> Iterator[Tuple[str, str, bool]]:
+  '''Join ``(piece, at_line_start)`` pieces (as ``edgutil.iter_line_pieces``
+  yields them) into lines, yielding ``(text, line_end, cut)`` for each: at
+  most ``MAX_DISPLAY_LINE_SIZE`` characters of its text (``cut`` if it had
+  more, which are dropped as they come), and its end ('\\n', or '' for a
+  last line without one).
+
+  A piece that starts a line ends the one before it, so a text that doesn't
+  end in a line end (e.g. a command's output) never runs into the next.
+  '''
+  # The line being joined (as much of it as is kept), and whether some was
+  # dropped; ``None`` between lines.
+  line: Optional[str] = None
+  cut = False
+  for piece, at_line_start in pieces:
+    if line is not None and at_line_start:
+      yield line, '\n', cut
+      line = None
+    if line is None:
+      line = ''
+      cut = False
+    text = piece[:-1] if piece.endswith('\n') else piece
+    room = MAX_DISPLAY_LINE_SIZE - len(line)
+    if len(text) > room:
+      cut = True
+    line += text[:room]
+    if piece.endswith('\n'):
+      yield line, '\n', cut
+      line = None
+  if line is not None:
+    yield line, '', cut
+
+
+def display_content(pieces: Iterable[Tuple[str, bool]]) -> Dict[str, Any]:
+  '''The ``content`` of a display payload, from ``(piece, at_line_start)``
+  pieces (as ``edgutil.iter_line_pieces`` yields them), and as needed
+  ``truncated`` and ``lines_truncated``:
+
+  - Each line is cut to ``MAX_DISPLAY_LINE_SIZE`` characters, its 1-based
+    number listed in ``lines_truncated``.
+  - The whole is cut to ``MAX_DISPLAY_CONTENT_SIZE``, after the last line
+    that fits (setting ``truncated``); no more pieces are taken then, so
+    what they come from is read no further. (Closing ``pieces``, should it
+    be a generator with files open, is left to the caller.)
+
+  Neither key is set when nothing was cut, and nothing marks a cut in the
+  content itself: the UI does.
+  '''
+  kept: List[str] = []
+  size = 0
+  lines_truncated: List[int] = []
+  truncated = False
+  for line_number, (text, line_end, cut) in enumerate(
+    _display_lines(pieces),
+    start = 1
+  ):
+    num_chars_for_line = len(text) + len(line_end)
+    if size + num_chars_for_line > MAX_DISPLAY_CONTENT_SIZE:
+      truncated = True
+      if not kept:
+        # The first line alone doesn't fit (MAX_DISPLAY_LINE_SIZE is
+        # larger than MAX_DISPLAY_CONTENT_SIZE): keep what does of it, as
+        # a cut line.
+        kept.append(text[:MAX_DISPLAY_CONTENT_SIZE])
+        lines_truncated.append(line_number)
+      break
+    kept.append(text + line_end)
+    size += num_chars_for_line
+    if cut:
+      lines_truncated.append(line_number)
+
+  content = ''.join(kept)
+  if truncated and content.endswith('\n'):
+    # Without the end of the last line kept.
+    content = content[:-1]
+  result: Dict[str, Any] = { 'content': content }
+  if truncated:
+    result['truncated'] = True
+  if lines_truncated:
+    result['lines_truncated'] = lines_truncated
+  return result
+
+
+def display_text(handle: IO[str]) -> Dict[str, Any]:
+  '''``display_content`` of the text ``handle`` reads: only as much as is
+  shown, and of a line, at most a character more.
+  '''
+  return display_content(
+    edgutil.iter_line_pieces(handle, MAX_DISPLAY_LINE_SIZE + 1)
+  )
+
+
+def trunc_display_content(content: str) -> Dict[str, Any]:
+  '''``display_content`` of ``content``, already in memory.'''
+  return display_text(io.StringIO(content))
 
 
 def reviewer_of(request: Any) -> Optional[str]:
