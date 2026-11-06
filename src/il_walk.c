@@ -3955,12 +3955,12 @@ as specified in the control block.
     case stmk_expansion_statement:
       { an_expansion_stmt_info_ptr expn_info = expn_info_of(statement);
         check_assertion(statement->expr == NULL);
-        traverse_expr_list(expn_info->initializer, tblock);
-        if (tblock->terminate) goto end_of_routine;
         if (expn_info->initialization != NULL) {
           traverse_statement(expn_info->initialization, tblock);
           if (tblock->terminate) goto end_of_routine;
         }  /* if */
+        traverse_expr_list(expn_info->initializer, tblock);
+        if (tblock->terminate) goto end_of_routine;
         if (statement->variant.expansion_statement.statement != NULL) {
           traverse_statement(statement->variant.expansion_statement.statement,
                              tblock);

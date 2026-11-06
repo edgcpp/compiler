@@ -1,0 +1,65 @@
+fe_only -DTEST_NUMBER=2 --c++26 --no_warnings --microsoft_version 1950 --ms_permissive Test_name.c
+"Test_name.c", line 11: error: identifier "unknown_name" is undefined
+        (void)unknown_name;
+              ^
+
+"Test_name.c", line 22: error: static assertion failed
+        static_assert(x == 1);
+        ^
+"Test_name.c", line 22: note: the final comparison was 2 == 1
+        static_assert(x == 1);
+                        ^
+          detected during expansion of element 2 of the expansion statement at line 20
+
+"Test_name.c", line 31: error: expression must have a constant value
+      template for (constexpr int x : { n })
+                                  ^
+"Test_name.c", line 31: note: the value of parameter "n" (declared at line 29) cannot be used as a constant
+      template for (constexpr int x : { n })
+                                        ^
+
+"Test_name.c", line 42: error: "x", declared in the init-statement of an expansion statement, may not be redeclared in this scope
+      template for (int x = 0; auto x : {}) {}
+                                    ^
+
+"Test_name.c", line 45: error: "x", declared in the for-range-declaration of an expansion statement, may not be redeclared in this scope
+        int x;
+            ^
+
+"Test_name.c", line 58: error: a case or default label in an expansion statement must be associated with a "switch" statement within it
+          case 0: break;
+          ^
+
+"Test_name.c", line 63: error: label definitions cannot appear in expansion statements
+        label: (void)x;
+        ^
+
+"Test_name.c", line 72: error: expected a ":"
+      template for (int x) {}
+                         ^
+
+"Test_name.c", line 73: error: expected an expression
+      template for (auto x : { , }) {}
+                               ^
+
+"Test_name.c", line 82: error: static assertion failed
+      static_assert(false);
+      ^
+
+"Test_name.c", line 90: error: a storage class may not be specified here
+      template for (extern int x : { 1 })
+                    ^
+
+"Test_name.c", line 101: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+        [] () { return i; };
+                       ^
+
+"Test_name.c", line 113: error: label definitions cannot appear in expansion statements
+      in:
+      ^
+
+"Test_name.c", line 123: error: not a class or struct name
+      template for (auto x : {0}) { struct S : Missing {}; }
+                                               ^
+
+14 errors detected in the compilation of "Test_name.c".

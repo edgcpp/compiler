@@ -20312,6 +20312,9 @@ Generate code for the indicated expansion statement.
 {
   an_expansion_stmt_info_ptr  expn_info = expn_info_of(statement);
 
+  if (expn_info->expansion_scope != NULL) {
+    push_name_context(expn_info->expansion_scope);
+  }  /* if */
   write_tok_str("template for (");
   if (expn_info->initialization != NULL) {
     /* Generate the initialization statement. */
@@ -20331,7 +20334,8 @@ Generate code for the indicated expansion statement.
       if (expr != expn_info->initializer) {
         write_tok_str(", ");
       }  /* if */
-      gen_expression(expr);
+      gen_expr(expr, /*need_parens=*/expr_has_comma_operation(expr),
+               /*obj_expr_of_mfunc_operator=*/FALSE);
     }  /* for */
     write_tok_ch('}');
   } else {
@@ -20344,7 +20348,12 @@ Generate code for the indicated expansion statement.
      generate it in prototype form. */
   Value_saver<a_boolean>  prototype_context_saver(
                                     &in_prototype_instantiation_context, TRUE);
+  if (expn_info->iterator_scope != NULL) {
+    push_name_context(expn_info->iterator_scope);
+  }  /* if */
   gen_statement(statement->variant.expansion_statement.statement);
+  if (expn_info->iterator_scope != NULL) pop_name_context();
+  if (expn_info->expansion_scope != NULL) pop_name_context();
 }  /* gen_expansion_statement */
 
 #if MICROSOFT_EXTENSIONS_ALLOWED

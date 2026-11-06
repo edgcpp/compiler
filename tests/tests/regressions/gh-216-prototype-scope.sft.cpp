@@ -1,6 +1,44 @@
 //type: cp
 //options: --c++26 --no_warnings -tused
 
+namespace expansion_name_context
+{
+  template<int> struct S {};
+
+  void f()
+  {
+    template for (constexpr int n = 1; auto p : {&n})
+    {
+      S<sizeof(&n)> s;
+      S<sizeof(p)> t;
+      (void)s;
+      (void)t;
+    }
+  }
+}
+
+namespace comma_initializer_element
+{
+  constexpr int f()
+  {
+    int n = 0;
+    template for (auto x : {(++n, 2)}) { n += x; }
+    return n;
+  }
+  static_assert(f() == 3);
+}
+
+namespace init_statement_order
+{
+  constexpr int f()
+  {
+    int n = 0;
+    template for (n = 1; auto x : {++n}) { n += x; }
+    return n;
+  }
+  static_assert(f() == 4);
+}
+
 namespace alias_semantics {
   template<typename T, typename U> constexpr bool same = false;
   template<typename T> constexpr bool same<T, T> = true;

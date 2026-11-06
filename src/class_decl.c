@@ -10661,7 +10661,7 @@ can only contain CLI interfaces.
               }  /* if */
 #if MICROSOFT_EXTENSIONS_ALLOWED
             } else if (microsoft_mode && ms_permissive &&
-                       is_prototype_instantiation_or_expansion_context() &&
+                       is_prototype_instantiation_context() &&
                        !locator_for_curr_id.is_qualified_name) {
               /* In permissive Microsoft mode an undeclared name is allowed as
                  a base class in prototype instantiations. */

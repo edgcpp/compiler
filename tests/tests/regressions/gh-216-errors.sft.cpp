@@ -1,5 +1,5 @@
 //type: fn
-//options: --c++26 --no_warnings
+//options: --c++26 --no_warnings:--c++26 --no_warnings --microsoft_version 1950 --ms_permissive
 //remark:[GH #216] Definition checking, element diagnostics, and recovery.
 
 namespace definition_checking
@@ -113,5 +113,13 @@ namespace goto_into_expansion
     in:
       (void)x;
     }
+  }
+}
+
+namespace undeclared_local_base
+{
+  void f()
+  {
+    template for (auto x : {0}) { struct S : Missing {}; }
   }
 }
