@@ -17760,7 +17760,7 @@ be returned for a C mode const variable.
        function-local as well). */
     con_val = initializer_constant(var);
     if (con_val == NULL && gpp_mode &&
-        var->init_kind == (an_init_kind)initk_none &&
+        var->init_kind == initk_none &&
         var->source_corresp.is_class_member &&
         !var->is_member_constant &&
         parent_class_of(var)->variant.class_struct_union.is_nonreal_class &&
@@ -17769,7 +17769,18 @@ be returned for a C mode const variable.
          in-class initializer as a constant-expression during the prototype
          instantiation of its class.  In a real instantiation, the out-of-class
          definition must be present. */
-      con_val = alloc_constant((a_constant_repr_kind)ck_template_param);
+      con_val = alloc_constant(ck_template_param);
+      make_template_param_expr_constant(var_rvalue_expr(var), con_val);
+    } else if (con_val == NULL && !constexpr_enabled && var->is_nonreal &&
+               var->init_kind == initk_none &&
+               var->template_info != NULL &&
+               var->template_info->template_arg_list != NULL) {
+      /* A variable template instance with template-dependent arguments
+         (e.g., "vt<T>" in a template), whose value is not known until
+         instantiation.  A pre-C++11 constant expression (where variable
+         templates are an extension) requires a constant here, so treat
+         the reference as a template-dependent constant. */
+      con_val = alloc_constant(ck_template_param);
       make_template_param_expr_constant(var_rvalue_expr(var), con_val);
     }  /* if */
     if (!C_mode() && !constexpr_enabled && strict_ansi_mode &&

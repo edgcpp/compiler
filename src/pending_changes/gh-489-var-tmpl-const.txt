@@ -1,0 +1,19 @@
+[GH #489]
+Template-dependent variable template-ids in C++03 constant expressions
+
+In C++03 GNU and Clang modes, where variable templates are accepted as an
+extension, a variable template-id with template-dependent template arguments
+was rejected as nonconstant where a constant expression is required (e.g., as
+a template argument, an array bound, or an enumerator value).  That is now
+fixed.  Such a reference to a constant variable template is treated as a
+value-dependent constant, and its value is checked when the template is
+instantiated.  For example, with --g++ --c++03:
+
+  template <class T> const bool is_fp = false;
+  template <> const bool is_fp<float> = true;
+  template <bool B> struct integral_constant {
+    static const bool value = B;
+  };
+  template <class T>
+  struct is_floating_point
+    : integral_constant<is_fp<T> > {};  // Previously an error.

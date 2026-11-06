@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=2 --clang --c++03 --clang_version=220100 Test_name.c
+"Test_name.c", line 13: warning: variable templates are a C++14 feature
+  template <class T> bool nonconst = false;
+                                   ^
+
+"Test_name.c", line 14: error: expression must have a constant value
+  template <class T> struct Z : integral_constant<nonconst<T> > {};
+                                                  ^
+          detected during instantiation of class "Z<T> [with T=int]" at line 15
+
+1 error detected in the compilation of "Test_name.c".

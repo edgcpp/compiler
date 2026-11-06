@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=3 --g++ --c++11 --gnu_version=150200 Test_name.c
+"Test_name.c", line 13: warning: variable templates are a C++14 feature
+  template <class T> inline const bool is_fp_impl              = false;
+                                                               ^
+
+"Test_name.c", line 14: warning: inline variables are a C++17 feature
+  template <>        inline const bool is_fp_impl<float>       = true;
+                     ^
+
+"Test_name.c", line 25: warning: variable templates are a C++14 feature
+  template <int N> const bool positive = N > 0;
+                                       ^
+
