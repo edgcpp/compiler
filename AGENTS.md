@@ -100,8 +100,13 @@ words the spell check rejects (words already in the target `Changes` file
 pass without them). A nightly job runs `edg-collect-changes` to
 date them and move them into `Changes`. Check entries with
 `edg-exec -- edg-collect-changes --check src/Changes src/pending_changes`
-(for the directory in question). Edit a `Changes` file directly
-only to correct an already-collected entry. Details: skill
+(for the directory in question). To replace already-collected entries
+in the current (open) version, add a pending entry with a leading
+`//correction: true` directive and all of the replaced entries' tags.
+A problem with an issue fixed in a prior release is usually a new issue
+with its own entry, whose description references the old issue and the
+release it was fixed in. Edit a `Changes` file directly only to correct the
+text of an entry in a released version. Details: skill
 **edg-changes-example**.
 
 Any `Changes` changelog in the tree (not only `src/Changes`) and every
