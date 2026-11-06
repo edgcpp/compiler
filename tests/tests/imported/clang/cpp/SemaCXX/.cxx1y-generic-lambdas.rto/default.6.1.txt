@@ -50,42 +50,17 @@ fe_only -DTEST_NUMBER=6 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
         i = b;  //expected-error 3{{cannot be implicitly captured}}
         ^
 
-"Test_name.c", line 448: error: pack expansion does not make use of any argument packs
-              print("d = ", d ..., "\n");
-                              ^
-          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 461
-
 "Test_name.c", line 468: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
     int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
                                                                           ^
-
-"Test_name.c", line 527: error: the operand of sizeof... must be a parameter pack name
-          x = sizeof...(b);
-                        ^
-          detected during instantiation of "auto nested_non_capturing_lambda_tests::wrapped_within_templates::implicit_return_deduction::fooV(Ts...) [with Ts=<double, const char *, char, int>]" at line 542
-
-"Test_name.c", line 563: error: pack expansion does not make use of any argument packs
-              print("d = ", d ..., "\n");
-                              ^
-          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 574
 
 "Test_name.c", line 581: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
   int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
                                                                         ^
 
-"Test_name.c", line 687: error: pack expansion does not make use of any argument packs
-              print("d = ", d ..., "\n");
-                              ^
-          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 700
-
 "Test_name.c", line 707: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
   int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
                                                                         ^
-
-"Test_name.c", line 728: error: pack expansion does not make use of any argument packs
-              print("d = ", d ..., "\n");
-                              ^
-          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 742
 
 "Test_name.c", line 749: error: no suitable conversion function from "lambda [](const char *, int, const char *, double, const char *, int)->char" to "int (*)(const char *, int, const char *, double, const char *, int)" exists
   int (*np2)(const char*, int, const char*, double, const char*, int) = O; // expected-error{{no viable conversion}}
@@ -132,7 +107,7 @@ fe_only -DTEST_NUMBER=6 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     auto y = [](auto (*p)() -> auto) { return p(); };
                                               ^
 
-30 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+25 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
 Compilation aborted.
 Aborted
 eccp: front end returned an exit status of 134
