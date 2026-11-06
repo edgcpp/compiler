@@ -98,9 +98,10 @@ following:
     the list of exceptions of the interpreter state (see create_exception),
     initializes the exception object (which is stored in a block of its own),
     and then starts the throw (see start_throw), which makes a ctk_throw
-    transfer pending.  The exception exists until it is no longer being thrown
-    and no handler for it is active (see the counts in a_constexpr_exception);
-    its object is then destroyed (see release_exception_if_unused).
+    transfer pending.  The exception exists until it is no longer being thrown,
+    no handler for it is active, and no std::exception_ptr refers to it (see
+    the counts in a_constexpr_exception); its object is then destroyed (see
+    release_exception_if_unused).
 
   - Stack unwinding.  The destructions of the objects whose lifetime ends with
     a scope or a full-expression are recorded in a_constexpr_destruction
@@ -131,7 +132,18 @@ following:
   - Escaping exceptions.  An exception that escapes from a non-throwing
     function calls std::terminate (see check_exception_escape), and one that
     escapes from the outermost evaluation is not caught (see run_pushed_work).
-    Both are failures.
+    Both are failures.  An exception that still exists at the end of the
+    evaluation (because a std::exception_ptr refers to it) is reported like a
+    dynamic allocation that was not deallocated (see
+    report_leftover_allocations).
+
+  - Library support.  std::current_exception, std::rethrow_exception, and
+    std::uncaught_exceptions are constexpr intrinsics (see, e.g.,
+    do_constexpr_std_current_exception), and std::exception_ptr is supported if
+    it has a single nonstatic data member that points to the exception object
+    (see exception_ptr_member_offset and adjust_exception_ref_count).  Failing
+    dynamic_cast and typeid operations and invalid array new-expressions throw
+    the exceptions specified by the standard (see throw_library_exception).
 
   - Ignored evaluations.  When the failure of an evaluation is ignored (that of
     an assumption expression or of the operand of __builtin_constant_p),
@@ -1259,16 +1271,20 @@ typedef struct a_constexpr_exception {
 			/* The number of handlers that are active for the
 			   exception (i.e., that caught it and have not yet
 			   exited). */
+  unsigned int	ref_count;
+			/* The number of std::exception_ptr objects that refer
+			   to the exception. */
   unsigned int	throw_count;
 			/* The number of throws (or rethrows) of the exception
 			   that are in progress, i.e., that a handler has not
 			   yet caught (by completing the initialization of its
-			   parameter).  (The pending control transfer for a
-			   throw is set aside while destructors run during the
-			   unwinding, so it cannot be used to determine this.
-			   The count can exceed one because such a destructor
-			   can rethrow the exception that is being
-			   rethrown.) */
+			   parameter).  The sum of these counts is therefore
+			   the result of std::uncaught_exceptions.  (The
+			   pending control transfer for a throw is set aside
+			   while destructors run during the unwinding, so it
+			   cannot be used to determine this.  The count can
+			   exceed one because such a destructor can rethrow the
+			   exception that is being rethrown.) */
   a_boolean	is_initialized;
 			/* TRUE once the initialization of the exception object
 			   has completed (so that it must be destroyed
@@ -2262,13 +2278,21 @@ typedef struct an_interpreter_state {
 		handled_exceptions;
 			/* The stack of exceptions for which a handler is
 			   active, innermost first.  The top entry is the
-			   exception rethrown by "throw;". */
+			   exception rethrown by "throw;" and returned by
+			   std::current_exception(). */
   a_handler_ptr	entering_handler;
 			/* While the block of a handler is pushed for an
 			   exception that it caught (the exception of the top
 			   entry of handled_exceptions), the handler; NULL
 			   otherwise.  The block initializes the handler
 			   parameter (if any) when it starts. */
+  a_constexpr_exception_ptr
+		ignored_evaluation_exceptions;
+			/* While an evaluation whose failure is ignored is in
+			   progress (see save_exception_state), the list of
+			   exceptions when the innermost such evaluation
+			   started; NULL otherwise.  Those exceptions are not
+			   released during that evaluation. */
 } an_interpreter_state;
 
 
@@ -3318,6 +3342,7 @@ result of calls to std::is_constant_evaluated().
   ips->exceptions = NULL;
   ips->handled_exceptions = NULL;
   ips->entering_handler = NULL;
+  ips->ignored_evaluation_exceptions = NULL;
   n_active_interpreter_states += 1;
 }  /* init_interpreter_state */
 
@@ -9245,6 +9270,7 @@ diagnostic recorded) if that allocation fails.
     exc->destructor = dtor;
     exc->position = *pos;
     exc->handler_count = 0;
+    exc->ref_count = 0;
     exc->is_initialized = FALSE;
     exc->throw_count = 0;
     exc->prev = NULL;
@@ -9269,23 +9295,67 @@ is being rethrown).
 }  /* start_throw */
 
 
+static unsigned int uncaught_exception_count(an_interpreter_state  *ips)
+/*
+Return the number of exceptions that have been thrown (or rethrown) and not yet
+caught (see std::uncaught_exceptions).
+*/
+{
+  a_constexpr_exception_ptr  exc;
+  unsigned int               count = 0;
+
+  for (exc = ips->exceptions; exc != NULL; exc = exc->next) {
+    count += exc->throw_count;
+  }  /* for */
+  return count;
+}  /* uncaught_exception_count */
+
+
+static a_boolean predates_ignored_evaluation(an_interpreter_state       *ips,
+                                             a_constexpr_exception_ptr  exc)
+/*
+Return TRUE if an evaluation whose failure is ignored is in progress and the
+exception exc existed when the innermost such evaluation started.
+*/
+{
+  a_boolean                  result = FALSE;
+  a_constexpr_exception_ptr  old_exc;
+
+  for (old_exc = ips->ignored_evaluation_exceptions;
+       old_exc != NULL && !result; old_exc = old_exc->next) {
+    result = (old_exc == exc);
+  }  /* for */
+  return result;
+}  /* predates_ignored_evaluation */
+
+
 static a_boolean release_exception_if_unused(an_interpreter_state       *ips,
                                              a_constexpr_exception_ptr  exc,
                                              a_boolean           may_propagate)
 /*
-If the exception exc is no longer used -- i.e., no handler is active for it and
-it is not being thrown -- destroy the exception object and release the
-exception.  A control transfer that is pending is preserved.  Return FALSE if
-the destruction fails or exits by throwing an exception.  In the latter case,
-if may_propagate is TRUE and the pending control transfer (if any) is not a
-throw, the new exception replaces that transfer and is left pending; otherwise,
-std::terminate is called (an exception that escapes from a destructor during
-stack unwinding), which is a failure.
+If the exception exc is no longer used -- i.e., no handler is active for it, no
+std::exception_ptr refers to it, and it is not being thrown -- destroy the
+exception object and release the exception.  A control transfer that is pending
+is preserved.  Return FALSE if the destruction fails or exits by throwing an
+exception.  In the latter case, if may_propagate is TRUE and the pending
+control transfer (if any) is not a throw, the new exception replaces that
+transfer and is left pending; otherwise, std::terminate is called (an exception
+that escapes from a destructor during stack unwinding), which is a failure.
+Also return FALSE, without releasing the exception, if it existed when the
+innermost evaluation whose failure is ignored started: Code outside that
+evaluation can still refer to the exception (e.g., the evaluation has called
+the destructor of a std::exception_ptr that it did not create), and the
+failure of the evaluation restores the exception's counts.
 */
 {
   a_boolean  result = TRUE;
 
-  if (exc->handler_count == 0 && exc->throw_count == 0) {
+  if (exc->handler_count != 0 || exc->ref_count != 0 ||
+      exc->throw_count != 0) {
+    /* The exception is still used. */
+  } else if (predates_ignored_evaluation(ips, exc)) {
+    result = FALSE;
+  } else {
     if (exc->is_initialized && exc->destructor != NULL) {
       a_control_transfer  saved_transfer = ips->transfer;
       ips->transfer.kind = ctk_none;
@@ -9315,6 +9385,7 @@ The counts of an exception, as saved by save_exception_state.
 */
 typedef struct a_saved_exception_counts {
   unsigned int	handler_count;
+  unsigned int	ref_count;
   unsigned int	throw_count;
 } a_saved_exception_counts;
 
@@ -9334,6 +9405,10 @@ typedef struct a_saved_exception_state {
   a_handled_exception_ptr
 		handled_exceptions;
 			/* The stack of handled exceptions. */
+  a_constexpr_exception_ptr
+		enclosing_ignored_evaluation_exceptions;
+			/* The saved value of
+			   ips->ignored_evaluation_exceptions. */
 } a_saved_exception_state;
 
 
@@ -9346,7 +9421,8 @@ runs with side effects disabled, so the only exceptions that code outside of it
 can refer to are the ones that exist now.  The counts of those exceptions are
 saved in the storage stack (and so they are released along with the storage of
 the enclosing full-expression or scope).  Return FALSE if that storage cannot
-be allocated.
+be allocated.  Otherwise, the evaluation must end with a call of either
+restore_exception_state or end_ignored_evaluation.
 */
 {
   a_boolean                  result = TRUE;
@@ -9355,6 +9431,8 @@ be allocated.
 
   saved->exceptions = ips->exceptions;
   saved->handled_exceptions = ips->handled_exceptions;
+  saved->enclosing_ignored_evaluation_exceptions =
+                                            ips->ignored_evaluation_exceptions;
   saved->counts = NULL;
   for (exc = ips->exceptions; exc != NULL; exc = exc->next) {
     n_exceptions += 1;
@@ -9372,12 +9450,27 @@ be allocated.
       for (exc = ips->exceptions, cp = saved->counts; exc != NULL;
            exc = exc->next, ++cp) {
         cp->handler_count = exc->handler_count;
+        cp->ref_count = exc->ref_count;
         cp->throw_count = exc->throw_count;
       }  /* for */
     }  /* if */
   }  /* if */
+  if (result) {
+    ips->ignored_evaluation_exceptions = ips->exceptions;
+  }  /* if */
   return result;
 }  /* save_exception_state */
+
+
+static void end_ignored_evaluation(an_interpreter_state     *ips,
+                                   a_saved_exception_state  *saved)
+/*
+The evaluation for which save_exception_state saved *saved completed normally.
+*/
+{
+  ips->ignored_evaluation_exceptions =
+                              saved->enclosing_ignored_evaluation_exceptions;
+}  /* end_ignored_evaluation */
 
 
 static void restore_exception_state(an_interpreter_state     *ips,
@@ -9402,11 +9495,62 @@ it failed, for example, has ended).
   for (exc = ips->exceptions, cp = saved->counts; exc != NULL;
        exc = exc->next, ++cp) {
     exc->handler_count = cp->handler_count;
+    exc->ref_count = cp->ref_count;
     exc->throw_count = cp->throw_count;
   }  /* for */
   ips->handled_exceptions = saved->handled_exceptions;
   ips->entering_handler = NULL;
+  end_ignored_evaluation(ips, saved);
 }  /* restore_exception_state */
+
+
+static a_boolean exception_ptr_member_offset(an_interpreter_state  *ips,
+                                             a_type_ptr            eptr_type,
+                                             a_byte_count          *p_offset)
+/*
+eptr_type is std::exception_ptr.  The interpreter supports library
+implementations in which that class has a single nonstatic data member, of
+pointer type, that points to the exception object (as in the GCC C++ standard
+library).  If eptr_type has that form, store the offset of that member in
+*p_offset and return TRUE; otherwise, return FALSE.
+*/
+{
+  a_boolean  result = FALSE;
+
+  eptr_type = skip_typerefs(eptr_type);
+  if (is_immediate_class_type(eptr_type)) {
+    a_boolean  layout_ok = TRUE;
+    (void)value_bytes_for_type(ips, eptr_type, &layout_ok);
+    if (layout_ok) {
+      a_field_ptr  fp = next_alloc_field(fields_of(eptr_type));
+      if (fp != NULL && is_pointer_type(skip_typerefs(fp->type)) &&
+          next_alloc_field(fp->next) == NULL) {
+        get_mapped_byte_count(&persistent_map, fp, *p_offset);
+        result = TRUE;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* exception_ptr_member_offset */
+
+
+static a_constexpr_exception_ptr exception_at_address(
+                                                an_interpreter_state  *ips,
+                                                a_constexpr_address   *cap)
+/*
+Return the exception whose object is at the address *cap, or NULL if there is
+none.
+*/
+{
+  a_constexpr_exception_ptr  exc = NULL;
+
+  if (cap->address != NULL && !is_runtime_data_address(cap)) {
+    for (exc = ips->exceptions; exc != NULL; exc = exc->next) {
+      if (exc->address.address == cap->address) break;
+    }  /* for */
+  }  /* if */
+  return exc;
+}  /* exception_at_address */
 
 
 static a_boolean is_null_constexpr_address(a_constexpr_address  *cap)
@@ -9420,6 +9564,159 @@ without any address or as a null integer constant).
           (constant_is(cap->variant.addr_con, ck_integer) &&
            is_zero_int(&cap->variant.addr_con->variant.integer_value)));
 }  /* is_null_constexpr_address */
+
+
+static a_boolean store_exception_ptr(
+                                    an_interpreter_state       *ips,
+                                    a_type_ptr                 eptr_type,
+                                    a_constexpr_exception_ptr  exc,
+                                    a_source_position          *pos,
+                                    a_byte                     *result_storage,
+                                    a_byte                     *complete_obj)
+/*
+Construct at result_storage (part of the complete object at complete_obj) a
+std::exception_ptr object (of type eptr_type) that refers to the exception exc,
+or a null std::exception_ptr if exc is NULL.  The new object counts as a
+reference to exc.  Return TRUE if successful; if eptr_type does not have the
+form expected by exception_ptr_member_offset, record a diagnostic (using pos)
+and return FALSE.
+*/
+{
+  a_boolean     result = TRUE;
+  a_byte_count  offset;
+
+  if (!exception_ptr_member_offset(ips, eptr_type, &offset)) {
+    info_with_pos(ec_constexpr_expression_cannot_be_interpreted, pos, ips);
+    do_constexpr_fail(result);
+  } else {
+    a_constexpr_address  *cap = (a_constexpr_address*)(result_storage+offset);
+    if (exc == NULL) {
+      clear_address(cap, (a_byte*)NULL);
+    } else {
+      *cap = exc->address;
+      exc->ref_count += 1;
+    }  /* if */
+    mark_whole_subobject_initialized(ips, result_storage,
+                                     skip_typerefs(eptr_type), complete_obj);
+    if (result_storage == complete_obj) {
+      mark_complete_object_initialized(complete_obj);
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* store_exception_ptr */
+
+
+static a_boolean adjust_exception_ref_count(an_interpreter_state  *ips,
+                                            a_constexpr_address   *cap,
+                                            a_host_large_integer  delta,
+                                            a_source_position     *pos)
+/*
+Implement __builtin_eh_ptr_adjust_ref (used by the GCC C++ standard library's
+implementation of std::exception_ptr during constant evaluation): add delta to
+the number of std::exception_ptr objects that refer to the exception whose
+object is at the address *cap, and release the exception if it is no longer
+used.  Return TRUE if successful; otherwise, record a diagnostic (using pos)
+and return FALSE.
+*/
+{
+  a_boolean                  result = TRUE;
+  a_constexpr_exception_ptr  exc = exception_at_address(ips, cap);
+  a_boolean                  valid = FALSE;
+
+  if (exc != NULL) {
+    /* Compute the magnitude of delta in unsigned arithmetic, so that neither
+       its negation nor the adjustment can overflow. */
+    a_host_large_unsigned  magnitude = delta < 0 ?
+                                        -(a_host_large_unsigned)delta :
+                                        (a_host_large_unsigned)delta;
+    if (delta < 0) {
+      valid = magnitude <= exc->ref_count;
+    } else {
+      valid = magnitude <= UINT_MAX - exc->ref_count;
+    }  /* if */
+    if (valid) {
+      exc->ref_count = delta < 0 ? exc->ref_count - (unsigned int)magnitude :
+                                   exc->ref_count + (unsigned int)magnitude;
+    }  /* if */
+  }  /* if */
+  if (!valid) {
+    info_with_pos(ec_constexpr_expression_cannot_be_interpreted, pos, ips);
+    do_constexpr_fail(result);
+  } else if (exc->ref_count == 0 &&
+             !release_exception_if_unused(ips, exc, /*may_propagate=*/FALSE)) {
+    do_constexpr_fail(result);
+  }  /* if */
+  return result;
+}  /* adjust_exception_ref_count */
+
+
+static a_boolean throw_library_exception(an_interpreter_state  *ips,
+                                         a_const_char          *class_name,
+                                         a_source_position     *pos)
+/*
+An operation evaluated at pos throws an exception of type std::class_name
+(e.g., std::bad_cast for a dynamic_cast to a reference type that fails).  If
+that class is complete and has a constexpr default constructor without
+parameters, create the exception object, initialize it with that constructor,
+start throwing it, and return TRUE.  The exception is then pending, unless its
+initialization failed or exited by throwing another exception (which then
+propagates instead).  Return FALSE (without doing anything) if exceptions
+cannot be thrown during constant evaluation or the class is not available, in
+which case the caller reports that the operation cannot be evaluated.
+*/
+{
+  a_boolean      result = FALSE;
+  a_symbol_ptr   sym;
+  a_type_ptr     class_type = NULL;
+  a_routine_ptr  ctor = NULL;
+
+  if (!constexpr_exceptions_enabled) {
+    /* The operation cannot throw the exception, and so it cannot be
+       evaluated. */
+    goto done;
+  }  /* if */
+  sym = look_up_name_string_in_std(class_name);
+  if (sym != NULL) {
+    sym = fundamental_symbol_of(sym);
+    if (is_class_symbol(sym)) {
+      class_type = skip_typerefs(type_symbol_type(sym));
+    }  /* if */
+  }  /* if */
+  if (class_type != NULL && !is_incomplete_type(class_type)) {
+    a_boolean  error_detected, err;
+    ctor = select_default_constructor_full(class_type, pos, class_type,
+                                           /*declarative_context=*/FALSE,
+                                           /*evaluated=*/TRUE,
+                                           /*check_access=*/FALSE,
+                                           /*no_explicit=*/FALSE,
+                                           &error_detected, &err);
+    if (error_detected || err ||
+        (ctor != NULL &&
+         (!ctor->is_constexpr ||
+          function_type_params(skip_typerefs(ctor->type)) != NULL))) {
+      ctor = NULL;
+    }  /* if */
+  }  /* if */
+  if (ctor != NULL) {
+    a_constexpr_exception_ptr  exc;
+    result = TRUE;
+    exc = create_exception(ips, class_type,
+                           nontrivial_destructor_for_type(class_type), pos);
+    if (exc != NULL) {
+      a_dynamic_init_ptr  dip = alloc_dynamic_init(dik_constructor);
+      dip->variant.constructor.ptr = ctor;
+      if (do_constexpr_ctor(ips, dip, pos, exc->address,
+                            (a_constexpr_address*)NULL)) {
+        exc->is_initialized = TRUE;
+        start_throw(ips, exc);
+      } else {
+        free_exception(ips, exc);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+done:
+  return result;
+}  /* throw_library_exception */
 
 
 static a_handler_ptr find_matching_handler(a_handler_ptr              handlers,
@@ -10418,6 +10715,7 @@ evaluates to false.
         !save_exception_state(ips, &saved_exception_state)) {
       do_constexpr_fail(result);
     } else if (eval_bool_assertion(ips, expr, &assertion_value)) {
+      end_ignored_evaluation(ips, &saved_exception_state);
       if (!assertion_value) {
         /* Add a new note indicating that the assumption failed.  The call to
            eval_bool_assertion may have appended a note after dp (indicating
@@ -13682,6 +13980,7 @@ to FALSE and the reason for the failure is recorded in *ips.
                                            arg1_bytes) &&
                      do_constexpr_expression(ips, args, arg1_bytes,
                                              arg1_bytes)) {
+            end_ignored_evaluation(ips, &saved_exception_state);
             *(an_integer_value*)result_storage = one_int;
           } else {
             *(an_integer_value*)result_storage = zero_int;
@@ -14328,6 +14627,50 @@ to FALSE and the reason for the failure is recorded in *ips.
         } else {
           do_constexpr_fail(*p_result);
         }  /* if */
+      }  /* if */
+      break;
+    case bufk_eh_ptr_adjust_ref:
+      interpreted = TRUE;
+      if (args == NULL || args->next == NULL || args->next->next != NULL) {
+        unexpected_condition();
+      } else {
+        a_type_ptr    tp1 = skip_typerefs(args->type);
+        a_type_ptr    tp2 = skip_typerefs(args->next->type);
+        a_byte_count  n_bytes1 = value_bytes_for_type(ips, tp1, p_result);
+        a_byte_count  n_bytes2 = value_bytes_for_type(ips, tp2, p_result);
+        if (!*p_result) break;
+        if (!alloc_complete_object(ips, n_bytes1, tp1, arg1_bytes) ||
+            !do_constexpr_expression(ips, args, arg1_bytes, arg1_bytes) ||
+            !alloc_complete_object(ips, n_bytes2, tp2, arg2_bytes) ||
+            !do_constexpr_expression(ips, args->next, arg2_bytes,
+                                     arg2_bytes)) {
+          do_constexpr_fail(*p_result);
+        } else {
+          a_boolean             ovflo;
+          a_host_large_integer  delta = 0;
+          conv_integer_value_to_host_large_integer(
+                                       (an_integer_value*)arg2_bytes,
+                                       /*is_signed=*/TRUE, &delta, &ovflo);
+          if (!adjust_exception_ref_count(ips,
+                                          (a_constexpr_address*)arg1_bytes,
+                                          delta, &call_node->position)) {
+            do_constexpr_fail(*p_result);
+          }  /* if */
+        }  /* if */
+      }  /* if */
+      break;
+    case bufk_uncaught_exceptions:
+      /* A call that was not replaced by a call of std::uncaught_exceptions
+         (because that function is not declared; see
+         builtin_call_needs_adjustment). */
+      interpreted = TRUE;
+      if (args != NULL) {
+        unexpected_condition();
+      } else if (!ips->is_constant_evaluated) {
+        do_constexpr_fail(*p_result);
+      } else {
+        set_integer_value((an_integer_value*)result_storage,
+                          (a_host_large_integer)uncaught_exception_count(ips));
       }  /* if */
       break;
     case bfk_assume:
@@ -23316,6 +23659,14 @@ explains the missing deallocation.
     info_with_pos(ec_constexpr_allocation_pos, &ips->dyn_allocations->pos,
                   ips);
   }  /* if */
+  if (ips->exceptions != NULL) {
+    /* An exception object is still referred to (by a std::exception_ptr
+       object). */
+    info_with_pos_type(ec_constexpr_exception_object_not_destroyed,
+                       &ips->position, ips->exceptions->type, ips);
+    info_with_pos(ec_constexpr_exception_thrown_here,
+                  &ips->exceptions->position, ips);
+  }  /* if */
 }  /* report_leftover_allocations */
 
 
@@ -23709,6 +24060,116 @@ do_constexpr_intrinsic_call for the meaning of the parameters.
               address_is_string_literal(ips, cap) ? one_int : zero_int;
   return TRUE;
 }  /* do_constexpr_std_is_string_literal */
+
+
+static a_boolean do_constexpr_std_current_exception(
+                                   an_interpreter_state        *ips,
+                                   a_routine_ptr               callee,
+                                   an_expr_node_ptr            call_node,
+                                   ARG_UNUSED a_byte           **p_arg_bytes,
+                                   a_byte                      *result_storage,
+                                   a_byte                      *complete_obj)
+/*
+Implement std::current_exception(), which returns a std::exception_ptr that
+refers to the currently handled exception (or a null std::exception_ptr if
+there is none).  When no handler is active in the evaluation, the result is
+known only if the evaluation is a constant evaluation (since otherwise a
+handler may be active when the call is executed).  The GCC C++ standard library
+calls it through __builtin_current_exception (see
+builtin_call_needs_adjustment).
+
+See do_constexpr_intrinsic_call for the meaning of the parameters.
+*/
+{
+  a_boolean                  result = TRUE;
+  a_constexpr_exception_ptr  exc = NULL;
+
+  if (ips->handled_exceptions != NULL) {
+    exc = ips->handled_exceptions->exception;
+  }  /* if */
+  if (exc == NULL && !ips->is_constant_evaluated) {
+    do_constexpr_fail(result);
+  } else {
+    result = store_exception_ptr(ips, return_type_of(callee->type), exc,
+                                 &call_node->position, result_storage,
+                                 complete_obj);
+  }  /* if */
+  return result;
+}  /* do_constexpr_std_current_exception */
+
+
+static a_boolean do_constexpr_std_rethrow_exception(
+                                   an_interpreter_state        *ips,
+                                   a_routine_ptr               callee,
+                                   an_expr_node_ptr            call_node,
+                                   a_byte                      **p_arg_bytes,
+                                   ARG_UNUSED a_byte           *result_storage,
+                                   ARG_UNUSED a_byte           *complete_obj)
+/*
+Implement std::rethrow_exception(p), which throws the exception object to which
+the std::exception_ptr p refers.  If successful, the result is FALSE with the
+throw pending.
+
+See do_constexpr_intrinsic_call for the meaning of the parameters.
+*/
+{
+  a_boolean         result = TRUE;
+  a_param_type_ptr  ptp = function_type_params(skip_typerefs(callee->type));
+  a_byte_count      offset;
+
+  if (ptp == NULL || !exception_ptr_member_offset(ips, ptp->type, &offset)) {
+    info_with_pos(ec_constexpr_expression_cannot_be_interpreted,
+                  &call_node->position, ips);
+    do_constexpr_fail(result);
+  } else {
+    a_constexpr_address        *cap;
+    a_constexpr_exception_ptr  exc;
+    cap = (a_constexpr_address*)(p_arg_bytes[0]+offset);
+    exc = exception_at_address(ips, cap);
+    if (exc != NULL) {
+      start_throw(ips, exc);
+      result = FALSE;
+    } else {
+      if (is_null_constexpr_address(cap)) {
+        info_with_pos(ec_constexpr_rethrow_null_exception_ptr,
+                      &call_node->position, ips);
+      } else {
+        info_with_pos(ec_constexpr_expression_cannot_be_interpreted,
+                      &call_node->position, ips);
+      }  /* if */
+      do_constexpr_fail(result);
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* do_constexpr_std_rethrow_exception */
+
+
+static a_boolean do_constexpr_std_uncaught_exceptions(
+                                   an_interpreter_state        *ips,
+                                   ARG_UNUSED a_routine_ptr    callee,
+                                   ARG_UNUSED an_expr_node_ptr call_node,
+                                   ARG_UNUSED a_byte           **p_arg_bytes,
+                                   a_byte                      *result_storage,
+                                   ARG_UNUSED a_byte           *complete_obj)
+/*
+Implement std::uncaught_exceptions(), which returns the number of exceptions
+that have been thrown but not yet caught.  The result is known only if the
+evaluation is a constant evaluation (since otherwise exceptions thrown outside
+the evaluation may be uncaught when the call is executed).
+
+See do_constexpr_intrinsic_call for the meaning of the parameters.
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (!ips->is_constant_evaluated) {
+    do_constexpr_fail(result);
+  } else {
+    set_integer_value((an_integer_value*)result_storage,
+                      (a_host_large_integer)uncaught_exception_count(ips));
+  }  /* if */
+  return result;
+}  /* do_constexpr_std_uncaught_exceptions */
 
 
 static a_boolean do_constexpr_std_construct_at(
@@ -24712,7 +25173,8 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
         }  /* if */
       }  /* if */
     }  /* if */
-    if (callee->function_def_number == NULL_function_def_number) {
+    if (callee->function_def_number == NULL_function_def_number ||
+        (callee->is_constexpr_intrinsic && !callee->is_constexpr)) {
       if (callee->is_constexpr_intrinsic) {
         /* A standard library function or member function that the front end
            has marked as "constexpr-intrinsic", which means we should implement
@@ -24720,7 +25182,9 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
            Note that some intrinsics do have a definition, and for those we
            should perform some more work (like mapping parameters) in case the
            intrinsic handling falls back to the provided definition (as, e.g.,
-           std::construct_at does). */
+           std::construct_at does).  That does not apply to an intrinsic that
+           is not constexpr (see check_for_constexpr_intrinsic): Its
+           definition (if any) cannot be interpreted. */
         up_front_cost = charge_call_cost(ips);
         push_new_call_frame(ips, callee, &call_node->position, result_cap);
         result = do_constexpr_intrinsic_call(
@@ -27556,6 +28020,16 @@ given complete object).
                                        complete_object);
       if (!result) goto done;
       opnd_addr = (a_constexpr_address*)result_storage;
+      if (is_null_constexpr_address(opnd_addr)) {
+        /* The glvalue was obtained by an indirection through a null pointer,
+           which causes std::bad_typeid to be thrown (N5054 [expr.typeid]). */
+        do_constexpr_fail(result);
+        if (!throw_library_exception(ips, "bad_typeid", &expr->position)) {
+          info_with_pos(ec_constexpr_invalid_null_ptr_operation,
+                        &expr->position, ips);
+        }  /* if */
+        goto done;
+      }  /* if */
       /* Now determine the dynamic type of this object. */
       if (is_runtime_data_address(opnd_addr)) {
         /* The address is represented as an IL constant.  Follow the subobject
@@ -27812,8 +28286,11 @@ represented by an entry of type a_constant (ck_address or ck_integer).
               }  /* if */
             } else {
               do_constexpr_fail(result);
-              info_with_pos_type2(ec_constexpr_invalid_dynamic_cast,
-                                  &expr->position, tp, opnd_type, ips);
+              if (!throw_library_exception(ips, "bad_cast",
+                                           &expr->position)) {
+                info_with_pos_type2(ec_constexpr_invalid_dynamic_cast,
+                                    &expr->position, tp, opnd_type, ips);
+              }  /* if */
             }  /* if */
             goto done;
           } else {
@@ -27883,8 +28360,12 @@ represented by an entry of type a_constant (ck_address or ck_integer).
                     clear_address(result_storage, NULL);
                   } else {
                     do_constexpr_fail(result);
-                    info_with_pos_type(ec_ambiguous_base_class,
-                                       &expr->position, new_bcp->type, ips);
+                    if (!throw_library_exception(ips, "bad_cast",
+                                                 &expr->position)) {
+                      info_with_pos_type(ec_ambiguous_base_class,
+                                         &expr->position, new_bcp->type,
+                                         ips);
+                    }  /* if */
                   }  /* if */
                   goto done;
                 } else if (!prev_bcp->has_public_derivation ||
@@ -27896,8 +28377,12 @@ represented by an entry of type a_constant (ck_address or ck_integer).
                     clear_address(result_storage, NULL);
                   } else {
                     do_constexpr_fail(result);
-                    info_with_pos_type(ec_inaccessible_base_class,
-                                       &expr->position, new_bcp->type, ips);
+                    if (!throw_library_exception(ips, "bad_cast",
+                                                 &expr->position)) {
+                      info_with_pos_type(ec_inaccessible_base_class,
+                                         &expr->position, new_bcp->type,
+                                         ips);
+                    }  /* if */
                   }  /* if */
                   goto done;
                 }  /* if */
@@ -27906,9 +28391,12 @@ represented by an entry of type a_constant (ck_address or ck_integer).
                   clear_address(result_storage, NULL);
                 } else {
                   do_constexpr_fail(result);
-                  info_with_pos_type2(ec_constexpr_invalid_dynamic_cast,
-                                      &expr->position, tp,
-                                      prev_bcp->derived_class, ips);
+                  if (!throw_library_exception(ips, "bad_cast",
+                                               &expr->position)) {
+                    info_with_pos_type2(ec_constexpr_invalid_dynamic_cast,
+                                        &expr->position, tp,
+                                        prev_bcp->derived_class, ips);
+                  }  /* if */
                 }  /* if */
                 goto done;
               }  /* if */
@@ -28022,8 +28510,10 @@ represented by an entry of type a_constant (ck_address or ck_integer).
             clear_address(result_storage, NULL);
           } else {
             do_constexpr_fail(result);
-            info_with_pos_type(ec_ambiguous_base_class,
-                               &expr->position, tp, ips);
+            if (!throw_library_exception(ips, "bad_cast", &expr->position)) {
+              info_with_pos_type(ec_ambiguous_base_class,
+                                 &expr->position, tp, ips);
+            }  /* if */
           }  /* if */
           goto done;
         } else if (!is_public_base || !baseward_bcp->has_public_derivation) {
@@ -28031,8 +28521,10 @@ represented by an entry of type a_constant (ck_address or ck_integer).
             clear_address(result_storage, NULL);
           } else {
             do_constexpr_fail(result);
-            info_with_pos_type(ec_inaccessible_base_class,
-                               &expr->position, tp, ips);
+            if (!throw_library_exception(ips, "bad_cast", &expr->position)) {
+              info_with_pos_type(ec_inaccessible_base_class,
+                                 &expr->position, tp, ips);
+            }  /* if */
           }  /* if */
           goto done;
         }  /* if */
@@ -28042,8 +28534,10 @@ represented by an entry of type a_constant (ck_address or ck_integer).
           clear_address(result_storage, NULL);
         } else {
           do_constexpr_fail(result);
-          info_with_pos_type2(ec_constexpr_invalid_dynamic_cast,
-                              &expr->position, tp, dtp, ips);
+          if (!throw_library_exception(ips, "bad_cast", &expr->position)) {
+            info_with_pos_type2(ec_constexpr_invalid_dynamic_cast,
+                                &expr->position, tp, dtp, ips);
+          }  /* if */
         }  /* if */
         goto done;
       }  /* if */
@@ -28114,9 +28608,16 @@ Evaluate the given new-expression.
     }  /* if */
     get_int_val_from(length_bytes, length_tp, length, ovflo);
     if (ovflo || length < 0 || length > MAX_ARRAY_LENGTH) {
-      info_with_pos_num(ec_constexpr_alloc_too_large, &length_expr->position,
-                        (int32_t)length, ips);
+      /* An invalid length causes std::bad_array_new_length to be thrown (N5054
+         [expr.new]), except with a non-throwing allocation function (which is
+         a placement allocation function). */
       do_constexpr_fail(result);
+      if ((!ovflo && length > MAX_ARRAY_LENGTH) || ndsp->placement_new ||
+          !throw_library_exception(ips, "bad_array_new_length",
+                                   &length_expr->position)) {
+        info_with_pos_num(ec_constexpr_alloc_too_large,
+                          &length_expr->position, (int32_t)length, ips);
+      }  /* if */
       goto done;
     }  /* if */
     alloc_length = (a_byte_count)length;
@@ -28221,10 +28722,16 @@ Evaluate the given new-expression.
               n_init_elems = init_cp->variant.string.length;
             }  /* if */
             if (n_init_elems > orig_alloc_length) {
-              info_with_pos_num(ec_constexpr_alloc_too_small,
-                                &length_expr->position,
-                                (int32_t)orig_alloc_length, ips);
+              /* That also causes std::bad_array_new_length to be thrown
+                 (N5054 [expr.new]).  The allocation is freed below. */
               do_constexpr_fail(result);
+              if (allocation == NULL ||
+                  !throw_library_exception(ips, "bad_array_new_length",
+                                           &length_expr->position)) {
+                info_with_pos_num(ec_constexpr_alloc_too_small,
+                                  &length_expr->position,
+                                  (int32_t)orig_alloc_length, ips);
+              }  /* if */
               goto done;
             }  /* if */
           }  /* if */

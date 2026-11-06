@@ -2137,8 +2137,10 @@ Return the declaration index for the routine.
       /* FIXME: Implement these. */
       break;
 #if BUILTIN_FUNCTIONS_ENABLED
+    case sfk_builtin_current_exception:
     case sfk_builtin_operator_delete:
     case sfk_builtin_operator_new:
+    case sfk_builtin_uncaught_exceptions:
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
     case sfk_deduction_guide:
 #if MICROSOFT_EXTENSIONS_ALLOWED
@@ -3122,8 +3124,10 @@ for the function type.
         /* FIXME: Implement these. */
         break;
   #if BUILTIN_FUNCTIONS_ENABLED
+      case sfk_builtin_current_exception:
       case sfk_builtin_operator_delete:
       case sfk_builtin_operator_new:
+      case sfk_builtin_uncaught_exceptions:
   #endif /* BUILTIN_FUNCTIONS_ENABLED */
       case sfk_deduction_guide:
   #if MICROSOFT_EXTENSIONS_ALLOWED

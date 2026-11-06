@@ -2627,6 +2627,12 @@ enum a_special_function_kind : a_byte {
   sfk_builtin_operator_delete,
 			/* Represents __builtin_operator_delete (which has been
 			   replaced by operator delete). */
+  sfk_builtin_current_exception,
+			/* Represents __builtin_current_exception (which has
+			   been replaced by std::current_exception). */
+  sfk_builtin_uncaught_exceptions,
+			/* Represents __builtin_uncaught_exceptions (which has
+			   been replaced by std::uncaught_exceptions). */
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
   sfk_last		/* Must be last. */
 };
@@ -4594,6 +4600,8 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, db_special_function_kinds, sfk_last + 1)
    "gnu atomic generic function",
    "__builtin_operator_new",
    "__builtin_operator_delete",
+   "__builtin_current_exception",
+   "__builtin_uncaught_exceptions",
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
    "last" /* used to check that initialization is right. */
 }

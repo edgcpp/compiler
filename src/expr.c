@@ -5956,14 +5956,15 @@ typedef struct a_builtin_call_adjustment {
                            arguments, this field will be NULL. */
   a_symbol_ptr
               overloaded_function_symbol;
-                        /* If non-NULL, the symbol for operator new/delete
-                           to be used in place of __builtin_operator_new/
-                           builtin_operator_delete. */
+                        /* If non-NULL, the symbol for the function to be
+                           called in place of the builtin (e.g., operator
+                           new/delete in place of __builtin_operator_new/
+                           __builtin_operator_delete). */
   a_name_reference_ptr
               name_reference;
                         /* If non-NULL, the special name reference to use
-                           to represent __builtin_operator_new/
-                           __builtin_operator_delete to a back end. */
+                           to represent the builtin (e.g.,
+                           __builtin_operator_new) to a back end. */
   int         n_args;   /* The number of arguments the builtin expects. */
   int         dispatch_arg;
                         /* The argument number of the "dispatch type", if any.
@@ -6254,6 +6255,38 @@ be called to check and adjust the argument and routine types as needed.
             bcap->callback = adjust_srcloc_builtin;
             requires_processing = TRUE;
           }  /* if */
+        }  /* if */
+      }
+      break;
+    case bufk_current_exception:
+    case bufk_uncaught_exceptions:
+      { /* The GCC C++ standard library uses __builtin_current_exception in
+           constexpr functions, since std::current_exception is not declared
+           constexpr there.  The builtin is equivalent to
+           std::current_exception (which can be evaluated during constant
+           evaluation; see check_for_constexpr_intrinsic), and so the call is
+           replaced by a call to that function (with a name reference that
+           lets a back end recreate the original source).  Likewise for
+           __builtin_uncaught_exceptions and std::uncaught_exceptions.  If the
+           std function is not declared, the builtin is kept (and
+           __builtin_uncaught_exceptions is then evaluated directly; see
+           do_constexpr_builtin_function). */
+        a_symbol_ptr  sym = look_up_name_string_in_std(
+                                    bfk == bufk_current_exception
+                                      ? "current_exception"
+                                      : "uncaught_exceptions");
+        if (sym != NULL) sym = fundamental_symbol_of(sym);
+        if (sym != NULL && (symbol_is(sym, sk_routine) ||
+                            symbol_is(sym, sk_overloaded_function))) {
+          bcap->overloaded_function_symbol = sym;
+          bcap->name_reference = alloc_name_reference();
+          bcap->name_reference->special_kind =
+                                    bfk == bufk_current_exception
+                                      ? sfk_builtin_current_exception
+                                      : sfk_builtin_uncaught_exceptions;
+          bcap->callback = nullptr;
+        } else {
+          requires_processing = FALSE;
         }  /* if */
       }
       break;
@@ -8180,6 +8213,7 @@ and bound_function_selector are expected to be NULL in that case.
   an_expr_node_ptr  castexp;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   a_boolean         call_folded_to_constant = FALSE;
+  an_expr_node_ptr  function_call_node = NULL;
 #if BUILTIN_FUNCTIONS_ENABLED
   a_routine_ptr     operand_routine;
   a_builtin_call_adjustment
@@ -8762,8 +8796,9 @@ and bound_function_selector are expected to be NULL in that case.
       routine = NULL;
       unknown_dependent_function = FALSE;
       if (bcap->overloaded_function_symbol != NULL) {
-        /* The builtin is being replaced by a call to a global overloaded
-           operator function; use that symbol to do the overload resolution. */
+        /* The builtin is being replaced by a call to another function (e.g.,
+           a global overloaded operator function); use that symbol to do the
+           overload resolution. */
         overloaded_function_symbol = bcap->overloaded_function_symbol;
         overloaded_function_case = TRUE;
         operand->is_qualified_name = TRUE;
@@ -9060,7 +9095,6 @@ and bound_function_selector are expected to be NULL in that case.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       }  /* if */
     }  /* if */
-    an_expr_node_ptr  function_call_node = NULL;
     assemble_function_call(operand, bound_function_selector, argument_list,
                            /*compiler_generated=*/FALSE,
                            arg_dep_lookup_suppressed,
@@ -9104,13 +9138,15 @@ and bound_function_selector are expected to be NULL in that case.
 #if BUILTIN_FUNCTIONS_ENABLED
   if (bcap != NULL) {
     if (bcap->name_reference != NULL && !is_error_operand(result)) {
-      /* The builtin call has been replaced by a call to the appropriate
-         operator new/delete; use a name reference to communicate this to the
-         back end so the original source can be recreated. */
+      /* The builtin call has been replaced by a call to another function
+         (e.g., the appropriate operator new/delete); use a name reference to
+         communicate this to the back end so the original source can be
+         recreated.  (The call node can be below the expression in result,
+         e.g., when the function returns a class.) */
       an_expr_node_ptr  operand_node;
-      check_assertion(result->kind == ok_expression &&
-                      node_is_operator(result->variant.expression, eok_call));
-      operand_node = result->variant.expression->variant.operation.operands;
+      check_assertion(function_call_node != NULL &&
+                      node_is_operator(function_call_node, eok_call));
+      operand_node = function_call_node->variant.operation.operands;
       switch (operand_node->kind) {
         case enk_routine:
           operand_node->variant.routine.name_reference = bcap->name_reference;

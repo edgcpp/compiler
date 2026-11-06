@@ -19389,7 +19389,11 @@ void check_for_constexpr_intrinsic(a_routine_ptr    rp,
 The given routine is being declared with the given symbol header and that
 header is associated with an intrinsic.  Check whether the routine is actually
 a "constexpr intrinsic" (i.e., a function handled specially by the constexpr
-interpreter) and if so mark it as such.
+interpreter) and if so mark it as such.  Most intrinsics must be declared
+constexpr (or consteval), but std::current_exception, std::rethrow_exception,
+and std::uncaught_exceptions are constexpr functions in P3068R6 even though
+some library implementations (e.g., the GCC C++ standard library, as of GCC 16)
+do not declare them that way.
 */
 {
   int  n = constexpr_intrinsic_descr_table->get(sym_hdr);
@@ -19398,7 +19402,17 @@ interpreter) and if so mark it as such.
     a_constexpr_intrinsic_descr  *descr;
     descr = &constexpr_intrinsic_descriptions[n].descr;
     check_assertion(descr->kind != cit_error);
-    if (*descr->p_namespace_sym != NULL &&
+    /* FIXME: N5054 [exception.syn] does not declare std::current_exception
+       and std::uncaught_exceptions constexpr (only an exposition-only
+       current-exception(), which corresponds to __builtin_current_exception),
+       so calls to them are not constant expressions there.  Revisit whether
+       they should still be evaluated during constant evaluation. */
+    if (!rp->is_constexpr &&
+        descr->kind != cit_std_current_exception &&
+        descr->kind != cit_std_rethrow_exception &&
+        descr->kind != cit_std_uncaught_exceptions) {
+      /* Not an intrinsic that may be declared non-constexpr. */
+    } else if (*descr->p_namespace_sym != NULL &&
         ((is_namespace_member(rp) &&
           is_member_of_namespace(symbol_for(rp), *descr->p_namespace_sym)) ||
          is_member_of_class_in_namespace(rp, *descr->p_namespace_sym))) {
