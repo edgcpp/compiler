@@ -40,6 +40,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 # Git invokes this hook with the ambient environment, which does not
@@ -52,6 +53,33 @@ sys.path.insert(
 import edgchanges
 import edgshell
 import edgutil
+
+START_TIME = time.monotonic()
+
+# The push isn't allowed to proceed until the hook has run for this long, so
+# that there's time to read the target of the push and cancel it (e.g., with
+# Ctrl-C) before it happens.
+MIN_RUN_SECONDS = 3.0
+
+def read_push_refs():
+  '''Return the lines git supplied on standard input describing what is to be
+  pushed.  A relaunched delegate (see below) can't read them from standard
+  input, so its parent passes them in the environment.'''
+  if os.environ.get('EDG_PREPUSH_DELEGATE') == '1':
+    refs_text = os.environ.get('EDG_PREPUSH_REFS', '')
+  elif sys.stdin.isatty():
+    # Run by hand rather than by git.
+    refs_text = ''
+  else:
+    refs_text = sys.stdin.read()
+  return refs_text.splitlines()
+
+# Git supplies the remote name and location as arguments (both are the
+# location if the push doesn't use a named remote).  Read the refs before
+# standard input is replaced below.
+PUSH_REMOTE_NAME = sys.argv[1] if len(sys.argv) > 1 else None
+PUSH_REMOTE_LOCATION = sys.argv[2] if len(sys.argv) > 2 else None
+PUSH_REFS = read_push_refs()
 
 if platform.system() == 'Windows':
   # The standard input of this hook carries the push ref list supplied by
@@ -68,10 +96,15 @@ if platform.system() == 'Windows':
     delegate_proc = subprocess.run(
       [
         sys.executable,
-        __file__
+        __file__,
+        *sys.argv[1:]
       ],
       creationflags = subprocess.CREATE_NEW_CONSOLE,
-      env = {**os.environ, 'EDG_PREPUSH_DELEGATE': '1'}
+      env = {
+        **os.environ,
+        'EDG_PREPUSH_DELEGATE': '1',
+        'EDG_PREPUSH_REFS': '\n'.join(PUSH_REFS)
+      }
     )
     sys.exit(delegate_proc.returncode)
 else:
@@ -161,6 +194,37 @@ def git_show_blob(revision_path: str) -> bytes:
   if completed_process.returncode != 0:
     return b''
   return completed_process.stdout
+
+ZERO_OBJECT_NAME_CHARS = set('0')
+
+def describe_push_ref(line):
+  '''Return a description of one of the ref lines git supplies to the hook
+  (<local ref> <local name> <remote ref> <remote name>), or None if line
+  isn't of that form.'''
+  fields = line.split()
+  if len(fields) != 4:
+    return None
+  local_ref, local_name, remote_ref, remote_name = fields
+  if set(local_name) <= ZERO_OBJECT_NAME_CHARS:
+    return f"delete {remote_ref}"
+  description = f"{local_ref} -> {remote_ref}"
+  if set(remote_name) <= ZERO_OBJECT_NAME_CHARS:
+    description += ' (new)'
+  return description
+
+def print_push_target():
+  '''Print where the push is targeted.'''
+  if PUSH_REMOTE_NAME is None:
+    return
+  target = PUSH_REMOTE_NAME
+  if PUSH_REMOTE_LOCATION not in (None, PUSH_REMOTE_NAME):
+    target += f" ({PUSH_REMOTE_LOCATION})"
+  print(f"Pushing to {target}:\n")
+  for line in PUSH_REFS:
+    description = describe_push_ref(line)
+    if description is not None:
+      print(f"  {description}")
+  print('')
 
 class PrePushChecker:
   '''Runs EDG pre-push policy checks against new commits and changed files.'''
@@ -435,6 +499,7 @@ class PrePushChecker:
 
   def run(self) -> int:
     '''Execute the full pre-push check sequence.  Return the exit status.'''
+    print_push_target()
     first_new_commit = self.check_commits()
 
     # Skip per file checks if we didn't actually detect a new commit.
@@ -450,11 +515,20 @@ def wait_for_minimum_run_time() -> None:
     print(f"Pushing in {remaining:.0f}s (Ctrl-C to cancel)...")
     time.sleep(remaining)
 
+def wait_for_minimum_run_time() -> None:
+  '''Sleep until the hook has been running for MIN_RUN_SECONDS.'''
+  remaining = MIN_RUN_SECONDS - (time.monotonic() - START_TIME)
+  if remaining > 0:
+    print(f"Pushing in {remaining:.0f}s (Ctrl-C to cancel)...")
+    time.sleep(remaining)
+
 def main():
   checker = PrePushChecker()
   returncode = checker.run()
   if returncode != 0:
     pause_delegate_window()
+  else:
+    wait_for_minimum_run_time()
   sys.exit(returncode)
 
 main()
