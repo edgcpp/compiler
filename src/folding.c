@@ -11043,6 +11043,7 @@ pseudo_call can be NULL if that information is not needed.
       case bufk_FILE_NAME:
       case bfk_FUNCTION:
       case bufk_FUNCSIG:
+      case bufk_eh_ptr_adjust_ref:
       case bfk_add_overflow_p:
       case bfk_add_overflow:
       case bfk_uadd_overflow:

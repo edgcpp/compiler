@@ -7260,14 +7260,12 @@ successfully emitted.
 #endif /* TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS */
 #if BUILTIN_FUNCTIONS_ENABLED
     if (use_name_reference &&
-        (nrp->special_kind ==
-                (a_special_function_kind)sfk_builtin_operator_new ||
-         nrp->special_kind ==
-                (a_special_function_kind)sfk_builtin_operator_delete ||
-         nrp->special_kind ==
-                (a_special_function_kind)sfk_gnu_atomic_nongeneric_function ||
-         nrp->special_kind ==
-                   (a_special_function_kind)sfk_gnu_sync_concrete_function)) {
+        (special_kind_is(nrp, sfk_builtin_operator_new) ||
+         special_kind_is(nrp, sfk_builtin_operator_delete) ||
+         special_kind_is(nrp, sfk_builtin_current_exception) ||
+         special_kind_is(nrp, sfk_builtin_uncaught_exceptions) ||
+         special_kind_is(nrp, sfk_gnu_atomic_nongeneric_function) ||
+         special_kind_is(nrp, sfk_gnu_sync_concrete_function))) {
       /* These are special cases handled by gen_name_from_routine_node. */
       use_name_reference = FALSE;
     }  /* if */
@@ -7438,7 +7436,9 @@ qualified is TRUE, force the generation of a qualified name.
         (special_kind_is(nrp, sfk_gnu_sync_concrete_function) ||
          special_kind_is(nrp, sfk_gnu_atomic_nongeneric_function) ||
          special_kind_is(nrp, sfk_builtin_operator_new) ||
-         special_kind_is(nrp, sfk_builtin_operator_delete))) {
+         special_kind_is(nrp, sfk_builtin_operator_delete) ||
+         special_kind_is(nrp, sfk_builtin_current_exception) ||
+         special_kind_is(nrp, sfk_builtin_uncaught_exceptions))) {
       switch (nrp->special_kind) {
         case sfk_gnu_sync_concrete_function:
         case sfk_gnu_atomic_nongeneric_function:
@@ -7483,6 +7483,12 @@ qualified is TRUE, force the generation of a qualified name.
           break;
         case sfk_builtin_operator_delete:
           write_tok_str("__builtin_operator_delete");
+          break;
+        case sfk_builtin_current_exception:
+          write_tok_str("__builtin_current_exception");
+          break;
+        case sfk_builtin_uncaught_exceptions:
+          write_tok_str("__builtin_uncaught_exceptions");
           break;
         default:
           unexpected_condition();

@@ -1,0 +1,71 @@
+fe_only -DTEST_NUMBER=1 --gn 160100 --c++26 Test_name.c
+"Test_name.c", line 113: error: expression must have a constant value
+  static_assert(k1() == 0);  // error: null exception_ptr
+                ^
+"Test_name.c", line 110: note: std::rethrow_exception is called with a null std::exception_ptr
+    std::rethrow_exception(std::exception_ptr());
+                          ^
+"Test_name.c", line 110: note: called from:
+    std::rethrow_exception(std::exception_ptr());
+                          ^
+
+"Test_name.c", line 116: error: expression must have a constant value
+      std::make_exception_ptr(3);  // error
+      ^
+"Test_name.c", line 116: note: invalid use of address of interpreter storage
+      std::make_exception_ptr(3);  // error
+      ^
+
+"Test_name.c", line 122: error: expression must have a constant value
+  static_assert(k3() == 0);  // error: uncaught int
+                ^
+"Test_name.c", line 98: note: an exception of type "int" is thrown and not caught during constant evaluation
+        throw __ex;
+        ^
+
+"Test_name.c", line 128: error: expression must have a constant value
+  static_assert(leaked());  // error: exception object not destroyed
+                ^
+"Test_name.c", line 128: note: some dynamic allocations (total number = 1) were not deallocated
+  static_assert(leaked());  // error: exception object not destroyed
+                      ^
+"Test_name.c", line 125: note: allocation occurred here
+    new std::exception_ptr(std::make_exception_ptr(4));
+    ^
+"Test_name.c", line 128: note: an exception object of type "int" is not destroyed at the end of constant evaluation
+  static_assert(leaked());  // error: exception object not destroyed
+                      ^
+"Test_name.c", line 98: note: the exception was thrown here
+        throw __ex;
+        ^
+
+"Test_name.c", line 135: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 137: error: expression must have a constant value
+  static_assert(exception_dtor_throws() == 0);  // error: std::terminate
+                ^
+"Test_name.c", line 131: note: std::terminate is called because the destructor of an exception object exits by throwing an exception
+    constexpr ~ThrowingDtor() noexcept(false) { throw 1; }
+                                                ^
+
+"Test_name.c", line 143: warning: statement is unreachable
+    return false;
+    ^
+
+"Test_name.c", line 145: error: expression must have a constant value
+  static_assert(current());  // error: call to non-constexpr function
+                ^
+"Test_name.c", line 142: note: cannot call non-constexpr function "std::current_exception" (declared at line 14)
+    try { throw 1; } catch (...) { return !!std::current_exception(); }
+                                                 ^
+
+"Test_name.c", line 147: error: expression must have a constant value
+  static_assert(uncaught() == 0);  // error: call to non-constexpr function
+                ^
+"Test_name.c", line 146: note: cannot call non-constexpr function "std::uncaught_exceptions" (declared at line 18)
+  constexpr int uncaught() { return std::uncaught_exceptions(); }
+                                         ^
+
+7 errors detected in the compilation of "Test_name.c".

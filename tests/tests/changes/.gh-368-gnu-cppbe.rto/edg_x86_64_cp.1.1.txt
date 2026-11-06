@@ -1,0 +1,29 @@
+cpfe -DTEST_NUMBER=1 --gn 160100 --c++26 Test_name.c
+Generated file content for "Test_name.c":
+  # 1 "Test_name.c"
+  # 7
+  namespace std { 
+  
+  
+  class exception_ptr { 
+  void *p; 
+  
+  public: exception_ptr() noexcept : p((nullptr)) { } 
+  exception_ptr(const exception_ptr &other) noexcept : p(other.p) { } 
+  ~exception_ptr() noexcept { } 
+  }; 
+  exception_ptr current_exception() noexcept; 
+  int uncaught_exceptions() noexcept; 
+  }
+  
+  std::exception_ptr f() { 
+  try { 
+  throw 1; 
+  } catch (...) { 
+  return __builtin_current_exception(); 
+  }  
+  } 
+  
+  int g() { 
+  return __builtin_uncaught_exceptions(); 
+  } 
