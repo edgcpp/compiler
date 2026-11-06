@@ -519,7 +519,7 @@ fe_only -DTEST_NUMBER=7 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 1132: error: expression must have a constant value
     static_assert(__enable_constant_folding(true ? throw 0 : 4), "");
                                            ^
-"Test_name.c", line 1132: note: expression cannot be interpreted
+"Test_name.c", line 1132: note: an exception of type "int" is thrown and not caught during constant evaluation
     static_assert(__enable_constant_folding(true ? throw 0 : 4), "");
                                                    ^
 

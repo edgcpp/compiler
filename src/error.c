@@ -7740,6 +7740,29 @@ list is freed and the list passed in is reset.
 }  /* discard_more_info_list */
 
 
+void truncate_more_info_list(a_diag_list_ptr   dlp,
+                             a_diagnostic_ptr  last_kept)
+/*
+Discard the "more information" diagnostics that follow the entry last_kept on
+the list specified by dlp (all of them, if last_kept is NULL).  last_kept must
+be an entry of the list (or NULL).
+*/
+{
+  a_diag_list  discarded;
+
+  if (last_kept == NULL) {
+    discarded = *dlp;
+    clear_diag_list(dlp);
+  } else {
+    discarded.head = last_kept->next;
+    discarded.tail = dlp->tail;
+    last_kept->next = NULL;
+    dlp->tail = last_kept;
+  }  /* if */
+  if (discarded.head != NULL) free_diag_list_elements(&discarded);
+}  /* truncate_more_info_list */
+
+
 void more_info_diagnostic(an_error_code     error_code,
                           a_source_position *error_pos,
                           a_diag_list_ptr   diag_list)
