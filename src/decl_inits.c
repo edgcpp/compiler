@@ -1004,10 +1004,7 @@ remove_any_extraneous_braces:
           if (!interpret_dynamic_init(elem_is.init_dip, diag_pos, dest_type,
                                       /*is_constant_evaluated=*/TRUE,
                                       folded_value, &diag_list)) {
-            a_diagnostic_ptr  dp;
-            dp = pos_start_error(ec_expr_not_constant, diag_pos);
-            add_more_info_list(dp, &diag_list);
-            end_diagnostic(dp);
+            error_with_notes(ec_expr_not_constant, diag_pos, &diag_list);
           } else {
             /* This could happen if the interpreter ran into an error node.
                (The interpreter "succeeds" with an error constants in such
@@ -1093,7 +1090,7 @@ of the whole initialization (*is) as appropriate.
   a_boolean  pack_expansion = is_pack_expansion_component(icp);
 
   check_assertion(is_template_param_or_nonreal_class_type(gtype) ||
-                  is_prototype_instantiation_context() ||
+                  is_prototype_instantiation_or_expansion_context() ||
                   is_error_type(gtype));
   if (is_designator_component(icp)) {
     if (is_error_type(gtype)) {
@@ -2543,9 +2540,10 @@ for this array initialization).  *is describes the initialization as a whole.
          the destination to reflect the actual number of initializer
          elements.  In prototype instantiation contexts where a pack expansion
          has been seen, assume the count is unknown. */
-      set_initialized_array_size(&atype, icount,
-                                 is->pack_expansion_handled &&
-                                   is_prototype_instantiation_context());
+      set_initialized_array_size(
+                          &atype, icount,
+                          (is->pack_expansion_handled &&
+                           is_prototype_instantiation_or_expansion_context()));
       if (*init_con != NULL) (*init_con)->type = atype;
       if (!is->non_top_level_aggregate) {
         /* An aggregate initializer for a top-level incomplete array type.
@@ -4518,7 +4516,7 @@ the type pointed to is opaque to declaration processing.
     case tk_struct:
     case tk_union:
       if (dtype->variant.class_struct_union.is_nonreal_class ||
-          (is_prototype_instantiation_context() &&
+          (is_prototype_instantiation_or_expansion_context() &&
            arg_list_is_dependent(icp))) {
         /* Treat nonreal classes like a template parameter since we don't
            really know their structure.  Similarly, do not try to match up a
@@ -4664,7 +4662,7 @@ a template-dependent type).
     an_init_component_ptr  list = icp->variant.braced.list;
     if (list != NULL && is_last_elem(list) && is_expression_component(list)) {
       a_type_ptr  etp = operand_of_arg_list_elem(list)->type;
-      special_singleton = (is_prototype_instantiation_context() &&
+      special_singleton = (is_prototype_instantiation_or_expansion_context() &&
                            is_or_contains_template_param(etp)) ||
                           are_reference_related(dtype, etp);
     }  /* if */
@@ -4820,7 +4818,7 @@ initializer, already copied and substituted.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
       /* Do not insert code here. */
       if (dtype->variant.class_struct_union.is_nonreal_class ||
-          (is_prototype_instantiation_context() &&
+          (is_prototype_instantiation_or_expansion_context() &&
            (gpp_mode || arg_list_is_dependent(icp)))) {
         /* Treat nonreal classes like a template parameter since we don't
            really know their structure.  Similarly, do not try to match up a
@@ -5429,6 +5427,31 @@ variable.
 }  /* addresses_dllimport_variable */
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+
+
+static a_boolean dynamic_init_is_dependent(a_dynamic_init_ptr  dip)
+/*
+Return TRUE if dip is an expression initialization, or has a constructor
+argument, that is instantiation-dependent.
+*/
+{
+  a_boolean  result = FALSE;
+
+  if (dyn_init_is(dip, dik_expression)) {
+    result = expr_is_instantiation_dependent(dip->variant.expression);
+  } else if (dyn_init_is(dip, dik_constructor)) {
+    for (an_expr_node_ptr  arg = dip->variant.constructor.args;
+         arg != NULL;
+         arg = arg->next) {
+      if (expr_is_instantiation_dependent(arg)) {
+        result = TRUE;
+        break;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  return result;
+}  /* dynamic_init_is_dependent */
+
 
 void initializer(a_decl_parse_state  *dps,
                  a_source_position   *source_pos,
@@ -6093,7 +6116,7 @@ returned set to TRUE.
                   dtor, init_dip, !dps->init_state.not_potentially_evaluated);
       }  /* if */
     } else if (constexpr_enabled &&
-               !(scope_stack_top().in_prototype_instantiation ||
+               !(is_prototype_instantiation_or_expansion_context() ||
                  in_ms_nonreal_class_instantiation()) &&
                !init_err) {
       /* See if the initializer can be evaluated as a constant expression. */
@@ -6167,17 +6190,20 @@ returned set to TRUE.
                                     move_local_constant_to_il(&folded_con));
         }  /* if */
       } else {
-        if (dps->init_state.initializer_must_be_constant ||
-            is_consteval_init ||
-            (vp->declared_constinit &&
-             !(dyn_init_is(init_dip, dik_constant) ||
-               dyn_init_is(init_dip, dik_zero) ||
-               dyn_init_is(init_dip, dik_none)))) {
+        if (is_uninstantiated_dependent_expr_context() &&
+            dynamic_init_is_dependent(init_dip)) {
+          /* The initialization is instantiation-dependent.  Leave the
+             initialization unfolded; it is checked when the enclosing
+             definition is instantiated or, for an expansion, when the
+             compound-statement is rescanned for each element. */
+        } else if (dps->init_state.initializer_must_be_constant ||
+                   is_consteval_init ||
+                   (vp->declared_constinit &&
+                    !(dyn_init_is(init_dip, dik_constant) ||
+                      dyn_init_is(init_dip, dik_zero) ||
+                      dyn_init_is(init_dip, dik_none)))) {
           /* A constant was required: Issue a diagnostic. */
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, &pos_first_token);
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, &pos_first_token, &diag_list);
           init_err = TRUE;
           init_con = alloc_error_constant();
           init_dip = NULL;
@@ -6337,6 +6363,7 @@ returned set to TRUE.
                                is_template_dependent_type(tp) ||
                                scope_stack_top().in_prototype_instantiation ||
                                scope_stack_top().in_nonreal_instantiation ||
+                               scope_stack_top().in_expansion_statement_body ||
                                (is_immediate_class_type(tp) &&
                                 !class_symbol_supp(symbol_for(tp))
                                        ->has_nontrivial_default_constructor &&
@@ -6691,7 +6718,7 @@ members of managed class types in some Microsoft modes.
     scope_stack_top().in_field_initializer = saved_in_field_initializer;
     field_for_curr_field_initializer = saved_field;
   }  /* if */
-  if (is_prototype_instantiation_context() &&
+  if (is_prototype_instantiation_or_expansion_context() &&
       class_type->variant.class_struct_union.is_prototype_instantiation &&
       class_type->variant.class_struct_union.is_template_class &&
       (is_field || is_var_templ || gpp_mode)) {
@@ -7193,10 +7220,8 @@ FALSE is returned) for non-class objects.
               cp = NULL;
             } else {
               /* A constant was required: Issue a diagnostic. */
-              a_diagnostic_ptr  dp;
-              dp = pos_start_error(ec_initializer_not_constant, err_pos);
-              add_more_info_list(dp, &diag_list);
-              end_diagnostic(dp);
+              error_with_notes(ec_initializer_not_constant, err_pos,
+                               &diag_list);
               cp = alloc_error_constant();
             }  /* if */
             release_local_constant(&folded_con);
@@ -10870,7 +10895,7 @@ declaration that has internal linkage because of the explicit presence of a
               }  /* if */
             }  /* if */
             if (gpp_mode && !vp->is_constexpr &&
-                is_prototype_instantiation_context()) {
+                is_prototype_instantiation_or_expansion_context()) {
               /* g++ fails to diagnose a missing initializer for a
                  non-constexpr variable at template definition time.  An
                  error is issued if the template is instantiated. */

@@ -623,6 +623,8 @@ enum an_il_entry_kind : a_byte {
   iek_for_loop,         /* a_for_loop */
   iek_range_based_for_loop,
                         /* a_range_based_for_loop */
+  iek_expansion_stmt_info,
+                        /* an_expansion_stmt_info */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   iek_for_each_loop,    /* a_for_each_loop */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -844,6 +846,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, il_entry_kind_names, iek_last + 1)
 /* iek_expr_node */			"expr-node",
 /* iek_for_loop */			"for-loop",
 /* iek_range_based_for_loop */		"range-based-for-loop",
+/* iek_expansion_stmt_info */		"expansion-stmt-info",
 #if MICROSOFT_EXTENSIONS_ALLOWED
 /* iek_for_each_loop */			"for-each-loop",
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -11422,9 +11425,11 @@ typedef struct a_variable {
 			/* TRUE if this variable represents the prototype
 			   instantiation of a variable template or a static
 			   data member of a class template.  Also TRUE for a
-			   variable declared during the prototype
-			   instantiation of a function template, unless that
-			   variable has linkage and a nondependent type. */
+			   variable declared during the prototype instantiation
+			   of a function template or the prototype scan of an
+			   expansion statement (including its iterator), unless
+			   that variable has linkage and a nondependent
+			   type. */
   a_bit_field	is_nonreal:1;
 			/* TRUE if this is a variable template instance that
 			   resulted from an instantiation using a dependent
@@ -11703,6 +11708,10 @@ typedef struct a_variable {
 			/* TRUE for the iterator variable of a for-each
 			   loop (in Microsoft or C++/CLI modes) or a
 			   range-based-for (in C++11 modes). */
+  a_bit_field	is_expansion_iterator:1;
+			/* TRUE for the variable introduced by the
+			   for-range-declaration of an expansion statement in
+			   the prototype scan of the statement. */
   a_bit_field	initializer_in_class:1;
 			/* TRUE for static data members with in-class
 			   initializers. */
@@ -11710,9 +11719,9 @@ typedef struct a_variable {
 			/* TRUE for variables of a const type initialized with
 			   a constant expression so that uses of the variable's
 			   value are permitted in constant-expressions.  Also
-			   TRUE for variables in prototype instantiations that
-			   might end up with those properties after template
-			   instantiation.  Only set in C++. */
+			   TRUE for variables in prototype instantiations or
+			   expansion prototypes that might end up with those
+			   properties after instantiation.  Only set in C++. */
   a_bit_field	is_immutable:1;
 			/* TRUE if the variable is of a const type that does
 			   not contain a mutable subobject. */
@@ -15824,6 +15833,8 @@ enum a_statement_kind : a_byte {
   stmk_end_test_while,	/* Loop, test at bottom. */
   stmk_for,		/* For loop. */
   stmk_range_based_for,	/* Range-based-for loop. */
+  stmk_expansion_statement,
+			/* C++26 expansion statement ("template for"). */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   stmk_for_each,	/* For each loop. */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -16025,6 +16036,117 @@ typedef struct a_range_based_for_loop {
 			/* TRUE in the case of a "for await (...)"
 			   statement. */
 } a_range_based_for_loop;
+
+
+typedef struct a_definition_replay_info *a_definition_replay_info_ptr;
+
+/*
+A token-ordered descriptor list for front end use.  Template declaration
+information and expansion statements hold these lists, while active scope
+stack entries hold independent scan cursors.  Descriptors are allocated in
+front end memory, not in the IL region containing an expansion statement.
+*/
+typedef struct a_pack_expansion_descr_list {
+  struct a_pack_expansion_descr
+                *head, *tail;
+                        /* First and last entries, both NULL for an empty
+                           list.  Entries are doubly linked and sorted by
+                           starting token sequence number.  A non-NULL head
+                           with a NULL tail denotes a shared read-only view
+                           used by generated member templates; that view
+                           must not be used to insert or remove descriptors. */
+} a_pack_expansion_descr_list;
+
+
+/*
+Information about a C++26 expansion statement (N5050 [stmt.expand]), pointed to
+from an stmk_expansion_statement statement.  The expansion statement takes
+the form:
+
+  template for ( init-statement opt for-range-declaration :
+                 expansion-initializer )
+    compound-statement
+
+Unlike a range-based-for, the statement is not a loop: It is expanded at
+compile time into the "equivalent compound-statement" of N5050 [stmt.expand]/5,
+a sequence of blocks, one per element, each holding a per-element copy of the
+for-range-declaration bound to that element, followed by the
+compound-statement.  The compound-statement is also scanned in prototype form
+and kept in unlowered IL for template-related processing, source regeneration,
+and IL reachability; it is discarded during lowering.  The
+for-range-declaration and body tokens are cached for the per-element rescans.
+A non-dependent enumerating expansion is done at scan time (see
+expansion_statement_is_expandable in statements.c); otherwise the statement is
+erroneous or deferred to the instantiation of the enclosing template.
+*/
+typedef struct an_expansion_stmt_info *an_expansion_stmt_info_ptr;
+typedef struct an_expansion_stmt_info {
+  a_statement_ptr
+                initialization;
+                        /* Pointer to an init-statement if the expansion
+                           statement has one, NULL otherwise. */
+  a_variable_ptr
+                iterator;
+                        /* Pointer to the variable declared in the
+                           for-range-declaration, or to the structured-binding
+                           container variable.  NULL if there was an error. */
+  a_scope_ptr   expansion_scope;
+                        /* An sck_block scope added to surround the expansion
+                           statement.  It contains the declarations from the
+                           init-statement (if any) and, later, the additional
+                           expansion declarations created by semantic
+                           analysis. */
+  a_scope_ptr   iterator_scope;
+                        /* An sck_block scope that contains the prototype
+                           for-range-declaration and compound-statement. */
+  a_statement_ptr
+                expanded_statement;
+                        /* The generated block containing the per-element
+                           blocks of the expansion (N5050 [stmt.expand]/5).
+                           The init-statement, if any, is stored separately
+                           in initialization and lowered before this block.
+                           NULL if the expansion was deferred or an error
+                           prevented it. */
+  struct a_token_cache
+                *decl_token_cache;
+                        /* The tokens of the for-range-declaration, including
+                           the terminating ":" of the header, cached for
+                           later rescanning (once for each element of the
+                           expansion, to declare the per-element copy of the
+                           for-range-declaration).  For front end use only.
+                           NULL if the tokens were not cached. */
+  struct a_token_cache
+                *body_token_cache;
+                        /* The tokens of the body statement, including any
+                           surrounding braces, cached for later rescanning
+                           once per element.  Non-compound bodies are an
+                           extension.  For front end use only.  NULL if
+                           the tokens were not cached. */
+  a_definition_replay_info_ptr
+                definition_info;
+                        /* Definition-time calls, pack descriptors, and lookup
+                           boundary when this statement owns its replay state.
+                           Nested prototypes without an enclosing template
+                           share the outermost expansion's state.  Within a
+                           template, records belong to its declaration info.
+                           Active scans hold independent traversal cursors.
+                           Front end only; cleared before writing the IL. */
+  an_expr_node_ptr
+                initializer;
+                        /* The expansion-initializer: When initializer_is_list
+                           is TRUE, the elements of the expression-list as a
+                           chain of expression nodes linked through their next
+                           fields (as for the argument list of a call), or
+                           NULL for an empty list ({ }).  A single-expression
+                           initializer (initializer_is_list FALSE) is retained
+                           but is currently unsupported (the statement is
+                           rejected during checking).
+                           NULL in error cases. */
+  a_bit_field   initializer_is_list:1;
+                        /* TRUE if the expansion-initializer is an
+                           expansion-init-list ({ } or { expression-list }),
+                           FALSE if it is a single expression. */
+} an_expansion_stmt_info;
 
 #if MICROSOFT_EXTENSIONS_ALLOWED
 /*
@@ -16683,6 +16805,22 @@ typedef struct a_statement {
                            used in the range-based-for.  The expr field in
                            the statement is unused. */
     } range_based_for_loop;
+    /* When kind == stmk_expansion_statement: */
+    struct {
+      a_statement_ptr
+                statement;
+                        /* The compound-statement in its prototype expansion
+                           form, as scanned at parse time.  NULL if the body
+                           was not scanned in prototype form, which happens
+                           when the statement is rescanned during an
+                           instantiation of an enclosing template function or
+                           during a per-element expansion rescan; the body is
+                           then instantiated only for actual elements. */
+      an_expansion_stmt_info_ptr
+                extra_info;
+                        /* Information about the expansion statement.  The
+                           expr field in the statement is unused. */
+    } expansion_statement;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     /* When kind == stmk_for_each: */
     struct {
@@ -16968,6 +17106,9 @@ typedef struct a_scope_orphaned_list_header {
   a_scope_number
 		scope_number;
 			/* The scope number for the scope. */
+  a_bit_field	in_expansion_prototype:1;
+			/* TRUE if this scope is part of the prototype of an
+			   expansion statement, not an expanded element. */
   a_type_ptr	orphaned_types;
 			/* Pointer to the orphaned file scope IL type entry
 			   list for a function scope. */
@@ -18377,6 +18518,12 @@ typedef struct a_scope {
 		needed_walk_done:1;
 			/* TRUE if the "needed flag IL walk" has visited this
 			   entry.  Only used for block scopes. */
+  a_bit_field
+		is_expansion_prototype:1;
+			/* TRUE for the iterator scope containing the
+			   prototype declaration and body of an expansion
+			   statement.  Its subtree is retained for definition
+			   checking but ignored by code generation. */
   union {
     /* When kind == sck_file, no variant fields. */
     /* When kind == sck_template_declaration, no variant fields. */
@@ -19339,6 +19486,7 @@ EXTERN_CONSTINIT_ARRAY(sizeof_t, sizeof_il_entry, iek_last)
   sizeof(an_expr_node),
   sizeof(a_for_loop),
   sizeof(a_range_based_for_loop),
+  sizeof(an_expansion_stmt_info),
 #if MICROSOFT_EXTENSIONS_ALLOWED
   sizeof(a_for_each_loop),
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */

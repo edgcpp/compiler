@@ -2309,6 +2309,7 @@ running them through the indicated remapping function.
   remap_orphan_entry_first(iek_expr_node);
   remap_orphan_entry_first(iek_for_loop);
   remap_orphan_entry_first(iek_range_based_for_loop);
+  remap_orphan_entry_first(iek_expansion_stmt_info);
 #if MICROSOFT_EXTENSIONS_ALLOWED
   remap_orphan_entry_first(iek_for_each_loop);
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -2412,6 +2413,7 @@ running them through the indicated remapping function.
   remap_orphan_entry_last(iek_expr_node);
   remap_orphan_entry_last(iek_for_loop);
   remap_orphan_entry_last(iek_range_based_for_loop);
+  remap_orphan_entry_last(iek_expansion_stmt_info);
 #if MICROSOFT_EXTENSIONS_ALLOWED
   remap_orphan_entry_last(iek_for_each_loop);
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -2730,14 +2732,17 @@ call the given processing function for each entity.
 #endif /* NEED_DECLARATIVE_WALK */
 
 void process_local_types(
-                    a_scope_ptr                        scope,
-                    a_type_list_processing_routine_ptr list_processing_routine)
+                  a_scope_ptr                        scope,
+                  a_type_list_processing_routine_ptr list_processing_routine,
+/* Defaulted: */  a_boolean                          skip_expansion_prototypes)
 /*
 Process local types in or under the indicated scope (a file, namespace, class,
 function, or block scope) by calling the indicated routine to process a
 type list.  Types are processed either from the orphan lists, when this
 routine is called for the file scope, or from function and local scopes
-in cases where the orphan lists have not been generated yet.
+in cases where the orphan lists have not been generated yet.  If
+skip_expansion_prototypes is TRUE, do not process expansion prototype
+subtrees or their orphan lists.
 */
 {
   a_routine_ptr   routine;
@@ -2746,12 +2751,18 @@ in cases where the orphan lists have not been generated yet.
   a_scope_ptr     subscope;
   a_scope_ptr     saved_innermost_function_scope;
 
+  if (skip_expansion_prototypes && scope->is_expansion_prototype) {
+    goto end_of_routine;
+  }  /* if */
   if (scope->kind == (a_scope_kind)sck_file) {
     /* Process the types on the orphan lists. */
     a_scope_orphaned_list_header_ptr solhp;
     for (solhp = il_header.scope_orphaned_list_headers;
          solhp != NULL;
          solhp = solhp->next) {
+      if (skip_expansion_prototypes && solhp->in_expansion_prototype) {
+        continue;
+      }  /* if */
       saved_innermost_function_scope = innermost_function_scope;
       check_assertion(solhp->assoc_routine != NULL);
       if (solhp->assoc_routine->function_def_number !=
@@ -2791,7 +2802,8 @@ in cases where the orphan lists have not been generated yet.
           !func_scope->function_body_processing_finished) {
         saved_innermost_function_scope = innermost_function_scope;
         innermost_function_scope = func_scope;
-        process_local_types(func_scope, list_processing_routine);
+        process_local_types(func_scope, list_processing_routine,
+                            skip_expansion_prototypes);
         innermost_function_scope = saved_innermost_function_scope;
       }  /* if */
     }  /* if */
@@ -2817,7 +2829,8 @@ in cases where the orphan lists have not been generated yet.
         a_scope_ptr class_scope =
                       type->variant.class_struct_union.extra_info->assoc_scope;
         if (!scope_is_null_or_placeholder(class_scope)) {
-          process_local_types(class_scope, list_processing_routine);
+          process_local_types(class_scope, list_processing_routine,
+                              skip_expansion_prototypes);
         }  /* if */
       }  /* if */
     }  /* for */
@@ -2826,7 +2839,8 @@ in cases where the orphan lists have not been generated yet.
          nsp != NULL;
          nsp = nsp->next) {
       if (!nsp->is_namespace_alias) {
-        process_local_types(nsp->variant.assoc_scope, list_processing_routine);
+        process_local_types(nsp->variant.assoc_scope, list_processing_routine,
+                            skip_expansion_prototypes);
       }  /* if */
     }  /* for */
   }  /* if */
@@ -2834,7 +2848,8 @@ in cases where the orphan lists have not been generated yet.
   for (subscope = scope->scopes;
        subscope != NULL;
        subscope = subscope->next) {
-    process_local_types(subscope, list_processing_routine);
+    process_local_types(subscope, list_processing_routine,
+                        skip_expansion_prototypes);
   }  /* for */
 end_of_routine:;
 }  /* process_local_types */
@@ -3933,6 +3948,27 @@ as specified in the control block.
         if (statement->variant.range_based_for_loop.statement != NULL) {
           traverse_statement(statement->variant.range_based_for_loop.statement,
                              tblock);
+          if (tblock->terminate) goto end_of_routine;
+        }  /* if */
+      }
+      break;
+    case stmk_expansion_statement:
+      { an_expansion_stmt_info_ptr expn_info = expn_info_of(statement);
+        check_assertion(statement->expr == NULL);
+        if (expn_info->initialization != NULL) {
+          traverse_statement(expn_info->initialization, tblock);
+          if (tblock->terminate) goto end_of_routine;
+        }  /* if */
+        traverse_expr_list(expn_info->initializer, tblock);
+        if (tblock->terminate) goto end_of_routine;
+        if (statement->variant.expansion_statement.statement != NULL) {
+          traverse_statement(statement->variant.expansion_statement.statement,
+                             tblock);
+          if (tblock->terminate) goto end_of_routine;
+        }  /* if */
+        if (expn_info->expanded_statement != NULL) {
+          /* The equivalent compound-statement (if the expansion was done). */
+          traverse_statement(expn_info->expanded_statement, tblock);
           if (tblock->terminate) goto end_of_routine;
         }  /* if */
       }

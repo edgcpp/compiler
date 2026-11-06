@@ -1177,7 +1177,9 @@ enum an_interpreter_work_kind {
   iwk_ctor,		/* Interpret a constructor dynamic-init. */
   iwk_dtor,		/* Interpret a destructor call. */
   iwk_stmt,		/* Interpret a statement. */
-  iwk_block		/* Interpret a block statement and its scope. */
+  iwk_block,		/* Interpret a block statement and its scope. */
+  iwk_expansion		/* Interpret the equivalent compound-statement of an
+			   expansion statement. */
 };
 
 
@@ -1437,6 +1439,25 @@ typedef struct a_block_work {
 
 
 /*
+The state that the handler for an iwk_expansion work item carries from one
+visit to the next.
+*/
+typedef struct an_expansion_work {
+  a_scope_ptr	scope;
+			/* The expansion scope (containing the variables
+			   declared in the init-statement, if any). */
+  a_storage_stack_state
+		saved_stack;
+			/* The storage stack as it was before the expansion
+			   allocated its storage. */
+  a_statement_ptr
+		next_stmt;
+			/* The statement of the equivalent compound-statement
+			   to interpret next. */
+} an_expansion_work;
+
+
+/*
 One frame of the interpreter's explicit control stack.  A work item is created
 by the push_..._work routine of its kind and then visited by the matching
 process_..._work routine, once in phase iwp_start and once more in a later
@@ -1478,8 +1499,9 @@ struct an_interpreter_work_item {
   a_byte	*result_storage;
 			/* Interpreter storage that receives the result, or
 			   for iwk_dtor the object being destroyed.  Not used
-			   by iwk_dyn_init, iwk_ctor, iwk_stmt, or iwk_block,
-			   which record their destination elsewhere. */
+			   by iwk_dyn_init, iwk_ctor, iwk_stmt, iwk_block, or
+			   iwk_expansion, which record their destination
+			   elsewhere. */
   a_byte	*complete_object;
 			/* Complete object containing result_storage. */
   an_alloc_seq_number
@@ -1505,6 +1527,8 @@ struct an_interpreter_work_item {
 		stmt;
     a_block_work
 		block;
+    an_expansion_work
+		expansion;
   } variant;
 			/* The payload of the item's kind. */
 };
@@ -6335,6 +6359,8 @@ static void process_stmt_work(an_interpreter_state      *ips,
                               an_interpreter_work_item  *item);
 static void process_block_work(an_interpreter_state      *ips,
                                an_interpreter_work_item  *item);
+static void process_expansion_work(an_interpreter_state      *ips,
+                                   an_interpreter_work_item  *item);
 
 
 static void process_work_item(an_interpreter_state      *ips,
@@ -6367,6 +6393,9 @@ item itself stays valid across such pushes.
       break;
     case iwk_block:
       process_block_work(ips, item);
+      break;
+    case iwk_expansion:
+      process_expansion_work(ips, item);
       break;
     default_is_unexpected();
   }  /* switch */
@@ -8614,6 +8643,71 @@ initialization of its variables), entered through its body.
 }  /* statement_can_be_entered_by_switch */
 
 
+static a_boolean init_constexpr_scope_variables(an_interpreter_state *ips,
+                                                a_scope_ptr          scope)
+/*
+Allocate uninitialized automatic variables and initialize supported static
+variables (e.g., __func__) in scope for constant evaluation by ips.  Other
+automatic variables are allocated by their stmk_init statements.  Return TRUE
+on success.
+*/
+{
+  a_boolean       result = TRUE;
+  a_variable_ptr  vp = scope->nonstatic_variables;
+
+  for (; vp != NULL && result; vp = vp->next) {
+    /* Skip dummy structured binding pack variables. */
+    if (vp->is_pack && vp->compiler_generated) continue;
+    /* Ordinarily, local variables are allocated and initialized when
+       interpreting their associated stmk_init entry.  In C++20,
+       however, uninitialized variables are permitted in constexpr
+       expressions (via changes introduced by P1331R2). */
+    if (vp->init_kind == initk_none) {
+      (void)do_constexpr_alloc_variable(ips, vp, &result);
+    }  /* if */
+  }  /* for */
+  if (result && scope->variables != NULL) {
+    result = init_static_variables(ips, scope);
+  }  /* if */
+  return result;
+}  /* init_constexpr_scope_variables */
+
+
+static void unmap_constexpr_scope_variables(an_interpreter_state *ips,
+                                            a_scope_ptr          scope,
+                                            a_boolean            result)
+/*
+Unmap the automatic variables of scope after constant evaluation by ips,
+releasing pointer variant paths when their initialization state is known.
+result indicates whether evaluation completed normally.
+*/
+{
+  a_variable_ptr  vp = scope->nonstatic_variables;
+  a_boolean       vars_initialized =
+                            result || (transfer_pending(ips) &&
+                                       ips->transfer.kind != ctk_throw);
+  for (; vp != NULL; vp = vp->next) {
+    if (is_pointer_type(vp->type)) {
+      a_byte  *var_bytes;
+      get_stack_bytes(ips, vp, var_bytes);
+      if (var_bytes != NULL && vars_initialized &&
+          var_storage_is_in_curr_frame(
+                              ips, var_postfix_for(ips, vp, var_bytes)) &&
+          complete_object_is_initialized(var_bytes)) {
+        /* Release the variant path of a pointer variable of this block
+           that has a value.  The variable may not have been reached (or
+           been given a value) if a control transfer left the block early.
+           If interpretation failed or an exception was thrown, the
+           initialization state of var_bytes is uncertain.  Rely on
+           reclaim_variant_path_entries to recover entries in that case. */
+        release_variant_path_if_needed(var_bytes);
+      }  /* if */
+    }  /* if */
+    do_constexpr_unmap_variable(ips, vp);
+  }  /* for */
+}  /* unmap_constexpr_scope_variables */
+
+
 static void process_block_work(an_interpreter_state      *ips,
                                an_interpreter_work_item  *item)
 /*
@@ -8646,26 +8740,8 @@ statement that is or contains that label.
         save_storage_stack(ips, item->variant.block.saved_stack);
         local_storage = TRUE;
         item->needs_cleanup = TRUE;
-        for (; vp != NULL && result; vp = vp->next) {
-          /* Skip dummy structured binding pack variables. */
-          if (vp->is_pack && vp->compiler_generated) continue;
-          /* Ordinarily, local variables are allocated and initialized when
-             interpreting their associated stmk_init entry.  In C++20,
-             however, uninitialized variables are permitted in constexpr
-             expressions (via changes introduced by P1331R2). */
-          if (vp->init_kind == initk_none) {
-            (void)do_constexpr_alloc_variable(ips, vp, &result);
-          }  /* if */
-        }  /* for */
       }  /* if */
-      if (result && scope->variables != NULL) {
-        /* There are local static variables.  That is normally not possible
-           in constexpr functions, but the implied static variables for
-           __func__ and similar constructs are permitted. */
-        if (!init_static_variables(ips, scope)) {
-          result = FALSE;
-        }  /* if */
-      }  /* if */
+      result = init_constexpr_scope_variables(ips, scope);
     }  /* if */
     if (result && ips->switch_entry != NULL) {
       stmt = substatement_leading_to_switch_entry(ips, block_stmt);
@@ -8692,34 +8768,90 @@ statement that is or contains that label.
   }  /* if */
   /* Release and unmap the local storage if necessary. */
   if (local_storage) {
-    a_variable_ptr  vp = scope->nonstatic_variables;
-    a_boolean       vars_initialized =
-                              result || (transfer_pending(ips) &&
-                                         ips->transfer.kind != ctk_throw);
-    for (; vp != NULL; vp = vp->next) {
-      if (skip_typerefs(vp->type)->kind == (a_type_kind)tk_pointer) {
-        a_byte  *var_bytes;
-        get_stack_bytes(ips, vp, var_bytes);
-        if (var_bytes != NULL && vars_initialized &&
-            var_storage_is_in_curr_frame(
-                                ips, var_postfix_for(ips, vp, var_bytes)) &&
-            complete_object_is_initialized(var_bytes)) {
-          /* Release the variant path of a pointer variable of this block
-             that has a value.  The variable may not have been reached (or
-             been given a value) if a control transfer left the block early.
-             If interpretation failed or an exception was thrown, the
-             initialization state of var_bytes is uncertain.  Rely on
-             reclaim_variant_path_entries to recover entries in that case. */
-          release_variant_path_if_needed(var_bytes);
-        }  /* if */
-      }  /* if */
-      do_constexpr_unmap_variable(ips, vp);
-    }  /* for */
+    unmap_constexpr_scope_variables(ips, scope, result);
     restore_storage_stack(ips, item->variant.block.saved_stack, result);
   }  /* if */
 done:
   end_work_visit(ips, result, pop_when_done);
 }  /* process_block_work */
+
+
+static void process_expansion_work(an_interpreter_state      *ips,
+                                   an_interpreter_work_item  *item)
+/*
+Perform the next visit to the given iwk_expansion work item, interpreting the
+statements of the equivalent compound-statement of an expansion statement
+(N5050 [stmt.expand]/5) one per visit.  The expansion is not a loop, but it
+shares the loop handling of "break" and "continue": A "break" in an element
+body ends the whole expansion, and a "continue" ends the current element body
+only (N5050 [stmt.cont]).  Both are completed here, because the break label is
+defined after the expansion statement and each continue label at the end of
+its element block.  A "return" or a thrown exception propagates.
+*/
+{
+  a_statement_ptr             stmt = (a_statement_ptr)item->il_entry;
+  an_expansion_stmt_info_ptr  expn_info = expn_info_of(stmt);
+  a_boolean                   result = work_completed_normally(ips);
+  a_boolean                   pop_when_done = TRUE;
+
+  if (item->phase == iwp_start) {
+    /* Save the current storage state to enable deallocation of the storage
+       allocated for the expansion (including that of the variables declared
+       in the init-statement). */
+    save_storage_stack(ips, item->variant.expansion.saved_stack);
+    item->needs_cleanup = TRUE;
+    item->variant.expansion.next_stmt =
+             expn_info->expanded_statement->variant.block.statements;
+    item->phase = iwp_2nd_resume;
+    result = init_constexpr_scope_variables(ips, expn_info->expansion_scope);
+    if (result && expn_info->initialization != NULL) {
+      /* Run the init-statement first. */
+      item->phase = iwp_1st_resume;
+      push_stmt_work(ips, expn_info->initialization);
+      pop_when_done = FALSE;
+      goto done;
+    }  /* if */
+  } else {
+    /* The init-statement (if any) or a statement of the equivalent
+       compound-statement has completed.  Complete a pending break or
+       continue that applies to the expansion. */
+    if (item->phase == iwp_1st_resume) {
+      item->phase = iwp_2nd_resume;
+    }  /* if */
+    if (!result && !ips->failed) {
+      if (ips->transfer.kind == ctk_continue) {
+        /* A continue ends the current element body only; interpret the next
+           element. */
+        ips->transfer.kind = ctk_none;
+        result = TRUE;
+      } else if (ips->transfer.kind == ctk_loop_break) {
+        /* A break ends the whole expansion. */
+        ips->transfer.kind = ctk_none;
+        item->variant.expansion.next_stmt = NULL;
+        result = TRUE;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  if (result) {
+    a_statement_ptr  next_stmt = item->variant.expansion.next_stmt;
+    if (next_stmt != NULL) {
+      item->variant.expansion.next_stmt = next_stmt->next;
+      push_stmt_work(ips, next_stmt);
+      pop_when_done = FALSE;
+      goto done;
+    }  /* if */
+  }  /* if */
+  /* Unmap the variables in the expansion scope, including those declared
+     by the init-statement, if any. */
+  { a_scope_ptr  expansion_scope = item->variant.expansion.scope;
+    if (expansion_scope != NULL) {
+      unmap_constexpr_scope_variables(ips, expansion_scope, result);
+    }  /* if */
+  }
+  restore_storage_stack(ips, item->variant.expansion.saved_stack, result);
+done:
+  end_work_visit(ips, result, pop_when_done);
+}  /* process_expansion_work */
 
 
 static a_boolean do_constexpr_block_statement(an_interpreter_state  *ips,
@@ -9690,6 +9822,24 @@ transfer, or perform their cleanup and let it propagate further.
         }  /* if */
         goto resume;
       }
+    case stmk_expansion_statement:
+      if (expn_info_of(stmt)->expanded_statement == NULL) {
+        /* The compile-time expansion was not done (a dependent or
+           unsupported case); the statement cannot be interpreted. */
+        info_with_pos(ec_constexpr_statement_cannot_be_interpreted,
+                      &stmt->position, ips);
+        do_constexpr_fail(result);
+      } else {
+        /* The compile-time expansion has been done: Interpret the
+           equivalent compound-statement, including the init-statement (see
+           process_expansion_work and an_expansion_stmt_info). */
+        item->kind = iwk_expansion;
+        item->phase = iwp_start;
+        item->variant.expansion.scope = expn_info_of(stmt)->expansion_scope;
+        pop_when_done = FALSE;
+        goto done;
+      }  /* if */
+      break;
     case stmk_switch_case:
       /* Nothing to do. */
       break;

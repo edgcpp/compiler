@@ -753,7 +753,9 @@ unnamed type ends up being an "anonymous union".
              ssep = &scope_stack[scope_depth];
   a_boolean  local_scope = is_local_scope_kind(ssep->kind);
 
-  if (local_scope) {
+  if (ssep->in_expansion_statement_body) {
+    /* Prototype entities do not participate in linkage-name numbering. */
+  } else if (local_scope) {
     /* Local scope entities use a "collision table". */
     compute_local_name_collision_discriminator(sym, scope_depth);
   } else if (sym->kind == (a_symbol_kind)sk_class_or_struct_tag &&
@@ -806,16 +808,18 @@ discriminator field in the symbol supplement.
 
   check_assertion(is_unnamed_tag_symbol(sym) &&
                   !type->source_corresp.name_has_been_mangled);
-  if (local_scope) {
+  if (ssep->in_expansion_statement_body) {
+    /* No discriminator was assigned to the prototype entity. */
+  } else if (local_scope) {
     a_symbol_list_entry_ptr  *p_sep, sep;
     p_sep = get_name_collision_list(sym, scope_depth);
     /* The given symbol must be on the list, but new (named) symbols may
        already have been added. */
-    check_assertion(p_sep != NULL);
+    check_assertion(*p_sep != NULL);
     while ((*p_sep)->symbol != sym) {
       check_assertion(!is_unnamed_tag_symbol((*p_sep)->symbol));
       p_sep = &(*p_sep)->next;
-      check_assertion(p_sep != NULL);
+      check_assertion(*p_sep != NULL);
     }  /* while */
     /* Remove and dispose of the list entry. */
     sep = *p_sep;
@@ -3094,6 +3098,10 @@ the scope being pushed.
   ssep->kind                     = kind;
   ssep->inside_local_class       = inside_local_class;
   ssep->alias_in_template_decl   = (options & PS_ALIAS_IN_TEMPLATE_DECL) != 0;
+  ssep->expansion_statement      = NULL;
+  ssep->definition_lookup_decl_seq = NO_DECL_SEQUENCE_NUMBER;
+  ssep->definition_replay_info   = template_decl_info == NULL ? NULL :
+                                      &template_decl_info->definition_info;
   ssep->record_form_of_name_reference = kind == (a_scope_kind)sck_file &&
                                         record_form_of_name_reference;
   ssep->microsoft_specialization_instantiation_scope =
@@ -3384,6 +3392,18 @@ the scope being pushed.
                                    (options & PS_PROTOTYPE_INSTANTIATION) != 0;
       ssep->in_nonreal_instantiation =
                                    (options & PS_NONREAL_INSTANTIATION) != 0;
+      ssep->in_expansion_statement_body = FALSE;
+      ssep->in_expansion_element_rescan = FALSE;
+      ssep->in_expansion_range_decl = FALSE;
+      ssep->in_expansion_element_body = FALSE;
+      if (ssep->in_prototype_instantiation && template_sym != NULL &&
+          symbol_is(template_sym, sk_function_template) &&
+          template_sym->is_class_member &&
+          class_type_supp(sym_parent_class(template_sym))
+                                                   ->is_lambda_closure_class) {
+        ssep->in_expansion_statement_body =
+                                         (ssep-1)->in_expansion_statement_body;
+      }  /* if */
       ssep->in_generic_definition = (options & PS_GENERIC_DEFINITION) != 0;
       ssep->exception_specification = (options & PS_EXCEPTION_SPEC) != 0;
       ssep->is_default_template_arg =
@@ -3412,8 +3432,10 @@ the scope being pushed.
       }  /* if */
       /* Initialize the pointer to the dependent call list for this
          template. */
-      ssep->next_nondependent_call = template_decl_info->nondependent_calls;
-      ssep->last_pack_expansion_used = template_decl_info->pack_expansions;
+      ssep->next_nondependent_call =
+                              ssep->definition_replay_info->nondependent_calls;
+      ssep->last_pack_expansion_used =
+                            ssep->definition_replay_info->pack_expansions.head;
     } else if (kind != (a_scope_kind)sck_file &&
                kind != (a_scope_kind)sck_instantiation_context) {
       if (kind == (a_scope_kind)sck_function &&
@@ -3425,6 +3447,10 @@ the scope being pushed.
            should not be considered to be within a prototype instantiation. */
         ssep->in_prototype_instantiation = FALSE;
         ssep->in_nonreal_instantiation = FALSE;
+        ssep->in_expansion_statement_body = FALSE;
+        ssep->in_expansion_element_rescan = FALSE;
+        ssep->in_expansion_range_decl = FALSE;
+        ssep->in_expansion_element_body = FALSE;
         ssep->in_variadic_template = FALSE;
         ssep->in_generic_definition = FALSE;
         ssep->exception_specification = FALSE;
@@ -3438,6 +3464,12 @@ the scope being pushed.
                                           (ssep-1)->in_prototype_instantiation;
         ssep->in_nonreal_instantiation =
                                           (ssep-1)->in_nonreal_instantiation;
+        ssep->in_expansion_statement_body =
+                                         (ssep-1)->in_expansion_statement_body;
+        ssep->in_expansion_element_rescan =
+                                         (ssep-1)->in_expansion_element_rescan;
+        ssep->in_expansion_range_decl =   FALSE;
+        ssep->in_expansion_element_body = FALSE;
         ssep->in_generic_definition =
                                           (ssep-1)->in_generic_definition;
         ssep->exception_specification =
@@ -5862,7 +5894,7 @@ class to be defined.
       a_template_symbol_supplement_ptr  tssp =
                                   template_supplement_for_symbol(template_sym);
       scope_stack[depth_scope_stack].decl_seq_for_lookup =
-                                              tssp->cache->decl_info->decl_seq;
+                              tssp->cache->decl_info->definition_info.decl_seq;
     }  /* if */
   }  /* if */
   if (!use_existing_context) {
@@ -5886,7 +5918,7 @@ class to be defined.
                                        NO_DECL_SEQUENCE_NUMBER);
     { a_decl_sequence_number	decl_seq;
       /* Set the active using flags for the newly created context. */
-      decl_seq = decl_info->decl_seq;
+      decl_seq = decl_info->definition_info.decl_seq;
       if (!do_dependent_name_processing && !gpp_using_directive_lookup &&
           (assoc_routine != NULL || assoc_type != NULL)) {
         /* When not doing dependent name lookup, all using-directives are
@@ -9853,21 +9885,25 @@ set correctly.
 
 static void clear_pack_expansion_variables(a_scope_stack_entry_ptr	ssep)
 /*
-Go through the pack expansion entries pointed to by ssep and clear the
-variable pointers of any variable symbols to prevent references to freed
-memory regions.
+Go through all descriptors in the template declaration information of ssep
+and clear variable-symbol pointers for variables declared in that scope,
+which is being popped.  Binding references retain their prototype variables
+for find_binding_for_pack; they are not handled by this cleanup.
 */
 {
-  a_template_decl_info_ptr	tdip = ssep->template_decl_info;
-  a_pack_expansion_descr_ptr	pedp = tdip->pack_expansions;
-  a_pack_reference_ptr		prp;
+  a_template_decl_info_ptr   tdip = ssep->template_decl_info;
+  a_pack_expansion_descr_ptr pedp = tdip->definition_info.pack_expansions.head;
+  a_pack_reference_ptr       prp;
 
-  for (prp = pedp->packs_referenced; prp != NULL; prp = prp->next) {
-    /* Only clear the pointer when the scope containing the variable is
-       being popped. */
-    if (prp->kind == prk_variable && prp->symbol->decl_scope == ssep->number) {
-      prp->symbol->variant.variable.ptr = NULL;
-    }  /* if */
+  for (; pedp != NULL; pedp = pedp->next) {
+    for (prp = pedp->packs_referenced; prp != NULL; prp = prp->next) {
+      /* Only clear the pointer when the scope containing the variable is
+         being popped. */
+      if (prp->kind == prk_variable &&
+          prp->symbol->decl_scope == ssep->number) {
+        prp->symbol->variant.variable.ptr = NULL;
+      }  /* if */
+    }  /* for */
   }  /* for */
 }  /* clear_pack_expansion_variables */
 
@@ -10458,7 +10494,7 @@ being popped.
     pop_saved_stmt_scope_stack();
   }  /* if */
   if (ssep->template_decl_info != NULL &&
-      ssep->template_decl_info->pack_expansions != NULL) {
+      ssep->template_decl_info->definition_info.pack_expansions.head != NULL) {
     /* The variable entries in pack expansions are cleared to prevent
        references to freed memory regions. */
     clear_pack_expansion_variables(ssep);
@@ -11324,17 +11360,69 @@ scope or template instantiation scope for a prototype instantiation.
 }  /* get_outermost_template_dependent_context */
 
 
+static a_scope_stack_entry_ptr outermost_expansion_stmt_body_scope(void)
+/*
+Return the scope stack entry of the outermost scope that is part of the
+compound-statement of an expansion statement currently being scanned (i.e., the
+scope of the for-range-declaration, which is pushed and flagged when the
+statement is scanned and is reactivated for the prototype scan of the
+compound-statement).  Nested expansion prototypes share this outermost
+prototype scope for pack references.  Its previous entry identifies the
+expansion statement that owns their descriptors when there is no enclosing
+template-dependent context.  Called only when in_expansion_statement_body is
+set on the current scope.
+*/
+{
+  a_scope_stack_entry_ptr  ssep = &scope_stack_top();
+
+  while (previous_scope_of(ssep) != NULL &&
+         previous_scope_of(ssep)->in_expansion_statement_body) {
+    ssep = previous_scope_of(ssep);
+  }  /* while */
+  return ssep;
+}  /* outermost_expansion_stmt_body_scope */
+
+
+a_boolean in_expansion_prototype_without_enclosing_template(void)
+/*
+Return TRUE if the current expansion prototype has no enclosing template
+declaration, prototype instantiation, or nonreal instantiation context.  A real
+instantiation is not a template definition context, so it does not prevent this
+from being TRUE; callers that must distinguish one should test
+is_real_instantiation_context first.
+*/
+{
+  a_boolean  result = FALSE;
+
+  if (scope_stack_top().in_expansion_statement_body &&
+      depth_template_declaration_scope == NO_SCOPE_DEPTH) {
+    a_scope_stack_entry_ptr  ssep =
+                      previous_scope_of(outermost_expansion_stmt_body_scope());
+    result = !ssep->in_prototype_instantiation &&
+             !ssep->in_nonreal_instantiation;
+  }  /* if */
+  return result;
+}  /* in_expansion_prototype_without_enclosing_template */
+
+
 static a_scope_stack_entry_ptr get_scope_for_pack_references(void)
 /*
 Return the scope stack entry on which pack references in the current context
-should be recorded.
+should be recorded and from which they are extracted.  In an enclosing
+template-dependent context, even binding packs local to an expansion body use
+the normal template context so enclosing patterns can find them.  Otherwise
+references belong to the outermost active expansion prototype scope (whose
+previous entry owns the descriptor list).
 */
 {
   a_scope_stack_entry_ptr  ssep;
 
-  if (scope_stack_top().in_nonreal_instantiation &&
-      scope_stack_top().is_default_template_arg &&
-      enclosing_scope_is_prototype_instantiation_context()) {
+  if (in_expansion_prototype_without_enclosing_template()) {
+    /* Without an enclosing template, references belong to this prototype. */
+    ssep = outermost_expansion_stmt_body_scope();
+  } else if (scope_stack_top().in_nonreal_instantiation &&
+             scope_stack_top().is_default_template_arg &&
+             enclosing_scope_is_prototype_instantiation_context()) {
     /* Keep references introduced while rescanning a default template argument
        local to that rescan.  They may be expanded by an enclosing context, but
        their token sequence numbers come from the default argument declaration
@@ -11345,6 +11433,177 @@ should be recorded.
   }  /* if */
   return ssep;
 }  /* get_scope_for_pack_references */
+
+
+a_scope_stack_entry_ptr definition_recording_scope(a_boolean innermost)
+/*
+Return the owner of records produced by definition checking.  Preserve the
+ordinary template ownership rules (outermost for packs, innermost for calls).
+Without a template, nested expansion prototypes share their outermost owner.
+*/
+{
+  a_scope_stack_entry_ptr owner;
+
+  if (in_expansion_prototype_without_enclosing_template()) {
+    owner = previous_scope_of(outermost_expansion_stmt_body_scope());
+    if (owner->definition_replay_info == NULL) {
+      /* The special for-range-declaration scan can record packs or calls
+         before the body definition scan begins. */
+      an_expansion_stmt_info_ptr expn_info = owner->expansion_statement->
+                                        variant.expansion_statement.extra_info;
+      expn_info->definition_info = alloc_definition_replay_info();
+      expn_info->definition_info->decl_seq = decl_seq_counter;
+      owner->definition_replay_info = expn_info->definition_info;
+    }  /* if */
+  } else {
+    owner = innermost ? get_innermost_template_dependent_context() :
+                        get_outermost_template_dependent_context();
+  }  /* if */
+  return owner;
+}  /* definition_recording_scope */
+
+
+a_scope_stack_entry_ptr definition_replay_scope(void)
+/*
+Find the innermost active replay cursor.  Independent template instantiations
+are boundaries: An expansion in the caller must not affect an independently
+instantiated callee.  Callers must not retain the returned pointer across
+scans.
+*/
+{
+  a_scope_stack_entry_ptr ssep = &scope_stack_top();
+  a_scope_stack_entry_ptr result = NULL;
+
+  for (; ssep != NULL; ssep = previous_scope_of(ssep)) {
+    if (ssep->definition_replay_info != NULL &&
+        (ssep->kind == sck_template_instantiation ||
+         ssep->definition_lookup_decl_seq != NO_DECL_SEQUENCE_NUMBER ||
+         ssep->expansion_statement != NULL)) {
+      result = ssep;
+      break;
+    }  /* if */
+    if (ssep->kind == sck_template_instantiation ||
+        (ssep->kind == sck_function &&
+         ssep->assoc_routine->compiler_generated &&
+         !ssep->assoc_routine->is_prototype_instantiation)) break;
+  }  /* for */
+  return result;
+}  /* definition_replay_scope */
+
+
+a_boolean is_nondependent_call_recording_context(void)
+/*
+Return TRUE if the current context records the outcome of overload resolution
+for a nondependent call.  Only initial definition checking records; an
+expansion prototype revisited during a real instantiation reuses existing
+records instead.  Concept rescans and nested real instantiations are excluded.
+*/
+{
+  return is_prototype_instantiation_or_expansion_context() &&
+         !scope_stack_top().in_concept_rescan &&
+         !is_nested_in_real_instantiation() &&
+         !(scope_stack_top().in_expansion_statement_body &&
+           is_real_instantiation_context());
+}  /* is_nondependent_call_recording_context */
+
+
+a_boolean is_nondependent_call_reuse_context(void)
+/*
+Return TRUE if the current context can reuse the outcome of overload resolution
+recorded for a nondependent call: a real template instantiation or an expansion
+element rescan.  A nested definition is checked rather than treated as a real
+replay.
+*/
+{
+  return !is_prototype_instantiation_or_expansion_context() &&
+         (is_nonspecialized_instantiation_context() ||
+          scope_stack_top().in_expansion_element_rescan);
+}  /* is_nondependent_call_reuse_context */
+
+
+static void initialize_definition_scan_cursors(a_scope_stack_entry_ptr ssep)
+/*
+Start an independent traversal of persistent definition records.
+*/
+{
+  ssep->next_nondependent_call =
+                              ssep->definition_replay_info->nondependent_calls;
+  ssep->last_pack_expansion_used =
+                            ssep->definition_replay_info->pack_expansions.head;
+}  /* initialize_definition_scan_cursors */
+
+
+void begin_expansion_definition_scan(an_expansion_stmt_info_ptr expn_info)
+/*
+Enter definition checking on the reactivated iterator block, retaining the
+actual enclosing function and its return/lookup context.  The header has
+already been scanned; its special declaration handling is independent.
+*/
+{
+  a_scope_stack_entry_ptr owner;
+  a_scope_stack_entry_ptr expansion_scope =
+                                         previous_scope_of(&scope_stack_top());
+
+  check_assertion(scope_stack_top().il_scope == expn_info->iterator_scope);
+  /* Capture the boundary before checking the body.  Replays must not use the
+     later counter value after earlier elements have been instantiated. */
+  expansion_scope->definition_lookup_decl_seq = decl_seq_counter;
+  scope_stack_top().in_expansion_statement_body = TRUE;
+  scope_stack_top().slow_lookup_required = TRUE;
+  if (is_real_instantiation_context() ||
+      scope_stack_top().in_nonreal_instantiation) {
+    /* A definition scan repeated in a real instantiation must reuse the
+       enclosing template's records, not create an empty expansion-only list.
+       Test this before in_expansion_prototype_without_enclosing_template,
+       which excludes only enclosing prototype and nonreal instantiations. */
+    owner = scope_stack_entry_for(depth_innermost_instantiation_scope);
+  } else {
+    /* In an expansion prototype without an enclosing template, the
+       innermost/outermost choice does not apply (see
+       definition_recording_scope). */
+    owner = definition_recording_scope(/*innermost=*/TRUE);
+  }  /* if */
+  scope_stack_top().definition_replay_info = owner->definition_replay_info;
+  if (expn_info->definition_info != NULL) {
+    expn_info->definition_info->decl_seq =
+                                   expansion_scope->definition_lookup_decl_seq;
+  }  /* if */
+  scope_stack_top().definition_lookup_decl_seq =
+                                   expansion_scope->definition_lookup_decl_seq;
+  initialize_definition_scan_cursors(&scope_stack_top());
+}  /* begin_expansion_definition_scan */
+
+
+void begin_expansion_element_scan(an_expansion_stmt_info_ptr expn_info)
+/*
+Enter one element replay in its generated block.  Use the statement's own
+state when available, otherwise the active enclosing definition's records.
+Each element starts fresh cursors, so nested rescans do not consume an outer
+scan's traversal state.
+*/
+{
+  a_definition_replay_info_ptr  info = expn_info->definition_info;
+  a_scope_stack_entry_ptr       expansion_scope = &scope_stack_top();
+
+  while (expansion_scope->expansion_statement == NULL ||
+         expansion_scope->expansion_statement->
+             variant.expansion_statement.extra_info != expn_info) {
+    expansion_scope = previous_scope_of(expansion_scope);
+    check_assertion(expansion_scope != NULL);
+  }  /* while */
+  if (info == NULL) {
+    a_scope_stack_entry_ptr owner = definition_replay_scope();
+    check_assertion(owner != NULL);
+    info = owner->definition_replay_info;
+  }  /* if */
+  scope_stack_top().definition_replay_info = info;
+  scope_stack_top().definition_lookup_decl_seq =
+                         expn_info->definition_info != NULL ? info->decl_seq :
+                                   expansion_scope->definition_lookup_decl_seq;
+  scope_stack_top().in_expansion_element_rescan = TRUE;
+  scope_stack_top().slow_lookup_required = TRUE;
+  initialize_definition_scan_cursors(&scope_stack_top());
+}  /* begin_expansion_element_scan */
 
 
 a_template_decl_info_ptr get_specified_template_decl_info(
@@ -11465,21 +11724,42 @@ STATIC_THREAD int
                 depth_tentative_pack_expansions;
 
 
+static a_pack_expansion_descr_list *pack_expansion_list_for_scope(
+                                                  a_scope_stack_entry_ptr ssep)
+/*
+Return the descriptor list associated with ssep, which must be an expansion
+statement scope or a template declaration/instantiation scope with template
+declaration information.  This only accesses the list; it does not select the
+owner for the current context.  An expansion scope inside a template can have
+an empty list because the enclosing template owns its descriptors.  Scan
+cursors are kept separately on the scope stack entries.
+*/
+{
+  a_pack_expansion_descr_list  *list;
+
+  check_assertion(ssep->definition_replay_info != NULL);
+  list = &ssep->definition_replay_info->pack_expansions;
+  return list;
+}  /* pack_expansion_list_for_scope */
+
+
 void begin_tentative_pack_expansion_context(void)
 /*
 We are about to begin the initial scan of a function declarator that might
-add pack expansions that must be reverted.  If we are in a template
-dependent context, begin marking new pack expansion descriptors as
-associated with this scan, to allow them to be identified for removal if
-necessary, and save the current value of last_pack_expansion_used in each
-instantiation scope for possible restoration.
+add pack expansions that must be reverted.  In a template instantiation or
+an expansion-only prototype, mark new descriptors with the tentative scan
+depth and save each instantiation or expansion scope's cursor for possible
+restoration.  Expansion scopes must be included even without an enclosing
+instantiation scope (e.g., a generic lambda declarator in an expansion body).
 */
 {
-  if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH) {
+  if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH ||
+      in_expansion_prototype_without_enclosing_template()) {
     a_scope_stack_entry_ptr ssep;
-    for (ssep = &scope_stack[depth_innermost_instantiation_scope];
+    for (ssep = &scope_stack_top();
          ssep != NULL; ssep = previous_scope_of(ssep)) {
-      if (ssep->kind == sck_template_instantiation) {
+      if (ssep->definition_replay_info != NULL &&
+          ssep->kind != sck_template_declaration) {
         ssep->saved_last_pack_expansion_used = ssep->last_pack_expansion_used;
       }  /* if */
     }  /* for */
@@ -11542,39 +11822,42 @@ Return the pack expansion descriptor pedp to the available list.
 void end_tentative_pack_expansion_context(a_boolean remove_descriptors)
 /*
 We have just finished the initial scan of a function declarator that might
-have added pack expansions that must be reverted.  If we are in a template
-dependent context, scan the list of pack expansion descriptors in each
-instantiation scope on the scope stack.  For each descriptor that matches
-the current tentative pack expansion depth, either remove the descriptor
-from the list (if remove_descriptors is TRUE) or reset its depth to 0.
+have added pack expansions that must be reverted.  Visit the instantiation
+and expansion scopes considered by begin_tentative_pack_expansion_context.
+For each descriptor matching the current tentative pack expansion depth,
+either remove it from the list (if remove_descriptors is TRUE) or reset
+its depth to 0.
 Also, if remove_descriptors is TRUE, restore the value of
-last_pack_expansion_used in each affected instantiation scope stack entry.
+last_pack_expansion_used in each affected scope stack entry.
 */
 {
-  if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH) {
+  if (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH ||
+      in_expansion_prototype_without_enclosing_template()) {
     a_scope_stack_entry_ptr    ssep;
     a_pack_expansion_descr_ptr pedp;
-    for (ssep = &scope_stack[depth_innermost_instantiation_scope];
+    for (ssep = &scope_stack_top();
          ssep != NULL; ssep = previous_scope_of(ssep)) {
-      if (ssep->kind == sck_template_instantiation) {
-        a_boolean change_made = FALSE;
-        pedp = ssep->template_decl_info->pack_expansions;
+      if (ssep->definition_replay_info != NULL &&
+          ssep->kind != sck_template_declaration) {
+        a_pack_expansion_descr_list  *list =
+                                           pack_expansion_list_for_scope(ssep);
+        pedp = list->head;
         while (pedp != NULL) {
           if (pedp->tentative_pack_expansion_depth >=
                                              depth_tentative_pack_expansions) {
             check_assertion(pedp->tentative_pack_expansion_depth ==
                                               depth_tentative_pack_expansions);
-            change_made = TRUE;
             if (remove_descriptors) {
-              /* Remove the descriptor from the list. */
+              /* Remove the descriptor.  A shared view is read-only. */
               a_pack_expansion_descr_ptr old_pedp;
+              check_assertion(list->tail != NULL || list->head == NULL);
               if (pedp->previous == NULL) {
-                ssep->template_decl_info->pack_expansions = pedp->next;
+                list->head = pedp->next;
               } else {
                 pedp->previous->next = pedp->next;
               }  /* if */
               if (pedp->next == NULL) {
-                ssep->template_decl_info->last_pack_expansion = pedp->previous;
+                list->tail = pedp->previous;
               } else {
                 pedp->next->previous = pedp->previous;
               }  /* if */
@@ -11590,9 +11873,10 @@ last_pack_expansion_used in each affected instantiation scope stack entry.
             pedp = pedp->next;
           }  /* if */
         }  /* while */
-        if (remove_descriptors && change_made) {
-          /* Restore the value of last_pack_expansion_used to its value
-             before the initial parse. */
+        if (remove_descriptors) {
+          /* Several scans can share one list.  Restore every saved cursor,
+             including those whose descriptors were removed through another
+             scan of that same list. */
           ssep->last_pack_expansion_used =
                                           ssep->saved_last_pack_expansion_used;
         }  /* if */
@@ -11674,6 +11958,7 @@ to it.
   pesep->is_deduction = FALSE;
   pesep->is_suppression = FALSE;
   pesep->expansion_with_no_packs_diagnostic_issued = FALSE;
+  pesep->recorded_pack_expansion = FALSE;
   pesep->is_lookahead = FALSE;
   pesep->enclosing_packs_reset = FALSE;
   pesep->preserve_deduced_packs = FALSE;
@@ -11770,37 +12055,43 @@ Display the tokens that make up a pack expansion, for debugging purposes.
 
   if (is_prototype_instantiation_context()) {
     ssep = get_innermost_template_dependent_context();
+  } else if (in_expansion_prototype_without_enclosing_template()) {
+    /* No template token cache exists for an expansion outside a template. */
+    ssep = NULL;
   } else {
     ssep = scope_stack_entry_for(depth_innermost_instantiation_scope);
     check_assertion(ssep != NULL);
   }  /* if */
-  template_sym = ssep->template_sym;
-  if (template_sym != NULL) {
-    a_template_symbol_supplement_ptr	tssp;
-    a_token_cache_ptr			cache;
-    tssp = template_supplement_for_symbol(template_sym);
-    /* The tokens could come from the body cache or the declaration cache.
-       They could presumably also come from something like a default
-       argument cache, but that is not supported by this routine. */
-    cache = tssp->cache->tokens.ptr();
-    if (is_pack_within_cache(cache, pedp)) {
-      /* Use this cache. */
-      result_cache = cache;
-    } else if (is_function_or_template_symbol(template_sym)) {
-      /* Try the declaration cache for a function template. */
-      cache = tssp->variant.function.decl_cache->tokens.ptr();
+  if (ssep != NULL) {
+    template_sym = ssep->template_sym;
+    if (template_sym != NULL) {
+      a_template_symbol_supplement_ptr	tssp;
+      a_token_cache_ptr			cache;
+      tssp = template_supplement_for_symbol(template_sym);
+      /* The tokens could come from the body cache or the declaration cache.
+         They could presumably also come from something like a default
+         argument cache, but that is not supported by this routine. */
+      cache = tssp->cache->tokens.ptr();
       if (is_pack_within_cache(cache, pedp)) {
         /* Use this cache. */
         result_cache = cache;
+      } else if (is_function_or_template_symbol(template_sym)) {
+        /* Try the declaration cache for a function template. */
+        cache = tssp->variant.function.decl_cache->tokens.ptr();
+        if (is_pack_within_cache(cache, pedp)) {
+          /* Use this cache. */
+          result_cache = cache;
+        }  /* if */
       }  /* if */
-    }  /* if */
-    if (result_cache != NULL) {
-      init_token_string(result_cache->get_first_token()->get_source_position(),
-                        /*keep_spacing=*/FALSE,
-                        /*suppress_identifier_wrapping=*/FALSE);
-      add_token_cache_segment_to_string(result_cache, pedp->first_token,
-                                        pedp->last_token);
-      fprintf(f_debug, "%s\n", token_string());
+      if (result_cache != NULL) {
+        init_token_string(
+                result_cache->get_first_token()->get_source_position(),
+                /*keep_spacing=*/FALSE,
+                /*suppress_identifier_wrapping=*/FALSE);
+        add_token_cache_segment_to_string(result_cache, pedp->first_token,
+                                          pedp->last_token);
+        fprintf(f_debug, "%s\n", token_string());
+      }  /* if */
     }  /* if */
   }  /* if */
 }  /* db_pack_tokens */
@@ -11830,14 +12121,17 @@ expansion stack.
 
 static a_pack_expansion_descr_ptr get_pack_expansion_for_curr_context(void)
 /*
-Look for a pack expansion descriptor for the current token location.
-This is used during the actual instantiation of a variadic template to
-determine whether we are entering a pack expansion context.
+Look for a pack expansion descriptor for the current token location during
+template instantiation or a per-element expansion rescan.  Each active owner
+scope has its own last_pack_expansion_used cursor into a persistent list;
+lookup moves that cursor without changing the list.  Template instantiations
+use the template's list; expansion-only rescans use active expansion scopes.
 */
 {
   a_pack_expansion_descr_ptr	result_pedp = NULL;
   a_pack_expansion_descr_ptr	pedp;
   a_scope_stack_entry_ptr	ssep;
+  a_scope_depth			start_depth;
 
 #if DEBUG
   if (db_flag_is_set("packs")) {
@@ -11845,9 +12139,19 @@ determine whether we are entering a pack expansion context.
             (long)curr_token_sequence_number);
   }  /* if */
 #endif /* DEBUG */
-  for (ssep = scope_stack_entry_for(depth_innermost_instantiation_scope);
+  /* Element and nested definition scans have independent cursors even when
+     an ordinary template instantiation is active. */
+  start_depth = depth_scope_stack;
+  for (ssep = scope_stack_entry_for(start_depth);
        ssep != NULL; ssep = previous_scope_of(ssep)) {
-    if (ssep->kind == (a_scope_kind)sck_template_instantiation) {
+    if (ssep->definition_replay_info != NULL &&
+        (ssep->kind == sck_template_instantiation ||
+         ssep->definition_lookup_decl_seq != NO_DECL_SEQUENCE_NUMBER ||
+         ssep->expansion_statement != NULL)) {
+      /* Pack expansions for the body of an expansion statement not
+         enclosed by a template are recorded in the statement itself (see
+         record_pack_expansion); the cursor on the scope of the statement
+         finds them, like an instantiation scope cursor. */
       pedp = ssep->last_pack_expansion_used;
       /* Move forward or backward in the list of pack expansions to attempt to
          find one that matches the current token sequence number. */
@@ -13192,7 +13496,8 @@ entries.
 {
   a_pack_expansion_stack_entry_ptr	pesep = NULL;
 
-  if (is_prototype_instantiation_context() && is_variadic_template_context()) {
+  if (is_prototype_instantiation_or_expansion_context() &&
+      is_variadic_template_context()) {
     pesep = push_pack_expansion_stack();
     pesep->is_suppression = TRUE;
   }  /* if */
@@ -13236,7 +13541,8 @@ NULL if suppress_packs is FALSE.
   a_scope_stack_entry_ptr	ssep;
 
   *packs_suppressed = suppress_packs &&
-       is_prototype_instantiation_context() && is_variadic_template_context();
+       is_prototype_instantiation_or_expansion_context() &&
+       is_variadic_template_context();
   if (*packs_suppressed) {
     /* Disable variadic processing during the prescan. */
     push_expansion_suppression(pack_expansion_stack_entry);
@@ -13290,7 +13596,7 @@ Return TRUE if we are within the prototype instantiation of a generic lambda.
 {
   a_boolean			result = FALSE;
 
-  if (!is_prototype_instantiation_context()) {
+  if (!is_prototype_instantiation_or_expansion_context()) {
     /* We are not in a prototype instantiation context of any kind. */
   } else {
     a_scope_stack_entry_ptr	ssep = &scope_stack_top();
@@ -13460,7 +13766,8 @@ Return TRUE if we are nested within a real instantiation.
 static a_boolean is_alias_prototype_in_real_instantiation(void)
 /*
 Return TRUE if we are within the prototype instantiation of an alias
-template within a real instantiation of a class.
+template within a real instantiation of a class.  This requires an actual
+template instantiation scope; an expansion body outside a template has none.
 */
 {
   a_boolean			result = FALSE;
@@ -13514,7 +13821,10 @@ that *p_pedp is set even when FALSE is returned.
 
   pedp = get_pack_expansion_for_curr_context();
   *p_pedp = pedp;
-  if (pedp != NULL) {
+  if (scope_stack_top().in_expansion_statement_body) {
+    /* Packs are never instantiated during the prototype scan of an expansion
+       statement. */
+  } else if (pedp != NULL) {
     if (!is_uninstantiated_pack_expansion_context() &&
         !in_ms_nonreal_class_instantiation()) {
       result = TRUE;
@@ -13714,7 +14024,15 @@ pack-index scanner.
       a_template_param_ptr  templ_param_list;
       a_template_arg_ptr    templ_arg_list;
       a_boolean             err;
-      get_curr_template_params_and_args(&templ_param_list, &templ_arg_list);
+      if (depth_innermost_instantiation_scope == NO_SCOPE_DEPTH) {
+        /* Not in a template instantiation context: A per-element rescan,
+           in which only structured binding packs can be expanded (they
+           don't use template parameters or arguments). */
+        templ_param_list = NULL;
+        templ_arg_list = NULL;
+      } else {
+        get_curr_template_params_and_args(&templ_param_list, &templ_arg_list);
+      }  /* if */
       pesep = push_pack_instantiation(pedp, templ_param_list, templ_arg_list,
                                       /*is_rescan=*/FALSE,
                                       /*is_deduction=*/FALSE,
@@ -13754,6 +14072,12 @@ pack-index scanner.
          values for both T and U. */
       reset_enclosing_pack_values();
       pesep->enclosing_packs_reset = TRUE;
+      if (!(pedp->is_pack_index && !claim_pack_index)) {
+        /* A descriptor from an earlier scan for this context counts as
+           evidence of a pack in diagnostics (except for a pack-index
+           construct, whose descriptor belongs to the pack-index scanner). */
+        pesep->recorded_pack_expansion = TRUE;
+      }  /* if */
     }  /* if */
     /* Allocate an expansion descriptor for this stack entry. */
     pesep->expansion_descr = alloc_pack_expansion_descr();
@@ -13931,16 +14255,83 @@ pack expansion stack.
 }  /* end_pack_deduction_context */
 
 
-static void record_pack_expansion(a_pack_expansion_descr_ptr	pedp)
+static void insert_pack_expansion_descr_in_sorted_list(
+                                          a_pack_expansion_descr_ptr   pedp,
+                                          a_pack_expansion_descr_ptr   *p_head,
+                                          a_pack_expansion_descr_ptr   *p_tail)
 /*
-We have reached the end of a potential pack expansion context and
-there were parameter packs referenced.  Save the information needed
-to expand the pack in a real instantiation.
+Insert the pack expansion descriptor pedp into the list whose first and last
+entries are identified by *p_head and *p_tail, keeping the list sorted by
+starting token sequence number.  Normally an entry is just added to the end
+of the list, but for nested expansions an entry may have to be inserted
+earlier in the list.  (Used both for a template's descriptor list and for
+the one in an expansion statement; the scope stack cursor used to find
+the entries of either list is not updated here.)
 */
 {
-  a_template_decl_info_ptr	tdip;
-  a_scope_stack_entry_ptr	ssep;
+  a_pack_expansion_descr_ptr  insert_pedp = *p_tail;
 
+  /* A shared view (head non-NULL, tail NULL) is read-only. */
+  check_assertion(*p_tail != NULL || *p_head == NULL);
+  for (; insert_pedp != NULL &&
+         insert_pedp->first_token > pedp->first_token;
+       insert_pedp = insert_pedp->previous) {}
+  if (insert_pedp == NULL) {
+    pedp->previous = NULL;
+    pedp->next = *p_head;
+    if (*p_head != NULL) {
+      (*p_head)->previous = pedp;
+    }  /* if */
+    *p_head = pedp;
+  } else {
+    if (insert_pedp->next != NULL) insert_pedp->next->previous = pedp;
+    pedp->next = insert_pedp->next;
+    pedp->previous = insert_pedp;
+    insert_pedp->next = pedp;
+  }  /* if */
+  /* If this is the last entry on the list, update the last pointer. */
+  if (pedp->next == NULL) *p_tail = pedp;
+}  /* insert_pack_expansion_descr_in_sorted_list */
+
+
+static void record_pack_expansion(a_pack_expansion_descr_ptr	pedp)
+/*
+Save pedp, the descriptor for a completed pack expansion, for later token
+rescans.  An enclosing template-dependent context owns all descriptors,
+including those for binding packs local to expansion bodies.  Without such
+a context, the outermost active expansion prototype's statement owns the
+list.  Prototype scans in real instantiations reuse the template's recorded
+descriptors rather than adding copies.  Ownership is selected here, before
+pack_expansion_list_for_scope accesses the selected list.
+*/
+{
+  a_scope_stack_entry_ptr       ssep;
+  a_pack_expansion_descr_list   *list;
+
+  if (scope_stack_top().in_expansion_statement_body) {
+    if (is_real_instantiation_context()) {
+      /* A prototype scan in a real instantiation context: Do not record
+         the pack expansion; the per-element rescans use the one recorded
+         with the template definition. */
+      goto done;
+    } else if (in_expansion_prototype_without_enclosing_template()) {
+      /* Without an enclosing template-dependent context, nested prototypes
+         share the outermost active expansion statement's descriptor list.
+         The list is attached to the IL statement, so it survives popping
+         the prototype scope; per-element rescans find it by token range. */
+      ssep = definition_recording_scope(/*innermost=*/FALSE);
+      check_assertion(ssep != NULL && ssep->expansion_statement != NULL);
+      list = pack_expansion_list_for_scope(ssep);
+      insert_pack_expansion_descr_in_sorted_list(pedp, &list->head,
+                                                 &list->tail);
+      if (ssep->last_pack_expansion_used == NULL) {
+        /* This is also the initial cursor position for finding the
+           expansion (see get_pack_expansion_for_curr_context). */
+        ssep->last_pack_expansion_used = pedp;
+      }  /* if */
+      goto done;
+    }  /* if */
+  }  /* if */
 #if DEBUG
   if (db_flag_is_set("packs")) {
     fprintf(f_debug, "Recording pack expansion from %ld to %ld\n",
@@ -13950,36 +14341,13 @@ to expand the pack in a real instantiation.
 #endif /* DEBUG */
   /* Get the template declaration information entry associated with the
      current context. */
-  ssep = get_outermost_template_dependent_context();
-  tdip = ssep->template_decl_info;
+  ssep = definition_recording_scope(/*innermost=*/FALSE);
+  list = pack_expansion_list_for_scope(ssep);
   /* Set the last_pack_expansion_used field so that this pack expansion can
      be found by get_pack_expansion_for_curr_context. */
   ssep->last_pack_expansion_used = pedp;
-  /* Insert the new entry to preserve a list sorted by starting token
-     sequence number. */
-  {
-    a_pack_expansion_descr_ptr	last_pedp = tdip->last_pack_expansion; 
-    a_pack_expansion_descr_ptr	insert_pedp = last_pedp;
-    /* Normally entries will just be added to the end of the list, but
-       for nested expansions we may need to back up in the list. */
-    for (; insert_pedp != NULL &&
-           insert_pedp->first_token > pedp->first_token;
-         insert_pedp = insert_pedp->previous) {}
-    if (insert_pedp == NULL) {
-      pedp->next = tdip->pack_expansions;
-      if (tdip->pack_expansions != NULL) {
-        tdip->pack_expansions->previous = pedp;
-      }  /* if */
-      tdip->pack_expansions = pedp;
-    } else {
-      if (insert_pedp->next != NULL) insert_pedp->next->previous = pedp;
-      pedp->next = insert_pedp->next;
-      pedp->previous = insert_pedp;
-      insert_pedp->next = pedp;
-    }  /* if */
-    /* If this is the last entry on the list, update the last pointer. */
-    if (pedp->next == NULL) tdip->last_pack_expansion = pedp;
-  }
+  insert_pack_expansion_descr_in_sorted_list(pedp, &list->head, &list->tail);
+done: ;
 }  /* record_pack_expansion */
 
 
@@ -14202,11 +14570,12 @@ effect and returns NULL.
           result_pedp = pedp;
         }  /* if */
       } else {
-        /* There were no packs referenced.  This is not a pack expansion.
-           If a pack expansion ("...") has been seen, issue an error that
-           no packs were encountered. */
+        /* There were no packs referenced.  This is not a pack expansion.  If
+           "..." was seen, diagnose the missing packs, unless an earlier scan's
+           descriptor confirms this is a pack expansion. */
         if (pedp->ellipsis_seen &&
-            !pesep->expansion_with_no_packs_diagnostic_issued) {
+            !pesep->expansion_with_no_packs_diagnostic_issued &&
+            !pesep->recorded_pack_expansion) {
           pos_error(ec_expansion_contains_no_packs,
                     &pedp->ellipsis_position);
         }  /* if */
@@ -14541,7 +14910,7 @@ for more information.
       !pack_expansion_stack->is_suppression) {
     a_pack_expansion_stack_entry_ptr	pesep = pack_expansion_stack;
     result = pesep->expansion_descr->packs_referenced != NULL;
-    if (!result && is_prototype_instantiation_context()) {
+    if (!result && is_prototype_instantiation_or_expansion_context()) {
       a_scope_stack_entry_ptr	ssep;
       ssep = get_scope_for_pack_references();
       result = ssep->packs_referenced != NULL;
@@ -14571,7 +14940,10 @@ enclosing context.
       !pack_expansion_stack->is_suppression) {
     a_pack_expansion_stack_entry_ptr	pesep = pack_expansion_stack;
     result = pesep->expansion_descr->packs_referenced != NULL ||
-             pesep->contains_pack_reference;
+             pesep->contains_pack_reference ||
+             /* An earlier scan's descriptor shows this is a pack expansion
+                even if the current scan records no pack. */
+             pesep->recorded_pack_expansion;
   }  /* if */
   return result;
 }  /* any_packs_referenced_in_curr_context */
@@ -14606,7 +14978,15 @@ form.
       (pack_expansion_stack == NULL ||
        (!pack_expansion_stack->is_rescan &&
         !pack_expansion_stack->is_suppression))) {
-    if (bases_type != NULL || symbol_is_pack(pack_symbol)) {
+    if (bases_type != NULL || symbol_is_pack(pack_symbol) ||
+        (scope_stack_top().in_expansion_statement_body &&
+         pack_symbol != NULL && pack_symbol->kind == sk_variable &&
+         pack_symbol->variant.variable.ptr->is_struct_binding &&
+         pack_symbol->variant.variable.ptr->is_pack_element)) {
+      /* A structured binding marked is_pack_element is one element of the
+         per-element copy of an enclosing expansion's binding pack, whose
+         elements act as the pack during a nested prototype scan (function
+         parameter pack elements are excluded). */
       /* Add this pack symbol to the list of packs in the scope stack
          entry. */
       a_pack_reference_ptr		prp;
@@ -14753,7 +15133,7 @@ class list is returned.
   a_type_ptr	result = NULL;
 
   sym = symbol_for(bases_type);
-  if (is_prototype_instantiation_context()) {
+  if (is_prototype_instantiation_or_expansion_context()) {
     record_potential_pack_reference_full(sym, position,
                                          bases_type, direct_bases);
     result = bases_type;

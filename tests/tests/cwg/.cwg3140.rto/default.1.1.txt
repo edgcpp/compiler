@@ -1,18 +1,6 @@
 fe_only -DTEST_NUMBER=1 -A --c++26 Test_name.c
-"Test_name.c", line 13: error: explicit instantiation is not allowed in the current scope
+"Test_name.c", line 13: error: expected a "{"
     template for (auto x : a) {
-    ^
-
-"Test_name.c", line 16: warning: parsing restarts here after previous syntax error
-    return s;
-            ^
-
-"Test_name.c", line 11: warning: variable "a" was declared but never referenced
-    array_like a{{1, 2, 3}};
-               ^
-
-"Test_name.c", line 12: warning: variable "s" was declared but never referenced
-    int s = 0;
-        ^
+                           ^
 
 1 error detected in the compilation of "Test_name.c".
