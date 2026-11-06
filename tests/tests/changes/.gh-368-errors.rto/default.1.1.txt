@@ -1,0 +1,135 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 19: warning: statement is unreachable
+  constexpr int uncaught() { throw E{1}; return 0; }
+                                         ^
+
+"Test_name.c", line 20: error: expression must have a constant value
+  static_assert(uncaught() == 0);              // Uncaught E.
+                ^
+"Test_name.c", line 19: note: an exception of type "E" is thrown and not caught during constant evaluation
+  constexpr int uncaught() { throw E{1}; return 0; }
+                             ^
+
+"Test_name.c", line 24: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 26: error: expression must have a constant value
+  static_assert(wrong_handler() == 1);         // Uncaught int.
+                ^
+"Test_name.c", line 23: note: an exception of type "int" is thrown and not caught during constant evaluation
+    try { throw 1; } catch (long) { return 1; }
+          ^
+
+"Test_name.c", line 28: warning: statement is unreachable
+  constexpr int bare_rethrow() { throw; return 0; }
+                                        ^
+
+"Test_name.c", line 29: error: expression must have a constant value
+  static_assert(bare_rethrow() == 0);          // Nothing being handled.
+                ^
+"Test_name.c", line 28: note: a rethrow ("throw;") is evaluated when no exception is being handled
+  constexpr int bare_rethrow() { throw; return 0; }
+                                 ^
+
+"Test_name.c", line 36: error: expression must have a constant value
+  static_assert(noexcept_boundary() == 1);     // std::terminate.
+                ^
+"Test_name.c", line 31: note: std::terminate is called because an exception escapes from non-throwing function "nt" (declared at line 31)
+  constexpr void nt() noexcept { throw 1; }
+                                 ^
+"Test_name.c", line 33: note: called from:
+    try { nt(); } catch (int) { return 1; }
+            ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+  static_assert(implicit_noexcept_dtor() == 1);  // std::terminate.
+                ^
+"Test_name.c", line 38: note: std::terminate is called because an exception escapes from non-throwing function "Dtor::~Dtor" (declared at line 38)
+  struct Dtor { constexpr ~Dtor() { throw 1; } };
+                                    ^
+"Test_name.c", line 40: note: called from:
+    try { Dtor d; } catch (int) { return 1; }
+               ^
+
+"Test_name.c", line 50: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 52: error: expression must have a constant value
+  static_assert(during_unwinding() == 1);      // std::terminate.
+                ^
+"Test_name.c", line 46: note: std::terminate is called because an exception escapes from a destructor during stack unwinding
+    constexpr ~ThrowingDtor() noexcept(false) { throw 2; }
+                                                ^
+
+"Test_name.c", line 63: error: expression must have a constant value
+  static_assert(delete_array() == 1);          // std::terminate (element 0).
+                ^
+"Test_name.c", line 56: note: std::terminate is called because an exception escapes from a destructor during stack unwinding
+    constexpr ~Logged() noexcept(false) { if (id > 0) throw id; }
+                                                      ^
+
+"Test_name.c", line 74: error: expression must have a constant value
+  static_assert(ctor_handler_member() == 1);   // v accessed after destruction.
+                ^
+"Test_name.c", line 68: note: access to uninitialized object
+    catch (int) { (void)(v + 1); }
+                         ^
+"Test_name.c", line 71: note: called from:
+    try { CtorTry c; } catch (int) { return 1; }
+                  ^
+
+"Test_name.c", line 82: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 84: error: expression must have a constant value
+  static_assert(handler_init() == 1);          // std::terminate.
+                ^
+"Test_name.c", line 78: note: std::terminate is called because an exception escapes from the initialization of a handler parameter
+    constexpr ThrowingCopy(const ThrowingCopy&) { throw 3; }
+                                                  ^
+
+"Test_name.c", line 93: error: expression must have a constant value
+  static_assert(failed_assumption() == 0);     // Null pointer dereference.
+                ^
+"Test_name.c", line 91: note: attempt to access run-time storage
+    return *p;
+           ^
+
+"Test_name.c", line 110: error: expression must have a constant value
+  static_assert(noexcept_construct_at() == 1);  // std::terminate.
+                ^
+"Test_name.c", line 104: note: std::terminate is called because an exception escapes from non-throwing function "std::construct_at(T *) noexcept [with T=ThrowingCtor]" (declared at line 100)
+  struct ThrowingCtor { constexpr ThrowingCtor() { throw 1; } };
+                                                   ^
+"Test_name.c", line 107: note: called from:
+    try { std::construct_at(&u.t); } catch (int) { return 1; }
+                           ^
+
+"Test_name.c", line 120: error: expression must have a constant value
+  static_assert(returned_dtor_throws() == 1);  // std::terminate.
+                ^
+"Test_name.c", line 113: note: std::terminate is called because an exception escapes from a destructor during stack unwinding
+    constexpr ~ThrowingReturned() noexcept(false) { throw 1; }
+                                                    ^
+"Test_name.c", line 117: note: called from:
+    try { returned(); } catch (int) { return 1; }
+                  ^
+
+"Test_name.c", line 128: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 130: error: expression must have a constant value
+  static_assert(handler_init_rethrow() == 1);  // Nothing being handled.
+                ^
+"Test_name.c", line 124: note: a rethrow ("throw;") is evaluated when no exception is being handled
+    constexpr RethrowingCopy(const RethrowingCopy&) { throw; }
+                                                      ^
+"Test_name.c", line 127: note: called from:
+    try { throw RethrowingCopy(); } catch (RethrowingCopy) { return 1; }
+                                    ^
+
+13 errors detected in the compilation of "Test_name.c".

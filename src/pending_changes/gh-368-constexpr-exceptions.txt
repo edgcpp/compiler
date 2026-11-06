@@ -1,0 +1,27 @@
+[GH #368]
+C++26: Allowing exception throwing in constant evaluation
+
+P3068R6 is now implemented in C++26 mode, except for its library support:
+Exceptions may be thrown and caught during constant evaluation, provided that
+every exception thrown is also caught (and its exception object destroyed)
+within the same evaluation.  For example, with --c++26:
+
+  constexpr int f(int n) {
+    try {
+      if (n < 0) throw n;
+      return n;
+    } catch (int i) {
+      return -i;
+    }
+  }
+  static_assert(f(-3) == 3);  // Previously an error; now okay.
+
+The feature can be enabled in other modes with
+--set_flag=constexpr_exceptions, and disabled with
+--clear_flag=constexpr_exceptions.  It is always disabled if exceptions are
+disabled.
+
+An exception that is not caught, a rethrow when no exception is being
+handled, and a call to std::terminate (e.g., because an exception escapes from
+a noexcept function) all cause the evaluation to not be constant, with a
+specific diagnostic.

@@ -2,15 +2,8 @@ fe_only -DTEST_NUMBER=1 -A -tused --c++26 Test_name.c
 "Test_name.c", line 9: error: expression must have a constant value
       constexpr int x = [] {
                         ^
-"Test_name.c", line 11: note: expression cannot be interpreted
+"Test_name.c", line 11: note: a rethrow ("throw;") is evaluated when no exception is being handled
           throw;                  // error
-          ^
-
-"Test_name.c", line 17: error: expression must have a constant value
-      constexpr int y = [] {
-                        ^
-"Test_name.c", line 19: note: expression cannot be interpreted
-          throw 0;                // OK
           ^
 
 "Test_name.c", line 9: warning: variable "x" was declared but never referenced
@@ -21,4 +14,4 @@ fe_only -DTEST_NUMBER=1 -A -tused --c++26 Test_name.c
       constexpr int y = [] {
                     ^
 
-2 errors detected in the compilation of "Test_name.c".
+1 error detected in the compilation of "Test_name.c".
