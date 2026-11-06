@@ -133,6 +133,9 @@ must be defined in interpret.c to implement its evaluation.
   M(std, construct_at, "<T,>(*.,)*.") \
   M(std, __report_constexpr_value, "(I)v|(*C)v|(*C,I)v") \
   M(std, is_string_literal, "(*G)b") \
+  M(std, current_exception, "().") \
+  M(std, rethrow_exception, "(.)v") \
+  M(std, uncaught_exceptions, "()I") \
   M(std_meta, identifier_of, "(r)Sv") \
   M(std_meta, u8identifier_of, "(r)Su") \
   M(std_meta, display_string_of, "(r)Sv") \

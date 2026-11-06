@@ -514,6 +514,7 @@ fe_only -DTEST_NUMBER=6 --gn 160000 --c++ -d-dump_builtins --set_flag preload_bu
 /* __builtin_ctzimax */ int __builtin_ctzimax(unsigned long long);
 /* __builtin_ctzl */ int __builtin_ctzl(unsigned long);
 /* __builtin_ctzll */ int __builtin_ctzll(unsigned long long);
+/* __builtin_current_exception */ void *__builtin_current_exception() throw();
 /* __builtin_dcgettext */ char *__builtin_dcgettext(const char *, const char *, int);
 /* __builtin_dgettext */ char *__builtin_dgettext(const char *, const char *);
 /* __builtin_drem */ double __builtin_drem(double, double);
@@ -525,6 +526,7 @@ fe_only -DTEST_NUMBER=6 --gn 160000 --c++ -d-dump_builtins --set_flag preload_bu
 /* __builtin_eh_copy_values */ void __builtin_eh_copy_values(int, int);
 /* __builtin_eh_filter */ int __builtin_eh_filter(int);
 /* __builtin_eh_pointer */ void *__builtin_eh_pointer(int);
+/* __builtin_eh_ptr_adjust_ref */ void __builtin_eh_ptr_adjust_ref(void *, int) throw();
 /* __builtin_eh_return */ void __builtin_eh_return(int, void *);
 /* __builtin_eh_return_data_regno */ int __builtin_eh_return_data_regno(int);
 /* __builtin_erf */ double __builtin_erf(double);
@@ -1310,6 +1312,7 @@ fe_only -DTEST_NUMBER=6 --gn 160000 --c++ -d-dump_builtins --set_flag preload_bu
 /* __builtin_umul_overflow */ bool __builtin_umul_overflow(unsigned int, unsigned int, unsigned int *);
 /* __builtin_umull_overflow */ bool __builtin_umull_overflow(unsigned long, unsigned long, unsigned long *);
 /* __builtin_umulll_overflow */ bool __builtin_umulll_overflow(unsigned long long, unsigned long long, unsigned long long *);
+/* __builtin_uncaught_exceptions */ int __builtin_uncaught_exceptions() throw();
 /* __builtin_unreachable */ void __builtin_unreachable();
 /* __builtin_unwind_init */ void __builtin_unwind_init();
 /* __builtin_unwind_resume */ void __builtin_unwind_resume(void *);

@@ -392,6 +392,9 @@ enum a_builtin_user_function_kind {
   bufk_u8strlen,                  /* __builtin_u8strlen */
   bufk_FUNCSIG,                   /* __builtin_FUNCSIG */
   bufk_FILE_NAME,                 /* __builtin_FILE_NAME */
+  bufk_eh_ptr_adjust_ref,         /* __builtin_eh_ptr_adjust_ref */
+  bufk_current_exception,         /* __builtin_current_exception */
+  bufk_uncaught_exceptions,       /* __builtin_uncaught_exceptions */
   bufk_last                       /* final entry */
 };
 
@@ -609,6 +612,19 @@ EXTERN a_builtin_user_descr builtin_user_table[]
      __FUNCSIG__ macro) beginning with version 19.35. */
   { "__builtin_FUNCSIG", "m+(1935-)",
     "const char*(void) __edg_throw__()", bufk_FUNCSIG },
+
+  /* The GCC C++ standard library uses these builtin functions to implement
+     std::exception_ptr during constant evaluation.  A call of
+     __builtin_current_exception or __builtin_uncaught_exceptions is replaced
+     by a call of std::current_exception or std::uncaught_exceptions,
+     respectively, when that function is declared, but a back end still
+     generates the builtin (see builtin_call_needs_adjustment). */
+  { "__builtin_eh_ptr_adjust_ref", "g+(160000-)",
+    "void (void*,int) __edg_throw__()", bufk_eh_ptr_adjust_ref },
+  { "__builtin_current_exception", "g+(160000-)",
+    "void* (void) __edg_throw__()", bufk_current_exception },
+  { "__builtin_uncaught_exceptions", "g+(160000-)",
+    "int (void) __edg_throw__()", bufk_uncaught_exceptions },
 
   { NULL, NULL, 0, bfk_none }   /* end of table marker */
 }

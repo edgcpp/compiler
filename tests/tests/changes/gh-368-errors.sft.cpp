@@ -13,6 +13,22 @@ namespace std {
     constexpr exception() noexcept {}
     constexpr virtual ~exception() noexcept {}
   };
+  class bad_cast : public exception {
+  public:
+    constexpr bad_cast() noexcept {}
+  };
+  class bad_typeid : public exception {
+  public:
+    constexpr bad_typeid() noexcept {}
+  };
+  class bad_alloc : public exception {
+  public:
+    constexpr bad_alloc() noexcept {}
+  };
+  class bad_array_new_length : public bad_alloc {
+  public:
+    constexpr bad_array_new_length() noexcept {}
+  };
 }
 
 struct E { int v; };
@@ -83,6 +99,31 @@ constexpr int handler_init() {
 }
 static_assert(handler_init() == 1);          // std::terminate.
 
+struct B { virtual ~B() = default; };
+struct D1 : B {};
+struct D2 : B {};
+constexpr int bad_cast() {
+  D1 d;
+  B& b = d;
+  (void)dynamic_cast<D2&>(b);
+  return 0;
+}
+static_assert(bad_cast() == 0);              // Uncaught std::bad_cast.
+
+constexpr int bad_typeid(B* p) {
+  (void)typeid(*p);
+  return 0;
+}
+static_assert(bad_typeid(nullptr) == 0);     // Uncaught std::bad_typeid.
+
+constexpr int bad_array_new_length(int n) {
+  int* p = new int[n];
+  delete[] p;
+  return 0;
+}
+static_assert(bad_array_new_length(-2) == 0);  // Uncaught
+                                               // std::bad_array_new_length.
+
 int nonconstexpr();
 constexpr int failed_assumption() {
   // The failure to evaluate the assumption expression is not reported.
@@ -128,3 +169,9 @@ constexpr int handler_init_rethrow() {
   return 0;
 }
 static_assert(handler_init_rethrow() == 1);  // Nothing being handled.
+
+namespace std {
+  int uncaught_exceptions() noexcept;
+}
+constexpr int direct_uncaught() { return std::uncaught_exceptions(); }
+static_assert(direct_uncaught() == 0);       // Not constexpr (P3842R2).
