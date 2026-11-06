@@ -19654,6 +19654,37 @@ the subsequent replay.
 }  /* skip_statement_header */
 
 
+static a_token_kind next_try_clause_token(void)
+/*
+Return the kind of the token following the current try block or handler.
+Recognize the context-sensitive C++/CLI "finally" keyword when followed by
+"{".  Preserve pragmas on following tokens, even when flushing a discarded
+statement.
+*/
+{
+  a_token_kind  next_tok;
+
+  push_lexical_state_stack();
+  caching_tokens = TRUE;
+  next_tok = next_token();
+#if MICROSOFT_EXTENSIONS_ALLOWED
+  if (cli_or_cx_enabled && next_tok == tok_identifier) {
+    a_tiny_scanning_token_cache  aux_cache;
+
+    cache_curr_token(aux_cache.ptr());
+    (void)get_token();
+    if (curr_token_is_identifier_string("finally") &&
+        next_token() == tok_lbrace) {
+      next_tok = tok_finally;
+    }  /* if */
+    rescan_cached_tokens(aux_cache.ptr());
+  }  /* if */
+#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+  pop_lexical_state_stack();
+  return next_tok;
+}  /* next_try_clause_token */
+
+
 static a_boolean skip_one_statement(a_token_cache_ptr cache)
 /*
 Skip exactly one statement without semantic analysis.  The current token is
@@ -19749,46 +19780,33 @@ an enclosing token or end-of-source in an error case.
       }  /* if */
       break;
     case tok_try:
-      /* "try compound-statement handler-seq" */
-      advance_statement_token(cache);
-      if (curr_token == tok_lbrace) {
-        last_token_in_statement = skip_statement_group(cache);
-      }  /* if */
-      while (last_token_in_statement && next_token() == tok_catch) {
-        /* Consume the preceding block's final token, then the "catch". */
-        advance_statement_token(cache);
-        advance_statement_token(cache);
-        last_token_in_statement = skip_statement_header(cache) &&
-                                 curr_token == tok_lbrace &&
-                                 skip_statement_group(cache);
-      }  /* while */
-#if MICROSOFT_EXTENSIONS_ALLOWED
-      if (cache != NULL && last_token_in_statement && cli_or_cx_enabled &&
-          next_token() == tok_identifier) {
-        /* "finally" is a context-sensitive keyword in C++/CLI.  Look ahead
-           without caching a token that might follow the statement. */
-        a_tiny_scanning_token_cache  aux_cache;
-        a_boolean                    finally_next;
+      { a_token_kind  next_tok = tok_error;
 
-        cache_curr_token(aux_cache.ptr());
-        (void)get_token();
-        finally_next = curr_token_is_identifier_string("finally") &&
-                       next_token() == tok_lbrace;
-        rescan_cached_tokens(aux_cache.ptr());
-        if (finally_next) {
-          advance_statement_token(cache);
-          advance_statement_token(cache);
+        /* "try compound-statement handler-seq" */
+        advance_statement_token(cache);
+        if (curr_token == tok_lbrace) {
           last_token_in_statement = skip_statement_group(cache);
         }  /* if */
-      } else if (cache != NULL && last_token_in_statement &&
-                 cli_or_cx_enabled && next_token() == tok_finally) {
-        advance_statement_token(cache);
-        advance_statement_token(cache);
-        last_token_in_statement = curr_token == tok_lbrace &&
-                                  skip_statement_group(cache);
-      }  /* if */
+        while (last_token_in_statement &&
+               (next_tok = next_try_clause_token()) == tok_catch) {
+          /* Consume the preceding block's final token, then the "catch". */
+          advance_statement_token(cache);
+          advance_statement_token(cache);
+          last_token_in_statement = skip_statement_header(cache) &&
+                                    curr_token == tok_lbrace &&
+                                    skip_statement_group(cache);
+        }  /* while */
+        #if MICROSOFT_EXTENSIONS_ALLOWED
+        if (last_token_in_statement && cli_or_cx_enabled &&
+            next_tok == tok_finally) {
+          advance_statement_token(cache);
+          advance_statement_token(cache);
+          last_token_in_statement = curr_token == tok_lbrace &&
+                                    skip_statement_group(cache);
+        }  /* if */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
-      break;
+        break;
+      }
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case tok_microsoft_try:
       /* "__try compound-statement __except ( expression ) compound-statement"
