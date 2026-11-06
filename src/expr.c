@@ -14570,10 +14570,14 @@ indication in *rcblock).
               pesep != NULL && pesep->instantiation_descr == NULL) {
             /* Check that the identifier is a parameter pack name. */
             if (!symbol_is_pack(sym)) {
-              expr_pos_error(ec_sizeof_operand_not_parameter_pack,
-                             &pos_curr_token);
-              suppress_expansion_with_no_packs_diagnostic(pesep);
-              err = TRUE;
+              /* An earlier scan may have recorded a pack whose name now
+                 refers to a substituted symbol. */
+              if (!pesep->recorded_pack_expansion) {
+                expr_pos_error(ec_sizeof_operand_not_parameter_pack,
+                               &pos_curr_token);
+                suppress_expansion_with_no_packs_diagnostic(pesep);
+                err = TRUE;
+              }  /* if */
             } else {
               record_potential_pack_reference(sym, &pos_curr_token);
             }  /* if */

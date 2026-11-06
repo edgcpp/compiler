@@ -1,0 +1,14 @@
+[GH #491]
+Spurious error for pack expansions in nested generic lambdas
+
+Previously, valid pack expansions (including sizeof... and fold expressions) in
+nested generic lambdas (for example, in default arguments or exception
+specifications) could be rejected during instantiation with spurious missing
+parameter pack errors.  For example, with --c++14 -tused:
+
+  int f() {
+    auto g = [](auto... x) {
+      return [](auto, int n = sizeof...(x)) { return n; }(0);
+    };
+    return g(1, 2);  // Previously a spurious error, now okay.
+  }
