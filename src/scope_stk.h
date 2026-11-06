@@ -606,55 +606,53 @@ typedef struct a_pack_expansion_stack_entry {
 			/* In rescan contexts, a copy of the supplied
 			   template argument list is made.  This points to
 			   that copy of the list.  NULL otherwise. */
-  a_byte_boolean
-		is_rescan;
+  a_bit_field	is_rescan:1;
 			/* TRUE when the expansion is being done in an
 			   expression rescan context.  In such contexts the
 			   current values of the packs are maintained, but
 			   no token manipulation or checking is done. */
-  a_byte_boolean
-		is_deduction;
+  a_bit_field	is_deduction:1;
 			/* TRUE when the expansion is being done in an
 			   template argument deduction context.  In such
 			   contexts a new template argument is created for
 			   each pack element produced by the deduction
 			   process, but no token manipulation or checking
 			   is done. */
-  a_byte_boolean
-		is_suppression;
+  a_bit_field	is_suppression:1;
 			/* TRUE when the processing of expansion contexts
 			   is being suppressed.  This only suppresses
 			   expansions from tokens, not rescans. */
-  a_byte_boolean
-		expansion_with_no_packs_diagnostic_issued;
+  a_bit_field	expansion_with_no_packs_diagnostic_issued:1;
 			/* TRUE if suppress_expansion_with_no_packs_diagnostic
 			   was called to indicate that the caller already
 			   issued a diagnostic for an expansion with no
 			   packs. */
-  a_byte_boolean
-		is_lookahead;
+  a_bit_field	is_lookahead:1;
 			/* TRUE if this context is being pushed to
 			   distinguish between two contexts.  When this
 			   is TRUE, it is assumed that another begin...
 			   call will be done for the same starting position,
 			   and that context will be responsible for the
 			   end... and advance... calls. */
-  a_byte_boolean
-		enclosing_packs_reset;
+  a_bit_field	enclosing_packs_reset:1;
 			/* TRUE for a pack expansion of a template declaration
 			   in a real instantiation (see call of
 			   reset_enclosing_pack_values in
 			   begin_potential_pack_expansion_context_full for
 			   more information). */
-  a_boolean
-		preserve_deduced_packs;
+  a_bit_field	preserve_deduced_packs:1;
 			/* TRUE if is_rescan is TRUE and deduced parameter
 			   packs should be retained in the substituted type. */
-  a_byte_boolean
-		contains_pack_reference;
+  a_bit_field	contains_pack_reference:1;
 			/* TRUE during prototype instantiations if any
 			   pack references were recorded while this entry
 			   was at the top of the pack expansion stack. */
+  a_bit_field	recorded_pack_expansion:1;
+			/* TRUE if an earlier scan recorded a pack expansion
+			   for this context, which is being scanned without
+			   pack instantiation.  The descriptor is evidence
+			   of a pack even if lookup yields substituted
+			   symbols and no pack references are recorded. */
 } a_pack_expansion_stack_entry;
 
 
