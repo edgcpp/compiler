@@ -1,0 +1,45 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 21: warning: unrecognized GCC pragma
+  #pragma GCC visibility push(hidden)
+              ^
+
+"Test_name.c", line 23: warning: unrecognized GCC pragma
+  #pragma GCC visibility pop
+              ^
+
+"Test_name.c", line 26: warning: unknown attribute "visibility"
+  template __attribute ((visibility ("default"))) void bar (short);
+                         ^
+
+"Test_name.c", line 27: warning: unknown attribute "visibility"
+  template<> __attribute ((visibility ("default"))) void bar (float) { }
+                           ^
+
+"Test_name.c", line 28: warning: unrecognized GCC pragma
+  #pragma GCC visibility push(default)
+              ^
+
+"Test_name.c", line 31: warning: unrecognized GCC pragma
+  #pragma GCC visibility pop
+              ^
+
+"Test_name.c", line 33: warning: unknown attribute "visibility"
+  template <class T> __attribute ((visibility ("hidden"))) void foo(T) { }
+                                   ^
+
+"Test_name.c", line 36: warning: unknown attribute "visibility"
+  template __attribute ((visibility ("default"))) void foo (short);
+                         ^
+
+"Test_name.c", line 37: warning: unknown attribute "visibility"
+  template<> __attribute ((visibility ("default"))) void foo (float) { }
+                           ^
+
+"Test_name.c", line 38: warning: unrecognized GCC pragma
+  #pragma GCC visibility push(default)
+              ^
+
+"Test_name.c", line 41: warning: unrecognized GCC pragma
+  #pragma GCC visibility pop
+              ^
+

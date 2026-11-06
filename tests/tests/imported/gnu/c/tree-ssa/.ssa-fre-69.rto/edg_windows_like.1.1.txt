@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef int v2si __attribute__((vector_size(__SIZEOF_INT__*2)));
+                                  ^
+
+"Test_name.c", line 8: warning: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  int __GIMPLE (ssa,guessed_local(97603132),startwith("fre1"))
+                ^
+
+"Test_name.c", line 8: error: expected a ")"
+  int __GIMPLE (ssa,guessed_local(97603132),startwith("fre1"))
+                                 ^
+
+"Test_name.c", line 9: error: expected a declaration
+       foo ()
+       ^
+
+"Test_name.c", line 31: warning: parsing restarts here after previous syntax error
+    return res_15;
+                 ^
+
+"Test_name.c", line 8: warning: standard requires that parameter "ssa" be given a type by a subsequent declaration ("int" assumed)
+  int __GIMPLE (ssa,guessed_local(97603132),startwith("fre1"))
+                ^
+
+"Test_name.c", line 8: warning: standard requires that parameter "guessed_local" be given a type by a subsequent declaration ("int" assumed)
+  int __GIMPLE (ssa,guessed_local(97603132),startwith("fre1"))
+                    ^
+
+"Test_name.c", line 32: error: expected a "{"
+  }
+  ^
+
+"Test_name.c", line 32: warning: missing return statement at end of non-void function "__GIMPLE"
+  }
+  ^
+
+3 errors detected in the compilation of "Test_name.c".

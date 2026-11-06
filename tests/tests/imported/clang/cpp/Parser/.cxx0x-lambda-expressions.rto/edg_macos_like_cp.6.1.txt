@@ -1,0 +1,263 @@
+fe_only -DTEST_NUMBER=6 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 21: error: expected a "{" introducing a lambda body
+      []; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 22: error: expected an identifier
+      [+] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+       ^
+
+"Test_name.c", line 23: error: expected a "]"
+      [foo+] {}; // expected-error {{expected ',' or ']' in lambda capture list}}
+          ^
+
+"Test_name.c", line 23: warning: variable "foo" is used before its value is set
+      [foo+] {}; // expected-error {{expected ',' or ']' in lambda capture list}}
+       ^
+
+"Test_name.c", line 24: error: "this" cannot be captured by reference
+      [foo,&this] {}; // expected-error {{'this' cannot be captured by reference}}
+           ^
+
+"Test_name.c", line 25: error: "this" cannot be captured by reference
+      [&this] {}; // expected-error {{'this' cannot be captured by reference}}
+       ^
+
+"Test_name.c", line 26: error: trailing comma is nonstandard
+      [&,] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+        ^
+
+"Test_name.c", line 27: error: trailing comma is nonstandard
+      [=,] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+        ^
+
+"Test_name.c", line 31: warning: variable "bar" is used before its value is set
+      [foo,bar] () { return 3; };
+           ^
+
+"Test_name.c", line 41: error: expected a type specifier
+      [](int) -> {}; // PR13652 expected-error {{expected a type}}
+                 ^
+
+"Test_name.c", line 50: error: no suitable conversion function from "lambda [](T (*)())->void" to "int" exists
+      int a1[1] = {[b] (T()) {}}; // expected-error{{no viable conversion from '(lambda}}
+                   ^
+
+"Test_name.c", line 52: error: expected a "]"
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                     ^
+
+"Test_name.c", line 52: error: expected an expression
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                     ^
+
+"Test_name.c", line 52: error: expected a "}"
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                       ^
+
+"Test_name.c", line 52: error: too many initializer values
+      int a3[1] = {[b,c] = 1 }; // expected-error{{expected ']'}} expected-note {{to match}}
+                      ^
+
+"Test_name.c", line 53: error: expression must have a constant value
+      int a4[1] = {[&b] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'const int *'}}
+                    ^
+"Test_name.c", line 53: note: attempt to access run-time storage
+      int a4[1] = {[&b] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'const int *'}}
+                    ^
+
+"Test_name.c", line 55: error: expression must have a constant value
+      int a6[1] = {[this] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'C *'}}
+                    ^
+"Test_name.c", line 55: note: attempt to access run-time storage
+      int a6[1] = {[this] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'C *'}}
+                    ^
+
+"Test_name.c", line 61: error: expression must have a constant value
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                    ^
+"Test_name.c", line 61: note: the value of variable "d" (declared at line 49) cannot be used as a constant
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                    ^
+
+"Test_name.c", line 61: warning: variable "d" is used before its value is set
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                    ^
+
+"Test_name.c", line 61: error: expected a "]"
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                      ^
+
+"Test_name.c", line 61: error: expected a "}"
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+                         ^
+
+"Test_name.c", line 48: warning: variable "c" was declared but never referenced
+      const int c = 1;
+                ^
+
+"Test_name.c", line 51: warning: variable "a2" was declared but never referenced
+      int a2[1] = {[b] = 1 };
+          ^
+
+"Test_name.c", line 53: warning: variable "a4" was declared but never referenced
+      int a4[1] = {[&b] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'const int *'}}
+          ^
+
+"Test_name.c", line 54: warning: variable "a5" was declared but never referenced
+      int a5[3] = { []{return 0;}() };
+          ^
+
+"Test_name.c", line 55: warning: variable "a6" was declared but never referenced
+      int a6[1] = {[this] = 1 }; // expected-error{{integral constant expression must have integral or unscoped enumeration type, not 'C *'}}
+          ^
+
+"Test_name.c", line 56: warning: variable "a7" was declared but never referenced
+      int a7[1] = {[d(0)] { return d; } ()}; // cxx14ext-warning {{initialized lambda captures are a C++14 extension}}
+          ^
+
+"Test_name.c", line 57: warning: variable "a8" was declared but never referenced
+      int a8[1] = {[d = 0] { return d; } ()}; // cxx14ext-warning {{initialized lambda captures are a C++14 extension}}
+          ^
+
+"Test_name.c", line 59: warning: variable "a10" was declared but never referenced
+      int a10[1] = {[id(0)] { return id; } ()}; // cxx14ext-warning {{initialized lambda captures are a C++14 extension}}
+          ^
+
+"Test_name.c", line 61: warning: variable "a9" was declared but never referenced
+      int a9[1] = {[d = 0] = 1}; // expected-error{{is not an integral constant expression}}
+          ^
+
+"Test_name.c", line 66: warning: variable "a11" was declared but never referenced
+      int a11[1] = {[id(0)] = 1};
+          ^
+
+"Test_name.c", line 73: error: expected an expression
+      delete [] { return new int; } (); // expected-error {{'[]' after delete interpreted as 'delete[]'}}
+                ^
+
+"Test_name.c", line 74: error: delete array size expression used (anachronism)
+      delete [&] { return new int; } (); // ok, lambda
+              ^
+
+"Test_name.c", line 74: error: expected an expression
+      delete [&] { return new int; } (); // ok, lambda
+               ^
+
+"Test_name.c", line 74: error: expected an expression
+      delete [&] { return new int; } (); // ok, lambda
+                 ^
+
+"Test_name.c", line 76: error: expected an expression
+      delete []() { return new int; }(); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                ^
+
+"Test_name.c", line 76: error: expected a ";"
+      delete []() { return new int; }(); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                  ^
+
+"Test_name.c", line 77: error: expected a ")"
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                  ^
+
+"Test_name.c", line 77: error: expected an expression
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                          ^
+
+"Test_name.c", line 77: error: expected a "}"
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                                                   ^
+
+"Test_name.c", line 77: error: expression must be a pointer to a complete object type
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+               ^
+
+"Test_name.c", line 77: error: invalid start of member declaration
+      delete [](E Enum) { return new int((int)Enum); }(e); // expected-error{{'[]' after delete interpreted as 'delete[]'}}
+                                                      ^
+
+"Test_name.c", line 89: error: expression must be a modifiable lvalue
+      [n = 0] { return ++n; };                  // expected-error      {{captured by copy in a non-mutable}}
+                         ^
+
+"Test_name.c", line 91: error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+      [n = {0}] { return; };                    // expected-error      {{<initializer_list>}}
+           ^
+
+"Test_name.c", line 91: error: cannot deduce "auto" type
+      [n = {0}] { return; };                    // expected-error      {{<initializer_list>}}
+       ^
+
+"Test_name.c", line 102: warning: function declared with "noreturn" does return
+      [] __attribute__((noreturn)){}; // cxx23ext-warning {{lambda without a parameter clause is a C++23 extension}}
+                                   ^
+
+"Test_name.c", line 105: error: expected a "{" introducing a lambda body
+        mutable {}; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 105: error: expected a ";"
+        mutable {}; // expected-error {{expected body of lambda expression}}
+        ^
+
+"Test_name.c", line 116: error: expected a "{" introducing a lambda body
+      []() __attribute__((noreturn)) mutable { while(1); };
+                                     ^
+
+"Test_name.c", line 116: error: expected a ";"
+      []() __attribute__((noreturn)) mutable { while(1); };
+                                     ^
+
+"Test_name.c", line 124: warning: template parameter "<unnamed>" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+      []<typename>[[]](){}; // cxx20ext-warning    {{explicit template parameter list for lambdas is a C++20 extension}}
+                 ^
+
+"Test_name.c", line 140: error: expected a type specifier
+    [](int) -> {}; // expected-error {{expected a type}}
+               ^
+
+"Test_name.c", line 158: error: expected a ")"
+  } s;
+  ^
+
+"Test_name.c", line 158: error: expected a ";"
+  } s;
+  ^
+
+"Test_name.c", line 157: error: expected an identifier
+    void m (T x =[0); // expected-error{{expected variable name or 'this' in lambda capture list}}
+                  ^
+
+"Test_name.c", line 158: error: expected a "]"
+  } s;
+  ^
+
+"Test_name.c", line 158: error: expected a "{" introducing a lambda body
+  } s;
+  ^
+
+"Test_name.c", line 163: error: expected a ")"
+  } *U;
+  ^
+
+"Test_name.c", line 163: error: expected a ";"
+  } *U;
+  ^
+
+"Test_name.c", line 162: error: expression must have pointer-to-object type but it has type "int"
+    void m_fn1(T x = 0[0); // expected-error{{expected ']'}} expected-note{{to match this '['}}
+                       ^
+
+"Test_name.c", line 162: error: expected a "]"
+    void m_fn1(T x = 0[0); // expected-error{{expected ']'}} expected-note{{to match this '['}}
+                        ^
+
+"Test_name.c", line 169: error: a value of type "int" cannot be used to initialize an entity of type "char *"
+      char* i(*[] { return new int; }());
+              ^
+
+"Test_name.c", line 172: error: a value of type "int *" cannot be used to initialize an entity of type "char *"
+      char* j(&[]() -> int& { return *new int; }());
+              ^
+
+48 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,104 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 15: error: no instance of function template "has_constraints_" matches the argument list
+            argument types are: (usage_requirements<InputIterator<char *>> *)
+    static const bool value = sizeof( has_constraints_((Model*)0)  == 1); // expected-error 3{{no matching function}} \
+                                      ^
+"Test_name.c", line 12: note: candidate function template "has_constraints_" failed deduction
+  inline char has_constraints_(Model* , // expected-note 3{{candidate template ignored}}
+              ^
+          detected during:
+            instantiation of class "not_satisfied<Model> [with Model=usage_requirements<InputIterator<char *>>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<usage_requirements<InputIterator<char *>>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=usage_requirements<InputIterator<char *>>]" at line 26
+            instantiation of class "InputIterator<TT> [with TT=char *]" at line 28
+            instantiation of class "ForwardIterator<TT> [with TT=char *]" at line 15
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 21: error: class "if_<not_satisfied<usage_requirements<InputIterator<char *>>>>" has no member class "type"
+  template <class Model> struct requirement_<void(*)(Model)>                           : if_<       not_satisfied<Model>         >::type { // expected-error 3{{no type named 'type' in}} expected-note 7{{in instantiation}}
+                                                                                                                                    ^
+          detected during:
+            instantiation of class "requirement_<void (*)(Model)> [with Model=usage_requirements<InputIterator<char *>>]" at line 26
+            instantiation of class "InputIterator<TT> [with TT=char *]" at line 28
+            instantiation of class "ForwardIterator<TT> [with TT=char *]" at line 15
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 26: error: class "requirement_<void (*)(usage_requirements<InputIterator<char *>>)>" has no member "failed"
+      typedef  instantiate< & requirement_<void(*)(usage_requirements<InputIterator> x)>::failed> boost_concept_check1; // expected-note 2{{in instantiation}}
+                                                                                          ^
+          detected during:
+            instantiation of class "InputIterator<TT> [with TT=char *]" at line 28
+            instantiation of class "ForwardIterator<TT> [with TT=char *]" at line 15
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 15: error: no instance of function template "has_constraints_" matches the argument list
+            argument types are: (usage_requirements<ForwardIterator<char *>> *)
+    static const bool value = sizeof( has_constraints_((Model*)0)  == 1); // expected-error 3{{no matching function}} \
+                                      ^
+"Test_name.c", line 12: note: candidate function template "has_constraints_" failed deduction
+  inline char has_constraints_(Model* , // expected-note 3{{candidate template ignored}}
+              ^
+          detected during:
+            instantiation of class "not_satisfied<Model> [with Model=usage_requirements<ForwardIterator<char *>>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<usage_requirements<ForwardIterator<char *>>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=usage_requirements<ForwardIterator<char *>>]" at line 29
+            instantiation of class "ForwardIterator<TT> [with TT=char *]" at line 15
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 21: error: class "if_<not_satisfied<usage_requirements<ForwardIterator<char *>>>>" has no member class "type"
+  template <class Model> struct requirement_<void(*)(Model)>                           : if_<       not_satisfied<Model>         >::type { // expected-error 3{{no type named 'type' in}} expected-note 7{{in instantiation}}
+                                                                                                                                    ^
+          detected during:
+            instantiation of class "requirement_<void (*)(Model)> [with Model=usage_requirements<ForwardIterator<char *>>]" at line 29
+            instantiation of class "ForwardIterator<TT> [with TT=char *]" at line 15
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 29: error: class "requirement_<void (*)(usage_requirements<ForwardIterator<char *>>)>" has no member "failed"
+    typedef instantiate< & requirement_<void(*)(usage_requirements<ForwardIterator> x)>::failed> boost_concept_check2; // expected-note 2{{in instantiation}}
+                                                                                         ^
+          detected during:
+            instantiation of class "ForwardIterator<TT> [with TT=char *]" at line 15
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 15: error: no instance of function template "has_constraints_" matches the argument list
+            argument types are: (ForwardIterator<char *> *)
+    static const bool value = sizeof( has_constraints_((Model*)0)  == 1); // expected-error 3{{no matching function}} \
+                                      ^
+"Test_name.c", line 12: note: candidate function template "has_constraints_" failed deduction
+  inline char has_constraints_(Model* , // expected-note 3{{candidate template ignored}}
+              ^
+          detected during:
+            instantiation of class "not_satisfied<Model> [with Model=ForwardIterator<char *>]" at line 8
+            instantiation of class "if_<T1> [with T1=not_satisfied<ForwardIterator<char *>>]" at line 21
+            instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 21: error: class "if_<not_satisfied<ForwardIterator<char *>>>" has no member class "type"
+  template <class Model> struct requirement_<void(*)(Model)>                           : if_<       not_satisfied<Model>         >::type { // expected-error 3{{no type named 'type' in}} expected-note 7{{in instantiation}}
+                                                                                                                                    ^
+          detected during instantiation of class "requirement_<void (*)(Model)> [with Model=ForwardIterator<char *>]" at line 32
+
+"Test_name.c", line 32: error: class "requirement_<void (*)(ForwardIterator<char *>)>" has no member "failed"
+  typedef instantiate< &requirement_<void(*)(ForwardIterator<char*> x)>::failed> boost_concept_checkX;// expected-note 6{{in instantiation}}
+                                                                         ^
+
+"Test_name.c", line 88: warning: attribute is supported only in 32-bit x86 configurations
+      typedef int stdfunctype(int, int) __attribute__((stdcall));
+                                                       ^
+
+"Test_name.c", line 89: warning: attribute is supported only in 32-bit x86 configurations
+      __attribute__((stdcall)) functype stdfunc1;
+                     ^
+
+9 errors detected in the compilation of "Test_name.c".

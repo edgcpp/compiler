@@ -1,0 +1,32 @@
+fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
+"Test_name.c", line 12: error: expected an identifier
+    auto [ ... b ] = t;
+           ^
+          detected during instantiation of "int f(T, C) [with T=C]" at line 16
+
+"Test_name.c", line 12: error: expected a "]"
+    auto [ ... b ] = t;
+                   ^
+          detected during instantiation of "int f(T, C) [with T=C]" at line 16
+
+"Test_name.c", line 12: error: there are more elements than there are binding names
+    auto [ ... b ] = t;
+         ^
+          detected during instantiation of "int f(T, C) [with T=C]" at line 16
+
+"Test_name.c", line 13: error: identifier "b" is undefined
+    return (b + ... );
+            ^
+          detected during instantiation of "int f(T, C) [with T=C]" at line 16
+
+"Test_name.c", line 13: error: fold expression does not refer to a parameter pack
+    return (b + ... );
+                ^
+          detected during instantiation of "int f(T, C) [with T=C]" at line 16
+
+"Test_name.c", line 12: warning: variable "<unnamed>" was declared but never referenced
+    auto [ ... b ] = t;
+         ^
+          detected during instantiation of "int f(T, C) [with T=C]" at line 16
+
+5 errors detected in the compilation of "Test_name.c".

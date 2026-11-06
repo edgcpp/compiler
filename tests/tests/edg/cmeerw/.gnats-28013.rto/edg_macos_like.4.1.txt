@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=4 -w --c++11 --clang_version 200100 --target linux_armv7 Test_name.c
+"Test_name.c", line 166: error: "int" is not a vector type
+        auto ri = __builtin_reduce_max(vi);
+                                       ^
+
+"Test_name.c", line 168: error: "float" is not a vector type
+        auto rf = __builtin_reduce_max(vf);
+                                       ^
+
+"Test_name.c", line 173: error: "int" is not a vector type
+        auto ri = __builtin_reduce_and(vi);
+                                       ^
+
+"Test_name.c", line 177: error: "int" is not a vector type
+        auto ri = __builtin_reduce_or(vi);
+                                      ^
+
+"Test_name.c", line 181: error: "int" is not a vector type
+        auto ri = __builtin_reduce_xor(vi);
+                                       ^
+
+"Test_name.c", line 185: error: "int" is not a vector type
+        auto ri = __builtin_reduce_add(vi);
+                                       ^
+
+"Test_name.c", line 189: error: "int" is not a vector type
+        auto ri = __builtin_reduce_mul(vi);
+                                       ^
+
+"Test_name.c", line 193: error: "float" is not a vector type
+        auto rf = __builtin_reduce_maximum(vf);
+                                           ^
+
+"Test_name.c", line 197: error: "int" is not a vector type
+        auto ri = __builtin_reduce_min(vi);
+                                       ^
+
+"Test_name.c", line 199: error: "float" is not a vector type
+        auto rf = __builtin_reduce_min(vf);
+                                       ^
+
+"Test_name.c", line 203: error: "float" is not a vector type
+        auto rf = __builtin_reduce_minimum(vf);
+                                           ^
+
+11 errors detected in the compilation of "Test_name.c".

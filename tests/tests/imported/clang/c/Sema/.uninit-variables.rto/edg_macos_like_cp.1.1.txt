@@ -1,0 +1,242 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: warning: variable "x" is used before its value is set
+    return x; // expected-warning{{variable 'x' is uninitialized when used here}}
+           ^
+
+"Test_name.c", line 27: warning: variable "x" is used before its value is set
+    ++x; // expected-warning{{variable 'x' is uninitialized when used here}}
+      ^
+
+"Test_name.c", line 33: warning: variable "y" is used before its value is set
+    x = y; // expected-warning{{variable 'y' is uninitialized when used here}}
+        ^
+
+"Test_name.c", line 39: warning: variable "x" is used before its value is set
+    x += 2; // expected-warning{{variable 'x' is uninitialized when used here}}
+    ^
+
+"Test_name.c", line 52: warning: variable "x" is used before its value is set
+    int x = x; // expected-note{{variable 'x' is declared here}}
+            ^
+
+"Test_name.c", line 107: warning: variable "p" was declared but never referenced
+    const char *p = 0;
+                ^
+
+"Test_name.c", line 112: warning: variable "x" is used before its value is set
+    int x = x; // no-warning: signals intended lack of initialization.
+            ^
+
+"Test_name.c", line 118: warning: variable "x" is used before its value is set
+    int x = x; // expected-warning {{variable 'x' is uninitialized when used within its own initialization}}
+            ^
+
+"Test_name.c", line 134: warning: variable "x" is used before its value is set
+    *x = 1; // expected-warning{{variable 'x' is uninitialized when used here}}
+     ^
+
+"Test_name.c", line 140: warning: use of "=" where "==" may have been intended
+    if (x && y && (z = 1)) {
+                  ^
+
+"Test_name.c", line 199: warning: variable "x" is used before its value is set
+    return x; // expected-warning{{variable 'x' is uninitialized when used here}}
+           ^
+
+"Test_name.c", line 205: warning: variable "x" is used before its value is set
+    return x; // expected-warning{{variable 'x' is uninitialized when used here}}
+           ^
+
+"Test_name.c", line 216: warning: variable "len" is used before its value is set
+    return sizeof(int[len]); // expected-warning{{variable 'len' is uninitialized when used here}}
+                      ^
+
+"Test_name.c", line 221: error: expected an expression
+    (void) ^{ (void) x; }; // expected-warning{{variable 'x' is uninitialized when captured by block}}
+           ^
+
+"Test_name.c", line 220: warning: variable "x" was declared but never referenced
+    int x; // expected-note{{initialize the variable 'x' to silence this warning}}
+        ^
+
+"Test_name.c", line 226: error: expected an expression
+    (void) ^{ (void) x; };
+           ^
+
+"Test_name.c", line 225: warning: variable "x" was declared but never referenced
+    static int x; // no-warning
+               ^
+
+"Test_name.c", line 230: error: identifier "__block" is undefined
+    __block int x; // no-warning
+    ^
+
+"Test_name.c", line 230: error: expected a ";"
+    __block int x; // no-warning
+            ^
+
+"Test_name.c", line 231: error: expected an expression
+    (void) ^{ (void) x; };
+           ^
+
+"Test_name.c", line 236: error: expected an expression
+    (void) ^{ (void) test32_x; }; // no-warning
+           ^
+
+"Test_name.c", line 241: warning: variable "x" is used before its value is set
+    (void) x;
+           ^
+
+"Test_name.c", line 246: warning: variable "x" is used before its value is set
+    (void) x;
+           ^
+
+"Test_name.c", line 252: error: identifier "__block" is undefined
+    __block int y = 0;
+    ^
+
+"Test_name.c", line 252: error: expected a ";"
+    __block int y = 0;
+            ^
+
+"Test_name.c", line 253: error: expected an expression
+    ^{ y = (x == 0); }();
+    ^
+
+"Test_name.c", line 260: warning: variable "dummy" was declared but never referenced
+    void *dummy[] = { &&L1, &&L2 };
+          ^
+
+"Test_name.c", line 273: warning: use of "=" where "==" may have been intended
+      if ((test37_a() && (identifier = 1)) ||
+                         ^
+
+"Test_name.c", line 274: warning: use of "=" where "==" may have been intended
+          (test37_b() && (identifier = 2))) {
+                         ^
+
+"Test_name.c", line 283: warning: variable "z" was declared but never referenced
+    int z;
+        ^
+
+"Test_name.c", line 289: warning: variable "y" is used before its value is set
+    int z = x + y; // expected-warning {{variable 'y' is uninitialized when used here}}
+                ^
+
+"Test_name.c", line 296: warning: variable "y" is used before its value is set
+    return x ? 1 : y; // expected-warning {{variable 'y' is uninitialized when used here}}
+                   ^
+
+"Test_name.c", line 307: warning: variable "a" was set but never used
+    int a;
+        ^
+
+"Test_name.c", line 337: warning: variable "i" is used before its value is set
+    int j = i ? : 1; // expected-warning {{variable 'i' is uninitialized when used here}}
+            ^
+
+"Test_name.c", line 337: warning: variable "j" was declared but never referenced
+    int j = i ? : 1; // expected-warning {{variable 'i' is uninitialized when used here}}
+        ^
+
+"Test_name.c", line 353: warning: variable "c" was declared but never referenced
+    char c[1 ? : 2]; // no-warning
+         ^
+
+"Test_name.c", line 358: error: identifier "__block" is undefined
+      __block int a;
+      ^
+
+"Test_name.c", line 358: error: expected a ";"
+      __block int a;
+              ^
+
+"Test_name.c", line 359: error: expected an expression
+      ^(void) {
+      ^
+
+"Test_name.c", line 362: error: identifier "a" is undefined
+      return a; // no-warning
+             ^
+
+"Test_name.c", line 381: warning: variable "x" is used before its value is set
+    int y = (x);  // expected-warning {{variable 'x' is uninitialized when used here}}
+             ^
+
+"Test_name.c", line 381: warning: variable "y" was declared but never referenced
+    int y = (x);  // expected-warning {{variable 'x' is uninitialized when used here}}
+        ^
+
+"Test_name.c", line 407: error: identifier "__block" is undefined
+    __block int x;
+    ^
+
+"Test_name.c", line 407: error: expected a ";"
+    __block int x;
+            ^
+
+"Test_name.c", line 408: error: expected an expression
+    ^{ x = 1; }();
+    ^
+
+"Test_name.c", line 410: error: identifier "x" is undefined
+      return x;
+             ^
+
+"Test_name.c", line 411: error: identifier "x" is undefined
+    return x; // no-warning
+           ^
+
+"Test_name.c", line 430: warning: variable "i" is used before its value is set
+    for (; i < 10000; ++i) // expected-warning {{variable 'i' is uninitialized when used here}}
+           ^
+
+"Test_name.c", line 438: warning: variable "a" is used before its value is set
+    UNINIT(int, a, b);  // expected-warning {{variable 'a' is uninitialized when used here}} \
+    ^
+
+"Test_name.c", line 441: warning: variable "c" is used before its value is set
+    ASSIGN(int, c, d);  // expected-warning {{variable 'c' is uninitialized when used here}}
+    ^
+
+"Test_name.c", line 438: warning: variable "b" was declared but never referenced
+    UNINIT(int, a, b);  // expected-warning {{variable 'a' is uninitialized when used here}} \
+    ^
+
+"Test_name.c", line 441: warning: variable "d" was declared but never referenced
+    ASSIGN(int, c, d);  // expected-warning {{variable 'c' is uninitialized when used here}}
+    ^
+
+"Test_name.c", line 453: warning: variable "k" is used before its value is set
+      consume(k); // expected-warning {{variable 'k' is uninitialized}}
+              ^
+
+"Test_name.c", line 480: warning: variable "a" is used before its value is set
+    if (!a) { // expected-warning {{variable 'a' is uninitialized}}
+         ^
+
+"Test_name.c", line 501: warning: variable "x" is used before its value is set
+    return x += 1; // expected-warning {{variable 'x' is uninitialized}}
+           ^
+
+"Test_name.c", line 506: warning: variable "x" is used before its value is set
+    x *= 0; // expected-warning {{variable 'x' is uninitialized}}
+    ^
+
+"Test_name.c", line 521: warning: variable "x" is used before its value is set
+  	++x; // no-warning
+  	  ^
+
+"Test_name.c", line 549: warning: variable "e" is used before its value is set
+    return e; // no-warning
+           ^
+
+"Test_name.c", line 554: warning: variable "e" is used before its value is set
+    return e; // no-warning
+           ^
+
+"Test_name.c", line 586: warning: variable "a" is used before its value is set
+    (void)sizeof({ struct with_explicit_field a; a; });  // no warning -- unevaluated operand
+                                                 ^
+
+18 errors detected in the compilation of "Test_name.c".

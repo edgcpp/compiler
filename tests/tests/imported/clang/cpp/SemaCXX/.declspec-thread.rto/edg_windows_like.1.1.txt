@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -w --c++11 --ms_extensions -w Test_name.c
+"Test_name.c", line 6: error: this declaration has no storage class or type specifier
+  __thread __declspec(thread) int a; // expected-error {{already has a thread-local storage specifier}}
+  ^
+
+"Test_name.c", line 6: error: expected a ";"
+  __thread __declspec(thread) int a; // expected-error {{already has a thread-local storage specifier}}
+           ^
+
+"Test_name.c", line 7: error: unknown attribute "thread"
+  __declspec(thread) __thread int b; // expected-error {{already has a thread-local storage specifier}}
+             ^
+
+"Test_name.c", line 7: error: this declaration has no storage class or type specifier
+  __declspec(thread) __thread int b; // expected-error {{already has a thread-local storage specifier}}
+                     ^
+
+"Test_name.c", line 7: error: variable "__thread" has already been defined (previous definition at line 6)
+  __declspec(thread) __thread int b; // expected-error {{already has a thread-local storage specifier}}
+                     ^
+
+"Test_name.c", line 7: error: expected a ";"
+  __declspec(thread) __thread int b; // expected-error {{already has a thread-local storage specifier}}
+                              ^
+
+"Test_name.c", line 8: error: unknown attribute "thread"
+  __declspec(thread) int c(); // expected-warning {{only applies to variables}}
+             ^
+
+"Test_name.c", line 9: error: unknown attribute "thread"
+  __declspec(thread) int d;
+             ^
+
+"Test_name.c", line 14: error: unknown attribute "thread"
+  __declspec(thread) int e = foo(); // expected-error {{must be a constant expression}} expected-note {{thread_local}}
+             ^
+
+"Test_name.c", line 21: error: unknown attribute "thread"
+  __declspec(thread) HasCtor f; // expected-error {{must be a constant expression}} expected-note {{thread_local}}
+             ^
+
+"Test_name.c", line 28: error: unknown attribute "thread"
+  __declspec(thread) HasCtor g; // expected-error {{must be a constant expression}} expected-note {{thread_local}}
+             ^
+
+"Test_name.c", line 35: error: unknown attribute "thread"
+  __declspec(thread) HasDefaultedDefaultCtor h;
+             ^
+
+"Test_name.c", line 41: error: unknown attribute "thread"
+  __declspec(thread) HasConstexprCtor i(42);
+             ^
+
+"Test_name.c", line 44: error: unknown attribute "thread"
+    __declspec(thread) int a; // expected-error {{must have global storage}}
+               ^
+
+"Test_name.c", line 45: error: unknown attribute "thread"
+    static __declspec(thread) int b;
+                      ^
+
+"Test_name.c", line 48: error: unknown attribute "thread"
+  extern __declspec(thread) int fwd_thread_var;
+                    ^
+
+"Test_name.c", line 49: error: unknown attribute "thread"
+  __declspec(thread) int fwd_thread_var = 5;
+             ^
+
+"Test_name.c", line 52: error: unknown attribute "thread"
+  __declspec(thread) int fwd_thread_var_mismatch = 5; // expected-error-re {{thread-local {{.*}} follows non-thread-local}}
+             ^
+
+"Test_name.c", line 54: error: unknown attribute "thread"
+  extern __declspec(thread) int thread_mismatch_2; // expected-note {{previous declaration}}
+                    ^
+
+"Test_name.c", line 57: error: unknown attribute "thread"
+  typedef __declspec(thread) int tls_int_t; // expected-warning {{only applies to variables}}
+                     ^
+
+20 errors detected in the compilation of "Test_name.c".

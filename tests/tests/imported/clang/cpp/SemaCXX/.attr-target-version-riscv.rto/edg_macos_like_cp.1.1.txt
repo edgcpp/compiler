@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++14 Test_name.c
+"Test_name.c", line 10: error: function "fullArchString" has already been defined (previous definition at line 7)
+  __attribute__((target_version("arch=default"))) int fullArchString(void) { return 2; }
+                                                      ^
+
+"Test_name.c", line 16: error: function "mcpu" has already been defined (previous definition at line 14)
+  __attribute__((target_version("default"))) int mcpu(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 22: error: function "mtune" has already been defined (previous definition at line 20)
+  __attribute__((target_version("default"))) int mtune(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 28: error: function "emptyVersion" has already been defined (previous definition at line 26)
+  __attribute__((target_version("default"))) int emptyVersion(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 33: error: function "dupVersion" has already been defined (previous definition at line 31)
+  __attribute__((target_version("arch=+c"))) int dupVersion(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 34: error: function "dupVersion" has already been defined (previous definition at line 31)
+  __attribute__((target_version("default"))) int dupVersion(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 40: error: function "UnsupportBitMaskExt" has already been defined (previous definition at line 38)
+  __attribute__((target_version("default"))) int UnsupportBitMaskExt(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 46: error: function "UnsupportPriority" has already been defined (previous definition at line 44)
+  __attribute__((target_version("default"))) int UnsupportPriority(void) { return 2;}
+                                                 ^
+
+"Test_name.c", line 55: error: function "WithoutAddSign" has already been defined (previous definition at line 53)
+  __attribute__((target_version("default"))) int WithoutAddSign(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 61: error: function "DefaultInVersion" has already been defined (previous definition at line 59)
+  __attribute__((target_version("default"))) int DefaultInVersion(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 67: error: function "EmptyVersionAfterSemiColon" has already been defined (previous definition at line 65)
+  __attribute__((target_version("default"))) int EmptyVersionAfterSemiColon(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 73: error: function "dupArch" has already been defined (previous definition at line 71)
+  __attribute__((target_version("default"))) int dupArch(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 79: error: function "dupDefault" has already been defined (previous definition at line 77)
+  __attribute__((target_version("default"))) int dupDefault(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 85: error: function "dupPriority" has already been defined (previous definition at line 83)
+  __attribute__((target_version("default"))) int dupPriority(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 91: error: function "invalidVerson1" has already been defined (previous definition at line 89)
+  __attribute__((target_version("default"))) int invalidVerson1(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 97: error: function "invalidVerson2" has already been defined (previous definition at line 95)
+  __attribute__((target_version("default"))) int invalidVerson2(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 103: error: function "invalidVerson3" has already been defined (previous definition at line 101)
+  __attribute__((target_version("default"))) int invalidVerson3(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 109: error: function "invalidVerson4" has already been defined (previous definition at line 107)
+  __attribute__((target_version("default"))) int invalidVerson4(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 115: error: function "prioriyWithoutArch" has already been defined (previous definition at line 113)
+  __attribute__((target_version("default"))) int prioriyWithoutArch(void) { return 2; }
+                                                 ^
+
+"Test_name.c", line 121: error: function "UnsupportNegativePriority" has already been defined (previous definition at line 119)
+  __attribute__((target_version("default"))) int UnsupportNegativePriority(void) { return 2; }
+                                                 ^
+
+20 errors detected in the compilation of "Test_name.c".

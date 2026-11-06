@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -w --ms_extensions -w --ms_extensions Test_name.c
+"Test_name.c", line 15: error: expected a ")"
+  void bad(T __ptr32 a) { // expected-error {{'__ptr32' attribute only applies to pointer arguments}}`
+             ^
+
+"Test_name.c", line 16: error: identifier "a" is undefined
+    (*a) += 1;
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

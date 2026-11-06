@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Sema/Inputs/lifetime-analysis.h", line 134: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer]] iterator {
+           ^
+
+"Sema/warn-lifetime-analysis-capture-by.cpp", line 120: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=int, Alloc=std::allocator<int>]" matches the argument list
+            argument types are: (int, int, int)
+    captureVector({1, 2, 3}, x);
+                  ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=int, Alloc=std::allocator<int>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: number of parameters of function "std::vector<T, Alloc>::vector(const std::vector<int, std::allocator<int>> &) [with T=int, Alloc=std::allocator<int>]" does not match the call
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: number of parameters of function "std::vector<T, Alloc>::vector(std::vector<int, std::allocator<int>> &&) [with T=int, Alloc=std::allocator<int>]" does not match the call
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=int, Alloc=std::allocator<int>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=int, Alloc=std::allocator<int>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-capture-by.cpp", line 126: error: a value of type "int" cannot be used to initialize an entity of type "const int *"
+    captureInitList({1, 2}, x);
+                     ^
+
+"Sema/warn-lifetime-analysis-capture-by.cpp", line 127: error: a value of type "int" cannot be used to initialize an entity of type "const int *"
+    captureInitList(getLifetimeBoundInitList({1, 2}), x);
+                                              ^
+
+"Sema/warn-lifetime-analysis-capture-by.cpp", line 301: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer()]] MyStringView : public std::string_view {
+           ^
+
+"Sema/warn-lifetime-analysis-capture-by.cpp", line 416: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer]] Span {
+           ^
+
+"Sema/warn-lifetime-analysis-capture-by.cpp", line 422: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=int, Alloc=std::allocator<int>]" matches the argument list
+            argument types are: (int, int, int)
+    spans.push_back(std::vector<int>{1, 2, 3});
+                                    ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=int, Alloc=std::allocator<int>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: number of parameters of function "std::vector<T, Alloc>::vector(const std::vector<int, std::allocator<int>> &) [with T=int, Alloc=std::allocator<int>]" does not match the call
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: number of parameters of function "std::vector<T, Alloc>::vector(std::vector<int, std::allocator<int>> &&) [with T=int, Alloc=std::allocator<int>]" does not match the call
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=int, Alloc=std::allocator<int>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=int, Alloc=std::allocator<int>]" does not match the call
+    vector();
+    ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,642 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 31: error: expected a ";"
+  float _Imaginary fi1; // expected-error {{imaginary types are not supported}}
+                   ^
+
+"Test_name.c", line 32: warning: this declaration has no storage class or type specifier
+  _Imaginary float fi2; // expected-error {{imaginary types are not supported}}
+  ^
+
+"Test_name.c", line 32: error: declaration is incompatible with "float _Imaginary" (declared at line 31)
+  _Imaginary float fi2; // expected-error {{imaginary types are not supported}}
+  ^
+
+"Test_name.c", line 32: error: expected a ";"
+  _Imaginary float fi2; // expected-error {{imaginary types are not supported}}
+             ^
+
+"Test_name.c", line 34: error: declaration is incompatible with "float _Imaginary" (declared at line 32)
+  double _Imaginary di1; // expected-error {{imaginary types are not supported}}
+         ^
+
+"Test_name.c", line 34: error: expected a ";"
+  double _Imaginary di1; // expected-error {{imaginary types are not supported}}
+                    ^
+
+"Test_name.c", line 35: warning: this declaration has no storage class or type specifier
+  _Imaginary double di2; // expected-error {{imaginary types are not supported}}
+  ^
+
+"Test_name.c", line 35: error: declaration is incompatible with "float _Imaginary" (declared at line 34)
+  _Imaginary double di2; // expected-error {{imaginary types are not supported}}
+  ^
+
+"Test_name.c", line 35: error: expected a ";"
+  _Imaginary double di2; // expected-error {{imaginary types are not supported}}
+             ^
+
+"Test_name.c", line 37: error: declaration is incompatible with "float _Imaginary" (declared at line 35)
+  long double _Imaginary ldi1; // expected-error {{imaginary types are not supported}}
+              ^
+
+"Test_name.c", line 37: error: expected a ";"
+  long double _Imaginary ldi1; // expected-error {{imaginary types are not supported}}
+                         ^
+
+"Test_name.c", line 38: warning: this declaration has no storage class or type specifier
+  _Imaginary long double ldi2; // expected-error {{imaginary types are not supported}}
+  ^
+
+"Test_name.c", line 38: error: declaration is incompatible with "float _Imaginary" (declared at line 37)
+  _Imaginary long double ldi2; // expected-error {{imaginary types are not supported}}
+  ^
+
+"Test_name.c", line 38: error: expected a ";"
+  _Imaginary long double ldi2; // expected-error {{imaginary types are not supported}}
+             ^
+
+"Test_name.c", line 45: error: expected a type specifier
+  _Static_assert(sizeof(float _Complex) == sizeof(struct { float mem[2]; }), "");
+                 ^
+
+"Test_name.c", line 45: error: expected a type specifier
+  _Static_assert(sizeof(float _Complex) == sizeof(struct { float mem[2]; }), "");
+                                                                             ^
+
+"Test_name.c", line 45: warning: this declaration has no storage class or type specifier
+  _Static_assert(sizeof(float _Complex) == sizeof(struct { float mem[2]; }), "");
+  ^
+
+"Test_name.c", line 46: error: identifier "_Alignof" is undefined
+  _Static_assert(_Alignof(float _Complex) == _Alignof(struct { float mem[2]; }), "");
+                 ^
+
+"Test_name.c", line 46: error: expected a ")"
+  _Static_assert(_Alignof(float _Complex) == _Alignof(struct { float mem[2]; }), "");
+                                          ^
+
+"Test_name.c", line 46: warning: this declaration has no storage class or type specifier
+  _Static_assert(_Alignof(float _Complex) == _Alignof(struct { float mem[2]; }), "");
+  ^
+
+"Test_name.c", line 46: error: declaration is incompatible with "int _Static_assert(<error-type>, <error-type>)" (declared at line 45)
+  _Static_assert(_Alignof(float _Complex) == _Alignof(struct { float mem[2]; }), "");
+  ^
+
+"Test_name.c", line 48: error: expected a type specifier
+  _Static_assert(sizeof(double _Complex) == sizeof(struct { double mem[2]; }), "");
+                 ^
+
+"Test_name.c", line 48: error: expected a type specifier
+  _Static_assert(sizeof(double _Complex) == sizeof(struct { double mem[2]; }), "");
+                                                                               ^
+
+"Test_name.c", line 48: warning: this declaration has no storage class or type specifier
+  _Static_assert(sizeof(double _Complex) == sizeof(struct { double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 48: error: declaration is incompatible with "int _Static_assert(<error-type> (*)(float __complex__))" (declared at line 46)
+  _Static_assert(sizeof(double _Complex) == sizeof(struct { double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 49: error: identifier "_Alignof" is undefined
+  _Static_assert(_Alignof(double _Complex) == _Alignof(struct { double mem[2]; }), "");
+                 ^
+
+"Test_name.c", line 49: error: expected a ")"
+  _Static_assert(_Alignof(double _Complex) == _Alignof(struct { double mem[2]; }), "");
+                                           ^
+
+"Test_name.c", line 49: warning: this declaration has no storage class or type specifier
+  _Static_assert(_Alignof(double _Complex) == _Alignof(struct { double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 49: error: declaration is incompatible with "int _Static_assert(<error-type>, <error-type>)" (declared at line 48)
+  _Static_assert(_Alignof(double _Complex) == _Alignof(struct { double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 51: error: expected a type specifier
+  _Static_assert(sizeof(long double _Complex) == sizeof(struct { long double mem[2]; }), "");
+                 ^
+
+"Test_name.c", line 51: error: expected a type specifier
+  _Static_assert(sizeof(long double _Complex) == sizeof(struct { long double mem[2]; }), "");
+                                                                                         ^
+
+"Test_name.c", line 51: warning: this declaration has no storage class or type specifier
+  _Static_assert(sizeof(long double _Complex) == sizeof(struct { long double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 51: error: declaration is incompatible with "int _Static_assert(<error-type> (*)(double __complex__))" (declared at line 49)
+  _Static_assert(sizeof(long double _Complex) == sizeof(struct { long double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 52: error: identifier "_Alignof" is undefined
+  _Static_assert(_Alignof(long double _Complex) == _Alignof(struct { long double mem[2]; }), "");
+                 ^
+
+"Test_name.c", line 52: error: expected a ")"
+  _Static_assert(_Alignof(long double _Complex) == _Alignof(struct { long double mem[2]; }), "");
+                                                ^
+
+"Test_name.c", line 52: warning: this declaration has no storage class or type specifier
+  _Static_assert(_Alignof(long double _Complex) == _Alignof(struct { long double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 52: error: declaration is incompatible with "int _Static_assert(<error-type>, <error-type>)" (declared at line 51)
+  _Static_assert(_Alignof(long double _Complex) == _Alignof(struct { long double mem[2]; }), "");
+  ^
+
+"Test_name.c", line 56: error: expected a type specifier
+  _Static_assert(__real((float _Complex){ 1.0f, 2.0f }) == 1.0f, "");
+                 ^
+
+"Test_name.c", line 56: error: expected a type specifier
+  _Static_assert(__real((float _Complex){ 1.0f, 2.0f }) == 1.0f, "");
+                                                                 ^
+
+"Test_name.c", line 56: warning: this declaration has no storage class or type specifier
+  _Static_assert(__real((float _Complex){ 1.0f, 2.0f }) == 1.0f, "");
+  ^
+
+"Test_name.c", line 56: error: declaration is incompatible with "int _Static_assert(<error-type> (*)(long double __complex__))" (declared at line 52)
+  _Static_assert(__real((float _Complex){ 1.0f, 2.0f }) == 1.0f, "");
+  ^
+
+"Test_name.c", line 57: error: expected a type specifier
+  _Static_assert(__imag((float _Complex){ 1.0f, 2.0f }) == 2.0f, "");
+                 ^
+
+"Test_name.c", line 57: error: expected a type specifier
+  _Static_assert(__imag((float _Complex){ 1.0f, 2.0f }) == 2.0f, "");
+                                                                 ^
+
+"Test_name.c", line 57: warning: this declaration has no storage class or type specifier
+  _Static_assert(__imag((float _Complex){ 1.0f, 2.0f }) == 2.0f, "");
+  ^
+
+"Test_name.c", line 59: error: expected a type specifier
+  _Static_assert(__real((double _Complex){ 1.0, 2.0 }) == 1.0, "");
+                 ^
+
+"Test_name.c", line 59: error: expected a type specifier
+  _Static_assert(__real((double _Complex){ 1.0, 2.0 }) == 1.0, "");
+                                                               ^
+
+"Test_name.c", line 59: warning: this declaration has no storage class or type specifier
+  _Static_assert(__real((double _Complex){ 1.0, 2.0 }) == 1.0, "");
+  ^
+
+"Test_name.c", line 60: error: expected a type specifier
+  _Static_assert(__imag((double _Complex){ 1.0, 2.0 }) == 2.0, "");
+                 ^
+
+"Test_name.c", line 60: error: expected a type specifier
+  _Static_assert(__imag((double _Complex){ 1.0, 2.0 }) == 2.0, "");
+                                                               ^
+
+"Test_name.c", line 60: warning: this declaration has no storage class or type specifier
+  _Static_assert(__imag((double _Complex){ 1.0, 2.0 }) == 2.0, "");
+  ^
+
+"Test_name.c", line 62: error: expected a type specifier
+  _Static_assert(__real((long double _Complex){ 1.0L, 2.0L }) == 1.0L, "");
+                 ^
+
+"Test_name.c", line 62: error: expected a type specifier
+  _Static_assert(__real((long double _Complex){ 1.0L, 2.0L }) == 1.0L, "");
+                                                                       ^
+
+"Test_name.c", line 62: warning: this declaration has no storage class or type specifier
+  _Static_assert(__real((long double _Complex){ 1.0L, 2.0L }) == 1.0L, "");
+  ^
+
+"Test_name.c", line 63: error: expected a type specifier
+  _Static_assert(__imag((long double _Complex){ 1.0L, 2.0L }) == 2.0L, "");
+                 ^
+
+"Test_name.c", line 63: error: expected a type specifier
+  _Static_assert(__imag((long double _Complex){ 1.0L, 2.0L }) == 2.0L, "");
+                                                                       ^
+
+"Test_name.c", line 63: warning: this declaration has no storage class or type specifier
+  _Static_assert(__imag((long double _Complex){ 1.0L, 2.0L }) == 2.0L, "");
+  ^
+
+"Test_name.c", line 67: error: expected a type specifier
+  _Static_assert(__real((float _Complex)1.0f) == 1.0f, "");
+                 ^
+
+"Test_name.c", line 67: error: expected a type specifier
+  _Static_assert(__real((float _Complex)1.0f) == 1.0f, "");
+                                                       ^
+
+"Test_name.c", line 67: warning: this declaration has no storage class or type specifier
+  _Static_assert(__real((float _Complex)1.0f) == 1.0f, "");
+  ^
+
+"Test_name.c", line 68: error: expected a type specifier
+  _Static_assert(__imag((float _Complex)1.0f) == 0.0f, "");
+                 ^
+
+"Test_name.c", line 68: error: expected a type specifier
+  _Static_assert(__imag((float _Complex)1.0f) == 0.0f, "");
+                                                       ^
+
+"Test_name.c", line 68: warning: this declaration has no storage class or type specifier
+  _Static_assert(__imag((float _Complex)1.0f) == 0.0f, "");
+  ^
+
+"Test_name.c", line 70: error: expected a type specifier
+  _Static_assert(__real((double _Complex)1.0f) == 1.0, "");
+                 ^
+
+"Test_name.c", line 70: error: expected a type specifier
+  _Static_assert(__real((double _Complex)1.0f) == 1.0, "");
+                                                       ^
+
+"Test_name.c", line 70: warning: this declaration has no storage class or type specifier
+  _Static_assert(__real((double _Complex)1.0f) == 1.0, "");
+  ^
+
+"Test_name.c", line 71: error: expected a type specifier
+  _Static_assert(__imag((double _Complex)1.0f) == 0.0, "");
+                 ^
+
+"Test_name.c", line 71: error: expected a type specifier
+  _Static_assert(__imag((double _Complex)1.0f) == 0.0, "");
+                                                       ^
+
+"Test_name.c", line 71: warning: this declaration has no storage class or type specifier
+  _Static_assert(__imag((double _Complex)1.0f) == 0.0, "");
+  ^
+
+"Test_name.c", line 73: error: expected a type specifier
+  _Static_assert(__real((long double _Complex)1.0f) == 1.0L, "");
+                 ^
+
+"Test_name.c", line 73: error: expected a type specifier
+  _Static_assert(__real((long double _Complex)1.0f) == 1.0L, "");
+                                                             ^
+
+"Test_name.c", line 73: warning: this declaration has no storage class or type specifier
+  _Static_assert(__real((long double _Complex)1.0f) == 1.0L, "");
+  ^
+
+"Test_name.c", line 74: error: expected a type specifier
+  _Static_assert(__imag((long double _Complex)1.0f) == 0.0L, "");
+                 ^
+
+"Test_name.c", line 74: error: expected a type specifier
+  _Static_assert(__imag((long double _Complex)1.0f) == 0.0L, "");
+                                                             ^
+
+"Test_name.c", line 74: warning: this declaration has no storage class or type specifier
+  _Static_assert(__imag((long double _Complex)1.0f) == 0.0L, "");
+  ^
+
+"Test_name.c", line 78: error: expected a type specifier
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+                 ^
+
+"Test_name.c", line 78: error: expected a ")"
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+                                        ^
+
+"Test_name.c", line 78: warning: explicit type is missing ("int" assumed)
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+  ^
+
+"Test_name.c", line 78: error: declaration is incompatible with "int _Static_assert(<error-type>, <error-type>)" (declared at line 56)
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+  ^
+
+"Test_name.c", line 78: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+  ^
+
+"Test_name.c", line 78: warning: expression has no effect
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+                                          ^
+
+"Test_name.c", line 78: warning: expression has no effect
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+                                          ^
+
+"Test_name.c", line 78: error: expected a ";"
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+                                                     ^
+
+"Test_name.c", line 78: error: expected a declaration
+  _Static_assert((float)(float _Complex){ 1.0f, 2.0f } == 1.0f, "");
+                                                       ^
+
+"Test_name.c", line 79: error: expected a type specifier
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+                 ^
+
+"Test_name.c", line 79: error: expected a ")"
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+                                         ^
+
+"Test_name.c", line 79: warning: explicit type is missing ("int" assumed)
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+  ^
+
+"Test_name.c", line 79: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+  ^
+
+"Test_name.c", line 79: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+  ^
+
+"Test_name.c", line 79: warning: expression has no effect
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+                                           ^
+
+"Test_name.c", line 79: warning: expression has no effect
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+                                           ^
+
+"Test_name.c", line 79: error: expected a ";"
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+                                                      ^
+
+"Test_name.c", line 79: error: expected a declaration
+  _Static_assert((double)(float _Complex){ 1.0f, 2.0f } == 1.0, "");
+                                                        ^
+
+"Test_name.c", line 80: error: expected a type specifier
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+                 ^
+
+"Test_name.c", line 80: error: expected a ")"
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+                                              ^
+
+"Test_name.c", line 80: warning: explicit type is missing ("int" assumed)
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+  ^
+
+"Test_name.c", line 80: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+  ^
+
+"Test_name.c", line 80: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+  ^
+
+"Test_name.c", line 80: warning: expression has no effect
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+                                                ^
+
+"Test_name.c", line 80: warning: expression has no effect
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+                                                ^
+
+"Test_name.c", line 80: error: expected a ";"
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+                                                           ^
+
+"Test_name.c", line 80: error: expected a declaration
+  _Static_assert((long double)(float _Complex){ 1.0f, 2.0f } == 1.0L, "");
+                                                             ^
+
+"Test_name.c", line 83: error: expected a type specifier
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+                 ^
+
+"Test_name.c", line 83: error: expected a ")"
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+                                 ^
+
+"Test_name.c", line 83: warning: explicit type is missing ("int" assumed)
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+  ^
+
+"Test_name.c", line 83: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+  ^
+
+"Test_name.c", line 83: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+  ^
+
+"Test_name.c", line 83: warning: expression has no effect
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+                                   ^
+
+"Test_name.c", line 83: warning: expression has no effect
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+                                   ^
+
+"Test_name.c", line 83: error: expected a ";"
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+                                              ^
+
+"Test_name.c", line 83: error: expected a declaration
+  _Static_assert((float _Complex){ 1.0f, 2.0f } == (float _Complex){ 1.0f, 2.0f }, "");
+                                                ^
+
+"Test_name.c", line 84: error: expected a type specifier
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+                 ^
+
+"Test_name.c", line 84: error: expected a ")"
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+                                  ^
+
+"Test_name.c", line 84: warning: explicit type is missing ("int" assumed)
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+  ^
+
+"Test_name.c", line 84: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+  ^
+
+"Test_name.c", line 84: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+  ^
+
+"Test_name.c", line 84: warning: expression has no effect
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+                                    ^
+
+"Test_name.c", line 84: warning: expression has no effect
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+                                    ^
+
+"Test_name.c", line 84: error: expected a ";"
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+                                             ^
+
+"Test_name.c", line 84: error: expected a declaration
+  _Static_assert((double _Complex){ 1.0, 2.0 } == (double _Complex){ 1.0, 2.0 }, "");
+                                               ^
+
+"Test_name.c", line 85: error: expected a type specifier
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+                 ^
+
+"Test_name.c", line 85: error: expected a ")"
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+                                       ^
+
+"Test_name.c", line 85: warning: explicit type is missing ("int" assumed)
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+  ^
+
+"Test_name.c", line 85: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+  ^
+
+"Test_name.c", line 85: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+  ^
+
+"Test_name.c", line 85: warning: expression has no effect
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+                                         ^
+
+"Test_name.c", line 85: warning: expression has no effect
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+                                         ^
+
+"Test_name.c", line 85: error: expected a ";"
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+                                                    ^
+
+"Test_name.c", line 85: error: expected a declaration
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } == (long double _Complex){ 1.0L, 2.0L }, "");
+                                                      ^
+
+"Test_name.c", line 87: error: expected a type specifier
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+                 ^
+
+"Test_name.c", line 87: error: expected a ")"
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+                                 ^
+
+"Test_name.c", line 87: warning: explicit type is missing ("int" assumed)
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+  ^
+
+"Test_name.c", line 87: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+  ^
+
+"Test_name.c", line 87: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+  ^
+
+"Test_name.c", line 87: warning: expression has no effect
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+                                   ^
+
+"Test_name.c", line 87: warning: expression has no effect
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+                                   ^
+
+"Test_name.c", line 87: error: expected a ";"
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+                                              ^
+
+"Test_name.c", line 87: error: expected a declaration
+  _Static_assert((float _Complex){ 1.0f, 2.0f } != (float _Complex){ 2.0f, 0.0f }, "");
+                                                ^
+
+"Test_name.c", line 88: error: expected a type specifier
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+                 ^
+
+"Test_name.c", line 88: error: expected a ")"
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+                                  ^
+
+"Test_name.c", line 88: warning: explicit type is missing ("int" assumed)
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+  ^
+
+"Test_name.c", line 88: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+  ^
+
+"Test_name.c", line 88: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+  ^
+
+"Test_name.c", line 88: warning: expression has no effect
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+                                    ^
+
+"Test_name.c", line 88: warning: expression has no effect
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+                                    ^
+
+"Test_name.c", line 88: error: expected a ";"
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+                                             ^
+
+"Test_name.c", line 88: error: expected a declaration
+  _Static_assert((double _Complex){ 1.0, 2.0 } != (double _Complex){ 2.0, 0.0 }, "");
+                                               ^
+
+"Test_name.c", line 89: error: expected a type specifier
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+                 ^
+
+"Test_name.c", line 89: error: expected a ")"
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+                                       ^
+
+"Test_name.c", line 89: warning: explicit type is missing ("int" assumed)
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+  ^
+
+"Test_name.c", line 89: error: function "_Static_assert" has already been defined (previous definition at line 78)
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+  ^
+
+"Test_name.c", line 89: warning: unnamed prototyped parameters not allowed when body is present
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+  ^
+
+"Test_name.c", line 89: warning: expression has no effect
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+                                         ^
+
+"Test_name.c", line 89: warning: expression has no effect
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+                                         ^
+
+"Test_name.c", line 89: error: expected a ";"
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+                                                    ^
+
+"Test_name.c", line 89: error: expected a declaration
+  _Static_assert((long double _Complex){ 1.0L, 2.0L } != (long double _Complex){ 2.0L, 0.0L }, "");
+                                                      ^
+
+"Test_name.c", line 92: error: complex type is not allowed
+  int i1 = (float _Complex){ 1.0f, 2.0f } < 10;        // expected-error {{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 93: error: complex type is not allowed
+  int i2 = (double _Complex){ 1.0f, 2.0f } > 10;       // expected-error {{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 94: error: complex type is not allowed
+  int i3 = (long double _Complex){ 1.0f, 2.0f } <= 10; // expected-error {{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 95: error: complex type is not allowed
+  int i4 = (float _Complex){ 1.0f, 2.0f } >= 10;       // expected-error {{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 103: error: variable "_Imaginary" is not a type name
+  _Imaginary i = 1.0f; // expected-warning {{plain '_Complex' requires a type specifier; assuming '_Complex double'}} \
+  ^
+
+103 errors detected in the compilation of "Test_name.c".

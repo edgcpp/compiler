@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 11: error: use the "typename" keyword to treat nontype "S<T>::type [with T=auto]" as a type in a dependent context
+    S<decltype(x)>::type n; // expected-error 2{{}}
+    ^
+
+"Test_name.c", line 17: error: use the "typename" keyword to treat nontype "S<T>::type [with T=auto]" as a type in a dependent context
+    S<decltype(x)>::type n; // expected-error 2{{}}
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

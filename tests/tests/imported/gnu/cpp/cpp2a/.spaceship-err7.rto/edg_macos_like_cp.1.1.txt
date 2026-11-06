@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-err7.C", line 8: error: invalid types ("std::nullptr_t" and "std::nullptr_t") for built-in operator<=>
+  auto b0 = nullptr <=> nullptr;
+                    ^
+
+"./cpp2a/spaceship-err7.C", line 9: error: invalid types ("int" and "std::nullptr_t") for built-in operator<=>
+  auto b1 = 0 <=> nullptr;
+              ^
+
+"./cpp2a/spaceship-err7.C", line 10: error: invalid types ("std::nullptr_t" and "int") for built-in operator<=>
+  auto b2 = nullptr <=> 0;
+                    ^
+
+"./cpp2a/spaceship-err7.C", line 11: error: invalid types ("std::nullptr_t" and "int") for built-in operator<=>
+  auto b3 = foo () <=> 0;
+                   ^
+
+"./cpp2a/spaceship-err7.C", line 12: error: invalid types ("int" and "std::nullptr_t") for built-in operator<=>
+  auto b4 = 0 <=> foo ();
+              ^
+
+"./cpp2a/spaceship-err7.C", line 13: error: invalid types ("std::nullptr_t" and "std::nullptr_t") for built-in operator<=>
+  auto b5 = foo () <=> nullptr;
+                   ^
+
+"./cpp2a/spaceship-err7.C", line 14: error: invalid types ("std::nullptr_t" and "std::nullptr_t") for built-in operator<=>
+  auto b6 = nullptr <=> foo ();
+                    ^
+
+8 errors detected in the compilation of "Test_name.c".

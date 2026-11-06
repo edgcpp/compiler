@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 --modules Test_name.c
+"./modules/contracts-2_a.C", line 26: error: expected a ","
+  export int fn_in1(int n) [[ pre: pre_print(n) > 0 ]]
+                                 ^
+
+"./modules/contracts-2_a.C", line 31: error: expected a ","
+  export int fn_in2(int x) [[ pre: pre_print(x) > 0 ]]
+                                 ^
+
+"./modules/contracts-2_a.C", line 40: error: expected a ","
+    [[ pre: pre_print(n) > 0 ]];
+          ^
+
+"./modules/contracts-2_a.C", line 43: error: expected a ","
+    [[ pre: pre_print(n) > 0 ]];
+          ^
+
+"./modules/contracts-2_a.C", line 48: error: expected a ","
+    [[ pre: pre_print2(n) > 0 ]];
+          ^
+
+5 errors detected in the compilation of "Test_name.c".

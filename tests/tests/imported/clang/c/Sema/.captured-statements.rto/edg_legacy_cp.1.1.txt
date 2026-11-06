@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: warning: statement is unreachable
+    goto L3; // OK
+    ^
+
+"Test_name.c", line 23: warning: statement is unreachable
+        continue; // expected-error {{'continue' statement not in loop statement}}
+        ^
+
+"Test_name.c", line 47: warning: variable "y" is used before its value is set
+          x = z = y; // OK
+                  ^
+
+"Test_name.c", line 44: warning: variable "z" was set but never used
+        int z;
+            ^
+
+"Test_name.c", line 38: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"Test_name.c", line 54: error: identifier "__block" is undefined
+    __block int x; // expected-note {{'x' declared here}}
+    ^
+
+"Test_name.c", line 54: error: expected a ";"
+    __block int x; // expected-note {{'x' declared here}}
+            ^
+
+"Test_name.c", line 56: error: expected an expression
+    ^{
+    ^
+
+"Test_name.c", line 64: warning: parsing restarts here after previous syntax error
+    }();
+       ^
+
+"Test_name.c", line 66: error: expected a ";"
+    __block int a; // expected-note 2 {{'a' declared here}}
+            ^
+
+"Test_name.c", line 71: error: expected an expression
+      ^{
+      ^
+
+"Test_name.c", line 75: warning: parsing restarts here after previous syntax error
+      }();
+         ^
+
+"Test_name.c", line 70: warning: variable "d" was declared but never referenced
+      int d;
+          ^
+
+"Test_name.c", line 79: error: expected a ";"
+      __block int c;
+              ^
+
+"Test_name.c", line 81: error: expected an expression
+      ^{
+      ^
+
+"Test_name.c", line 85: warning: parsing restarts here after previous syntax error
+      }();
+         ^
+
+"Test_name.c", line 80: warning: variable "d" was declared but never referenced
+      int d;
+          ^
+
+"Test_name.c", line 55: warning: variable "y" was declared but never referenced
+    int y;
+        ^
+
+"Test_name.c", line 67: warning: variable "b" was declared but never referenced
+    int b;
+        ^
+
+7 errors detected in the compilation of "Test_name.c".

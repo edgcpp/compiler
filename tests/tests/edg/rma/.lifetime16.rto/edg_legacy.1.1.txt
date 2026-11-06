@@ -1,0 +1,10 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 7: remark: function "A::A()" cannot be inlined
+  	A() { ctor_calls += 1; }
+  	^
+
+"Test_name.c", line 10: error: return type "int" omitted in declaration of function "main"
+  main()
+  ^
+
+1 error detected in the compilation of "Test_name.c".

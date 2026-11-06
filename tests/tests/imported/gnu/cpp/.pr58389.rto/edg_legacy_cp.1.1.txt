@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 14: warning: label "std" was declared but never referenced
+    std:
+    ^
+
+"Test_name.c", line 21: warning: label "std" was declared but never referenced
+  std:
+  ^
+
+"Test_name.c", line 53: warning: variable "c" is used before its value is set
+      sort(c, b, qt_notclosestLeaf);
+           ^
+
+"Test_name.c", line 53: warning: variable "b" is used before its value is set
+      sort(c, b, qt_notclosestLeaf);
+              ^
+
+"Test_name.c", line 11: warning: variable "a" is used before its value is set
+    if (p1 - a)
+             ^
+          detected during:
+            instantiation of "void __final_insertion_sort(_RandomAccessIterator, _Compare) [with _RandomAccessIterator=A::B, _Compare=void (*)()]" at line 23
+            instantiation of "void sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator=A::B, _Compare=void (*)()]" at line 53
+

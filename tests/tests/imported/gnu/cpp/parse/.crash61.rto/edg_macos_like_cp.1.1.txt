@@ -1,0 +1,43 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: error: explicit type is missing ("int" assumed)
+  struct pair { constexpr pair (const) : }; // { dg-error "" }
+                                     ^
+
+"Test_name.c", line 8: error: expected a type specifier
+  template <0> make_pair () {}		  // { dg-error "" }
+            ^
+
+"Test_name.c", line 8: error: explicit type is missing ("int" assumed)
+  template <0> make_pair () {}		  // { dg-error "" }
+               ^
+
+"Test_name.c", line 9: error: incomplete type "pair []" is not allowed
+  pair prefix[] = { 0, make_pair }	  // { dg-error "" }
+       ^
+
+At end of source: error: expected a ";"
+
+At end of source: error: expected a "}"
+"Test_name.c", line 7: note: to match this "{"
+  struct pair { constexpr pair (const) : }; // { dg-error "" }
+              ^
+
+"Test_name.c", line 7: error: expected an identifier
+  struct pair { constexpr pair (const) : }; // { dg-error "" }
+                                          ^
+
+"Test_name.c", line 7: error: expected a "{"
+  struct pair { constexpr pair (const) : }; // { dg-error "" }
+                                          ^
+
+"Test_name.c", line 7: error: expected a "}"
+  struct pair { constexpr pair (const) : }; // { dg-error "" }
+                                          ^
+
+"Test_name.c", line 8: warning: missing return statement at end of non-void function "pair::make_pair<<unnamed>>()"
+  template <0> make_pair () {}		  // { dg-error "" }
+                             ^
+
+At end of source: error: expected a ";"
+
+10 errors detected in the compilation of "Test_name.c".

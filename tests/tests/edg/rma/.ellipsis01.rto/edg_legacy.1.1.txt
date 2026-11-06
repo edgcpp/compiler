@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 7: remark: function "A::A(int)" cannot be inlined
+    A(int i = 11) : x(i) { }
+    ^
+
+"Test_name.c", line 11: remark: function "A::operator()" cannot be inlined
+    void operator ()(int i, ...) { printf("%d\n", x+i); }
+         ^
+

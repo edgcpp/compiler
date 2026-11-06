@@ -1,0 +1,26 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c11 --strict_gnu Test_name.c
+"Test_name.c", line 13: warning: function "__builtin_shuffle" declared implicitly
+    *res = __builtin_shuffle ((v2df) { 1.0, 0.0 }, x, (v2di) { 1, 3 });
+           ^
+
+"Test_name.c", line 13: warning: excess initializers are ignored
+    *res = __builtin_shuffle ((v2df) { 1.0, 0.0 }, x, (v2di) { 1, 3 });
+                                            ^
+
+"Test_name.c", line 13: warning: excess initializers are ignored
+    *res = __builtin_shuffle ((v2df) { 1.0, 0.0 }, x, (v2di) { 1, 3 });
+                                                                  ^
+
+"Test_name.c", line 18: warning: excess initializers are ignored
+    v2df x = (v2df) { 0.0, 2.0 };
+                           ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "v2df" (aka "double")
+    if (x[0] != 0.0 || x[1] != 2.0)
+        ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "v2df" (aka "double")
+    if (x[0] != 0.0 || x[1] != 2.0)
+                       ^
+
+2 errors detected in the compilation of "Test_name.c".

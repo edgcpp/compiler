@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 161: error: a value of type "test6::A *" cannot be assigned to an entity of type "test6::B *"
+        *ptr = field; // expected-error {{incompatible pointer types assigning to 'B *' from 'A *'}}
+             ^
+
+"Test_name.c", line 171: error: a nonstatic member reference must be relative to a specific object
+        (x.g()); // expected-error {{invalid use of member 'x' in static member function}}
+         ^
+
+"Test_name.c", line 41: error: class "OtherBase" has no member "f0"
+    x.CrazyBase::f0(); // expected-error 2{{no member named}}
+                 ^
+          detected during instantiation of "void call_f0_through_typedef2<TheBase,T>(T) [with TheBase=OtherBase, T=X1]" at line 59
+
+"Test_name.c", line 41: error: class "OtherBase" has no member "f0"
+    x.CrazyBase::f0(); // expected-error 2{{no member named}}
+                 ^
+          detected during instantiation of "void call_f0_through_typedef2<TheBase,T>(T) [with TheBase=Base, T=X1]" at line 60
+
+"Test_name.c", line 70: error: class "X2" has no member "operator long"
+    return value.operator T(); // expected-error{{operator long}}
+                 ^
+          detected during instantiation of "T convert<T,U>(const U &) [with T=long, U=X2]" at line 75
+
+5 errors detected in the compilation of "Test_name.c".

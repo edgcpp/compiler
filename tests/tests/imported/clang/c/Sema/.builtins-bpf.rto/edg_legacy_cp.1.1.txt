@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 30: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg, 1); // expected-error {{__builtin_preserve_field_info argument 1 not a field access}}
+           ^
+
+"Test_name.c", line 34: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(*arg, 1); // expected-error {{__builtin_preserve_field_info argument 1 not a field access}}
+           ^
+
+"Test_name.c", line 38: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->a, 1); // expected-error {{incompatible integer to pointer conversion returning 'unsigned int' from a function with result type 'void *'}}
+           ^
+
+"Test_name.c", line 38: warning: return value type does not match the function type
+    return __builtin_preserve_field_info(arg->a, 1); // expected-error {{incompatible integer to pointer conversion returning 'unsigned int' from a function with result type 'void *'}}
+           ^
+
+"Test_name.c", line 42: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->b[1], 1);
+           ^
+
+"Test_name.c", line 46: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->b[2], 1);
+           ^
+
+"Test_name.c", line 50: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->a, 1);
+           ^
+
+"Test_name.c", line 54: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->c, 1ULL);
+           ^
+
+"Test_name.c", line 58: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->a, 1);
+           ^
+
+"Test_name.c", line 62: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->c, 'a');
+           ^
+
+"Test_name.c", line 66: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->a, arg); // expected-error {{__builtin_preserve_field_info argument 2 not a constant}}
+           ^
+
+"Test_name.c", line 70: warning: function "__builtin_preserve_field_info" declared implicitly
+    return __builtin_preserve_field_info(arg->a, info_kind); // expected-error {{__builtin_preserve_field_info argument 2 not a constant}}
+           ^
+
+"Test_name.c", line 75: warning: function "__builtin_preserve_type_info" declared implicitly
+    return __builtin_preserve_type_info(t, 0) +
+           ^
+
+"Test_name.c", line 81: warning: function "__builtin_preserve_type_info" declared implicitly
+    return __builtin_preserve_type_info(t, 1) +
+           ^
+
+"Test_name.c", line 81: warning: variable "t" is used before its value is set
+    return __builtin_preserve_type_info(t, 1) +
+                                        ^
+
+"Test_name.c", line 87: warning: function "__builtin_preserve_type_info" declared implicitly
+    return __builtin_preserve_type_info(t, 0) +
+           ^
+
+"Test_name.c", line 87: warning: variable "t" is used before its value is set
+    return __builtin_preserve_type_info(t, 0) +
+                                        ^
+
+"Test_name.c", line 92: warning: function "__builtin_preserve_enum_value" declared implicitly
+    return __builtin_preserve_enum_value(*(enum AA *)VAL1, 1) +
+           ^
+
+"Test_name.c", line 97: warning: function "__builtin_preserve_enum_value" declared implicitly
+    return __builtin_preserve_enum_value(*(enum AA *)0, 1); // expected-error {{__builtin_preserve_enum_value argument 1 invalid}}
+           ^
+
+"Test_name.c", line 101: warning: function "__builtin_preserve_enum_value" declared implicitly
+    return __builtin_preserve_enum_value(*(enum AA *)VAL10, 1); // expected-error {{__builtin_preserve_enum_value argument 1 invalid}}
+           ^
+
+"Test_name.c", line 105: warning: function "__builtin_preserve_type_info" declared implicitly
+    return __builtin_preserve_type_info(arg->a + 2, 0); // expected-error {{__builtin_preserve_type_info argument 1 invalid}}
+           ^
+

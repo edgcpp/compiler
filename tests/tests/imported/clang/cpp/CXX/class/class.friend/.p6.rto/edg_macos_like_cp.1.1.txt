@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 7: error: a storage class is not allowed in a friend declaration
+    friend static class B; // expected-error {{'static' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 8: error: a storage class is not allowed in a friend declaration
+    friend extern class C; // expected-error {{'extern' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 10: error: a storage class is not allowed in a friend declaration
+    friend register class E; // expected-error {{'register' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 14: error: mutable is not allowed
+    friend mutable class F; // expected-error {{'mutable' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 15: error: a storage class is not allowed in a friend declaration
+    friend typedef class G; // expected-error {{'typedef' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 16: error: invalid friend declaration
+    friend __thread class G; // expected-error {{'__thread' is invalid in friend declarations}}
+    ^
+
+"Test_name.c", line 16: error: expected a ";"
+    friend __thread class G; // expected-error {{'__thread' is invalid in friend declarations}}
+                    ^
+
+"Test_name.c", line 17: error: thread-local storage class is not valid here
+    friend _Thread_local class G; // expected-error {{'_Thread_local' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 18: error: a storage class is not allowed in a friend declaration
+    friend static _Thread_local class G; // expected-error {{'static _Thread_local' is invalid in friend declarations}}
+           ^
+
+"Test_name.c", line 18: error: thread-local storage class is not valid here
+    friend static _Thread_local class G; // expected-error {{'static _Thread_local' is invalid in friend declarations}}
+                  ^
+
+"Test_name.c", line 20: error: a storage class is not allowed in a friend declaration
+    friend auto class D; // expected-warning {{incompatible with C++11}} expected-error {{'auto' is invalid in friend declarations}}
+           ^
+
+11 errors detected in the compilation of "Test_name.c".

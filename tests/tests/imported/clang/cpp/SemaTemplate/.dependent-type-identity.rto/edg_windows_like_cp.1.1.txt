@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 35: error: invalid redeclaration of member function "X1<T, U>::f0(T)" (declared at line 33)
+    void f0(type); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 39: error: invalid redeclaration of member function "X1<T, U>::f1(T *)" (declared at line 37)
+    void f1(type*); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 43: error: invalid redeclaration of member function "X1<T, U>::f2(X0<T> *)" (declared at line 41)
+    void f2(X0<type>*); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 47: error: invalid redeclaration of member function "X1<T, U>::f3(X0<T> *)" (declared at line 45)
+    void f3(::X0<type>*); // expected-error{{redeclar}}  
+         ^
+
+"Test_name.c", line 52: error: invalid redeclaration of member function "X1<T, U>::f4(T::apply<U> *)" (declared at line 49)
+    void f4(typename type::template apply<U_type>*); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 58: error: invalid redeclaration of member function "X1<T, U>::f5(T::apply<U>::type *)" (declared at line 54)
+    void f5(typename type::template apply<U_type>::type*); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 63: error: invalid redeclaration of member function "X1<T, U>::f6(N::X2<T>::apply<U> *)" (declared at line 60)
+    void f6(typename ::N::X2<type>::template apply<U_type> *); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 68: error: invalid redeclaration of member function "X1<T, U>::f7(N::X2<T>::apply<U> *)" (declared at line 65)
+    void f7(typename X2<type>::template apply<U_type> *); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 73: error: invalid redeclaration of member function "X1<T, U>::f8(N::X2<T>::apply<U> *)" (declared at line 70)
+    void f8(typename ::Nalias::X2<type>::template apply<U_type> *); // expected-error{{redeclar}}
+         ^
+
+"Test_name.c", line 95: warning: missing return statement at end of non-void function "PR6851::N::foo<w>()"
+    S< S<w>::cond && 1 > N::foo() { }
+                                    ^
+
+"Test_name.c", line 98: warning: missing return statement at end of non-void function "PR6851::M<T>::f"
+    auto M<T>::f() -> M<decltype(a->n)> {}
+                                         ^
+
+"Test_name.c", line 122: error: expression must be a modifiable lvalue
+    void A<T>::f(int x) { x = 0; }
+                          ^
+
+"Test_name.c", line 126: error: expression must be a modifiable lvalue
+      x = 0; // expected-error {{cannot assign to variable 'x'}}
+      ^
+
+"Test_name.c", line 148: error: type "Type" has already been defined (previous definition at line 146)
+      using Type = S<int, int, int>;
+            ^
+
+"Test_name.c", line 147: warning: variable "s" was declared but never referenced
+      Type s;
+           ^
+
+"Test_name.c", line 157: error: function template "PR21289::h<Ts...>(PR21289::S<int...>)" has already been defined (previous definition at line 156)
+    template<typename ...Ts> void h(S<Y<Ts, sizeof(Ts)>...>) {} // expected-error {{redefinition}}
+                                  ^
+
+13 errors detected in the compilation of "Test_name.c".

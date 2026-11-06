@@ -1,0 +1,72 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: error: expression must have a constant value
+  int (&f())[n]; // expected-error {{function declaration cannot have variably modified type}}
+             ^
+"Test_name.c", line 7: note: the value of variable "n" (declared at line 6) cannot be used as a constant
+  int (&f())[n]; // expected-error {{function declaration cannot have variably modified type}}
+             ^
+
+"Test_name.c", line 12: error: a class or namespace qualified name is required
+      typename T::error e; // expected-error {{cannot be used prior to '::'}}
+               ^
+          detected during instantiation of class "PR18581::error<T> [with T=int]" at line 18
+
+"Test_name.c", line 12: error: global-scope qualifier (leading "::") is not allowed
+      typename T::error e; // expected-error {{cannot be used prior to '::'}}
+                ^
+          detected during instantiation of class "PR18581::error<T> [with T=int]" at line 18
+
+"Test_name.c", line 12: error: expected a ";"
+      typename T::error e; // expected-error {{cannot be used prior to '::'}}
+                        ^
+          detected during instantiation of class "PR18581::error<T> [with T=int]" at line 18
+
+"Test_name.c", line 19: error: incomplete type "PR18581::incomplete [n]" is not allowed
+      incomplete c[n]; // expected-error {{incomplete}}
+                 ^
+
+"Test_name.c", line 17: warning: variable "a" was declared but never referenced
+      pod<int> a[n];
+               ^
+
+"Test_name.c", line 18: warning: variable "b" was declared but never referenced
+      error<int> b[n]; // expected-note {{instantiation}}
+                 ^
+
+"Test_name.c", line 23: error: variable length array with unspecified bound is not allowed
+  void pr23151(int (&)[*]) { // expected-error {{variable length array must be bound in function definition}}
+                       ^
+
+"Test_name.c", line 27: warning: variable "a1" was declared but never referenced
+    char a1[(unsigned long)(int *)0+1]{}; // expected-warning{{variable length array folded to constant array as an extension}}
+         ^
+
+"Test_name.c", line 28: warning: variable "a2" was declared but never referenced
+    char a2[(unsigned long)(int *)0+1] = {}; // expected-warning{{variable length array folded to constant array as an extension}}
+         ^
+
+"Test_name.c", line 29: warning: variable "a3" was declared but never referenced
+    char a3[(unsigned long)(int *)0+1];
+         ^
+
+"Test_name.c", line 35: error: incomplete type "int []" is not allowed
+    int array1[]; // expected-error {{definition of variable with array type needs an explicit size or an initializer}}
+        ^
+
+"Test_name.c", line 36: warning: variable "array2" was declared but never referenced
+    int array2[] = { 1, 2, 3 };
+        ^
+
+"Test_name.c", line 43: warning: variable "array" was declared but never referenced
+    int array[sizeof(Ty) ? sizeof(Ty{}) : sizeof(int)];
+        ^
+
+"Test_name.c", line 44: warning: variable "old_style_assert" was declared but never referenced
+    int old_style_assert[expr ? Ty::one : Ty::Neg_one]; // We don't diagnose as a VLA until instantiation
+        ^
+
+"Test_name.c", line 55: error: no suitable constructor exists to convert from "int" to "GH138444::S"
+    S vec1 = 2; // expected-error {{no viable conversion from 'int' to 'S'}}
+             ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,66 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./../gcc.dg/pr104992.c", line 8: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned foo(unsigned x, unsigned y)
+                 ^
+
+"./../gcc.dg/pr104992.c", line 13: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned bar(unsigned x, unsigned y) {
+                 ^
+
+"./../gcc.dg/pr104992.c", line 18: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned baz (int x, int y) {
+                 ^
+
+"./../gcc.dg/pr104992.c", line 23: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned qux (unsigned x, unsigned y) {
+                 ^
+
+"./../gcc.dg/pr104992.c", line 28: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned corge(unsigned x, unsigned y) {
+                 ^
+
+"./../gcc.dg/pr104992.c", line 35: warning: unknown attribute "noipa"
+  __attribute__((noipa)) __attribute__((vector_size(4*sizeof(int)))) int thud(__attribute__((vector_size(4*sizeof(int)))) int x, __attribute__((vector_size(4*sizeof(int)))) int y) {
+                 ^
+
+"./../gcc.dg/pr104992.c", line 35: warning: unknown attribute "vector_size"
+  __attribute__((noipa)) __attribute__((vector_size(4*sizeof(int)))) int thud(__attribute__((vector_size(4*sizeof(int)))) int x, __attribute__((vector_size(4*sizeof(int)))) int y) {
+                                        ^
+
+"./../gcc.dg/pr104992.c", line 35: warning: unknown attribute "vector_size"
+  __attribute__((noipa)) __attribute__((vector_size(4*sizeof(int)))) int thud(__attribute__((vector_size(4*sizeof(int)))) int x, __attribute__((vector_size(4*sizeof(int)))) int y) {
+                                                                                             ^
+
+"./../gcc.dg/pr104992.c", line 35: warning: unknown attribute "vector_size"
+  __attribute__((noipa)) __attribute__((vector_size(4*sizeof(int)))) int thud(__attribute__((vector_size(4*sizeof(int)))) int x, __attribute__((vector_size(4*sizeof(int)))) int y) {
+                                                                                                                                                ^
+
+"./../gcc.dg/pr104992.c", line 40: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int goo(_Complex int x, _Complex int y)
+                 ^
+
+"./../gcc.dg/pr104992.c", line 40: error: _Complex can only be used with floating-point types
+  __attribute__((noipa)) int goo(_Complex int x, _Complex int y)
+                                 ^
+
+"./../gcc.dg/pr104992.c", line 40: error: _Complex can only be used with floating-point types
+  __attribute__((noipa)) int goo(_Complex int x, _Complex int y)
+                                                 ^
+
+"./../gcc.dg/pr104992.c", line 42: error: _Complex can only be used with floating-point types
+      _Complex int z = x / y;
+      ^
+
+"./../gcc.dg/pr104992.c", line 43: error: _Complex can only be used with floating-point types
+      _Complex int q = z * y;
+      ^
+
+"./../gcc.dg/pr104992.c", line 48: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned fred (unsigned x, unsigned y) {
+                 ^
+
+"./../gcc.dg/pr104992.c", line 53: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned waldo (unsigned x, unsigned y, unsigned z) {
+                 ^
+
+4 errors detected in the compilation of "Test_name.c".

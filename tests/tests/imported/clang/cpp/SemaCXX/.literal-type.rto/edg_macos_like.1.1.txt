@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 15: warning: unknown attribute "vector_size"
+  typedef int Vector __attribute__((vector_size(16)));
+                                    ^
+
+"Test_name.c", line 16: warning: unknown attribute "ext_vector_type"
+  typedef int VectorExt __attribute__((ext_vector_type(4)));
+                                       ^
+
+"Test_name.c", line 62: error: constructor cannot be constexpr because the initializer of member "HasNonConstExprMemInit::x" is not a constant expression
+    constexpr HasNonConstExprMemInit() {} // expected-error {{never produces a constant expression}}
+                                       ^
+
+1 error detected in the compilation of "Test_name.c".

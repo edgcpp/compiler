@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 60: warning: variable "one" is used before its value is set
+    one(); // expected-warning {{ignoring return value of type 'E' declared with 'nodiscard' attribute}}
+    ^
+
+"Test_name.c", line 61: warning: variable "two" is used before its value is set
+    two(); // expected-warning {{ignoring return value of type 'S' declared with 'nodiscard' attribute}}
+    ^
+
+"Test_name.c", line 62: warning: variable "three" is used before its value is set
+    three(); // expected-warning {{ignoring return value of type 'S' declared with 'nodiscard' attribute}}
+    ^
+
+"Test_name.c", line 63: warning: variable "four" is used before its value is set
+    four(); // expected-warning {{ignoring return value of type 'S' declared with 'nodiscard' attribute}}
+    ^
+
+"Test_name.c", line 105: warning: attribute "warn_unused_result" is ignored for void return type
+    [[gnu::warn_unused_result]] S(double);
+      ^
+
+"Test_name.c", line 157: warning: extra ";" ignored
+    using enum scoped_enum_t;
+                            ^
+

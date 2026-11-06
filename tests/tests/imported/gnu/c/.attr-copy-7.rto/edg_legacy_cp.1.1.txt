@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 14: error: static assertion failed with "__builtin_has_attribute (fnoreturn_copy, noreturn)"
+  ASRT (__builtin_has_attribute (fnoreturn_copy, noreturn));
+  ^
+
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "call_fnoreturn_copy"
+  }
+  ^
+
+"Test_name.c", line 27: error: static assertion failed with "__builtin_has_attribute (f_Noreturn_copy, noreturn)"
+  ASRT (__builtin_has_attribute (f_Noreturn_copy, noreturn));
+  ^
+
+"Test_name.c", line 33: warning: missing return statement at end of non-void function "call_f_Noreturn_copy"
+  }
+  ^
+
+"Test_name.c", line 42: error: static assertion failed with "__builtin_has_attribute (fnoreturn_Noreturn_copy, noreturn)"
+  ASRT (__builtin_has_attribute (fnoreturn_Noreturn_copy, noreturn));
+  ^
+
+"Test_name.c", line 48: warning: missing return statement at end of non-void function "call_fnoreturn_Noreturn_copy"
+  }
+  ^
+
+"Test_name.c", line 57: error: static assertion failed with "__builtin_has_attribute (func_noreturn_copy, noreturn)"
+  ASRT (__builtin_has_attribute (func_noreturn_copy, noreturn));
+  ^
+
+"Test_name.c", line 63: warning: missing return statement at end of non-void function "call_func_noreturn_copy"
+  }
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

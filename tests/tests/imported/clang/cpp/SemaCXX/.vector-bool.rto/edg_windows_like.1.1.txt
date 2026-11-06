@@ -1,0 +1,187 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++17 Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  using FourShorts = short __attribute__((__vector_size__(8)));
+                                          ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  using TwoInts = int __attribute__((__vector_size__(8)));
+                                     ^
+
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+  using EightInts = int __attribute__((__vector_size__(32)));
+                                       ^
+
+"Test_name.c", line 10: warning: unknown attribute "__vector_size__"
+  using TwoUInts = unsigned __attribute__((__vector_size__(8)));
+                                           ^
+
+"Test_name.c", line 11: warning: unknown attribute "__vector_size__"
+  using FourInts = int __attribute__((__vector_size__(16)));
+                                      ^
+
+"Test_name.c", line 12: warning: unknown attribute "__vector_size__"
+  using FourUInts = unsigned __attribute__((__vector_size__(16)));
+                                            ^
+
+"Test_name.c", line 13: warning: unknown attribute "__vector_size__"
+  using TwoLongLong = long long __attribute__((__vector_size__(16)));
+                                               ^
+
+"Test_name.c", line 14: warning: unknown attribute "__vector_size__"
+  using FourLongLong = long long __attribute__((__vector_size__(32)));
+                                                ^
+
+"Test_name.c", line 15: warning: unknown attribute "__vector_size__"
+  using TwoFloats = float __attribute__((__vector_size__(8)));
+                                         ^
+
+"Test_name.c", line 16: warning: unknown attribute "__vector_size__"
+  using FourFloats = float __attribute__((__vector_size__(16)));
+                                          ^
+
+"Test_name.c", line 17: warning: unknown attribute "__vector_size__"
+  using TwoDoubles = double __attribute__((__vector_size__(16)));
+                                           ^
+
+"Test_name.c", line 18: warning: unknown attribute "__vector_size__"
+  using FourDoubles = double __attribute__((__vector_size__(32)));
+                                            ^
+
+"Test_name.c", line 19: warning: unknown attribute "ext_vector_type"
+  using EightBools = bool __attribute__((ext_vector_type(8)));
+                                         ^
+
+"Test_name.c", line 69: error: incrementing a bool value is not allowed
+    (void)(eight_bools++); // expected-error@67 {{cannot increment value of type 'EightBools' (vector of 8 'bool' values)}}
+           ^
+
+"Test_name.c", line 70: error: incrementing a bool value is not allowed
+    (void)(++eight_bools); // expected-error@68 {{cannot increment value of type 'EightBools' (vector of 8 'bool' values)}}
+             ^
+
+"Test_name.c", line 71: error: bool type is not allowed
+    (void)(eight_bools--); // expected-error@69 {{cannot decrement value of type 'EightBools' (vector of 8 'bool' values)}}
+           ^
+
+"Test_name.c", line 72: error: bool type is not allowed
+    (void)(--eight_bools); // expected-error@70 {{cannot decrement value of type 'EightBools' (vector of 8 'bool' values)}}
+             ^
+
+"Test_name.c", line 90: error: expression must have class type but it has type "EightBools" (aka "bool")
+    eight_bools.y = false; // expected-error@88 {{illegal vector component name 'y'}}
+    ^
+
+"Test_name.c", line 91: error: expression must have class type but it has type "EightBools" (aka "bool")
+    &eight_bools.z;        // expected-error@89 {{illegal vector component name 'z'}}
+     ^
+
+"Test_name.c", line 92: error: expression must have class type but it has type "EightBools" (aka "bool")
+    foo(eight_bools.w);    // expected-error@90 {{illegal vector component name 'w'}}
+        ^
+
+"Test_name.c", line 93: error: expression must have class type but it has type "EightBools" (aka "bool")
+    foo(eight_bools.wyx);  // expected-error@91 {{illegal vector component name 'wyx'}}
+        ^
+
+"Test_name.c", line 94: warning: missing return statement at end of non-void function "ElementRefs"
+  }
+  ^
+
+"Test_name.c", line 97: warning: unknown attribute "ext_vector_type"
+    using FourBools = bool __attribute__((ext_vector_type(4)));
+                                          ^
+
+"Test_name.c", line 98: warning: unknown attribute "ext_vector_type"
+    using NineBools = bool __attribute__((ext_vector_type(9)));
+                                          ^
+
+"Test_name.c", line 99: warning: unknown attribute "ext_vector_type"
+    using TwentyEightBools = bool __attribute__((ext_vector_type(28)));
+                                                 ^
+
+"Test_name.c", line 100: warning: unknown attribute "ext_vector_type"
+    using ThirtyThreeBools = bool __attribute__((ext_vector_type(33)));
+                                                 ^
+
+"Test_name.c", line 101: warning: unknown attribute "ext_vector_type"
+    using SixtyFiveBools = bool __attribute__((ext_vector_type(65)));
+                                               ^
+
+"Test_name.c", line 102: warning: unknown attribute "ext_vector_type"
+    using Bool129 = bool __attribute__((ext_vector_type(129)));
+                                        ^
+
+"Test_name.c", line 103: warning: unknown attribute "ext_vector_type"
+    using Bool150 = bool __attribute__((ext_vector_type(150)));
+                                        ^
+
+"Test_name.c", line 104: warning: unknown attribute "ext_vector_type"
+    using Bool195 = bool __attribute__((ext_vector_type(195)));
+                                        ^
+
+"Test_name.c", line 105: warning: unknown attribute "ext_vector_type"
+    using Bool257 = bool __attribute__((ext_vector_type(257)));
+                                        ^
+
+"Test_name.c", line 108: error: static assertion failed
+    static_assert(sizeof(NineBools) == 2);
+    ^
+"Test_name.c", line 108: note: the final comparison was 1 == 2
+    static_assert(sizeof(NineBools) == 2);
+                                    ^
+
+"Test_name.c", line 109: error: static assertion failed
+    static_assert(sizeof(TwentyEightBools) == 4);
+    ^
+"Test_name.c", line 109: note: the final comparison was 1 == 4
+    static_assert(sizeof(TwentyEightBools) == 4);
+                                           ^
+
+"Test_name.c", line 110: error: static assertion failed
+    static_assert(sizeof(ThirtyThreeBools) == 8);
+    ^
+"Test_name.c", line 110: note: the final comparison was 1 == 8
+    static_assert(sizeof(ThirtyThreeBools) == 8);
+                                           ^
+
+"Test_name.c", line 111: error: static assertion failed
+    static_assert(sizeof(SixtyFiveBools) == 16);
+    ^
+"Test_name.c", line 111: note: the final comparison was 1 == 16
+    static_assert(sizeof(SixtyFiveBools) == 16);
+                                         ^
+
+"Test_name.c", line 112: error: static assertion failed
+    static_assert(sizeof(Bool129) == 32);
+    ^
+"Test_name.c", line 112: note: the final comparison was 1 == 32
+    static_assert(sizeof(Bool129) == 32);
+                                  ^
+
+"Test_name.c", line 113: error: static assertion failed
+    static_assert(sizeof(Bool150) == 32);
+    ^
+"Test_name.c", line 113: note: the final comparison was 1 == 32
+    static_assert(sizeof(Bool150) == 32);
+                                  ^
+
+"Test_name.c", line 114: error: static assertion failed
+    static_assert(sizeof(Bool195) == 32);
+    ^
+"Test_name.c", line 114: note: the final comparison was 1 == 32
+    static_assert(sizeof(Bool195) == 32);
+                                  ^
+
+"Test_name.c", line 115: error: static assertion failed
+    static_assert(sizeof(Bool257) == 64);
+    ^
+"Test_name.c", line 115: note: the final comparison was 1 == 64
+    static_assert(sizeof(Bool257) == 64);
+                                  ^
+
+"Test_name.c", line 119: catastrophic error: #error directive: "FAIL"
+  #error "FAIL"
+   ^
+
+16 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

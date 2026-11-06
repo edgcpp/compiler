@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 11: error: "f" has already been declared in the current scope
+  template<class T> void f(T::R); // { dg-error "declared void" }
+                         ^
+
+"Test_name.c", line 11: error: incomplete type "void" is not allowed
+  template<class T> void f(T::R); // { dg-error "declared void" }
+                         ^
+
+"Test_name.c", line 36: error: "f" has already been declared in the current scope
+  void f ()
+       ^
+
+"Test_name.c", line 43: error: incomplete type "void" is not allowed
+    void g(T::X); // { dg-error "declared void" }
+         ^
+
+"Test_name.c", line 39: warning: variable "pf" was declared but never referenced
+    void (*pf)(T::X);
+           ^
+
+4 errors detected in the compilation of "Test_name.c".

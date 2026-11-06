@@ -1,0 +1,110 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 13: error: identifier "_Decimal32" is undefined
+  foo (_Decimal32 x)
+       ^
+
+"Test_name.c", line 20: error: identifier "_Decimal64" is undefined
+  bar (_Decimal64 x)
+       ^
+
+"Test_name.c", line 27: error: identifier "_Decimal128" is undefined
+  baz (_Decimal128 x)
+       ^
+
+"Test_name.c", line 36: warning: function "__builtin_infd32" declared implicitly
+    if (foo (__builtin_infd32 ()) != FP_INFINITE
+             ^
+
+"Test_name.c", line 38: warning: function "__builtin_nand32" declared implicitly
+        || foo (__builtin_nand32 ("")) != FP_NAN
+                ^
+
+"Test_name.c", line 39: error: extra text after expected end of number
+        || foo (9.999999E96DF) != FP_NORMAL
+                           ^
+
+"Test_name.c", line 40: error: extra text after expected end of number
+        || foo (-1E-95DF) != FP_NORMAL
+                      ^
+
+"Test_name.c", line 41: error: extra text after expected end of number
+        || foo (0.999999E-95DF) != FP_SUBNORMAL
+                            ^
+
+"Test_name.c", line 42: error: extra text after expected end of number
+        || foo (-0.000001E-95DF) != FP_SUBNORMAL
+                             ^
+
+"Test_name.c", line 43: error: extra text after expected end of number
+        || foo (0.000DF) != FP_ZERO
+                     ^
+
+"Test_name.c", line 44: error: extra text after expected end of number
+        || foo (-0.00000DF) != FP_ZERO)
+                        ^
+
+"Test_name.c", line 46: warning: function "__builtin_infd64" declared implicitly
+    if (bar (__builtin_infd64 ()) != FP_INFINITE
+             ^
+
+"Test_name.c", line 48: warning: function "__builtin_nand64" declared implicitly
+        || bar (__builtin_nand64 ("")) != FP_NAN
+                ^
+
+"Test_name.c", line 49: error: extra text after expected end of number
+        || bar (9.999999999999999E384DD) != FP_NORMAL
+                                     ^
+
+"Test_name.c", line 50: error: extra text after expected end of number
+        || bar (-1E-383DD) != FP_NORMAL
+                       ^
+
+"Test_name.c", line 51: error: extra text after expected end of number
+        || bar (0.999999999999999E-383DD) != FP_SUBNORMAL
+                                      ^
+
+"Test_name.c", line 52: error: extra text after expected end of number
+        || bar (-0.000000000000001E-383DD) != FP_SUBNORMAL
+                                       ^
+
+"Test_name.c", line 53: error: extra text after expected end of number
+        || bar (0.000DD) != FP_ZERO
+                     ^
+
+"Test_name.c", line 54: error: extra text after expected end of number
+        || bar (-0.0000000000DD) != FP_ZERO)
+                             ^
+
+"Test_name.c", line 56: warning: function "__builtin_infd128" declared implicitly
+    if (baz (__builtin_infd128 ()) != FP_INFINITE
+             ^
+
+"Test_name.c", line 58: warning: function "__builtin_nand128" declared implicitly
+        || baz (__builtin_nand128 ("")) != FP_NAN
+                ^
+
+"Test_name.c", line 59: error: extra text after expected end of number
+        || baz (9.999999999999999999999999999999999E6144DL) != FP_NORMAL
+                                                        ^
+
+"Test_name.c", line 60: error: extra text after expected end of number
+        || baz (-1E-6143DL) != FP_NORMAL
+                        ^
+
+"Test_name.c", line 61: error: extra text after expected end of number
+        || baz (0.999999999999999999999999999999999E-6143DL) != FP_SUBNORMAL
+                                                         ^
+
+"Test_name.c", line 62: error: extra text after expected end of number
+        || baz (-0.000000000000000000000000000000001E-6143DL) != FP_SUBNORMAL
+                                                          ^
+
+"Test_name.c", line 63: error: extra text after expected end of number
+        || baz (0.000DL) != FP_ZERO
+                     ^
+
+"Test_name.c", line 64: error: extra text after expected end of number
+        || baz (-0.0000000000000000000000DL) != FP_ZERO)
+                                         ^
+
+21 errors detected in the compilation of "Test_name.c".

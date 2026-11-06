@@ -1,0 +1,198 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c11 Test_name.c
+"Test_name.c", line 23: warning: arithmetic on pointer to void or function type
+    apv++; /* { dg-error "wrong type|pointer of type" } */
+       ^
+
+"Test_name.c", line 24: warning: arithmetic on pointer to void or function type
+    apv--; /* { dg-error "wrong type|pointer of type" } */
+       ^
+
+"Test_name.c", line 25: warning: arithmetic on pointer to void or function type
+    ++apv; /* { dg-error "wrong type|pointer of type" } */
+    ^
+
+"Test_name.c", line 26: warning: arithmetic on pointer to void or function type
+    --apv; /* { dg-error "wrong type|pointer of type" } */
+    ^
+
+"Test_name.c", line 27: error: expression must be a pointer to a complete object type
+    aps++; /* { dg-error "pointer to|invalid use of undefined type" } */
+    ^
+
+"Test_name.c", line 28: error: expression must be a pointer to a complete object type
+    aps--; /* { dg-error "pointer to|invalid use of undefined type" } */
+    ^
+
+"Test_name.c", line 29: error: expression must be a pointer to a complete object type
+    ++aps; /* { dg-error "pointer to|invalid use of undefined type" } */
+      ^
+
+"Test_name.c", line 30: error: expression must be a pointer to a complete object type
+    --aps; /* { dg-error "pointer to|invalid use of undefined type" } */
+      ^
+
+"Test_name.c", line 31: error: expression must have arithmetic or pointer type
+    as++; /* { dg-error "wrong type" } */
+    ^
+
+"Test_name.c", line 32: error: expression must have arithmetic or pointer type
+    as--; /* { dg-error "wrong type" } */
+    ^
+
+"Test_name.c", line 33: error: expression must have arithmetic or pointer type
+    ++as; /* { dg-error "wrong type" } */
+      ^
+
+"Test_name.c", line 34: error: expression must have arithmetic or pointer type
+    --as; /* { dg-error "wrong type" } */
+      ^
+
+"Test_name.c", line 75: warning: a value of type "_Atomic(int) *" cannot be assigned to an entity of type "int *"
+    pi = pai; /* { dg-error "incompatible pointer type" } */
+       ^
+
+"Test_name.c", line 85: error: a value of type "float __complex__" cannot be assigned to an entity of type "struct t"
+    as = acf; /* { dg-error "incompatible types" } */
+       ^
+
+"Test_name.c", line 86: error: a value of type "struct t" cannot be assigned to an entity of type "void *"
+    apv = as; /* { dg-error "incompatible types" } */
+        ^
+
+"Test_name.c", line 87: error: expression must have arithmetic or pointer type but has type "_Atomic(struct t)"
+    as += 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 88: warning: arithmetic on pointer to void or function type
+    apv -= 1; /* { dg-error "pointer of type" } */
+        ^
+
+"Test_name.c", line 89: error: expression must have arithmetic type
+    apv *= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 90: error: expression must have arithmetic type
+    apv /= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 91: error: expression must have integral type
+    apv %= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 92: error: expression must have integral type
+    apv <<= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 93: error: expression must have integral type
+    apv >>= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 94: error: expression must have integral type
+    apv &= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 95: error: expression must have integral type
+    apv ^= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 96: error: expression must have integral type
+    apv |= 1; /* { dg-error "invalid operands" } */
+    ^
+
+"Test_name.c", line 103: error: a bit field cannot have an _Atomic type
+    _Atomic int i : 1; /* { dg-error "atomic type" } */
+    ^
+
+"Test_name.c", line 104: error: a bit field cannot have an _Atomic type
+    _Atomic int : 0; /* { dg-error "atomic type" } */
+    ^
+
+"Test_name.c", line 109: error: type "int [2]" cannot be _Atomic because it is an array or function type
+  _Atomic (int [2]) v0; /* { dg-error "array type" } */
+           ^
+
+"Test_name.c", line 110: error: type "void (void)" cannot be _Atomic because it is an array or function type
+  _Atomic (void (void)) v1; /* { dg-error "function type" } */
+           ^
+
+"Test_name.c", line 111: error: the _Atomic(...) specifier cannot be applied to qualified type "_Atomic(int)"
+  _Atomic (_Atomic int) v2; /* { dg-error "applied to a qualified type" } */
+           ^
+
+"Test_name.c", line 112: error: the _Atomic(...) specifier cannot be applied to qualified type "const int"
+  _Atomic (const int) v3; /* { dg-error "applied to a qualified type" } */
+           ^
+
+"Test_name.c", line 113: error: the _Atomic(...) specifier cannot be applied to qualified type "volatile int"
+  _Atomic (volatile int) v4; /* { dg-error "applied to a qualified type" } */
+           ^
+
+"Test_name.c", line 114: error: the _Atomic(...) specifier cannot be applied to qualified type "int *__restrict__"
+  _Atomic (int *restrict) v5; /* { dg-error "applied to a qualified type" } */
+           ^
+
+"Test_name.c", line 120: error: type "arraytype" (aka "int [2]") cannot be _Atomic because it is an array or function type
+  _Atomic arraytype v6; /* { dg-error "array type" } */
+  ^
+
+"Test_name.c", line 121: error: type "arraytype" (aka "int [2]") cannot be _Atomic because it is an array or function type
+  _Atomic arraytype *v7; /* { dg-error "array type" } */
+  ^
+
+"Test_name.c", line 122: error: type "arraytype" (aka "int [2]") cannot be _Atomic because it is an array or function type
+  typedef _Atomic arraytype v8; /* { dg-error "array type" } */
+          ^
+
+"Test_name.c", line 123: error: type "arraytype" (aka "int [2]") cannot be _Atomic because it is an array or function type
+  int v9 = sizeof (_Atomic arraytype); /* { dg-error "array type" } */
+                   ^
+
+"Test_name.c", line 124: error: type "arraytype" (aka "int [2]") cannot be _Atomic because it is an array or function type
+  void v10 (_Atomic arraytype parm); /* { dg-error "array type" } */
+            ^
+
+"Test_name.c", line 125: error: type "arraytype" (aka "int [2]") cannot be _Atomic because it is an array or function type
+  struct v11 { _Atomic arraytype f; }; /* { dg-error "array type" } */
+               ^
+
+"Test_name.c", line 126: warning: type qualifiers on function types are ignored
+  _Atomic functiontype v12; /* { dg-error "function type" } */
+  ^
+
+"Test_name.c", line 127: warning: type qualifiers on function types are ignored
+  _Atomic functiontype *v13; /* { dg-error "function type" } */
+  ^
+
+"Test_name.c", line 128: warning: type qualifiers on function types are ignored
+  typedef _Atomic functiontype *v14; /* { dg-error "function type" } */
+          ^
+
+"Test_name.c", line 129: warning: type qualifiers on function types are ignored
+  void v15 (_Atomic functiontype parm); /* { dg-error "function type" } */
+            ^
+
+"Test_name.c", line 135: error: declaration is incompatible with "void fc0(_Atomic(int))" (declared at line 134)
+  void fc0 (int); /* { dg-error "conflicting types" } */
+       ^
+
+"Test_name.c", line 138: error: declaration is incompatible with "void fc1(int)" (declared at line 136)
+  fc1 (x)
+  ^
+
+"Test_name.c", line 147: error: declaration is incompatible with "void fc2()" (declared at line 143)
+  void fc2 (int); /* { dg-error "incompatible type" } */
+       ^
+
+"Test_name.c", line 150: error: declaration is incompatible with "void fc3(int)" (declared at line 148)
+  fc3 (x)
+  ^
+
+"Test_name.c", line 159: error: declaration is incompatible with "void fc4()" (declared at line 155)
+  void fc4 (int); /* { dg-error "incompatible type" } */
+       ^
+
+"Test_name.c", line 176: error: declaring a void parameter list with a qualified void type is nonstandard
+  void fv (_Atomic void); /* { dg-error "may not be qualified" } */
+           ^
+
+39 errors detected in the compilation of "Test_name.c".

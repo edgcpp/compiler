@@ -1,0 +1,599 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 51: error: _Complex can only be used with floating-point types
+  using ComplexInt = _Complex int;
+                     ^
+
+"Test_name.c", line 265: error: an incomplete class type is not allowed
+    static_assert(!__is_pod(AnIncompleteType)); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 266: error: an incomplete class type is not allowed
+    static_assert(!__is_pod(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 267: error: an incomplete class type is not allowed
+    static_assert(!__is_pod(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 295: error: an incomplete class type is not allowed
+    static_assert(!__is_empty(IncompleteUnion));
+                   ^
+
+"Test_name.c", line 307: error: an incomplete class type is not allowed
+    static_assert(!__is_empty(AnIncompleteType)); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 457: error: an incomplete class type is not allowed
+    static_assert(!__is_polymorphic(IncompleteUnion));
+                   ^
+
+"Test_name.c", line 542: error: type of array element must be complete
+    __is_aggregate(AnIncompleteType); // expected-error {{incomplete type}}
+    ^
+
+"Test_name.c", line 542: warning: expression has no effect
+    __is_aggregate(AnIncompleteType); // expected-error {{incomplete type}}
+    ^
+
+"Test_name.c", line 543: error: type of array element must be complete
+    __is_aggregate(IncompleteUnion); // expected-error {{incomplete type}}
+    ^
+
+"Test_name.c", line 543: warning: expression has no effect
+    __is_aggregate(IncompleteUnion); // expected-error {{incomplete type}}
+    ^
+
+"Test_name.c", line 546: error: type of array element must be complete
+    static_assert(__is_aggregate(AnIncompleteType[]));
+                  ^
+
+"Test_name.c", line 547: error: type of array element must be complete
+    static_assert(__is_aggregate(AnIncompleteType[1]));
+                  ^
+
+"Test_name.c", line 548: error: type of array element must be complete
+    static_assert(__is_aggregate(AnIncompleteTypeAr));
+                  ^
+
+"Test_name.c", line 549: error: type of array element must be complete
+    static_assert(__is_aggregate(AnIncompleteTypeArNB));
+                  ^
+
+"Test_name.c", line 550: error: type of array element must be complete
+    static_assert(__is_aggregate(AnIncompleteTypeArMB));
+                  ^
+
+"Test_name.c", line 696: error: static assertion failed
+    static_assert(!__is_array(IntArZero));
+    ^
+
+"Test_name.c", line 726: error: static assertion failed
+    static_assert(!__is_bounded_array(IntArZero));
+    ^
+
+"Test_name.c", line 987: warning: variable "x" was declared but never referenced
+    StructWithMembers x;
+                      ^
+
+"Test_name.c", line 1023: warning: variable "x" was declared but never referenced
+    StructWithMembers x;
+                      ^
+
+"Test_name.c", line 1059: warning: variable "x" was declared but never referenced
+    StructWithMembers x;
+                      ^
+
+"Test_name.c", line 1095: warning: variable "x" was declared but never referenced
+    StructWithMembers x;
+                      ^
+
+"Test_name.c", line 1330: error: an incomplete class type is not allowed
+    static_assert(!__is_trivial(AnIncompleteType)); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1331: error: an incomplete class type is not allowed
+    static_assert(!__is_trivial(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1332: error: an incomplete class type is not allowed
+    static_assert(!__is_trivial(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1374: error: an incomplete class type is not allowed
+    static_assert(!__is_trivially_copyable(AnIncompleteType)); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1375: error: an incomplete class type is not allowed
+    static_assert(!__is_trivially_copyable(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1376: error: an incomplete class type is not allowed
+    static_assert(!__is_trivially_copyable(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1444: error: an incomplete class type is not allowed
+    static_assert(!__is_standard_layout(AnIncompleteType)); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1445: error: an incomplete class type is not allowed
+    static_assert(!__is_standard_layout(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1446: error: an incomplete class type is not allowed
+    static_assert(!__is_standard_layout(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 1478: error: static assertion failed
+    static_assert(!__is_standard_layout(HasEmptyBaseAsSubobjectOfMember1));
+    ^
+
+"Test_name.c", line 1480: error: static assertion failed
+    static_assert(!__is_standard_layout(HasEmptyBaseAsSubobjectOfMember3));
+    ^
+
+"Test_name.c", line 1481: error: static assertion failed
+    static_assert(!__is_standard_layout(HasEmptyIndirectBaseAsMember));
+    ^
+
+"Test_name.c", line 1483: error: static assertion failed
+    static_assert(!__is_standard_layout(HasEmptyIndirectBaseAfterBitfield)); // FIXME: standard bug?
+    ^
+
+"Test_name.c", line 1501: error: static assertion failed
+    static_assert(!__is_standard_layout(HasEmptyIndirectBaseAsSecondUnionMember));
+    ^
+
+"Test_name.c", line 1700: error: static assertion failed
+    static_assert(!__is_layout_compatible(int, _Atomic int));
+    ^
+
+"Test_name.c", line 1723: warning: type qualifiers on function types are ignored
+    static_assert(__is_layout_compatible(const function_type, const function_type));
+                                         ^
+
+"Test_name.c", line 1723: warning: type qualifiers on function types are ignored
+    static_assert(__is_layout_compatible(const function_type, const function_type));
+                                                              ^
+
+"Test_name.c", line 1726: warning: type qualifiers on function types are ignored
+    static_assert(__is_layout_compatible(function_type, const function_type));
+                                                        ^
+
+"Test_name.c", line 1728: warning: type qualifiers on function types are ignored
+    static_assert(!__is_layout_compatible(const function_type, const function_type2));
+                                          ^
+
+"Test_name.c", line 1728: warning: type qualifiers on function types are ignored
+    static_assert(!__is_layout_compatible(const function_type, const function_type2));
+                                                               ^
+
+"Test_name.c", line 1748: error: static assertion failed
+    static_assert(__is_layout_compatible(CStruct, CStructAlignment));
+    ^
+
+"Test_name.c", line 1750: error: static assertion failed
+    static_assert(__is_layout_compatible(UnionNoOveralignedMembers, UnionWithOveralignedMembers));
+    ^
+
+"Test_name.c", line 1753: error: static assertion failed
+    static_assert(!__is_layout_compatible(CStructWithBitfelds, CStructWithBitfelds3));
+    ^
+
+"Test_name.c", line 1790: error: static assertion failed
+    static_assert(__is_layout_compatible(CStruct, D<CStruct>));
+    ^
+
+"Test_name.c", line 1791: error: static assertion failed
+    static_assert(__is_layout_compatible(CStruct, D<UniqueEmpty<0>, CStruct>));
+    ^
+
+"Test_name.c", line 1792: error: static assertion failed
+    static_assert(__is_layout_compatible(CStruct, D<UniqueEmpty<0>, D<UniqueEmpty<1>, CStruct>, D<UniqueEmpty<2>>>));
+    ^
+
+"Test_name.c", line 1793: error: static assertion failed
+    static_assert(__is_layout_compatible(CStruct, D<CStructWithQualifiers>));
+    ^
+
+"Test_name.c", line 1794: error: static assertion failed
+    static_assert(__is_layout_compatible(CStruct, D<UniqueEmpty<0>, CStructWithQualifiers>));
+    ^
+
+"Test_name.c", line 1795: error: static assertion failed
+    static_assert(__is_layout_compatible(CStructWithQualifiers, D<UniqueEmpty<0>, D<UniqueEmpty<1>, CStruct>, D<UniqueEmpty<2>>>));
+    ^
+
+"Test_name.c", line 1862: warning: type qualifiers on function types are ignored
+    static_assert(!__is_pointer_interconvertible_base_of(const function_type, const function_type));
+                                                         ^
+
+"Test_name.c", line 1862: warning: type qualifiers on function types are ignored
+    static_assert(!__is_pointer_interconvertible_base_of(const function_type, const function_type));
+                                                                              ^
+
+"Test_name.c", line 1865: warning: type qualifiers on function types are ignored
+    static_assert(!__is_pointer_interconvertible_base_of(function_type, const function_type));
+                                                                        ^
+
+"Test_name.c", line 1867: warning: type qualifiers on function types are ignored
+    static_assert(!__is_pointer_interconvertible_base_of(const function_type, const function_type2));
+                                                         ^
+
+"Test_name.c", line 1867: warning: type qualifiers on function types are ignored
+    static_assert(!__is_pointer_interconvertible_base_of(const function_type, const function_type2));
+                                                                              ^
+
+"Test_name.c", line 2005: error: an incomplete class type is not allowed
+    static_assert(!__builtin_is_implicit_lifetime(IncompleteStruct));
+                   ^
+
+"Test_name.c", line 2048: error: static assertion failed
+    static_assert(!__builtin_is_implicit_lifetime(_Atomic int));
+    ^
+
+"Test_name.c", line 2104: error: static assertion failed
+  static_assert(!__builtin_is_implicit_lifetime(DataMemberInitializer));
+  ^
+
+"Test_name.c", line 2105: error: static assertion failed
+  static_assert(!__builtin_is_implicit_lifetime(UserProvidedConstructor));
+  ^
+
+"Test_name.c", line 2233: error: an incomplete class type is not allowed
+    static_assert(!__has_trivial_constructor(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 2266: error: an incomplete class type is not allowed
+    static_assert(!__has_trivial_move_constructor(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 2298: error: an incomplete class type is not allowed
+    static_assert(!__has_trivial_copy(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 2318: error: static assertion failed
+    static_assert(__has_trivial_assign(HasRef));
+    ^
+
+"Test_name.c", line 2325: error: static assertion failed
+    static_assert(__has_trivial_assign(DerivesHasRef));
+    ^
+
+"Test_name.c", line 2367: error: an incomplete class type is not allowed
+    static_assert(!__has_trivial_destructor(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 2448: error: static assertion failed
+    static_assert(!__has_nothrow_move_assign(AnIncompleteType[])); // expected-error {{incomplete type}}
+    ^
+
+"Test_name.c", line 2453: error: static assertion failed
+    static_assert(!__has_nothrow_move_assign(NoDefaultMoveAssignDueToUDCopyCtor));
+    ^
+
+"Test_name.c", line 2455: error: static assertion failed
+    static_assert(!__has_nothrow_move_assign(NoDefaultMoveAssignDueToDtor));
+    ^
+
+"Test_name.c", line 2482: error: static assertion failed
+    static_assert(!__has_trivial_move_assign(AnIncompleteType[])); // expected-error {{incomplete type}}
+    ^
+
+"Test_name.c", line 2488: error: static assertion failed
+    static_assert(!__has_nothrow_move_assign(NoDefaultMoveAssignDueToUDCopyCtor));
+    ^
+
+"Test_name.c", line 2518: error: an incomplete class type is not allowed
+    static_assert(!__has_nothrow_copy(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 2521: error: static assertion failed
+    static_assert(!__has_nothrow_copy(VirtAr));
+    ^
+
+"Test_name.c", line 2546: error: an incomplete class type is not allowed
+    static_assert(!__has_nothrow_constructor(AnIncompleteType[])); // expected-error {{incomplete type}}
+                   ^
+
+"Test_name.c", line 2551: error: static assertion failed
+    static_assert(!__has_nothrow_constructor(HasNoThrowConstructorWithArgs));
+    ^
+
+"Test_name.c", line 2873: error: static assertion failed
+    static_assert(!__is_convertible_to(PrivateCopy, PrivateCopy));
+    ^
+
+"Test_name.c", line 2880: warning: variable "a" was declared but never referenced
+    template<int x> class A { A(int) { int a[x]; } };
+                                           ^
+
+"Test_name.c", line 3016: error: incomplete type "class_forward" is not allowed
+    static_assert(!(__is_trivially_constructible(class_forward))); // expected-error {{incomplete type 'class_forward' used in type trait expression}}
+                                                 ^
+
+"Test_name.c", line 3146: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_constructible(AnIncompleteType)); // expected-error {{incomplete type}}
+                                      ^
+
+"Test_name.c", line 3147: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_nothrow_constructible(AnIncompleteType)); // expected-error {{incomplete type}}
+                                              ^
+
+"Test_name.c", line 3150: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_constructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                                      ^
+
+"Test_name.c", line 3151: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_nothrow_constructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                                              ^
+
+"Test_name.c", line 3186: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_trivially_constructible(AnIncompleteType)); // expected-error {{incomplete type}}
+                                                ^
+
+"Test_name.c", line 3188: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_trivially_constructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                                                ^
+
+"Test_name.c", line 3423: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_destructible(AnIncompleteType)); // expected-error {{incomplete type}}
+                                     ^
+
+"Test_name.c", line 3425: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_destructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                                     ^
+
+"Test_name.c", line 3446: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_nothrow_destructible(AnIncompleteType)); // expected-error {{incomplete type}}
+                                             ^
+
+"Test_name.c", line 3448: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_nothrow_destructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                                             ^
+
+"Test_name.c", line 3468: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_trivially_destructible(AnIncompleteType)); // expected-error {{incomplete type}}
+                                               ^
+
+"Test_name.c", line 3470: error: incomplete type "AnIncompleteType" is not allowed
+    static_assert(!__is_trivially_destructible(AnIncompleteType[1])); // expected-error {{incomplete type}}
+                                               ^
+
+"Test_name.c", line 3544: error: an incomplete class type is not allowed
+  static_assert(!__has_unique_object_representations(AnIncompleteType));
+                 ^
+
+"Test_name.c", line 3689: error: static assertion failed with "Alignment causes padding"
+  static_assert(!__has_unique_object_representations(WeirdAlignmentUnion), "Alignment causes padding");
+  ^
+
+"Test_name.c", line 3733: warning: variable "i" is used before its value is set
+    static auto lambda2 = [i]() {};
+                           ^
+
+"Test_name.c", line 3730: warning: variable "lambda" was set but never used
+    static auto lambda = []() {};
+                ^
+
+"Test_name.c", line 3733: warning: variable "lambda2" was set but never used
+    static auto lambda2 = [i]() {};
+                ^
+
+"Test_name.c", line 3739: warning: signed bit field of length 1
+    char d : 1;
+         ^
+
+"Test_name.c", line 3790: warning: declared size for bit field is larger than the size of the bit field type; truncated to 8 bits
+    bool b : 16;
+             ^
+
+"Test_name.c", line 3797: warning: declared size for bit field is larger than the size of the bit field type; truncated to 32 bits
+    int n : 1024;
+            ^
+
+"Test_name.c", line 3807: error: static assertion failed with "References are still unique"
+  static_assert(__has_unique_object_representations(StructWithRef), "References are still unique");
+  ^
+
+"Test_name.c", line 3821: error: static assertion failed with "inherit from std layout"
+  static_assert(sizeof(CanBeUniqueIfNoPadding) != 16 ||
+  ^
+
+"Test_name.c", line 3829: error: incomplete type "ErrorType::S" is not allowed
+          S t; //expected-error{{field has incomplete type 'S'}}
+            ^
+
+"Test_name.c", line 3834: error: static assertion failed with "BitInt:"
+  static_assert(!__has_unique_object_representations(_BitInt(7)), "BitInt:");
+  ^
+
+"Test_name.c", line 3836: error: static assertion failed with "BitInt:"
+  static_assert(!__has_unique_object_representations(_BitInt(127)), "BitInt:");
+  ^
+
+"Test_name.c", line 3845: error: static assertion failed
+  static_assert(__has_unique_object_representations(Foo<0>[]));
+  ^
+
+"Test_name.c", line 3847: error: static assertion failed
+  static_assert(__has_unique_object_representations(Bar[])); // expected-error {{incomplete type}}
+  ^
+
+"Test_name.c", line 3878: error: static assertion failed
+    static_assert(__is_trivially_assignable(Bar2 &, const Bar2 &));
+    ^
+
+"Test_name.c", line 3954: error: an incomplete class type is not allowed
+  bool unused = __is_trivially_relocatable(Incomplete); // expected-error {{incomplete type}}
+                ^
+
+"Test_name.c", line 3979: error: static assertion failed
+  static_assert(__is_trivially_relocatable(TrivialAbiNontrivialDtor));
+  ^
+
+"Test_name.c", line 3980: error: static assertion failed
+  static_assert(__is_trivially_relocatable(TrivialAbiNontrivialDtor[]));
+  ^
+
+"Test_name.c", line 3981: error: static assertion failed
+  static_assert(__is_trivially_relocatable(const TrivialAbiNontrivialDtor));
+  ^
+
+"Test_name.c", line 3982: error: static assertion failed
+  static_assert(__is_trivially_relocatable(volatile TrivialAbiNontrivialDtor));
+  ^
+
+"Test_name.c", line 3987: error: static assertion failed
+  static_assert(__is_trivially_relocatable(TrivialAbiNontrivialCopyCtor));
+  ^
+
+"Test_name.c", line 3988: error: static assertion failed
+  static_assert(__is_trivially_relocatable(TrivialAbiNontrivialCopyCtor[]));
+  ^
+
+"Test_name.c", line 3989: error: static assertion failed
+  static_assert(__is_trivially_relocatable(const TrivialAbiNontrivialCopyCtor));
+  ^
+
+"Test_name.c", line 3990: error: static assertion failed
+  static_assert(__is_trivially_relocatable(volatile TrivialAbiNontrivialCopyCtor));
+  ^
+
+"Test_name.c", line 3997: error: static assertion failed
+  static_assert(__is_trivially_relocatable(TrivialAbiNontrivialMoveCtor));
+  ^
+
+"Test_name.c", line 3998: error: static assertion failed
+  static_assert(__is_trivially_relocatable(TrivialAbiNontrivialMoveCtor[]));
+  ^
+
+"Test_name.c", line 3999: error: static assertion failed
+  static_assert(__is_trivially_relocatable(const TrivialAbiNontrivialMoveCtor));
+  ^
+
+"Test_name.c", line 4000: error: static assertion failed
+  static_assert(__is_trivially_relocatable(volatile TrivialAbiNontrivialMoveCtor));
+  ^
+
+"Test_name.c", line 4006: error: an incomplete class type is not allowed
+  static_assert(!__is_trivially_equality_comparable(ForwardDeclared)); // expected-error {{incomplete type 'ForwardDeclared' used in type trait expression}}
+                 ^
+
+"Test_name.c", line 4496: error: type name is not allowed
+  static_assert(__can_pass_in_regs(A));
+                                   ^
+
+"Test_name.c", line 4496: error: identifier "__can_pass_in_regs" is undefined
+  static_assert(__can_pass_in_regs(A));
+                ^
+
+"Test_name.c", line 4497: error: type name is not allowed
+  static_assert(__can_pass_in_regs(A));
+                                   ^
+
+"Test_name.c", line 4498: error: type name is not allowed
+  static_assert(!__can_pass_in_regs(B));
+                                    ^
+
+"Test_name.c", line 4499: error: type name is not allowed
+  static_assert(__can_pass_in_regs(D));
+                                   ^
+
+"Test_name.c", line 4502: error: expected an expression
+    (void)__can_pass_in_regs(const A); // expected-error {{not an unqualified class type}}
+                             ^
+
+"Test_name.c", line 4503: error: type name is not allowed
+    (void)__can_pass_in_regs(A&); // expected-error {{not an unqualified class type}}
+                             ^
+
+"Test_name.c", line 4503: error: expected an expression
+    (void)__can_pass_in_regs(A&); // expected-error {{not an unqualified class type}}
+                               ^
+
+"Test_name.c", line 4504: error: type name is not allowed
+    (void)__can_pass_in_regs(A&&); // expected-error {{not an unqualified class type}}
+                             ^
+
+"Test_name.c", line 4504: error: expected an expression
+    (void)__can_pass_in_regs(A&&); // expected-error {{not an unqualified class type}}
+                                ^
+
+"Test_name.c", line 4505: error: expected an expression
+    (void)__can_pass_in_regs(const A&); // expected-error {{not an unqualified class type}}
+                             ^
+
+"Test_name.c", line 4506: error: type name is not allowed
+    (void)__can_pass_in_regs(C); // expected-error {{incomplete type}}
+                             ^
+
+"Test_name.c", line 4507: error: type name is not allowed
+    (void)__can_pass_in_regs(int); // expected-error {{not an unqualified class type}}
+                             ^
+
+"Test_name.c", line 4508: error: type name is not allowed
+    (void)__can_pass_in_regs(int&); // expected-error {{not an unqualified class type}}
+                             ^
+
+"Test_name.c", line 4508: error: expected an expression
+    (void)__can_pass_in_regs(int&); // expected-error {{not an unqualified class type}}
+                                 ^
+
+"Test_name.c", line 4695: error: expected a ")"
+    static_assert(__is_same(remove_pointer_t<int (^)(char)>, int (^)(char)));
+                                                  ^
+
+"Test_name.c", line 4695: error: expected a ")"
+    static_assert(__is_same(remove_pointer_t<int (^)(char)>, int (^)(char)));
+                                                                  ^
+
+"Test_name.c", line 4891: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() &> x; }
+                                              ^
+
+"Test_name.c", line 4892: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() &&> x; }
+                                               ^
+
+"Test_name.c", line 4893: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() const> x; }
+                                                  ^
+
+"Test_name.c", line 4894: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() const &> x; }
+                                                    ^
+
+"Test_name.c", line 4895: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() const &&> x; }
+                                                     ^
+
+"Test_name.c", line 4896: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() volatile> x; }
+                                                     ^
+
+"Test_name.c", line 4897: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() volatile &> x; }
+                                                       ^
+
+"Test_name.c", line 4898: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() volatile &&> x; }
+                                                        ^
+
+"Test_name.c", line 4899: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() const volatile> x; }
+                                                           ^
+
+"Test_name.c", line 4900: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() const volatile &> x; }
+                                                             ^
+
+"Test_name.c", line 4901: warning: variable "x" was declared but never referenced
+    { CheckAbominableFunction<int (S::*)() const volatile &&> x; }
+                                                              ^
+
+"Test_name.c", line 4920: catastrophic error: #error directive: Programming model currently unsupported; please add a new entry.
+  #error Programming model currently unsupported; please add a new entry.
+   ^
+
+114 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

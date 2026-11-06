@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc -w Test_name.c
+"Test_name.c", line 34: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (x[i] != ((i & 3) ? 0xff : 0x80))
+            ^
+
+"Test_name.c", line 38: error: expression must have pointer-to-object type but it has type "unsigned int"
+      if (y[i] != ((i & 1) ? 0xffff : 0x8000))
+            ^
+
+2 errors detected in the compilation of "Test_name.c".

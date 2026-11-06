@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 10: error: expression must have pointer-to-object type but it has type "float32x4_t" (aka "float")
+    constexpr auto vs = sizeof(v)/sizeof(v[0]);
+                                         ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "float32x4_t" (aka "float")
+    for (auto i=0U; i<vs; ++i) v[i]=i; // { dg-error "not a constant" }
+                               ^
+
+2 errors detected in the compilation of "Test_name.c".

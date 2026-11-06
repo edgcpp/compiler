@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./cpp1y/vla-initlist1.C", line 18: warning: variable "i" was declared but never referenced
+    { int i[x] = { 42, 42, 42, 42 }; }
+          ^
+
+"./cpp1y/vla-initlist1.C", line 20: internal error: assertion failed: adjust_cleanup_state_for_aggregate_init: NULL dip (lower_init.c, line <suppressed> in adjust_cleanup_state_for_aggregate_init)
+
+  A a[x] = {argc};   
+    ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

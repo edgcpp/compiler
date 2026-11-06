@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --ms_compatibility --exceptions --exceptions Test_name.c
+"Test_name.c", line 22: warning: exception specification is incompatible with that of previous function "PR28080::fn" (declared at line 21)
+  void fn() throw();  // expected-warning {{does not match previous declaration}}
+            ^
+
+"Test_name.c", line 13 (col. 6): internal error: assertion failed at: "cp_gen_be.c", line <suppressed> in gen_exception_specification
+
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

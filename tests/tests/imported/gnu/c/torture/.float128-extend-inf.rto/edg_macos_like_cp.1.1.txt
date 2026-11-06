@@ -1,0 +1,82 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 22: error: identifier "__float128" is undefined
+    volatile __float128 r;
+             ^
+
+"Test_name.c", line 23: error: identifier "__float128" is undefined
+    r = (__float128) finf;
+         ^
+
+"Test_name.c", line 23: error: expected a ";"
+    r = (__float128) finf;
+                     ^
+
+"Test_name.c", line 24: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) != 0)
+                         ^
+
+"Test_name.c", line 24: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) != 0)
+                                                  ^
+
+"Test_name.c", line 26: error: expected a ";"
+    r = (__float128) dinf;
+                     ^
+
+"Test_name.c", line 27: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) != 0)
+                         ^
+
+"Test_name.c", line 27: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) != 0)
+                                                  ^
+
+"Test_name.c", line 29: error: expected a ";"
+    r = (__float128) ldinf;
+                     ^
+
+"Test_name.c", line 30: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) != 0)
+                         ^
+
+"Test_name.c", line 30: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) != 0)
+                                                  ^
+
+"Test_name.c", line 32: error: expected a ";"
+    r = (__float128) nfinf;
+                     ^
+
+"Test_name.c", line 33: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) == 0)
+                         ^
+
+"Test_name.c", line 33: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) == 0)
+                                                  ^
+
+"Test_name.c", line 35: error: expected a ";"
+    r = (__float128) ndinf;
+                     ^
+
+"Test_name.c", line 36: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) == 0)
+                         ^
+
+"Test_name.c", line 36: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) == 0)
+                                                  ^
+
+"Test_name.c", line 38: error: expected a ";"
+    r = (__float128) nldinf;
+                     ^
+
+"Test_name.c", line 39: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) == 0)
+                         ^
+
+"Test_name.c", line 39: error: function call requires a real floating-point argument
+    if (!__builtin_isinf (r) || __builtin_signbit (r) == 0)
+                                                  ^
+
+20 errors detected in the compilation of "Test_name.c".

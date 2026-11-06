@@ -1,0 +1,138 @@
+fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --ms_extensions Test_name.c
+"Test_name.c", line 27: warning: attribute "dllexport" does not apply here
+  __declspec(dllexport) typedef int typedef1;
+             ^
+
+"Test_name.c", line 29: warning: attribute "dllexport" does not apply here
+  typedef __declspec(dllexport) int typedef2;
+                     ^
+
+"Test_name.c", line 31: warning: attribute "dllexport" does not apply here
+  typedef int __declspec(dllexport) typedef3;
+                         ^
+
+"Test_name.c", line 33: warning: attribute "dllexport" does not apply here
+  typedef __declspec(dllexport) void (*FunTy)();
+                     ^
+
+"Test_name.c", line 70: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl3" (declared at line 69)
+  __declspec(dllexport) extern int GlobalRedecl3; // expected-warning{{redeclaration of 'GlobalRedecl3' should not add 'dllexport' attribute}}
+                                   ^
+
+"Test_name.c", line 74: error: redeclaration cannot add dllexport/dllimport to "GlobalRedecl4" (declared at line 73)
+  __declspec(dllexport) extern int GlobalRedecl4; // expected-warning{{redeclaration of 'GlobalRedecl4' should not add 'dllexport' attribute}}
+                                   ^
+
+"Test_name.c", line 78: error: dllexport/dllimport requires external linkage
+  __declspec(dllexport) static int StaticGlobal; // expected-error{{'StaticGlobal' must have external linkage when declared 'dllexport'}}
+                                   ^
+
+"Test_name.c", line 80: error: dllexport/dllimport requires external linkage
+  namespace    { __declspec(dllexport) int InternalGlobal; } // non-ms-error{{'(anonymous namespace)::InternalGlobal' must have external linkage when declared 'dllexport'}}
+                                           ^
+
+"Test_name.c", line 87: error: a thread-local variable cannot be declared with "dllimport" or "dllexport"
+  __declspec(dllexport) __thread int ThreadLocalGlobal; // expected-error{{'ThreadLocalGlobal' cannot be thread local when declared 'dllexport'}}
+                                     ^
+
+"Test_name.c", line 90: warning: variable "OK" was declared but never referenced
+    static __thread int OK; // no-error
+                        ^
+
+"Test_name.c", line 95: error: attribute "dllexport" does not apply to automatic variables
+    __declspec(dllexport)        int LocalVarDecl; // expected-error{{'LocalVarDecl' must have external linkage when declared 'dllexport'}}
+               ^
+
+"Test_name.c", line 96: error: attribute "dllexport" does not apply to automatic variables
+    __declspec(dllexport)        int LocalVarDef = 1; // expected-error{{'LocalVarDef' must have external linkage when declared 'dllexport'}}
+               ^
+
+"Test_name.c", line 95: warning: variable "LocalVarDecl" was declared but never referenced
+    __declspec(dllexport)        int LocalVarDecl; // expected-error{{'LocalVarDecl' must have external linkage when declared 'dllexport'}}
+                                     ^
+
+"Test_name.c", line 96: warning: variable "LocalVarDef" was declared but never referenced
+    __declspec(dllexport)        int LocalVarDef = 1; // expected-error{{'LocalVarDef' must have external linkage when declared 'dllexport'}}
+                                     ^
+
+"Test_name.c", line 98: warning: variable "StaticLocalVar" was declared but never referenced
+    __declspec(dllexport) static int StaticLocalVar; // expected-error{{'StaticLocalVar' must have external linkage when declared 'dllexport'}}
+                                     ^
+
+"Test_name.c", line 215: error: redeclaration cannot add dllexport/dllimport to "redecl3" (declared at line 214)
+  __declspec(dllexport) void redecl3(); // expected-warning{{redeclaration of 'redecl3' should not add 'dllexport' attribute}}
+                             ^
+
+"Test_name.c", line 219: error: redeclaration cannot add dllexport/dllimport to "redecl4" (declared at line 218)
+  __declspec(dllexport) void redecl4(); // expected-warning{{redeclaration of 'redecl4' should not add 'dllexport' attribute}}
+                             ^
+
+"Test_name.c", line 223: error: redeclaration cannot add dllexport/dllimport to "redecl5" (declared at line 222)
+  __declspec(dllexport) inline void redecl5() {} // expected-warning{{redeclaration of 'redecl5' should not add 'dllexport' attribute}}
+                                    ^
+
+"Test_name.c", line 234: error: redeclaration cannot add dllexport/dllimport to "friend3" (declared at line 229)
+  __declspec(dllexport) void friend3() {} // expected-warning{{redeclaration of 'friend3' should not add 'dllexport' attribute}}
+                             ^
+
+"Test_name.c", line 235: error: redeclaration cannot add dllexport/dllimport to "friend4" (declared at line 230)
+  __declspec(dllexport) inline void friend4() {} // expected-warning{{redeclaration of 'friend4' should not add 'dllexport' attribute}}
+                                    ^
+
+"Test_name.c", line 238: error: redeclaration cannot add dllexport/dllimport to "operator new" (declared implicitly)
+  __declspec(dllexport) void* operator new(__SIZE_TYPE__ n);
+                              ^
+
+"Test_name.c", line 241: error: dllexport/dllimport requires external linkage
+  __declspec(dllexport) static int staticFunc(); // expected-error{{'staticFunc' must have external linkage when declared 'dllexport'}}
+                                   ^
+
+"Test_name.c", line 243: error: dllexport/dllimport requires external linkage
+  namespace    { __declspec(dllexport) void internalFunc() {} } // expected-error{{'(anonymous namespace)::internalFunc' must have external linkage when declared 'dllexport'}}
+                                            ^
+
+"Test_name.c", line 281: error: redeclaration cannot add dllexport/dllimport to "funcTmplRedecl3" (declared at line 280)
+  template<typename T> __declspec(dllexport) void funcTmplRedecl3(); // expected-error{{redeclaration of 'funcTmplRedecl3' cannot add 'dllexport' attribute}}
+                                                  ^
+
+"Test_name.c", line 284: error: redeclaration cannot add dllexport/dllimport to "funcTmplRedecl4" (declared at line 283)
+  template<typename T> __declspec(dllexport) inline void funcTmplRedecl4() {} // expected-error{{redeclaration of 'funcTmplRedecl4' cannot add 'dllexport' attribute}}
+                                                         ^
+
+"Test_name.c", line 295: error: redeclaration cannot add dllexport/dllimport to "funcTmplFriend3" (declared at line 290)
+  template<typename T> __declspec(dllexport) void funcTmplFriend3() {} // expected-error{{redeclaration of 'funcTmplFriend3' cannot add 'dllexport' attribute}}
+                                                  ^
+
+"Test_name.c", line 296: error: redeclaration cannot add dllexport/dllimport to "funcTmplFriend4" (declared at line 291)
+  template<typename T> __declspec(dllexport) inline void funcTmplFriend4() {} // expected-error{{redeclaration of 'funcTmplFriend4' cannot add 'dllexport' attribute}}
+                                                         ^
+
+"Test_name.c", line 299: error: dllexport/dllimport requires external linkage
+  template<typename T> __declspec(dllexport) static int staticFuncTmpl(); // expected-error{{'staticFuncTmpl' must have external linkage when declared 'dllexport'}}
+                                                        ^
+
+"Test_name.c", line 301: error: dllexport/dllimport requires external linkage
+  namespace    { template<typename T> __declspec(dllexport) void internalFuncTmpl(); } // expected-error{{'(anonymous namespace)::internalFuncTmpl' must have external linkage when declared 'dllexport'}}
+                                                                 ^
+
+"Test_name.c", line 349: warning: dllimport/dllexport applied to a member of an unnamed namespace
+    struct __declspec(dllexport) AnonymousClass {}; // expected-error{{(anonymous namespace)::AnonymousClass' must have external linkage when declared 'dllexport'}}
+                                 ^
+
+"Test_name.c", line 349: error: dllexport/dllimport requires external linkage
+    struct __declspec(dllexport) AnonymousClass {}; // expected-error{{(anonymous namespace)::AnonymousClass' must have external linkage when declared 'dllexport'}}
+                                 ^
+
+"Test_name.c", line 349: error: dllexport/dllimport requires external linkage
+    struct __declspec(dllexport) AnonymousClass {}; // expected-error{{(anonymous namespace)::AnonymousClass' must have external linkage when declared 'dllexport'}}
+                                 ^
+
+"Test_name.c", line 349: internal error: assertion failed at: "class_decl.c", line <suppressed> in force_definition_of_generated_exported_members
+
+    struct __declspec(dllexport) AnonymousClass {}; // expected-error{{(anonymous namespace)::AnonymousClass' must have external linkage when declared 'dllexport'}}
+                                                  ^
+
+23 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

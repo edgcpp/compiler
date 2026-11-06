@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: attribute "constructor" does not apply here
+  int x __attribute__((constructor)); // expected-warning {{'constructor' attribute only applies to functions}}
+                       ^
+
+"Test_name.c", line 7: error: attribute "constructor" does not take arguments
+  int f(void) __attribute__((constructor(1)));
+                                        ^
+
+"Test_name.c", line 8: error: attribute "constructor" does not take arguments
+  int f(void) __attribute__((constructor(1,2))); // expected-error {{'constructor' attribute takes no more than 1 argument}}
+                                        ^
+
+"Test_name.c", line 9: error: attribute "constructor" does not take arguments
+  int f(void) __attribute__((constructor(1.0))); // expected-error {{'constructor' attribute requires an integer constant}}
+                                        ^
+
+"Test_name.c", line 10: error: attribute "constructor" does not take arguments
+  int f(void) __attribute__((constructor(0x100000000))); // expected-error {{integer constant expression evaluates to value 4294967296 that cannot be represented in a 32-bit unsigned integer type}}
+                                        ^
+
+"Test_name.c", line 12: warning: attribute "destructor" does not apply here
+  int x __attribute__((destructor)); // expected-warning {{'destructor' attribute only applies to functions}}
+                       ^
+
+"Test_name.c", line 14: error: attribute "destructor" does not take arguments
+  int f(void) __attribute__((destructor(1)));
+                                       ^
+
+"Test_name.c", line 15: error: attribute "destructor" does not take arguments
+  int f(void) __attribute__((destructor(1,2))); // expected-error {{'destructor' attribute takes no more than 1 argument}}
+                                       ^
+
+"Test_name.c", line 16: error: attribute "destructor" does not take arguments
+  int f(void) __attribute__((destructor(1.0))); // expected-error {{'destructor' attribute requires an integer constant}}
+                                       ^
+
+7 errors detected in the compilation of "Test_name.c".

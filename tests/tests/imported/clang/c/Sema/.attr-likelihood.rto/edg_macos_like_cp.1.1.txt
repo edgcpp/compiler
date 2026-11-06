@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 33: error: expected "while"
+    [[clang::unlikely]] while (x); // expected-error {{expected 'while' in do/while loop}}
+    ^
+
+"Test_name.c", line 36: warning: loop is not reachable
+    for (;;) {
+    ^
+
+"Test_name.c", line 39: warning: loop is not reachable
+    while (x)
+    ^
+
+1 error detected in the compilation of "Test_name.c".

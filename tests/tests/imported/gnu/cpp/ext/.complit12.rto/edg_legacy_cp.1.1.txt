@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 43: error: no suitable constructor exists to convert from "M [1]" to "M"
+      M m[1] = (M[1]) { M () };
+               ^
+
+"Test_name.c", line 49: error: no suitable constructor exists to convert from "M [4]" to "M"
+      M o[4] = (M[4]) { M (), M (), M (), M () };
+               ^
+
+"Test_name.c", line 58: error: no suitable constructor exists to convert from "M [2]" to "M"
+      M mm[2] = ((M[2]) { f(M()), f(M()) });
+                ^
+
+3 errors detected in the compilation of "Test_name.c".

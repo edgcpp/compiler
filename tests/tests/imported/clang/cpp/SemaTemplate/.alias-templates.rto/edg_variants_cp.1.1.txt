@@ -1,0 +1,101 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 90: error: no instance of function template "PR11848::f1" matches the argument list
+            argument types are: (int)
+      f1(U<void>()); // expected-error {{no match}}
+      ^
+"Test_name.c", line 78: note: candidate function template "PR11848::f1" failed deduction
+    void f1(U<T> i, U<Ts> ...is) { // expected-note 2{{couldn't infer template argument 'T'}}
+         ^
+
+"Test_name.c", line 91: error: no instance of function template "PR11848::f1" matches the argument list
+            argument types are: (int, int, int, int, int)
+      f1(1, 2, 3, 4, 5); // expected-error {{no match}}
+      ^
+"Test_name.c", line 78: note: candidate function template "PR11848::f1" failed deduction
+    void f1(U<T> i, U<Ts> ...is) { // expected-note 2{{couldn't infer template argument 'T'}}
+         ^
+
+"Test_name.c", line 93: error: no instance of function template "PR11848::f2" matches the argument list
+            argument types are: (int)
+      f2(1); // expected-error {{no match}}
+      ^
+"Test_name.c", line 83: note: function template "PR11848::f2" does not match because argument #1 is provided for an empty parameter pack
+    void f2(U<Ts> ...is) { } // expected-note {{deduced incomplete pack <(no value)> for template parameter 'Ts'}}
+         ^
+
+"Test_name.c", line 95: error: no instance of function template "PR11848::f3" matches the argument list
+            argument types are: (PR11848::type_tuple<void, void, void>, int, int)
+      f3(type_tuple<void, void, void>(), 1, 2); // expected-error {{no match}}
+      ^
+
+"Test_name.c", line 131: error: identifier "g" is undefined
+      void f1(Y<T> a) { h(g(a)); } // expected-error {{undeclared identifier 'g'}}
+                          ^
+
+"Test_name.c", line 132: error: identifier "g" is undefined
+      void f2(Y<Ts>...as) { h(g(as)...); } // expected-error {{undeclared identifier 'g'}}
+                              ^
+
+"Test_name.c", line 134: error: identifier "g" is undefined
+      void f4(Ts ...ts) { h(g(sizeof(ts))...); } // expected-error {{undeclared identifier 'g'}}
+                            ^
+
+"Test_name.c", line 199: warning: missing "typename" is nonstandard here
+    using derived = base<T, U>::template derived<V>; // expected-warning {{missing 'typename'}}
+                    ^
+
+"Test_name.c", line 201: warning: missing "typename" is nonstandard here
+    using derived2 = ::PR16904::base<T, U>::template derived<V>; // expected-warning {{missing 'typename'}}
+                     ^
+
+"Test_name.c", line 215: error: function template "PR14858::f" has already been defined (previous definition at line 214)
+    template<typename ...T> void f(int(&)[sizeof...(T)]) {}
+                                 ^
+
+"Test_name.c", line 220: warning: template parameter "U" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "PR14858::h"
+    template<typename ...T, typename ...U> void h(X<T...> &) {}
+                                        ^
+
+"Test_name.c", line 221: warning: template parameter "U" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "PR14858::h<T...,U...>(PR14858::X<U...> &)"
+    template<typename ...T, typename ...U> void h(X<U...> &) {} // ok, different
+                                        ^
+
+"Test_name.c", line 238: error: no instance of function template "PR14858::Q<T...>::f [with T=<PR14858::B, PR14858::B, PR14858::B>]" matches the argument list
+            argument types are: (int (*)[5])
+            object type is: PR14858::Q<PR14858::B, PR14858::B, PR14858::B>
+    void test_q(int (&a)[5]) { Q<B, B, B>().f<B, B>(&a); }
+                                            ^
+"Test_name.c", line 235: note: function template "PR14858::Q<T...>::f [with T=<PR14858::B, PR14858::B, PR14858::B>]" does not match because argument #1 does not match parameter
+      template<typename ...U> void f(V<typename U::type..., typename T::type...> *);
+                                   ^
+
+"Test_name.c", line 282: error: argument list for alias template "an_alias_template_is_not_a_class_template::Foo" is missing
+    Foo x; // expected-error {{use of alias template 'Foo' requires template arguments}}
+    ^
+
+"Test_name.c", line 283: error: too few arguments for alias template "an_alias_template_is_not_a_class_template::Foo"
+    Foo<> y; // expected-error {{too few template arguments for alias template 'Foo'}}
+        ^
+
+"Test_name.c", line 284: error: argument list for alias template "an_alias_template_is_not_a_class_template::Foo" is missing
+    int z = Foo(); // expected-error {{use of alias template 'Foo' requires template arguments}}
+            ^
+
+"Test_name.c", line 287: error: argument list for template template parameter "Bar" is missing
+      Bar x; // expected-error {{use of template template parameter 'Bar' requires template arguments}}
+      ^
+
+"Test_name.c", line 288: error: too few arguments for template template parameter "Bar"
+      Bar<> y; // expected-error {{too few template arguments for template template parameter 'Bar'}}
+          ^
+
+"Test_name.c", line 289: error: argument list for template template parameter "Bar" is missing
+      int z = Bar(); // expected-error {{use of template template parameter 'Bar' requires template arguments}}
+              ^
+
+"Test_name.c", line 320: error: reference to void is not allowed
+        template <class> using B = T&;
+                                    ^
+          detected during instantiation of class "OuterSubstFailure::A<T> [with T=void]" at line 323
+
+16 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: error: identifier "__transaction_cancel" is undefined
+    __transaction_cancel [[,,,outer,,]];
+    ^
+
+"Test_name.c", line 12: error: two consecutive left square brackets always introduce an attribute list but an attribute list cannot appear here
+    __transaction_cancel [[,,,outer,,]];
+                         ^
+
+"Test_name.c", line 12: error: expected an expression
+    __transaction_cancel [[,,,outer,,]];
+                          ^
+
+"Test_name.c", line 18: error: identifier "__transaction_atomic" is undefined
+    __transaction_atomic [[__gnu__::__outer__]] {
+    ^
+
+"Test_name.c", line 18: error: two consecutive left square brackets always introduce an attribute list but an attribute list cannot appear here
+    __transaction_atomic [[__gnu__::__outer__]] {
+                         ^
+
+"Test_name.c", line 18: error: expected an expression
+    __transaction_atomic [[__gnu__::__outer__]] {
+                          ^
+
+"Test_name.c", line 18: error: expected a ";"
+    __transaction_atomic [[__gnu__::__outer__]] {
+                                                ^
+
+"Test_name.c", line 25: warning: parsing restarts here after previous syntax error
+  }
+  ^
+
+7 errors detected in the compilation of "Test_name.c".

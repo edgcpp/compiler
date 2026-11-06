@@ -1,0 +1,97 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: warning: variable "vec" is used before its value is set
+    return vec == vec; // expected-warning{{self-comparison always evaluates to true}}
+           ^
+
+"Test_name.c", line 12: warning: statement is unreachable
+    return vec != vec; // expected-warning{{self-comparison always evaluates to false}}
+    ^
+
+"Test_name.c", line 13: warning: statement is unreachable
+    return vec < vec; // expected-warning{{self-comparison always evaluates to false}}
+    ^
+
+"Test_name.c", line 14: warning: statement is unreachable
+    return vec <= vec; // expected-warning{{self-comparison always evaluates to true}}
+    ^
+
+"Test_name.c", line 15: warning: statement is unreachable
+    return vec > vec; // expected-warning{{self-comparison always evaluates to false}}
+    ^
+
+"Test_name.c", line 16: warning: statement is unreachable
+    return vec >= vec; // expected-warning{{self-comparison always evaluates to true}}
+    ^
+
+"Test_name.c", line 8: warning: variable "rv" was declared but never referenced
+    int4 vec, rv;
+              ^
+
+"Test_name.c", line 26: warning: variable "vec" is used before its value is set
+    return vec == vec; // no-warning
+           ^
+
+"Test_name.c", line 27: warning: statement is unreachable
+    return vec != vec; // no-warning
+    ^
+
+"Test_name.c", line 28: warning: statement is unreachable
+    return vec < vec;  // no-warning
+    ^
+
+"Test_name.c", line 29: warning: statement is unreachable
+    return vec <= vec; // no-warning
+    ^
+
+"Test_name.c", line 30: warning: statement is unreachable
+    return vec > vec;  // no-warning
+    ^
+
+"Test_name.c", line 31: warning: statement is unreachable
+    return vec >= vec; // no-warning
+    ^
+
+"Test_name.c", line 23: warning: variable "rv" was declared but never referenced
+    float4 vec, rv;
+                ^
+
+"Test_name.c", line 37: warning: variable "i0" is used before its value is set
+    return i0 > i1 ? i0 : i1; // no-error
+           ^
+
+"Test_name.c", line 37: warning: variable "i1" is used before its value is set
+    return i0 > i1 ? i0 : i1; // no-error
+                ^
+
+"Test_name.c", line 38: warning: statement is unreachable
+    return i0 ? i0 : i1;      // no-error
+    ^
+
+"Test_name.c", line 46: warning: variable "f0" is used before its value is set
+    return f0 > f1 ? f0 : f1; // no-error
+           ^
+
+"Test_name.c", line 46: warning: variable "f1" is used before its value is set
+    return f0 > f1 ? f0 : f1; // no-error
+                ^
+
+"Test_name.c", line 47: warning: statement is unreachable
+    return f0 ? f0 : f1;      // expected-error {{used type 'float4' (vector of 4 'float' values) where floating point type is not allowed}}
+    ^
+
+"Test_name.c", line 7: warning: function "test1" was declared but never referenced
+  static int4 test1(void) {
+              ^
+
+"Test_name.c", line 22: warning: function "test2" was declared but never referenced
+  static int4 test2(void) {
+              ^
+
+"Test_name.c", line 34: warning: function "test3" was declared but never referenced
+  static int4 test3(void) {
+              ^
+
+"Test_name.c", line 41: warning: function "test4" was declared but never referenced
+  static float4 test4(void) {
+                ^
+

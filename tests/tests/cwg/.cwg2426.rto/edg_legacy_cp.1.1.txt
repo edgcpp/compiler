@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++17 -tused -A Test_name.c
+"Test_name.c", line 7: error: "A::~A() noexcept" (declared at line 5) is inaccessible
+    A f() { return A(); }   // error: destructor of A is private (even though it is never invoked)
+                   ^
+
+"Test_name.c", line 7: error: "A::~A() noexcept" (declared at line 5) is inaccessible
+    A f() { return A(); }   // error: destructor of A is private (even though it is never invoked)
+                   ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics -w Test_name.c
+"Test_name.c", line 8: error: expression must have pointer-to-object type but it has type "int"
+      return vec[0] + vec[1];
+                 ^
+          detected during instantiation of "T test(T) [with T=int]" at line 12
+
+"Test_name.c", line 8: error: expression must have pointer-to-object type but it has type "int"
+      return vec[0] + vec[1];
+                          ^
+          detected during instantiation of "T test(T) [with T=int]" at line 12
+
+2 errors detected in the compilation of "Test_name.c".

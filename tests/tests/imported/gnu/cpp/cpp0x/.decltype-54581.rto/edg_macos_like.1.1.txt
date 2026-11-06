@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef float v4f __attribute__((vector_size(4*sizeof(float))));
+                                   ^
+
+"Test_name.c", line 12: error: too many initializer values
+    v4f x = {0,1,2,3};
+               ^
+
+"Test_name.c", line 14: error: too many initializer values
+    v4i y = {4,5,6,7}; // v4i is not opaque
+               ^
+
+"Test_name.c", line 21: error: too many initializer values
+    V x = {0,1,2,3};
+             ^
+          detected during instantiation of "void test2<V>() [with V=v4f]" at line 29
+
+"Test_name.c", line 23: error: too many initializer values
+    v4i y = {4,5,6,7}; // v4i is not opaque
+               ^
+          detected during instantiation of "void test2<V>() [with V=v4f]" at line 29
+
+4 errors detected in the compilation of "Test_name.c".

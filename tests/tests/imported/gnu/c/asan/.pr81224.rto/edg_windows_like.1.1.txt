@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "__vector_size__"
+    register __attribute__ ((__vector_size__ (4 * sizeof (int)))) int c asm("xmm0");
+                             ^
+
+"Test_name.c", line 12: error: expression must have pointer-to-object type but it has type "int"
+    return c[a];
+             ^
+
+1 error detected in the compilation of "Test_name.c".

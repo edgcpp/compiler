@@ -1,0 +1,12 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics conpr-3b.cc conpr-3a.cc Test_name.c
+conpr-3b.cc:
+"conpr-3b.cc", line 11: warning: unknown attribute "init_priority"
+  foo_t foo2 __attribute__((init_priority(5000)));
+                            ^
+
+conpr-3a.cc:
+"conpr-3a.cc", line 11: warning: unknown attribute "init_priority"
+  foo_t foo1 __attribute__((init_priority(6000)));
+                            ^
+
+Test_name.c:

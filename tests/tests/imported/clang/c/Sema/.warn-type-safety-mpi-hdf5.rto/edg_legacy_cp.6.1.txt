@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=6 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 -DMPICH Test_name.c
+"Test_name.c", line 297: error: identifier "__SCHAR_MAX__" is undefined
+    H5Dwrite(H5T_NATIVE_CHAR,  char_buf);  // no-warning
+             ^
+
+"Test_name.c", line 88: warning: variable "mpich_mpi_datatype_null" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_datatype_null __attribute__(( type_tag_for_datatype(mpi,void,must_be_null) )) = 0xa0000000;
+                            ^
+
+"Test_name.c", line 89: warning: variable "mpich_mpi_float" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_float         __attribute__(( type_tag_for_datatype(mpi,float) ))             = 0xa0000001;
+                            ^
+
+"Test_name.c", line 90: warning: variable "mpich_mpi_int" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_int           __attribute__(( type_tag_for_datatype(mpi,int) ))               = 0xa0000002;
+                            ^
+
+"Test_name.c", line 91: warning: variable "mpich_mpi_long" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_long          __attribute__(( type_tag_for_datatype(mpi,long) ))              = 0xa0000003;
+                            ^
+
+"Test_name.c", line 92: warning: variable "mpich_mpi_long_long_int" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_long_long_int __attribute__(( type_tag_for_datatype(mpi,long long int) ))     = 0xa0000004;
+                            ^
+
+"Test_name.c", line 93: warning: variable "mpich_mpi_char" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_char          __attribute__(( type_tag_for_datatype(mpi,char) ))              = 0xa0000005;
+                            ^
+
+"Test_name.c", line 97: warning: variable "mpich_mpi_float_int" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_float_int     __attribute__(( type_tag_for_datatype(mpi, struct mpich_struct_mpi_float_int, layout_compatible) )) = 0xa0000006;
+                            ^
+
+"Test_name.c", line 98: warning: variable "mpich_mpi_2int" was declared but never referenced
+  static const MPI_Datatype mpich_mpi_2int          __attribute__(( type_tag_for_datatype(mpi, struct mpich_struct_mpi_2int, layout_compatible) )) = 0xa0000007;
+                            ^
+
+1 error detected in the compilation of "Test_name.c".

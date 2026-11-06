@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics -w Test_name.c empty22a.c
+Test_name.c:
+eccp: diagnostics generated from compilation of Test_name.int.c:
+./abi/empty22.C: In function 'main':
+./abi/empty22.C:15:46: note: the ABI of passing C structures with zero-width bit-fields has changed in GCC 12.1
+eccp: end of diagnostics from compilation of Test_name.int.c
+empty22a.c:
+eccp: diagnostics generated from compilation of empty22a.int.c:
+empty22a.c: In function 'fun__F5dummy3foo':
+empty22a.c:2:66: note: the ABI of passing C structures with zero-width bit-fields has changed in GCC 12.1
+eccp: end of diagnostics from compilation of empty22a.int.c
+/usr/sbin/ld: Test_name.o: in function `main':
+Test_name.int.c:(.text+0xXX): undefined reference to `fun'
+collect2: error: ld returned 1 exit status

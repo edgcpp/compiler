@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 150: warning: expression has no effect
+    fcntl(0, (b, F_DUPFD), 10); // expected-warning {{left operand of comma operator has no effect}}
+              ^
+
+"Test_name.c", line 133: warning: variable "F_DUPFD_tag" was declared but never referenced
+  static const int F_DUPFD_tag __attribute__(( type_tag_for_datatype(fcntl,int) )) = F_DUPFD;
+                   ^
+
+"Test_name.c", line 134: warning: variable "F_SETLK_tag" was declared but never referenced
+  static const int F_SETLK_tag __attribute__(( type_tag_for_datatype(fcntl,struct flock *) )) = F_SETLK;
+                   ^
+
+"Test_name.c", line 157: warning: variable "F_tag1" was declared but never referenced
+  static const unsigned long long F_tag1 __attribute__(( type_tag_for_datatype(f,int) )) = 0xFFFFFFFFFFFFFFFFULL;
+                                  ^
+
+"Test_name.c", line 158: warning: variable "F_tag2" was declared but never referenced
+  static const unsigned long long F_tag2 __attribute__(( type_tag_for_datatype(f,float) )) = 0xFFFFFFFFULL;
+                                  ^
+

@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --ms_compatibility Test_name.c
+"Test_name.c", line 42: error: static assertion failed
+  static_assert(__has_cpp_attribute(no_unique_address) == 0);
+  ^
+"Test_name.c", line 42: note: the final comparison was 201803 == 0
+  static_assert(__has_cpp_attribute(no_unique_address) == 0);
+                                                       ^
+
+"Test_name.c", line 46: error: static assertion failed with ""
+  static_assert(!__is_layout_compatible(CStructMSVCNoUniqueAddress, CStructMSVCNoUniqueAddress2), "");
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

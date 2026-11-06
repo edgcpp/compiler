@@ -1,0 +1,105 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "vector_size"
+  typedef long long t1 __attribute__ ((vector_size (8)));
+                                       ^
+
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef char t2 __attribute__ ((vector_size (16)));
+                                  ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef float t3 __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef short s2 __attribute__ ((vector_size(4)));
+                                   ^
+
+"Test_name.c", line 20: warning: variable "v4" is used before its value is set
+    e = (E)v4;
+           ^
+
+"Test_name.c", line 23: warning: variable "v1" is used before its value is set
+    v2 = (t2)v1; // expected-error {{invalid conversion between vector type \
+             ^
+
+"Test_name.c", line 16: warning: variable "v3" was set but never used
+    t3 v3;
+       ^
+
+"Test_name.c", line 35: warning: variable "r1" was declared but never referenced
+    long long r1 = (long long)v1;
+              ^
+
+"Test_name.c", line 36: warning: variable "r2" was declared but never referenced
+    short r2 = (short)v1; // expected-error {{invalid conversion between vector \
+          ^
+
+"Test_name.c", line 38: warning: variable "r3" was declared but never referenced
+    char *r3 = (char *)v1; // expected-error {{invalid conversion between vector\
+          ^
+
+"Test_name.c", line 49: warning: unknown attribute "vector_size"
+  typedef float float2 __attribute__ ((vector_size (8)));
+                                       ^
+
+"Test_name.c", line 50: warning: unknown attribute "vector_size"
+  typedef __attribute__((vector_size(8))) double float64x1_t;
+                         ^
+
+"Test_name.c", line 51: warning: unknown attribute "vector_size"
+  typedef __attribute__((vector_size(16))) double float64x2_t;
+                         ^
+
+"Test_name.c", line 53: warning: unknown attribute "__vector_size__"
+  typedef float float16 __attribute__((__vector_size__(16)));
+                                       ^
+
+"Test_name.c", line 54: warning: unknown attribute "__vector_size__"
+  typedef signed int vSInt32 __attribute__((__vector_size__(16)));
+                                            ^
+
+"Test_name.c", line 55: warning: unknown attribute "__vector_size__"
+  typedef unsigned int vUInt32 __attribute__((__vector_size__(16)));
+                                              ^
+
+"Test_name.c", line 60: warning: excess initializers are ignored
+    float64x2_t v = {0.0, 1.0};
+                          ^
+
+"Test_name.c", line 61: warning: variable "f2" is used before its value is set
+    f2 += d; // expected-error {{cannot convert between scalar type 'double' and vector type 'float2' (vector of 2 'float' values) as implicit conversion would cause truncation}}
+    ^
+
+"Test_name.c", line 61: warning: variable "d" is used before its value is set
+    f2 += d; // expected-error {{cannot convert between scalar type 'double' and vector type 'float2' (vector of 2 'float' values) as implicit conversion would cause truncation}}
+          ^
+
+"Test_name.c", line 59: warning: variable "a" was set but never used
+    double d, a, b, c;
+              ^
+
+"Test_name.c", line 59: warning: variable "b" was set but never used
+    double d, a, b, c;
+                 ^
+
+"Test_name.c", line 73: warning: unknown attribute "vector_size"
+  typedef short short_sizeof_pointer __attribute__((vector_size(sizeof(void*))));
+                                                    ^
+
+"Test_name.c", line 77: warning: a value of type "void *" cannot be assigned to an entity of type "short_sizeof_pointer" (aka "short")
+    v = ptr; // expected-error-re {{assigning to 'short_sizeof_pointer' (vector of {{[0-9]+}} 'short' values) from incompatible type 'void *'}}
+      ^
+
+"Test_name.c", line 77: warning: variable "ptr" is used before its value is set
+    v = ptr; // expected-error-re {{assigning to 'short_sizeof_pointer' (vector of {{[0-9]+}} 'short' values) from incompatible type 'void *'}}
+        ^
+
+"Test_name.c", line 78: warning: a value of type "short_sizeof_pointer" (aka "short") cannot be assigned to an entity of type "void *"
+    ptr = v; // expected-error {{assigning to 'void *' from incompatible type 'short_sizeof_pointer'}}
+        ^
+
+"Test_name.c", line 82: warning: excess initializers are ignored
+    vUInt32 counter = (float16){0.0f, 0.0f, 0.0f, 0.0f}; // expected-warning {{incompatible vector types initializing 'vUInt32' (vector of 4 'unsigned int' values) with an expression of type 'float16' (vector of 4 'float' values)}}
+                                      ^
+

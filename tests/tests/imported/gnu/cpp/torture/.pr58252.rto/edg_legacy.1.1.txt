@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 19: error: explicit type is missing ("int" assumed)
+          inline _CORBA_Unbounded_Sequence_WChar() { // { dg-warning "forbids declaration" }
+                 ^
+
+Segmentation fault
+eccp: front end returned an exit status of 139

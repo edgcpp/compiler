@@ -1,0 +1,42 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 8: error: expected a ","
+    friend void fn0(X x) [[ pre: x.a > 0 ]] { }
+                               ^
+
+"Test_name.c", line 8: error: expected a "]"
+    friend void fn0(X x) [[ pre: x.a > 0 ]] { }
+                               ^
+
+"Test_name.c", line 8: error: expected a ";"
+    friend void fn0(X x) [[ pre: x.a > 0 ]] { }
+                               ^
+
+"Test_name.c", line 11: error: expected a ","
+    static void fns0(X x) [[ pre: x.a > 0 ]] { }
+                                ^
+
+"Test_name.c", line 11: error: expected a "]"
+    static void fns0(X x) [[ pre: x.a > 0 ]] { }
+                                ^
+
+"Test_name.c", line 11: error: expected a ";"
+    static void fns0(X x) [[ pre: x.a > 0 ]] { }
+                                ^
+
+"Test_name.c", line 21: error: expected a ","
+  void fn2(X x) [[ pre: x.a > 0 ]] { }
+                      ^
+
+"Test_name.c", line 22: error: class "X" has no member "fns1"
+  void X::fns1(X x) { }
+          ^
+
+"Test_name.c", line 23: error: expected a ","
+  void X::fns2(X x) [[ pre: x.a > 0 ]] { }
+                          ^
+
+"Test_name.c", line 33: error: class "X" has no member "fns1"
+    X::fns1(x);
+       ^
+
+10 errors detected in the compilation of "Test_name.c".

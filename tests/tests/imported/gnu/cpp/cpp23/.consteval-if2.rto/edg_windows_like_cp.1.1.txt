@@ -1,0 +1,139 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 9: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval (true) {}	// { dg-error "'if consteval' requires compound statement" }
+    ^
+
+"Test_name.c", line 9: error: "if consteval" and "if not consteval" require braced dependent statements
+    if consteval (true) {}	// { dg-error "'if consteval' requires compound statement" }
+                 ^
+
+"Test_name.c", line 9: warning: expression has no effect
+    if consteval (true) {}	// { dg-error "'if consteval' requires compound statement" }
+                 ^
+
+"Test_name.c", line 9: error: expected a ";"
+    if consteval (true) {}	// { dg-error "'if consteval' requires compound statement" }
+                        ^
+
+"Test_name.c", line 17: warning: parsing restarts here after previous syntax error
+    if ! consteval {} else ;	// { dg-error "'if consteval' requires compound statement" }
+                      ^
+
+"Test_name.c", line 17: error: "if consteval" and "if not consteval" require braced dependent statements
+    if ! consteval {} else ;	// { dg-error "'if consteval' requires compound statement" }
+                           ^
+
+"Test_name.c", line 19: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval {} else if (true) {}	// { dg-error "'if consteval' requires compound statement" }
+    ^
+
+"Test_name.c", line 19: error: "if consteval" and "if not consteval" require braced dependent statements
+    if consteval {} else if (true) {}	// { dg-error "'if consteval' requires compound statement" }
+                         ^
+
+"Test_name.c", line 22: warning: "if consteval" and "if not consteval" are not standard in this mode
+      if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+      ^
+
+"Test_name.c", line 25: error: "if consteval" and "if not consteval" require braced dependent statements
+      else ;			// { dg-error "'if consteval' requires compound statement" }
+           ^
+
+"Test_name.c", line 36: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if not consteval	// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 38: error: call to consteval function "foo" did not produce a valid constant expression
+        r += foo (x);	// { dg-error "not a constant expression" }
+                 ^
+"Test_name.c", line 38: note: the value of parameter "x" (declared at line 33) cannot be used as a constant
+        r += foo (x);	// { dg-error "not a constant expression" }
+                  ^
+
+"Test_name.c", line 44: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 50: error: call to consteval function "foo" did not produce a valid constant expression
+        r += foo (8 * x);	// { dg-error "is not a constant expression" }
+                 ^
+"Test_name.c", line 50: note: the value of parameter "x" (declared at line 33) cannot be used as a constant
+        r += foo (8 * x);	// { dg-error "is not a constant expression" }
+                      ^
+
+"Test_name.c", line 52: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if ! consteval	// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 54: error: call to consteval function "foo" did not produce a valid constant expression
+        r += foo (32 * x);// { dg-error "not a constant expression" }
+                 ^
+"Test_name.c", line 54: note: the value of parameter "x" (declared at line 33) cannot be used as a constant
+        r += foo (32 * x);// { dg-error "not a constant expression" }
+                       ^
+
+"Test_name.c", line 56: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 69: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if not consteval	// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 71: error: call to consteval function "foo" did not produce a valid constant expression
+        r += foo (x);	// { dg-error "'x' is not a constant expression" "" { xfail *-*-* } }
+                 ^
+"Test_name.c", line 71: note: the value of parameter "x" (declared at line 66) cannot be used as a constant
+        r += foo (x);	// { dg-error "'x' is not a constant expression" "" { xfail *-*-* } }
+                  ^
+
+"Test_name.c", line 77: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 83: error: call to consteval function "foo" did not produce a valid constant expression
+        r += foo (8 * x);	// { dg-error "is not a constant expression" "" { xfail *-*-* } }
+                 ^
+"Test_name.c", line 83: note: the value of parameter "x" (declared at line 66) cannot be used as a constant
+        r += foo (8 * x);	// { dg-error "is not a constant expression" "" { xfail *-*-* } }
+                      ^
+
+"Test_name.c", line 85: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if ! consteval	// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 87: error: call to consteval function "foo" did not produce a valid constant expression
+        r += foo (32 * x);// { dg-error "is not a constant expression" "" { xfail *-*-* } }
+                 ^
+"Test_name.c", line 87: note: the value of parameter "x" (declared at line 66) cannot be used as a constant
+        r += foo (32 * x);// { dg-error "is not a constant expression" "" { xfail *-*-* } }
+                       ^
+
+"Test_name.c", line 89: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 101: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if not consteval	// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 109: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 117: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if ! consteval	// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 121: warning: "if consteval" and "if not consteval" are not standard in this mode
+    if consteval		// { dg-warning "'if consteval' only available with" "" { target c++20_only } }
+    ^
+
+"Test_name.c", line 131: error: call to consteval function "corge(T) [with T=int]" did not produce a valid constant expression
+    return corge (x); // { dg-error "is not a constant expression" }
+                 ^
+"Test_name.c", line 131: note: the value of parameter "x" (declared at line 129) cannot be used as a constant
+    return corge (x); // { dg-error "is not a constant expression" }
+                  ^
+
+12 errors detected in the compilation of "Test_name.c".

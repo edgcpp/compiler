@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 25: warning: the qualifier on this friend declaration is ignored
+    [[deprecated]] friend void ::foo(int, int); // { dg-warning "attribute ignored" }
+                               ^
+
+"Test_name.c", line 37: warning: attributes are not allowed here
+    [[deprecated]] friend class A; // { dg-warning "attribute ignored" }
+    ^
+

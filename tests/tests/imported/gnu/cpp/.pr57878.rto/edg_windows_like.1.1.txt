@@ -1,0 +1,36 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 35: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__ ((__visibility__ ("default"))) {
+                                      ^
+
+"Test_name.c", line 57: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__ ((__visibility__ ("default"))) {
+                                      ^
+
+"Test_name.c", line 120: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default"))) {
+                                ^
+
+"Test_name.c", line 144: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__ ((__visibility__ ("default"))) {
+                                      ^
+
+"Test_name.c", line 156: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default"))) {
+                                ^
+
+"Test_name.c", line 194: warning: function "operator new(std::size_t, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+      ::new((void *)__new_temp) _Tp(std::forward<_Args>(__args)...);
+        ^
+          detected during:
+            instantiation of "void std::vector<_Tp, _Alloc>::_M_emplace_back_aux(_Args &&...) [with _Tp=FDB::ChunkData, _Alloc=std::allocator<FDB::ChunkData>, _Args=<const FDB::ChunkData &>]" at line 183
+            instantiation of "void std::vector<_Tp, _Alloc>::push_back(const std::vector<_Tp, _Alloc>::value_type &) [with _Tp=FDB::ChunkData, _Alloc=std::allocator<FDB::ChunkData>]" at line 231
+
+"Test_name.c", line 159: warning: function "operator new(std::size_t, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+      ::new(static_cast<void*>(__p)) _T1(std::forward<_Args>(__args)...);
+        ^
+          detected during:
+            instantiation of "void std::_Construct(_T1 *, _Args &&...) [with _T1=FDB::ChunkData, _Args=<FDB::ChunkData &>]" at line 200
+            instantiation of "void std::vector<_Tp, _Alloc>::_M_emplace_back_aux(_Args &&...) [with _Tp=FDB::ChunkData, _Alloc=std::allocator<FDB::ChunkData>, _Args=<const FDB::ChunkData &>]" at line 183
+            instantiation of "void std::vector<_Tp, _Alloc>::push_back(const std::vector<_Tp, _Alloc>::value_type &) [with _Tp=FDB::ChunkData, _Alloc=std::allocator<FDB::ChunkData>]" at line 231
+

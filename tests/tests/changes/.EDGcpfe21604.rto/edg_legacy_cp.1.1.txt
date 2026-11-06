@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++17 --gnu_version=70300 Test_name.c
+"Test_name.c", line 25: warning: variable "x" was declared but never referenced
+  constexpr X<void> x(true, X<void>{});  // Previously an error.  Now okay.
+                    ^
+

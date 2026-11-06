@@ -1,0 +1,98 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: warning: the "always_inline" attribute is ignored on non-inline functions
+  [[gnu::always_inline]] void always_inline_fn(void) {}
+    ^
+
+"Test_name.c", line 14: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] bar();
+      ^
+
+"Test_name.c", line 15: error: attribute "clang::always_inline" does not take arguments
+    [[clang::always_inline(0)]] bar(); // expected-error {{'clang::always_inline' attribute takes no arguments}}
+                          ^
+
+"Test_name.c", line 17: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] int i = bar();  // expected-warning {{'clang::always_inline' attribute only applies to functions and statements}}
+      ^
+
+"Test_name.c", line 18: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] x = 0;          // expected-warning {{'clang::always_inline' attribute is ignored because there exists no call expression inside the statement}}
+      ^
+
+"Test_name.c", line 19: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] { asm("nop"); } // expected-warning {{'clang::always_inline' attribute is ignored because there exists no call expression inside the statement}}
+      ^
+
+"Test_name.c", line 20: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] label : x = 1;  // expected-warning {{'clang::always_inline' attribute only applies to functions and statements}}
+      ^
+
+"Test_name.c", line 22: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] always_inline_fn();
+      ^
+
+"Test_name.c", line 23: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] noinline_fn(); // expected-warning {{statement attribute 'clang::always_inline' has higher precedence than function attribute 'noinline'}}
+      ^
+
+"Test_name.c", line 24: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] flatten_fn();  // expected-warning {{statement attribute 'clang::always_inline' has higher precedence than function attribute 'flatten'}}
+      ^
+
+"Test_name.c", line 26: warning: attribute "gnu::always_inline" does not apply here
+    [[gnu::always_inline]] bar();         // expected-warning {{attribute is ignored on this statement as it only applies to functions; use '[[clang::always_inline]]' on statements}}
+      ^
+
+"Test_name.c", line 27: warning: attribute "always_inline" does not apply here
+    __attribute__((always_inline)) bar(); // expected-warning {{attribute is ignored on this statement as it only applies to functions; use '[[clang::always_inline]]' on statements}}
+                   ^
+
+"Test_name.c", line 16: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"Test_name.c", line 20: warning: label "label" was declared but never referenced
+    [[clang::always_inline]] label : x = 1;  // expected-warning {{'clang::always_inline' attribute only applies to functions and statements}}
+                             ^
+
+"Test_name.c", line 30: warning: attribute "clang::always_inline" does not apply here
+  [[clang::always_inline]] static int i = bar(); // expected-warning {{'clang::always_inline' attribute only applies to functions and statements}}
+    ^
+
+"Test_name.c", line 35: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] return foo<D-1>(x + 1);
+      ^
+
+"Test_name.c", line 48: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] non_dependent(x);
+      ^
+
+"Test_name.c", line 56: warning: attribute "clang::always_inline" does not apply here
+      [[clang::always_inline]] return non_dependent(x), baz<D-1>(x + 1);
+        ^
+
+"Test_name.c", line 71: warning: attribute "clang::always_inline" does not apply here
+    [[clang::always_inline]] return non_dependent(x) + (dependent<D>(x) + ...);
+      ^
+
+"Test_name.c", line 58: warning: statement is unreachable
+    return x;
+    ^
+          detected during:
+            instantiation of "int baz<D>(int) [with D=1]" at line 56
+            instantiation of "int baz<D>(int) [with D=2]" at line 56
+            instantiation of "int baz<D>(int) [with D=3]" at line 75
+
+"Test_name.c", line 58: warning: statement is unreachable
+    return x;
+    ^
+          detected during:
+            instantiation of "int baz<D>(int) [with D=2]" at line 56
+            instantiation of "int baz<D>(int) [with D=3]" at line 75
+
+"Test_name.c", line 58: warning: statement is unreachable
+    return x;
+    ^
+          detected during instantiation of "int baz<D>(int) [with D=3]" at line 75
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: error: expected an identifier
+    int i [[and::bitor, bar::xor_eq, compl::baz(1), bitand::xor_eq(2, 3)]]; // { dg-warning "ignored" }
+            ^
+
+"Test_name.c", line 7: error: expected an identifier
+    int i [[and::bitor, bar::xor_eq, compl::baz(1), bitand::xor_eq(2, 3)]]; // { dg-warning "ignored" }
+                             ^
+
+"Test_name.c", line 7: error: expected an identifier
+    int i [[and::bitor, bar::xor_eq, compl::baz(1), bitand::xor_eq(2, 3)]]; // { dg-warning "ignored" }
+                                     ^
+
+"Test_name.c", line 7: error: expected an identifier
+    int i [[and::bitor, bar::xor_eq, compl::baz(1), bitand::xor_eq(2, 3)]]; // { dg-warning "ignored" }
+                                                    ^
+
+"Test_name.c", line 8: warning: attribute namespace "using" is unrecognized
+    int j [[using, using::baz, bar::using, using::using (2)]];		  // { dg-warning "ignored" }
+                   ^
+
+"Test_name.c", line 8: warning: attribute namespace "bar" is unrecognized
+    int j [[using, using::baz, bar::using, using::using (2)]];		  // { dg-warning "ignored" }
+                               ^
+
+"Test_name.c", line 8: warning: attribute namespace "using" is unrecognized
+    int j [[using, using::baz, bar::using, using::using (2)]];		  // { dg-warning "ignored" }
+                                           ^
+
+4 errors detected in the compilation of "Test_name.c".

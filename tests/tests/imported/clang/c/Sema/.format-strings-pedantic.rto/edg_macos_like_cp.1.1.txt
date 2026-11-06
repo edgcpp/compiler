@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 21: warning: argument is incompatible with corresponding format string conversion (expected type "void *" but argument has type "nullptr_t")
+    printf("%p", nullptr);
+                 ^
+
+"Test_name.c", line 21: error: identifier "__nullptr" is undefined
+  printf("%p", __nullptr); return 0; 
+               ^
+
+1 error detected in the compilation of "Test_name.c".

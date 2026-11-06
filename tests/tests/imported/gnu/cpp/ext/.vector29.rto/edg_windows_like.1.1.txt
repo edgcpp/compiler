@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 28: warning: unknown attribute "vector_size"
+          char a __attribute__ ((vector_size (N)));
+                                 ^
+
+"Test_name.c", line 31: warning: unknown attribute "vector_size"
+          T b __attribute__ ((vector_size (N)));
+                              ^
+
+"Test_name.c", line 29: error: static assertion failed with "sizeof a == N"
+          ASSERT (sizeof a == N);
+          ^
+"Test_name.c", line 29: note: the final comparison was 1 == 16
+          ASSERT (sizeof a == N);
+          ^
+          detected during instantiation of "void B<T, N>::foo() [with T=int, N=16]" at line 53
+
+"Test_name.c", line 32: error: static assertion failed with "sizeof b == N"
+          ASSERT (sizeof b == N);
+          ^
+"Test_name.c", line 32: note: the final comparison was 4 == 16
+          ASSERT (sizeof b == N);
+          ^
+          detected during instantiation of "void B<T, N>::foo() [with T=int, N=16]" at line 53
+
+"Test_name.c", line 37: warning: unknown attribute "vector_size"
+          char c1 __attribute__ ((vector_size (VecSize)));
+                                  ^
+
+"Test_name.c", line 40: warning: unknown attribute "vector_size"
+          char c2 __attribute__ ((vector_size (A<N>::X)));
+                                  ^
+
+"Test_name.c", line 43: warning: unknown attribute "vector_size"
+          T d1 __attribute__ ((vector_size (VecSize)));
+                               ^
+
+"Test_name.c", line 46: warning: unknown attribute "vector_size"
+          T d2 __attribute__ ((vector_size (A<N>::X)));
+                               ^
+
+"Test_name.c", line 38: error: static assertion failed with "sizeof c1 == VecSize"
+          ASSERT (sizeof c1 == VecSize);
+          ^
+"Test_name.c", line 38: note: the final comparison was 1 == 16
+          ASSERT (sizeof c1 == VecSize);
+          ^
+          detected during instantiation of "void B<T, N>::bar() [with T=int, N=16]" at line 54
+
+"Test_name.c", line 41: error: static assertion failed with "sizeof c2 == A<N>::X"
+          ASSERT (sizeof c2 == A<N>::X);
+          ^
+"Test_name.c", line 41: note: the final comparison was 1 == 16
+          ASSERT (sizeof c2 == A<N>::X);
+          ^
+          detected during instantiation of "void B<T, N>::bar() [with T=int, N=16]" at line 54
+
+"Test_name.c", line 44: error: static assertion failed with "sizeof d1 == VecSize"
+          ASSERT (sizeof d1 == VecSize);
+          ^
+"Test_name.c", line 44: note: the final comparison was 4 == 16
+          ASSERT (sizeof d1 == VecSize);
+          ^
+          detected during instantiation of "void B<T, N>::bar() [with T=int, N=16]" at line 54
+
+"Test_name.c", line 47: error: static assertion failed with "sizeof d2 == A<N>::X"
+          ASSERT (sizeof d2 == A<N>::X);
+          ^
+"Test_name.c", line 47: note: the final comparison was 4 == 16
+          ASSERT (sizeof d2 == A<N>::X);
+          ^
+          detected during instantiation of "void B<T, N>::bar() [with T=int, N=16]" at line 54
+
+6 errors detected in the compilation of "Test_name.c".

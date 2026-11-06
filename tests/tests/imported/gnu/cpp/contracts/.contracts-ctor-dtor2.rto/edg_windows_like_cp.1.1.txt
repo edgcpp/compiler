@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 10: error: expected a ","
+    F0() [[ pre: x > 0 ]]; // { dg-error "invalid use of member" }
+               ^
+
+"Test_name.c", line 10: error: expected a "]"
+    F0() [[ pre: x > 0 ]]; // { dg-error "invalid use of member" }
+               ^
+
+"Test_name.c", line 11: error: expected a ","
+    ~F0() [[ post: x > 0 ]]; // { dg-error "invalid use of member" }
+                 ^
+
+"Test_name.c", line 11: error: expected a "]"
+    ~F0() [[ post: x > 0 ]]; // { dg-error "invalid use of member" }
+                 ^
+
+"Test_name.c", line 11: error: expected a ";"
+    ~F0() [[ post: x > 0 ]]; // { dg-error "invalid use of member" }
+                 ^
+
+"Test_name.c", line 10: error: expected a "(" or a "{"
+    F0() [[ pre: x > 0 ]]; // { dg-error "invalid use of member" }
+                   ^
+
+"Test_name.c", line 10: error: expected a "{"
+    F0() [[ pre: x > 0 ]]; // { dg-error "invalid use of member" }
+                         ^
+
+"Test_name.c", line 10: error: expected a "}"
+    F0() [[ pre: x > 0 ]]; // { dg-error "invalid use of member" }
+                         ^
+
+"Test_name.c", line 17: error: expected a ","
+    F1() [[ pre: this->x > 0 ]]; // { dg-error "may not be used" }
+               ^
+
+"Test_name.c", line 17: error: expected a "]"
+    F1() [[ pre: this->x > 0 ]]; // { dg-error "may not be used" }
+               ^
+
+"Test_name.c", line 18: error: expected a ","
+    ~F1() [[ post: this->x > 0 ]]; // { dg-error "may not be used" }
+                 ^
+
+"Test_name.c", line 18: error: expected a "]"
+    ~F1() [[ post: this->x > 0 ]]; // { dg-error "may not be used" }
+                 ^
+
+"Test_name.c", line 18: error: expected a ";"
+    ~F1() [[ post: this->x > 0 ]]; // { dg-error "may not be used" }
+                 ^
+
+"Test_name.c", line 17: error: expected an identifier
+    F1() [[ pre: this->x > 0 ]]; // { dg-error "may not be used" }
+                 ^
+
+"Test_name.c", line 17: error: expected a "{"
+    F1() [[ pre: this->x > 0 ]]; // { dg-error "may not be used" }
+                               ^
+
+"Test_name.c", line 17: error: expected a "}"
+    F1() [[ pre: this->x > 0 ]]; // { dg-error "may not be used" }
+                               ^
+
+"Test_name.c", line 25: error: expected a ","
+      [[ post ret: false ]] // { dg-error "does not return a value" }
+              ^
+
+"Test_name.c", line 25: error: expected a "]"
+      [[ post ret: false ]] // { dg-error "does not return a value" }
+                 ^
+
+"Test_name.c", line 29: error: expected a ","
+      [[ post r: false ]] // { dg-error "does not return a value" }
+              ^
+
+"Test_name.c", line 29: error: expected a "]"
+      [[ post r: false ]] // { dg-error "does not return a value" }
+               ^
+
+"Test_name.c", line 29: error: expected a ";"
+      [[ post r: false ]] // { dg-error "does not return a value" }
+               ^
+
+"Test_name.c", line 36: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"Test_name.c", line 25: error: expected an identifier
+      [[ post ret: false ]] // { dg-error "does not return a value" }
+                   ^
+
+22 errors detected in the compilation of "Test_name.c".

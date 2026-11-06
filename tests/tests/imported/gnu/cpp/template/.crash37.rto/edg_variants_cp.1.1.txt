@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 25: error: nonstandard form for taking the address of a member function
+     bla(coperator_stack::push3<helper>); // { dg-error "pointer to member" }
+         ^
+
+1 error detected in the compilation of "Test_name.c".

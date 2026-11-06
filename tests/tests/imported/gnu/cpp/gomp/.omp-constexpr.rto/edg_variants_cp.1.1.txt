@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: error: statement may not appear in a constexpr function
+    int a = 42;
+    ^
+
+"Test_name.c", line 11: error: statement may not appear in a constexpr function
+      a += i;
+      ^
+
+"Test_name.c", line 10: error: statement may not appear in a constexpr function
+    for (int i=0; i < 10; i++)
+    ^
+
+"Test_name.c", line 18: error: statement may not appear in a constexpr function
+    int a = 42;
+    ^
+
+"Test_name.c", line 19: warning: attribute namespace "omp" is unrecognized
+    [[omp::sequence(omp::directive(parallel),omp::directive(for))]]  /* { dg-error "OpenMP directives may not appear in 'constexpr' functions" }  */
+      ^
+
+"Test_name.c", line 21: error: statement may not appear in a constexpr function
+      a += i;
+      ^
+
+"Test_name.c", line 19: error: statement may not appear in a constexpr function
+    [[omp::sequence(omp::directive(parallel),omp::directive(for))]]  /* { dg-error "OpenMP directives may not appear in 'constexpr' functions" }  */
+    ^
+
+"Test_name.c", line 28: error: statement may not appear in a constexpr function
+    int a = 42;
+    ^
+
+"Test_name.c", line 36: warning: attribute namespace "omp" is unrecognized
+    int a [[omp::decl(allocate, align(128))]] = 42;  /* { dg-error "OpenMP directives may not appear in 'constexpr' functions" }  */
+            ^
+
+"Test_name.c", line 36: error: statement may not appear in a constexpr function
+    int a [[omp::decl(allocate, align(128))]] = 42;  /* { dg-error "OpenMP directives may not appear in 'constexpr' functions" }  */
+    ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+    static constexpr int a = f ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                             ^
+"Test_name.c", line 43: note: this call cannot be evaluated because the target function function "f" (declared at line 6) is not constexpr or not completely defined yet
+    static constexpr int a = f ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                               ^
+
+"Test_name.c", line 44: error: expression must have a constant value
+    static constexpr int b = g ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                             ^
+"Test_name.c", line 44: note: this call cannot be evaluated because the target function function "g" (declared at line 16) is not constexpr or not completely defined yet
+    static constexpr int b = g ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                               ^
+
+"Test_name.c", line 45: error: expression must have a constant value
+    static constexpr int c = h ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                             ^
+"Test_name.c", line 45: note: this call cannot be evaluated because the target function function "h" (declared at line 26) is not constexpr or not completely defined yet
+    static constexpr int c = h ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                               ^
+
+"Test_name.c", line 46: error: expression must have a constant value
+    static constexpr int d = i ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                             ^
+"Test_name.c", line 46: note: this call cannot be evaluated because the target function function "i" (declared at line 34) is not constexpr or not completely defined yet
+    static constexpr int d = i ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                               ^
+
+"Test_name.c", line 43: warning: variable "a" was declared but never referenced
+    static constexpr int a = f ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                         ^
+
+"Test_name.c", line 44: warning: variable "b" was declared but never referenced
+    static constexpr int b = g ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                         ^
+
+"Test_name.c", line 45: warning: variable "c" was declared but never referenced
+    static constexpr int c = h ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                         ^
+
+"Test_name.c", line 46: warning: variable "d" was declared but never referenced
+    static constexpr int d = i ();  // { dg-error "called in a constant expression" "" { target c++11_down } }
+                         ^
+
+12 errors detected in the compilation of "Test_name.c".

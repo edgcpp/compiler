@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 17: warning: use of "=" where "==" may have been intended
+    if (x = 7) {} // expected-warning {{using the result of an assignment as a condition without parentheses}} \
+        ^
+
+"Test_name.c", line 20: warning: use of "=" where "==" may have been intended
+    if ((x = 7)) {}
+        ^
+
+"Test_name.c", line 22: warning: use of "=" where "==" may have been intended
+    } while (x = 7); // expected-warning {{using the result of an assignment as a condition without parentheses}} \
+             ^
+
+"Test_name.c", line 26: warning: use of "=" where "==" may have been intended
+    } while ((x = 7));
+             ^
+
+"Test_name.c", line 27: warning: use of "=" where "==" may have been intended
+    while (x = 7) {} // expected-warning {{using the result of an assignment as a condition without parentheses}} \
+           ^
+
+"Test_name.c", line 31: warning: use of "=" where "==" may have been intended
+    while ((x = 7)) {}
+           ^
+
+"Test_name.c", line 32: warning: use of "=" where "==" may have been intended
+    for (; x = 7; ) {} // expected-warning {{using the result of an assignment as a condition without parentheses}} \
+           ^
+
+"Test_name.c", line 35: warning: use of "=" where "==" may have been intended
+    for (; (x = 7); ) {}
+           ^
+
+"Test_name.c", line 37: warning: variable "p" is used before its value is set
+    if (p = p) {} // expected-warning {{using the result of an assignment as a condition without parentheses}} \
+            ^
+

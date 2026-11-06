@@ -1,0 +1,187 @@
+fe_only -DTEST_NUMBER=2 --target linux_aarch64 -w --c++17 --clang_version 180100 Test_name.c
+"Test_name.c", line 12: error: template-dependent vector size is not allowed
+        __attribute__((neon_vector_type(I))) short s; // error
+                       ^
+
+"Test_name.c", line 18: error: invalid NEON vector element type "T"
+        __attribute__((neon_vector_type(4))) T s; // error
+                       ^
+
+"Test_name.c", line 18: error: a NEON vector or polyvector must be either 64 or 128 bits wide
+        __attribute__((neon_vector_type(4))) T s; // error
+                       ^
+
+"Test_name.c", line 35: error: invalid NEON vector element type "char"
+      { char __attribute__((neon_vector_type(8))) v; } // error
+                            ^
+
+"Test_name.c", line 36: error: invalid NEON vector element type "bool"
+      { bool __attribute__((neon_vector_type(8))) v; } // error
+                            ^
+
+"Test_name.c", line 37: error: invalid NEON vector element type "neon_underlying_types::E"
+      { E __attribute__((neon_vector_type(2))) v; }    // error
+                         ^
+
+"Test_name.c", line 44: error: invalid NEON vector element type "char"
+      { __edg_neon_vector_type__(char, 8) v; }  // error
+                                 ^
+
+"Test_name.c", line 45: error: invalid NEON vector element type "bool"
+      { __edg_neon_vector_type__(bool, 8) v; }  // error
+                                 ^
+
+"Test_name.c", line 46: error: invalid NEON vector element type "neon_underlying_types::E"
+      { __edg_neon_vector_type__(E, 2) v; }     // error
+                                 ^
+
+"Test_name.c", line 48: error: invalid NEON polyvector element type "char"
+      { __edg_neon_polyvector_type__(char, 8) v; }        // error
+                                     ^
+
+"Test_name.c", line 49: error: invalid NEON polyvector element type "signed char"
+      { __edg_neon_polyvector_type__(signed char, 8) v; } // error
+                                     ^
+
+"Test_name.c", line 50: error: invalid NEON polyvector element type "unsigned int"
+      { __edg_neon_polyvector_type__(unsigned int, 2) v; } // error
+                                     ^
+
+"Test_name.c", line 65: error: invalid number of tuple elements for scalable vector type
+      { __edg_scalable_vector_type__(short, 0) v; } // error
+                                     ^
+
+"Test_name.c", line 66: error: invalid number of tuple elements for scalable vector type
+      { __edg_scalable_vector_type__(short, 5) v; } // error
+                                     ^
+
+"Test_name.c", line 67: error: invalid number of tuple elements for scalable vector type
+      { __edg_scalable_vector_type__(bool, 3) v; }  // error
+                                     ^
+
+"Test_name.c", line 69: error: invalid scalable vector element type "scalable_vector_underlying_types::E"
+      { __edg_scalable_vector_type__(E, 1) v; }           // error
+                                     ^
+
+"Test_name.c", line 70: error: invalid scalable vector element type "scalable_vector_underlying_types::C"
+      { __edg_scalable_vector_type__(C, 1) v; }           // error
+                                     ^
+
+"Test_name.c", line 71: error: invalid scalable vector element type "char"
+      { __edg_scalable_vector_type__(char, 1) v; }        // error
+                                     ^
+
+"Test_name.c", line 72: error: invalid scalable vector element type "const short"
+      { __edg_scalable_vector_type__(const short, 1) v; } // error
+                                     ^
+
+"Test_name.c", line 73: error: invalid scalable vector element type "void"
+      { __edg_scalable_vector_type__(void, 1) v; }        // error
+                                     ^
+
+"Test_name.c", line 74: error: invalid scalable vector element type "char *"
+      { __edg_scalable_vector_type__(char *, 1) v; }      // error
+                                     ^
+
+"Test_name.c", line 78: error: expected an integer constant
+        __edg_scalable_vector_type__(short, i) v; // error
+                                            ^
+
+"Test_name.c", line 102: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+    auto sizeof_val = sizeof(__SVInt8_t);    // error
+                             ^
+
+"Test_name.c", line 103: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+    auto alignof_val = alignof(__SVInt8_t);  // error
+                       ^
+
+"Test_name.c", line 104: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+    alignas(__SVInt8_t) int int_val;         // error
+            ^
+
+"Test_name.c", line 106: error: a template parameter may not have a vector type
+    template<__SVInt8_t v>          // error
+             ^
+
+"Test_name.c", line 110: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+    __SVInt8_t g;                   // error
+               ^
+
+"Test_name.c", line 114: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      auto *p = new __SVInt8_t;     // error
+                    ^
+
+"Test_name.c", line 115: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      delete p;                     // error
+             ^
+
+"Test_name.c", line 120: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      __SVInt8_t m;                 // error
+                 ^
+
+"Test_name.c", line 125: error: an object of the sizeless type "__edg_scalable_vector_type__(signed char, 1)" cannot be value-initialized
+      __SVInt8_t v = { };           // error
+                     ^
+
+"Test_name.c", line 130: error: sizeless type "__edg_scalable_vector_type__(signed char, 1)" is not allowed
+      __SVInt8_t arr[2];            // error
+                 ^
+
+"Test_name.c", line 135: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      v + 0;                        // error
+      ^
+
+"Test_name.c", line 136: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      v + 1;                        // error
+      ^
+
+"Test_name.c", line 137: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      0 + v;                        // error
+          ^
+
+"Test_name.c", line 138: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      1 + v;                        // error
+          ^
+
+"Test_name.c", line 139: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      v[1];                         // error
+      ^
+
+"Test_name.c", line 140: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      v[0];                         // error
+      ^
+
+"Test_name.c", line 147: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      [v] () { };                   // error
+       ^
+
+"Test_name.c", line 148: error: sizeless type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)") is not allowed
+      [c = v] () { };               // error
+       ^
+
+"Test_name.c", line 151: error: nonmember operator requires a parameter with class or enum type
+    void operator +(__SVInt8_t);    // error
+         ^
+
+"Test_name.c", line 155: error: expression must have arithmetic, unscoped enum, or pointer type but has type "__SVInt8_t" (aka "__edg_scalable_vector_type__(signed char, 1)")
+      v + 1;                        // error
+      ^
+
+"Test_name.c", line 156: error: expression must have arithmetic or unscoped enum type
+      +v;                           // error
+       ^
+
+"Test_name.c", line 163: error: invalid NEON vector element type "<something>[2]"
+    unsigned short arr[2] __attribute__((neon_vector_type(4))); // error
+                                         ^
+
+"Test_name.c", line 163: error: a NEON vector or polyvector must be either 64 or 128 bits wide
+    unsigned short arr[2] __attribute__((neon_vector_type(4))); // error
+                                         ^
+
+"Test_name.c", line 12: error: a NEON vector or polyvector must be either 64 or 128 bits wide
+        __attribute__((neon_vector_type(I))) short s; // error
+                       ^
+          detected during instantiation of "void dependent_vector_types::g<I,T>() [with I=0, T=short]" at line 23
+
+46 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,21 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 28: remark: declaration hides variable "bp" (declared at line 12)
+    BB *bp = new BB;
+        ^
+
+"Test_name.c", line 29: remark: declaration hides variable "cp" (declared at line 18)
+    CC::CCN *cp = new CC::CCN;
+             ^
+
+"Test_name.c", line 28: remark: variable "bp" was declared but never referenced
+    BB *bp = new BB;
+        ^
+
+"Test_name.c", line 29: remark: variable "cp" was declared but never referenced
+    CC::CCN *cp = new CC::CCN;
+             ^
+
+"Test_name.c", line 30: remark: extra ";" ignored
+  };
+   ^
+

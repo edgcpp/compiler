@@ -1,0 +1,180 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 7: error: invalid storage class for a class member
+    auto int errx; // expected-error {{storage class specified for a member declaration}}
+    ^
+
+"Test_name.c", line 13: error: invalid storage class for a class member
+    register int erry; // expected-error {{storage class specified for a member declaration}}
+    ^
+
+"Test_name.c", line 14: error: invalid storage class for a class member
+    extern int errz; // expected-error {{storage class specified for a member declaration}}
+    ^
+
+"Test_name.c", line 35: error: expected a ";"
+    typedef int E : 1; // expected-error {{typedef member 'E' cannot be a bit-field}}
+                  ^
+
+"Test_name.c", line 36: error: expected a ";"
+    static int sb : 1; // expected-error {{static member 'sb' cannot be a bit-field}}
+                  ^
+
+"Test_name.c", line 42: error: expected a ";"
+    func btm : 1; // expected-error {{bit-field 'btm' has non-integral type}}
+             ^
+
+"Test_name.c", line 43: error: invalid type for a bit field
+    NestedC bc : 1; // expected-error {{bit-field 'bc' has non-integral type}}
+    ^
+
+"Test_name.c", line 47: warning: field initializers are a C++11 feature
+    int i = 0;
+          ^
+
+"Test_name.c", line 51: error: a member with an in-class initializer must be const
+    static int si = 0; // expected-error {{non-const static data member must be initialized out of line}}
+                  ^
+
+"Test_name.c", line 52: error: a member of type "const C::NestedC" cannot have an in-class initializer
+    static const NestedC ci = 0; // expected-error {{static data member of type 'const NestedC' must be initialized out of line}}
+                            ^
+
+"Test_name.c", line 53: error: expression must have a constant value
+    static const int nci = vs; // expected-error {{in-class initializer for static data member is not a constant expression}} \
+                           ^
+
+"Test_name.c", line 62: warning: integer operation result is out of range
+    static const int overflow = 1000000*1000000; // cxx11-error {{in-class initializer for static data member is not a constant expression}} \
+                                       ^
+
+"Test_name.c", line 65: warning: shift count is too large
+    static const int overflow_shift = 1<<32; // cxx11-error {{in-class initializer for static data member is not a constant expression}} \
+                                         ^
+
+"Test_name.c", line 67: warning: shift count is too large
+    static const int overflow_shift2 = 1>>32; // cxx11-error {{in-class initializer for static data member is not a constant expression}}\
+                                          ^
+
+"Test_name.c", line 69: error: shift count is negative
+    static const int overflow_shift3 = 1<<-1; // cxx11-error {{in-class initializer for static data member is not a constant expression}} \
+                                          ^
+
+"Test_name.c", line 71: error: shift count is negative
+    static const int overflow_shift4 = 1<<-1; // cxx11-error {{in-class initializer for static data member is not a constant expression}} \
+                                          ^
+
+"Test_name.c", line 90: error: "virtual" is not allowed
+    virtual int viv; // expected-error {{'virtual' can only appear on non-static member functions}}
+    ^
+
+"Test_name.c", line 91: error: only nonstatic member functions may be virtual
+    virtual static int vsif(); // expected-error {{'virtual' can only appear on non-static member functions}}
+    ^
+
+"Test_name.c", line 99: warning: declaring a reference with "mutable" is nonstandard
+    mutable int &mir; // expected-error {{'mutable' cannot be applied to references}}
+    ^
+
+"Test_name.c", line 100: error: mutable is not allowed
+    mutable void mfn(); // expected-error {{'mutable' cannot be applied to functions}}
+    ^
+
+"Test_name.c", line 101: error: mutable is not allowed
+    mutable const int mci; // expected-error {{'mutable' and 'const' cannot be mixed}}
+    ^
+
+"Test_name.c", line 5: warning: class "C" defines no constructor to initialize the following:
+            reference member "C::mir"
+            const member "C::mci"
+  class C {
+        ^
+
+"Test_name.c", line 18: error: "this" may only be used inside a nonstatic member function
+      this->x = 0; // expected-error {{invalid use of 'this' outside of a non-static member function}}
+      ^
+
+"Test_name.c", line 19: error: a nonstatic member reference must be relative to a specific object
+      x = 0; // expected-error {{invalid use of member 'x' in static member function}}
+      ^
+
+"Test_name.c", line 27: error: a nonstatic member reference must be relative to a specific object
+        x = 0; // expected-error {{use of non-static data member 'x' of 'C' from nested type 'NestedC'}}
+        ^
+
+"Test_name.c", line 29: error: a nonstatic member reference must be relative to a specific object
+        m(); // expected-error {{call to non-static member function 'm' of 'C' from nested type 'NestedC'}}
+        ^
+
+"Test_name.c", line 80: error: expression must be a modifiable lvalue
+      this = 0; // expected-error {{expression is not assignable}}
+      ^
+
+"Test_name.c", line 126: error: static_cast cannot cast away const or other type qualifiers
+    (void)static_cast<int*>(&c3.i); // expected-error {{static_cast from 'const int *' to 'int *' is not allowed}}
+          ^
+
+"Test_name.c", line 132: error: mutable is not allowed
+  mutable int gi; // expected-error {{'mutable' can only be applied to member variables}}
+  ^
+
+"Test_name.c", line 133: error: mutable is not allowed
+  mutable void gfn(); // expected-error {{illegal storage class on function}}
+  ^
+
+"Test_name.c", line 136: error: mutable is not allowed
+    mutable int ml; // expected-error {{'mutable' can only be applied to member variables}}
+    ^
+
+"Test_name.c", line 140: warning: declaration does not declare anything
+    C4; // expected-warning {{declaration does not declare anything}}
+    ^
+
+"Test_name.c", line 136: warning: variable "ml" was declared but never referenced
+    mutable int ml; // expected-error {{'mutable' can only be applied to member variables}}
+                ^
+
+"Test_name.c", line 145: error: "f" has already been declared in the current scope
+    int f; // expected-error{{duplicate member 'f'}}
+        ^
+
+"Test_name.c", line 152: warning: qualified name is not allowed in member declaration
+    void S::f() {} // expected-error {{extra qualification on member}} expected-error {{class member cannot be redeclared}}
+         ^
+
+"Test_name.c", line 152: error: invalid redeclaration of member function "S::f()" (declared at line 151)
+    void S::f() {} // expected-error {{extra qualification on member}} expected-error {{class member cannot be redeclared}}
+            ^
+
+"Test_name.c", line 153: error: invalid redeclaration of member function "S::f()" (declared at line 151)
+    void f() {} // expected-error {{class member cannot be redeclared}}
+         ^
+
+"Test_name.c", line 159: error: bogus is not a template
+      bogus<foo<T1,T2> > // expected-error {{no template named 'bogus'}}
+      ^
+
+"Test_name.c", line 162: error: identifier "unknown" is undefined
+    template<> struct foo<unknown,unknown> { // expected-error {{undeclared identifier 'unknown'}}
+                          ^
+
+"Test_name.c", line 162: error: identifier "unknown" is undefined
+    template<> struct foo<unknown,unknown> { // expected-error {{undeclared identifier 'unknown'}}
+                                  ^
+
+"Test_name.c", line 197: error: expected a ";"
+  }
+  ^
+
+"Test_name.c", line 208: error: function call is not allowed in a constant expression
+      static const float y = foo(); // expected-warning {{in-class initializer for static data member of type 'const float' is a GNU extension}} expected-error {{in-class initializer for static data member is not a constant expression}}
+                             ^
+
+"Test_name.c", line 224: error: a nonstatic member reference must be relative to a specific object
+      S::c; // expected-error {{invalid use of non-static data member}}
+         ^
+
+"Test_name.c", line 229: error: identifier "PR9989_Member" is undefined
+    static int const PR9989_Member = sizeof PR9989_Member; 
+                                            ^
+
+35 errors detected in the compilation of "Test_name.c".

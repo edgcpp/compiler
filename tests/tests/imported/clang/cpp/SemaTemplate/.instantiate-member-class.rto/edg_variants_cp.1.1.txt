@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 23: error: identifier "type" is undefined
+        typedef type field; // expected-error{{no member 'type' in 'PR8965::Y<int>'; it has not yet been instantiated}}
+                ^
+          detected during:
+            instantiation of class "PR8965::Y<T>::Inner [with T=int]" at line 12
+            instantiation of class "PR8965::X<T> [with T=PR8965::Y<int>::Inner]" at line 19
+            instantiation of class "PR8965::Y<T> [with T=int]" at line 27
+
+"Test_name.c", line 44: error: overloaded function "X<T>::X [with T=int]" is not a type name
+  X<int>::X *xi; // expected-error{{qualified reference to 'X' is a constructor name rather than a type}}
+  ^
+
+"Test_name.c", line 45: error: overloaded function "X<T>::X [with T=float]" is not a type name
+  X<float>::X *xf; // expected-error{{qualified reference to 'X' is a constructor name rather than a type}}
+  ^
+
+"Test_name.c", line 48: error: a value of type "X<float>::C *" cannot be assigned to an entity of type "X<int>::C *"
+    c1 = c2; // expected-error{{incompatible pointer types assigning to 'X<int>::C *' from 'X<float>::C *'}}
+       ^
+
+"Test_name.c", line 58: error: pointer or reference to incomplete type "X<float>::D::F" is not allowed
+    f->foo(); // expected-error{{implicit instantiation of undefined member 'X<float>::D::F'}}
+    ^
+
+"Test_name.c", line 36: error: reference to void is not allowed
+      struct E { T &bar(); }; // expected-error{{cannot form a reference to 'void'}}
+                   ^
+          detected during instantiation of class "X<T>::D::E [with T=void]" at line 65
+
+"Test_name.c", line 113: warning: alias declarations are a C++11 feature
+      using S = struct U {
+            ^
+
+"Test_name.c", line 132: warning: variable "ptr" was declared but never referenced
+        struct C { C() { int *ptr = I; } };
+                              ^
+
+"Test_name.c", line 145: warning: variable "member" was declared but never referenced
+      int A<N+1>::B::C::*member = 0;
+                         ^
+
+"Test_name.c", line 132: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+        struct C { C() { int *ptr = I; } };
+                                    ^
+          detected during:
+            instantiation of "rdar10397846::A<I>::B::C::C() [with I=1]" at line 144
+            instantiation of "void rdar10397846::foo<N>() [with N=1]" at line 151
+
+7 errors detected in the compilation of "Test_name.c".

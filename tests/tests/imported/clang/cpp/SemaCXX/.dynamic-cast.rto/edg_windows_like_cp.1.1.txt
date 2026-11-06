@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 27: error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+    (void)dynamic_cast<A>((A*)0); // expected-error {{invalid target type 'A' for dynamic_cast; target type must be a reference or pointer type to a defined class}}
+                       ^
+
+"Test_name.c", line 29: error: the operand of a pointer dynamic_cast must be a pointer to a complete class type
+    (void)dynamic_cast<A*>(0); // expected-error {{cannot use dynamic_cast to convert from 'int' to 'A *'}}
+                           ^
+
+"Test_name.c", line 31: error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+    (void)dynamic_cast<int*>((A*)0); // expected-error {{'int' is not a class type}}
+                       ^
+
+"Test_name.c", line 33: error: the operand of a pointer dynamic_cast must be a pointer to a complete class type
+    (void)dynamic_cast<A*>((int*)0); // expected-error {{'int' is not a class type}}
+                           ^
+
+"Test_name.c", line 35: error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+    (void)dynamic_cast<int&>(*((A*)0)); // expected-error {{'int' is not a class type}}
+                       ^
+
+"Test_name.c", line 37: error: the operand of a reference dynamic_cast must be an lvalue of a complete class type
+    (void)dynamic_cast<A&>(*((int*)0)); // expected-error {{'int' is not a class type}}
+                           ^
+
+"Test_name.c", line 39: error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+    (void)dynamic_cast<Incomplete*>((A*)0); // expected-error {{'Incomplete' is an incomplete type}}
+                       ^
+
+"Test_name.c", line 41: error: the operand of a pointer dynamic_cast must be a pointer to a complete class type
+    (void)dynamic_cast<A*>((Incomplete*)0); // expected-error {{'Incomplete' is an incomplete type}}
+                           ^
+
+"Test_name.c", line 43: error: the operand of a reference dynamic_cast must be an lvalue of a complete class type
+    (void)dynamic_cast<A&>(A()); // expected-error {{dynamic_cast from rvalue to reference type 'A &'}}
+                           ^
+
+"Test_name.c", line 64: error: base class "A" is ambiguous
+    (void)dynamic_cast<A*>((F*)0); // expected-error {{ambiguous conversion from derived class 'F' to base class 'A':\n    struct F -> B -> A\n    struct F -> E -> A}}
+                           ^
+
+"Test_name.c", line 65: error: base class "A" is ambiguous
+    (void)dynamic_cast<A&>(*((F*)0)); // expected-error {{ambiguous conversion from derived class 'F' to base class 'A':\n    struct F -> B -> A\n    struct F -> E -> A}}
+                           ^
+
+"Test_name.c", line 77: error: the operand of a runtime dynamic_cast must have a polymorphic class type
+    (void)dynamic_cast<PolyDerived&>(*((A*)0)); // expected-error {{'A' is not polymorphic}}
+                                     ^
+
+12 errors detected in the compilation of "Test_name.c".

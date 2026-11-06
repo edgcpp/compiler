@@ -1,0 +1,113 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 47: warning: enumerated type mixed with another type
+    enum flag e = 0; // no-warning
+                  ^
+
+"Test_name.c", line 48: warning: enumerated type mixed with another type
+    e = 0x1; // no-warning
+      ^
+
+"Test_name.c", line 49: warning: enumerated type mixed with another type
+    e = 0x3; // no-warning
+      ^
+
+"Test_name.c", line 50: warning: enumerated type mixed with another type
+    e = 0xa; // no-warning
+      ^
+
+"Test_name.c", line 51: warning: enumerated type mixed with another type
+    e = 0x4; // expected-warning {{integer constant not in range of enumerated type}}
+      ^
+
+"Test_name.c", line 52: warning: enumerated type mixed with another type
+    e = 0xf; // expected-warning {{integer constant not in range of enumerated type}}
+      ^
+
+"Test_name.c", line 53: warning: enumerated type mixed with another type
+    e = ~0; // no-warning
+      ^
+
+"Test_name.c", line 54: warning: enumerated type mixed with another type
+    e = ~0x1; // no-warning
+      ^
+
+"Test_name.c", line 55: warning: enumerated type mixed with another type
+    e = ~0x2; // no-warning
+      ^
+
+"Test_name.c", line 56: warning: enumerated type mixed with another type
+    e = ~0x3; // no-warning
+      ^
+
+"Test_name.c", line 57: warning: enumerated type mixed with another type
+    e = ~0x4; // expected-warning {{integer constant not in range of enumerated type}}
+      ^
+
+"Test_name.c", line 60: warning: enumerated type mixed with another type
+      case 0: break; // no-warning
+           ^
+
+"Test_name.c", line 61: warning: enumerated type mixed with another type
+      case 0x1: break; // no-warning
+           ^
+
+"Test_name.c", line 62: warning: enumerated type mixed with another type
+      case 0x3: break; // no-warning
+           ^
+
+"Test_name.c", line 63: warning: enumerated type mixed with another type
+      case 0xa: break; // no-warning
+           ^
+
+"Test_name.c", line 64: warning: enumerated type mixed with another type
+      case 0x4: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 65: warning: enumerated type mixed with another type
+      case 0xf: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 66: warning: enumerated type mixed with another type
+      case ~0: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 67: warning: enumerated type mixed with another type
+      case ~0x1: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 68: warning: enumerated type mixed with another type
+      case ~0x2: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 69: warning: enumerated type mixed with another type
+      case ~0x3: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 70: warning: enumerated type mixed with another type
+      case ~0x4: break; // expected-warning {{case value not in enumerated type}}
+           ^
+
+"Test_name.c", line 74: warning: enumerated type mixed with another type
+    enum flag2 f = ~0x1; // no-warning
+                   ^
+
+"Test_name.c", line 75: warning: enumerated type mixed with another type
+    f = ~0x1u; // no-warning
+      ^
+
+"Test_name.c", line 77: warning: enumerated type mixed with another type
+    enum flag4 h = ~0x1; // no-warning
+                   ^
+
+"Test_name.c", line 78: warning: enumerated type mixed with another type
+    h = ~0x1u; // expected-warning {{integer constant not in range of enumerated type}}
+      ^
+
+"Test_name.c", line 74: warning: variable "f" was set but never used
+    enum flag2 f = ~0x1; // no-warning
+               ^
+
+"Test_name.c", line 77: warning: variable "h" was set but never used
+    enum flag4 h = ~0x1; // no-warning
+               ^
+

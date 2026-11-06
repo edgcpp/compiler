@@ -1,0 +1,45 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics static-1a.cc Test_name.c
+static-1a.cc:
+"static-1a.cc", line 9: error: explicit type is missing ("int" assumed)
+    static __thread int i;
+           ^
+
+"static-1a.cc", line 9: error: expected a ";"
+    static __thread int i;
+                    ^
+
+"static-1a.cc", line 15: error: class "A" has no member "i"
+    if (A::i != 8)
+           ^
+
+"static-1a.cc", line 18: error: class "A" has no member "i"
+    A::i = 17;
+       ^
+
+4 errors detected in the compilation of "static-1a.cc".
+Test_name.c:
+"Test_name.c", line 14: error: explicit type is missing ("int" assumed)
+    static __thread int i;
+           ^
+
+"Test_name.c", line 14: error: expected a ";"
+    static __thread int i;
+                    ^
+
+"Test_name.c", line 17: error: this declaration has no storage class or type specifier
+  __thread int A::i = 8;
+  ^
+
+"Test_name.c", line 17: error: expected a ";"
+  __thread int A::i = 8;
+           ^
+
+"Test_name.c", line 22: error: class "A" has no member "i"
+    if (A::i != 8)
+           ^
+
+"Test_name.c", line 28: error: class "A" has no member "i"
+    if (A::i != 17)
+           ^
+
+6 errors detected in the compilation of "Test_name.c".

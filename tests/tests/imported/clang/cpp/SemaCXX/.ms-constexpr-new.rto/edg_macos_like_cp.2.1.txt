@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 18: error: expression must have a constant value
+  static_assert(check_std_construct_at());
+                ^
+"Test_name.c", line 13: note: a placement new-expression cannot be constant-evaluated
+      [[msvc::constexpr]] return ::new (p) int(v); // unsupported-warning {{unknown attribute 'msvc::constexpr' ignored}}
+                                 ^
+"Test_name.c", line 17: note: called from:
+  constexpr bool check_std_construct_at() { int x; return *std::construct_at(&x, 42) == 42; }
+                                                                            ^
+
+"Test_name.c", line 24: error: expression must have a constant value
+  static_assert(check_construct_at());                                                        // unsupported-error {{static assertion expression is not an integral constant expression}}\
+                ^
+"Test_name.c", line 20: note: a placement new-expression cannot be constant-evaluated
+  constexpr int* construct_at(int* p, int v) { [[msvc::constexpr]] return ::new (p) int(v); } // unsupported-error {{constexpr function never produces a constant expression}} \
+                                                                          ^
+"Test_name.c", line 23: note: called from:
+  constexpr bool check_construct_at() { int x; return *construct_at(&x, 42) == 42; }          // unsupported-note {{in call to 'construct_at(&x, 42)'}}
+                                                                   ^
+
+2 errors detected in the compilation of "Test_name.c".

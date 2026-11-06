@@ -1,0 +1,202 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 21: error: conversion function must be a nonstatic member function
+    static operator short(); // expected-error{{conversion function must be a non-static member function}}
+           ^
+
+"Test_name.c", line 18: error: identifier "operator float" is undefined
+      return operator float(); // expected-error{{use of undeclared 'operator float'}}
+             ^
+
+"Test_name.c", line 24: error: conversion function must be a nonstatic member function
+  operator int(); // expected-error{{conversion function must be a non-static member function}}
+  ^
+
+"Test_name.c", line 26: error: conversion function must be a nonstatic member function
+  operator int; // expected-error{{'operator int' cannot be the name of a variable or data member}}
+  ^
+
+"Test_name.c", line 26: error: an operator name must be declared as a function
+  operator int; // expected-error{{'operator int' cannot be the name of a variable or data member}}
+              ^
+
+"Test_name.c", line 33: error: return type may not be specified on a conversion function
+    void operator bool(int, ...) const; // expected-error{{conversion function cannot have a return type}} \
+    ^
+
+"Test_name.c", line 33: error: no arguments allowed on user-defined conversion
+    void operator bool(int, ...) const; // expected-error{{conversion function cannot have a return type}} \
+         ^
+
+"Test_name.c", line 36: error: default argument is not allowed
+    operator bool(int a = 4, int b = 6) const; // expected-error{{conversion function cannot have any parameters}}
+                        ^
+
+"Test_name.c", line 36: error: default argument is not allowed
+    operator bool(int a = 4, int b = 6) const; // expected-error{{conversion function cannot have any parameters}}
+                                   ^
+
+"Test_name.c", line 36: error: no arguments allowed on user-defined conversion
+    operator bool(int a = 4, int b = 6) const; // expected-error{{conversion function cannot have any parameters}}
+    ^
+
+"Test_name.c", line 39: error: no arguments allowed on user-defined conversion
+    operator float(...) const;  // expected-error{{conversion function cannot be variadic}}
+    ^
+
+"Test_name.c", line 42: error: function returning function is not allowed
+    operator func_type(); // expected-error{{conversion function cannot convert to a function type}}
+    ^
+
+"Test_name.c", line 43: error: function returning array is not allowed
+    operator array_type(); // expected-error{{conversion function cannot convert to an array type}}
+    ^
+
+"Test_name.c", line 54: error: invalid redeclaration of member function "Z::operator int()" (declared at line 51)
+    operator INT();  // expected-error{{conversion function cannot be redeclared}}
+    ^
+
+"Test_name.c", line 55: error: invalid redeclaration of member function "Z::operator int **()" (declared at line 52)
+    operator INT_PTR*(); // expected-error{{conversion function cannot be redeclared}}
+    ^
+
+"Test_name.c", line 63: warning: "B::operator A &() const" will not be called for implicit or explicit conversions
+    operator A&() const; // expected-warning{{conversion function converting 'B' to its base class 'A' will never be used}}
+    ^
+
+"Test_name.c", line 64: warning: type qualifier on return type is meaningless
+    operator const void() const; // expected-warning{{conversion function converting 'B' to 'const void' will never be used}}
+             ^
+
+"Test_name.c", line 64: warning: "B::operator const void() const" will not be called for implicit or explicit conversions
+    operator const void() const; // expected-warning{{conversion function converting 'B' to 'const void' will never be used}}
+    ^
+
+"Test_name.c", line 65: warning: "B::operator const B()" will not be called for implicit or explicit conversions
+    operator const B(); // expected-warning{{conversion function converting 'B' to itself will never be used}}
+    ^
+
+"Test_name.c", line 77: warning: "DerivedA::operator BaseA &()" will not be called for implicit or explicit conversions
+    virtual operator BaseA &();    // OK. Overrides BaseB::operatorBaseA&()
+            ^
+
+"Test_name.c", line 78: warning: "DerivedA::operator DerivedA &()" will not be called for implicit or explicit conversions
+    virtual operator DerivedA &(); // OK. Overrides BaseB::operatorDerivedA&()
+            ^
+
+"Test_name.c", line 82: warning: "DerivedB::operator DerivedB &()" will not be called for implicit or explicit conversions
+    virtual operator DerivedB &(); // expected-warning{{conversion function converting 'DerivedB' to itself will never be used}}
+            ^
+
+"Test_name.c", line 83: warning: "DerivedB::operator BaseA &()" will not be called for implicit or explicit conversions
+    virtual operator BaseA &();    // expected-warning{{conversion function converting 'DerivedB' to its base class 'BaseA' will never be used}}
+            ^
+
+"Test_name.c", line 95: error: more than one user-defined conversion from "Flip" to "Flop" applies:
+            function "Flip::operator Flop() const" (declared at line 93)
+            function "Flop::Flop(const Flip &)" (declared at line 90)
+  Flop flop = Flip(); // expected-error {{conversion from 'Flip' to 'Flop' is ambiguous}}
+              ^
+
+"Test_name.c", line 120: error: more than one conversion function from "Yb" to a built-in type applies:
+            function "Yb::operator char()" (declared at line 116)
+            function "XB::operator int()" (declared at line 111)
+    if (a) { } // expected-error {{conversion from 'Yb' to 'bool' is ambiguous}}
+        ^
+
+"Test_name.c", line 185: error: initial value of reference to non-const must be an lvalue
+      A<float, float> &af = E(); // expected-error{{no viable conversion}}
+                            ^
+
+"Test_name.c", line 194: error: pointer to reference is not allowed
+      * // expected-error{{'operator type-parameter-0-0 *' declared as a pointer to a reference of type 'int &'}}
+      ^
+          detected during instantiation of class "source_locations::E2<T> [with T=int &]" at line 198
+
+"Test_name.c", line 240: error: no suitable user-defined conversion from "smart_ptr::Y" to "smart_ptr::X" exists
+      X x = make_Y(); // expected-error{{no viable conversion from 'Y' to 'X'}}
+            ^
+
+"Test_name.c", line 256: warning: a class type that is not trivially copyable passed through ellipsis
+    Any any = Other();
+              ^
+
+"Test_name.c", line 295: error: no instance of constructor "PR7055::Y::Y" matches the argument list
+            argument types are: (PR7055::auto_ptr)
+    Y f2(foo());
+         ^
+"Test_name.c", line 291: note: function "PR7055::Y::Y(const PR7055::Y &)" does not match because argument #1 does not match parameter
+    struct Y {
+           ^
+"Test_name.c", line 291: note: function "PR7055::Y::Y(PR7055::Y &&)" does not match because argument #1 does not match parameter
+    struct Y {
+           ^
+"Test_name.c", line 292: note: function "PR7055::Y::Y(PR7055::X)" does not match because argument #1 does not match parameter
+      Y(X);
+      ^
+
+"Test_name.c", line 353: error: base class "rdar8018274::Base" is ambiguous
+      int i = ud; // expected-error{{ambiguous conversion from derived class 'UeberDerived' to base class 'rdar8018274::Base'}}
+              ^
+
+"Test_name.c", line 387: warning: "PR8065::Container<T>::operator PR8065::Container<int>() [with T=int]" will not be called for implicit or explicit conversions
+      operator X(void) { return X(); }
+      ^
+          detected during instantiation of class "PR8065::Container<T> [with T=int]" at line 390
+
+"Test_name.c", line 412: warning: variable "i" is used before its value is set
+        ar[0]=*i;
+               ^
+
+"Test_name.c", line 455: error: forward declaration of enum type is nonstandard
+      operator enum E { e } (); // expected-error {{'PR18234::A::E' cannot be defined in a type specifier}}
+                    ^
+
+"Test_name.c", line 455: error: an operator name must be declared as a function
+      operator enum E { e } (); // expected-error {{'PR18234::A::E' cannot be defined in a type specifier}}
+      ^
+
+"Test_name.c", line 455: error: expected a ";"
+      operator enum E { e } (); // expected-error {{'PR18234::A::E' cannot be defined in a type specifier}}
+                      ^
+
+"Test_name.c", line 456: error: an operator name must be declared as a function
+      operator struct S { int n; } (); // expected-error {{'PR18234::A::S' cannot be defined in a type specifier}}
+      ^
+
+"Test_name.c", line 456: error: expected a ";"
+      operator struct S { int n; } (); // expected-error {{'PR18234::A::S' cannot be defined in a type specifier}}
+                        ^
+
+"Test_name.c", line 462: error: class "PR18234::A" has no member "S"
+    A::S s = a; // expected-error {{no viable conversion from 'struct A' to 'A::S'}}
+       ^
+
+"Test_name.c", line 463: error: class "PR18234::A" has no member "E"
+    A::E e = a; // expected-note {{'e' declared here}}
+       ^
+
+"Test_name.c", line 464: error: class "PR18234::A" has no member "e"
+    bool k1 = e == A::e; // expected-error {{no member named 'e'}}
+                      ^
+
+"Test_name.c", line 470: error: return type may not be specified on a conversion function
+    const operator int(); // expected-error {{cannot specify any part of a return type in the declaration of a conversion function; put the complete type after 'operator'}}
+    ^
+
+"Test_name.c", line 471: error: return type may not be specified on a conversion function
+    const operator int() const; // expected-error {{cannot specify any part of a return type}}
+    ^
+
+"Test_name.c", line 472: error: return type may not be specified on a conversion function
+    volatile const operator int(); // expected-error {{cannot specify any part of a return type}}
+    ^
+
+"Test_name.c", line 472: error: invalid redeclaration of member function "PR30595::S::operator int()" (declared at line 470)
+    volatile const operator int(); // expected-error {{cannot specify any part of a return type}}
+                   ^
+
+"Test_name.c", line 474: warning: type qualifier on return type is meaningless
+    operator const int() const;
+             ^
+
+34 errors detected in the compilation of "Test_name.c".

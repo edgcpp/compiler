@@ -1,0 +1,6 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: Test_name.o: in function `T1 &std::valarray<T1>::operator [](unsigned long) [with T1=long long]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `T1 &std::valarray<T1>::operator [](unsigned long) [with T1=std::valarray<long long>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+collect2: error: ld returned 1 exit status

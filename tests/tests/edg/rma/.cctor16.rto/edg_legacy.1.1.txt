@@ -1,0 +1,28 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 11: remark: function "B::B()" cannot be inlined
+      B() { }
+      ^
+
+"Test_name.c", line 12: remark: function "B::B(const B &)" cannot be inlined
+      B( const B& ) { printf("in cctor (#1)\n"); }     // #1
+      ^
+
+"Test_name.c", line 13: remark: function "B::B(const D &)" cannot be inlined
+      B( const D& ) { printf("in non-cctor (#2)\n"); } // #2
+      ^
+
+"Test_name.c", line 16: remark: function "D::D()" cannot be inlined
+  class D: public B {
+        ^
+          detected during implicit generation of "D::D()" at line 17
+
+"Test_name.c", line 16: remark: function "D::D(const D &)" cannot be inlined
+  class D: public B {
+        ^
+          detected during implicit generation of "D::D(const D &)" at line 21
+
+"Test_name.c", line 39: error: return type "int" omitted in declaration of function "main"
+  main() {
+  ^
+
+1 error detected in the compilation of "Test_name.c".

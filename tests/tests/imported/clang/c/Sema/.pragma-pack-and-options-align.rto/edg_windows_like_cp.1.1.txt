@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 19: error: the size of an array must be greater than zero
+  extern int a[sizeof(struct s1) == 8 ? 1 : -1];
+               ^
+
+"Test_name.c", line 27: error: the size of an array must be greater than zero
+  extern int a[sizeof(struct s1_1) == 8 ? 1 : -1];
+               ^
+
+"Test_name.c", line 34: error: the size of an array must be greater than zero
+  extern int a[sizeof(struct s2) == 5 ? 1 : -1];
+               ^
+
+"Test_name.c", line 35: warning: empty pack alignment stack
+  #pragma pack(pop)
+               ^
+
+"Test_name.c", line 51: error: the size of an array must be greater than zero
+  extern int a[sizeof(struct s4) == 8 ? 1 : -1];
+               ^
+
+"Test_name.c", line 54: warning: empty pack alignment stack
+  /* expected-warning {{#pragma pack(pop, ...) failed: stack empty}} */ #pragma pack(pop)
+                                                                                     ^
+
+4 errors detected in the compilation of "Test_name.c".

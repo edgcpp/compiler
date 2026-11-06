@@ -1,0 +1,41 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: variable "x" was declared but never referenced
+    int x, y, z;
+        ^
+
+"Test_name.c", line 6: warning: variable "y" was declared but never referenced
+    int x, y, z;
+           ^
+
+"Test_name.c", line 6: warning: variable "z" was declared but never referenced
+    int x, y, z;
+              ^
+
+"Test_name.c", line 10: warning: variable "w" was declared but never referenced
+    int w; // expected-warning {{unused}}
+        ^
+
+"Test_name.c", line 15: warning: variable "x" was declared but never referenced
+    int x, y; // expected-warning {{unused}} expected-warning {{unused}}
+        ^
+
+"Test_name.c", line 15: warning: variable "y" was declared but never referenced
+    int x, y; // expected-warning {{unused}} expected-warning {{unused}}
+           ^
+
+"Test_name.c", line 25: warning: variable "w" was declared but never referenced
+    int w; // expected-warning {{unused}}
+        ^
+
+"Test_name.c", line 30: warning: variable "z" was declared but never referenced
+    int z; // no-warning
+        ^
+
+"Test_name.c", line 37: warning: variable "y" was declared but never referenced
+    int y;
+        ^
+
+"Test_name.c", line 65: warning: variable "glob_var" was declared but never referenced
+  static int glob_var = 0;
+             ^
+

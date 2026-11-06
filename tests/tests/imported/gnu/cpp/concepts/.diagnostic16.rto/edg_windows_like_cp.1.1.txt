@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 9: error: expected a declaration
+  concept C2 = true; // { dg-error "non-template variable cannot be .concept." }
+  ^
+
+"Test_name.c", line 15: error: expected an expression
+    concept bar = true; // { dg-error "concept must be defined at namespace scope" }
+    ^
+
+"Test_name.c", line 21: error: expected an expression
+    concept bar = true; // { dg-error "non-template variable cannot be .concept." }
+    ^
+
+"Test_name.c", line 28: error: a template declaration is not allowed here
+    template<typename> // { dg-error "template declaration cannot appear at block scope" }
+    ^
+
+"Test_name.c", line 29: error: concept definition cannot appear in this scope
+    concept bar = true;
+    ^
+
+"Test_name.c", line 34: error: a template declaration is not allowed here
+    template<typename> // { dg-error "template declaration cannot appear at block scope" }
+    ^
+
+"Test_name.c", line 35: error: concept definition cannot appear in this scope
+    concept bar = true;
+    ^
+
+"Test_name.c", line 40: warning: variable "x" was declared but never referenced
+    C1 auto x = 42;
+            ^
+
+"Test_name.c", line 46: warning: variable "x" was declared but never referenced
+    C1 auto x = 42;
+            ^
+
+7 errors detected in the compilation of "Test_name.c".

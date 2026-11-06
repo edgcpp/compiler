@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./lto/trans-mem.h", line 17: warning: missing return statement at end of non-void function "_ITM_beginTransaction"
+             __attribute__((noinline,noclone,used)) uint32_t _ITM_beginTransaction(uint32_t a, ...) { asm(""); }
+                                                                                                               ^
+
+"./lto/trans-mem-3_1.c", line 10: error: identifier "__transaction_atomic" is undefined
+    __transaction_atomic { i = 0; }
+    ^
+
+"./lto/trans-mem-3_1.c", line 10: error: expected a ";"
+    __transaction_atomic { i = 0; }
+                         ^
+
+2 errors detected in the compilation of "Test_name.c".

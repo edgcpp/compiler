@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: variable "x" is used before its value is set
+    __asm ( "": :"" (*x));	// { dg-error "incomplete" }
+                      ^
+
+"Test_name.c", line 7: error: incomplete type "S" is not allowed
+    __asm ( "": :"" (*x));	// { dg-error "incomplete" }
+                     ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(bad_alloc.o): in function `std::bad_alloc::bad_alloc()':
+/edg/workspace/lib_src/bad_alloc.c:39: multiple definition of `std::bad_alloc::bad_alloc()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(exception.o): in function `std::exception::exception()':
+/edg/workspace/lib_src/exception.c:37: multiple definition of `std::exception::exception()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `simulate_thread_main()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `simulate_thread_step_verify()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o:Test_name.int.c:(.text+0xXX): more undefined references to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)' follow
+collect2: error: ld returned 1 exit status

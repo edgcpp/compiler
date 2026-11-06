@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 14: warning: initialization with "{...}" expected for aggregate object
+    char s1[] = __FUNCTION__".";	     /* { dg-error "(parse|syntax|expected|invalid|array)" } */
+                ^
+
+"Test_name.c", line 14: warning: a value of type "const char *" cannot be used to initialize an entity of type "char"
+    char s1[] = __FUNCTION__".";	     /* { dg-error "(parse|syntax|expected|invalid|array)" } */
+                ^
+
+"Test_name.c", line 14: error: expected a ";"
+    char s1[] = __FUNCTION__".";	     /* { dg-error "(parse|syntax|expected|invalid|array)" } */
+                            ^
+
+"Test_name.c", line 15: warning: initialization with "{...}" expected for aggregate object
+    char s2[] = __PRETTY_FUNCTION__".";/* { dg-error "(parse|syntax|expected|invalid|array)" } */
+                ^
+
+"Test_name.c", line 15: warning: a value of type "const char *" cannot be used to initialize an entity of type "char"
+    char s2[] = __PRETTY_FUNCTION__".";/* { dg-error "(parse|syntax|expected|invalid|array)" } */
+                ^
+
+"Test_name.c", line 15: error: expected a ";"
+    char s2[] = __PRETTY_FUNCTION__".";/* { dg-error "(parse|syntax|expected|invalid|array)" } */
+                                   ^
+
+"Test_name.c", line 16: error: expected a ";"
+    char s3[] = "."__FUNCTION__;	     /* { dg-error "(parse|syntax|expected|invalid)" } */
+                   ^
+
+"Test_name.c", line 17: error: expected a ";"
+    char s4[] = "."__PRETTY_FUNCTION__;/* { dg-error "(parse|syntax|expected|invalid)" } */
+                   ^
+
+"Test_name.c", line 14: warning: variable "s1" was declared but never referenced
+    char s1[] = __FUNCTION__".";	     /* { dg-error "(parse|syntax|expected|invalid|array)" } */
+         ^
+
+"Test_name.c", line 15: warning: variable "s2" was declared but never referenced
+    char s2[] = __PRETTY_FUNCTION__".";/* { dg-error "(parse|syntax|expected|invalid|array)" } */
+         ^
+
+"Test_name.c", line 16: warning: variable "s3" was declared but never referenced
+    char s3[] = "."__FUNCTION__;	     /* { dg-error "(parse|syntax|expected|invalid)" } */
+         ^
+
+"Test_name.c", line 17: warning: variable "s4" was declared but never referenced
+    char s4[] = "."__PRETTY_FUNCTION__;/* { dg-error "(parse|syntax|expected|invalid)" } */
+         ^
+
+"Test_name.c", line 18: warning: variable "s5" was declared but never referenced
+    char s5[] = "."".";                /* No error.  */
+         ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,647 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 22: error: type name is not allowed
+    static_assert (__builtin_classify_type (void) == 0, "");
+                                            ^
+
+"Test_name.c", line 23: error: type name is not allowed
+    static_assert (__builtin_classify_type (int) == 1, "");
+                                            ^
+
+"Test_name.c", line 24: error: expected an expression
+    static_assert (__builtin_classify_type (enum E) == 3, "");
+                                            ^
+
+"Test_name.c", line 25: error: type name is not allowed
+    static_assert (__builtin_classify_type (bool) == 4, "");
+                                            ^
+
+"Test_name.c", line 26: error: expected an expression
+    static_assert (__builtin_classify_type (const char *) == 5, "");
+                                            ^
+
+"Test_name.c", line 27: error: type name is not allowed
+    static_assert (__builtin_classify_type (int &) == 6, "");
+                                            ^
+
+"Test_name.c", line 27: error: expected an expression
+    static_assert (__builtin_classify_type (int &) == 6, "");
+                                                 ^
+
+"Test_name.c", line 28: error: type name is not allowed
+    static_assert (__builtin_classify_type (int &&) == 6, "");
+                                            ^
+
+"Test_name.c", line 28: error: expected an expression
+    static_assert (__builtin_classify_type (int &&) == 6, "");
+                                                  ^
+
+"Test_name.c", line 29: error: type name is not allowed
+    static_assert (__builtin_classify_type (int S::*) == 7, "");
+                                            ^
+
+"Test_name.c", line 29: error: expected a ")"
+    static_assert (__builtin_classify_type (int S::*) == 7, "");
+                                                ^
+
+"Test_name.c", line 30: error: type name is not allowed
+    static_assert (__builtin_classify_type (float) == 8, "");
+                                            ^
+
+"Test_name.c", line 31: error: expected an expression
+    static_assert (__builtin_classify_type (_Complex double) == 9, "");
+                                            ^
+
+"Test_name.c", line 32: error: type name is not allowed
+    static_assert (__builtin_classify_type (int (int, int)) == 10, "");
+                                                 ^
+
+"Test_name.c", line 32: error: type name is not allowed
+    static_assert (__builtin_classify_type (int (int, int)) == 10, "");
+                                                      ^
+
+"Test_name.c", line 33: error: expected an expression
+    static_assert (__builtin_classify_type (struct S) == 12, "");
+                                            ^
+
+"Test_name.c", line 34: error: expected an expression
+    static_assert (__builtin_classify_type (union U) == 13, "");
+                                            ^
+
+"Test_name.c", line 35: error: type name is not allowed
+    static_assert (__builtin_classify_type (int [2]) == 14, "");
+                                            ^
+
+"Test_name.c", line 36: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (a[0])) == 1, "");
+                                            ^
+
+"Test_name.c", line 37: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (e)) == 3, "");
+                                            ^
+
+"Test_name.c", line 38: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (b)) == 4, "");
+                                            ^
+
+"Test_name.c", line 39: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (p)) == 5, "");
+                                            ^
+
+"Test_name.c", line 40: error: type name is not allowed
+    static_assert (__builtin_classify_type (decltype (r)) == 6, "");
+                                            ^
+
+"Test_name.c", line 41: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (q)) == 7, "");
+                                            ^
+
+"Test_name.c", line 42: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (f)) == 8, "");
+                                            ^
+
+"Test_name.c", line 43: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (c)) == 9, "");
+                                            ^
+
+"Test_name.c", line 44: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (abort)) == 10, "");
+                                            ^
+
+"Test_name.c", line 45: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (s)) == 12, "");
+                                            ^
+
+"Test_name.c", line 46: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (u)) == 13, "");
+                                            ^
+
+"Test_name.c", line 47: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (a)) == 14, "");
+                                            ^
+
+"Test_name.c", line 90: error: type name is not allowed
+    static_assert (__builtin_classify_type (V) == 0, "");
+                                            ^
+
+"Test_name.c", line 91: error: type name is not allowed
+    static_assert (__builtin_classify_type (I) == 1, "");
+                                            ^
+
+"Test_name.c", line 92: error: type name is not allowed
+    static_assert (__builtin_classify_type (E) == 3, "");
+                                            ^
+
+"Test_name.c", line 93: error: type name is not allowed
+    static_assert (__builtin_classify_type (B) == 4, "");
+                                            ^
+
+"Test_name.c", line 94: error: type name is not allowed
+    static_assert (__builtin_classify_type (P) == 5, "");
+                                            ^
+
+"Test_name.c", line 95: error: type name is not allowed
+    static_assert (__builtin_classify_type (R1) == 6, "");
+                                            ^
+
+"Test_name.c", line 96: error: type name is not allowed
+    static_assert (__builtin_classify_type (R2) == 6, "");
+                                            ^
+
+"Test_name.c", line 97: error: type name is not allowed
+    static_assert (__builtin_classify_type (PM) == 7, "");
+                                            ^
+
+"Test_name.c", line 98: error: type name is not allowed
+    static_assert (__builtin_classify_type (F) == 8, "");
+                                            ^
+
+"Test_name.c", line 99: error: type name is not allowed
+    static_assert (__builtin_classify_type (C) == 9, "");
+                                            ^
+
+"Test_name.c", line 100: error: type name is not allowed
+    static_assert (__builtin_classify_type (FN) == 10, "");
+                                            ^
+
+"Test_name.c", line 101: error: type name is not allowed
+    static_assert (__builtin_classify_type (S) == 12, "");
+                                            ^
+
+"Test_name.c", line 102: error: type name is not allowed
+    static_assert (__builtin_classify_type (U) == 13, "");
+                                            ^
+
+"Test_name.c", line 103: error: type name is not allowed
+    static_assert (__builtin_classify_type (A) == 14, "");
+                                            ^
+
+"Test_name.c", line 104: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (a[0])) == 1, "");
+                                            ^
+
+"Test_name.c", line 105: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (e)) == 3, "");
+                                            ^
+
+"Test_name.c", line 106: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (b)) == 4, "");
+                                            ^
+
+"Test_name.c", line 107: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (p)) == 5, "");
+                                            ^
+
+"Test_name.c", line 108: error: type name is not allowed
+    static_assert (__builtin_classify_type (decltype (r)) == 6, "");
+                                            ^
+
+"Test_name.c", line 109: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (q)) == 7, "");
+                                            ^
+
+"Test_name.c", line 110: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (f)) == 8, "");
+                                            ^
+
+"Test_name.c", line 111: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (c)) == 9, "");
+                                            ^
+
+"Test_name.c", line 112: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (abort)) == 10, "");
+                                            ^
+
+"Test_name.c", line 113: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (s)) == 12, "");
+                                            ^
+
+"Test_name.c", line 114: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (u)) == 13, "");
+                                            ^
+
+"Test_name.c", line 115: error: type name is not allowed
+    static_assert (__builtin_classify_type (__typeof__ (a)) == 14, "");
+                                            ^
+
+"Test_name.c", line 22: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (void) == 0, "");
+    ^
+"Test_name.c", line 22: note: the final comparison was -1 == 0
+    static_assert (__builtin_classify_type (void) == 0, "");
+                                                  ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 23: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (int) == 1, "");
+    ^
+"Test_name.c", line 23: note: the final comparison was -1 == 1
+    static_assert (__builtin_classify_type (int) == 1, "");
+                                                 ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 24: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (enum E) == 3, "");
+    ^
+"Test_name.c", line 24: note: the final comparison was -1 == 3
+    static_assert (__builtin_classify_type (enum E) == 3, "");
+                                                    ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 25: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (bool) == 4, "");
+    ^
+"Test_name.c", line 25: note: the final comparison was -1 == 4
+    static_assert (__builtin_classify_type (bool) == 4, "");
+                                                  ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 26: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (const char *) == 5, "");
+    ^
+"Test_name.c", line 26: note: the final comparison was -1 == 5
+    static_assert (__builtin_classify_type (const char *) == 5, "");
+                                                          ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 27: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (int &) == 6, "");
+    ^
+"Test_name.c", line 27: note: the final comparison was -1 == 6
+    static_assert (__builtin_classify_type (int &) == 6, "");
+                                                   ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 28: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (int &&) == 6, "");
+    ^
+"Test_name.c", line 28: note: the final comparison was -1 == 6
+    static_assert (__builtin_classify_type (int &&) == 6, "");
+                                                    ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 29: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (int S::*) == 7, "");
+    ^
+"Test_name.c", line 29: note: the final comparison was -1 == 7
+    static_assert (__builtin_classify_type (int S::*) == 7, "");
+                                                      ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 30: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (float) == 8, "");
+    ^
+"Test_name.c", line 30: note: the final comparison was -1 == 8
+    static_assert (__builtin_classify_type (float) == 8, "");
+                                                   ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 31: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (_Complex double) == 9, "");
+    ^
+"Test_name.c", line 31: note: the final comparison was -1 == 9
+    static_assert (__builtin_classify_type (_Complex double) == 9, "");
+                                                             ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 32: error: expected a ")"
+    static_assert (__builtin_classify_type (int (int, int)) == 10, "");
+                                                    ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 32: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (int (int, int)) == 10, "");
+    ^
+"Test_name.c", line 32: note: the final comparison was -1 == 10
+    static_assert (__builtin_classify_type (int (int, int)) == 10, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 33: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (struct S) == 12, "");
+    ^
+"Test_name.c", line 33: note: the final comparison was -1 == 12
+    static_assert (__builtin_classify_type (struct S) == 12, "");
+                                                      ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 34: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (union U) == 13, "");
+    ^
+"Test_name.c", line 34: note: the final comparison was -1 == 13
+    static_assert (__builtin_classify_type (union U) == 13, "");
+                                                     ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 35: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (int [2]) == 14, "");
+    ^
+"Test_name.c", line 35: note: the final comparison was -1 == 14
+    static_assert (__builtin_classify_type (int [2]) == 14, "");
+                                                     ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 36: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (a[0])) == 1, "");
+    ^
+"Test_name.c", line 36: note: the final comparison was -1 == 1
+    static_assert (__builtin_classify_type (__typeof__ (a[0])) == 1, "");
+                                                               ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 37: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (e)) == 3, "");
+    ^
+"Test_name.c", line 37: note: the final comparison was -1 == 3
+    static_assert (__builtin_classify_type (__typeof__ (e)) == 3, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 38: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (b)) == 4, "");
+    ^
+"Test_name.c", line 38: note: the final comparison was -1 == 4
+    static_assert (__builtin_classify_type (__typeof__ (b)) == 4, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 39: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (p)) == 5, "");
+    ^
+"Test_name.c", line 39: note: the final comparison was -1 == 5
+    static_assert (__builtin_classify_type (__typeof__ (p)) == 5, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 40: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (decltype (r)) == 6, "");
+    ^
+"Test_name.c", line 40: note: the final comparison was -1 == 6
+    static_assert (__builtin_classify_type (decltype (r)) == 6, "");
+                                                          ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 41: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (q)) == 7, "");
+    ^
+"Test_name.c", line 41: note: the final comparison was -1 == 7
+    static_assert (__builtin_classify_type (__typeof__ (q)) == 7, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 42: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (f)) == 8, "");
+    ^
+"Test_name.c", line 42: note: the final comparison was -1 == 8
+    static_assert (__builtin_classify_type (__typeof__ (f)) == 8, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 43: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (c)) == 9, "");
+    ^
+"Test_name.c", line 43: note: the final comparison was -1 == 9
+    static_assert (__builtin_classify_type (__typeof__ (c)) == 9, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 44: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (abort)) == 10, "");
+    ^
+"Test_name.c", line 44: note: the final comparison was -1 == 10
+    static_assert (__builtin_classify_type (__typeof__ (abort)) == 10, "");
+                                                                ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 45: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (s)) == 12, "");
+    ^
+"Test_name.c", line 45: note: the final comparison was -1 == 12
+    static_assert (__builtin_classify_type (__typeof__ (s)) == 12, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 46: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (u)) == 13, "");
+    ^
+"Test_name.c", line 46: note: the final comparison was -1 == 13
+    static_assert (__builtin_classify_type (__typeof__ (u)) == 13, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 47: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (a)) == 14, "");
+    ^
+"Test_name.c", line 47: note: the final comparison was -1 == 14
+    static_assert (__builtin_classify_type (__typeof__ (a)) == 14, "");
+                                                            ^
+          detected during instantiation of "void foo<N>() [with N=0]" at line 148
+
+"Test_name.c", line 90: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (V) == 0, "");
+    ^
+"Test_name.c", line 90: note: the final comparison was -1 == 0
+    static_assert (__builtin_classify_type (V) == 0, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 91: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (I) == 1, "");
+    ^
+"Test_name.c", line 91: note: the final comparison was -1 == 1
+    static_assert (__builtin_classify_type (I) == 1, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 92: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (E) == 3, "");
+    ^
+"Test_name.c", line 92: note: the final comparison was -1 == 3
+    static_assert (__builtin_classify_type (E) == 3, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 93: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (B) == 4, "");
+    ^
+"Test_name.c", line 93: note: the final comparison was -1 == 4
+    static_assert (__builtin_classify_type (B) == 4, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 94: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (P) == 5, "");
+    ^
+"Test_name.c", line 94: note: the final comparison was -1 == 5
+    static_assert (__builtin_classify_type (P) == 5, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 95: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (R1) == 6, "");
+    ^
+"Test_name.c", line 95: note: the final comparison was -1 == 6
+    static_assert (__builtin_classify_type (R1) == 6, "");
+                                                ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 96: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (R2) == 6, "");
+    ^
+"Test_name.c", line 96: note: the final comparison was -1 == 6
+    static_assert (__builtin_classify_type (R2) == 6, "");
+                                                ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 97: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (PM) == 7, "");
+    ^
+"Test_name.c", line 97: note: the final comparison was -1 == 7
+    static_assert (__builtin_classify_type (PM) == 7, "");
+                                                ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 98: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (F) == 8, "");
+    ^
+"Test_name.c", line 98: note: the final comparison was -1 == 8
+    static_assert (__builtin_classify_type (F) == 8, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 99: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (C) == 9, "");
+    ^
+"Test_name.c", line 99: note: the final comparison was -1 == 9
+    static_assert (__builtin_classify_type (C) == 9, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 100: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (FN) == 10, "");
+    ^
+"Test_name.c", line 100: note: the final comparison was -1 == 10
+    static_assert (__builtin_classify_type (FN) == 10, "");
+                                                ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 101: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (S) == 12, "");
+    ^
+"Test_name.c", line 101: note: the final comparison was -1 == 12
+    static_assert (__builtin_classify_type (S) == 12, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 102: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (U) == 13, "");
+    ^
+"Test_name.c", line 102: note: the final comparison was -1 == 13
+    static_assert (__builtin_classify_type (U) == 13, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 103: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (A) == 14, "");
+    ^
+"Test_name.c", line 103: note: the final comparison was -1 == 14
+    static_assert (__builtin_classify_type (A) == 14, "");
+                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 104: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (a[0])) == 1, "");
+    ^
+"Test_name.c", line 104: note: the final comparison was -1 == 1
+    static_assert (__builtin_classify_type (__typeof__ (a[0])) == 1, "");
+                                                               ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 105: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (e)) == 3, "");
+    ^
+"Test_name.c", line 105: note: the final comparison was -1 == 3
+    static_assert (__builtin_classify_type (__typeof__ (e)) == 3, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 106: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (b)) == 4, "");
+    ^
+"Test_name.c", line 106: note: the final comparison was -1 == 4
+    static_assert (__builtin_classify_type (__typeof__ (b)) == 4, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 107: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (p)) == 5, "");
+    ^
+"Test_name.c", line 107: note: the final comparison was -1 == 5
+    static_assert (__builtin_classify_type (__typeof__ (p)) == 5, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 108: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (decltype (r)) == 6, "");
+    ^
+"Test_name.c", line 108: note: the final comparison was -1 == 6
+    static_assert (__builtin_classify_type (decltype (r)) == 6, "");
+                                                          ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 109: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (q)) == 7, "");
+    ^
+"Test_name.c", line 109: note: the final comparison was -1 == 7
+    static_assert (__builtin_classify_type (__typeof__ (q)) == 7, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 110: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (f)) == 8, "");
+    ^
+"Test_name.c", line 110: note: the final comparison was -1 == 8
+    static_assert (__builtin_classify_type (__typeof__ (f)) == 8, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 111: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (c)) == 9, "");
+    ^
+"Test_name.c", line 111: note: the final comparison was -1 == 9
+    static_assert (__builtin_classify_type (__typeof__ (c)) == 9, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 112: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (abort)) == 10, "");
+    ^
+"Test_name.c", line 112: note: the final comparison was -1 == 10
+    static_assert (__builtin_classify_type (__typeof__ (abort)) == 10, "");
+                                                                ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 113: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (s)) == 12, "");
+    ^
+"Test_name.c", line 113: note: the final comparison was -1 == 12
+    static_assert (__builtin_classify_type (__typeof__ (s)) == 12, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 114: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (u)) == 13, "");
+    ^
+"Test_name.c", line 114: note: the final comparison was -1 == 13
+    static_assert (__builtin_classify_type (__typeof__ (u)) == 13, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+"Test_name.c", line 115: error: static assertion failed with ""
+    static_assert (__builtin_classify_type (__typeof__ (a)) == 14, "");
+    ^
+"Test_name.c", line 115: note: the final comparison was -1 == 14
+    static_assert (__builtin_classify_type (__typeof__ (a)) == 14, "");
+                                                            ^
+          detected during instantiation of "void bar<V,I,E,B,P,R1,R2,PM,F,C,FN,S,U,A>() [with V=void, I=int, E=E, B=bool, P=const char *, R1=int &, R2=int &&, PM=int S::*, F=float, C=double __complex__, FN=int (int, int), S=S, U=U, A=int [2]]" at line 149
+
+109 errors detected in the compilation of "Test_name.c".

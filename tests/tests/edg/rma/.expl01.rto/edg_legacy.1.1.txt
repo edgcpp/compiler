@@ -1,0 +1,10 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "X::X(int)" cannot be inlined
+    explicit X(int) { }
+             ^
+
+"Test_name.c", line 7: error: no suitable constructor exists to convert from "int" to "X"
+  X ox = 5;
+         ^
+
+1 error detected in the compilation of "Test_name.c".

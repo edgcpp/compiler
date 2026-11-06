@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=2 --c++23 -DNEG Test_name.c
+"Test_name.c", line 15: error: no operator "[]" matches these operands
+            operand types are: S<int> [ int ]
+  int r3 = s[1];
+            ^
+"Test_name.c", line 6: note: number of parameters of function "S<T>::operator[]() [with T=int]" does not match the call
+    int operator[]();
+        ^
+"Test_name.c", line 5: note: number of parameters of function "S<T>::operator[](int, int) [with T=int]" does not match the call
+    int operator[](int, int);
+        ^
+"Test_name.c", line 15: note: built-in operator[](<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+  int r3 = s[1];
+            ^
+
+"Test_name.c", line 16: error: no instance of overloaded function "S<T>::operator[] [with T=int]" matches the argument list
+            argument types are: (int, int, int)
+            object type is: S<int>
+  int r4 = s[1, 2, 3];
+           ^
+"Test_name.c", line 6: note: number of parameters of function "S<T>::operator[]() [with T=int]" does not match the call
+    int operator[]();
+        ^
+"Test_name.c", line 5: note: number of parameters of function "S<T>::operator[](int, int) [with T=int]" does not match the call
+    int operator[](int, int);
+        ^
+
+2 errors detected in the compilation of "Test_name.c".

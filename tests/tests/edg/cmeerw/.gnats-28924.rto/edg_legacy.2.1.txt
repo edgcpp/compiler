@@ -1,0 +1,76 @@
+fe_only -DTEST_NUMBER=2 --c++26 Test_name.c
+"Test_name.c", line 16: error: no instance of constructor "minimal::A" matches the argument list
+            argument types are: (const char [1], int, int, int)
+    A a{"", 1, 2, 3};
+      ^
+
+"Test_name.c", line 16: error: cannot deduce class template arguments
+    A a{"", 1, 2, 3};
+    ^
+
+"Test_name.c", line 49: error: no instance of constructor "sizeof_pack::A" matches the argument list
+            argument types are: (const char [1], int, int, int)
+    A a{"", 1, 2, 3};
+      ^
+
+"Test_name.c", line 49: error: cannot deduce class template arguments
+    A a{"", 1, 2, 3};
+    ^
+
+"Test_name.c", line 50: error: incomplete type "sizeof_pack::X<<error-type>>" is not allowed
+    static_assert(X<decltype(a)>::v == 3, "Unexpected");
+                  ^
+
+"Test_name.c", line 75: error: no instance of constructor "fold_expr::A" matches the argument list
+            argument types are: (const char [1], fold_expr::D<1>, fold_expr::D<2>, fold_expr::D<3>)
+    A a{"", D<1>{}, D<2>{}, D<3>{}};
+      ^
+
+"Test_name.c", line 75: error: cannot deduce class template arguments
+    A a{"", D<1>{}, D<2>{}, D<3>{}};
+    ^
+
+"Test_name.c", line 76: error: incomplete type "fold_expr::X<<error-type>>" is not allowed
+    static_assert(X<decltype(a)>::v == 6, "Unexpected");
+                  ^
+
+"Test_name.c", line 78: error: no instance of constructor "fold_expr::A" matches the argument list
+            argument types are: (const char [1], fold_expr::D<5>)
+    A a1{"", D<5>{}};
+      ^
+
+"Test_name.c", line 78: error: cannot deduce class template arguments
+    A a1{"", D<5>{}};
+    ^
+
+"Test_name.c", line 79: error: incomplete type "fold_expr::X<<error-type>>" is not allowed
+    static_assert(X<decltype(a1)>::v == 5, "Unexpected");
+                  ^
+
+"Test_name.c", line 81: error: no instance of constructor "fold_expr::A" matches the argument list
+            argument types are: (const char [1])
+    A a0{""};
+      ^
+
+"Test_name.c", line 81: error: cannot deduce class template arguments
+    A a0{""};
+    ^
+
+"Test_name.c", line 82: error: incomplete type "fold_expr::X<<error-type>>" is not allowed
+    static_assert(X<decltype(a0)>::v == 0, "Unexpected");
+                  ^
+
+"Test_name.c", line 107: error: no instance of constructor "pack_indexing::A" matches the argument list
+            argument types are: (const char [1], pack_indexing::D<1>, pack_indexing::D<2>, pack_indexing::D<3>)
+    A a{"", D<1>{}, D<2>{}, D<3>{}};
+      ^
+
+"Test_name.c", line 107: error: cannot deduce class template arguments
+    A a{"", D<1>{}, D<2>{}, D<3>{}};
+    ^
+
+"Test_name.c", line 108: error: incomplete type "pack_indexing::X<<error-type>>" is not allowed
+    static_assert(X<decltype(a)>::v == 2, "Unexpected");
+                  ^
+
+17 errors detected in the compilation of "Test_name.c".

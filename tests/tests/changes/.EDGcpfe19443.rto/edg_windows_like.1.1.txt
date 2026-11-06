@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang_v 50000 Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "__vector_size__"
+  typedef long long __m128i __attribute__((__vector_size__(16)));
+                                           ^
+
+"Test_name.c", line 12: warning: unknown attribute "__vector_size__"
+  typedef long long __v2di __attribute__ ((__vector_size__ (16)));
+                                           ^
+

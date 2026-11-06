@@ -1,0 +1,55 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 17: error: no valid std::strong_ordering type found (<compare> must be included)
+  class SpaceShipDefaultCompare {
+        ^
+
+"Test_name.c", line 17: error: no valid std::partial_ordering type found (<compare> must be included)
+  class SpaceShipDefaultCompare {
+        ^
+
+"Test_name.c", line 17: error: no valid std::weak_ordering type found (<compare> must be included)
+  class SpaceShipDefaultCompare {
+        ^
+
+"Test_name.c", line 113: warning: variable "var" was declared but never referenced
+      int var = my_friend.used_by_friend_; // expected-warning {{unused variable 'var'}}
+          ^
+
+"Test_name.c", line 124: warning: parameter "my_friend" was set but never used
+  void friendFunction(HasFriend my_friend) {
+                                ^
+
+"Test_name.c", line 178: warning: attribute "unused" does not apply here
+    int attr_ __attribute__((unused));
+                             ^
+
+"Test_name.c", line 179: warning: attribute "unused" does not apply here
+    int attr_used_ __attribute__((unused));
+                                  ^
+
+"Test_name.c", line 186: warning: variable "use" was declared but never referenced
+      int *use = &by_reference_; // expected-warning {{unused variable 'use'}}
+           ^
+
+"Test_name.c", line 187: warning: variable "test" was set but never used
+      int test[2];
+          ^
+
+"Test_name.c", line 189: warning: variable "ptr" was declared but never referenced
+      int EverythingUsed::*ptr = &EverythingUsed::by_pointer_to_member_; // expected-warning {{unused variable 'ptr'}}
+                           ^
+
+"Test_name.c", line 344: warning: variable "i" was declared but never referenced
+    int i = 0; // expected-warning {{unused variable 'i'}}
+        ^
+
+"Test_name.c", line 346: warning: variable "t" was declared but never referenced
+    T t;       // ok
+      ^
+
+"Test_name.c", line 349: warning: class "GH62472::C" defines no constructor to initialize the following:
+            const member "GH62472::C::t1"
+  class C {
+        ^
+
+3 errors detected in the compilation of "Test_name.c".

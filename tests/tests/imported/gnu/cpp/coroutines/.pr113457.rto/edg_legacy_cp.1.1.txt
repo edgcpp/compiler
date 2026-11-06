@@ -1,0 +1,108 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 71: error: identifier "concept" is undefined
+    concept range = requires(_Tp &__t) { ranges::begin(__t); };
+    ^
+
+"Test_name.c", line 71: error: type name is not allowed
+    concept range = requires(_Tp &__t) { ranges::begin(__t); };
+                             ^
+
+"Test_name.c", line 71: error: identifier "__t" is undefined
+    concept range = requires(_Tp &__t) { ranges::begin(__t); };
+                                  ^
+
+"Test_name.c", line 71: error: identifier "requires" is undefined
+    concept range = requires(_Tp &__t) { ranges::begin(__t); };
+                    ^
+
+"Test_name.c", line 71: error: expected a ";"
+    concept range = requires(_Tp &__t) { ranges::begin(__t); };
+                                       ^
+
+"Test_name.c", line 73: error: argument list for variable template "std::ranges::range" is missing
+    template <range _Range>
+              ^
+
+"Test_name.c", line 74: error: constant "_Range" is not a type name
+    using range_value_t = iter_value_t<iterator_t<_Range>>;
+                                                  ^
+
+"Test_name.c", line 49: error: no instance of function template "std::declval" matches the argument list
+      decltype(ranges::__access::__begin(std::declval<_Tp &>()));
+                                         ^
+"Test_name.c", line 6: note: substituting explicit template arguments "<<error-type> &>" for function template "std::declval" failed
+  template <typename _Tp> auto declval() noexcept -> decltype(__declval<_Tp>(0));
+                               ^
+          detected during:
+            instantiation of type "std::__detail::__range_iter_t<<error-type>>" at line 72
+            instantiation of type "std::ranges::iterator_t<<error-type>>" at line 74
+
+"Test_name.c", line 37: error: incomplete type "std::iterator_traits<std::ranges::iterator_t<<error-type>>>" is not allowed
+      typename __iter_traits<_Tp, indirectly_readable_traits<_Tp>>::value_type;
+               ^
+          detected during:
+            instantiation of type "std::__detail::__iter_value_t<<error-type>>" at line 40
+            instantiation of type "std::iter_value_t<<error-type>>" at line 74
+
+"Test_name.c", line 75: error: argument list for variable template "std::ranges::range" is missing
+    template <range _Range>
+              ^
+
+"Test_name.c", line 77: error: constant "_Range" is not a type name
+      _Range range;
+      ^
+
+"Test_name.c", line 80: error: type name is not allowed
+    elements_of(_Range &&) -> elements_of<_Range &&>;
+                                          ^
+
+"Test_name.c", line 80: error: expected an expression
+    elements_of(_Range &&) -> elements_of<_Range &&>;
+                                                   ^
+
+"Test_name.c", line 97: warning: "std::__n4861::coroutine_handle<_Promise>::operator std::__n4861::coroutine_handle<void>() const noexcept [with _Promise=void]" will not be called for implicit or explicit conversions
+      constexpr operator coroutine_handle<>() const noexcept {
+                ^
+          detected during instantiation of class "std::__n4861::coroutine_handle<_Promise> [with _Promise=void]" at line 97
+
+"Test_name.c", line 119: error: type name is not allowed
+          ranges::elements_of<generator<_R2, _V2> &&> __r) noexcept {
+                              ^
+
+"Test_name.c", line 119: error: expected an expression
+          ranges::elements_of<generator<_R2, _V2> &&> __r) noexcept {
+                                                    ^
+
+"Test_name.c", line 123: error: type name is not allowed
+      auto yield_value(ranges::elements_of<_R> __r) noexcept {
+                                           ^
+
+"Test_name.c", line 125: error: type name is not allowed
+            -> generator<_Yielded, ranges::range_value_t<_R>>
+                                                         ^
+
+"Test_name.c", line 127: error: identifier "co_yield" is undefined
+          co_yield static_cast<_Yielded>(*__i);
+          ^
+
+"Test_name.c", line 127: error: expected a ";"
+          co_yield static_cast<_Yielded>(*__i);
+                   ^
+
+"Test_name.c", line 128: warning: missing return statement at end of non-void function "lambda [](std::ranges::iterator_t<_R>)->std::generator<_Yielded, range_value_t>"
+        };
+        ^
+
+"Test_name.c", line 172: error: identifier "co_yield" is undefined
+    co_yield
+    ^
+
+"Test_name.c", line 173: error: expected a ")"
+    ranges::elements_of(ranges), ...);
+    ^
+
+"Test_name.c", line 174: warning: missing return statement at end of non-void function "concat(Ranges &&...)->std::generator<double, double>"
+  }
+  ^
+
+21 errors detected in the compilation of "Test_name.c".

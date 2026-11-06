@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 10: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"Test_name.c", line 13: warning: label "label" was declared but never referenced
+    [[clang::nomerge]] label: bar(); // expected-error {{'clang::nomerge' attribute only applies to functions, statements and variables}}
+                       ^
+

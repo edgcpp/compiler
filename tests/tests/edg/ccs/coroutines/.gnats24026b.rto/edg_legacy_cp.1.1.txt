@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --set_flag coroutines --c++20 --il_display Test_name.c
+egrep: warning: egrep is obsolescent; using grep -E
+kind:                    stmk_label
+label:                   func-scope label@XXXXXXXX
+lifetime:                NULL
+
+--
+kind:                    stmk_goto
+label:                   func-scope label@XXXXXXXX
+lifetime:                func-scope object-lifetime@XXXXXXXX
+
+--
+operation.kind:          eok_not
+operation.type_kind:     tk_integer
+operands:                func-scope expr-node@XXXXXXXX
+
+--
+kind:                    stmk_label
+label:                   func-scope label@XXXXXXXX
+lifetime:                func-scope object-lifetime@XXXXXXXX
+

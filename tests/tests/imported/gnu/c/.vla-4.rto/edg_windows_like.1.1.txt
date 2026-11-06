@@ -1,0 +1,38 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 Test_name.c
+"Test_name.c", line 16: warning: expression has no effect
+    sizeof (b[i++ + sizeof(j++)]);	/* Outer sizeof is evaluated for vla, but not the inner one.  */
+    ^
+
+"Test_name.c", line 28: warning: expression has no effect
+    sizeof (d[i++]);			/* sizeof is evaluated for vla.  */
+    ^
+
+"Test_name.c", line 31: warning: expression has no effect
+    __alignof__(__typeof__(t + (i++,0)));	/* typeof is not evauluated when given a vm inside alignof*/
+    ^
+
+"Test_name.c", line 34: warning: expression has no effect
+    sizeof(__typeof__(t + (i++,0)));	/* typeof is not evauluated when given a vm inside sizeof*/
+    ^
+
+"Test_name.c", line 19: warning: variable "c1" was declared but never referenced
+    __typeof__(b[i++]) c1;		/* typeof is evauluated when given a vm */
+                       ^
+
+"Test_name.c", line 22: warning: variable "c2" was declared but never referenced
+    __typeof__(t + (i++,0)) c2;		/* typeof is evauluated when given a vm */
+                            ^
+
+"Test_name.c", line 25: warning: variable "c3" was declared but never referenced
+    __typeof__(i + (i++,0)) c3;		/* typeof is not evauluated when not given a vm */
+                            ^
+
+"Test_name.c", line 40: internal error: assertion failed: find_vla_dimension: not found (il.c, line <suppressed> in find_vla_dimension)
+
+  int foo6(int a, int b[a][a], int (*c)[sizeof(*b)]) {
+                                                     ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

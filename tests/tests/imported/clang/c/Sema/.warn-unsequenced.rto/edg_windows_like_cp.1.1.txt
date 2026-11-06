@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 14: warning: variable "a" is used before its value is set
+    a + ++a; // expected-warning {{unsequenced modification and access to 'a'}}
+          ^
+
+"Test_name.c", line 21: warning: variable "xs" is used before its value is set
+    a = xs[++a]; // expected-warning {{multiple unsequenced modifications}}
+        ^
+
+"Test_name.c", line 45: warning: use of "=" where "==" may have been intended
+    (xs[2] && (a = 0)) + a; // expected-warning {{unsequenced modification and access to 'a'}}
+              ^
+
+"Test_name.c", line 46: warning: use of "=" where "==" may have been intended
+    (0 && (a = 0)) + a; // ok
+          ^
+
+"Test_name.c", line 46: warning: expression has no effect
+    (0 && (a = 0)) + a; // ok
+    ^
+
+"Test_name.c", line 47: warning: use of "=" where "==" may have been intended
+    (1 && (a = 0)) + a; // expected-warning {{unsequenced modification and access}}
+          ^
+
+"Test_name.c", line 49: warning: use of "=" where "==" may have been intended
+    (xs[3] || (a = 0)) + a; // expected-warning {{unsequenced modification and access to 'a'}}
+              ^
+
+"Test_name.c", line 50: warning: use of "=" where "==" may have been intended
+    (0 || (a = 0)) + a; // expected-warning {{unsequenced modification and access}}
+          ^
+
+"Test_name.c", line 51: warning: use of "=" where "==" may have been intended
+    (1 || (a = 0)) + a; // ok
+          ^
+
+"Test_name.c", line 51: warning: expression has no effect
+    (1 || (a = 0)) + a; // ok
+    ^
+
+"Test_name.c", line 98: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Alignof(++a) + ++a; // expected-warning {{extension}}
+            ^
+
+"Test_name.c", line 100: warning: expression has no effect
+    __builtin_constant_p(f(++a, 0)) ? f(f(++a, 0), f(++a, 0)) : 0;
+    ^
+
+"Test_name.c", line 107: warning: expression has no effect
+    __builtin_constant_p(p) && __builtin_constant_p(++n) && (++n + ++n);
+    ^
+

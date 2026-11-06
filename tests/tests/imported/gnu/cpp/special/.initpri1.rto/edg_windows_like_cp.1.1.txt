@@ -1,0 +1,34 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: attribute "constructor" does not take arguments
+  void c1() __attribute__((constructor (500)));
+                                       ^
+
+"Test_name.c", line 11: error: attribute "constructor" does not take arguments
+  void c2() __attribute__((constructor (700)));
+                                       ^
+
+"Test_name.c", line 12: error: attribute "constructor" does not take arguments
+  void c3() __attribute__((constructor (600)));
+                                       ^
+
+"Test_name.c", line 29: error: attribute "destructor" does not take arguments
+  void d1() __attribute__((destructor (500)));
+                                      ^
+
+"Test_name.c", line 30: error: attribute "destructor" does not take arguments
+  void d2() __attribute__((destructor (700)));
+                                      ^
+
+"Test_name.c", line 31: error: attribute "destructor" does not take arguments
+  void d3() __attribute__((destructor (600)));
+                                      ^
+
+"Test_name.c", line 50: error: attribute "constructor" does not take arguments
+  void cd4() __attribute__((constructor (800), destructor (800)));
+                                        ^
+
+"Test_name.c", line 50: error: attribute "destructor" does not take arguments
+  void cd4() __attribute__((constructor (800), destructor (800)));
+                                                          ^
+
+8 errors detected in the compilation of "Test_name.c".

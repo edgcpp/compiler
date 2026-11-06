@@ -1,0 +1,95 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 7: error: expected an identifier
+      T...1; // expected-error{{expected member name or ';' after declaration specifiers}}
+       ^
+
+"Test_name.c", line 8: error: expected an expression
+      T...[; // expected-error{{expected expression}} \
+           ^
+
+"Test_name.c", line 8: error: expected a "]"
+      T...[; // expected-error{{expected expression}} \
+           ^
+
+"Test_name.c", line 8: error: declaration does not declare anything
+      T...[; // expected-error{{expected expression}} \
+      ^
+
+"Test_name.c", line 13: error: expected a "]"
+      T...[1; // expected-error{{expected ']'}} \
+            ^
+
+"Test_name.c", line 13: error: declaration does not declare anything
+      T...[1; // expected-error{{expected ']'}} \
+      ^
+
+"Test_name.c", line 17: error: expected an identifier
+      T...[]; // expected-error{{expected member name or ';' after declaration specifiers}}
+       ^
+
+"Test_name.c", line 7: error: parameter pack "T" was referenced but not expanded
+      T...1; // expected-error{{expected member name or ';' after declaration specifiers}}
+      ^
+
+"Test_name.c", line 17: error: parameter pack "T" was referenced but not expanded
+      T...[]; // expected-error{{expected member name or ';' after declaration specifiers}}
+      ^
+
+"Test_name.c", line 21: error: expected a ";"
+          decltype(v...[1]) b = v...[]; // expected-error{{expected expression}}
+                                 ^
+
+"Test_name.c", line 23: error: expected an expression
+          decltype(v...[1]) c = v...[ ;  // expected-error{{expected expression}}\
+                                      ^
+
+"Test_name.c", line 23: error: expected a "]"
+          decltype(v...[1]) c = v...[ ;  // expected-error{{expected expression}}\
+                                      ^
+
+"Test_name.c", line 21: error: parameter pack "v" was referenced but not expanded
+          decltype(v...[1]) b = v...[]; // expected-error{{expected expression}}
+                                ^
+
+"Test_name.c", line 34: warning: unnamed parameter in requires-expression has no effect
+  requires requires(T...[0]) { {T...[0](0)}; }
+                           ^
+
+"Test_name.c", line 49: warning: dynamic initialization in unreachable code
+          typename T...[1]::foo b = 0;
+                                ^
+
+"Test_name.c", line 52: warning: statement is unreachable
+          new T...[0];
+          ^
+
+"Test_name.c", line 43: warning: variable "test" was declared but never referenced
+          T...[0] (*test)(const volatile T...[0]**);
+                    ^
+
+"Test_name.c", line 71: error: expected an expression
+  requires( ); // expected-error {{expected expression}}
+            ^
+
+"Test_name.c", line 71: error: expected a declaration
+  requires( ); // expected-error {{expected expression}}
+             ^
+
+"Test_name.c", line 74: error: identifier "p" is undefined
+          (*p).~T...[](); // expected-error {{use of undeclared identifier 'p'}} \
+            ^
+
+"Test_name.c", line 74: error: "T" is not a type name
+          (*p).~T...[](); // expected-error {{use of undeclared identifier 'p'}} \
+               ^
+
+"Test_name.c", line 74: error: expected a ";"
+          (*p).~T...[](); // expected-error {{use of undeclared identifier 'p'}} \
+                 ^
+
+"Test_name.c", line 53: warning: constant "<unnamed>" is not used in declaring the parameter types of function template "lambda [](T...[0] *)->T...[0]::operator auto (*)(T...[0] *)->T...[0]"
+          [[maybe_unused]] auto l = []<T...[0]>(T...[0][1]) -> T...[0]{return{};};
+                                              ^
+          detected during instantiation of "const T...[0] SS<T...>::f(T...[0] &&) [with T=<int, base>]" at line 65
+
+18 errors detected in the compilation of "Test_name.c".

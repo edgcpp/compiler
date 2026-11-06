@@ -1,0 +1,7 @@
+import <linux-gcc/cpprtlib>
+# The runtime library is compiled against the host's glibc headers, which
+# use __float128 on x86-64; this configuration's front end has no 128-bit
+# floating-point types (and long double is binary64), so map them to double.
+__float128=double
+_Float128=__edg_rt_float128
+__TC__=__DC__

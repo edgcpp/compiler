@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 14: warning: variable "fn_ptr_ptr" was declared but never referenced
+    void (*[[attrA]] *[[attrB]] fn_ptr_ptr)() = &fn_ptr; // expected-warning{{unknown attribute 'attrA' ignored}} expected-warning{{unknown attribute 'attrB' ignored}}
+                                ^
+
+"Test_name.c", line 16: warning: variable "fn_lref" was declared but never referenced
+    void (&[[attr]] fn_lref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
+                    ^
+
+"Test_name.c", line 17: warning: variable "fn_rref" was declared but never referenced
+    void (&&[[attr]] fn_rref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
+                     ^
+
+"Test_name.c", line 20: warning: variable "pi" was set but never used
+    int (*[[attr(i[1])]] pi);  // expected-warning{{unknown attribute 'attr' ignored}}
+                         ^
+

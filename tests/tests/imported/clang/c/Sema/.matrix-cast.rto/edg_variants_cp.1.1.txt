@@ -1,0 +1,33 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 24: warning: variable "m1" is used before its value is set
+    m2 = (ix4x4)m1;
+                ^
+
+"Test_name.c", line 41: warning: conversion from pointer to smaller integer
+    m3 = (sx4x4)s;         // expected-error {{conversion between matrix type 'sx4x4' (aka 'short \
+         ^
+
+"Test_name.c", line 63: warning: variable "m1" is used before its value is set
+    m2 = (double_10x10)m1; // expected-error {{conversion between matrix types 'double_10x10' \
+                       ^
+
+"Test_name.c", line 68: warning: variable "m4" is used before its value is set
+    m5 = (unsigned_int_12x12)m4;
+                             ^
+
+"Test_name.c", line 77: warning: last line of file ends without a newline
+  }
+   ^
+
+"Test_name.c", line 56: warning: variable "m2" was set but never used
+    double_10x10 m2;
+                 ^
+
+"Test_name.c", line 57: warning: variable "m3" was set but never used
+    double_8x8 m3;
+               ^
+
+"Test_name.c", line 60: warning: variable "m6" was set but never used
+    unsigned_int_10x10 m6;
+                       ^
+

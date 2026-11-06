@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 191: error: incomplete type "PR18907::C<int>" is not allowed
+  class C : public C<int> {}; // expected-error{{within its own definition}}
+                   ^
+
+"Test_name.c", line 238: error: forward declaration of enum type is nonstandard
+      void g2(enum x2);  // expected-error{{ISO C++ forbids forward references to 'enum' types}}
+                   ^
+
+"Test_name.c", line 252: error: type definition is not allowed
+      void g4(struct x4 {} x);  // expected-error{{'x4' cannot be defined in a parameter type}}
+              ^
+
+"Test_name.c", line 257: error: type definition is not allowed
+      void g4(union x4 {} x);  // expected-error{{'x4' cannot be defined in a parameter type}}
+              ^
+
+"Test_name.c", line 273: error: forward declaration of enum type is nonstandard
+        f<enum new_enum>();  // expected-error{{ISO C++ forbids forward references to 'enum' types}}
+               ^
+
+"Test_name.c", line 422: error: expected a "}"
+        val = T::error;  // expected-error{{expected '}' or ','}} expected-error{{type 'int' cannot be used prior to '::' because it has no members}}
+                      ^
+"Test_name.c", line 421: note: to match this "{"
+      enum S {
+             ^
+
+"Test_name.c", line 429: error: expected a "}"
+        val = T::error;  // expected-error{{expected '}' or ','}} expected-error{{type 'int' cannot be used prior to '::' because it has no members}}
+                      ^
+"Test_name.c", line 428: note: to match this "{"
+      enum class S {
+                   ^
+
+"Test_name.c", line 454: error: identifier "undefined_val" is undefined
+      struct S { void g() noexcept(undefined_val); };  // expected-error{{use of undeclared identifier 'undefined_val'}}
+                                   ^
+
+"Test_name.c", line 498: error: default argument of type "std::nullptr_t" is incompatible with parameter of type "int"
+    void f(int x = [](T x = nullptr) -> int { return x; }());
+                            ^
+          detected during instantiation of "void PR45000::f<T>(int) [with T=int]" at line 503
+
+"Test_name.c", line 407: error: name followed by "::" must be a class or namespace name
+        void g1(int n = T::error);  // expected-error{{type 'int' cannot be used prior to '::' because it has no members}} \
+                        ^
+          detected during instantiation of "void PR21332::f1<T>() [with T=int]" at line 411
+
+"Test_name.c", line 415: error: name followed by "::" must be a class or namespace name
+        void g2() noexcept(T::error);  // expected-error{{type 'int' cannot be used prior to '::' because it has no members}}
+                           ^
+          detected during instantiation of "void PR21332::f2<T>() [with T=int]" at line 418
+
+"Test_name.c", line 422: error: name followed by "::" must be a class or namespace name
+        val = T::error;  // expected-error{{expected '}' or ','}} expected-error{{type 'int' cannot be used prior to '::' because it has no members}}
+              ^
+          detected during instantiation of "void PR21332::f3<T>() [with T=int]" at line 425
+
+"Test_name.c", line 429: error: name followed by "::" must be a class or namespace name
+        val = T::error;  // expected-error{{expected '}' or ','}} expected-error{{type 'int' cannot be used prior to '::' because it has no members}}
+              ^
+          detected during instantiation of "void PR21332::f4<T>() [with T=int]" at line 432
+
+"Test_name.c", line 436: error: name followed by "::" must be a class or namespace name
+        int val = T::error;  // expected-error {{type 'int' cannot be used prior to '::' because it has no members}}
+                  ^
+          detected during instantiation of "void PR21332::f5<T>() [with T=int]" at line 439
+
+"Test_name.c", line 445: error: name followed by "::" must be a class or namespace name
+            void g1(int n = T::error);  // expected-error {{type 'int' cannot be used prior to '::' because it has no members}} \
+                            ^
+          detected during instantiation of "void PR21332::f6<T>() [with T=int]" at line 451
+
+"Test_name.c", line 468: error: function "rdar23721638::A::A(const char *)" (declared at line 463) cannot be referenced -- it is a deleted function
+        void operator()(T a = "") {} // expected-error {{conversion function from 'const char[1]' to 'rdar23721638::A' invokes a deleted function}} \
+                              ^
+          detected during instantiation of "void rdar23721638::foo<T>() [with T=rdar23721638::A]" at line 474
+
+"Test_name.c", line 477: error: function "rdar23721638::A::A(const char *)" (declared at line 463) cannot be referenced -- it is a deleted function
+      auto lambda = [](T a = "") {}; // expected-error {{conversion function from 'const char[1]' to 'rdar23721638::A' invokes a deleted function}} \
+                             ^
+          detected during instantiation of "void rdar23721638::bar<T>() [with T=rdar23721638::A]" at line 482
+
+17 errors detected in the compilation of "Test_name.c".

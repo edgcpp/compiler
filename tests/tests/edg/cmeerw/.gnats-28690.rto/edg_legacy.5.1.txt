@@ -1,0 +1,23 @@
+fe_only -DTEST_NUMBER=5 -w --c++20 Test_name.c
+"Test_name.c", line 70: error: static assertion failed with ""
+    static_assert(C<int>::f(1) == 111, "");
+    ^
+"Test_name.c", line 70: note: the final comparison was 222 == 111
+    static_assert(C<int>::f(1) == 111, "");
+                               ^
+
+"Test_name.c", line 96: error: static assertion failed with ""
+    static_assert(C<int>::f(1) == 111, "");
+    ^
+"Test_name.c", line 96: note: the final comparison was 222 == 111
+    static_assert(C<int>::f(1) == 111, "");
+                               ^
+
+"Test_name.c", line 120: error: static assertion failed with ""
+    static_assert(f(C<int>{}, 1) == 111, "");
+    ^
+"Test_name.c", line 120: note: the final comparison was 222 == 111
+    static_assert(f(C<int>{}, 1) == 111, "");
+                                 ^
+
+3 errors detected in the compilation of "Test_name.c".

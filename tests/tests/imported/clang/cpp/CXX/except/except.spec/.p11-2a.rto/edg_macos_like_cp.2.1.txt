@@ -1,0 +1,139 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 -DDEFINE_FIRST Test_name.c
+"Test_name.c", line 46: error: static assertion failed
+    static_assert(!noexcept(C() == C()));
+    ^
+
+"Test_name.c", line 52: warning: missing return statement at end of non-void function "Eq::D<T>::operator=="
+      }
+      ^
+
+"Test_name.c", line 58: error: static assertion failed
+    static_assert(!noexcept(E() == E()));
+    ^
+
+"Test_name.c", line 66: error: static assertion failed
+    static_assert(!noexcept(F() == F()));
+    ^
+
+"Test_name.c", line 76: error: no valid std::weak_ordering type found (<compare> must be included)
+    DEF(Y() <=> Y());
+                    ^
+
+"Test_name.c", line 76: error: no valid std::partial_ordering type found (<compare> must be included)
+    DEF(Y() <=> Y());
+                    ^
+
+"Test_name.c", line 77: error: static assertion failed
+    static_assert(!noexcept(Y() <=> Y()));
+    ^
+
+"Test_name.c", line 94: error: static assertion failed
+    static_assert(!noexcept(B() <=> B()));
+    ^
+
+"Test_name.c", line 100: error: function "Spaceship::C::operator<=>(const Spaceship::C &) const" (declared at line 98) cannot be referenced -- it is a deleted function
+    DEF(C() <=> C());
+    ^
+
+"Test_name.c", line 101: error: function "Spaceship::C::operator<=>(const Spaceship::C &) const" (declared at line 98) cannot be referenced -- it is a deleted function
+    static_assert(!noexcept(C() <=> C()));
+                                ^
+
+"Test_name.c", line 101: error: static assertion failed
+    static_assert(!noexcept(C() <=> C()));
+    ^
+
+"Test_name.c", line 132: error: function "Spaceship::G::operator<=>(const Spaceship::G &) const" (declared at line 130) cannot be referenced -- it is a deleted function
+    DEF(G() <=> G());
+    ^
+
+"Test_name.c", line 133: error: function "Spaceship::G::operator<=>(const Spaceship::G &) const" (declared at line 130) cannot be referenced -- it is a deleted function
+    static_assert(!noexcept(G() <=> G()));
+                                ^
+
+"Test_name.c", line 133: error: static assertion failed
+    static_assert(!noexcept(G() <=> G()));
+    ^
+
+"Test_name.c", line 145: error: exception specification is incompatible with that of previous function "Synth::operator<=>" (declared at line 143)
+    std::strong_ordering operator<=>(B, B) noexcept;
+                                           ^
+
+"Test_name.c", line 155: error: exception specification is incompatible with that of previous function "Synth::operator<=>(Synth::D, Synth::D)" (declared at line 153)
+    std::strong_ordering operator<=>(D, D) noexcept; // expected-error {{does not match}}
+                                           ^
+
+"Test_name.c", line 165: error: exception specification is incompatible with that of previous function "Synth::operator<=>(Synth::F, Synth::F)" (declared at line 163)
+    std::strong_ordering operator<=>(F, F) noexcept; // expected-error {{does not match}}
+                                           ^
+
+"Test_name.c", line 179: error: exception specification is incompatible with that of previous function "Secondary::operator!=" (declared at line 171)
+    bool operator!=(A, A) noexcept; // expected-error {{does not match}}
+                          ^
+
+"Test_name.c", line 180: error: exception specification is incompatible with that of previous function "Secondary::operator<" (declared at line 174)
+    bool operator<(A, A) noexcept; // expected-error {{does not match}}
+                         ^
+
+"Test_name.c", line 181: error: exception specification is incompatible with that of previous function "Secondary::operator<=" (declared at line 175)
+    bool operator<=(A, A) noexcept; // expected-error {{does not match}}
+                          ^
+
+"Test_name.c", line 182: error: exception specification is incompatible with that of previous function "Secondary::operator>" (declared at line 176)
+    bool operator>(A, A) noexcept; // expected-error {{does not match}}
+                         ^
+
+"Test_name.c", line 183: error: exception specification is incompatible with that of previous function "Secondary::operator>=" (declared at line 177)
+    bool operator>=(A, A) noexcept; // expected-error {{does not match}}
+                          ^
+
+"Test_name.c", line 195: error: exception specification is incompatible with that of previous function "Secondary::operator!=(Secondary::B, Secondary::B)" (declared at line 187)
+    bool operator!=(B, B) noexcept;
+                          ^
+
+"Test_name.c", line 196: error: exception specification is incompatible with that of previous function "Secondary::operator<(Secondary::B, Secondary::B)" (declared at line 190)
+    bool operator<(B, B) noexcept;
+                         ^
+
+"Test_name.c", line 197: error: exception specification is incompatible with that of previous function "Secondary::operator<=(Secondary::B, Secondary::B)" (declared at line 191)
+    bool operator<=(B, B) noexcept;
+                          ^
+
+"Test_name.c", line 198: error: exception specification is incompatible with that of previous function "Secondary::operator>(Secondary::B, Secondary::B)" (declared at line 192)
+    bool operator>(B, B) noexcept;
+                         ^
+
+"Test_name.c", line 199: error: exception specification is incompatible with that of previous function "Secondary::operator>=(Secondary::B, Secondary::B)" (declared at line 193)
+    bool operator>=(B, B) noexcept;
+                          ^
+
+"Test_name.c", line 208: warning: "bool operator==(DefineBeforeComputingExceptionSpec::A<<unnamed>>, DefineBeforeComputingExceptionSpec::A<<unnamed>>)" declares a non-template function -- add <> to refer to a template instance
+      friend bool operator==(A, A); // expected-note 3{{passing}}
+                  ^
+
+"Test_name.c", line 213: error: function "DefineBeforeComputingExceptionSpec::operator!=(const DefineBeforeComputingExceptionSpec::A<1> &, const DefineBeforeComputingExceptionSpec::A<1> &)" (declared at line 209) cannot be referenced -- it is a deleted function
+    bool a1 = operator!=(A<1>(), A<1>()); // expected-note {{in defaulted equality comparison operator}}
+              ^
+
+"Test_name.c", line 216: error: exception specification is incompatible with that of previous function "DefineBeforeComputingExceptionSpec::operator!=(const DefineBeforeComputingExceptionSpec::A<2> &, const DefineBeforeComputingExceptionSpec::A<2> &)" (declared at line 209)
+    bool operator!=(const A<2>&, const A<2>&) noexcept; // expected-note {{in evaluation of exception specification}}
+                                              ^
+
+"Test_name.c", line 221: warning: "bool operator==(DefineBeforeComputingExceptionSpec::B<<unnamed>>, DefineBeforeComputingExceptionSpec::B<<unnamed>>)" declares a non-template function -- add <> to refer to a template instance
+      friend bool operator==(B, B); // expected-note 3{{passing}}
+                  ^
+
+"Test_name.c", line 226: error: function "DefineBeforeComputingExceptionSpec::B<<unnamed>>::operator!=(const DefineBeforeComputingExceptionSpec::B<<unnamed>> &) const [with <unnamed>=1]" (declared at line 222) cannot be referenced -- it is a deleted function
+    bool b1 = B<1>().operator!=(B<1>()); // expected-note {{in defaulted equality comparison operator}}
+                     ^
+
+"Test_name.c", line 227: error: function "DefineBeforeComputingExceptionSpec::B<<unnamed>>::operator!=(const DefineBeforeComputingExceptionSpec::B<<unnamed>> &) const [with <unnamed>=2]" (declared at line 222) cannot be referenced -- it is a deleted function
+    int b2 = sizeof(&B<2>::operator!=); // expected-note {{in evaluation of exception specification}}
+                           ^
+
+"Test_name.c", line 51: error: class "Eq::F" has no member "error"
+        typename T::error error; // expected-error {{no type}}
+                    ^
+          detected during instantiation of "bool Eq::D<T>::operator==(const Eq::D<T> &) const [with T=Eq::F]" at line 61
+
+31 errors detected in the compilation of "Test_name.c".

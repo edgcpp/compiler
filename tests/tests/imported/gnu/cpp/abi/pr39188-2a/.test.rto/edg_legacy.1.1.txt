@@ -1,0 +1,6 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c pr39188-2b.C
+Test_name.c:
+pr39188-2b.C:
+/usr/sbin/ld: pr39188-2b.o: in function `T1 f<T1>(T1) [with T1=int]':
+pr39188-2b.int.c:(.text+0xXX): multiple definition of `T1 f<T1>(T1) [with T1=int]'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+collect2: error: ld returned 1 exit status

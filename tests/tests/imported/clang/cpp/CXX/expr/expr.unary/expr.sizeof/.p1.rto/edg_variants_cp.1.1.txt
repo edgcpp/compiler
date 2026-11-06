@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 15: error: operand of sizeof may not be a bit field
+    x = sizeof(a->bitX); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 17: error: operand of sizeof may not be a bit field
+    x = sizeof(a->foo(), a->bitX); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 18: error: operand of sizeof may not be a bit field
+    x = sizeof(a->var ? a->bitX : a->bitY); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 19: error: operand of sizeof may not be a bit field
+    x = sizeof(a->var ? a->bitX : a->bitX); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 20: error: operand of sizeof may not be a bit field
+    x = sizeof(a->bitX = 3); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 21: error: operand of sizeof may not be a bit field
+    x = sizeof(a->bitY += 3); // expected-error {{invalid application of 'sizeof' to bit-field}}
+              ^
+
+"Test_name.c", line 14: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"Test_name.c", line 26: warning: incomplete type "void" is not allowed
+    x = sizeof(void); // expected-error {{invalid application of 'sizeof' to an incomplete type 'void'}}
+               ^
+
+"Test_name.c", line 27: warning: operand of sizeof may not be a function
+    x = sizeof(int()); // expected-error {{invalid application of 'sizeof' to a function type}}
+               ^
+
+"Test_name.c", line 28: warning: incomplete type "void" is not allowed
+    x = sizeof(test2()); // expected-error {{invalid application of 'sizeof' to an incomplete type 'void'}}
+              ^
+
+"Test_name.c", line 29: warning: operand of sizeof may not be a function
+    x = sizeof(test2); // expected-error {{invalid application of 'sizeof' to a function type}}
+              ^
+
+"Test_name.c", line 25: warning: variable "x" was set but never used
+    int x;
+        ^
+
+"Test_name.c", line 36: error: type name is not allowed
+      return sizeof T;  // expected-error {{expected parentheses around type name in sizeof expression}}
+                    ^
+
+7 errors detected in the compilation of "Test_name.c".

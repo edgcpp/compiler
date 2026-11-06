@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 10: error: type name is not allowed
+  static_assert(!__is_constructible(XX));;
+                                    ^
+
+"Test_name.c", line 10: error: identifier "__is_constructible" is undefined
+  static_assert(!__is_constructible(XX));;
+                 ^
+
+"Test_name.c", line 10: error: expected a comma (the one-argument version of static_assert is not enabled in this mode)
+  static_assert(!__is_constructible(XX));;
+                                       ^
+
+3 errors detected in the compilation of "Test_name.c".

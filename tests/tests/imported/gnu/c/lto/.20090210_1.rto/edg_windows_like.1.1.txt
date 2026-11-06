@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 8: error: expected a ";"
+    static int __thread value = 100;
+                        ^
+
+"Test_name.c", line 11: error: identifier "value" is undefined
+        volatile int *p = &value;
+                           ^
+
+"Test_name.c", line 8: warning: variable "__thread" was declared but never referenced
+    static int __thread value = 100;
+               ^
+
+2 errors detected in the compilation of "Test_name.c".

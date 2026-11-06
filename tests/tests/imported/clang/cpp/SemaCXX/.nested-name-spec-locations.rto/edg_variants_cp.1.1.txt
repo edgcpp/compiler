@@ -1,0 +1,101 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 29: error: pointer to reference is not allowed
+      * // expected-error{{declared as a pointer to a reference of type}}
+      ^
+          detected during instantiation of class "UnresolvedUsingValueDeclTester<T> [with T=int]" at line 33
+
+"Test_name.c", line 30: error: class "outer::inner::X0<<error-type> *>" has no member "value"
+          >::value;
+             ^
+          detected during instantiation of class "UnresolvedUsingValueDeclTester<T> [with T=int]" at line 33
+
+"Test_name.c", line 39: error: pointer to reference is not allowed
+      * // expected-error{{declared as a pointer to a reference of type}}
+      ^
+          detected during instantiation of class "UnresolvedUsingTypenameDeclTester<T> [with T=int]" at line 43
+
+"Test_name.c", line 40: error: class "outer::inner::X0<<error-type> *>" has no member "value"
+          >::value;
+             ^
+          detected during instantiation of class "UnresolvedUsingTypenameDeclTester<T> [with T=int]" at line 43
+
+"Test_name.c", line 85: error: pointer to reference is not allowed
+      * // expected-error{{declared as a pointer to a reference of type}}
+      ^
+          detected during instantiation of class "TypenameTypeTester<T> [with T=int]" at line 89
+
+"Test_name.c", line 86: error: class "outer::inner::X0<<error-type> *>" has no member "type"
+          >::type type;
+             ^
+          detected during instantiation of class "TypenameTypeTester<T> [with T=int]" at line 89
+
+"Test_name.c", line 94: error: pointer to reference is not allowed
+                                       * // expected-error{{declared as a pointer to a reference of type}}
+                                       ^
+          detected during instantiation of class "DependentTemplateSpecializationTypeTester<T, U> [with T=HasApply, U=int]" at line 105
+
+"Test_name.c", line 110: error: pointer to reference is not allowed
+                                       * // expected-error{{declared as a pointer to a reference of type}}
+                                       ^
+          detected during instantiation of class "DependentTemplateSpecializationTypeTester2<T, U> [with T=HasApply, U=int]" at line 114
+
+"Test_name.c", line 119: error: pointer to reference is not allowed
+                                       * // expected-error{{declared as a pointer to a reference of type}}
+                                       ^
+          detected during instantiation of class "DependentTemplateSpecializationTypeTester3<T, U> [with T=HasApply, U=int]" at line 123
+
+"Test_name.c", line 128: error: pointer to reference is not allowed
+                                       * // expected-error{{declared as a pointer to a reference of type}}
+                                       ^
+          detected during instantiation of class "DependentTemplateSpecializationTypeTester4<T, U> [with T=HasApply, U=int]" at line 132
+
+"Test_name.c", line 144: error: pointer to reference is not allowed
+                * // expected-error{{declared as a pointer to a reference of type}}
+                ^
+          detected during instantiation of class "DependentTemplateTemplateArgumentTester<T, U> [with T=HasApply, U=int]" at line 150
+
+"Test_name.c", line 146: error: name followed by "::" must be a class or namespace name
+              template X>
+                       ^
+          detected during instantiation of class "DependentTemplateTemplateArgumentTester<T, U> [with T=HasApply, U=int]" at line 150
+
+"Test_name.c", line 147: error: expected a ">"
+      type;
+          ^
+          detected during instantiation of class "DependentTemplateTemplateArgumentTester<T, U> [with T=HasApply, U=int]" at line 150
+
+"Test_name.c", line 147: warning: declaration requires a typedef name
+      type;
+          ^
+          detected during instantiation of class "DependentTemplateTemplateArgumentTester<T, U> [with T=HasApply, U=int]" at line 150
+
+"Test_name.c", line 158: warning: expression has no effect
+      __PRETTY_FUNCTION__; // expected-warning{{expression result unused}}
+      ^
+
+"Test_name.c", line 50: error: pointer to reference is not allowed
+        * // expected-error{{as a pointer to a reference of type}}
+        ^
+          detected during instantiation of "void PseudoDestructorExprTester<T, U>::f(T *) [with T=HasInnerTemplate, U=float]" at line 64
+
+"Test_name.c", line 51: error: incomplete type "HasInnerTemplate::Inner<<error-type> *>" is not allowed
+        >::Blarg::~Blarg();
+        ^
+          detected during instantiation of "void PseudoDestructorExprTester<T, U>::f(T *) [with T=HasInnerTemplate, U=float]" at line 64
+
+"Test_name.c", line 51: error: invalid destructor name for type "HasInnerTemplate"
+        >::Blarg::~Blarg();
+                   ^
+          detected during instantiation of "void PseudoDestructorExprTester<T, U>::f(T *) [with T=HasInnerTemplate, U=float]" at line 64
+
+"Test_name.c", line 71: error: pointer to reference is not allowed
+        * // expected-error{{as a pointer to a reference of type}}
+        ^
+          detected during instantiation of "void DependentScopedDeclRefExpr<T>::f() [with T=int]" at line 77
+
+"Test_name.c", line 72: error: class "outer::inner::X0<<error-type> *>" has no member "value"
+        >::value = 17;
+           ^
+          detected during instantiation of "void DependentScopedDeclRefExpr<T>::f() [with T=int]" at line 77
+
+18 errors detected in the compilation of "Test_name.c".

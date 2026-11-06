@@ -1,0 +1,408 @@
+fe_only -DTEST_NUMBER=2 --c++20 --gn 150200 --target linux_riscv32 Test_name.c
+"Test_name.c", line 7: warning: unrecognized #pragma
+  #pragma riscv intrinsic "vector"
+          ^
+
+"Test_name.c", line 12: error: incomplete type "void" is not allowed
+  void g(__RISCV_FRM, __RISCV_VXRM)
+       ^
+
+"Test_name.c", line 12: error: identifier "__RISCV_FRM" is undefined
+  void g(__RISCV_FRM, __RISCV_VXRM)
+         ^
+
+"Test_name.c", line 12: error: identifier "__RISCV_VXRM" is undefined
+  void g(__RISCV_FRM, __RISCV_VXRM)
+                      ^
+
+"Test_name.c", line 13: error: expected a ";"
+  { }
+  ^
+
+"Test_name.c", line 16: error: identifier "__RISCV_FRM_RTZ" is undefined
+  static_assert(__RISCV_FRM_RTZ == 1, "");
+                ^
+
+"Test_name.c", line 17: error: identifier "__RISCV_FRM_RDN" is undefined
+  static_assert(__RISCV_FRM_RDN == 2, "");
+                ^
+
+"Test_name.c", line 18: error: identifier "__RISCV_FRM_RUP" is undefined
+  static_assert(__RISCV_FRM_RUP == 3, "");
+                ^
+
+"Test_name.c", line 19: error: identifier "__RISCV_FRM_RMM" is undefined
+  static_assert(__RISCV_FRM_RMM == 4, "");
+                ^
+
+"Test_name.c", line 21: error: identifier "__RISCV_VXRM_RNU" is undefined
+  static_assert(__RISCV_VXRM_RNU == 0, "");
+                ^
+
+"Test_name.c", line 22: error: identifier "__RISCV_VXRM_RNE" is undefined
+  static_assert(__RISCV_VXRM_RNE == 1, "");
+                ^
+
+"Test_name.c", line 23: error: identifier "__RISCV_VXRM_RDN" is undefined
+  static_assert(__RISCV_VXRM_RDN == 2, "");
+                ^
+
+"Test_name.c", line 24: error: identifier "__RISCV_VXRM_ROD" is undefined
+  static_assert(__RISCV_VXRM_ROD == 3, "");
+                ^
+
+"Test_name.c", line 30: error: identifier "__rvv_bool64_t" is undefined
+    typedef __rvv_bool64_t vbool64_t;
+            ^
+
+"Test_name.c", line 31: error: identifier "__rvv_bool32_t" is undefined
+    typedef __rvv_bool32_t vbool32_t;
+            ^
+
+"Test_name.c", line 32: error: identifier "__rvv_bool16_t" is undefined
+    typedef __rvv_bool16_t vbool16_t;
+            ^
+
+"Test_name.c", line 33: error: identifier "__rvv_bool8_t" is undefined
+    typedef __rvv_bool8_t vbool8_t;
+            ^
+
+"Test_name.c", line 34: error: identifier "__rvv_bool4_t" is undefined
+    typedef __rvv_bool4_t vbool4_t;
+            ^
+
+"Test_name.c", line 35: error: identifier "__rvv_bool2_t" is undefined
+    typedef __rvv_bool2_t vbool2_t;
+            ^
+
+"Test_name.c", line 36: error: identifier "__rvv_bool1_t" is undefined
+    typedef __rvv_bool1_t vbool1_t;
+            ^
+
+"Test_name.c", line 37: error: identifier "__rvv_int8mf8_t" is undefined
+    typedef __rvv_int8mf8_t vint8mf8_t;
+            ^
+
+"Test_name.c", line 38: error: identifier "__rvv_uint8mf8_t" is undefined
+    typedef __rvv_uint8mf8_t vuint8mf8_t;
+            ^
+
+"Test_name.c", line 39: error: identifier "__rvv_int8mf8x2_t" is undefined
+    typedef __rvv_int8mf8x2_t vint8mf8x2_t;
+            ^
+
+"Test_name.c", line 40: error: identifier "__rvv_uint8mf8x2_t" is undefined
+    typedef __rvv_uint8mf8x2_t vuint8mf8x2_t;
+            ^
+
+"Test_name.c", line 41: error: identifier "__rvv_int8mf8x3_t" is undefined
+    typedef __rvv_int8mf8x3_t vint8mf8x3_t;
+            ^
+
+"Test_name.c", line 42: error: identifier "__rvv_uint8mf8x3_t" is undefined
+    typedef __rvv_uint8mf8x3_t vuint8mf8x3_t;
+            ^
+
+"Test_name.c", line 43: error: identifier "__rvv_int8mf8x4_t" is undefined
+    typedef __rvv_int8mf8x4_t vint8mf8x4_t;
+            ^
+
+"Test_name.c", line 44: error: identifier "__rvv_uint8mf8x4_t" is undefined
+    typedef __rvv_uint8mf8x4_t vuint8mf8x4_t;
+            ^
+
+"Test_name.c", line 45: error: identifier "__rvv_int8mf8x5_t" is undefined
+    typedef __rvv_int8mf8x5_t vint8mf8x5_t;
+            ^
+
+"Test_name.c", line 46: error: identifier "__rvv_uint8mf8x5_t" is undefined
+    typedef __rvv_uint8mf8x5_t vuint8mf8x5_t;
+            ^
+
+"Test_name.c", line 47: error: identifier "__rvv_int8mf8x6_t" is undefined
+    typedef __rvv_int8mf8x6_t vint8mf8x6_t;
+            ^
+
+"Test_name.c", line 48: error: identifier "__rvv_uint8mf8x6_t" is undefined
+    typedef __rvv_uint8mf8x6_t vuint8mf8x6_t;
+            ^
+
+"Test_name.c", line 49: error: identifier "__rvv_int8mf8x7_t" is undefined
+    typedef __rvv_int8mf8x7_t vint8mf8x7_t;
+            ^
+
+"Test_name.c", line 50: error: identifier "__rvv_uint8mf8x7_t" is undefined
+    typedef __rvv_uint8mf8x7_t vuint8mf8x7_t;
+            ^
+
+"Test_name.c", line 51: error: identifier "__rvv_int8mf8x8_t" is undefined
+    typedef __rvv_int8mf8x8_t vint8mf8x8_t;
+            ^
+
+"Test_name.c", line 52: error: identifier "__rvv_uint8mf8x8_t" is undefined
+    typedef __rvv_uint8mf8x8_t vuint8mf8x8_t;
+            ^
+
+"Test_name.c", line 53: error: identifier "__rvv_int8mf4_t" is undefined
+    typedef __rvv_int8mf4_t vint8mf4_t;
+            ^
+
+"Test_name.c", line 54: error: identifier "__rvv_uint8mf4_t" is undefined
+    typedef __rvv_uint8mf4_t vuint8mf4_t;
+            ^
+
+"Test_name.c", line 55: error: identifier "__rvv_int8mf4x2_t" is undefined
+    typedef __rvv_int8mf4x2_t vint8mf4x2_t;
+            ^
+
+"Test_name.c", line 56: error: identifier "__rvv_uint8mf4x2_t" is undefined
+    typedef __rvv_uint8mf4x2_t vuint8mf4x2_t;
+            ^
+
+"Test_name.c", line 57: error: identifier "__rvv_int8mf4x3_t" is undefined
+    typedef __rvv_int8mf4x3_t vint8mf4x3_t;
+            ^
+
+"Test_name.c", line 58: error: identifier "__rvv_uint8mf4x3_t" is undefined
+    typedef __rvv_uint8mf4x3_t vuint8mf4x3_t;
+            ^
+
+"Test_name.c", line 59: error: identifier "__rvv_int8mf4x4_t" is undefined
+    typedef __rvv_int8mf4x4_t vint8mf4x4_t;
+            ^
+
+"Test_name.c", line 60: error: identifier "__rvv_uint8mf4x4_t" is undefined
+    typedef __rvv_uint8mf4x4_t vuint8mf4x4_t;
+            ^
+
+"Test_name.c", line 61: error: identifier "__rvv_int8mf4x5_t" is undefined
+    typedef __rvv_int8mf4x5_t vint8mf4x5_t;
+            ^
+
+"Test_name.c", line 62: error: identifier "__rvv_uint8mf4x5_t" is undefined
+    typedef __rvv_uint8mf4x5_t vuint8mf4x5_t;
+            ^
+
+"Test_name.c", line 63: error: identifier "__rvv_int8mf4x6_t" is undefined
+    typedef __rvv_int8mf4x6_t vint8mf4x6_t;
+            ^
+
+"Test_name.c", line 64: error: identifier "__rvv_uint8mf4x6_t" is undefined
+    typedef __rvv_uint8mf4x6_t vuint8mf4x6_t;
+            ^
+
+"Test_name.c", line 65: error: identifier "__rvv_int8mf4x7_t" is undefined
+    typedef __rvv_int8mf4x7_t vint8mf4x7_t;
+            ^
+
+"Test_name.c", line 66: error: identifier "__rvv_uint8mf4x7_t" is undefined
+    typedef __rvv_uint8mf4x7_t vuint8mf4x7_t;
+            ^
+
+"Test_name.c", line 67: error: identifier "__rvv_int8mf4x8_t" is undefined
+    typedef __rvv_int8mf4x8_t vint8mf4x8_t;
+            ^
+
+"Test_name.c", line 68: error: identifier "__rvv_uint8mf4x8_t" is undefined
+    typedef __rvv_uint8mf4x8_t vuint8mf4x8_t;
+            ^
+
+"Test_name.c", line 69: error: identifier "__rvv_int8mf2_t" is undefined
+    typedef __rvv_int8mf2_t vint8mf2_t;
+            ^
+
+"Test_name.c", line 70: error: identifier "__rvv_uint8mf2_t" is undefined
+    typedef __rvv_uint8mf2_t vuint8mf2_t;
+            ^
+
+"Test_name.c", line 71: error: identifier "__rvv_int8mf2x2_t" is undefined
+    typedef __rvv_int8mf2x2_t vint8mf2x2_t;
+            ^
+
+"Test_name.c", line 72: error: identifier "__rvv_uint8mf2x2_t" is undefined
+    typedef __rvv_uint8mf2x2_t vuint8mf2x2_t;
+            ^
+
+"Test_name.c", line 73: error: identifier "__rvv_int8mf2x3_t" is undefined
+    typedef __rvv_int8mf2x3_t vint8mf2x3_t;
+            ^
+
+"Test_name.c", line 74: error: identifier "__rvv_uint8mf2x3_t" is undefined
+    typedef __rvv_uint8mf2x3_t vuint8mf2x3_t;
+            ^
+
+"Test_name.c", line 75: error: identifier "__rvv_int8mf2x4_t" is undefined
+    typedef __rvv_int8mf2x4_t vint8mf2x4_t;
+            ^
+
+"Test_name.c", line 76: error: identifier "__rvv_uint8mf2x4_t" is undefined
+    typedef __rvv_uint8mf2x4_t vuint8mf2x4_t;
+            ^
+
+"Test_name.c", line 77: error: identifier "__rvv_int8mf2x5_t" is undefined
+    typedef __rvv_int8mf2x5_t vint8mf2x5_t;
+            ^
+
+"Test_name.c", line 78: error: identifier "__rvv_uint8mf2x5_t" is undefined
+    typedef __rvv_uint8mf2x5_t vuint8mf2x5_t;
+            ^
+
+"Test_name.c", line 79: error: identifier "__rvv_int8mf2x6_t" is undefined
+    typedef __rvv_int8mf2x6_t vint8mf2x6_t;
+            ^
+
+"Test_name.c", line 80: error: identifier "__rvv_uint8mf2x6_t" is undefined
+    typedef __rvv_uint8mf2x6_t vuint8mf2x6_t;
+            ^
+
+"Test_name.c", line 81: error: identifier "__rvv_int8mf2x7_t" is undefined
+    typedef __rvv_int8mf2x7_t vint8mf2x7_t;
+            ^
+
+"Test_name.c", line 82: error: identifier "__rvv_uint8mf2x7_t" is undefined
+    typedef __rvv_uint8mf2x7_t vuint8mf2x7_t;
+            ^
+
+"Test_name.c", line 83: error: identifier "__rvv_int8mf2x8_t" is undefined
+    typedef __rvv_int8mf2x8_t vint8mf2x8_t;
+            ^
+
+"Test_name.c", line 84: error: identifier "__rvv_uint8mf2x8_t" is undefined
+    typedef __rvv_uint8mf2x8_t vuint8mf2x8_t;
+            ^
+
+"Test_name.c", line 85: error: identifier "__rvv_int8m1_t" is undefined
+    typedef __rvv_int8m1_t vint8m1_t;
+            ^
+
+"Test_name.c", line 86: error: identifier "__rvv_uint8m1_t" is undefined
+    typedef __rvv_uint8m1_t vuint8m1_t;
+            ^
+
+"Test_name.c", line 87: error: identifier "__rvv_int8m1x2_t" is undefined
+    typedef __rvv_int8m1x2_t vint8m1x2_t;
+            ^
+
+"Test_name.c", line 88: error: identifier "__rvv_uint8m1x2_t" is undefined
+    typedef __rvv_uint8m1x2_t vuint8m1x2_t;
+            ^
+
+"Test_name.c", line 89: error: identifier "__rvv_int8m1x3_t" is undefined
+    typedef __rvv_int8m1x3_t vint8m1x3_t;
+            ^
+
+"Test_name.c", line 90: error: identifier "__rvv_uint8m1x3_t" is undefined
+    typedef __rvv_uint8m1x3_t vuint8m1x3_t;
+            ^
+
+"Test_name.c", line 91: error: identifier "__rvv_int8m1x4_t" is undefined
+    typedef __rvv_int8m1x4_t vint8m1x4_t;
+            ^
+
+"Test_name.c", line 92: error: identifier "__rvv_uint8m1x4_t" is undefined
+    typedef __rvv_uint8m1x4_t vuint8m1x4_t;
+            ^
+
+"Test_name.c", line 93: error: identifier "__rvv_int8m1x5_t" is undefined
+    typedef __rvv_int8m1x5_t vint8m1x5_t;
+            ^
+
+"Test_name.c", line 94: error: identifier "__rvv_uint8m1x5_t" is undefined
+    typedef __rvv_uint8m1x5_t vuint8m1x5_t;
+            ^
+
+"Test_name.c", line 95: error: identifier "__rvv_int8m1x6_t" is undefined
+    typedef __rvv_int8m1x6_t vint8m1x6_t;
+            ^
+
+"Test_name.c", line 96: error: identifier "__rvv_uint8m1x6_t" is undefined
+    typedef __rvv_uint8m1x6_t vuint8m1x6_t;
+            ^
+
+"Test_name.c", line 97: error: identifier "__rvv_int8m1x7_t" is undefined
+    typedef __rvv_int8m1x7_t vint8m1x7_t;
+            ^
+
+"Test_name.c", line 98: error: identifier "__rvv_uint8m1x7_t" is undefined
+    typedef __rvv_uint8m1x7_t vuint8m1x7_t;
+            ^
+
+"Test_name.c", line 99: error: identifier "__rvv_int8m1x8_t" is undefined
+    typedef __rvv_int8m1x8_t vint8m1x8_t;
+            ^
+
+"Test_name.c", line 100: error: identifier "__rvv_uint8m1x8_t" is undefined
+    typedef __rvv_uint8m1x8_t vuint8m1x8_t;
+            ^
+
+"Test_name.c", line 101: error: identifier "__rvv_int8m2_t" is undefined
+    typedef __rvv_int8m2_t vint8m2_t;
+            ^
+
+"Test_name.c", line 102: error: identifier "__rvv_uint8m2_t" is undefined
+    typedef __rvv_uint8m2_t vuint8m2_t;
+            ^
+
+"Test_name.c", line 103: error: identifier "__rvv_int8m2x2_t" is undefined
+    typedef __rvv_int8m2x2_t vint8m2x2_t;
+            ^
+
+"Test_name.c", line 104: error: identifier "__rvv_uint8m2x2_t" is undefined
+    typedef __rvv_uint8m2x2_t vuint8m2x2_t;
+            ^
+
+"Test_name.c", line 105: error: identifier "__rvv_int8m2x3_t" is undefined
+    typedef __rvv_int8m2x3_t vint8m2x3_t;
+            ^
+
+"Test_name.c", line 106: error: identifier "__rvv_uint8m2x3_t" is undefined
+    typedef __rvv_uint8m2x3_t vuint8m2x3_t;
+            ^
+
+"Test_name.c", line 107: error: identifier "__rvv_int8m2x4_t" is undefined
+    typedef __rvv_int8m2x4_t vint8m2x4_t;
+            ^
+
+"Test_name.c", line 108: error: identifier "__rvv_uint8m2x4_t" is undefined
+    typedef __rvv_uint8m2x4_t vuint8m2x4_t;
+            ^
+
+"Test_name.c", line 109: error: identifier "__rvv_int8m4_t" is undefined
+    typedef __rvv_int8m4_t vint8m4_t;
+            ^
+
+"Test_name.c", line 110: error: identifier "__rvv_uint8m4_t" is undefined
+    typedef __rvv_uint8m4_t vuint8m4_t;
+            ^
+
+"Test_name.c", line 111: error: identifier "__rvv_int8m4x2_t" is undefined
+    typedef __rvv_int8m4x2_t vint8m4x2_t;
+            ^
+
+"Test_name.c", line 112: error: identifier "__rvv_uint8m4x2_t" is undefined
+    typedef __rvv_uint8m4x2_t vuint8m4x2_t;
+            ^
+
+"Test_name.c", line 113: error: identifier "__rvv_int8m8_t" is undefined
+    typedef __rvv_int8m8_t vint8m8_t;
+            ^
+
+"Test_name.c", line 114: error: identifier "__rvv_uint8m8_t" is undefined
+    typedef __rvv_uint8m8_t vuint8m8_t;
+            ^
+
+"Test_name.c", line 115: error: identifier "__rvv_int16mf4_t" is undefined
+    typedef __rvv_int16mf4_t vint16mf4_t;
+            ^
+
+"Test_name.c", line 116: error: identifier "__rvv_uint16mf4_t" is undefined
+    typedef __rvv_uint16mf4_t vuint16mf4_t;
+            ^
+
+"Test_name.c", line 117: error: identifier "__rvv_int16mf4x2_t" is undefined
+    typedef __rvv_int16mf4x2_t vint16mf4x2_t;
+            ^
+
+Error limit reached.
+100 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

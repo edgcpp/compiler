@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 20: error: incomplete type "S<0>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during implicit definition of "int U<N>::a [with N=0]" at line 24
+
+"Test_name.c", line 20: error: incomplete type "S<1>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during implicit definition of "int U<N>::a [with N=1]" at line 25
+
+"Test_name.c", line 20: error: incomplete type "S<2>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during implicit definition of "int U<N>::a [with N=2]" at line 26
+
+"Test_name.c", line 20: error: incomplete type "S<3>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during implicit definition of "int U<N>::a [with N=3]" at line 32
+
+"Test_name.c", line 20: error: incomplete type "S<4>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during implicit definition of "int U<N>::a [with N=4]" at line 33
+
+"Test_name.c", line 20: error: incomplete type "S<5>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during implicit definition of "int U<N>::a [with N=5]" at line 34
+
+"Test_name.c", line 20: error: incomplete type "S<10>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during:
+            implicit definition of "int U<N>::a [with N=10]" at line 39
+            instantiation of "void fi<N>() [with N=10]" at line 46
+
+"Test_name.c", line 20: error: incomplete type "S<11>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during:
+            implicit definition of "int U<N>::a [with N=11]" at line 40
+            instantiation of "void fi<N>() [with N=10]" at line 46
+
+"Test_name.c", line 20: error: incomplete type "S<12>" is not allowed
+  int U<N>::a = S<N>::kError; // expected-error 6{{undefined}}
+                ^
+          detected during:
+            implicit definition of "int U<N>::a [with N=12]" at line 41
+            instantiation of "void fi<N>() [with N=10]" at line 46
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,70 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./contracts/contracts-redecl7.C", line 9: error: expected a ","
+    int now(int a, T *t) [[ pre: a > 0 ]] [[ pre: x < 0 ]];
+                               ^
+
+"./contracts/contracts-redecl7.C", line 9: error: expected a "]"
+    int now(int a, T *t) [[ pre: a > 0 ]] [[ pre: x < 0 ]];
+                               ^
+
+"./contracts/contracts-redecl7.C", line 9: error: expected a ";"
+    int now(int a, T *t) [[ pre: a > 0 ]] [[ pre: x < 0 ]];
+                               ^
+
+"./contracts/contracts-redecl7.C", line 15: error: expected a ","
+  int now(int a, T *t) [[ pre: a > 0 ]];
+                             ^
+
+"./contracts/contracts-redecl7.C", line 17: error: expected a ","
+  int both(int a, T *t) [[ pre: a > 0 ]];
+                              ^
+
+"./contracts/contracts-redecl7.C", line 22: error: expected a ","
+    friend int later(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]]
+                                        ^
+
+"./contracts/contracts-redecl7.C", line 22: error: expected a "]"
+    friend int later(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]]
+                                        ^
+
+"./contracts/contracts-redecl7.C", line 22: error: expected a ";"
+    friend int later(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]]
+                                        ^
+
+"./contracts/contracts-redecl7.C", line 34: warning: parsing restarts here after previous syntax error
+    friend int S::now(int a, T *t);
+                                  ^
+
+"./contracts/contracts-redecl7.C", line 36: error: expected a ","
+    friend int hidden(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]]
+                                         ^
+
+"./contracts/contracts-redecl7.C", line 36: error: expected a "]"
+    friend int hidden(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]]
+                                         ^
+
+"./contracts/contracts-redecl7.C", line 36: error: expected a ";"
+    friend int hidden(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]]
+                                         ^
+
+"./contracts/contracts-redecl7.C", line 47: warning: parsing restarts here after previous syntax error
+    int x{1};
+            ^
+
+"./contracts/contracts-redecl7.C", line 52: error: expected a ","
+  int hidden2(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]];
+                                 ^
+
+"./contracts/contracts-redecl7.C", line 52: error: expected a ","
+  int hidden2(int a, T *t) [[ pre: a > 0 ]] [[ pre: t->pri > 0 ]];
+                                                  ^
+
+"./contracts/contracts-redecl7.C", line 56: error: member "T::pri" (declared at line 49) is inaccessible
+    printf("S::now: a: %d, t->pri: %d\n", a, t->pri);
+                                                ^
+
+"./contracts/contracts-redecl7.C", line 57: error: member "T::pri" (declared at line 49) is inaccessible
+    return -a * t->pri;
+                   ^
+
+15 errors detected in the compilation of "Test_name.c".

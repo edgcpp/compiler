@@ -1,0 +1,302 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 10: error: expression must have a constant value
+  constexpr int b = bar (2);		// { dg-message "in 'constexpr' expansion of" }
+                    ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 12: error: call to consteval function "bar" did not produce a valid constant expression
+  const int d = bar (4);			// { dg-message "in 'constexpr' expansion of" }
+                    ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 14: error: call to consteval function "bar" did not produce a valid constant expression
+  const int e = 0 ? bar (5) : 1;
+                        ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 16: error: call to consteval function "bar" did not produce a valid constant expression
+  int g = bar (6);			// { dg-message "in 'constexpr' expansion of" }
+              ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 18: error: call to consteval function "bar" did not produce a valid constant expression
+  int h = 0 ? bar (7) : 1;
+                  ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 24: error: expression must have a constant value
+    constexpr int b = bar (2);		// { dg-message "in 'constexpr' expansion of" }
+                      ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 26: error: call to consteval function "bar" did not produce a valid constant expression
+    const int d = bar (4);		// { dg-message "in 'constexpr' expansion of" }
+                      ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 28: error: call to consteval function "bar" did not produce a valid constant expression
+    const int e = 0 ? bar (5) : 1;
+                          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 30: error: call to consteval function "bar" did not produce a valid constant expression
+    int g = bar (6);			// { dg-message "in 'constexpr' expansion of" }
+                ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 32: error: call to consteval function "bar" did not produce a valid constant expression
+    int h = 0 ? bar (7) : 1;		// { dg-message "in 'constexpr' expansion of" }
+                    ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 34: error: call to consteval function "bar" did not produce a valid constant expression
+    h += 0 ? bar (8) : 1;			// { dg-message "in 'constexpr' expansion of" }
+                 ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 37: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (9);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 40: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (10);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 43: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (11);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 46: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (12);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 49: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (13);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 51: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (14);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 54: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (15);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 57: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (16);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 23: warning: variable "a" was declared but never referenced
+    constexpr int a = bar (1);
+                  ^
+
+"Test_name.c", line 24: warning: variable "b" was declared but never referenced
+    constexpr int b = bar (2);		// { dg-message "in 'constexpr' expansion of" }
+                  ^
+
+"Test_name.c", line 25: warning: variable "c" was declared but never referenced
+    constexpr int c = 0 ? bar (3) : 1;
+                  ^
+
+"Test_name.c", line 29: warning: variable "f" was declared but never referenced
+    int f = bar (1);
+        ^
+
+"Test_name.c", line 64: error: expression must have a constant value
+    constexpr int b = bar (2);		// { dg-message "in 'constexpr' expansion of" }
+                      ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 63: warning: variable "a" was declared but never referenced
+    constexpr int a = bar (1);
+                  ^
+
+"Test_name.c", line 64: warning: variable "b" was declared but never referenced
+    constexpr int b = bar (2);		// { dg-message "in 'constexpr' expansion of" }
+                  ^
+
+"Test_name.c", line 65: warning: variable "c" was declared but never referenced
+    constexpr int c = 0 ? bar (3) : 1;
+                  ^
+
+"Test_name.c", line 67: warning: variable "e" was declared but never referenced
+    const int e = 0 ? bar (5) : 1;
+              ^
+
+"Test_name.c", line 68: warning: variable "f" was declared but never referenced
+    int f = bar (1);
+        ^
+
+"Test_name.c", line 99: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (2);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 101: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (3);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 103: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (4);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 105: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (5);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 107: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (6);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 109: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (7);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 111: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (8);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 113: error: call to consteval function "bar" did not produce a valid constant expression
+      bar (9);
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+
+"Test_name.c", line 137: error: call to consteval function "bar" did not produce a valid constant expression
+      bar ((T) 2);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void quux<T>() [with T=int]" at line 163
+
+"Test_name.c", line 140: error: call to consteval function "bar" did not produce a valid constant expression
+      bar ((T) 3);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void quux<T>() [with T=int]" at line 163
+
+"Test_name.c", line 143: error: call to consteval function "bar" did not produce a valid constant expression
+      bar ((T) 4);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void quux<T>() [with T=int]" at line 163
+
+"Test_name.c", line 146: error: call to consteval function "bar" did not produce a valid constant expression
+      bar ((T) 5);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void quux<T>() [with T=int]" at line 163
+
+"Test_name.c", line 151: error: call to consteval function "bar" did not produce a valid constant expression
+      bar ((T) 7);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void quux<T>() [with T=int]" at line 163
+
+"Test_name.c", line 154: error: call to consteval function "bar" did not produce a valid constant expression
+      bar ((T) 8);				// { dg-message "in 'constexpr' expansion of" }
+          ^
+"Test_name.c", line 7: note: expression cannot be interpreted
+  consteval int bar (int i) { if (i != 1) throw 1; return 0; }	// { dg-error "is not a constant expression" }
+                                          ^
+          detected during instantiation of "void quux<T>() [with T=int]" at line 163
+
+"Test_name.c", line 9: warning: variable "a" was declared but never referenced
+  constexpr int a = bar (1);
+                ^
+
+"Test_name.c", line 10: warning: variable "b" was declared but never referenced
+  constexpr int b = bar (2);		// { dg-message "in 'constexpr' expansion of" }
+                ^
+
+"Test_name.c", line 11: warning: variable "c" was declared but never referenced
+  constexpr int c = 0 ? bar (3) : 1;
+                ^
+
+"Test_name.c", line 12: warning: variable "d" was declared but never referenced
+  const int d = bar (4);			// { dg-message "in 'constexpr' expansion of" }
+            ^
+
+"Test_name.c", line 14: warning: variable "e" was declared but never referenced
+  const int e = 0 ? bar (5) : 1;
+            ^
+
+34 errors detected in the compilation of "Test_name.c".

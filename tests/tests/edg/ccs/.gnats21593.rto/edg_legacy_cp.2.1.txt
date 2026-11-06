@@ -1,0 +1,243 @@
+cpfe -DTEST_NUMBER=2 --diag_suppress 174,177 -tused --set_flag=no_checking_pragmas --c++17 -r Test_name.c
+"Test_name.c", line 26: remark: a volatile operand to an increment expression is deprecated
+    vi++; // Deprecated
+    ^
+
+"Test_name.c", line 28: remark: a volatile operand to a decrement expression is deprecated
+    vi--; // Deprecated
+    ^
+
+"Test_name.c", line 31: remark: a volatile operand to an increment expression is deprecated
+    ++vi; // Deprecated
+      ^
+
+"Test_name.c", line 33: remark: a volatile operand to a decrement expression is deprecated
+    --vi; // Deprecated
+      ^
+
+"Test_name.c", line 76: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    vi = vi = i; // Deprecated
+         ^
+
+"Test_name.c", line 47: remark: a volatile function parameter is deprecated
+  void templass(T t, U u) {
+                     ^
+          detected during instantiation of "templass" based on template arguments <int, volatile int> at line 81
+
+"Test_name.c", line 47: remark: a volatile function parameter is deprecated
+  void templass(T t, U u) {
+                     ^
+          detected during instantiation of "templass" based on template arguments <A, volatile A> at line 83
+
+"Test_name.c", line 86: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    (int)(vi = i); // Deprecated
+          ^
+
+"Test_name.c", line 89: remark: empty dependent statement in if-statement
+    if (i = vi, vi); // Should not warn
+                   ^
+
+"Test_name.c", line 90: remark: empty dependent statement in if-statement
+    if (vi = i, vi); // Should not warn
+                   ^
+
+"Test_name.c", line 91: remark: empty dependent statement in if-statement
+    if (vi, i = vi); // Should not warn
+                   ^
+
+"Test_name.c", line 92: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    if (vi, vi = i); // Deprecated
+            ^
+
+"Test_name.c", line 92: remark: empty dependent statement in if-statement
+    if (vi, vi = i); // Deprecated
+                   ^
+
+"Test_name.c", line 93: remark: empty dependent statement in if-statement
+    if (i = vi); // Should not warn
+               ^
+
+"Test_name.c", line 94: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    if (vi = i); // Deprecated
+        ^
+
+"Test_name.c", line 94: remark: empty dependent statement in if-statement
+    if (vi = i); // Deprecated
+               ^
+
+"Test_name.c", line 135: remark: a volatile function parameter is deprecated
+            volatile int vi // Deprecated
+            ^
+
+"Test_name.c", line 142: remark: a volatile function parameter is deprecated
+            volint vi // Deprecated
+            ^
+
+"Test_name.c", line 140: remark: a volatile return type is deprecated
+  volint func2(       // Return type deprecated
+         ^
+
+"Test_name.c", line 145: remark: a volatile return type is deprecated
+  auto func3() -> volint; // Return type deprecated
+                  ^
+
+"Test_name.c", line 150: remark: a volatile function parameter is deprecated
+            volatile int vi // Deprecated
+            ^
+
+"Test_name.c", line 155: remark: a volatile function parameter is deprecated
+            volint vi // Deprecated
+            ^
+
+"Test_name.c", line 153: remark: a volatile return type is deprecated
+    volint func2(     // Return type deprecated
+           ^
+
+"Test_name.c", line 158: remark: a volatile return type is deprecated
+    auto func3() -> volint; // Return type deprecated
+                    ^
+
+"Test_name.c", line 165: remark: use of a volatile qualifier on a structured binding is deprecated
+    volatile auto [va,vb,vc] = arr; // Deprecated
+    ^
+
+"Test_name.c", line 56: remark: empty dependent statement in if-statement
+    if (t = u, u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=int]" at line 80
+
+"Test_name.c", line 57: remark: empty dependent statement in if-statement
+    if (u = t, t); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=int]" at line 80
+
+"Test_name.c", line 58: remark: empty dependent statement in if-statement
+    if (u, t = u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=int]" at line 80
+
+"Test_name.c", line 59: remark: empty dependent statement in if-statement
+    if (t, u = t); // Deprecated if u is volatile
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=int]" at line 80
+
+"Test_name.c", line 60: remark: empty dependent statement in if-statement
+    if (t = u); // Should not warn
+              ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=int]" at line 80
+
+"Test_name.c", line 61: remark: empty dependent statement in if-statement
+    if (u = t); // Deprecated if u is volatile
+              ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=int]" at line 80
+
+"Test_name.c", line 51: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    u = u = t; // Deprecated if u is volatile
+        ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 53: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    (T)(u = t); // Deprecated if u is volatile
+        ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 56: remark: empty dependent statement in if-statement
+    if (t = u, u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 57: remark: empty dependent statement in if-statement
+    if (u = t, t); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 58: remark: empty dependent statement in if-statement
+    if (u, t = u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 59: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    if (t, u = t); // Deprecated if u is volatile
+           ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 59: remark: empty dependent statement in if-statement
+    if (t, u = t); // Deprecated if u is volatile
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 60: remark: empty dependent statement in if-statement
+    if (t = u); // Should not warn
+              ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 61: remark: use of the result of an assignment to a volatile scalar object is deprecated
+    if (u = t); // Deprecated if u is volatile
+        ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 61: remark: empty dependent statement in if-statement
+    if (u = t); // Deprecated if u is volatile
+              ^
+          detected during instantiation of "void templass(T, U) [with T=int, U=volatile int]" at line 81
+
+"Test_name.c", line 56: remark: empty dependent statement in if-statement
+    if (t = u, u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=A]" at line 82
+
+"Test_name.c", line 57: remark: empty dependent statement in if-statement
+    if (u = t, t); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=A]" at line 82
+
+"Test_name.c", line 58: remark: empty dependent statement in if-statement
+    if (u, t = u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=A]" at line 82
+
+"Test_name.c", line 59: remark: empty dependent statement in if-statement
+    if (t, u = t); // Deprecated if u is volatile
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=A]" at line 82
+
+"Test_name.c", line 60: remark: empty dependent statement in if-statement
+    if (t = u); // Should not warn
+              ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=A]" at line 82
+
+"Test_name.c", line 61: remark: empty dependent statement in if-statement
+    if (u = t); // Deprecated if u is volatile
+              ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=A]" at line 82
+
+"Test_name.c", line 56: remark: empty dependent statement in if-statement
+    if (t = u, u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=volatile A]" at line 83
+
+"Test_name.c", line 57: remark: empty dependent statement in if-statement
+    if (u = t, t); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=volatile A]" at line 83
+
+"Test_name.c", line 58: remark: empty dependent statement in if-statement
+    if (u, t = u); // Should not warn
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=volatile A]" at line 83
+
+"Test_name.c", line 59: remark: empty dependent statement in if-statement
+    if (t, u = t); // Deprecated if u is volatile
+                 ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=volatile A]" at line 83
+
+"Test_name.c", line 60: remark: empty dependent statement in if-statement
+    if (t = u); // Should not warn
+              ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=volatile A]" at line 83
+
+"Test_name.c", line 61: remark: empty dependent statement in if-statement
+    if (u = t); // Deprecated if u is volatile
+              ^
+          detected during instantiation of "void templass(T, U) [with T=A, U=volatile A]" at line 83
+

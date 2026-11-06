@@ -1,0 +1,153 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 18: warning: the "nodiscard" attribute does not apply to destructors or routines with void return type
+  NODIS void check2 (void); /* { dg-warning "12:.nodiscard\[^\n\r]*void" } */
+  ^
+
+"Test_name.c", line 19: warning: attribute "nodiscard" does not apply here
+  NODIS int foo;         /* { dg-warning "11:.nodiscard\[^\n\r]*class" } */
+  ^
+
+"Test_name.c", line 57: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check1 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 59: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check1 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 67: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check3 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 69: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check3 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 77: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check4 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 79: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check4 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 87: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check5 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 89: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check5 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 97: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check6 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 99: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    check6 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_message" } */
+           ^
+
+"Test_name.c", line 107: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check7 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 109: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check7 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 117: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check8 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 119: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check8 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 127: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check9 ();           /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 129: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check9 (), bar ();   /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+           ^
+
+"Test_name.c", line 134: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check_int_result (GU (j)); /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+                     ^
+
+"Test_name.c", line 136: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    check_int_result (GU (j)), bar (); /* { dg-warning "nodiscard\[^\n\r]*exact_inline_message" } */
+                     ^
+
+"Test_name.c", line 141: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    fnptr ();            /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+          ^
+
+"Test_name.c", line 143: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    fnptr (), bar ();    /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+          ^
+
+"Test_name.c", line 149: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    fnptr ();            /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+          ^
+
+"Test_name.c", line 151: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    fnptr (), bar ();    /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+          ^
+
+"Test_name.c", line 157: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    fnptr ();            /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+          ^
+
+"Test_name.c", line 159: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    fnptr (), bar ();    /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+          ^
+
+"Test_name.c", line 164: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    bar9 ().fn ();       /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+               ^
+
+"Test_name.c", line 166: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    bar9 ().fn (), bar (); /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+               ^
+
+"Test_name.c", line 171: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    (k ? check1 : check10) (); /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+                           ^
+
+"Test_name.c", line 173: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    (k ? check1 : check10) (), bar (); /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+                           ^
+
+"Test_name.c", line 178: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    (k ? check3 : check11) (); /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+                           ^
+
+"Test_name.c", line 180: warning: ignoring return value type with "nodiscard" attribute ("exact_E_message")
+    (k ? check3 : check11) (), bar (); /* { dg-warning "nodiscard\[^\n\r]*exact_E_message" } */
+                           ^
+
+"Test_name.c", line 185: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    pcheck1 ();          /* { dg-warning "nodiscard\[^\n\r]*exact_" } */
+            ^
+
+"Test_name.c", line 187: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_message")
+    pcheck1 (), bar ();  /* { dg-warning "nodiscard\[^\n\r]*exact_" } */
+            ^
+
+"Test_name.c", line 192: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    pcheck3 ();          /* { dg-warning "nodiscard\[^\n\r]*exact_" } */
+            ^
+
+"Test_name.c", line 194: warning: ignoring return value from routine declared with "nodiscard" attribute ("exact_inline_message")
+    pcheck3 (), bar ();  /* { dg-warning "nodiscard\[^\n\r]*exact_" } */
+            ^
+
+"Test_name.c", line 202: warning: ignoring return value type with "nodiscard" attribute ("exact_D_message")
+    check12 ();          /* { dg-warning "nodiscard\[^\n\r]*exact_D_message" } */
+            ^
+
+"Test_name.c", line 204: warning: ignoring return value type with "nodiscard" attribute ("exact_D_message")
+    check12 (), bar ();  /* { dg-warning "nodiscard\[^\n\r]*exact_D_message" } */
+            ^
+

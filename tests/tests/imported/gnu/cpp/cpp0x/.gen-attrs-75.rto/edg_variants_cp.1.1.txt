@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++03 Test_name.c
+"Test_name.c", line 8: warning: standard attribute syntax is a C++11 feature
+  [[]] [[]] [[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+  ^
+
+"Test_name.c", line 8: warning: expected a declaration
+  [[]] [[]] [[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                ^
+
+"Test_name.c", line 9: warning: expected a declaration
+  [[foobar]];	// { dg-warning "attribute ignored" }
+            ^
+
+"Test_name.c", line 12: error: expected a declaration
+  extern "C" ;
+             ^
+
+"Test_name.c", line 13: error: expected a declaration
+  extern "C" [[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                 ^
+
+"Test_name.c", line 14: error: expected a declaration
+  extern "C" extern "C" ;
+                        ^
+
+"Test_name.c", line 15: error: expected a declaration
+  extern "C" extern "C" [[]][[]][[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                                    ^
+
+"Test_name.c", line 17: warning: expected a declaration
+  __extension__ [[]];			// { dg-warning "attributes only available with" "" { target c++98_only } }
+                    ^
+
+"Test_name.c", line 18: error: expected a declaration
+  __extension__ __extension__ ;
+                ^
+
+"Test_name.c", line 19: error: expected an identifier
+  __extension__ __extension__ [[]][[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                ^
+
+"Test_name.c", line 24: warning: expected a declaration
+  [[]] [[]] [[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                ^
+
+"Test_name.c", line 25: warning: expected a declaration
+  [[foobar]];	// { dg-warning "attribute ignored" }
+            ^
+
+"Test_name.c", line 28: error: expected a declaration
+  extern "C" ;
+             ^
+
+"Test_name.c", line 29: error: expected a declaration
+  extern "C" [[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                 ^
+
+"Test_name.c", line 30: error: expected a declaration
+  extern "C" extern "C" ;
+                        ^
+
+"Test_name.c", line 31: error: expected a declaration
+  extern "C" extern "C" [[]][[]][[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                                    ^
+
+"Test_name.c", line 33: warning: expected a declaration
+  __extension__ [[]];			// { dg-warning "attributes only available with" "" { target c++98_only } }
+                    ^
+
+"Test_name.c", line 34: error: expected a declaration
+  __extension__ __extension__ ;
+                ^
+
+"Test_name.c", line 35: error: expected an identifier
+  __extension__ __extension__ [[]][[]];	// { dg-warning "attributes only available with" "" { target c++98_only } }
+                ^
+
+12 errors detected in the compilation of "Test_name.c".

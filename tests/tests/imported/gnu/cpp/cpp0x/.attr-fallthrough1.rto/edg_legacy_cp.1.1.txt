@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 40: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+    auto b = [] constexpr [[fallthrough]] {};	// { dg-error "'fallthrough' attribute ignored" }
+                ^
+
+"Test_name.c", line 40: error: constexpr lambdas are not enabled in this mode
+    auto b = [] constexpr [[fallthrough]] {};	// { dg-error "'fallthrough' attribute ignored" }
+                ^
+
+"Test_name.c", line 43: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+    auto c = [] noexcept [[fallthrough]] {};	// { dg-error "'fallthrough' attribute ignored" }
+                ^
+
+"Test_name.c", line 64: warning: structured bindings are a C++17 feature
+    for ([[fallthrough]] auto [a, b] : arr2) {}	// { dg-error "'fallthrough' attribute ignored" }
+                              ^
+
+"Test_name.c", line 64: warning: structured binding "a" was declared but never referenced
+    for ([[fallthrough]] auto [a, b] : arr2) {}	// { dg-error "'fallthrough' attribute ignored" }
+                               ^
+
+"Test_name.c", line 69: warning: attributes may not appear here
+    try {} catch (int [[fallthrough]] x) {}	// { dg-warning "attribute ignored" }
+                        ^
+
+"Test_name.c", line 70: warning: attributes may not appear here
+    try {} catch (int [[fallthrough]]) {}		// { dg-warning "attribute ignored" }
+                        ^
+
+"Test_name.c", line 37: warning: variable "x1" was declared but never referenced
+    [[fallthrough]] int x1;			// { dg-error "'fallthrough' attribute ignored" }
+                        ^
+
+"Test_name.c", line 39: warning: variable "a" was declared but never referenced
+    auto a = [] [[fallthrough]] () {};		// { dg-error "'fallthrough' attribute ignored" }
+         ^
+
+"Test_name.c", line 40: warning: variable "b" was declared but never referenced
+    auto b = [] constexpr [[fallthrough]] {};	// { dg-error "'fallthrough' attribute ignored" }
+         ^
+
+"Test_name.c", line 43: warning: variable "c" was declared but never referenced
+    auto c = [] noexcept [[fallthrough]] {};	// { dg-error "'fallthrough' attribute ignored" }
+         ^
+
+"Test_name.c", line 45: warning: variable "d" was declared but never referenced
+    auto d = [] () [[fallthrough]] {};		// { dg-error "'fallthrough' attribute ignored" }
+         ^
+
+"Test_name.c", line 77: warning: structured bindings are a C++17 feature
+  [[fallthrough]] auto [b, c] = arr;		// { dg-error "'fallthrough' attribute ignored" }
+                       ^
+
+"Test_name.c", line 80: error: attribute does not apply to any entity
+  inline [[fallthrough]] void baz () {}		// { dg-warning "attribute ignored" }
+         ^
+
+"Test_name.c", line 82: error: attribute does not apply to any entity
+  constexpr [[fallthrough]] int qux () { return 0; }	// { dg-warning "attribute ignored" }
+            ^
+
+"Test_name.c", line 87: warning: declaration does not declare anything
+  struct A [[fallthrough]];			// { dg-warning "attribute ignored" }
+  ^
+
+"Test_name.c", line 91: warning: declaration does not declare anything
+  enum B [[fallthrough]];				// { dg-warning "attribute ignored" }
+  ^
+
+"Test_name.c", line 147: error: attributes are not allowed here
+  [[fallthrough]] using namespace H;		// { dg-warning "'fallthrough' attribute directive ignored" }
+  ^
+
+"Test_name.c", line 150: warning: attributes ignored here because they do not apply to a declared entity
+    [[fallthrough]];				// { dg-error "declaration does not declare anything" }
+      ^
+
+"Test_name.c", line 77: warning: structured binding "b" was declared but never referenced
+  [[fallthrough]] auto [b, c] = arr;		// { dg-error "'fallthrough' attribute ignored" }
+                        ^
+
+"Test_name.c", line 85: warning: variable "e" was declared but never referenced
+  int const [[fallthrough]] e = 1;		// { dg-warning "attribute ignored" }
+                            ^
+
+4 errors detected in the compilation of "Test_name.c".

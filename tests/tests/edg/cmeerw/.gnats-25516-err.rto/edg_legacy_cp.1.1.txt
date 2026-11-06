@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
+"Test_name.c", line 15: error: no instance of constructor "incomplete_base_class::D" matches the argument list
+            argument types are: (int)
+    D d(1);                       // error: cannot deduce
+      ^
+
+"Test_name.c", line 15: error: cannot deduce class template arguments
+    D d(1);                       // error: cannot deduce
+    ^
+
+"Test_name.c", line 30: error: no instance of constructor "non_deducible::D" matches the argument list
+            argument types are: (int)
+    D d(1);                       // error: cannot deduce
+      ^
+
+"Test_name.c", line 30: error: cannot deduce class template arguments
+    D d(1);                       // error: cannot deduce
+    ^
+
+"Test_name.c", line 37: error: a template parameter of class type must be of structural class type
+    template<auto V = A()>
+                      ^
+
+"Test_name.c", line 60: error: no instance of constructor "explicit_deduction_guide::D" matches the argument list
+            argument types are: (int)
+    D d = 1;                      // error: cannot deduce - explicit deduction guide
+      ^
+
+"Test_name.c", line 60: error: cannot deduce class template arguments
+    D d = 1;                      // error: cannot deduce - explicit deduction guide
+    ^
+
+"Test_name.c", line 77: error: no instance of constructor "explicit_constructor::D" matches the argument list
+            argument types are: (int)
+    D d = 1;                      // error: cannot deduce - explicit constructor/guide
+      ^
+
+"Test_name.c", line 77: error: cannot deduce class template arguments
+    D d = 1;                      // error: cannot deduce - explicit constructor/guide
+    ^
+
+9 errors detected in the compilation of "Test_name.c".

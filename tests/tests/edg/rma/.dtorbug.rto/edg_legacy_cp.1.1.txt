@@ -1,0 +1,13 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+/usr/sbin/ld: Test_name.o: in function `Collection::Collection()':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for Collection'
+/usr/sbin/ld: Test_name.o: in function `Set::~Set()':
+Test_name.int.c:(.text+0xXX): undefined reference to `Collection::~Collection()'
+/usr/sbin/ld: Test_name.o: in function `IdentSet::IdentSet()':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for IdentSet'
+/usr/sbin/ld: Test_name.o: in function `IdentSet::~IdentSet()':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for IdentSet'
+/usr/sbin/ld: Test_name.o:(.data+0x40): undefined reference to `Collection::~Collection()'
+/usr/sbin/ld: Test_name.o:(.data+0x50): undefined reference to `Collection::~Collection()'
+/usr/sbin/ld: Test_name.o:(.rodata+0x0): undefined reference to `typeinfo for Collection'
+collect2: error: ld returned 1 exit status

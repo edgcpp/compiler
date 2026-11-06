@@ -1,0 +1,146 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 --ms_compatibility -DMS Test_name.c
+"Test_name.c", line 9: error: expression must have integral type
+  _Static_assert("foo", "string is nonzero"); // ext-warning {{'_Static_assert' is a C11 extension}}
+                 ^
+
+"Test_name.c", line 15: error: static assertion failed with "0 is nonzero"
+  _Static_assert(0, "0 is nonzero"); // expected-error {{static assertion failed: 0 is nonzero}} \
+  ^
+
+"Test_name.c", line 19: error: expected a type specifier
+  static_assert(1, "1 is nonzero");
+                ^
+
+"Test_name.c", line 19: error: expected a type specifier
+  static_assert(1, "1 is nonzero");
+                   ^
+
+"Test_name.c", line 19: warning: this declaration has no storage class or type specifier
+  static_assert(1, "1 is nonzero");
+  ^
+
+"Test_name.c", line 24: error: static assertion failed with "0 is nonzero"
+    _Static_assert(0, "0 is nonzero"); // expected-error {{static assertion failed: 0 is nonzero}} \
+    ^
+
+"Test_name.c", line 31: error: expected a string literal
+  _Static_assert(1, invalid); // ext-warning {{'_Static_assert' is a C11 extension}}
+                    ^
+
+"Test_name.c", line 41: error: static assertion failed with "0 is nonzero"
+    _Static_assert(0, "0 is nonzero"); // expected-error {{static assertion failed: 0 is nonzero}} \
+    ^
+
+"Test_name.c", line 44: error: expected a type specifier
+    static_assert(1, "1 is nonzero");
+                  ^
+
+"Test_name.c", line 44: error: expected a type specifier
+    static_assert(1, "1 is nonzero");
+                     ^
+
+"Test_name.c", line 44: warning: this declaration has no storage class or type specifier
+    static_assert(1, "1 is nonzero");
+    ^
+
+"Test_name.c", line 44: error: a function type is not allowed here
+    static_assert(1, "1 is nonzero");
+    ^
+
+"Test_name.c", line 64: error: static assertion failed with "type size mismatch"
+  typedef UNION(char, short) U3; // expected-error {{static assertion failed due to requirement 'sizeof(char) == sizeof(short)': type size mismatch}} \
+          ^
+
+"Test_name.c", line 67: error: expected a type specifier
+  typedef UNION(float, 0.5f) U4; // expected-error {{expected a type}} \
+          ^
+
+"Test_name.c", line 67: error: expected a type specifier
+  typedef UNION(float, 0.5f) U4; // expected-error {{expected a type}} \
+          ^
+
+"Test_name.c", line 83: error: expected a type specifier
+  static_assert(0, "0 is nonzero"); // ms-error {{static assertion failed: 0 is nonzero}}
+                ^
+
+"Test_name.c", line 83: error: expected a type specifier
+  static_assert(0, "0 is nonzero"); // ms-error {{static assertion failed: 0 is nonzero}}
+                   ^
+
+"Test_name.c", line 83: warning: this declaration has no storage class or type specifier
+  static_assert(0, "0 is nonzero"); // ms-error {{static assertion failed: 0 is nonzero}}
+  ^
+
+"Test_name.c", line 87: error: expected a type specifier
+  static_assert(1, "1 is nonzero"); // ok
+                ^
+
+"Test_name.c", line 87: error: expected a type specifier
+  static_assert(1, "1 is nonzero"); // ok
+                   ^
+
+"Test_name.c", line 87: warning: this declaration has no storage class or type specifier
+  static_assert(1, "1 is nonzero"); // ok
+  ^
+
+"Test_name.c", line 90: error: expected a type specifier
+  static_assert(1, "1 is nonzero"); // yes, still ok.
+                ^
+
+"Test_name.c", line 90: error: expected a type specifier
+  static_assert(1, "1 is nonzero"); // yes, still ok.
+                   ^
+
+"Test_name.c", line 90: warning: this declaration has no storage class or type specifier
+  static_assert(1, "1 is nonzero"); // yes, still ok.
+  ^
+
+"Test_name.c", line 96: error: expected a ";"
+  static int static_var;
+  ^
+
+"Test_name.c", line 97: error: this operator is not allowed in an integral constant expression
+  _Static_assert(&static_var != 0, "");  // ext-warning {{'_Static_assert' is a C11 extension}} \
+                 ^
+
+"Test_name.c", line 97: error: identifier "static_var" is undefined
+  _Static_assert(&static_var != 0, "");  // ext-warning {{'_Static_assert' is a C11 extension}} \
+                  ^
+
+"Test_name.c", line 99: error: expression must have integral type
+  _Static_assert("" != 0, "");           // ext-warning {{'_Static_assert' is a C11 extension}}
+                 ^
+
+"Test_name.c", line 100: error: expression must have integral type
+  _Static_assert(("" != 0), "");         // ext-warning {{'_Static_assert' is a C11 extension}}
+                  ^
+
+"Test_name.c", line 101: error: expression must have integral type
+  _Static_assert(*"1", "");              // ext-warning {{'_Static_assert' is a C11 extension}}
+                  ^
+
+"Test_name.c", line 101: error: this operator is not allowed in an integral constant expression
+  _Static_assert(*"1", "");              // ext-warning {{'_Static_assert' is a C11 extension}}
+                 ^
+
+"Test_name.c", line 102: error: expression must have integral type
+  _Static_assert("1"[0], "");            // ext-warning {{'_Static_assert' is a C11 extension}}
+                 ^
+
+"Test_name.c", line 102: error: this operator is not allowed in an integral constant expression
+  _Static_assert("1"[0], "");            // ext-warning {{'_Static_assert' is a C11 extension}}
+                    ^
+
+"Test_name.c", line 117: error: static assertion failed with "?"
+  _Static_assert(0, L"\xFFFFFFFF"); // expected-warning {{encoding prefix 'L' on an unevaluated string literal has no effect}} \
+  ^
+
+"Test_name.c", line 121: error: static assertion failed with "?"
+  _Static_assert(0, L"\u1234"); // expected-warning {{encoding prefix 'L' on an unevaluated string literal has no effect}} \
+  ^
+
+"Test_name.c", line 125: error: static assertion failed with "?0#fx?goop"
+  _Static_assert(0, L"\x1ff"      // expected-warning {{encoding prefix 'L' on an unevaluated string literal has no effect}} \
+  ^
+
+31 errors detected in the compilation of "Test_name.c".

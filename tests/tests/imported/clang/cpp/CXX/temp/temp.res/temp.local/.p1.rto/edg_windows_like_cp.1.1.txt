@@ -1,0 +1,51 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 42: warning: class template "A<T>::B" has no member "C"
+      friend struct B::C;
+                       ^
+
+"Test_name.c", line 47: error: no instance of overloaded function "use" matches the argument list
+            argument types are: (float)
+          use<B::template C>(t); // expected-error {{no matching function}}
+          ^
+"Test_name.c", line 17: note: substituting explicit template arguments "<A<float>::C<float>>" for function template "use<<unnamed>>(char &)" failed
+  template<int> void use(char&); // expected-note 2{{invalid explicitly-specified argument}}
+                     ^
+"Test_name.c", line 16: note: substituting explicit template arguments "<A<float>::C<float>>" for function template "use<<unnamed>>(float &)" failed
+  template<template<typename> class> void use(float&); // expected-note 2{{no known conversion}}
+                                          ^
+"Test_name.c", line 15: note: function template "use<<unnamed>>(int &)" does not match because argument #1 does not match parameter
+  template<typename> void use(int&); // expected-note {{invalid explicitly-specified argument}} expected-note {{no known conversion}}
+                          ^
+          detected during instantiation of "void A<T>::B::f(T &) [with T=float]" at line 53
+
+"Test_name.c", line 45: error: no instance of overloaded function "use" matches the argument list
+            argument types are: (char)
+        use<A>(t); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 17: note: substituting explicit template arguments "<A<char>>" for function template "use<<unnamed>>(char &)" failed
+  template<int> void use(char&); // expected-note 2{{invalid explicitly-specified argument}}
+                     ^
+"Test_name.c", line 16: note: function template "use<<unnamed>>(float &)" does not match because argument #1 does not match parameter
+  template<template<typename> class> void use(float&); // expected-note 2{{no known conversion}}
+                                          ^
+"Test_name.c", line 15: note: function template "use<<unnamed>>(int &)" does not match because argument #1 does not match parameter
+  template<typename> void use(int&); // expected-note {{invalid explicitly-specified argument}} expected-note {{no known conversion}}
+                          ^
+          detected during instantiation of "void A<T>::B::f(T &) [with T=char]" at line 54
+
+"Test_name.c", line 47: error: no instance of overloaded function "use" matches the argument list
+            argument types are: (char)
+          use<B::template C>(t); // expected-error {{no matching function}}
+          ^
+"Test_name.c", line 17: note: substituting explicit template arguments "<A<char>::C<char>>" for function template "use<<unnamed>>(char &)" failed
+  template<int> void use(char&); // expected-note 2{{invalid explicitly-specified argument}}
+                     ^
+"Test_name.c", line 16: note: substituting explicit template arguments "<A<char>::C<char>>" for function template "use<<unnamed>>(float &)" failed
+  template<template<typename> class> void use(float&); // expected-note 2{{no known conversion}}
+                                          ^
+"Test_name.c", line 15: note: function template "use<<unnamed>>(int &)" does not match because argument #1 does not match parameter
+  template<typename> void use(int&); // expected-note {{invalid explicitly-specified argument}} expected-note {{no known conversion}}
+                          ^
+          detected during instantiation of "void A<T>::B::f(T &) [with T=char]" at line 54
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 12: warning: unknown attribute "preserve_access_index"
+  } __reloc__;
+    ^
+
+"Test_name.c", line 18: warning: unknown attribute "preserve_access_index"
+  } __reloc__;
+    ^
+
+"Test_name.c", line 22: warning: unknown attribute "preserve_access_index"
+  } __err_reloc__; // expected-error {{'preserve_access_index' attribute takes no arguments}}
+    ^
+
+"Test_name.c", line 31: warning: unknown attribute "preserve_access_index"
+    } __reloc__;
+      ^
+
+"Test_name.c", line 33: warning: unknown attribute "preserve_access_index"
+  } __reloc__;
+    ^
+
+"Test_name.c", line 35: warning: unknown attribute "preserve_access_index"
+  struct __reloc__ p;
+         ^
+
+"Test_name.c", line 36: warning: unknown attribute "preserve_access_index"
+  struct __reloc__ q;
+         ^
+
+"Test_name.c", line 41: warning: unknown attribute "preserve_access_index"
+  int a __reloc__; // expected-error {{'preserve_access_index' attribute only applies to structs, unions, and classes}}
+        ^
+
+"Test_name.c", line 42: warning: unknown attribute "preserve_access_index"
+  struct s *p __reloc__; // expected-error {{'preserve_access_index' attribute only applies to structs, unions, and classes}}
+              ^
+
+"Test_name.c", line 44: warning: unknown attribute "preserve_access_index"
+  void invalid1(const int __reloc__ *arg) {} // expected-error {{'preserve_access_index' attribute only applies to structs, unions, and classes}}
+                          ^
+
+"Test_name.c", line 45: warning: unknown attribute "preserve_access_index"
+  void invalid2(void) { const int __reloc__ *arg; } // expected-error {{'preserve_access_index' attribute only applies to structs, unions, and classes}}
+                                  ^
+
+"Test_name.c", line 45: warning: variable "arg" was declared but never referenced
+  void invalid2(void) { const int __reloc__ *arg; } // expected-error {{'preserve_access_index' attribute only applies to structs, unions, and classes}}
+                                             ^
+
+"Test_name.c", line 48: warning: unknown attribute "preserve_access_index"
+    struct local_t { int a; int b; } __reloc__;
+                                     ^
+

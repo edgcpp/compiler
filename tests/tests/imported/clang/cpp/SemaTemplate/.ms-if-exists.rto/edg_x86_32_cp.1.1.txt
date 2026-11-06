@@ -22,6 +22,18 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   X<int>::type4 i4; // expected-error{{no type named 'type4' in 'X<int>'}}
           ^
 
+"Test_name.c", line 46: error: use of __if_exists is not supported in this context
+    }
+    ^
+
+"Test_name.c", line 51: error: use of __if_exists is not supported in this context
+    }
+    ^
+
+"Test_name.c", line 55: error: use of __if_exists is not supported in this context
+      __if_exists(T::bar) {2, }// expected-warning{{dependent __if_exists declarations are ignored}}
+                              ^
+
 "Test_name.c", line 49: warning: variable "i" was declared but never referenced
       int *i = t; // expected-error{{no viable conversion from 'HasFoo' to 'int *'}}
            ^
@@ -29,6 +41,14 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 53: warning: variable "array2" was declared but never referenced
     int array2[] = {
         ^
+
+"Test_name.c", line 69: error: use of __if_exists is not supported in this context
+    }
+    ^
+
+"Test_name.c", line 66: error: use of __if_exists is not supported in this context
+    }
+    ^
 
 "Test_name.c", line 65: error: parameter pack "Ts" was referenced but not expanded
     __if_exists(T::operator Ts) { // expected-error{{__if_exists name contains unexpanded parameter pack 'Ts'}}
@@ -43,4 +63,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                ^
           detected during instantiation of "void f(T) [with T=HasFoo]" at line 60
 
-8 errors detected in the compilation of "Test_name.c".
+13 errors detected in the compilation of "Test_name.c".

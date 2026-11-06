@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+    constexpr int size() { return 42; } // non-static
+    ^
+
+"Test_name.c", line 12: error: a nonstatic member reference must be relative to a specific object
+    static_assert(A::size() == 42, ""); // { dg-error "without object" }
+                  ^
+
+"Test_name.c", line 20: error: a nonstatic member reference must be relative to a specific object
+    static const int m = A::size(); // { dg-error "without object" }
+                         ^
+
+"Test_name.c", line 15: error: a nonstatic member reference must be relative to a specific object
+      static_assert(A::size() == 42, ""); // { dg-error "without object" }
+                    ^
+
+"Test_name.c", line 16: error: a nonstatic member reference must be relative to a specific object
+      return A::size(); // { dg-error "without object" }
+             ^
+
+4 errors detected in the compilation of "Test_name.c".

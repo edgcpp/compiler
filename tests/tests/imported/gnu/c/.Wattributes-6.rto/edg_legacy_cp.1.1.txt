@@ -1,0 +1,93 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 43: warning: attribute "packed" does not apply here
+  void ATTR ((aligned (8), packed))
+       ^
+
+"Test_name.c", line 49: warning: attribute "packed" does not apply here
+  void ATTR ((packed))
+       ^
+
+"Test_name.c", line 72: warning: routine is both "inline" and "noinline"
+  void ATTR ((noinline))
+       ^
+
+"Test_name.c", line 77: warning: routine is both "inline" and "noinline"
+  falways_inline1 (void);
+  ^
+
+"Test_name.c", line 100: warning: the "always_inline" attribute is ignored on non-inline functions
+  void ATTR ((always_inline))
+       ^
+
+"Test_name.c", line 107: warning: routine is both "inline" and "noinline"
+  fnoinline1 (void);      /* { dg-warning "ignoring attribute .gnu_inline. because it conflicts with attribute .noinline." } */
+  ^
+
+"Test_name.c", line 111: warning: routine is both "inline" and "noinline"
+  void ATTR ((noinline))
+       ^
+
+"Test_name.c", line 134: warning: result of call is not used
+    fnoret1 ();
+    ^
+
+"Test_name.c", line 147: warning: result of call is not used
+    fnoret2 ();
+    ^
+
+"Test_name.c", line 154: warning: attribute "warn_unused_result" is ignored for void return type
+  void ATTR ((warn_unused_result))
+       ^
+
+"Test_name.c", line 373: warning: routine is both "inline" and "noinline"
+  inline int ATTR ((noinline))
+             ^
+
+"Test_name.c", line 378: warning: routine is both "inline" and "noinline"
+  finline_cold_noreturn (int);    /* { dg-warning "ignoring attribute .hot. because it conflicts with attribute .cold." } */
+  ^
+
+"Test_name.c", line 382: warning: routine is both "inline" and "noinline"
+  finline_cold_noreturn (int);    /* { dg-warning "ignoring attribute .warn_unused_result. because it conflicts with attribute .noreturn." } */
+  ^
+
+"Test_name.c", line 385: warning: routine is both "inline" and "noinline"
+  finline_cold_noreturn (int);
+  ^
+
+"Test_name.c", line 385: warning: routine is both "inline" and "noinline"
+  finline_cold_noreturn (int);
+  ^
+
+"Test_name.c", line 390: warning: routine is both "inline" and "noinline"
+  finline_cold_noreturn (int i) { (void)&i; __builtin_abort (); }
+  ^
+
+"Test_name.c", line 400: warning: routine is both "inline" and "noinline"
+  inline int ATTR ((noreturn, noinline))
+             ^
+
+"Test_name.c", line 405: warning: routine is both "inline" and "noinline"
+  finline_hot_noret_align (int);  /* { dg-warning "ignoring attribute .cold. because it conflicts with attribute .hot." } */
+  ^
+
+"Test_name.c", line 409: warning: routine is both "inline" and "noinline"
+  finline_hot_noret_align (int);  /* { dg-warning "ignoring attribute .warn_unused_result. because it conflicts with attribute .noreturn." } */
+  ^
+
+"Test_name.c", line 413: warning: routine is both "inline" and "noinline"
+    finline_hot_noret_align (int);  /* { dg-warning "ignoring attribute .aligned \\(4\\). because it conflicts with attribute .aligned \\(8\\)." "" } */
+    ^
+
+"Test_name.c", line 416: warning: routine is both "inline" and "noinline"
+  finline_hot_noret_align (int);  /* { dg-note	"previous declaration here" } */
+  ^
+
+"Test_name.c", line 419: warning: routine is both "inline" and "noinline"
+  finline_hot_noret_align (int);  /* { dg-warning "ignoring attribute .const. because it conflicts with attribute .noreturn." } */
+  ^
+
+"Test_name.c", line 424: warning: routine is both "inline" and "noinline"
+  finline_hot_noret_align (int i) { (void)&i; __builtin_abort (); }
+  ^
+

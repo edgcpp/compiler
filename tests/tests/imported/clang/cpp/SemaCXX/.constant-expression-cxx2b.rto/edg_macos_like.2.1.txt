@@ -1,0 +1,174 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 --exceptions Test_name.c
+"Test_name.c", line 33: error: explicit type is missing ("int" assumed)
+    static __thread int m = 0;            // cxx2a-note {{control flows through the definition of a thread_local variable}} \
+           ^
+
+"Test_name.c", line 33: error: expected a ";"
+    static __thread int m = 0;            // cxx2a-note {{control flows through the definition of a thread_local variable}} \
+                    ^
+
+"Test_name.c", line 35: error: identifier "m" is undefined
+    return m;
+           ^
+
+"Test_name.c", line 33: warning: variable "__thread" was declared but never referenced
+    static __thread int m = 0;            // cxx2a-note {{control flows through the definition of a thread_local variable}} \
+           ^
+
+"Test_name.c", line 74: error: expression must have a constant value
+  constexpr int je = j_evaluated(1); // expected-error {{constexpr variable 'je' must be initialized by a constant expression}}  \
+                     ^
+"Test_name.c", line 69: note: constant-evaluation cannot go through the declaration of a variable with static or thread storage duration
+    static const int m = n; // expected-note {{control flows through the definition of a static variable}} \
+    ^
+
+"Test_name.c", line 86: error: expression must have a constant value
+  constexpr int ke = k_evaluated(1); // expected-error {{constexpr variable 'ke' must be initialized by a constant expression}} \
+                     ^
+"Test_name.c", line 80: note: constant-evaluation cannot go through the declaration of a variable with static or thread storage duration
+    thread_local const int m = n; // expected-note {{control flows through the definition of a thread_local variable}} \
+    ^
+
+"Test_name.c", line 91: warning: variable "foo" was declared but never referenced
+    static constexpr Constexpr foo; // cxx23-warning {{definition of a static variable in a constexpr function is incompatible with C++ standards before C++23}}
+                               ^
+
+"Test_name.c", line 97: warning: variable "foo" was declared but never referenced
+    thread_local constexpr Constexpr foo; // cxx23-warning {{definition of a thread_local variable in a constexpr function is incompatible with C++ standards before C++23}}
+                                     ^
+
+"Test_name.c", line 105: warning: missing return statement at end of non-void function "non_literal"
+  }
+  ^
+
+"Test_name.c", line 123: error: expression must have a constant value
+  constexpr int b = f(0); // expected-error {{must be initialized by a constant expression}} \
+                    ^
+"Test_name.c", line 115: note: 'goto' cannot be executed in constexpr contexts
+      goto test; // expected-note {{subexpression not valid in a constant expression}} \
+      ^
+
+"Test_name.c", line 129: warning: label "test" was declared but never referenced
+  test: // cxx23-warning {{use of this statement in a constexpr function is incompatible with C++ standards before C++23}}
+  ^
+
+"Test_name.c", line 165: error: expression must have a constant value
+    constexpr auto c_error = c(1); // expected-error {{constexpr variable 'c_error' must be initialized by a constant expression}} \
+                             ^
+"Test_name.c", line 159: note: 'goto' cannot be executed in constexpr contexts
+        goto test; // expected-note {{subexpression not valid in a constant expression}} \
+        ^
+
+"Test_name.c", line 177: error: expression must have a constant value
+    constexpr auto non_literal_ko = non_literal(false); // cxx23-error {{constexpr variable 'non_literal_ko' must be initialized by a constant expression}} \
+                                    ^
+"Test_name.c", line 170: note: cannot call non-constexpr function "NonLiteral::NonLiteral()" (declared at line 8)
+        NonLiteral n; // cxx2a-error {{variable of non-literal type 'NonLiteral' cannot be defined in a constexpr function before C++23}} \
+                   ^
+
+"Test_name.c", line 182: warning: missing return statement at end of non-void function "test_in_lambdas"
+  }
+  ^
+
+"Test_name.c", line 142: warning: variable "a" was declared but never referenced
+    auto a = []() constexpr {
+         ^
+
+"Test_name.c", line 165: warning: variable "c_error" was declared but never referenced
+    constexpr auto c_error = c(1); // expected-error {{constexpr variable 'c_error' must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 177: warning: variable "non_literal_ko" was declared but never referenced
+    constexpr auto non_literal_ko = non_literal(false); // cxx23-error {{constexpr variable 'non_literal_ko' must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 180: warning: variable "non_literal_ok" was declared but never referenced
+    constexpr auto non_literal_ok = non_literal(true);
+                   ^
+
+"Test_name.c", line 200: error: expression must have a constant value
+    constexpr auto b3 = b(1); // expected-error{{constexpr variable 'b3' must be initialized by a constant expression}} \
+                        ^
+"Test_name.c", line 192: note: constant-evaluation cannot go through the declaration of a variable with static or thread storage duration
+      static const int m = n; // cxx23-note {{control flows through the definition of a static variable}}
+      ^
+
+"Test_name.c", line 216: error: expression must have a constant value
+    constexpr auto c_error = c(1); // expected-error {{constexpr variable 'c_error' must be initialized by a constant expression}} \
+                             ^
+"Test_name.c", line 208: note: 'goto' cannot be executed in constexpr contexts
+        goto test; // cxx23-note {{subexpression not valid in a constant expression}}
+        ^
+
+"Test_name.c", line 226: error: expression must have a constant value
+    constexpr auto non_literal_ko = non_literal(true); // expected-error {{constexpr variable 'non_literal_ko' must be initialized by a constant expression}} \
+                                    ^
+"Test_name.c", line 222: note: cannot call non-constexpr function "NonLiteral::NonLiteral()" (declared at line 8)
+        NonLiteral n; // cxx23-note {{non-constexpr constructor 'NonLiteral' cannot be used in a constant expression}}
+                   ^
+
+"Test_name.c", line 232: warning: missing return statement at end of non-void function "test_lambdas_implicitly_constexpr"
+  }
+  ^
+
+"Test_name.c", line 197: warning: variable "b2" was declared but never referenced
+    constexpr auto b2 = b(0); // cxx2a-error {{must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 200: warning: variable "b3" was declared but never referenced
+    constexpr auto b3 = b(1); // expected-error{{constexpr variable 'b3' must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 213: warning: variable "c_ok" was declared but never referenced
+    constexpr auto c_ok = c(0); // cxx2a-error {{must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 216: warning: variable "c_error" was declared but never referenced
+    constexpr auto c_error = c(1); // expected-error {{constexpr variable 'c_error' must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 226: warning: variable "non_literal_ko" was declared but never referenced
+    constexpr auto non_literal_ko = non_literal(true); // expected-error {{constexpr variable 'non_literal_ko' must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 230: warning: variable "non_literal_ok" was declared but never referenced
+    constexpr auto non_literal_ok = non_literal(false); // cxx2a-error {{must be initialized by a constant expression}} \
+                   ^
+
+"Test_name.c", line 55: warning: variable "j0" was declared but never referenced
+  constexpr int j0 = j(0);
+                ^
+
+"Test_name.c", line 64: warning: variable "k0" was declared but never referenced
+  constexpr int k0 = k(0);
+                ^
+
+"Test_name.c", line 74: warning: variable "je" was declared but never referenced
+  constexpr int je = j_evaluated(1); // expected-error {{constexpr variable 'je' must be initialized by a constant expression}}  \
+                ^
+
+"Test_name.c", line 86: warning: variable "ke" was declared but never referenced
+  constexpr int ke = k_evaluated(1); // expected-error {{constexpr variable 'ke' must be initialized by a constant expression}} \
+                ^
+
+"Test_name.c", line 107: warning: variable "non_literal_1" was declared but never referenced
+  constexpr int non_literal_1 = non_literal(false);
+                ^
+
+"Test_name.c", line 243: warning: variable "non_literal_valid_in_cxx23" was declared but never referenced
+  constexpr auto non_literal_valid_in_cxx23 = dependent_var_def_lambda<NonLiteral>()(true); // \
+                 ^
+
+"Test_name.c", line 123: warning: variable "eval_goto::b" was declared but never referenced
+  constexpr int b = f(0); // expected-error {{must be initialized by a constant expression}} \
+                ^
+
+"Test_name.c", line 125: warning: variable "eval_goto::c" was declared but never referenced
+  constexpr int c = f(1);
+                ^
+
+"Test_name.c", line 133: warning: variable "eval_goto::d" was declared but never referenced
+  constexpr int d = label();
+                ^
+
+11 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,47 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 18: warning: alias declarations are a C++11 feature
+    using type = Mask< int, 16 >; // expected-warning 0+ {{}}
+          ^
+
+"Test_name.c", line 27: warning: alias templates are a C++11 feature
+  using conditional_t = typename conditional< _Bp, _Then >::type; // expected-warning 0+ {{}}
+  ^
+
+"Test_name.c", line 52: error: type name is not allowed
+      return Derived_{load< Array1 >(mask.a1), Mask{}}; // expected-error 0+ {{}}
+             ^
+
+"Test_name.c", line 52: error: expected a ";"
+      return Derived_{load< Array1 >(mask.a1), Mask{}}; // expected-error 0+ {{}}
+                     ^
+
+"Test_name.c", line 68: error: invalid partial specialization -- class "StaticArrayImpl<float, 16, true, Mask<float, 16>>" is already fully specialized
+  struct StaticArrayImpl< float, 16, 1, Mask< float, 16 > > : KMaskBase< Derived_ > {}; // expected-error 0+ {{}}
+         ^
+
+"Test_name.c", line 74: error: incomplete type "StaticArrayImpl<float, 32, false, Array<float, 32>>" is not allowed
+  struct Array : StaticArrayImpl< Value_, Size_, 0, Array< Value_, Size_ > > {
+                 ^
+          detected during instantiation of class "Array<Value_, Size_> [with Value_=float, Size_=32]" at line 79
+
+"Test_name.c", line 79: warning: expression has no effect
+    load< Array< float, 32 > >{} == 0; // expected-error 0+ {{}} expected-warning 0+ {{}} expected-note 0+ {{}}
+    ^
+
+"Test_name.c", line 79: error: expected a ";"
+    load< Array< float, 32 > >{} == 0; // expected-error 0+ {{}} expected-warning 0+ {{}} expected-note 0+ {{}}
+                              ^
+
+"Test_name.c", line 36: error: incomplete type "StaticArrayImpl<float, 32, true, Mask<float, 32>>" is not allowed
+  struct Mask : StaticArrayImpl< Value_, Size_, 1, Mask< Value_, Size_ > > { // expected-note 0+ {{}}
+                ^
+          detected during:
+            instantiation of class "Mask<Value_, Size_> [with Value_=float, Size_=32]" at line 42
+            instantiation of "void load<T>(T::MaskType) [with T=Array<float, 32>]" 
+
+"Test_name.c", line 43: error: class "Array<float, 32>" has no member "load_"
+    T::load_(mask); // expected-note 0+ {{}}
+       ^
+          detected during instantiation of "void load<T>(T::MaskType) [with T=Array<float, 32>]" 
+
+7 errors detected in the compilation of "Test_name.c".

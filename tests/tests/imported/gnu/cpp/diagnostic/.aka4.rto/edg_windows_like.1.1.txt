@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 3: warning: unknown attribute "vector_size"
+  typedef unsigned int myvec __attribute__((vector_size (16)));
+                                            ^
+
+"Test_name.c", line 8: error: a value of type "float *" cannot be used to initialize an entity of type "myvec *" (aka "unsigned int *")
+    myvec *ptr = &x; // { dg-error {cannot convert 'float\*' to 'myvec\*' {aka '__vector\([48]\) unsigned int\*'} in initialization} }
+                 ^
+
+"Test_name.c", line 9: error: a value of type "float *" cannot be used to initialize an entity of type "const myvec *"
+    const myvec *const_ptr = &x; // { dg-error {cannot convert 'float\*' to 'const myvec\*' {aka 'const __vector\([48]\) unsigned int\*'} in initialization} }
+                             ^
+
+"Test_name.c", line 10: error: a value of type "float *" cannot be used to initialize an entity of type "volatile myvec *"
+    volatile myvec *volatile_ptr = &x; // { dg-error {cannot convert 'float\*' to 'volatile myvec\*' {aka 'volatile __vector\([48]\) unsigned int\*'} in initialization} }
+                                   ^
+
+3 errors detected in the compilation of "Test_name.c".

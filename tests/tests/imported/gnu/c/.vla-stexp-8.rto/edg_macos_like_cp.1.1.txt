@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 10: error: the result of a statement expression cannot have a type involving a variable-length array
+  	int c = *(*(*({ int n = 10; int (*x)[n][n] = __builtin_malloc(sizeof *x); x; }) + 5) + 5);
+  	              ^
+
+"Test_name.c", line 16: error: the result of a statement expression cannot have a type involving a variable-length array
+  	int c = *(5 + *(5 + *({ int n = 10; int (*x)[n][n] = __builtin_malloc(sizeof *x); x; })));
+  	                      ^
+
+"Test_name.c", line 22: warning: variable-length array field type will be treated as zero-length array field type
+  	int c = (*({ int n = 10; struct { int y[n]; int z; }* x = __builtin_malloc(sizeof *x); x; })).z;
+  	                                        ^
+
+"Test_name.c", line 30: error: the result of a statement expression cannot have a type involving a variable-length array
+  		({ int n = 10; int (*x)[n][n] = __builtin_malloc(sizeof *x); x; }); }))[5][5];
+  		 ^
+
+"Test_name.c", line 29: warning: variable "n" was declared but never referenced
+  	int c = (*({ int n = 3; 	/* { dg-warning "unused variable" } */
+  	                 ^
+
+"Test_name.c", line 28: warning: variable "n" was declared but never referenced
+  	int n = 2;	/* { dg-warning "unused variable" } */
+  	    ^
+
+"Test_name.c", line 38: error: the result of a statement expression cannot have a type involving a variable-length array
+  		({ int n = 10; int (*x)[n][n] = __builtin_malloc(sizeof *x); x; }); }))[0][0];
+  		 ^
+
+"Test_name.c", line 37: warning: variable "n" was declared but never referenced
+  	int c = (*({ int n = 3; 	/* { dg-warning "unused variable" } */
+  	                 ^
+
+"Test_name.c", line 36: warning: variable "n" was declared but never referenced
+  	int n = 2;	/* { dg-warning "unused variable" } */
+  	    ^
+
+"Test_name.c", line 46: error: the result of a statement expression cannot have a type involving a variable-length array
+  		({ int n = 10; int (*x)[n][n] = __builtin_malloc(sizeof *x); x; }); })));
+  		 ^
+
+"Test_name.c", line 45: warning: variable "n" was declared but never referenced
+  	int c = *(5 + *( 5 + *({ int n = 3;	/* { dg-warning "unused variable" } */
+  	                             ^
+
+"Test_name.c", line 44: warning: variable "n" was declared but never referenced
+  	int n = 2;	/* { dg-warning "unused variable" } */
+  	    ^
+
+5 errors detected in the compilation of "Test_name.c".

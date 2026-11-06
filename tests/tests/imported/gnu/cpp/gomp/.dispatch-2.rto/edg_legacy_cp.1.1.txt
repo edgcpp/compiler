@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 22: warning: variable "a" is used before its value is set
+    int c = f0 (a);	/* { dg-error "expected primary-expression before 'int'" } */
+                ^
+
+"Test_name.c", line 26: warning: variable "b" is used before its value is set
+    a = b;	/* { dg-error "expected target-function call" } */
+        ^
+
+"Test_name.c", line 37: warning: variable "x" is used before its value is set
+    a = s.f(x);   /* { dg-error "'f' is a virtual function but only a direct call is allowed in a dispatch construct" } */
+            ^
+
+"Test_name.c", line 18: warning: variable "arr" was declared but never referenced
+    int arr[1];
+        ^
+

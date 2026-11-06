@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 17: warning: handler is potentially masked by previous handler for type "int"
+  } catch (int) {  // Previously accepted with a warning.  Now an error
+           ^
+
+"Test_name.c", line 17: error: handler is masked by default handler
+  } catch (int) {  // Previously accepted with a warning.  Now an error
+           ^
+
+1 error detected in the compilation of "Test_name.c".

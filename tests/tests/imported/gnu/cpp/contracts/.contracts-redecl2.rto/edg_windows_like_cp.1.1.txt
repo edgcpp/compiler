@@ -1,0 +1,170 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 8: error: expected a ","
+  int g0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 9: error: expected a ","
+  int g0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 11: error: expected a ","
+  int g1(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 16: error: expected a ","
+  int g2(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 24: error: expected a ","
+  int G0::f(int a) [[ pre: a > 0 ]]
+                         ^
+
+"Test_name.c", line 34: error: expected a ","
+  int G1::f(int a) [[ pre: a > 0 ]];
+                         ^
+
+"Test_name.c", line 34: error: member function "G1::f" may not be redeclared outside its class
+  int G1::f(int a) [[ pre: a > 0 ]];
+          ^
+
+"Test_name.c", line 47: error: member function "G2::f" may not be redeclared outside its class
+  int G2::f(int a);
+          ^
+
+"Test_name.c", line 50: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 51: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]]; // { dg-error "different number of contracts" }
+                      ^
+
+"Test_name.c", line 51: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]]; // { dg-error "different number of contracts" }
+                                       ^
+
+"Test_name.c", line 53: error: expected a ","
+  int f1(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 54: error: expected a ","
+  int f1(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                      ^
+
+"Test_name.c", line 57: error: expected a ","
+  int f2(int a) [[ pre: a < 0 ]]; // { dg-error "cannot add contracts after definition" }
+                      ^
+
+"Test_name.c", line 61: error: expected a ","
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 61: error: expected a "]"
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 61: error: expected a ";"
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 66: error: expected a ","
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 66: error: expected a "]"
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 66: error: expected a ";"
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 75: error: class "F2" has no member "g"
+  int F2::g(int a) [[ pre: a > 0 ]]; // { dg-error "no declaration matches" }
+          ^
+
+"Test_name.c", line 75: error: expected a ","
+  int F2::g(int a) [[ pre: a > 0 ]]; // { dg-error "no declaration matches" }
+                         ^
+
+"Test_name.c", line 83: error: member function "F0::f" may not be redeclared outside its class
+  int F0::f(int a); // { dg-error "declaration.*is not definition" }
+          ^
+
+"Test_name.c", line 90: error: expected a ","
+  int F1::f(int a) [[ pre: a > 0 ]] // { dg-error "cannot add" }
+                         ^
+
+"Test_name.c", line 97: error: class "F2" has no member "test"
+  int F2::test(); // { dg-error "no declaration matches" }
+          ^
+
+"Test_name.c", line 98: error: class "F2" has no member "test2"
+  int F2::test2() [[ pre: true ]]; // { dg-error "no declaration matches" }
+          ^
+
+"Test_name.c", line 98: error: expected a ","
+  int F2::test2() [[ pre: true ]]; // { dg-error "no declaration matches" }
+                        ^
+
+"Test_name.c", line 108: error: forward declaration of enum type is nonstandard
+    enum my_enum0; // { dg-error "use of enum.*without previous decl" }
+         ^
+
+"Test_name.c", line 116: error: a nonstatic data member may not be defined outside its class
+  int F3::x{-1}; // { dg-error "is not a static data member" }
+          ^
+
+"Test_name.c", line 117: error: qualified name is not allowed
+  typedef double F3::my_int; // { dg-error "typedef name may not be a nested-name-specifier" }
+                 ^
+
+"Test_name.c", line 118: warning: declaration does not declare anything
+  struct F3::Inner0; // { dg-warning "declaration.*does not declare anything" }
+  ^
+
+"Test_name.c", line 122: error: enum "F3::my_enum1" has already been defined (previous definition at line 109)
+  enum F3::my_enum1 { E0, E1, END }; // { dg-error "multiple definition" }
+           ^
+
+"Test_name.c", line 122: error: enumerator already declared (see constant "F3::E1" (declared at line 109))
+  enum F3::my_enum1 { E0, E1, END }; // { dg-error "multiple definition" }
+                          ^
+
+"Test_name.c", line 128: error: qualified name is not allowed
+    int F3::test0() [[ pre: true ]]; // { dg-error "cannot declare member function" }
+        ^
+
+"Test_name.c", line 128: error: expected a ","
+    int F3::test0() [[ pre: true ]]; // { dg-error "cannot declare member function" }
+                          ^
+
+"Test_name.c", line 128: error: expected a "]"
+    int F3::test0() [[ pre: true ]]; // { dg-error "cannot declare member function" }
+                          ^
+
+"Test_name.c", line 128: error: expected a ";"
+    int F3::test0() [[ pre: true ]]; // { dg-error "cannot declare member function" }
+                          ^
+
+"Test_name.c", line 132: error: expected a ","
+  int F3::test2() [[ pre: true ]] { return -1; }
+                        ^
+
+"Test_name.c", line 136: error: qualified name is not allowed
+    int F4::test0() [[ pre: true ]]; // { dg-error "qualified-id in declaration" }
+        ^
+
+"Test_name.c", line 136: error: expected a ","
+    int F4::test0() [[ pre: true ]]; // { dg-error "qualified-id in declaration" }
+                          ^
+
+"Test_name.c", line 148: error: member function "ns0::X::test1" may not be redeclared outside its class
+    int X::test1(value); // { dg-error "no declaration matches" }
+           ^
+
+"Test_name.c", line 149: error: member function "ns0::X::test2" may not be redeclared outside its class
+    int X::test2(value);
+           ^
+
+41 errors detected in the compilation of "Test_name.c".

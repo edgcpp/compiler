@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --gnu_version=80200 -tused -e 200 --no_wrap Test_name.c
+"Test_name.c", line 11: error: invalid redeclaration of member function "b::b()" (declared at line 10)
+    __attribute__ ((target ("default"))) b () {}
+                                         ^
+
+"Test_name.c", line 22: warning: unknown attribute "target_clones"
+  __attribute__ ((target_clones ("sse", "default"))) void
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

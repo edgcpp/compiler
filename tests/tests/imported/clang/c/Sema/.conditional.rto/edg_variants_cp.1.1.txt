@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: error: return value type does not match the function type
+    return (1 ? free(0) : _efree(0)); // expected-error {{returning 'void' from a function with incompatible result type 'int'}}
+           ^
+
+"Test_name.c", line 15: error: return value type does not match the function type
+    return (1 ? _efree(0) : free(0));  // expected-error {{returning 'void' from a function with incompatible result type 'int'}}
+           ^
+
+"Test_name.c", line 31: warning: variable "transform" is used before its value is set
+    (void)(1 ? transform : transform); // ok
+               ^
+
+"Test_name.c", line 34: warning: variable "other_transform" is used before its value is set
+    (void)(1 ? other_transform : transform); // expected-error {{incompatible operand types ('mat5' (aka 'float __attribute__((matrix_type(5, 5)))') and 'mat4' (aka 'float __attribute__((matrix_type(4, 4)))'))}}
+               ^
+
+2 errors detected in the compilation of "Test_name.c".

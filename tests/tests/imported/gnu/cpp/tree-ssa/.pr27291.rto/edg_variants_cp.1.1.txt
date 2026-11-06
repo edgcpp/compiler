@@ -1,0 +1,95 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 134: warning: missing return statement at end of non-void function "boost::random::detail::ptr_helper<T>::ref"
+  	}
+  	^
+
+"Test_name.c", line 188: warning: missing return statement at end of non-void function "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::base"
+  	}
+  	^
+
+"Test_name.c", line 320: warning: missing return statement at end of non-void function "std::map<_Key, _Tp, _Compare>::operator[]"
+      }
+      ^
+
+"Test_name.c", line 351: warning: missing return statement at end of non-void function "alps::factory<KEY, BASE>::register_type<T>(alps::factory<KEY, BASE>::key_type)"
+      }
+      ^
+
+"Test_name.c", line 185: warning: missing return statement at end of non-void function "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::max [with UniformRandomNumberGenerator=boost::minstd_rand0 &]"
+  	}
+  	^
+          detected during:
+            instantiation of "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::result_type boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::max() const [with UniformRandomNumberGenerator=boost::minstd_rand0 &]" at line 150
+            instantiation of "boost::uniform_01<UniformRandomNumberGenerator, RealType>::uniform_01(boost::uniform_01<UniformRandomNumberGenerator, RealType>::base_type) [with UniformRandomNumberGenerator=boost::random::detail::pass_through_engine<boost::minstd_rand0 &>, RealType=double]" at line 214
+            instantiation of "void boost::random::lagged_fibonacci_01<RealType, w, p, q>::seed(Generator &) [with RealType=double, w=48, p=607U, q=273U, Generator=boost::minstd_rand0]" at line 208
+            instantiation of "void boost::random::lagged_fibonacci_01<RealType, w, p, q>::seed(uint32_t) [with RealType=double, w=48, p=607U, q=273U]" at line 203
+            instantiation of "boost::random::lagged_fibonacci_01<RealType, w, p, q>::lagged_fibonacci_01() [with RealType=double, w=48, p=607U, q=273U]" at line 274
+            instantiation of "alps::BufferedRandomNumberGenerator<RNG>::BufferedRandomNumberGenerator() [with RNG=boost::lagged_fibonacci607]" at line 338
+            instantiation of "alps::detail::creator<BASE, T>::base_type *alps::detail::creator<BASE, T>::create() const [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            implicit generation of "alps::detail::creator<BASE, T>::creator() noexcept [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of class "alps::detail::creator<BASE, T> [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of "bool alps::factory<KEY, BASE>::register_type<T>(alps::factory<KEY, BASE>::key_type) [with KEY=std::string, BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 363
+
+"Test_name.c", line 182: warning: missing return statement at end of non-void function "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::min [with UniformRandomNumberGenerator=boost::minstd_rand0 &]"
+  	}
+  	^
+          detected during:
+            instantiation of "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::result_type boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::min() const [with UniformRandomNumberGenerator=boost::minstd_rand0 &]" at line 150
+            instantiation of "boost::uniform_01<UniformRandomNumberGenerator, RealType>::uniform_01(boost::uniform_01<UniformRandomNumberGenerator, RealType>::base_type) [with UniformRandomNumberGenerator=boost::random::detail::pass_through_engine<boost::minstd_rand0 &>, RealType=double]" at line 214
+            instantiation of "void boost::random::lagged_fibonacci_01<RealType, w, p, q>::seed(Generator &) [with RealType=double, w=48, p=607U, q=273U, Generator=boost::minstd_rand0]" at line 208
+            instantiation of "void boost::random::lagged_fibonacci_01<RealType, w, p, q>::seed(uint32_t) [with RealType=double, w=48, p=607U, q=273U]" at line 203
+            instantiation of "boost::random::lagged_fibonacci_01<RealType, w, p, q>::lagged_fibonacci_01() [with RealType=double, w=48, p=607U, q=273U]" at line 274
+            instantiation of "alps::BufferedRandomNumberGenerator<RNG>::BufferedRandomNumberGenerator() [with RNG=boost::lagged_fibonacci607]" at line 338
+            instantiation of "alps::detail::creator<BASE, T>::base_type *alps::detail::creator<BASE, T>::create() const [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            implicit generation of "alps::detail::creator<BASE, T>::creator() noexcept [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of class "alps::detail::creator<BASE, T> [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of "bool alps::factory<KEY, BASE>::register_type<T>(alps::factory<KEY, BASE>::key_type) [with KEY=std::string, BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 363
+
+"Test_name.c", line 84: warning: missing return statement at end of non-void function "boost::random::const_mod<IntType, m>::add [with IntType=int32_t, m=2147483647]"
+        }
+        ^
+          detected during:
+            instantiation of "IntType boost::random::const_mod<IntType, m>::add(IntType, IntType) [with IntType=int32_t, m=2147483647]" at line 91
+            instantiation of "IntType boost::random::const_mod<IntType, m>::mult_add(IntType, IntType, IntType) [with IntType=int32_t, m=2147483647]" at line 115
+            instantiation of "IntType boost::random::linear_congruential<IntType, a, c, m, val>::operator()() [with IntType=int32_t, a=16807, c=0, m=2147483647, val=1043618065]" at line 191
+            instantiation of "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::result_type boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::operator()() [with UniformRandomNumberGenerator=boost::minstd_rand0 &]" at line 157
+            instantiation of "boost::uniform_01<UniformRandomNumberGenerator, RealType>::result_type boost::uniform_01<UniformRandomNumberGenerator, RealType>::operator()() [with UniformRandomNumberGenerator=boost::random::detail::pass_through_engine<boost::minstd_rand0 &>, RealType=double]" at line 216
+            [ 3 instantiation contexts not shown ]
+            instantiation of "alps::BufferedRandomNumberGenerator<RNG>::BufferedRandomNumberGenerator() [with RNG=boost::lagged_fibonacci607]" at line 338
+            instantiation of "alps::detail::creator<BASE, T>::base_type *alps::detail::creator<BASE, T>::create() const [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            implicit generation of "alps::detail::creator<BASE, T>::creator() noexcept [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of class "alps::detail::creator<BASE, T> [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of "bool alps::factory<KEY, BASE>::register_type<T>(alps::factory<KEY, BASE>::key_type) [with KEY=std::string, BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 363
+
+"Test_name.c", line 101: warning: missing return statement at end of non-void function "boost::random::const_mod<IntType, m>::mult_schrage [with IntType=int32_t, m=2147483647]"
+        }
+        ^
+          detected during:
+            instantiation of "IntType boost::random::const_mod<IntType, m>::mult_schrage(IntType, IntType) [with IntType=int32_t, m=2147483647]" at line 87
+            instantiation of "IntType boost::random::const_mod<IntType, m>::mult(IntType, IntType) [with IntType=int32_t, m=2147483647]" at line 91
+            instantiation of "IntType boost::random::const_mod<IntType, m>::mult_add(IntType, IntType, IntType) [with IntType=int32_t, m=2147483647]" at line 115
+            instantiation of "IntType boost::random::linear_congruential<IntType, a, c, m, val>::operator()() [with IntType=int32_t, a=16807, c=0, m=2147483647, val=1043618065]" at line 191
+            instantiation of "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::result_type boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::operator()() [with UniformRandomNumberGenerator=boost::minstd_rand0 &]" at line 157
+            [ 4 instantiation contexts not shown ]
+            instantiation of "alps::BufferedRandomNumberGenerator<RNG>::BufferedRandomNumberGenerator() [with RNG=boost::lagged_fibonacci607]" at line 338
+            instantiation of "alps::detail::creator<BASE, T>::base_type *alps::detail::creator<BASE, T>::create() const [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            implicit generation of "alps::detail::creator<BASE, T>::creator() noexcept [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of class "alps::detail::creator<BASE, T> [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of "bool alps::factory<KEY, BASE>::register_type<T>(alps::factory<KEY, BASE>::key_type) [with KEY=std::string, BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 363
+
+"Test_name.c", line 116: warning: missing return statement at end of non-void function "boost::random::linear_congruential<IntType, a, c, m, val>::operator() [with IntType=int32_t, a=16807, c=0, m=2147483647, val=1043618065]"
+        }
+        ^
+          detected during:
+            instantiation of "IntType boost::random::linear_congruential<IntType, a, c, m, val>::operator()() [with IntType=int32_t, a=16807, c=0, m=2147483647, val=1043618065]" at line 191
+            instantiation of "boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::result_type boost::random::detail::pass_through_engine<UniformRandomNumberGenerator>::operator()() [with UniformRandomNumberGenerator=boost::minstd_rand0 &]" at line 157
+            instantiation of "boost::uniform_01<UniformRandomNumberGenerator, RealType>::result_type boost::uniform_01<UniformRandomNumberGenerator, RealType>::operator()() [with UniformRandomNumberGenerator=boost::random::detail::pass_through_engine<boost::minstd_rand0 &>, RealType=double]" at line 216
+            instantiation of "void boost::random::lagged_fibonacci_01<RealType, w, p, q>::seed(Generator &) [with RealType=double, w=48, p=607U, q=273U, Generator=boost::minstd_rand0]" at line 208
+            instantiation of "void boost::random::lagged_fibonacci_01<RealType, w, p, q>::seed(uint32_t) [with RealType=double, w=48, p=607U, q=273U]" at line 203
+            instantiation of "boost::random::lagged_fibonacci_01<RealType, w, p, q>::lagged_fibonacci_01() [with RealType=double, w=48, p=607U, q=273U]" at line 274
+            instantiation of "alps::BufferedRandomNumberGenerator<RNG>::BufferedRandomNumberGenerator() [with RNG=boost::lagged_fibonacci607]" at line 338
+            instantiation of "alps::detail::creator<BASE, T>::base_type *alps::detail::creator<BASE, T>::create() const [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            implicit generation of "alps::detail::creator<BASE, T>::creator() noexcept [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of class "alps::detail::creator<BASE, T> [with BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 350
+            instantiation of "bool alps::factory<KEY, BASE>::register_type<T>(alps::factory<KEY, BASE>::key_type) [with KEY=std::string, BASE=alps::BufferedRandomNumberGeneratorBase, T=alps::BufferedRandomNumberGenerator<boost::lagged_fibonacci607>]" at line 363
+

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: identifier "__float128" is undefined
+  __float128 qf();
+  ^
+
+"Test_name.c", line 28: error: identifier "__float128" is undefined
+    __float128 q;
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

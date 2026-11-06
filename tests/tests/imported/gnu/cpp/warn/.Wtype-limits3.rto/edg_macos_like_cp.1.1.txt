@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 9: warning: pointless comparison of unsigned integer with a negative constant
+    return value == -1 ? "-1" : "no"; // { dg-warning "always false" }
+                 ^
+
+"Test_name.c", line 14: warning: integer conversion resulted in a change of sign
+    g<int>(-1);
+           ^
+

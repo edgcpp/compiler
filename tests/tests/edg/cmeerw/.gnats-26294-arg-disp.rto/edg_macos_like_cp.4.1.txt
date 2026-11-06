@@ -1,0 +1,67 @@
+fe_only -DTEST_NUMBER=4 --no_il_lower --il_display --c++20 Test_name.c
+file-scope variable#1
+  name:                  file-scope id-name#1: "i"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+
+file-scope routine#1
+  name:                  file-scope id-name#2: "f"
+  decl_position.seq:     6
+type:                    file-scope type#2: int ()
+
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#3: T#(1,1)
+
+file-scope type#4
+  name:                  file-scope id-name#3: "C"
+  decl_position.seq:     4
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope variable#2
+  name:                  file-scope id-name#1: "i"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+
+file-scope routine#2
+  name:                  file-scope id-name#2: "f"
+  decl_position.seq:     6
+type:                    file-scope type#5: int ()
+
+file-scope class-type-supplement#2
+template_arg_list:       
+  type:                  file-scope type#6: void
+  explicitly_specified:  TRUE
+
+file-scope type#7
+  name:                  file-scope id-name#3: "C"
+  decl_position.seq:     4
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#2
+
+file-scope expr-node#1
+type:                    file-scope type#8: int (*)()
+kind:                    enk_routine
+position.seq:            10
+
+file-scope expr-node#2
+type:                    file-scope type#1: int
+kind:                    enk_variable
+position.seq:            10
+
+file-scope expr-node#3
+type:                    file-scope type#8: int (*)()
+kind:                    enk_routine
+position.seq:            10
+
+file-scope expr-node#4
+type:                    file-scope type#1: int
+kind:                    enk_variable
+position.seq:            10
+
+file-scope variable#3
+  name:                  file-scope id-name#4: "v"
+  decl_position.seq:     10
+type:                    file-scope type#1: int
+

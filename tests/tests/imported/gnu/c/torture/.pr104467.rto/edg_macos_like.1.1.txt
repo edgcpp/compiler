@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "__vector_size__"
+  unsigned long __attribute__((__vector_size__ (8 * sizeof (long)))) u;
+                               ^
+
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  signed long __attribute__((__vector_size__ (8 * sizeof (long)))) s;
+                             ^
+
+"Test_name.c", line 12: warning: expression has no effect
+    s &= u + (0, 0);
+              ^
+

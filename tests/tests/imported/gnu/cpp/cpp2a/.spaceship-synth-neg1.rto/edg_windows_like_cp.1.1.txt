@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"/mds/gnu/build/gcc-15-20250112/include/c++/15.0.0/compare", line 729: error: identifier "__float80" is undefined
+     if constexpr (__is_same(_Tp, __float80))
+                                  ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 9: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    auto operator<=>(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 10: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    bool operator==(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 11: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    bool operator!=(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 12: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    bool operator<(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 13: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    bool operator<=(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 14: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    bool operator>(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 15: error: bad type "D<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    bool operator>=(D) const = default;
+         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 22: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend auto operator<=>(const E&, E) = default;
+                                         ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 23: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend bool operator==(const E&, E) = default;
+                                        ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 24: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend bool operator!=(const E&, E) = default;
+                                        ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 25: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend bool operator<(E, const E&) = default;
+                                       ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 26: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend bool operator<=(E, const E&) = default;
+                                        ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 27: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend bool operator>(E, const E&) = default;
+                                       ^
+
+"./cpp2a/spaceship-synth-neg1.C", line 28: error: bad type "E<T>" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+    friend bool operator>=(E, const E&) = default;
+                                        ^
+
+15 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size (sizeof(int) * 4)));
+                                  ^
+
+"Test_name.c", line 12: warning: excess initializers are ignored
+    v4si tem = (v4si) { 0, 0, 0, 0 };
+                           ^
+
+"Test_name.c", line 15: warning: function "__builtin_shufflevector" declared implicitly
+    x = __builtin_shufflevector (tem, tem, 0, 0, 0, 0);
+        ^
+

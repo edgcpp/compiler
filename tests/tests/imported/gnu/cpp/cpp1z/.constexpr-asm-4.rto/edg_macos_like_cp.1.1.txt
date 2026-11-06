@@ -1,0 +1,56 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 42: error: expected an asm string
+    asm ((gen <string_view> (0))
+         ^
+
+"Test_name.c", line 45: warning: parsing restarts here after previous syntax error
+         : (gen <string_view> (3)), (gen <string_view> (4)));
+                                                           ^
+
+"Test_name.c", line 46: error: expected an asm string
+    asm ((gen <string_view> (7)));
+         ^
+
+"Test_name.c", line 47: warning: variable "a" is used before its value is set
+    return a + b;
+           ^
+
+"Test_name.c", line 47: warning: variable "b" is used before its value is set
+    return a + b;
+               ^
+
+"Test_name.c", line 55: error: expected an asm string
+    asm ((gen <T> (5))
+         ^
+
+"Test_name.c", line 58: warning: parsing restarts here after previous syntax error
+         : (gen <T> (3)), (gen <T> (4)));
+                                       ^
+
+"Test_name.c", line 59: error: expected an asm string
+    asm ((gen <string_view> (8)));
+         ^
+
+"Test_name.c", line 68: error: expected an asm string
+    asm ((gen <T> (6))
+         ^
+
+"Test_name.c", line 71: warning: parsing restarts here after previous syntax error
+         : (gen <T> (3)), (gen <T> (4)));
+                                       ^
+
+"Test_name.c", line 72: error: expected an asm string
+    asm ((gen <string_view> (9)));
+         ^
+
+"Test_name.c", line 73: warning: variable "a" is used before its value is set
+    return a + b;
+           ^
+          detected during instantiation of "U qux<T,U>() [with T=string_view, U=int]" at line 79
+
+"Test_name.c", line 73: warning: variable "b" is used before its value is set
+    return a + b;
+               ^
+          detected during instantiation of "U qux<T,U>() [with T=string_view, U=int]" at line 79
+
+6 errors detected in the compilation of "Test_name.c".

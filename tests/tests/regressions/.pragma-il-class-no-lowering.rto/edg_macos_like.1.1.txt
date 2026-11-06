@@ -1,0 +1,804 @@
+fe_only -DTEST_NUMBER=1 --c++11 --no_il_lowering --il_display Test_name.c
+Display of IL produced by the compilation of "Test_name.c"
+
+
+Intermediate language for memory region 1 (file scope):
+
+il_header:
+primary_source_file:     file-scope source-file@XXXXXXXX: "Test_name.c"
+primary_scope:           file-scope scope@XXXXXXXX
+file_scope_statements:   NULL
+main_routine:            NULL
+compiler_version:        IL COMPILER VERSION
+time_of_compilation:     IL BUILD TIME
+plain_chars_are_signed:  TRUE
+source_language:         sl_Cplusplus
+std_version:             201103
+pcc_compatibility_mode:  FALSE
+enum_type_is_integral:   FALSE
+microsoft_mode:          FALSE
+cppcli_enabled:          FALSE
+cppcx_enabled:           FALSE
+microsoft_version:       1926
+gcc_mode:                FALSE
+gpp_mode:                FALSE
+gnu_version:             80100
+short_enums:             FALSE
+default_nocommon:        FALSE
+near_and_far_are_enabled:
+                         FALSE
+far_data_pointers:       FALSE
+far_code_pointers:       FALSE
+UCN_identifiers_used:    FALSE
+vla_used:                FALSE
+any_templates_seen:      FALSE
+prototype_instantiations_in_il:
+                         TRUE
+il_has_all_prototype_instantiations:
+                         TRUE
+il_has_C_semantics:      FALSE
+nontag_types_used_in_exception_or_rtti:
+                         NULL
+seq_number_lookup_entries:
+                         file-scope seq-number-lookup-entry@XXXXXXXX
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    8
+alignment:               8
+kind:                    tk_pointer
+type_pointed_to:         file-scope type@XXXXXXXX: foo
+is_reference:            TRUE
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    8
+alignment:               8
+kind:                    tk_pointer
+type_pointed_to:         file-scope type@XXXXXXXX: foo
+is_reference:            TRUE
+is_rvalue_reference:     TRUE
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    8
+alignment:               8
+kind:                    tk_pointer
+type_pointed_to:         file-scope type@XXXXXXXX: const foo
+is_reference:            TRUE
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             
+  reference:             file-scope type@XXXXXXXX: const foo &
+size:                    0
+alignment:               1
+kind:                    tk_typeref
+typeref_type:            file-scope type@XXXXXXXX: foo
+qualifiers:              const
+kind:                    none
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    4
+alignment:               4
+kind:                    tk_integer
+int_kind:                int
+
+file-scope field@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "x"
+  decl_position.seq:     13
+  decl_position.column:  7
+  identifier_range
+    start.seq:           13
+    start.column:        7
+    end.seq:             13
+    end.column:          7
+  specifiers_range
+    start.seq:           13
+    start.column:        3
+    end.seq:             13
+    end.column:          5
+  declarator_range
+    start.seq:           13
+    start.column:        7
+    end.seq:             13
+    end.column:          7
+  extra_positions:       NULL
+  is_class_member:       TRUE
+  access:                as_private
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          no
+  has_associated_pragma: TRUE
+  attributes:            NULL
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: int
+offset:                  0
+property_or_event_descr: NULL
+
+file-scope param-type@XXXXXXXX
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: const foo &
+declared_type:           NULL
+param_num:               1
+
+file-scope exception-specification@XXXXXXXX
+indeterminate:           TRUE
+compiler_generated:      TRUE
+exception_specification_type_list:
+                         NULL
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_routine
+return_type:             file-scope type@XXXXXXXX: foo &
+param_type_list:         file-scope param-type@XXXXXXXX
+assoc_routine:           file-scope routine@XXXXXXXX: operator=
+prototyped:              TRUE
+routine_name_linkage:    C++
+has_this_param:          TRUE
+fmt_arg:                 0
+format_first_subst_arg:  0
+calling_convention:      <default>
+this_class:              file-scope type@XXXXXXXX: foo
+exception_specification: file-scope exception-specification@XXXXXXXX
+
+file-scope routine@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "operator="
+  decl_position.seq:     11
+  decl_position.column:  7
+  extra_positions:       NULL
+  is_class_member:       TRUE
+  access:                as_public
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    file-scope routine@XXXXXXXX: operator=
+type:                    file-scope type@XXXXXXXX: foo &(const foo &)
+function_def_number:     0
+memory_region:           0
+storage_class:           sc_extern
+special_kind:            sfk_operator
+opname_kind:             onk_assign
+is_inline:               TRUE
+is_constexpr:            TRUE
+compiler_generated:      TRUE
+defined:                 FALSE
+called:                  FALSE
+is_trivial_copy_function:
+                         TRUE
+inline_in_class_definition:
+                         TRUE
+definition_needed:       FALSE
+
+file-scope param-type@XXXXXXXX
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: foo &&
+declared_type:           NULL
+param_num:               1
+move_ctor_or_assign_parameter:
+                         TRUE
+
+file-scope exception-specification@XXXXXXXX
+indeterminate:           TRUE
+compiler_generated:      TRUE
+exception_specification_type_list:
+                         NULL
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_routine
+return_type:             file-scope type@XXXXXXXX: foo &
+param_type_list:         file-scope param-type@XXXXXXXX
+assoc_routine:           file-scope routine@XXXXXXXX: operator=
+prototyped:              TRUE
+routine_name_linkage:    C++
+has_this_param:          TRUE
+fmt_arg:                 0
+format_first_subst_arg:  0
+calling_convention:      <default>
+this_class:              file-scope type@XXXXXXXX: foo
+exception_specification: file-scope exception-specification@XXXXXXXX
+
+file-scope routine@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "operator="
+  decl_position.seq:     11
+  decl_position.column:  7
+  extra_positions:       NULL
+  is_class_member:       TRUE
+  access:                as_public
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: foo &(foo &&)
+function_def_number:     0
+memory_region:           0
+storage_class:           sc_extern
+special_kind:            sfk_operator
+opname_kind:             onk_assign
+is_inline:               TRUE
+is_constexpr:            TRUE
+compiler_generated:      TRUE
+defined:                 FALSE
+called:                  FALSE
+is_trivial_copy_function:
+                         TRUE
+inline_in_class_definition:
+                         TRUE
+definition_needed:       FALSE
+
+file-scope pragma@XXXXXXXX
+next:                    NULL
+entity:                  file-scope field@XXXXXXXX: x
+position.seq:            12
+position.column:         3
+pragma_text:             NULL
+ignore_in_back_end:      TRUE
+kind:                    test_next_decl
+
+file-scope scope@XXXXXXXX
+next:                    NULL
+parent:                  file-scope scope@XXXXXXXX
+kind:                    sck_class_struct_union
+assoc_type:              file-scope type@XXXXXXXX: foo
+assoc_block:             NULL
+lifetime:                NULL
+constants:               NULL
+types:                   NULL
+variables:               NULL
+nonstatic_variables:     NULL
+labels:                  NULL
+routines:                file-scope routine@XXXXXXXX: operator=
+asm_entries:             NULL
+scopes:                  NULL
+using_declarations:      NULL
+using_directives:        NULL
+dynamic_inits:           NULL
+pragmas:                 file-scope pragma@XXXXXXXX
+ms_attributes:           NULL
+
+file-scope class-type-supplement@XXXXXXXX
+base_classes:            NULL
+direct_base_classes:     NULL
+preorder_base_classes:   NULL
+primary_base_class:      NULL
+size_without_virtual_base_classes:
+                         4
+alignment_without_virtual_base_classes:
+                         4
+highest_virtual_function_number:
+                         65535
+next_negative_virtual_table_index:
+                         -3
+first_vcall_offset_index:
+                         0
+vcall_offsets:           NULL
+virtual_function_info_offset:
+                         0
+contains_error:          FALSE
+assoc_scope:             file-scope scope@XXXXXXXX
+assoc_operator_delete_routine:
+                         NULL
+min_template_arguments:  -1
+
+file-scope type@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "foo"
+  decl_position.seq:     11
+  decl_position.column:  7
+  identifier_range
+    start.seq:           11
+    start.column:        7
+    end.seq:             11
+    end.column:          9
+  specifiers_range
+    start.seq:           11
+    start.column:        1
+    end.seq:             14
+    end.column:          1
+  extra_positions:       NULL
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    NULL
+based_types:             
+  reference:             file-scope type@XXXXXXXX: foo &
+  rvalue reference:      file-scope type@XXXXXXXX: foo &&
+  qualified:             file-scope type@XXXXXXXX: const foo
+size:                    4
+alignment:               4
+kind:                    tk_class
+field_list:              file-scope field@XXXXXXXX: x
+extra_info:              file-scope class-type-supplement@XXXXXXXX
+definition_needed:       FALSE
+has_zero_init_component: TRUE
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             
+  pointer:               file-scope type@XXXXXXXX: void *
+size:                    0
+alignment:               1
+incomplete:              TRUE
+kind:                    tk_void
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    8
+alignment:               8
+kind:                    tk_pointer
+type_pointed_to:         file-scope type@XXXXXXXX: void
+is_reference:            FALSE
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    8
+alignment:               8
+kind:                    tk_integer
+int_kind:                unsigned long
+
+file-scope param-type@XXXXXXXX
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: unsigned long
+declared_type:           NULL
+param_num:               1
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_routine
+return_type:             file-scope type@XXXXXXXX: void *
+param_type_list:         file-scope param-type@XXXXXXXX
+assoc_routine:           NULL
+prototyped:              TRUE
+routine_name_linkage:    C++
+fmt_arg:                 0
+format_first_subst_arg:  0
+calling_convention:      <default>
+
+file-scope routine@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "operator new"
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    file-scope routine@XXXXXXXX: operator delete
+type:                    file-scope type@XXXXXXXX: void *(unsigned long)
+function_def_number:     0
+memory_region:           0
+storage_class:           sc_extern
+special_kind:            sfk_operator
+opname_kind:             onk_new
+compiler_generated:      TRUE
+defined:                 FALSE
+called:                  FALSE
+definition_needed:       FALSE
+
+file-scope param-type@XXXXXXXX
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: void *
+declared_type:           NULL
+param_num:               1
+
+file-scope exception-specification@XXXXXXXX
+is_noexcept:             TRUE
+compiler_generated:      TRUE
+noexcept_arg:            NULL
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_routine
+return_type:             file-scope type@XXXXXXXX: void
+param_type_list:         file-scope param-type@XXXXXXXX
+assoc_routine:           NULL
+prototyped:              TRUE
+routine_name_linkage:    C++
+fmt_arg:                 0
+format_first_subst_arg:  0
+calling_convention:      <default>
+exception_specification: file-scope exception-specification@XXXXXXXX
+
+file-scope routine@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "operator delete"
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    file-scope routine@XXXXXXXX: operator new[]
+type:                    file-scope type@XXXXXXXX: void (void *)
+function_def_number:     0
+memory_region:           0
+storage_class:           sc_extern
+special_kind:            sfk_operator
+opname_kind:             onk_delete
+compiler_generated:      TRUE
+defined:                 FALSE
+called:                  FALSE
+never_throws:            TRUE
+definition_needed:       FALSE
+
+file-scope param-type@XXXXXXXX
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: unsigned long
+declared_type:           NULL
+param_num:               1
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_routine
+return_type:             file-scope type@XXXXXXXX: void *
+param_type_list:         file-scope param-type@XXXXXXXX
+assoc_routine:           NULL
+prototyped:              TRUE
+routine_name_linkage:    C++
+fmt_arg:                 0
+format_first_subst_arg:  0
+calling_convention:      <default>
+
+file-scope routine@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "operator new[]"
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    file-scope routine@XXXXXXXX: operator delete[]
+type:                    file-scope type@XXXXXXXX: void *(unsigned long)
+function_def_number:     0
+memory_region:           0
+storage_class:           sc_extern
+special_kind:            sfk_operator
+opname_kind:             onk_array_new
+compiler_generated:      TRUE
+defined:                 FALSE
+called:                  FALSE
+definition_needed:       FALSE
+
+file-scope param-type@XXXXXXXX
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: void *
+declared_type:           NULL
+param_num:               1
+
+file-scope exception-specification@XXXXXXXX
+is_noexcept:             TRUE
+compiler_generated:      TRUE
+noexcept_arg:            NULL
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_routine
+return_type:             file-scope type@XXXXXXXX: void
+param_type_list:         file-scope param-type@XXXXXXXX
+assoc_routine:           NULL
+prototyped:              TRUE
+routine_name_linkage:    C++
+fmt_arg:                 0
+format_first_subst_arg:  0
+calling_convention:      <default>
+exception_specification: file-scope exception-specification@XXXXXXXX
+
+file-scope routine@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "operator delete[]"
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    NULL
+type:                    file-scope type@XXXXXXXX: void (void *)
+function_def_number:     0
+memory_region:           0
+storage_class:           sc_extern
+special_kind:            sfk_operator
+opname_kind:             onk_array_delete
+compiler_generated:      TRUE
+defined:                 FALSE
+called:                  FALSE
+never_throws:            TRUE
+definition_needed:       FALSE
+
+file-scope scope@XXXXXXXX
+next:                    NULL
+parent:                  file-scope scope@XXXXXXXX
+kind:                    sck_namespace
+assoc_namespace:         file-scope namespace@XXXXXXXX: std
+assoc_block:             NULL
+lifetime:                NULL
+constants:               NULL
+types:                   NULL
+variables:               NULL
+nonstatic_variables:     NULL
+labels:                  NULL
+routines:                NULL
+asm_entries:             NULL
+scopes:                  NULL
+namespaces:              NULL
+using_declarations:      NULL
+using_directives:        NULL
+dynamic_inits:           NULL
+pragmas:                 NULL
+ms_attributes:           NULL
+
+file-scope namespace@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "std"
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    file-scope namespace@XXXXXXXX: __cxxabiv1
+proxy_class:             NULL
+is_std:                  TRUE
+assoc_scope:             file-scope scope@XXXXXXXX
+
+file-scope scope@XXXXXXXX
+next:                    NULL
+parent:                  file-scope scope@XXXXXXXX
+kind:                    sck_namespace
+assoc_namespace:         file-scope namespace@XXXXXXXX: __cxxabiv1
+assoc_block:             NULL
+lifetime:                NULL
+constants:               NULL
+types:                   NULL
+variables:               NULL
+nonstatic_variables:     NULL
+labels:                  NULL
+routines:                NULL
+asm_entries:             NULL
+scopes:                  NULL
+namespaces:              NULL
+using_declarations:      NULL
+using_directives:        NULL
+dynamic_inits:           NULL
+pragmas:                 NULL
+ms_attributes:           NULL
+
+file-scope namespace@XXXXXXXX
+source_corresp:
+  name:                  file-scope id-name@XXXXXXXX: "__cxxabiv1"
+  parent_scope:          file-scope scope@XXXXXXXX
+  enclosing_routine:     NULL
+  referenced:            FALSE
+  needed:                FALSE
+  name_linkage:          C++
+  attributes:            NULL
+next:                    NULL
+proxy_class:             NULL
+assoc_scope:             file-scope scope@XXXXXXXX
+
+file-scope scope@XXXXXXXX
+next:                    NULL
+parent:                  NULL
+kind:                    sck_file
+assoc_block:             NULL
+lifetime:                NULL
+constants:               NULL
+types:                   file-scope type@XXXXXXXX: foo
+variables:               NULL
+nonstatic_variables:     NULL
+labels:                  NULL
+routines:                file-scope routine@XXXXXXXX: operator new
+asm_entries:             NULL
+scopes:                  NULL
+namespaces:              file-scope namespace@XXXXXXXX: std
+using_declarations:      NULL
+using_directives:        NULL
+dynamic_inits:           NULL
+pragmas:                 NULL
+ms_attributes:           NULL
+
+file-scope source-file@XXXXXXXX
+file_name:               file-scope other-text@XXXXXXXX: "Test_name.c"
+full_name:               file-scope other-text@XXXXXXXX: "Test_name.c"
+name_as_written:         file-scope other-text@XXXXXXXX: "Test_name.c"
+first_seq_number:        1
+last_seq_number:         14
+first_line_number:       1
+first_child_file:        NULL
+last_child_file:         NULL
+next:                    NULL
+top_level_file:          TRUE
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    0
+alignment:               1
+kind:                    tk_typeref
+typeref_type:            file-scope type@XXXXXXXX: char
+qualifiers:              const
+kind:                    none
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             
+  qualified:             file-scope type@XXXXXXXX: const char
+size:                    1
+alignment:               1
+kind:                    tk_integer
+int_kind:                char
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    4
+alignment:               1
+kind:                    tk_array
+element_type:            file-scope type@XXXXXXXX: const char
+number_of_elements:      4
+
+file-scope type@XXXXXXXX
+source_corresp:
+  parent_scope:          NULL
+  enclosing_routine:     NULL
+  referenced:            TRUE
+  needed:                FALSE
+  attributes:            NULL
+next:                    NULL
+based_types:             NULL
+size:                    2
+alignment:               1
+kind:                    tk_array
+element_type:            file-scope type@XXXXXXXX: const char
+number_of_elements:      2
+
+file-scope seq-number-lookup-entry@XXXXXXXX
+next:                    NULL
+first:                   1
+last:                    14
+line_number:             1
+source_file:             file-scope source-file@XXXXXXXX: "Test_name.c"

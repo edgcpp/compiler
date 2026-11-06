@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 26: warning: label "label" was declared but never referenced
+  label:; // expected-warning {{use of this statement in a constexpr function is incompatible with C++ standards before C++23}}
+  ^
+
+"Test_name.c", line 45: warning: variable "a" was declared but never referenced
+    static _Thread_local int a; // expected-warning {{definition of a static variable in a constexpr function is incompatible with C++ standards before C++23}}
+                             ^
+
+"Test_name.c", line 46: warning: variable "b" was declared but never referenced
+    _Thread_local int b;        // // expected-error {{'_Thread_local' variables must have global storage}}
+                      ^
+
+"Test_name.c", line 53: error: explicit type is missing ("int" assumed)
+    static __thread int a; // expected-warning {{definition of a static variable in a constexpr function is incompatible with C++ standards before C++23}}
+           ^
+
+"Test_name.c", line 53: error: expected a ";"
+    static __thread int a; // expected-warning {{definition of a static variable in a constexpr function is incompatible with C++ standards before C++23}}
+                    ^
+
+"Test_name.c", line 54: warning: expression has no effect
+    __thread int b;        // expected-error {{'__thread' variables must have global storage}}
+    ^
+
+"Test_name.c", line 54: error: expected a ";"
+    __thread int b;        // expected-error {{'__thread' variables must have global storage}}
+             ^
+
+"Test_name.c", line 53: warning: variable "__thread" was set but never used
+    static __thread int a; // expected-warning {{definition of a static variable in a constexpr function is incompatible with C++ standards before C++23}}
+           ^
+
+3 errors detected in the compilation of "Test_name.c".

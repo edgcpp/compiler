@@ -1,0 +1,50 @@
+cpfe -DTEST_NUMBER=2 -r -x -tused Test_name.c
+"Test_name.c", line 11: error: class member typedef may not be redeclared
+    typedef int I;
+                ^
+
+"Test_name.c", line 12: warning: redeclaration of class "S::N" alters its access
+    struct N { };
+           ^
+
+"Test_name.c", line 13: warning: redeclaration of class "S::N2" is not allowed to alter its access
+    struct N2;
+           ^
+
+"Test_name.c", line 13: warning: invalid redeclaration of nested class
+    struct N2;
+           ^
+
+"Test_name.c", line 15: remark: return type "int" omitted in declaration of function "main"
+  main() {
+  ^
+
+"Test_name.c", line 16: error: type "S::I" (declared at line 6) is inaccessible
+    S::I i;
+       ^
+
+"Test_name.c", line 17: error: type "S::J" (declared at line 7) is inaccessible
+    S::J j;
+       ^
+
+"Test_name.c", line 19: error: class "S::N2" (declared at line 9) is inaccessible
+    S::N2 y;
+       ^
+
+"Test_name.c", line 16: warning: variable "i" was declared but never referenced
+    S::I i;
+         ^
+
+"Test_name.c", line 17: warning: variable "j" was declared but never referenced
+    S::J j;
+         ^
+
+"Test_name.c", line 18: warning: variable "x" was declared but never referenced
+    S::N x;
+         ^
+
+"Test_name.c", line 19: warning: variable "y" was declared but never referenced
+    S::N2 y;
+          ^
+
+4 errors detected in the compilation of "Test_name.c".

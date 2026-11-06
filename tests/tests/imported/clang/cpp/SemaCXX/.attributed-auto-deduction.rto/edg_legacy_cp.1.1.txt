@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 7: warning: variable "single_int" was declared but never referenced
+    auto single_int = [](int i) __attribute__ (( pcs("aapcs") )) {
+         ^
+
+"Test_name.c", line 10: warning: variable "multiple_int" was declared but never referenced
+    auto multiple_int = [](int i) __attribute__ (( pcs("aapcs") ))
+         ^
+
+"Test_name.c", line 15: warning: variable "single_void" was declared but never referenced
+    auto single_void = []() __attribute__ (( pcs("aapcs") )) { };
+         ^
+
+"Test_name.c", line 16: warning: variable "multiple_void" was declared but never referenced
+    auto multiple_void = []() __attribute__ (( pcs("aapcs") ))
+         ^
+

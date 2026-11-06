@@ -1,0 +1,148 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 15: error: invalid destructor name for type "A"
+    y->~decltype(*y)(); // expected-error{{destructor type 'decltype(*y)' (aka 'const A &') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+                   ^
+
+"Test_name.c", line 15: error: expected an identifier
+    y->~decltype(*y)(); // expected-error{{destructor type 'decltype(*y)' (aka 'const A &') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 15: error: expected a ";"
+    y->~decltype(*y)(); // expected-error{{destructor type 'decltype(*y)' (aka 'const A &') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 23: error: invalid destructor name for type "A"
+    x->~decltype(*x)(); // expected-error{{destructor type 'decltype(*x)' (aka 'const A &') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+                   ^
+
+"Test_name.c", line 23: error: expected an identifier
+    x->~decltype(*x)(); // expected-error{{destructor type 'decltype(*x)' (aka 'const A &') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 23: error: expected a ";"
+    x->~decltype(*x)(); // expected-error{{destructor type 'decltype(*x)' (aka 'const A &') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 24: error: expected an expression
+    x->~decltype()(); // expected-error{{expected expression}}
+                 ^
+
+"Test_name.c", line 24: error: invalid destructor name for type "A"
+    x->~decltype()(); // expected-error{{expected expression}}
+                 ^
+
+"Test_name.c", line 24: error: expected an identifier
+    x->~decltype()(); // expected-error{{expected expression}}
+        ^
+
+"Test_name.c", line 24: error: expected a ";"
+    x->~decltype()(); // expected-error{{expected expression}}
+        ^
+
+"Test_name.c", line 25: error: invalid destructor name for type "A"
+    x->~decltype(B())(); // expected-error{{destructor type 'decltype(B())' (aka 'B') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+                    ^
+
+"Test_name.c", line 25: error: expected an identifier
+    x->~decltype(B())(); // expected-error{{destructor type 'decltype(B())' (aka 'B') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 25: error: expected a ";"
+    x->~decltype(B())(); // expected-error{{destructor type 'decltype(B())' (aka 'B') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 26: error: invalid destructor name for type "A"
+    x->~decltype(x)(); // expected-error{{destructor type 'decltype(x)' (aka 'const A *') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+                  ^
+
+"Test_name.c", line 26: error: expected an identifier
+    x->~decltype(x)(); // expected-error{{destructor type 'decltype(x)' (aka 'const A *') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 26: error: expected a ";"
+    x->~decltype(x)(); // expected-error{{destructor type 'decltype(x)' (aka 'const A *') in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 28: error: expected an identifier
+    x->::A::~decltype(*x)(); // expected-error{{expected a class name after '~' to name a destructor}}
+             ^
+
+"Test_name.c", line 28: error: expected a ";"
+    x->::A::~decltype(*x)(); // expected-error{{expected a class name after '~' to name a destructor}}
+             ^
+
+"Test_name.c", line 29: error: identifier "y" is undefined
+    y->~decltype(A())(); // expected-error{{use of undeclared identifier 'y'}}
+    ^
+
+"Test_name.c", line 32: error: operator -> or ->* applied to "int" instead of to a pointer type
+    i->~decltype(int())(); // expected-error{{member reference type 'int' is not a pointer; did you mean to use '.'?}}
+    ^
+
+"Test_name.c", line 34: error: operator -> or ->* applied to "int" instead of to a pointer type
+    i->~decltype(intp())(); // expected-error{{member reference type 'int' is not a pointer; did you mean to use '.'?}} \
+    ^
+
+"Test_name.c", line 36: error: invalid destructor name for type "int"
+    i.~decltype(intp())(); // expected-error{{the type of object expression ('int') does not match the type being destroyed ('decltype(intp())' (aka 'int *')) in pseudo-destructor expression}}
+      ^
+
+"Test_name.c", line 38: error: invalid destructor name for type "int *"
+    pi.~decltype(int())(); // expected-error{{member reference type 'int *' is a pointer; did you mean to use '->'?}}
+       ^
+
+"Test_name.c", line 40: error: invalid destructor name for type "int"
+    pi->~decltype(intp())(); // expected-error{{the type of object expression ('int') does not match the type being destroyed ('decltype(intp())' (aka 'int *')) in pseudo-destructor expression}}
+        ^
+
+"Test_name.c", line 11: error: invalid destructor name for type "int"
+    x->~decltype(*x)(); // expected-error{{the type of object expression ('const int') does not match the type being destroyed ('decltype(*x)' (aka 'const int &')) in pseudo-destructor expression}} \
+       ^
+          detected during instantiation of "void b(const T *, const A *) [with T=int]" at line 19
+
+"Test_name.c", line 16: error: invalid destructor name for type "A"
+    y->~decltype(T())(); // expected-error{{destructor type 'decltype(T())' in object destruction expression does not match the type 'const A' of the object being destroyed}}
+                    ^
+          detected during instantiation of "void b(const T *, const A *) [with T=int]" at line 19
+
+"Test_name.c", line 16: error: expected an identifier
+    y->~decltype(T())(); // expected-error{{destructor type 'decltype(T())' in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+          detected during instantiation of "void b(const T *, const A *) [with T=int]" at line 19
+
+"Test_name.c", line 16: error: expected a ";"
+    y->~decltype(T())(); // expected-error{{destructor type 'decltype(T())' in object destruction expression does not match the type 'const A' of the object being destroyed}}
+        ^
+          detected during instantiation of "void b(const T *, const A *) [with T=int]" at line 19
+
+"Test_name.c", line 11: error: invalid destructor name for type "A"
+    x->~decltype(*x)(); // expected-error{{the type of object expression ('const int') does not match the type being destroyed ('decltype(*x)' (aka 'const int &')) in pseudo-destructor expression}} \
+                   ^
+          detected during instantiation of "void b(const T *, const A *) [with T=A]" at line 20
+
+"Test_name.c", line 11: error: expected an identifier
+    x->~decltype(*x)(); // expected-error{{the type of object expression ('const int') does not match the type being destroyed ('decltype(*x)' (aka 'const int &')) in pseudo-destructor expression}} \
+        ^
+          detected during instantiation of "void b(const T *, const A *) [with T=A]" at line 20
+
+"Test_name.c", line 11: error: expected a ";"
+    x->~decltype(*x)(); // expected-error{{the type of object expression ('const int') does not match the type being destroyed ('decltype(*x)' (aka 'const int &')) in pseudo-destructor expression}} \
+        ^
+          detected during instantiation of "void b(const T *, const A *) [with T=A]" at line 20
+
+"Test_name.c", line 13: error: invalid destructor name for type "A"
+    x->~decltype(int())(); // expected-error{{no member named '~int' in 'A'}}
+                      ^
+          detected during instantiation of "void b(const T *, const A *) [with T=A]" at line 20
+
+"Test_name.c", line 13: error: expected an identifier
+    x->~decltype(int())(); // expected-error{{no member named '~int' in 'A'}}
+        ^
+          detected during instantiation of "void b(const T *, const A *) [with T=A]" at line 20
+
+"Test_name.c", line 13: error: expected a ";"
+    x->~decltype(int())(); // expected-error{{no member named '~int' in 'A'}}
+        ^
+          detected during instantiation of "void b(const T *, const A *) [with T=A]" at line 20
+
+34 errors detected in the compilation of "Test_name.c".

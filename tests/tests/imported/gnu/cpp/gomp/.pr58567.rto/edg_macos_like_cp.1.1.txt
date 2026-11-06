@@ -1,0 +1,27 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: name followed by "::" must be a class or namespace name
+    for (typename T::X i = 0; i < 100; ++i)  /* { dg-error "'int' is not a class, struct, or union type|invalid type for iteration variable 'i'" } */
+                  ^
+          detected during instantiation of "void foo<T>() [with T=int]" at line 16
+
+"Test_name.c", line 10: error: a class or namespace qualified name is required
+    for (typename T::X i = 0; i < 100; ++i)  /* { dg-error "'int' is not a class, struct, or union type|invalid type for iteration variable 'i'" } */
+                  ^
+          detected during instantiation of "void foo<T>() [with T=int]" at line 16
+
+"Test_name.c", line 10: error: global-scope qualifier (leading "::") is not allowed
+    for (typename T::X i = 0; i < 100; ++i)  /* { dg-error "'int' is not a class, struct, or union type|invalid type for iteration variable 'i'" } */
+                   ^
+          detected during instantiation of "void foo<T>() [with T=int]" at line 16
+
+"Test_name.c", line 10: error: expected a ";"
+    for (typename T::X i = 0; i < 100; ++i)  /* { dg-error "'int' is not a class, struct, or union type|invalid type for iteration variable 'i'" } */
+                       ^
+          detected during instantiation of "void foo<T>() [with T=int]" at line 16
+
+"Test_name.c", line 10: error: identifier "i" is undefined
+    for (typename T::X i = 0; i < 100; ++i)  /* { dg-error "'int' is not a class, struct, or union type|invalid type for iteration variable 'i'" } */
+                              ^
+          detected during instantiation of "void foo<T>() [with T=int]" at line 16
+
+5 errors detected in the compilation of "Test_name.c".

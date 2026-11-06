@@ -1,0 +1,190 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 25: error: static assertion failed
+  static_assert(False<int>); // { dg-error "static assertion failed" }
+  ^
+
+"Test_name.c", line 40: error: no instance of function template "fn2" matches the argument list
+            argument types are: (int)
+    fn2(0); // { dg-error "" }
+    ^
+"Test_name.c", line 35: note: substituting "<int>" for function template "fn2" failed constraints
+  int fn2(T t) { return 0; }
+      ^
+"Test_name.c", line 34: note: concept "False" not satisfied for "<int>"
+    requires False<T>
+             ^
+"Test_name.c", line 9: note: atomic constraint evaluates to false
+  concept False = false;
+                  ^
+
+"Test_name.c", line 84: error: more than one instance of overloaded function "ambig" matches the argument list:
+            function template "int ambig(T)" (declared at line 64)
+            function template "int ambig(T)" (declared at line 67)
+            argument types are: (T1)
+    ambig(x); // { dg-error "call of overload | is ambiguous" }
+    ^
+
+"Test_name.c", line 108: error: no instance of function template "S<T>::h [with T=X]" matches the argument list
+            argument types are: (int)
+            object type is: S<X>
+    s1.h(0); // { dg-error "no matching function" }
+       ^
+"Test_name.c", line 98: note: substituting "<int>" for function template "S<T>::h [with T=X]" failed constraints
+    template<typename U> requires Classes<T, U> void h(U) { }
+                                                     ^
+"Test_name.c", line 98: note: concept "Classes" not satisfied for "<X, int>"
+    template<typename U> requires Classes<T, U> void h(U) { }
+                                  ^
+"Test_name.c", line 18: note: atomic constraint evaluates to false
+  concept Classes = __is_class(T) && __is_class (U);
+                                     ^
+
+"Test_name.c", line 111: error: no instance of function "S<T>::f [with T=int]" matches the argument list
+            object type is: S<int>
+    s2.f(); // { dg-error "no matching function" }
+       ^
+"Test_name.c", line 90: note: constraint on candidate function "S<T>::f [with T=int]" not satisfied
+    void f() requires Class<T> { }
+         ^
+
+"Test_name.c", line 117: error: no instance of function "S<T>::Inner<U>::g [with T=X, U=int]" matches the argument list
+            object type is: S<X>::Inner<int>
+    si2.g(); // { dg-error "no matching function" }
+        ^
+"Test_name.c", line 95: note: constraint on candidate function "S<T>::Inner<U>::g [with T=X, U=int]" not satisfied
+      void g() requires Classes<T, U> { }
+           ^
+
+"Test_name.c", line 131: error: no instance of function template "f1" matches the argument list
+            argument types are: (int)
+    f1(0); // { dg-error "" }
+    ^
+"Test_name.c", line 123: note: substituting "<int>" for function template "f1" failed constraints
+  template<typename T> requires Class<T> void f1(T x) { }
+                                              ^
+"Test_name.c", line 123: note: concept "Class" not satisfied for "<int>"
+  template<typename T> requires Class<T> void f1(T x) { }
+                                ^
+"Test_name.c", line 12: note: atomic constraint evaluates to false
+  concept Class = __is_class(T);
+                  ^
+
+"Test_name.c", line 151: error: no instance of overloaded function "f2" matches the argument list
+            argument types are: (int)
+    f2(0); // { dg-error "no matching function" }
+    ^
+"Test_name.c", line 141: note: substituting "<int>" for function template "f2(T)" failed constraints
+  constexpr int f2(T x) { return 2; }
+                ^
+"Test_name.c", line 140: note: concept "EmptyClass" not satisfied for "<int>"
+    requires EmptyClass<T> 
+             ^
+"Test_name.c", line 15: note: concept "Class" not satisfied for "<int>"
+  concept EmptyClass = Class<T> && __is_empty(T);
+                       ^
+"Test_name.c", line 12: note: atomic constraint evaluates to false
+  concept Class = __is_class(T);
+                  ^
+"Test_name.c", line 137: note: substituting "<int>" for function template "f2(T)" failed constraints
+  constexpr int f2(T x) { return 1; }
+                ^
+"Test_name.c", line 136: note: concept "Class" not satisfied for "<int>"
+    requires Class<T> 
+             ^
+"Test_name.c", line 12: note: atomic constraint evaluates to false
+  concept Class = __is_class(T);
+                  ^
+
+"Test_name.c", line 154: error: no instance of overloaded function "f3" matches the argument list
+            argument types are: (int)
+    f3(0); // { dg-error "no matching function" }
+    ^
+"Test_name.c", line 147: note: substituting "<int>" for function template "f3(T)" failed constraints
+  constexpr int f3(T x) requires EmptyClass<T> { return 2; }
+                ^
+"Test_name.c", line 147: note: concept "EmptyClass" not satisfied for "<int>"
+  constexpr int f3(T x) requires EmptyClass<T> { return 2; }
+                                 ^
+"Test_name.c", line 15: note: concept "Class" not satisfied for "<int>"
+  concept EmptyClass = Class<T> && __is_empty(T);
+                       ^
+"Test_name.c", line 12: note: atomic constraint evaluates to false
+  concept Class = __is_class(T);
+                  ^
+"Test_name.c", line 144: note: substituting "<int>" for function template "f3(T)" failed constraints
+  constexpr int f3(T x) requires Class<T> { return 1; }
+                ^
+"Test_name.c", line 144: note: concept "Class" not satisfied for "<int>"
+  constexpr int f3(T x) requires Class<T> { return 1; }
+                                 ^
+"Test_name.c", line 12: note: atomic constraint evaluates to false
+  concept Class = __is_class(T);
+                  ^
+
+"Test_name.c", line 164: error: cannot deduce "auto" type
+  auto p2 = &err<int>; // { dg-error "" }
+  ^
+
+"Test_name.c", line 166: error: no instance of function template "err" matches the required type
+  void (*p4)(int) = &err<int>; // { dg-error "no matches" }
+                    ^
+
+"Test_name.c", line 168: error: no instance of function template "err" matches the required type
+  void (*p6)(int) = &err; // { dg-error "no matches" }
+                    ^
+
+"Test_name.c", line 175: error: no instance of function template "g" matches the argument list
+            argument types are: (<unknown-type>)
+    g(&err<int>); // { dg-error "no match" }
+    ^
+"Test_name.c", line 170: note: substituting "<int>" for function template "g" failed constraints
+  template<typename T> void g(T x) { }
+                            ^
+"Test_name.c", line 161: note: concept "Class" not satisfied for "<int>"
+  template<typename T> requires Class<T> void err(T) { }
+                                ^
+"Test_name.c", line 12: note: atomic constraint evaluates to false
+  concept Class = __is_class(T);
+                  ^
+
+"Test_name.c", line 185: error: cannot deduce "auto" type
+  auto p8 = &S2::err<int>; // { dg-error "" }
+  ^
+
+"Test_name.c", line 187: error: no instance of function template "S2::err" matches the required type
+  int (S2::*p10)(int) = &S2::err<int>; // { dg-error "no matches" }
+                        ^
+
+"Test_name.c", line 189: error: no instance of function template "S2::err" matches the required type
+  int (S2::*p12)(int) = &S2::err; // { dg-error "no matches" }
+                        ^
+
+"Test_name.c", line 219: error: cannot deduce "auto" type
+    constexpr auto p1 = &fn<X>; // Empty f
+              ^
+
+"Test_name.c", line 223: warning: variable "y" is used before its value is set
+    static_assert(p2(y) == 1);
+                     ^
+
+"Test_name.c", line 225: error: cannot deduce "auto" type
+    constexpr auto p3 = &S3::fn<X>; // Empty f
+              ^
+
+"Test_name.c", line 242: error: more than one instance of overloaded function "f3" matches the argument list:
+            function template "void f3<T>()" (declared at line 237)
+            function template "void f3<T>()" (declared at line 238)
+    f3<int>(); // { dg-error "call of overload | ambiguous" }
+    ^
+"Test_name.c", line 147: note: number of parameters of function template "f3(T)" does not match the call
+  constexpr int f3(T x) requires EmptyClass<T> { return 2; }
+                ^
+"Test_name.c", line 144: note: number of parameters of function template "f3(T)" does not match the call
+  constexpr int f3(T x) requires Class<T> { return 1; }
+                ^
+
+"Test_name.c", line 249: error: function template "def" has already been defined (previous definition at line 248)
+  template<typename T> requires Type<T> void def() { } // { dg-error "redefinition" }
+                                             ^
+
+20 errors detected in the compilation of "Test_name.c".

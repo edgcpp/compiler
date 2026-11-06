@@ -1,0 +1,65 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: error: pack expansion does not make use of any argument packs
+  [[noreturn...]]					// { dg-error "attribute with no arguments contains no parameter packs" }
+            ^
+
+"Test_name.c", line 9: error: pack expansion does not make use of any argument packs
+  [[deprecated...]]				// { dg-error "attribute with no arguments contains no parameter packs" }
+              ^
+
+"Test_name.c", line 10: error: pack expansion does not make use of any argument packs
+  [[nodiscard...]]				// { dg-error "attribute with no arguments contains no parameter packs" }
+             ^
+
+"Test_name.c", line 16: error: pack expansion does not make use of any argument packs
+        [[likely...]];				// { dg-error "attribute with no arguments contains no parameter packs" }
+                ^
+
+"Test_name.c", line 17: error: pack expansion does not make use of any argument packs
+        [[fallthrough...]];			// { dg-error "attribute with no arguments contains no parameter packs" }
+                     ^
+
+"Test_name.c", line 19: error: pack expansion does not make use of any argument packs
+        [[unlikely...]];				// { dg-error "attribute with no arguments contains no parameter packs" }
+                  ^
+
+"Test_name.c", line 26: error: pack expansion does not make use of any argument packs
+    struct S { [[no_unique_address...]] T t; };	// { dg-error "attribute with no arguments contains no parameter packs" }
+                                  ^
+
+"Test_name.c", line 8: error: expected a ","
+  [[noreturn...]]					// { dg-error "attribute with no arguments contains no parameter packs" }
+            ^
+          detected during instantiation of "foo" based on template arguments <1, 2, 3> at line 31
+
+"Test_name.c", line 9: error: expected a ","
+  [[deprecated...]]				// { dg-error "attribute with no arguments contains no parameter packs" }
+              ^
+          detected during instantiation of "foo" based on template arguments <1, 2, 3> at line 31
+
+"Test_name.c", line 10: error: expected a ","
+  [[nodiscard...]]				// { dg-error "attribute with no arguments contains no parameter packs" }
+             ^
+          detected during instantiation of "foo" based on template arguments <1, 2, 3> at line 31
+
+"Test_name.c", line 16: error: expected a ","
+        [[likely...]];				// { dg-error "attribute with no arguments contains no parameter packs" }
+                ^
+          detected during instantiation of "int foo<args...>(int) [with args=<1, 2, 3>]" at line 31
+
+"Test_name.c", line 17: error: expected a ","
+        [[fallthrough...]];			// { dg-error "attribute with no arguments contains no parameter packs" }
+                     ^
+          detected during instantiation of "int foo<args...>(int) [with args=<1, 2, 3>]" at line 31
+
+"Test_name.c", line 19: error: expected a ","
+        [[unlikely...]];				// { dg-error "attribute with no arguments contains no parameter packs" }
+                  ^
+          detected during instantiation of "int foo<args...>(int) [with args=<1, 2, 3>]" at line 31
+
+"Test_name.c", line 26: error: expected a ","
+    struct S { [[no_unique_address...]] T t; };	// { dg-error "attribute with no arguments contains no parameter packs" }
+                                  ^
+          detected during instantiation of "int foo<args...>(int) [with args=<1, 2, 3>]" at line 31
+
+14 errors detected in the compilation of "Test_name.c".

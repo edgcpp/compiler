@@ -1,0 +1,18 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 4: remark: function "S::S(const S &)" cannot be inlined
+  struct S {
+         ^
+          detected during implicit generation of "S::S(const S &)" at line 15
+
+"Test_name.c", line 11: warning: variable "j" was declared but never referenced
+    static int j[2] = { 2, 2 };
+               ^
+
+"Test_name.c", line 12: warning: variable "k" was declared but never referenced
+    static int k = i;
+               ^
+
+"Test_name.c", line 15: warning: variable "s3" was declared but never referenced
+    static S s3 = s1;
+             ^
+

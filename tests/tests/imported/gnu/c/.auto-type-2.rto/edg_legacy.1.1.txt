@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: declaration does not declare anything
+  __auto_type; /* { dg-error "empty declaration" } */
+  ^
+
+"Test_name.c", line 7: error: "__auto_type" not allowed here
+  __auto_type; /* { dg-error "empty declaration" } */
+  ^
+
+"Test_name.c", line 8: error: "__auto_type" must be a placeholder for the complete type of the variable (not for a component of that type)
+  __auto_type *p = (int *) 0; /* { dg-error "plain identifier" } */
+  ^
+
+"Test_name.c", line 10: warning: variable "v" was declared but never referenced
+  void f (void) { __auto_type v = x.i; } /* { dg-error "bit-field initializer" } */
+                              ^
+
+"Test_name.c", line 11: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type i; /* { dg-error "initialized data declaration" } */
+  ^
+
+"Test_name.c", line 12: error: expected a ";"
+  __auto_type g { } /* { dg-error "initialized data declaration" } */
+                ^
+
+"Test_name.c", line 12: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type g { } /* { dg-error "initialized data declaration" } */
+  ^
+
+"Test_name.c", line 14: error: invalid combination of type specifiers
+  __auto_type long e0 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 14: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type long e0 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 15: error: invalid combination of type specifiers
+  __auto_type short e1 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 15: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type short e1 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 16: error: invalid combination of type specifiers
+  __auto_type signed e2 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 16: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type signed e2 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 17: error: invalid combination of type specifiers
+  __auto_type unsigned e3 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 17: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type unsigned e3 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 18: error: _Complex can only be used with floating-point types
+  __auto_type _Complex e4 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 18: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type _Complex e4 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 19: error: invalid combination of type specifiers
+  long __auto_type e5 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 19: error: a variable declared with "__auto_type" requires an initializer
+  long __auto_type e5 = 0; /* { dg-error "__auto_type" } */
+       ^
+
+"Test_name.c", line 20: error: invalid combination of type specifiers
+  short __auto_type e6 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 20: error: a variable declared with "__auto_type" requires an initializer
+  short __auto_type e6 = 0; /* { dg-error "__auto_type" } */
+        ^
+
+"Test_name.c", line 21: error: invalid combination of type specifiers
+  signed __auto_type e7 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 21: error: a variable declared with "__auto_type" requires an initializer
+  signed __auto_type e7 = 0; /* { dg-error "__auto_type" } */
+         ^
+
+"Test_name.c", line 22: error: invalid combination of type specifiers
+  unsigned __auto_type e8 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 22: error: a variable declared with "__auto_type" requires an initializer
+  unsigned __auto_type e8 = 0; /* { dg-error "__auto_type" } */
+           ^
+
+"Test_name.c", line 23: error: _Complex can only be used with floating-point types
+  _Complex __auto_type e9 = 0; /* { dg-error "__auto_type" } */
+  ^
+
+"Test_name.c", line 23: error: a variable declared with "__auto_type" requires an initializer
+  _Complex __auto_type e9 = 0; /* { dg-error "__auto_type" } */
+           ^
+
+"Test_name.c", line 24: error: invalid combination of type specifiers
+  int __auto_type e10 = 0; /* { dg-error "two or more data types" } */
+      ^
+
+"Test_name.c", line 25: error: invalid combination of type specifiers
+  __auto_type _Bool e11 = 0; /* { dg-error "'_Bool' cannot be used here" } */
+              ^
+
+"Test_name.c", line 25: error: a variable declared with "__auto_type" requires an initializer
+  __auto_type _Bool e11 = 0; /* { dg-error "'_Bool' cannot be used here" } */
+  ^
+
+28 errors detected in the compilation of "Test_name.c".

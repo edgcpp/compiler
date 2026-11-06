@@ -1,0 +1,14 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/float128-truncsf-underflow.c", line 14: error: identifier "__float128" is undefined
+    volatile __float128 a = 0x0.ffffffffffp-126q, b = 0x0.ffffffp-126q;
+             ^
+
+"./torture/float128-truncsf-underflow.c", line 14: error: extra text after expected end of number
+    volatile __float128 a = 0x0.ffffffffffp-126q, b = 0x0.ffffffp-126q;
+                                               ^
+
+"./torture/float128-truncsf-underflow.c", line 14: error: extra text after expected end of number
+    volatile __float128 a = 0x0.ffffffffffp-126q, b = 0x0.ffffffp-126q;
+                                                                     ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,176 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 11: warning: type "INT1" was declared deprecated
+  typedef INT1 INT1a; 			/* { dg-warning "'INT1' is deprecated" } */
+               ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  typedef int INT1 __attribute__((deprecated));
+                                  ^
+
+"Test_name.c", line 14: warning: type "INT1" was declared deprecated
+  INT1 should_be_unavailable; 		/* { dg-warning "'INT1' is deprecated" } */
+       ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  typedef int INT1 __attribute__((deprecated));
+                                  ^
+
+"Test_name.c", line 18: warning: type "INT1" was declared deprecated
+  INT1 f2(void) { return 0; }		/* { dg-warning "'INT1' is deprecated" } */
+       ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  typedef int INT1 __attribute__((deprecated));
+                                  ^
+
+"Test_name.c", line 21: warning: type "INT2" was declared deprecated
+  INT2 f4(void) { return 0; }		/* { dg-warning "'INT2' is deprecated" } */
+       ^
+"Test_name.c", line 9: note: because of a "deprecated" attribute
+  typedef INT1 INT2 __attribute__ ((__deprecated__));
+                                    ^
+
+"Test_name.c", line 22: warning: type "INT2" was declared deprecated
+  int f5(INT2 x);				/* { dg-warning "'INT2' is deprecated" } */
+      ^
+"Test_name.c", line 9: note: because of a "deprecated" attribute
+  typedef INT1 INT2 __attribute__ ((__deprecated__));
+                                    ^
+
+"Test_name.c", line 30: warning: type "Color" was declared deprecated
+  Color k;				/* { dg-warning "'Color' is deprecated" } */
+        ^
+"Test_name.c", line 25: note: because of a "deprecated" attribute
+  typedef enum {red, green, blue} Color __attribute__((deprecated));
+                                                       ^
+
+"Test_name.c", line 51: warning: type "INT1" was declared deprecated
+     INT1 w;				/* { dg-warning "'INT1' is deprecated" } */
+          ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  typedef int INT1 __attribute__((deprecated));
+                                  ^
+
+"Test_name.c", line 55: warning: function "f1" was declared deprecated
+     int (*pf)() = f1;			/* { dg-warning "'f1' is deprecated" } */
+                   ^
+"Test_name.c", line 17: note: because of a "deprecated" attribute
+  INT1 f1(void) __attribute__ ((deprecated)); 
+                                ^
+
+"Test_name.c", line 57: warning: variable "w" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+         ^
+
+"Test_name.c", line 57: warning: variable "x" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+             ^
+
+"Test_name.c", line 57: warning: variable "x" was declared deprecated
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+             ^
+"Test_name.c", line 52: note: because of a "deprecated" attribute
+     int x __attribute__ ((deprecated));
+                           ^
+
+"Test_name.c", line 57: warning: variable "y" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+                 ^
+
+"Test_name.c", line 57: warning: variable "y" was declared deprecated
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+                 ^
+"Test_name.c", line 53: note: because of a "deprecated" attribute
+     int y __attribute__ ((__deprecated__));
+                           ^
+
+"Test_name.c", line 57: warning: variable "g2" was declared deprecated
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+                          ^
+"Test_name.c", line 28: note: because of a "deprecated" attribute
+  int g2 __attribute__ ((deprecated));
+                         ^
+
+"Test_name.c", line 57: warning: variable "g3" was declared deprecated
+     z = w + x + y + g1 + g2 + g3;	/* { dg-warning "'x' is deprecated" } */
+                               ^
+"Test_name.c", line 29: note: because of a "deprecated" attribute
+  int g3 __attribute__ ((__deprecated__));
+                         ^
+
+"Test_name.c", line 61: warning: function "f1" was declared deprecated
+     return f1(); 			/* { dg-warning "'f1' is deprecated" "f1" } */
+            ^
+"Test_name.c", line 17: note: because of a "deprecated" attribute
+  INT1 f1(void) __attribute__ ((deprecated)); 
+                                ^
+
+"Test_name.c", line 54: warning: variable "z" was set but never used
+     int z;
+         ^
+
+"Test_name.c", line 55: warning: variable "pf" was declared but never referenced
+     int (*pf)() = f1;			/* { dg-warning "'f1' is deprecated" } */
+           ^
+
+"Test_name.c", line 69: warning: field "field2" was declared deprecated
+       return p->field2;			/* { dg-warning "'field2' is deprecated" } */
+                 ^
+"Test_name.c", line 34: note: because of a "deprecated" attribute
+    int field2 __attribute__ ((deprecated));
+                               ^
+
+"Test_name.c", line 70: warning: variable "lp" is used before its value is set
+    else if (lp.field4)			/* { dg-warning "'field4' is deprecated" } */
+             ^
+
+"Test_name.c", line 70: warning: field "field4" was declared deprecated
+    else if (lp.field4)			/* { dg-warning "'field4' is deprecated" } */
+                ^
+"Test_name.c", line 36: note: because of a "deprecated" attribute
+    int field4 __attribute__ ((__deprecated__));
+                               ^
+
+"Test_name.c", line 74: warning: expression has no effect
+    p->u2.field9;				/* { dg-warning "'u2' is deprecated" } */
+    ^
+
+"Test_name.c", line 74: warning: field "u2" was declared deprecated
+    p->u2.field9;				/* { dg-warning "'u2' is deprecated" } */
+       ^
+"Test_name.c", line 46: note: because of a "deprecated" attribute
+    } u2 __attribute__ ((deprecated));
+                         ^
+
+"Test_name.c", line 75: warning: field "field6" was declared deprecated
+    return p->u1.field6 + p->field8;	/* { dg-warning "'field6' is deprecated" } */
+                 ^
+"Test_name.c", line 39: note: because of a "deprecated" attribute
+      int field6 __attribute__ ((deprecated));
+                                 ^
+
+"Test_name.c", line 75: warning: field "field8" was declared deprecated
+    return p->u1.field6 + p->field8;	/* { dg-warning "'field6' is deprecated" } */
+                             ^
+"Test_name.c", line 42: note: because of a "deprecated" attribute
+    int field8:1 __attribute__ ((deprecated));
+                                 ^
+
+"Test_name.c", line 81: warning: type "INT1" was declared deprecated
+    INT1 y; 				/* { dg-warning "'INT1' is deprecated" } */
+         ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  typedef int INT1 __attribute__((deprecated));
+                                  ^
+
+"Test_name.c", line 84: warning: struct "SS1" was declared deprecated
+  struct SS1 *p1;				/* { dg-warning "'SS1' is deprecated" } */
+              ^
+"Test_name.c", line 82: note: because of a "deprecated" attribute
+  } __attribute__ ((deprecated));
+                    ^
+
+"Test_name.c", line 91: warning: struct "SS2" was declared deprecated
+  struct SS2 *p2;				/* { dg-warning "'SS2' is deprecated" } */
+              ^
+"Test_name.c", line 86: note: because of a "deprecated" attribute
+  struct __attribute__ ((__deprecated__)) SS2 {
+                         ^
+

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+    constexpr void b() {
+    ^
+
+"Test_name.c", line 8: error: a constexpr function cannot have a nonliteral return type "void"
+    constexpr void b() {
+                   ^
+
+"Test_name.c", line 10: error: this operator is not allowed in a constant expression
+      static_assert(c %= 1, ""); // { dg-error "constant" }
+                      ^
+
+2 errors detected in the compilation of "Test_name.c".

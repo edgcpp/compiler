@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 26: warning: variable "k" is used before its value is set
+      (void)(k % member);
+             ^
+
+"Test_name.c", line 62: warning: variable "v" was declared but never referenced
+        int &v = (int &)k;
+             ^
+
+"Test_name.c", line 88: warning: variable "x" is used before its value is set
+      return ((void*)(((unsigned long)(x)|0x1ul)));
+                                       ^
+
+"Test_name.c", line 117: error: static assertion failed with ""
+    static_assert( ({ false; }), "" ); // expected-error {{failed}}
+    ^
+
+"Test_name.c", line 132: error: incomplete type "void" is not allowed
+      decltype(({})) x; // expected-error {{incomplete type}}
+                     ^
+
+"Test_name.c", line 137: internal error: assertion failed at: "il_alloc.c", line <suppressed> in alloc_source_sequence_entry
+
+      auto c = [](auto, int) -> decltype(({})) {};
+                                          ^
+
+2 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

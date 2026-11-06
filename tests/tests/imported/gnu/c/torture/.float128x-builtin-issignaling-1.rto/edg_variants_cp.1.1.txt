@@ -1,0 +1,74 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/builtin-issignaling-1.c", line 73: warning: function "__builtin_nansf128x" declared implicitly
+    return __builtin_issignaling (__builtin_nansf128x (""));
+                                  ^
+
+"./torture/builtin-issignaling-1.c", line 79: warning: function "__builtin_nanf128x" declared implicitly
+    return __builtin_issignaling (__builtin_nanf128x (""));
+                                  ^
+
+"./torture/builtin-issignaling-1.c", line 85: error: extra text after expected end of number
+    return __builtin_issignaling (0.0f128x);
+                                         ^
+
+"./torture/builtin-issignaling-1.c", line 85: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    return __builtin_issignaling (0.0f128x);
+                                 ^
+
+"./torture/builtin-issignaling-1.c", line 89: error: identifier "_Float128x" is undefined
+  f4 (_Float128x x)
+      ^
+
+"./torture/builtin-issignaling-1.c", line 100: error: identifier "_Float128x" is undefined
+  _Float128x w;
+  ^
+
+"./torture/builtin-issignaling-1.c", line 132: warning: function "__builtin_nansf128x" declared implicitly
+    if (f4 (w) || !f4 (__builtin_nansf128x ("0x123")) || f4 (42.0f128x) || f4 (__builtin_nanf128x ("0x234"))
+                       ^
+
+"./torture/builtin-issignaling-1.c", line 132: error: extra text after expected end of number
+    if (f4 (w) || !f4 (__builtin_nansf128x ("0x123")) || f4 (42.0f128x) || f4 (__builtin_nanf128x ("0x234"))
+                                                                     ^
+
+"./torture/builtin-issignaling-1.c", line 132: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (f4 (w) || !f4 (__builtin_nansf128x ("0x123")) || f4 (42.0f128x) || f4 (__builtin_nanf128x ("0x234"))
+                                                             ^
+
+"./torture/builtin-issignaling-1.c", line 132: warning: function "__builtin_nanf128x" declared implicitly
+    if (f4 (w) || !f4 (__builtin_nansf128x ("0x123")) || f4 (42.0f128x) || f4 (__builtin_nanf128x ("0x234"))
+                                                                               ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: function "__builtin_inff128x" declared implicitly
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+               ^
+
+"./torture/builtin-issignaling-1.c", line 133: error: extra text after expected end of number
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+                                                                                     ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+                                                                             ^
+
+"./torture/builtin-issignaling-1.c", line 133: error: extra text after expected end of number
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+                                                                                                       ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+                                                                                               ^
+
+"./torture/builtin-issignaling-1.c", line 133: error: extra text after expected end of number
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+                                                                                                                        ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f4 (__builtin_inff128x ()) || f4 (-__builtin_inff128x ()) || f4 (-42.0f128x) || f4 (-0.0f128x) || f4 (0.0f128x))
+                                                                                                                ^
+
+"./torture/builtin-issignaling-1.c", line 135: warning: function "__builtin_nansf128x" declared implicitly
+    w = __builtin_nansf128x ("");
+        ^
+
+7 errors detected in the compilation of "Test_name.c".

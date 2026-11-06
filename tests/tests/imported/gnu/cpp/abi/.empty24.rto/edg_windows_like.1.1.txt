@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 14: warning: array of elements containing a flexible array member is nonstandard
+  struct S a[5];
+           ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function 'foo__F1SP1ST1':
+Test_name.c:17:6: note: the ABI of passing struct with a flexible array member has changed in GCC 4.4
+eccp: end of diagnostics from compilation of Test_name.int.c

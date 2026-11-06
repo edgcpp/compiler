@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: warning: function declared with "noreturn" does return
+    auto a = [][[noreturn]] () {};	// { dg-warning "'noreturn' function does return" }
+                                ^
+
+"Test_name.c", line 12: warning: function declared with "noreturn" does return
+    auto b = [][[noreturn]] {};		// { dg-warning "'noreturn' function does return" }
+                             ^
+
+"Test_name.c", line 31: warning: variable "i" was declared but never referenced
+    auto i = [] [[ gnu::unavailable ]] () {};
+         ^
+
+"Test_name.c", line 32: warning: variable "j" was declared but never referenced
+    auto j = [][[gnu::unavailable]] {};
+         ^
+

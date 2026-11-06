@@ -1,0 +1,234 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -DDELAYED_TEMPLATE_PARSING Test_name.c
+"Test_name.c", line 10: error: exported templates are no longer in the standard C++ language
+  export class foo { };   // expected-error {{expected template}}
+  ^
+
+"Test_name.c", line 10: error: expected "template"
+  export class foo { };   // expected-error {{expected template}}
+         ^
+
+"Test_name.c", line 11: error: this declaration has no storage class or type specifier
+  template  x;            // expected-error {{a type specifier is required for all declarations}} \
+            ^
+
+"Test_name.c", line 11: error: invalid explicit instantiation declaration
+  template  x;            // expected-error {{a type specifier is required for all declarations}} \
+            ^
+
+"Test_name.c", line 13: error: exported templates are no longer in the standard C++ language
+  export template x;      // expected-error {{expected '<' after 'template'}}
+  ^
+
+"Test_name.c", line 13: error: this declaration has no storage class or type specifier
+  export template x;      // expected-error {{expected '<' after 'template'}}
+                  ^
+
+"Test_name.c", line 13: error: invalid explicit instantiation declaration
+  export template x;      // expected-error {{expected '<' after 'template'}}
+                  ^
+
+"Test_name.c", line 14: error: exported templates are no longer in the standard C++ language
+  export template<class T> class x0; // expected-warning {{exported templates are unsupported}}
+  ^
+
+"Test_name.c", line 15: error: expected a type specifier
+  template < ;            // expected-error {{expected template parameter}} \
+             ^
+
+"Test_name.c", line 15: error: expected a "," or ">"
+  template < ;            // expected-error {{expected template parameter}} \
+             ^
+
+"Test_name.c", line 15: error: expected a declaration
+  template < ;            // expected-error {{expected template parameter}} \
+             ^
+
+"Test_name.c", line 18: error: expected a "," or ">"
+  template <int +> struct x1; // expected-error {{expected ',' or '>' in template-parameter-list}}
+                ^
+
+"Test_name.c", line 21: error: expected a "," or ">"
+  template <int +, T> struct x2; // expected-error {{expected ',' or '>' in template-parameter-list}} \
+                ^
+
+"Test_name.c", line 21: error: identifier "T" is undefined
+  template <int +, T> struct x2; // expected-error {{expected ',' or '>' in template-parameter-list}} \
+                   ^
+
+"Test_name.c", line 23: error: expected a "," or ">"
+  template<template<int+>> struct x3; // expected-error {{expected ',' or '>' in template-parameter-list}} \
+                       ^
+
+"Test_name.c", line 23: error: expected "class" or "typename"
+  template<template<int+>> struct x3; // expected-error {{expected ',' or '>' in template-parameter-list}} \
+                                    ^
+
+"Test_name.c", line 23: error: expected a "," or ">"
+  template<template<int+>> struct x3; // expected-error {{expected ',' or '>' in template-parameter-list}} \
+                                    ^
+
+"Test_name.c", line 23: error: expected a declaration
+  template<template<int+>> struct x3; // expected-error {{expected ',' or '>' in template-parameter-list}} \
+                                    ^
+
+"Test_name.c", line 26: error: expected a template parameter list
+  template <template X> struct Err1; // expected-error {{expected '<' after 'template'}} \
+                     ^
+
+"Test_name.c", line 26: error: expected "class" or "typename"
+  template <template X> struct Err1; // expected-error {{expected '<' after 'template'}} \
+                     ^
+
+"Test_name.c", line 28: error: expected "class" or "typename"
+  template <template <typename> > struct Err2;       // cpp14-error {{template template parameter requires 'class' after the parameter list}}
+                                ^
+
+"Test_name.c", line 30: error: expected "class" or "typename"
+  template <template <typename> Foo> struct Err3;    // cpp14-error {{template template parameter requires 'class' after the parameter list}}
+                                ^
+
+"Test_name.c", line 58: error: overloaded function "foo" is not a class template
+  template <template <typename> class T = foo> class TTP3; // expected-error{{must be a class template}}
+                                          ^
+
+"Test_name.c", line 59: error: overloaded function "foo" is not a class template
+  template <template <typename> class = foo> class TTP3; // expected-error{{must be a class template}}
+                                        ^
+
+"Test_name.c", line 59: error: redefinition of default argument
+  template <template <typename> class = foo> class TTP3; // expected-error{{must be a class template}}
+                                      ^
+
+"Test_name.c", line 78: warning: declaration of "T" hides template parameter
+           typename T> // expected-error{{declaration of 'T' shadows template parameter}}
+                    ^
+
+"Test_name.c", line 78: error: invalid redeclaration of type name "T" (declared at line 77)
+           typename T> // expected-error{{declaration of 'T' shadows template parameter}}
+                    ^
+
+"Test_name.c", line 82: warning: declaration of "T" hides template parameter
+  void shadow2(int T); // expected-error{{declaration of 'T' shadows template parameter}}
+                   ^
+
+"Test_name.c", line 85: error: class template and template parameter may not have the same name
+  class T { // expected-error{{declaration of 'T' shadows template parameter}}
+        ^
+
+"Test_name.c", line 89: warning: declaration of "Size" hides template parameter
+  void shadow3(int Size); // expected-error{{declaration of 'Size' shadows template parameter}}
+                   ^
+
+"Test_name.c", line 93: error: template parameter "T" may not be redeclared in this scope
+    int T; // expected-error{{shadows}}
+        ^
+
+"Test_name.c", line 98: error: template parameter "T" may not be redeclared in this scope
+    int T(int, float); // expected-error{{shadows}}
+        ^
+
+"Test_name.c", line 102: warning: declaration of "T" hides template parameter
+           T T> // expected-error{{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 102: error: "T" has already been declared in the current scope
+           T T> // expected-error{{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 106: warning: declaration of "T" hides template parameter
+           template<typename> class T> // expected-error{{declaration of 'T' shadows template parameter}}
+                                    ^
+
+"Test_name.c", line 106: error: "T" has already been declared in the current scope
+           template<typename> class T> // expected-error{{declaration of 'T' shadows template parameter}}
+                                    ^
+
+"Test_name.c", line 111: warning: declaration of "T" hides template parameter
+    template<template<typename> class T> struct inner; // expected-error{{declaration of 'T' shadows template parameter}}
+                                      ^
+
+"Test_name.c", line 127: error: expression must be a modifiable lvalue
+    Size = i;
+    ^
+
+"Test_name.c", line 138: warning: variable "a" was declared but never referenced
+    A< typeof(x>1) > a;
+                     ^
+
+"Test_name.c", line 143: error: S is not a template
+  template <> struct S<int> { }; // expected-error{{explicit specialization of undeclared template struct 'S'}}
+                     ^
+
+"Test_name.c", line 144: error: U is not a template
+  template <> union U<int> { }; // expected-error{{explicit specialization of undeclared template union 'U'}}
+                    ^
+
+"Test_name.c", line 148: error: class "SS" may not have a template argument list
+  template <> struct SS<int> { }; // expected-error{{explicit specialization of non-template struct 'SS'}}
+                     ^
+
+"Test_name.c", line 149: error: union "UU" may not have a template argument list
+  template <> union UU<int> { }; // expected-error{{explicit specialization of non-template union 'UU'}}
+                    ^
+
+"Test_name.c", line 225: warning: variable "var225" was declared but never referenced
+    sassert(sizeof(L<0>::O<int>::Fun(0)) == sizeof(one));
+    ^
+
+"Test_name.c", line 226: warning: variable "var226" was declared but never referenced
+    sassert(sizeof(L<0>::O<char>::Fun(0)) == sizeof(one));
+    ^
+
+"Test_name.c", line 238: error: expected an identifier
+    typename template <> void FuncTemplate<void>() { }
+             ^
+
+"Test_name.c", line 241: warning: parsing restarts here after previous syntax error
+  }
+  ^
+
+"Test_name.c", line 238: error: type name is not allowed
+    typename template <> void FuncTemplate<void>() { }
+    ^
+
+"Test_name.c", line 241: error: expected a ";"
+  }
+  ^
+
+"Test_name.c", line 249: error: too many arguments for class template "broken_baseclause::base"
+    public:  // expected-error {{expected expression}} expected-error {{expected '>'}}
+    ^
+
+"Test_name.c", line 250: error: class or struct definition is missing
+  };
+  ^
+
+"Test_name.c", line 250: error: expected an identifier
+  };
+  ^
+
+"Test_name.c", line 250: error: expected a ";"
+  };
+  ^
+
+"Test_name.c", line 252: error: base is not a template
+  struct t2 : base<int, // expected-note {{to match this '<'}}
+              ^
+
+"Test_name.c", line 253: error: expected an expression
+    public  // expected-error {{expected expression}} expected-error {{expected '>'}}
+    ^
+
+"Test_name.c", line 254: error: expected a ">"
+  };
+   ^
+
+"Test_name.c", line 254: error: class or struct definition is missing
+  };
+   ^
+
+"Test_name.c", line 257: error: expected a declaration
+  }
+  ^
+
+48 errors detected in the compilation of "Test_name.c".

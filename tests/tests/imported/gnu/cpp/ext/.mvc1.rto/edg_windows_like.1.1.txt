@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --gnu_version=80200 -tused -e 200 --no_wrap Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "target_clones"
+  __attribute__((target_clones("avx","arch=slm","arch=core-avx2","default")))
+                 ^
+
+"Test_name.c", line 23: error: function "bar" has already been defined (previous definition at line 16)
+  bar ()
+  ^
+
+1 error detected in the compilation of "Test_name.c".

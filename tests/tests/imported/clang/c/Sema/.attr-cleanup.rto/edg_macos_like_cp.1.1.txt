@@ -1,0 +1,105 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: warning: attribute "cleanup" requires automatic storage duration
+  extern int g1 __attribute((cleanup(c1))); // expected-warning {{'cleanup' attribute only applies to local variables}}
+                             ^
+
+"Test_name.c", line 8: warning: attribute "cleanup" requires automatic storage duration
+  int g2 __attribute((cleanup(c1))); // expected-warning {{'cleanup' attribute only applies to local variables}}
+                      ^
+
+"Test_name.c", line 9: warning: attribute "cleanup" requires automatic storage duration
+  static int g3 __attribute((cleanup(c1))); // expected-warning {{'cleanup' attribute only applies to local variables}}
+                             ^
+
+"Test_name.c", line 13: error: expected a "("
+      int v1 __attribute((cleanup)); // expected-error {{'cleanup' attribute takes one argument}}
+                                 ^
+
+"Test_name.c", line 14: error: expected an identifier
+      int v2 __attribute((cleanup(1, 2))); // expected-error {{'cleanup' attribute takes one argument}}
+                                  ^
+
+"Test_name.c", line 14: error: expected a ")"
+      int v2 __attribute((cleanup(1, 2))); // expected-error {{'cleanup' attribute takes one argument}}
+                                   ^
+
+"Test_name.c", line 14: error: expected an identifier
+      int v2 __attribute((cleanup(1, 2))); // expected-error {{'cleanup' attribute takes one argument}}
+                                     ^
+
+"Test_name.c", line 14: error: expected a ";"
+      int v2 __attribute((cleanup(1, 2))); // expected-error {{'cleanup' attribute takes one argument}}
+                                        ^
+
+"Test_name.c", line 16: warning: attribute "cleanup" requires automatic storage duration
+      static int v3 __attribute((cleanup(c1))); // expected-warning {{'cleanup' attribute only applies to local variables}}
+                                 ^
+
+"Test_name.c", line 18: warning: invalid cleanup routine
+      int v4 __attribute((cleanup(h))); // expected-error {{use of undeclared identifier 'h'}}
+                                  ^
+
+"Test_name.c", line 21: warning: invalid cleanup routine
+      int v6 __attribute((cleanup(v3))); // expected-error {{'cleanup' argument 'v3' is not a function}}
+                                  ^
+
+"Test_name.c", line 13: warning: variable "v1" was declared but never referenced
+      int v1 __attribute((cleanup)); // expected-error {{'cleanup' attribute takes one argument}}
+          ^
+
+"Test_name.c", line 14: warning: variable "v2" was declared but never referenced
+      int v2 __attribute((cleanup(1, 2))); // expected-error {{'cleanup' attribute takes one argument}}
+          ^
+
+"Test_name.c", line 16: warning: variable "v3" was declared but never referenced
+      static int v3 __attribute((cleanup(c1))); // expected-warning {{'cleanup' attribute only applies to local variables}}
+                 ^
+
+"Test_name.c", line 18: warning: variable "v4" was declared but never referenced
+      int v4 __attribute((cleanup(h))); // expected-error {{use of undeclared identifier 'h'}}
+          ^
+
+"Test_name.c", line 21: warning: variable "v6" was declared but never referenced
+      int v6 __attribute((cleanup(v3))); // expected-error {{'cleanup' argument 'v3' is not a function}}
+          ^
+
+"Test_name.c", line 33: error: cleanup routine has invalid type
+      int v1 __attribute__((cleanup(c2))); // expected-error {{'cleanup' function 'c2' must take 1 parameter}}
+                                    ^
+
+"Test_name.c", line 34: error: cleanup routine has invalid type
+      int v2 __attribute__((cleanup(c3))); // expected-error {{'cleanup' function 'c3' parameter has type 'struct s' which is incompatible with type 'int *'}}
+                            ^
+
+"Test_name.c", line 33: warning: variable "v1" was declared but never referenced
+      int v1 __attribute__((cleanup(c2))); // expected-error {{'cleanup' function 'c2' must take 1 parameter}}
+          ^
+
+"Test_name.c", line 34: warning: variable "v2" was declared but never referenced
+      int v2 __attribute__((cleanup(c3))); // expected-error {{'cleanup' function 'c3' parameter has type 'struct s' which is incompatible with type 'int *'}}
+          ^
+
+"Test_name.c", line 45: warning: function "c5" was declared deprecated
+    int i __attribute__((cleanup(c5)));  // expected-warning {{'c5' is deprecated}}
+                         ^
+"Test_name.c", line 43: note: because of a "deprecated" attribute
+  void c5(void*) __attribute__((deprecated));  // expected-note{{'c5' has been explicitly marked deprecated here}}
+                                ^
+
+"Test_name.c", line 49: error: expected an identifier
+    int i __attribute__((cleanup((void *)0)));  // expected-error {{'cleanup' argument is not a function}}
+                                 ^
+
+"Test_name.c", line 49: warning: variable "i" was declared but never referenced
+    int i __attribute__((cleanup((void *)0)));  // expected-error {{'cleanup' argument is not a function}}
+        ^
+
+"Test_name.c", line 52: warning: attribute "cleanup" does not apply here
+  void t7(__attribute__((cleanup(c4))) int a) {} // expected-warning {{'cleanup' attribute only applies to local variables}}
+                         ^
+
+"Test_name.c", line 9: warning: variable "g3" was declared but never referenced
+  static int g3 __attribute((cleanup(c1))); // expected-warning {{'cleanup' attribute only applies to local variables}}
+             ^
+
+8 errors detected in the compilation of "Test_name.c".

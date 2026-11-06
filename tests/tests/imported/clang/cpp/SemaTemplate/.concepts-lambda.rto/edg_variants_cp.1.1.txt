@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 11: error: a requires-clause is not allowed here (not a templated function)
+      auto f = []() requires c<void> {
+                    ^
+
+"Test_name.c", line 93: error: static assertion failed
+  static_assert(ConstructibleWithN<Foo>);
+  ^
+
+"Test_name.c", line 102: error: Template is not a template
+  	{ [] <typename T1> (Template<T1> &) {}(declare<It &>()) };
+  	                    ^
+
+"Test_name.c", line 114: error: incomplete type "LambdaInConcept::GH56556::Adapter<LambdaInConcept::GH56556::B<int>>" is not allowed
+  template struct Adapter<B<int>>;
+           ^
+
+"Test_name.c", line 125: error: identifier "V" is undefined
+          [](V w) {}(v);
+             ^
+          detected during instantiation of function "lambda [](V)->auto [with V=int]" at line 143
+
+"Test_name.c", line 159: warning: template parameter "<unnamed>" is not used in declaring the parameter types of function template "GH60642::lambda []()->auto::operator auto (*)()"
+  static_assert(C<[]<D>{}>);  // ok
+                      ^
+
+"Test_name.c", line 167: warning: template parameter "<unnamed>" is not used in declaring the parameter types of function template "GH60642::DIsFalse::lambda []()->auto::operator auto (*)()"
+  static_assert(C<[]<D>{}>);
+                      ^
+
+"Test_name.c", line 167: error: static assertion failed
+  static_assert(C<[]<D>{}>);
+  ^
+
+"Test_name.c", line 172: error: static assertion failed
+  static_assert(E<int>);
+  ^
+
+"Test_name.c", line 200: warning: constant "member" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+    auto make_caller = []<auto member> {
+                               ^
+
+"Test_name.c", line 209: warning: variable "caller" was declared but never referenced
+    auto caller = make_caller.operator()<&S1::f1>();
+         ^
+
+"Test_name.c", line 218: error: no instance of function template "lambda [](auto, auto...)->auto" matches the argument list
+            argument types are: (int)
+            object type is: lambda [](auto, auto...)->auto
+        return [](auto obj, auto... params)
+               ^
+"Test_name.c", line 218: note: substituting "<int>" for function template "lambda [](auto, auto...)->auto" failed constraints
+        return [](auto obj, auto... params)
+                 ^
+"Test_name.c", line 219: note: atomic constraint evaluates to false
+          requires requires {
+                   ^
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 226
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 227
+
+"Test_name.c", line 249: error: a requires-clause is not allowed here (not a templated function)
+          requires requires { sink(y..., z); }
+          ^
+
+"Test_name.c", line 270: error: no instance of function template "lambda [](auto)->auto" matches the argument list
+            argument types are: (int)
+            object type is: lambda [](auto)->auto
+    L(V<0>{}, V<1>{}, V<2>{})(V<3>{}, V<4>{})(1);
+    ^
+"Test_name.c", line 265: note: substituting "<int>" for function template "lambda [](auto)->auto" failed constraints
+        return [... w = z, y...](auto)
+                                ^
+"Test_name.c", line 266: note: atomic constraint evaluates to false
+          requires requires { sink(w..., y...); }
+                   ^
+
+"Test_name.c", line 281: error: no instance of function template "lambda [](auto)->auto" matches the argument list
+            argument types are: (int)
+            object type is: lambda [](auto)->auto
+    L(V<0>{}, V<1>{}, V<2>{})(V<3>{}, V<4>{})(1);
+    ^
+"Test_name.c", line 276: note: substituting "<int>" for function template "lambda [](auto)->auto" failed constraints
+        return [... c = w](auto)
+                          ^
+"Test_name.c", line 277: note: atomic constraint evaluates to false
+          requires requires { sink(c..., y...); }
+                   ^
+
+"Test_name.c", line 290: error: a requires-clause is not allowed here (not a templated function)
+      requires requires { x; }
+      ^
+
+"Test_name.c", line 305: error: a requires-clause is not allowed here (not a templated function)
+        requires true
+        ^
+
+"Test_name.c", line 320: error: a requires-clause is not allowed here (not a templated function)
+            requires true
+            ^
+
+"Test_name.c", line 336: error: a requires-clause is not allowed here (not a templated function)
+        [] () requires true {}();
+              ^
+
+"Test_name.c", line 356: warning: expression has no effect
+  		arr { [](auto) requires(i, true) { return 0; }(i)... };
+  		                        ^
+
+"Test_name.c", line 360: warning: variable "GH147772::bar" was declared but never referenced
+  constexpr auto bar = foo(seq<0>());
+                 ^
+
+15 errors detected in the compilation of "Test_name.c".

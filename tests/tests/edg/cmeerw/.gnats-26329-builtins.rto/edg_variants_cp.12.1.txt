@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=12 --c++11 -w --clang_version 50000 Test_name.c
+"Test_name.c", line 12: error: identifier "__float128" is undefined
+  using float128 = __float128;
+                   ^
+
+"Test_name.c", line 13: error: identifier "__float128" is undefined
+  using complex128 = __float128 __complex__;
+                     ^
+
+"Test_name.c", line 13: error: _Complex can only be used with floating-point types
+  using complex128 = __float128 __complex__;
+                     ^
+
+3 errors detected in the compilation of "Test_name.c".

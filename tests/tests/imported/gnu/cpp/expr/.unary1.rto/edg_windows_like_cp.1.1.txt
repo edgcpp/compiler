@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: expression must have arithmetic or unscoped enum type
+    -p;        // { dg-error "wrong type argument" }
+     ^
+
+"Test_name.c", line 11: warning: expression has no effect
+    +p;
+    ^
+
+"Test_name.c", line 17: error: expression must have arithmetic or unscoped enum type
+    -p;        // { dg-error "wrong type argument" }
+     ^
+
+"Test_name.c", line 18: warning: expression has no effect
+    +p;
+    ^
+
+2 errors detected in the compilation of "Test_name.c".

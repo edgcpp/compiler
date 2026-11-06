@@ -1,0 +1,126 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 92: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  template<typename T> requires foo<T>()
+                                      ^
+
+"Test_name.c", line 96: warning: missing return statement at end of non-void function "func"
+  int func() { }
+               ^
+
+"Test_name.c", line 98: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  template<typename T> requires func()
+                                    ^
+
+"Test_name.c", line 98: error: atomic constraint must have type bool
+  template<typename T> requires func()
+                                    ^
+
+"Test_name.c", line 106: error: a cast expression in a requires-clause must be parenthesized
+  template<typename T> requires T{}
+                                ^
+
+"Test_name.c", line 110: error: invalid start of expression in requires clause
+  template<typename T> requires sizeof(T) == 0
+                                ^
+
+"Test_name.c", line 110: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  template<typename T> requires sizeof(T) == 0
+                                          ^
+
+"Test_name.c", line 114: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  template<typename T> requires (sizeof(T)) == 0
+                                            ^
+
+"Test_name.c", line 120: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  (int) bar() { };
+  ^
+
+"Test_name.c", line 118: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+  template<typename T> requires 0
+                                ^
+
+"Test_name.c", line 120: error: type name is not allowed
+  (int) bar() { };
+   ^
+
+"Test_name.c", line 120: error: explicit type is missing ("int" assumed)
+  (int) bar() { };
+        ^
+
+"Test_name.c", line 120: warning: missing return statement at end of non-void function "bar<T>()"
+  (int) bar() { };
+                ^
+
+"Test_name.c", line 123: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  (int) bar() { };
+  ^
+
+"Test_name.c", line 123: error: type name is not allowed
+  (int) bar() { };
+   ^
+
+"Test_name.c", line 123: error: explicit type is missing ("int" assumed)
+  (int) bar() { };
+        ^
+
+"Test_name.c", line 123: warning: missing return statement at end of non-void function "bar<T>()"
+  (int) bar() { };
+                ^
+
+"Test_name.c", line 128: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  void bar() requires foo<T>();
+                            ^
+
+"Test_name.c", line 135: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  void bar() requires func();
+                          ^
+
+"Test_name.c", line 135: error: atomic constraint must have type bool
+  void bar() requires func();
+                          ^
+
+"Test_name.c", line 140: error: a cast expression in a requires-clause must be parenthesized
+  void bar() requires T{};
+                      ^
+
+"Test_name.c", line 144: error: invalid start of expression in requires clause
+  void bar() requires sizeof(T) == 0;
+                      ^
+
+"Test_name.c", line 144: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  void bar() requires sizeof(T) == 0;
+                                ^
+
+"Test_name.c", line 148: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  void bar() requires (sizeof(T)) == 0;
+                                  ^
+
+"Test_name.c", line 152: warning: expression has no effect
+  void bar(int x, int y) requires (x, y, true);
+                                   ^
+
+"Test_name.c", line 158: warning: expression has no effect
+    static void bar(int y) requires (x, true);
+                                     ^
+
+"Test_name.c", line 160: error: "this" may only be used inside a nonstatic member function
+    static void baz(int y) requires (this, true);
+                                     ^
+
+"Test_name.c", line 168: warning: constant "<unnamed>" is not used in declaring the parameter types of function template "lambda []()->auto::operator auto (*)()"
+  auto lambda3 = []<auto> requires(sizeof(char) == 1){};
+                        ^
+
+"Test_name.c", line 170: error: a trailing-requires-clause is not permitted when the lambda parameter list is omitted
+  auto lambda4 = [] requires(sizeof(char) == 1){}; // expected-error {{expected body of lambda expression}}
+                    ^
+
+"Test_name.c", line 170: error: a requires-clause is not allowed here (not a templated function)
+  auto lambda4 = [] requires(sizeof(char) == 1){}; // expected-error {{expected body of lambda expression}}
+                    ^
+
+"Test_name.c", line 206: error: expected a type name
+    typename decltype(L)::template operator()<int>;
+             ^
+
+25 errors detected in the compilation of "Test_name.c".

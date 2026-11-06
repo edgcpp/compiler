@@ -1,0 +1,83 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 10: error: expected an identifier
+  Y<1 >> 2> *y2; // FIXME: expected-error{{expected unqualified-id}}
+      ^
+
+"Test_name.c", line 19: error: cast to type "X<int>" is not allowed
+    (void)reinterpret_cast<X<int>>(x);       // expected-error{{reinterpret_cast from 'const X<int>' to 'X<int>' is not allowed}}
+                           ^
+
+"Test_name.c", line 20: error: incomplete type "X<X<X<int>>>" is not allowed
+    (void)reinterpret_cast<X<X<X<int>>>>(x); // expected-error{{reinterpret_cast from 'const X<int>' to 'X<X<X<int>>>' is not allowed}}
+                           ^
+
+"Test_name.c", line 22: warning: variable "x1" was declared but never referenced
+    X<X<int>> *x1;
+               ^
+
+"Test_name.c", line 102: error: invalid redeclaration of type name "ParameterPackExpansions::T1" (declared at line 99)
+  using T1 = types<void, void, void, void>; // expected-error {{'types<void, void, void, void>' vs 'types<typename ParameterPackExpansions::wrap<int>::inner<_>::type, typename ParameterPackExpansions::wrap<char>::inner<_>::type, typename ParameterPackExpansions::wrap<double>::inner<_>::type, (no argument)>'}}
+        ^
+
+"Test_name.c", line 109: error: invalid redeclaration of type name "ParameterPackExpansions::T2" (declared at line 106)
+  using T2 = types<void, void, void, void>; // expected-error {{'types<void, void, void, void>' vs 'types<typename ParameterPackExpansions::wrap<int>::inner<_>::type, typename ParameterPackExpansions::wrap<char>::inner<_>::type, typename ParameterPackExpansions::wrap<double>::inner<_>::type, typename ParameterPackExpansions::wrap<long>::inner<_>::type>'}}
+        ^
+
+"Test_name.c", line 110: error: invalid redeclaration of type name "ParameterPackExpansions::T2" (declared at line 109)
+  using T2 = types<int, char, double, long>;
+        ^
+
+"Test_name.c", line 92: error: too few arguments for class template "ParameterPackExpansions::takedrop_impl<ParameterPackExpansions::places<X...>>::inner [with X=<ParameterPackExpansions::_, ParameterPackExpansions::_, ParameterPackExpansions::_, ParameterPackExpansions::_, ParameterPackExpansions::_>]"
+      template inner<wrap<Ts>::template inner...>::take; // expected-error {{too few template arguments}}
+                                                ^
+          detected during instantiation of class "ParameterPackExpansions::take<N, Ts...> [with N=5U, Ts=<int, char, double, long>]" at line 114
+
+"Test_name.c", line 96: error: too few arguments for class template "ParameterPackExpansions::takedrop_impl<ParameterPackExpansions::places<X...>>::inner [with X=<ParameterPackExpansions::_, ParameterPackExpansions::_, ParameterPackExpansions::_, ParameterPackExpansions::_, ParameterPackExpansions::_>]"
+      template inner<wrap<Ts>::template inner...>::drop; // expected-error {{too few template arguments}}
+                                                ^
+          detected during instantiation of class "ParameterPackExpansions::drop<N, Ts...> [with N=5U, Ts=<int, char, double, long>]" at line 115
+
+"Test_name.c", line 122: error: parameter pack "Default" was referenced but not expanded
+    template<template<typename T = Default> class ...Classes> struct Inner { // expected-error {{default argument contains unexpanded parameter pack}} expected-note {{here}}
+                                   ^
+
+"Test_name.c", line 130: error: no instance of constructor "ParameterPackExpansions::DefArg<Default...>::Inner<Classes...>::Inner [with Default=<int, char>, Classes=<ParameterPackExpansions::vector, ParameterPackExpansions::list>]" matches the argument list
+            argument types are: (ParameterPackExpansions::vector<int>, ParameterPackExpansions::list<char>)
+  DefArg<int, char>::Inner<vector, list> defarg(vi, lc);
+                                                ^
+"Test_name.c", line 122: note: number of parameters of function "ParameterPackExpansions::DefArg<Default...>::Inner<Classes...>::Inner(const ParameterPackExpansions::DefArg<int, char>::Inner<ParameterPackExpansions::vector, ParameterPackExpansions::list> &) [with Default=<int, char>, Classes=<ParameterPackExpansions::vector, ParameterPackExpansions::list>]" does not match the call
+    template<template<typename T = Default> class ...Classes> struct Inner { // expected-error {{default argument contains unexpanded parameter pack}} expected-note {{here}}
+                                                                     ^
+"Test_name.c", line 122: note: number of parameters of function "ParameterPackExpansions::DefArg<Default...>::Inner<Classes...>::Inner(ParameterPackExpansions::DefArg<int, char>::Inner<ParameterPackExpansions::vector, ParameterPackExpansions::list> &&) [with Default=<int, char>, Classes=<ParameterPackExpansions::vector, ParameterPackExpansions::list>]" does not match the call
+    template<template<typename T = Default> class ...Classes> struct Inner { // expected-error {{default argument contains unexpanded parameter pack}} expected-note {{here}}
+                                                                     ^
+"Test_name.c", line 123: note: function "ParameterPackExpansions::DefArg<Default...>::Inner<Classes...>::Inner(Classes<Default>...) [with Default=<int, char>, Classes=<ParameterPackExpansions::vector, ParameterPackExpansions::list>]" does not match because argument #2 does not match parameter
+      Inner(Classes<>...); // expected-error {{too few}}
+      ^
+
+"Test_name.c", line 136: warning: constant "Vs" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "ParameterPackExpansions::error"
+  template<typename...Ts, Ts...Vs> void error(); // desired-error
+                               ^
+
+"Test_name.c", line 145: warning: variable "arr" was declared but never referenced
+          int arr[Vs]; // expected-error {{negative size}}
+              ^
+
+"Test_name.c", line 168: warning: missing return statement at end of non-void function "PR9023::main"
+    }
+    ^
+
+"Test_name.c", line 167: warning: variable "e" was declared but never referenced
+      A<int, long>::B<C, D> e;
+                            ^
+
+"Test_name.c", line 177: error: template parameter pack not at end of parameter list
+    template <class... T, T... Values> struct static_array; // expected-error {{must be the last}}
+                       ^
+
+"Test_name.c", line 145: error: the size of an array must be greater than zero
+          int arr[Vs]; // expected-error {{negative size}}
+                  ^
+          detected during instantiation of "ParameterPackExpansions::A<Ts...>::B<Cs..., Vs...>::B() [with Ts=<int, short>, Cs=<ParameterPackExpansions::Int, ParameterPackExpansions::Char>, Vs=<-1, 120>]" at line 153
+
+12 errors detected in the compilation of "Test_name.c".

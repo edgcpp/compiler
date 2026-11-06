@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: warning: variable "v1" was declared but never referenced
+    static __constinit auto v1 = 0;
+                            ^
+
+"Test_name.c", line 10: warning: variable "v2" was declared but never referenced
+    static __constinit int v2 = 0;
+                           ^
+
+"Test_name.c", line 18: error: constinit variable requires dynamic initialization
+    static __constinit auto v1 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+           ^
+
+"Test_name.c", line 19: error: constinit variable requires dynamic initialization
+    static __constinit int v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+           ^
+
+"Test_name.c", line 18: warning: variable "v1" was declared but never referenced
+    static __constinit auto v1 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                            ^
+
+"Test_name.c", line 19: warning: variable "v2" was declared but never referenced
+    static __constinit int v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                           ^
+
+"Test_name.c", line 26: error: constinit variable requires dynamic initialization
+    static __constinit T v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+           ^
+
+"Test_name.c", line 18: error: expression must have a constant value
+    static __constinit auto v1 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                                 ^
+"Test_name.c", line 18: note: the value of variable "nonconst" (declared at line 13) cannot be used as a constant
+    static __constinit auto v1 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                                 ^
+          detected during instantiation of "void fn2<T>() [with T=int]" at line 33
+
+"Test_name.c", line 19: error: expression must have a constant value
+    static __constinit int v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                                ^
+"Test_name.c", line 19: note: the value of variable "nonconst" (declared at line 13) cannot be used as a constant
+    static __constinit int v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                                ^
+          detected during instantiation of "void fn2<T>() [with T=int]" at line 33
+
+"Test_name.c", line 26: error: expression must have a constant value
+    static __constinit T v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                              ^
+"Test_name.c", line 26: note: the value of variable "nonconst" (declared at line 13) cannot be used as a constant
+    static __constinit T v2 = nonconst; // { dg-error "does not have a constant initializer|not usable" }
+                              ^
+          detected during instantiation of "void fn3<T>() [with T=int]" at line 34
+
+6 errors detected in the compilation of "Test_name.c".

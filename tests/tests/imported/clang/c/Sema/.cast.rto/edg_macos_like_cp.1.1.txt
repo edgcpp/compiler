@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 17: error: invalid type conversion
+    b = (double)a; // expected-error {{pointer cannot be cast to type}}
+        ^
+
+"Test_name.c", line 17: warning: variable "a" is used before its value is set
+    b = (double)a; // expected-error {{pointer cannot be cast to type}}
+                ^
+
+"Test_name.c", line 18: error: invalid type conversion
+    a = (char*)b; // expected-error {{cannot be cast to a pointer type}}
+        ^
+
+"Test_name.c", line 30: error: _Complex can only be used with floating-point types
+  typedef _Complex int CInt;
+  ^
+
+"Test_name.c", line 161: warning: conversion from pointer to smaller integer
+    (void) (Int) v; // expected-warning{{cast to smaller integer type 'Int' (aka 'int') from 'VoidPtr' (aka 'void *')}}
+           ^
+
+"Test_name.c", line 169: warning: conversion from pointer to smaller integer
+    (void)(Int) v; // no-warning
+          ^
+
+"Test_name.c", line 175: warning: conversion from pointer to smaller integer
+    (void) (Int) v; // expected-warning{{cast to smaller integer type 'Int' (aka 'int') from 'CharPtr' (aka 'char *')}}
+           ^
+
+"Test_name.c", line 183: warning: conversion from pointer to smaller integer
+    (void)(Int) v; // expected-warning{{cast to smaller integer type 'Int' (aka 'int') from 'CharPtr' (aka 'char *')}}
+          ^
+
+"Test_name.c", line 197: warning: conversion from pointer to smaller integer
+    (void)(X) v; // expected-warning{{cast to smaller integer type 'X' from 'VoidPtr' (aka 'void *')}}
+          ^
+
+"Test_name.c", line 202: warning: conversion from pointer to smaller integer
+    (void)(X) v; // no-warning
+          ^
+
+"Test_name.c", line 207: warning: conversion from pointer to smaller integer
+    (void)(X) v; // expected-warning{{cast to smaller integer type 'X' from 'CharPtr' (aka 'char *')}}
+          ^
+
+"Test_name.c", line 212: warning: conversion from pointer to smaller integer
+    (void)(X) v; // expected-warning{{cast to smaller integer type 'X' from 'CharPtr' (aka 'char *')}}
+          ^
+
+3 errors detected in the compilation of "Test_name.c".

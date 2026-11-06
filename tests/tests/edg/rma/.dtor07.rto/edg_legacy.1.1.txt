@@ -1,0 +1,74 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "A::A()" cannot be inlined
+    A() { }
+    ^
+
+"Test_name.c", line 9: remark: function "B::~B" cannot be inlined
+  struct B : public A {
+         ^
+          detected during:
+            implicit generation of "B::~B()" at line 12
+            implicit generation of "B::B()" at line 12
+
+"Test_name.c", line 9: remark: function "B::B()" cannot be inlined
+  struct B : public A {
+         ^
+          detected during implicit generation of "B::B()" at line 12
+
+"Test_name.c", line 14: remark: function "C::CN::~CN" cannot be inlined
+    struct CN : public A {
+           ^
+          detected during:
+            implicit generation of "C::CN::~CN()" at line 18
+            implicit generation of "C::CN::CN()" at line 18
+
+"Test_name.c", line 14: remark: function "C::CN::CN()" cannot be inlined
+    struct CN : public A {
+           ^
+          detected during implicit generation of "C::CN::CN()" at line 18
+
+"Test_name.c", line 28: remark: declaration hides variable "bp" (declared at line 12)
+    BB *bp = new BB;
+        ^
+
+"Test_name.c", line 20: remark: function "BB::~BB" cannot be inlined
+    struct BB : public A {
+           ^
+          detected during:
+            implicit generation of "BB::~BB()" at line 28
+            implicit generation of "BB::BB()" at line 28
+
+"Test_name.c", line 20: remark: function "BB::BB()" cannot be inlined
+    struct BB : public A {
+           ^
+          detected during implicit generation of "BB::BB()" at line 28
+
+"Test_name.c", line 29: remark: declaration hides variable "cp" (declared at line 18)
+    CC::CCN *cp = new CC::CCN;
+             ^
+
+"Test_name.c", line 24: remark: function "CC::CCN::~CCN" cannot be inlined
+      struct CCN : public A {
+             ^
+          detected during:
+            implicit generation of "CC::CCN::~CCN()" at line 29
+            implicit generation of "CC::CCN::CCN()" at line 29
+
+"Test_name.c", line 24: remark: function "CC::CCN::CCN()" cannot be inlined
+      struct CCN : public A {
+             ^
+          detected during implicit generation of "CC::CCN::CCN()" at line 29
+
+"Test_name.c", line 28: remark: variable "bp" was declared but never referenced
+    BB *bp = new BB;
+        ^
+
+"Test_name.c", line 29: remark: variable "cp" was declared but never referenced
+    CC::CCN *cp = new CC::CCN;
+             ^
+
+"Test_name.c", line 30: error: extra ";" ignored
+  };
+   ^
+
+1 error detected in the compilation of "Test_name.c".

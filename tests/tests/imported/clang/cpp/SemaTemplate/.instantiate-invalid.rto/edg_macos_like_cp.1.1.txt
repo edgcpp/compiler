@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 5: error: "Conv" is not a class template
+    template<class Conv> class rasterizer_sl_clip Conv::xi(x2), Conv::yi(y2));
+                                                  ^
+
+"Test_name.c", line 8: error: identifier "rasterizer_sl_clip_int" is undefined
+  	template<class Clip=rasterizer_sl_clip_int> class rasterizer_scanline_aa
+  	                    ^
+
+"Test_name.c", line 12: error: identifier "m_outline" is undefined
+  			unsigned num_cells = m_outline.scanline_num_cells(m_scan_y);
+  			                     ^
+
+"Test_name.c", line 12: error: identifier "m_scan_y" is undefined
+  			unsigned num_cells = m_outline.scanline_num_cells(m_scan_y);
+  			                                                  ^
+
+"Test_name.c", line 14: warning: missing return statement at end of non-void function "PR6375::agg::rasterizer_scanline_aa<Clip>::sweep_scanline(Scanline &)"
+  		}
+  		^
+
+"Test_name.c", line 16: error: expected a ";"
+      class scanline_u8 {}
+      ^
+
+"Test_name.c", line 37: error: not a class or struct name
+      template<class ColorT> class rbox_ctrl : public rbox_ctrl_impl
+                                                      ^
+
+"Test_name.c", line 39: error: identifier "m_colors" is undefined
+          const ColorT& color(unsigned i) const { return *m_colors[i]; }
+                                                          ^
+
+"Test_name.c", line 41: error: expected a ";"
+  class the_application : public agg::platform_support
+  ^
+
+"Test_name.c", line 52: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+8 errors detected in the compilation of "Test_name.c".

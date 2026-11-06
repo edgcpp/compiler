@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 60: error: identifier "__transaction_atomic" is undefined
+    __transaction_atomic {
+    ^
+
+"Test_name.c", line 60: error: expected a ";"
+    __transaction_atomic {
+                         ^
+
+"Test_name.c", line 76: warning: parsing restarts here after previous syntax error
+  }
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

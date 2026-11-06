@@ -1,0 +1,166 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 65: error: invalid narrowing conversion from "long long" to "int"
+    static_cast<void>(x <=> y);
+                             ^
+
+"Test_name.c", line 65: error: invalid narrowing conversion from "long long" to "int"
+    static_cast<void>(x <=> y);
+                             ^
+
+"Test_name.c", line 65: error: no valid std::weak_ordering type found (<compare> must be included)
+    static_cast<void>(x <=> y);
+                             ^
+
+"Test_name.c", line 65: error: no valid std::partial_ordering type found (<compare> must be included)
+    static_cast<void>(x <=> y);
+                             ^
+
+"Test_name.c", line 66: error: invalid narrowing conversion from "long long" to "int"
+    static_cast<void>(x.i <=> y.i);
+                      ^
+
+"Test_name.c", line 66: error: invalid narrowing conversion from "long long" to "int"
+    static_cast<void>(x.i <=> y.i);
+                              ^
+
+"Test_name.c", line 80: error: static assertion failed
+  static_assert(bf_three_way_comparable<CDependent<long long>>);
+  ^
+
+"Test_name.c", line 92: error: invalid narrowing conversion from "long long" to "int"
+  std::int32_t d1{ d<std::int64_t, 31>().i };
+                   ^
+
+"Test_name.c", line 93: error: invalid narrowing conversion from "long long" to "int"
+  std::int32_t d2{ d<std::int64_t, 32>().i };
+                   ^
+
+"Test_name.c", line 94: error: invalid narrowing conversion from "long long" to "int"
+  std::int32_t d3{ d<std::int64_t, 33>().i };
+                   ^
+
+"Test_name.c", line 98: error: invalid narrowing conversion from "int" to "short"
+  std::int16_t d6{ d<int, 16>().i };
+                   ^
+
+"Test_name.c", line 99: error: invalid narrowing conversion from "unsigned int" to "short"
+  std::int16_t d7{ d<unsigned, 15>().i };
+                   ^
+
+"Test_name.c", line 100: error: invalid narrowing conversion from "unsigned int" to "short"
+  std::int16_t d8{ d<unsigned, 16>().i };
+                   ^
+
+"Test_name.c", line 103: error: invalid narrowing conversion from "unsigned int" to "unsigned short"
+  std::uint16_t d9{ d<unsigned, 16>().i };
+                    ^
+
+"Test_name.c", line 104: error: invalid narrowing conversion from "int" to "unsigned short"
+  std::uint16_t da{ d<int, 1>().i };
+                    ^
+
+"Test_name.c", line 108: warning: invalid narrowing conversion from "unsigned int" to "bool"
+  bool db{ d<unsigned, 1>().i };
+           ^
+
+"Test_name.c", line 109: warning: invalid narrowing conversion from "int" to "bool"
+  bool dc{ d<int, 1>().i };
+           ^
+
+"Test_name.c", line 118: error: static assertion failed with ""
+  static_assert(!is_narrowing<std::int16_t, D<int, 16>>(0), "");
+  ^
+
+"Test_name.c", line 119: error: static assertion failed with ""
+  static_assert(!is_narrowing<std::int16_t, D<unsigned, 15>>(0), "");
+  ^
+
+"Test_name.c", line 121: error: static assertion failed with ""
+  static_assert(!is_narrowing<std::uint16_t, D<unsigned, 16>>(0), "");
+  ^
+
+"Test_name.c", line 123: error: static assertion failed with ""
+  static_assert(!is_narrowing<bool, D<unsigned, 1>>(0), "");
+  ^
+
+"Test_name.c", line 146: error: the default constructor of "cwg2628::foo<false, false>" cannot be referenced -- it is a deleted function
+    foo fooable; // #cwg2628-fooable
+        ^
+
+"Test_name.c", line 161: error: call to consteval function "cwg2631::f" did not produce a valid constant expression
+    int k(int x = f()) {
+                   ^
+"Test_name.c", line 159: note: constexpr function "cwg2631::g" (declared at line 157) is not defined
+      return g();
+             ^
+
+"Test_name.c", line 187: warning: structured binding "a" was declared but never referenced
+    UnaryC auto [a, b] = get_S();
+                 ^
+
+"Test_name.c", line 189: warning: structured binding "c" was declared but never referenced
+    BinaryC<int> auto [c, d] = get_S();
+                       ^
+
+"Test_name.c", line 207: error: character cannot appear in a Unicode name
+  int \N{Λ} = 0;
+         ^
+
+"Test_name.c", line 207: error: identifier "\u039b" is undefined
+  int \N{Λ} = 0;
+         ^
+
+"Test_name.c", line 207: error: expected a ";"
+  int \N{Λ} = 0;
+            ^
+
+"Test_name.c", line 210: error: character cannot appear in a Unicode name
+  const char* emoji = "\N{🤡}";
+                          ^
+
+"Test_name.c", line 220: error: the name "abc" does not designate a known Unicode character
+  int x = cwg2640_a\N{abc});
+                      ^
+
+"Test_name.c", line 222: warning: this universal character is not allowed in an identifier
+  int y = cwg2640_a\N{LOTUS});
+                   ^
+
+"Test_name.c", line 222: error: identifier "cwg2640_a\U0001fab7" is undefined
+  int y = cwg2640_a\N{LOTUS});
+          ^
+
+"Test_name.c", line 222: error: expected a ";"
+  int y = cwg2640_a\N{LOTUS});
+                            ^
+
+"Test_name.c", line 231: error: a lambda parameter cannot hide an explicit capture
+  auto z = [a = 42](int a) {
+                        ^
+
+"Test_name.c", line 266: warning: variable "neck" is used before its value is set
+      brachiosaur += neck;                // OK
+                     ^
+
+"Test_name.c", line 264: warning: variable "tail" was declared but never referenced
+      int neck, tail;
+                ^
+
+"Test_name.c", line 294: error: no instance of constructor "cwg2681::J" matches the argument list
+            argument types are: (const char [4])
+  J j = { "ghi" };
+    ^
+
+"Test_name.c", line 294: error: cannot deduce class template arguments
+  J j = { "ghi" };
+  ^
+
+"Test_name.c", line 308: error: name followed by "::" must be a class or namespace name
+  void f(T) requires requires { []() { T::invalid; } (); };
+                                       ^
+
+"Test_name.c", line 319: error: name followed by "::" must be a class or namespace name
+     []() -> decltype(T::foo()) {};
+                      ^
+
+33 errors detected in the compilation of "Test_name.c".

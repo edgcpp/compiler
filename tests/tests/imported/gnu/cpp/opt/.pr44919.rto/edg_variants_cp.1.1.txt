@@ -1,0 +1,73 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "std::_List_iterator<_Tp>::operator*"
+  template<typename _Tp> struct _List_iterator { typedef _List_iterator<_Tp> _Self; typedef _Tp& reference; explicit _List_iterator(_List_node_base* __x) : _M_node(__x) { } reference operator*() const { } _Self& operator++() { } bool operator!=(const _Self& __x) const { return _M_node != __x._M_node; } _List_node_base* _M_node; };
+                                                                                                                                                                                                           ^
+
+"Test_name.c", line 20: warning: missing return statement at end of non-void function "std::_List_iterator<_Tp>::operator++"
+  template<typename _Tp> struct _List_iterator { typedef _List_iterator<_Tp> _Self; typedef _Tp& reference; explicit _List_iterator(_List_node_base* __x) : _M_node(__x) { } reference operator*() const { } _Self& operator++() { } bool operator!=(const _Self& __x) const { return _M_node != __x._M_node; } _List_node_base* _M_node; };
+                                                                                                                                                                                                                                   ^
+
+"Test_name.c", line 22: warning: missing return statement at end of non-void function "std::list<_Tp, _Alloc>::begin"
+  template<typename _Tp, typename _Alloc = std::allocator<_Tp> > class list : protected _List_base<_Tp, _Alloc> { public: typedef _Tp value_type; typedef _List_iterator<_Tp> iterator; iterator begin() { } iterator end() { return iterator(&this->_M_impl._M_node); } };
+                                                                                                                                                                                                           ^
+
+"Test_name.c", line 40: warning: missing return statement at end of non-void function "X::Point_2<R_>::rep"
+    const Rep& rep() const { }
+                             ^
+
+"Test_name.c", line 221: warning: missing return statement at end of non-void function "X::Cartesian_base_ref_count<FT_, Kernel_>::compute_x_2_object"
+    Compute_x_2 compute_x_2_object() const { }
+                                             ^
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "X::Cartesian_base_ref_count<FT_, Kernel_>::compute_y_2_object"
+    Compute_y_2 compute_y_2_object() const { }
+                                             ^
+
+"Test_name.c", line 225: warning: missing return statement at end of non-void function "X::Cartesian_base_ref_count<FT_, Kernel_>::compute_hx_2_object"
+    Compute_hx_2 compute_hx_2_object() const { }
+                                               ^
+
+"Test_name.c", line 227: warning: missing return statement at end of non-void function "X::Cartesian_base_ref_count<FT_, Kernel_>::compute_hy_2_object"
+    Compute_hy_2 compute_hy_2_object() const { }
+                                               ^
+
+"Test_name.c", line 229: warning: missing return statement at end of non-void function "X::Cartesian_base_ref_count<FT_, Kernel_>::compute_hw_2_object"
+    Compute_hw_2 compute_hw_2_object() const { }
+                                               ^
+
+"Test_name.c", line 245: warning: missing return statement at end of non-void function "X::Ipelet_base<Kernel>::cast_into_seg(const T &, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &, output_iterator) const"
+    template <class T,class output_iterator> bool cast_into_seg(const T& obj,const Iso_rectangle_2& bbox,output_iterator out_it) const{ X::intersection(obj,bbox); }
+                                                                                                                                                                   ^
+
+"Test_name.c", line 242: warning: missing return statement at end of non-void function "X::Ipelet_base<Kernel>::read_active_objects [with Kernel=X::Kernel]"
+    Iso_rectangle_2 read_active_objects () const { }
+                                                   ^
+          detected during instantiation of "X::Ipelet_base<Kernel>::Iso_rectangle_2 X::Ipelet_base<Kernel>::read_active_objects() const [with Kernel=X::Kernel]" at line 254
+
+"Test_name.c", line 148: warning: missing return statement at end of non-void function "X::CommonKernelFunctors::Construct_cartesian_const_iterator_2<K>::operator()(const X::CommonKernelFunctors::Construct_cartesian_const_iterator_2<K>::Point_2 &, int) const [with K=X::Cartesian<double>]"
+      Cartesian_const_iterator_2 operator()( const Point_2& p, int) const { }
+                                                                            ^
+          detected during:
+            instantiation of "X::CommonKernelFunctors::Construct_cartesian_const_iterator_2<K>::Cartesian_const_iterator_2 X::CommonKernelFunctors::Construct_cartesian_const_iterator_2<K>::operator()(const X::CommonKernelFunctors::Construct_cartesian_const_iterator_2<K>::Point_2 &, int) const [with K=X::Cartesian<double>]" at line 111
+            instantiation of "X::internal::Segment_2_Iso_rectangle_2_pair<K>::Intersection_results X::internal::Segment_2_Iso_rectangle_2_pair<K>::intersection_type() const [with K=X::Cartesian<double>]" at line 103
+            instantiation of "X::Object X::internal::intersection(const K::Segment_2 &, const K::Iso_rectangle_2 &, const K &) [with K=X::Cartesian<double>]" at line 154
+            instantiation of "X::CommonKernelFunctors::Intersect_2<K>::Object_2 X::CommonKernelFunctors::Intersect_2<K>::operator()(const T1 &, const T2 &) const [with K=X::Cartesian<double>, T1=X::Segment_2<X::Cartesian<double>>, T2=X::Iso_rectangle_2<X::Cartesian<double>>]" at line 139
+            instantiation of "X::Object X::intersection(const X::Segment_2<K> &, const X::Iso_rectangle_2<K> &) [with K=X::Cartesian<double>]" at line 245
+            instantiation of "bool X::Ipelet_base<Kernel>::cast_into_seg(const T &, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &, output_iterator) const [with Kernel=X::Kernel, T=X::Segment_2<X::Cartesian<double>>, output_iterator=std::back_insert_iterator]" at line 246
+            instantiation of "void X::Ipelet_base<Kernel>::cast_into_seg(iterator, iterator, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &, output_iterator) const [with Kernel=X::Kernel, iterator=std::_List_iterator<X::Segment_2<X::Cartesian<double>>>, output_iterator=std::back_insert_iterator]" at line 247
+            instantiation of "void X::Ipelet_base<Kernel>::draw_dual_(X::Ipelet_base<Kernel>::Voronoi_from_tri &, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &) const [with Kernel=X::Kernel]" at line 248
+            instantiation of "void X::Ipelet_base<Kernel>::draw_dual_in_ipe(const X::Ipelet_base<Kernel>::Iso_rectangle_2 &) const [with Kernel=X::Kernel]" at line 254
+
+"Test_name.c", line 136: warning: missing return statement at end of non-void function "X::internal::Segment_2_Iso_rectangle_2_pair<K>::intersection_type [with K=X::Cartesian<double>]"
+    }
+    ^
+          detected during:
+            instantiation of "X::internal::Segment_2_Iso_rectangle_2_pair<K>::Intersection_results X::internal::Segment_2_Iso_rectangle_2_pair<K>::intersection_type() const [with K=X::Cartesian<double>]" at line 103
+            instantiation of "X::Object X::internal::intersection(const K::Segment_2 &, const K::Iso_rectangle_2 &, const K &) [with K=X::Cartesian<double>]" at line 154
+            instantiation of "X::CommonKernelFunctors::Intersect_2<K>::Object_2 X::CommonKernelFunctors::Intersect_2<K>::operator()(const T1 &, const T2 &) const [with K=X::Cartesian<double>, T1=X::Segment_2<X::Cartesian<double>>, T2=X::Iso_rectangle_2<X::Cartesian<double>>]" at line 139
+            instantiation of "X::Object X::intersection(const X::Segment_2<K> &, const X::Iso_rectangle_2<K> &) [with K=X::Cartesian<double>]" at line 245
+            instantiation of "bool X::Ipelet_base<Kernel>::cast_into_seg(const T &, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &, output_iterator) const [with Kernel=X::Kernel, T=X::Segment_2<X::Cartesian<double>>, output_iterator=std::back_insert_iterator]" at line 246
+            instantiation of "void X::Ipelet_base<Kernel>::cast_into_seg(iterator, iterator, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &, output_iterator) const [with Kernel=X::Kernel, iterator=std::_List_iterator<X::Segment_2<X::Cartesian<double>>>, output_iterator=std::back_insert_iterator]" at line 247
+            instantiation of "void X::Ipelet_base<Kernel>::draw_dual_(X::Ipelet_base<Kernel>::Voronoi_from_tri &, const X::Ipelet_base<Kernel>::Iso_rectangle_2 &) const [with Kernel=X::Kernel]" at line 248
+            instantiation of "void X::Ipelet_base<Kernel>::draw_dual_in_ipe(const X::Ipelet_base<Kernel>::Iso_rectangle_2 &) const [with Kernel=X::Kernel]" at line 254
+

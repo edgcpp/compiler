@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 12: error: too many initializer values
+          return Simd128U8VectT { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                                     ^
+
+"Test_name.c", line 16: error: identifier "__builtin_shufflevector" is undefined
+          return __builtin_shufflevector(vect, vect, ShuffleIndex, ShuffleIndex + 1,
+                 ^
+          detected during instantiation of "Simd128U8VectT ShufFunc<ShuffleIndex>(Simd128U8VectT) noexcept [with ShuffleIndex=5]" at line 24
+
+2 errors detected in the compilation of "Test_name.c".

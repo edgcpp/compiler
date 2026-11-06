@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 13: error: expected an expression
+    (void)^(int x,
+          ^
+
+"Test_name.c", line 20: warning: function "achor" was declared but never referenced
+  static void achor(void) {};
+              ^
+
+"Test_name.c", line 23: warning: function "nakedFunction" was declared but never referenced
+  __attribute__((naked)) static void nakedFunction(int a, int b) { }
+                                     ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: warning: missing return statement at end of non-void function "m<l>()"
+  template <typename l> d<i<l>::c> m() { }
+                                         ^
+
+"Test_name.c", line 11: error: function template "m" has already been defined (previous definition at line 10)
+  template <typename n> d<i<n*>::c> m() { }
+                                    ^
+
+1 error detected in the compilation of "Test_name.c".

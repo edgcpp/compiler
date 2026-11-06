@@ -1,0 +1,306 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: error: identifier "a" is undefined
+      switch (a) { // expected-error{{use of undeclared identifier 'a'}}
+              ^
+
+"Test_name.c", line 13: warning: statement is unreachable
+      switch (b) {
+      ^
+
+"Test_name.c", line 15: error: expected a ":"
+        break;
+        ^
+
+"Test_name.c", line 19: warning: parsing restarts here after previous syntax error
+      }
+      ^
+
+"Test_name.c", line 19: warning: expected a statement
+      }
+      ^
+
+"Test_name.c", line 25: warning: variable "x" is used before its value is set
+      switch (x) { // expected-warning {{enumeration value 'Xb' not handled in switch}}
+              ^
+
+"Test_name.c", line 26: error: expected a ":"
+      case Xa; // expected-error {{expected ':' after 'case'}}
+             ^
+
+"Test_name.c", line 28: warning: expected a statement
+      }
+      ^
+
+"Test_name.c", line 31: error: expected a ":"
+      default; // expected-error {{expected ':' after 'default'}}
+             ^
+
+"Test_name.c", line 33: warning: expected a statement
+      }
+      ^
+
+"Test_name.c", line 39: warning: statement is unreachable
+        2: return 1;  // expected-error {{expected 'case' keyword before expression}}
+        ^
+
+"Test_name.c", line 39: warning: expression has no effect
+        2: return 1;  // expected-error {{expected 'case' keyword before expression}}
+        ^
+
+"Test_name.c", line 39: error: expected a ";"
+        2: return 1;  // expected-error {{expected 'case' keyword before expression}}
+         ^
+
+"Test_name.c", line 47: warning: statement is unreachable
+      1: return -1;  // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 47: warning: expression has no effect
+      1: return -1;  // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 47: error: expected a ";"
+      1: return -1;  // expected-error {{expected 'case' keyword before expression}}
+       ^
+
+"Test_name.c", line 55: warning: statement is unreachable
+      4:5:6:7: return 2;  // expected-error 4{{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 55: warning: expression has no effect
+      4:5:6:7: return 2;  // expected-error 4{{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 55: error: expected a ";"
+      4:5:6:7: return 2;  // expected-error 4{{expected 'case' keyword before expression}}
+       ^
+
+"Test_name.c", line 73: warning: expression has no effect
+      5:  // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 73: error: expected a ";"
+      5:  // expected-error {{expected 'case' keyword before expression}}
+       ^
+
+"Test_name.c", line 76: warning: missing return statement at end of non-void function "test6"
+  }
+  ^
+
+"Test_name.c", line 81: warning: expression has no effect
+      true ? 1 : 2:  // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 81: error: expected a ";"
+      true ? 1 : 2:  // expected-error {{expected 'case' keyword before expression}}
+                  ^
+
+"Test_name.c", line 92: warning: label "A" was declared but never referenced
+      A: return 0;  // FIXME: give a warning for unused labels that could also be
+      ^
+
+"Test_name.c", line 102: warning: statement is unreachable
+      2: case; // expected-error {{expected 'case' keyword before expression}} \
+      ^
+
+"Test_name.c", line 102: warning: expression has no effect
+      2: case; // expected-error {{expected 'case' keyword before expression}} \
+      ^
+
+"Test_name.c", line 102: error: expected a ";"
+      2: case; // expected-error {{expected 'case' keyword before expression}} \
+       ^
+
+"Test_name.c", line 104: warning: expression has no effect
+      4:5:6: return; // expected-error 3{{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 104: error: expected a ";"
+      4:5:6: return; // expected-error 3{{expected 'case' keyword before expression}}
+       ^
+
+"Test_name.c", line 105: warning: expression has no effect
+      7: :x; // expected-error {{expected 'case' keyword before expression}} \
+      ^
+
+"Test_name.c", line 105: error: expected a ";"
+      7: :x; // expected-error {{expected 'case' keyword before expression}} \
+       ^
+
+"Test_name.c", line 107: warning: expression has no effect
+      8:: x; // expected-error {{expected ';' after expression}} \
+      ^
+
+"Test_name.c", line 107: error: expected a ";"
+      8:: x; // expected-error {{expected ';' after expression}} \
+       ^
+
+"Test_name.c", line 110: warning: expression has no effect
+      9:: :y; // expected-error {{expected ';' after expression}} \
+      ^
+
+"Test_name.c", line 110: error: expected a ";"
+      9:: :y; // expected-error {{expected ';' after expression}} \
+       ^
+
+"Test_name.c", line 113: error: expected an expression
+      :; // expected-error {{expected expression}}
+      ^
+
+"Test_name.c", line 114: error: expected an identifier
+      ::; // expected-error {{expected unqualified-id}}
+        ^
+
+"Test_name.c", line 123: warning: expression has no effect
+            2: y++;  // expected-error {{expected ';' after expression}} \
+            ^
+
+"Test_name.c", line 123: error: expected a ";"
+            2: y++;  // expected-error {{expected ';' after expression}} \
+             ^
+
+"Test_name.c", line 140: warning: statement is unreachable
+        E+1: break;  // expected-error {{expected 'case' keyword before expression}}
+        ^
+
+"Test_name.c", line 140: error: expected a ";"
+        E+1: break;  // expected-error {{expected 'case' keyword before expression}}
+           ^
+
+"Test_name.c", line 138: warning: label "E" was declared but never referenced
+        E: break;    // FIXME: give a 'case' fix-it for unused labels that
+        ^
+
+"Test_name.c", line 147: warning: statement is unreachable
+      0:  // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 147: warning: expression has no effect
+      0:  // expected-error {{expected 'case' keyword before expression}}
+      ^
+
+"Test_name.c", line 147: error: expected a ";"
+      0:  // expected-error {{expected 'case' keyword before expression}}
+       ^
+
+"Test_name.c", line 158: warning: parsing restarts here after previous syntax error
+    }
+    ^
+
+"Test_name.c", line 165: warning: expected a statement
+    } // expected-warning {{label at end of compound statement is a C++23 extension}}
+    ^
+
+"Test_name.c", line 172: warning: expected a statement
+    } // expected-warning {{label at end of compound statement is a C++23 extension}}
+    ^
+
+"Test_name.c", line 176: error: a condition declaration must include an initializer
+    switch (int x)  // expected-error {{variable declaration in condition must have an initializer}}
+                ^
+
+"Test_name.c", line 177: error: identifier "v" is undefined
+    case v: ;  // expected-error {{use of undeclared identifier 'v'}}
+         ^
+
+"Test_name.c", line 176: warning: variable "x" was declared but never referenced
+    switch (int x)  // expected-error {{variable declaration in condition must have an initializer}}
+                ^
+
+"Test_name.c", line 183: error: expected a ":"
+    } // expected-warning {{label at end of compound statement is a C++23 extension}}
+    ^
+
+"Test_name.c", line 183: warning: expected a statement
+    } // expected-warning {{label at end of compound statement is a C++23 extension}}
+    ^
+
+"Test_name.c", line 188: error: identifier "v" is undefined
+    case v  // expected-error{{use of undeclared identifier 'v'}} \
+         ^
+
+"Test_name.c", line 190: error: expected a ":"
+    } // expected-error{{expected statement}}
+    ^
+
+"Test_name.c", line 190: warning: expected a statement
+    } // expected-error{{expected statement}}
+    ^
+
+"Test_name.c", line 194: error: a condition declaration must include an initializer
+    switch (int x)  // expected-error {{variable declaration in condition must have an initializer}}
+                ^
+
+"Test_name.c", line 195: error: identifier "v1" is undefined
+    case v1: case v2: ;  // expected-error {{use of undeclared identifier 'v1'}} \
+         ^
+
+"Test_name.c", line 195: error: identifier "v2" is undefined
+    case v1: case v2: ;  // expected-error {{use of undeclared identifier 'v1'}} \
+                  ^
+
+"Test_name.c", line 194: warning: variable "x" was declared but never referenced
+    switch (int x)  // expected-error {{variable declaration in condition must have an initializer}}
+                ^
+
+"Test_name.c", line 201: error: identifier "v2" is undefined
+    case 1: case v2: ;  // expected-error {{use of undeclared identifier 'v2'}}
+                 ^
+
+"Test_name.c", line 207: error: expected a ":"
+    case 1 : return x;  // expected-error{{duplicate case value '1'}}
+    ^
+
+"Test_name.c", line 209: warning: missing return statement at end of non-void function "pr19022_4"
+  }
+  ^
+
+"Test_name.c", line 214: error: expected an expression
+    }  // expected-error{{expected expression}} \
+    ^
+
+"Test_name.c", line 214: error: expected a ":"
+    }  // expected-error{{expected expression}} \
+    ^
+
+"Test_name.c", line 214: warning: expected a statement
+    }  // expected-error{{expected expression}} \
+    ^
+
+"Test_name.c", line 219: warning: missing return statement at end of non-void function "pr19022::baz5"
+  int baz5() {}
+              ^
+
+"Test_name.c", line 221: error: a condition declaration must include an initializer
+    switch (int foo0)  //expected-error{{variable declaration in condition must have an initializer}}
+                ^
+
+"Test_name.c", line 222: error: identifier "bar5" is undefined
+    case bar5: ;  // expected-error{{use of undeclared identifier 'bar5'}}
+         ^
+
+"Test_name.c", line 221: warning: variable "foo0" was declared but never referenced
+    switch (int foo0)  //expected-error{{variable declaration in condition must have an initializer}}
+                ^
+
+"Test_name.c", line 223: warning: missing return statement at end of non-void function "pr19022::bar0"
+  }
+  ^
+
+"Test_name.c", line 229: warning: statement is unreachable
+      switch (0  // expected-note{{to match this '('}}
+      ^
+
+"Test_name.c", line 230: error: expected a ")"
+      {  // expected-error{{expected ')'}}
+      ^
+
+"Test_name.c", line 232: error: expected a statement
+  } // expected-error{{expected statement}}
+  ^
+
+"Test_name.c", line 240: error: expected a ":"
+    case FOO // expected-error {{expected ':' after 'case'}}
+         ^
+
+36 errors detected in the compilation of "Test_name.c".

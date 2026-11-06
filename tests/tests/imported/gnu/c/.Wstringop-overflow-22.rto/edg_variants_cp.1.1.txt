@@ -1,0 +1,229 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 169: warning: integer conversion resulted in a change of sign
+  T (__stpcpy_chk, d, a, -1);           // { dg-warning "missing terminating nul" "stpcpy" }
+  ^
+
+"Test_name.c", line 172: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, a, 4, -1);
+  ^
+
+"Test_name.c", line 173: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, a, 5, -1);       // { dg-warning "specified bound 5 exceeds the size 4 of unterminated array" "stpncpy_chk" }
+  ^
+
+"Test_name.c", line 174: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, a, n, -1);
+  ^
+
+"Test_name.c", line 176: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, a + n, 3, -1);
+  ^
+
+"Test_name.c", line 177: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, a + n, 4, -1);   // { dg-warning "specified bound 4 may exceed the size of at most 4 of unterminated array" "stpncpy_chk" }
+  ^
+
+"Test_name.c", line 178: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, a + n, 5, -1);   // { dg-warning "specified bound 5 exceeds the size of at most 4 of unterminated array" "stpncpy_chk" }
+  ^
+
+"Test_name.c", line 180: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b, 4, -1);
+  ^
+
+"Test_name.c", line 181: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b, 5, -1);
+  ^
+
+"Test_name.c", line 182: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b, n, -1);
+  ^
+
+"Test_name.c", line 184: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 1, 4, -1);
+  ^
+
+"Test_name.c", line 185: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 1, 5, -1);
+  ^
+
+"Test_name.c", line 186: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 1, n, -1);
+  ^
+
+"Test_name.c", line 188: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 3, 4, -1);
+  ^
+
+"Test_name.c", line 189: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 3, 5, -1);
+  ^
+
+"Test_name.c", line 190: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 3, n, -1);
+  ^
+
+"Test_name.c", line 192: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 4, 1, -1);
+  ^
+
+"Test_name.c", line 193: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 4, 2, -1);   // { dg-warning "specified bound 2 exceeds the size 1 of unterminated array" "stpncpy_chk" }
+  ^
+
+"Test_name.c", line 194: warning: integer conversion resulted in a change of sign
+  T (__stpncpy_chk, d, b + 4, n, -1);
+  ^
+
+"Test_name.c", line 197: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, a, 4, -1);
+  ^
+
+"Test_name.c", line 198: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, a, 5, -1);       // { dg-warning "specified bound 5 exceeds the size 4 of unterminated array" "strncat_chk" }
+  ^
+
+"Test_name.c", line 199: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, a, n, -1);
+  ^
+
+"Test_name.c", line 201: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, a + n, 3, -1);
+  ^
+
+"Test_name.c", line 202: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, a + n, 4, -1);   // { dg-warning "specified bound 4 may exceed the size of at most 4 of unterminated array" "strncat_chk" }
+  ^
+
+"Test_name.c", line 203: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, a + n, 5, -1);   // { dg-warning "specified bound 5 exceeds the size of at most 4 of unterminated array" "strncat_chk" }
+  ^
+
+"Test_name.c", line 205: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b, 4, -1);
+  ^
+
+"Test_name.c", line 206: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b, 5, -1);
+  ^
+
+"Test_name.c", line 207: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b, n, -1);
+  ^
+
+"Test_name.c", line 209: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 1, 4, -1);
+  ^
+
+"Test_name.c", line 210: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 1, 5, -1);
+  ^
+
+"Test_name.c", line 211: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 1, n, -1);
+  ^
+
+"Test_name.c", line 213: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 3, 4, -1);
+  ^
+
+"Test_name.c", line 214: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 3, 5, -1);
+  ^
+
+"Test_name.c", line 215: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 3, n, -1);
+  ^
+
+"Test_name.c", line 217: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 4, 1, -1);
+  ^
+
+"Test_name.c", line 218: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 4, 2, -1);   // { dg-warning "specified bound 2 exceeds the size 1 of unterminated array" "strncat_chk" }
+  ^
+
+"Test_name.c", line 219: warning: integer conversion resulted in a change of sign
+  T (__strncat_chk, d, b + 4, n, -1);
+  ^
+
+"Test_name.c", line 222: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, a, 4, -1);
+  ^
+
+"Test_name.c", line 223: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, a, 5, -1);       // { dg-warning "specified bound 5 exceeds the size 4 of unterminated array" "strncpy_chk" }
+  ^
+
+"Test_name.c", line 224: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, a, n, -1);
+  ^
+
+"Test_name.c", line 226: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, a + n, 3, -1);
+  ^
+
+"Test_name.c", line 227: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, a + n, 4, -1);   // { dg-warning "specified bound 4 may exceed the size of at most 4 of unterminated array" "strncpy_chk" }
+  ^
+
+"Test_name.c", line 228: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, a + n, 5, -1);   // { dg-warning "specified bound 5 exceeds the size of at most 4 of unterminated array" "strncpy_chk" }
+  ^
+
+"Test_name.c", line 230: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b, 4, -1);
+  ^
+
+"Test_name.c", line 231: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b, 5, -1);
+  ^
+
+"Test_name.c", line 232: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b, n, -1);
+  ^
+
+"Test_name.c", line 234: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 1, 4, -1);
+  ^
+
+"Test_name.c", line 235: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 1, 5, -1);
+  ^
+
+"Test_name.c", line 236: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 1, n, -1);
+  ^
+
+"Test_name.c", line 238: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 3, 4, -1);
+  ^
+
+"Test_name.c", line 239: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 3, 5, -1);
+  ^
+
+"Test_name.c", line 240: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 3, n, -1);
+  ^
+
+"Test_name.c", line 242: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 4, 1, -1);
+  ^
+
+"Test_name.c", line 243: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 4, 2, -1);   // { dg-warning "specified bound 2 exceeds the size 1 of unterminated array" "strncpy" }
+  ^
+
+"Test_name.c", line 244: warning: integer conversion resulted in a change of sign
+  T (__strncpy_chk, d, b + 4, n, -1);
+  ^
+
+"Test_name.c", line 253: warning: integer conversion resulted in a change of sign
+  T (__sprintf_chk, d, 0, -1, "%s", a);      // { dg-warning "not a nul-terminated string" "sprintf" }
+  ^
+
+"Test_name.c", line 254: warning: integer conversion resulted in a change of sign
+  T (__snprintf_chk, d, n, 0, -1, "%s", a);  // { dg-warning "not a nul-terminated string" "sprintf" }
+  ^
+

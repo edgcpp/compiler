@@ -1,0 +1,31 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 8: remark: function "Set::~Set" cannot be inlined
+  struct Set: public Collection {
+         ^
+          detected during:
+            implicit generation of "Set::~Set()" at line 17
+            implicit generation of "Set::Set()" at line 17
+            implicit generation of "IdentSet::IdentSet()" at line 17
+
+"Test_name.c", line 8: remark: function "Set::Set()" cannot be inlined
+  struct Set: public Collection {
+         ^
+          detected during:
+            implicit generation of "Set::Set()" at line 17
+            implicit generation of "IdentSet::IdentSet()" at line 17
+
+"Test_name.c", line 11: remark: function "IdentSet::IdentSet()" cannot be inlined
+  struct IdentSet : public Set {
+         ^
+          detected during implicit generation of "IdentSet::IdentSet()" at line 17
+
+/usr/sbin/ld: Test_name.o: in function `Set::Set()':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for Collection'
+/usr/sbin/ld: Test_name.o: in function `Set::~Set()':
+Test_name.int.c:(.text+0xXX): undefined reference to `Collection::~Collection()'
+/usr/sbin/ld: Test_name.o: in function `IdentSet::IdentSet()':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for IdentSet'
+/usr/sbin/ld: Test_name.o:(.data+0x0): undefined reference to `Collection::~Collection()'
+/usr/sbin/ld: Test_name.o:(.data+0x50): undefined reference to `Collection::~Collection()'
+/usr/sbin/ld: Test_name.o:(.rodata+0x0): undefined reference to `typeinfo for Collection'
+collect2: error: ld returned 1 exit status

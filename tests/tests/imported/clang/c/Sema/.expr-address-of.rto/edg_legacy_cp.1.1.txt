@@ -1,0 +1,230 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 13: warning: variable "p" is used before its value is set
+   add_one(&p->value);
+            ^
+
+"Test_name.c", line 15: error: taking the address of a bit field is not allowed
+   add_one(&p->bitf);  // expected-error {{address of bit-field requested}}
+           ^
+
+"Test_name.c", line 16: error: taking the address of a bit field is not allowed
+   add_one(&pvalue.bitf); // expected-error {{address of bit-field requested}}
+           ^
+
+"Test_name.c", line 17: error: taking the address of a bit field is not allowed
+   add_one(&p->whatever->bitf); // expected-error {{address of bit-field requested}}
+           ^
+
+"Test_name.c", line 22: warning: taking the address of a register variable is not allowed
+    &x[10];              // expected-error {{address of register variable requested}}
+     ^
+
+"Test_name.c", line 22: warning: taking the address of a register variable is not allowed
+    &x[10];              // expected-error {{address of register variable requested}}
+     ^
+
+"Test_name.c", line 22: warning: expression has no effect
+    &x[10];              // expected-error {{address of register variable requested}}
+    ^
+
+"Test_name.c", line 26: warning: taking the address of a register variable is not allowed
+    int *x2 = &y; // expected-error {{address of register variable requested}}
+               ^
+
+"Test_name.c", line 26: warning: a value of type "int **" cannot be used to initialize an entity of type "int *"
+    int *x2 = &y; // expected-error {{address of register variable requested}}
+              ^
+
+"Test_name.c", line 26: warning: variable "x2" was declared but never referenced
+    int *x2 = &y; // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 27: warning: variable "x3" was declared but never referenced
+    int *x3 = &y[10];
+         ^
+
+"Test_name.c", line 33: warning: variable "r" was declared but never referenced
+    float* r = &q[0]; // expected-error {{address of vector element requested}}
+           ^
+
+"Test_name.c", line 39: error: expression must have struct or union type but it has type "float4" (aka "__attribute((ext_vector_type(4))) float")
+    return &x.w; // expected-error {{address of vector element requested}}
+            ^
+
+"Test_name.c", line 44: warning: variable "x0" is used before its value is set
+    int *_dummy0 = &(*x0);
+                      ^
+
+"Test_name.c", line 47: warning: variable "x1" is used before its value is set
+    int *_dummy1 = &(*(x1 + 1));
+                       ^
+
+"Test_name.c", line 44: warning: variable "_dummy0" was declared but never referenced
+    int *_dummy0 = &(*x0);
+         ^
+
+"Test_name.c", line 47: warning: variable "_dummy1" was declared but never referenced
+    int *_dummy1 = &(*(x1 + 1));
+         ^
+
+"Test_name.c", line 52: warning: taking the address of a register variable is not allowed
+    int *_dummy00 = x0;     // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 53: warning: taking the address of a register variable is not allowed
+    int *_dummy01 = &(*x0); // expected-error {{address of register variable requested}}
+                       ^
+
+"Test_name.c", line 56: warning: taking the address of a register variable is not allowed
+    int *_dummy1 = &(*(x1 + 1)); // expected-error {{address of register variable requested}}
+                       ^
+
+"Test_name.c", line 59: warning: variable "x2" is used before its value is set
+    int *_dummy2 = &(*(x2 + 1));
+                       ^
+
+"Test_name.c", line 62: warning: taking the address of a register variable is not allowed
+    int(*_dummy3)[10] = &x3[0][0]; // expected-error {{address of register variable requested}}
+                         ^
+
+"Test_name.c", line 62: warning: taking the address of a register variable is not allowed
+    int(*_dummy3)[10] = &x3[0][0]; // expected-error {{address of register variable requested}}
+                         ^
+
+"Test_name.c", line 62: warning: taking the address of a register variable is not allowed
+    int(*_dummy3)[10] = &x3[0][0]; // expected-error {{address of register variable requested}}
+                         ^
+
+"Test_name.c", line 65: warning: taking the address of a register variable is not allowed
+    int *_dummy4 = &x4.f0[2]; // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 65: warning: taking the address of a register variable is not allowed
+    int *_dummy4 = &x4.f0[2]; // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 67: warning: taking the address of a register variable is not allowed
+    add_one(x0);      // expected-error {{address of register variable requested}}
+            ^
+
+"Test_name.c", line 70: warning: taking the address of a register variable is not allowed
+    int *p = ((int *)x0)++; // expected-error {{address of register variable requested}}
+                     ^
+
+"Test_name.c", line 70: error: expression must be a modifiable lvalue
+    int *p = ((int *)x0)++; // expected-error {{address of register variable requested}}
+             ^
+
+"Test_name.c", line 52: warning: variable "_dummy00" was declared but never referenced
+    int *_dummy00 = x0;     // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 53: warning: variable "_dummy01" was declared but never referenced
+    int *_dummy01 = &(*x0); // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 56: warning: variable "_dummy1" was declared but never referenced
+    int *_dummy1 = &(*(x1 + 1)); // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 59: warning: variable "_dummy2" was declared but never referenced
+    int *_dummy2 = &(*(x2 + 1));
+         ^
+
+"Test_name.c", line 62: warning: variable "_dummy3" was declared but never referenced
+    int(*_dummy3)[10] = &x3[0][0]; // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 65: warning: variable "_dummy4" was declared but never referenced
+    int *_dummy4 = &x4.f0[2]; // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 76: warning: taking the address of a register variable is not allowed
+    int *_dummy0 = &y; // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 76: warning: a value of type "int **" cannot be used to initialize an entity of type "int *"
+    int *_dummy0 = &y; // expected-error {{address of register variable requested}}
+                   ^
+
+"Test_name.c", line 76: warning: variable "_dummy0" was declared but never referenced
+    int *_dummy0 = &y; // expected-error {{address of register variable requested}}
+         ^
+
+"Test_name.c", line 77: warning: variable "_dummy1" was declared but never referenced
+    int *_dummy1 = &y[10];
+         ^
+
+"Test_name.c", line 82: warning: variable "_dummy0" was declared but never referenced
+    void (*_dummy0)(void) = &****f4;
+           ^
+
+"Test_name.c", line 86: error: _Complex can only be used with floating-point types
+    register _Complex int x;
+    ^
+
+"Test_name.c", line 94: warning: taking the address of a register variable is not allowed
+    int *_dummy0 = &(int*) arr; // expected-error {{address of register variable requested}}
+                           ^
+
+"Test_name.c", line 94: error: expression must be an lvalue or a function designator
+    int *_dummy0 = &(int*) arr; // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 95: warning: taking the address of a register variable is not allowed
+    int *_dummy1 = &(arr + 1); // expected-error {{address of register variable requested}}
+                     ^
+
+"Test_name.c", line 95: error: expression must be an lvalue or a function designator
+    int *_dummy1 = &(arr + 1); // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 99: warning: taking the address of a register variable is not allowed
+    int * dummy0 = &x; // expected-error {{address of register variable requested}}
+                    ^
+
+"Test_name.c", line 99: warning: variable "dummy0" was declared but never referenced
+    int * dummy0 = &x; // expected-error {{address of register variable requested}}
+          ^
+
+"Test_name.c", line 107: error: taking the address of a bit field is not allowed
+    int* dummy2 = &(t2.a); // expected-error {{address of bit-field requested}}
+                  ^
+
+"Test_name.c", line 108: error: taking the address of a bit field is not allowed
+    int* dummy3 = &(t2.b); // expected-error {{address of bit-field requested}}
+                  ^
+
+"Test_name.c", line 111: warning: missing return statement at end of non-void function "f7"
+  }
+  ^
+
+"Test_name.c", line 104: warning: variable "dummy1" was declared but never referenced
+    char* dummy1 = &(t1.x[0]);
+          ^
+
+"Test_name.c", line 110: warning: variable "t3" was declared but never referenced
+    void* t3 = &*(void*)0;
+          ^
+
+"Test_name.c", line 114: error: expression must be an lvalue or a function designator
+    void *dummy0 = &f8(); // expected-error {{cannot take the address of an rvalue of type 'void'}}
+                    ^
+
+"Test_name.c", line 117: error: expression must be an lvalue or a function designator
+    void *dummy1 = &(1 ? v : f8()); // expected-error {{cannot take the address of an rvalue of type 'void'}}
+                    ^
+
+"Test_name.c", line 119: error: expression must be an lvalue or a function designator
+    void *dummy2 = &(f8(), v); // expected-error {{cannot take the address of an rvalue of type 'void'}}
+                    ^
+
+"Test_name.c", line 121: error: expression must be an lvalue or a function designator
+    void *dummy3 = &({ ; }); // expected-error {{cannot take the address of an rvalue of type 'void'}}
+                    ^
+
+"Test_name.c", line 126: warning: variable "_dummy0" was declared but never referenced
+    void (*_dummy0)() = &****knr;
+           ^
+
+14 errors detected in the compilation of "Test_name.c".

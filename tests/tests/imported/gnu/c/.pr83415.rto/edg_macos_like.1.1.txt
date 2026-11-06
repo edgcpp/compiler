@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  const short __attribute__((vector_size(16))) y = { 0, 1, 2, 3, 4, 5, 6, 7 };
+                             ^
+
+"Test_name.c", line 6: warning: excess initializers are ignored
+  const short __attribute__((vector_size(16))) y = { 0, 1, 2, 3, 4, 5, 6, 7 };
+                                                        ^
+
+"Test_name.c", line 12: error: expression must have pointer-to-object type but it has type "int"
+    y[i] = 7 - i; /* { dg-error "read-only" } */
+      ^
+
+1 error detected in the compilation of "Test_name.c".

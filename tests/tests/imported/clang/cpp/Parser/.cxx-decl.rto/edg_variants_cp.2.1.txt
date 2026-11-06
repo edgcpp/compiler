@@ -1,0 +1,250 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: warning: type qualifier specified more than once
+  const char const *x10; // expected-error {{duplicate 'const' declaration specifier}}
+             ^
+
+"Test_name.c", line 9: error: identifier "g" is undefined
+  int x(*g); // expected-error {{use of undeclared identifier 'g'}}
+         ^
+
+"Test_name.c", line 11: error: expected a declaration
+  private int cplusplus_is_not_opencl; // expected-error {{expected unqualified-id}}
+  ^
+
+"Test_name.c", line 17: error: invalid combination of type specifiers
+  typedef char bool; // expected-error {{redeclaration of C++ built-in type 'bool'}}
+               ^
+
+"Test_name.c", line 26: error: this declaration has no storage class or type specifier
+  y:a a2;  // expected-error {{unexpected ':' in nested name specifier}}
+  ^
+
+"Test_name.c", line 26: error: "y" has already been declared in the current scope
+  y:a a2;  // expected-error {{unexpected ':' in nested name specifier}}
+  ^
+
+"Test_name.c", line 26: error: expected a ";"
+  y:a a2;  // expected-error {{unexpected ':' in nested name specifier}}
+   ^
+
+"Test_name.c", line 27: error: identifier "a2" is undefined
+  y::a a3 = a2;
+            ^
+
+"Test_name.c", line 31: warning: label "y" was declared but never referenced
+  y:  // label
+  ^
+
+"Test_name.c", line 32: warning: variable "s" was declared but never referenced
+    y::a s;
+         ^
+
+"Test_name.c", line 45: warning: variable "P" is used before its value is set
+      return 1 ? P->x : P->y;
+                 ^
+
+"Test_name.c", line 59: warning: signed bit field of length 1
+    int Type : fooenum;
+        ^
+
+"Test_name.c", line 64: warning: variable "Type" is used before its value is set
+    Type = 1 ? P->Type : Type;
+                         ^
+
+"Test_name.c", line 66: error: expected a ")"
+    Type = (y:b) 4;   // expected-error {{unexpected ':' in nested name specifier}}
+             ^
+
+"Test_name.c", line 66: error: expected a ";"
+    Type = (y:b) 4;   // expected-error {{unexpected ':' in nested name specifier}}
+                 ^
+
+"Test_name.c", line 68: error: expected a ")"
+                (y:b)  // expected-error {{unexpected ':' in nested name specifier}}
+                  ^
+
+"Test_name.c", line 69: error: expected a ")"
+                4) : 5;
+                ^
+
+"Test_name.c", line 74: error: expected a ";"
+    int y;
+    ^
+
+"Test_name.c", line 76: error: expected a ";"
+  };
+  ^
+
+"Test_name.c", line 99: error: expected a ";"
+    global11 == 0, // expected-error {{did you mean '='}}
+             ^
+
+"Test_name.c", line 103: warning: parsing restarts here after previous syntax error
+    global15;
+            ^
+
+"Test_name.c", line 107: error: register names can only be used for register variables
+      b __asm__("ebx"), // expected-error {{expected ';' at end of declaration}}
+                ^
+
+"Test_name.c", line 108: error: expected a ";"
+      Statics:return;
+             ^
+
+"Test_name.c", line 106: warning: variable "a" was declared but never referenced
+      static int a,
+                 ^
+
+"Test_name.c", line 107: warning: variable "b" was declared but never referenced
+      b __asm__("ebx"), // expected-error {{expected ';' at end of declaration}}
+      ^
+
+"Test_name.c", line 108: warning: variable "Statics" was declared but never referenced
+      Statics:return;
+      ^
+
+"Test_name.c", line 114: error: expected a declaration
+  ::new(static_cast<void*>(0)) test5; // expected-error {{expected unqualified-id}}
+  ^
+
+"Test_name.c", line 124: error: expected a ";"
+  typedef Class1<Class2> Type1;
+          ^
+
+"Test_name.c", line 124: error: incomplete type "Class1<Class2>" is not allowed
+  typedef Class1<Class2> Type1;
+                         ^
+
+"Test_name.c", line 129: error: expected an identifier
+  void CodeCompleteConsumer::() { // expected-error {{xpected unqualified-id}}
+                             ^
+
+"Test_name.c", line 135: error: incomplete type "void" is not allowed
+  void f(sqrgl); // expected-error {{unknown type name 'sqrgl'}}
+       ^
+
+"Test_name.c", line 135: error: identifier "sqrgl" is undefined
+  void f(sqrgl); // expected-error {{unknown type name 'sqrgl'}}
+         ^
+
+"Test_name.c", line 139: error: expected a ";"
+    typedef void a() { }; // expected-error {{function definition declared 'typedef'}}
+                     ^
+
+"Test_name.c", line 140: error: expected a ";"
+    typedef void c() try { } catch(...) { } // expected-error {{function definition declared 'typedef'}}
+                     ^
+
+"Test_name.c", line 142: error: expected an identifier
+    typedef S() : n(1), m(2) { } // expected-error {{function definition declared 'typedef'}}
+              ^
+
+"Test_name.c", line 142: error: expected a ";"
+    typedef S() : n(1), m(2) { } // expected-error {{function definition declared 'typedef'}}
+                ^
+
+"Test_name.c", line 180: error: expected an identifier
+    DIE.foo();  // expected-error {{cannot use dot operator on a type}}
+       ^
+
+"Test_name.c", line 183: error: expected an identifier
+    DIE->foo();  // expected-error {{cannot use arrow operator on a type}}
+       ^
+
+"Test_name.c", line 186: error: expected an identifier
+    int.foo();  // expected-error {{cannot use dot operator on a type}}
+       ^
+
+"Test_name.c", line 189: error: expected an identifier
+    float->foo();  // expected-error {{cannot use arrow operator on a type}}
+         ^
+
+"Test_name.c", line 194: error: type definition is not allowed
+    template<typename T = struct X { int i; }> struct S {}; // expected-error {{'PR15017::X' cannot be defined in a type specifier}}
+                          ^
+
+"Test_name.c", line 216: error: expected an identifier
+  }
+  ^
+
+"Test_name.c", line 216: error: expected a ";"
+  }
+  ^
+
+"Test_name.c", line 221: error: expected a member name
+    (&o)->(); // expected-error{{expected unqualified-id}}
+          ^
+
+"Test_name.c", line 226: error: expected a ">"
+    X<int N> x; // expected-error {{type-id cannot have a name}}
+          ^
+
+"Test_name.c", line 228: error: expected a ")"
+    using T = int (*T)(); // expected-error {{type-id cannot have a name}}
+                    ^
+
+"Test_name.c", line 237: error: name followed by "::" must be a class or namespace name
+    typename A::template B<> c; // expected-error {{use of undeclared identifier 'A'}}
+             ^
+
+"Test_name.c", line 237: error: expected an identifier
+    typename A::template B<> c; // expected-error {{use of undeclared identifier 'A'}}
+                           ^
+
+"Test_name.c", line 237: error: a class or namespace qualified name is required
+    typename A::template B<> c; // expected-error {{use of undeclared identifier 'A'}}
+             ^
+
+"Test_name.c", line 237: error: type name is not allowed
+    typename A::template B<> c; // expected-error {{use of undeclared identifier 'A'}}
+    ^
+
+"Test_name.c", line 237: error: expected a ";"
+    typename A::template B<> c; // expected-error {{use of undeclared identifier 'A'}}
+              ^
+
+"Test_name.c", line 246: error: explicit type is missing ("int" assumed)
+      FooBar(); // expected-error {{missing return type for function 'FooBar'; did you mean the constructor name 'Foobar'?}}
+      ^
+
+"Test_name.c", line 247: error: invalid destructor declaration
+      ~FooBar(); // expected-error {{undeclared identifier 'FooBar' in destructor name}}
+      ^
+
+"Test_name.c", line 249: error: this declaration has no storage class or type specifier
+    FooBar::FooBar() {} // expected-error {{undeclared}} expected-error {{missing return type}}
+    ^
+
+"Test_name.c", line 249: error: expected a ";"
+    FooBar::FooBar() {} // expected-error {{undeclared}} expected-error {{missing return type}}
+          ^
+
+"Test_name.c", line 255: error: duplicate specifier in declaration
+      friend void friend f(); // expected-warning {{duplicate 'friend' declaration specifier}}
+                  ^
+
+"Test_name.c", line 256: error: duplicate specifier in declaration
+      friend struct B friend; // expected-warning {{duplicate 'friend' declaration specifier}}
+                      ^
+
+"Test_name.c", line 296: error: "typename" may not be specified here
+    class A typename A; // expected-error {{expected a qualified name after 'typename'}}
+            ^
+
+"Test_name.c", line 301: error: unknown external linkage specification
+  extern ""      // expected-error {{unknown linkage language}}
+         ^
+
+"Test_name.c", line 302: error: explicit type is missing ("int" assumed)
+  test6a { ;// expected-error {{a type specifier is required for all declarations}}
+  ^
+
+"Test_name.c", line 302: error: expected an expression
+  test6a { ;// expected-error {{a type specifier is required for all declarations}}
+           ^
+
+"Test_name.c", line 302: error: expected a "}"
+  test6a { ;// expected-error {{a type specifier is required for all declarations}}
+           ^
+
+52 errors detected in the compilation of "Test_name.c".

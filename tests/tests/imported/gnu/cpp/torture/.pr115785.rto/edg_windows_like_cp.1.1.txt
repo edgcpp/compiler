@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --signed_chars -w --c++11 Test_name.c
+"Test_name.c", line 13: error: builtin function is not available because vector types are not supported
+  b e(b h, b m) { return __builtin_ia32_maxps(h, m); }
+                         ^
+
+"Test_name.c", line 53: error: builtin function is not available because vector types are not supported
+    av = __builtin_ia32_andps(aw, d);
+         ^
+
+"Test_name.c", line 59: error: builtin function is not available because vector types are not supported
+    ax = __builtin_ia32_movmskps(bd);
+         ^
+
+"Test_name.c", line 69: error: builtin function is not available because vector types are not supported
+    bg = (aa)__builtin_ia32_pminsd128((g)bh, (g)ae);
+             ^
+
+"Test_name.c", line 74: error: builtin function is not available because vector types are not supported
+    bi = (aa)__builtin_ia32_pmaxsd128((g)bj, (g)bk);
+             ^
+
+"Test_name.c", line 102: error: builtin function is not available because vector types are not supported
+      bq = __builtin_ia32_minps(ab, ac);
+           ^
+
+"Test_name.c", line 107: error: identifier "__builtin_ia32_maxps" is undefined
+    { f = __builtin_ia32_maxps(h.bs, m.bs); }
+          ^
+
+7 errors detected in the compilation of "Test_name.c".

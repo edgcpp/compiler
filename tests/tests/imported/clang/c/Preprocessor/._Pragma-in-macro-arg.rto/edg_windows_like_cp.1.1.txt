@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 31: error: expected a declaration
+  ACTIVE(_Pragma) ("clang diagnostic ignored \"-Wconversion\"")) // expected-error {{_Pragma takes a parenthesized string literal}} \
+                                                               ^
+
+"Test_name.c", line 37: warning: parsing restarts here after previous syntax error
+  int x2 = (double)1.0;
+                      ^
+
+1 error detected in the compilation of "Test_name.c".

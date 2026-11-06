@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++23 -tused -A Test_name.c
+"Test_name.c", line 11: error: function "std::coroutine_handle<void>::destroy() const" (declared at line 81 of "/edg/workspace/bases/docker/dev-env/gcc/include/coroutine.stdh") cannot be referenced -- it is a deleted function
+     ~resumable() { if (handle_) { handle_.destroy(); } }
+                                           ^
+
+"Test_name.c", line 19: error: namespace "std" has no member "size_t"
+     void* operator new(std::size_t sz, Allocator&);
+                             ^
+
+"Test_name.c", line 21: error: function "std::coroutine_handle<Promise>::from_promise(Promise &) [with Promise=resumable::promise_type]" (declared at line 92 of "/edg/workspace/bases/docker/dev-env/gcc/include/coroutine.stdh") cannot be referenced -- it is a deleted function
+     std::coroutine_handle<promise_type> get_return_object() { return std::coroutine_handle<promise_type>::from_promise(*this); }
+                                                                                                           ^
+
+"Test_name.c", line 29: error: identifier "co_return" is undefined
+      co_return;
+      ^
+
+"Test_name.c", line 30: warning: missing return statement at end of non-void function "foo"
+  }
+  ^
+
+4 errors detected in the compilation of "Test_name.c".

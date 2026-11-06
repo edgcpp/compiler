@@ -1,0 +1,34 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./coroutines/pr106188.C", line 22: error: identifier "co_await" is undefined
+    if (co_await suspend_and_resume{}, false) {}
+        ^
+
+"./coroutines/pr106188.C", line 22: error: expected an identifier
+    if (co_await suspend_and_resume{}, false) {}
+                                       ^
+
+"./coroutines/pr106188.C", line 22: error: a condition declaration can only declare one variable
+    if (co_await suspend_and_resume{}, false) {}
+                                       ^
+
+"./coroutines/pr106188.C", line 23: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+"./coroutines/pr106188.C", line 26: error: identifier "co_await" is undefined
+    switch (co_await suspend_and_resume{}, 0) {
+            ^
+
+"./coroutines/pr106188.C", line 26: error: expected an identifier
+    switch (co_await suspend_and_resume{}, 0) {
+                                           ^
+
+"./coroutines/pr106188.C", line 26: error: a condition declaration can only declare one variable
+    switch (co_await suspend_and_resume{}, 0) {
+                                           ^
+
+"./coroutines/pr106188.C", line 29: warning: missing return statement at end of non-void function "g"
+  }
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

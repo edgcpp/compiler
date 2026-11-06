@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 8: error: expected a ","
+    S() [[post: n == 0]]
+              ^
+
+"Test_name.c", line 8: error: expected a "]"
+    S() [[post: n == 0]]
+              ^
+
+"Test_name.c", line 12: error: expected a ","
+    ~S() [[post: true]]
+               ^
+
+"Test_name.c", line 12: error: expected a "]"
+    ~S() [[post: true]]
+               ^
+
+"Test_name.c", line 12: error: expected a ";"
+    ~S() [[post: true]]
+               ^
+
+"Test_name.c", line 32: warning: parsing restarts here after previous syntax error
+    int n = 0;
+             ^
+
+"Test_name.c", line 8: error: "n" is not a nonstatic data member or base class of class "S"
+    S() [[post: n == 0]]
+                ^
+
+"Test_name.c", line 8: error: expected a "(" or a "{"
+    S() [[post: n == 0]]
+                  ^
+
+"Test_name.c", line 9: error: expected a "{"
+      : n(0)
+         ^
+
+8 errors detected in the compilation of "Test_name.c".

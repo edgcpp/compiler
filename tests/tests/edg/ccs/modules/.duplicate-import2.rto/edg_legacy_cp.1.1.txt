@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++20 -r --set_flag skip_module_imports Test_name.c
+"Test_name.c", line 5: remark: module "A.B:C" has already been imported
+  import A   .B :C; // Duplicate import
+         ^
+
+"Test_name.c", line 4: error: identifier "import" is undefined
+  import A.B:C ;import A.B:C ;
+  ^
+
+"Test_name.c", line 4: error: expected a ";"
+  import A.B:C ;import A.B:C ;
+          ^
+
+"Test_name.c", line 4: error: identifier "import" is undefined
+  import A.B:C ;import A.B:C ;
+                ^
+
+"Test_name.c", line 4: error: variable "A" has already been defined (previous definition at line 4)
+  import A.B:C ;import A.B:C ;
+                       ^
+
+"Test_name.c", line 4: error: expected a ";"
+  import A.B:C ;import A.B:C ;
+                        ^
+
+5 errors detected in the compilation of "Test_name.c".

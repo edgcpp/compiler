@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 10: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef __kernel_size_t size_t;
+                          ^
+
+"Test_name.c", line 63: warning: arithmetic on pointer to void or function type
+      ((struct kset*)(__mptr - __builtin_offsetof(struct kset, kobj)));
+                             ^
+

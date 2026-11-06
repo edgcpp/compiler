@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 9: warning: unknown attribute "gnu::vector_size"
+      [[maybe_unused]] struct d { [[gnu::vector_size(4)]] char an[c]; } q;
+                                    ^
+
+"Test_name.c", line 9: warning: variable-length array field type will be treated as zero-length array field type
+      [[maybe_unused]] struct d { [[gnu::vector_size(4)]] char an[c]; } q;
+                                                                  ^
+

@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=2 -tused --gnu_version 150200 Test_name.c
+"Test_name.c", line 73: warning: unknown attribute "visibility"
+    template<class T> struct __attribute__((visibility("hidden"))) C
+                                            ^
+
+"Test_name.c", line 13: error: static assertion failed with ""
+        static_assert(N != 1, "");
+        ^
+"Test_name.c", line 13: note: the final comparison was 1 != 1
+        static_assert(N != 1, "");
+                        ^
+          detected during instantiation of "void in_class::C<N>::f() [with N=1]" 
+
+"Test_name.c", line 33: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 33: note: the final comparison was 1 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during:
+            instantiation of "void external_linkage::C<T>::f() [with T=external_linkage::External]" at line 28
+            instantiation of "external_linkage::C<T>::C() [with T=external_linkage::External]" at line 42
+
+"Test_name.c", line 57: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 57: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during:
+            instantiation of "void partial_specialization::C<T *>::f() [with T=int]" at line 52
+            instantiation of "partial_specialization::C<T *>::C() [with T=int]" at line 66
+
+"Test_name.c", line 77: error: static assertion failed with ""
+        static_assert(sizeof(T) == 0, "");
+        ^
+"Test_name.c", line 77: note: the final comparison was 4 == 0
+        static_assert(sizeof(T) == 0, "");
+                                ^
+          detected during instantiation of "void hidden_external_linkage::C<T>::f() [with T=int]" 
+
+"Test_name.c", line 99: error: static assertion failed with ""
+      static_assert(N != 1, "");
+      ^
+"Test_name.c", line 99: note: the final comparison was 1 != 1
+      static_assert(N != 1, "");
+                      ^
+          detected during instantiation of "void inline_out_of_class::C<N>::f() [with N=1]" 
+
+5 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "__vector_size__"
+  typedef double vector4double __attribute__((__vector_size__(32)));
+                                              ^
+
+"Test_name.c", line 6: warning: unknown attribute "__vector_size__"
+  typedef float  vector8float  __attribute__((__vector_size__(32)));
+                                              ^
+
+"Test_name.c", line 9: error: type name is not allowed
+    return __builtin_convertvector(x, vector8float);  // expected-error {{same number of elements}}
+                                      ^
+
+"Test_name.c", line 9: error: return value type does not match the function type
+    return __builtin_convertvector(x, vector8float);  // expected-error {{same number of elements}}
+           ^
+
+"Test_name.c", line 13: error: expected an expression
+    return __builtin_convertvector(x, float);  // expected-error {{second argument to __builtin_convertvector must be of vector type}}
+                                      ^
+
+"Test_name.c", line 13: error: return value type does not match the function type
+    return __builtin_convertvector(x, float);  // expected-error {{second argument to __builtin_convertvector must be of vector type}}
+           ^
+
+"Test_name.c", line 17: error: type name is not allowed
+    return __builtin_convertvector(x, vector8float);  // expected-error {{must be a vector}}
+                                      ^
+
+"Test_name.c", line 17: error: return value type does not match the function type
+    return __builtin_convertvector(x, vector8float);  // expected-error {{must be a vector}}
+           ^
+
+"Test_name.c", line 21: error: expected an expression
+    return __builtin_convertvector(x, float); // expected-error {{first argument to __builtin_convertvector must be a vector}}
+                                      ^
+
+"Test_name.c", line 21: error: return value type does not match the function type
+    return __builtin_convertvector(x, float); // expected-error {{first argument to __builtin_convertvector must be a vector}}
+           ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
+"Test_name.c", line 8: error: expected a "("
+    else if 1 ;
+            ^
+          detected during instantiation of "void foo<I>() [with I=1]" at line 17
+
+"Test_name.c", line 11: error: expected a "("
+    else if ! 1 ;
+            ^
+          detected during instantiation of "void foo<I>() [with I=1]" at line 17
+
+"Test_name.c", line 14: error: expected a "("
+    else if ! (1) ;
+            ^
+          detected during instantiation of "void foo<I>() [with I=1]" at line 17
+
+3 errors detected in the compilation of "Test_name.c".

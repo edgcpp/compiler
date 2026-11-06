@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gcc Test_name.c
+"Test_name.c", line 17: warning: variable "a" is used before its value is set
+  	asm("fsinx %[Angle],%0" : [Out]"=f"(r) : [In]"[Out ]"(a));
+  	                                                      ^
+
+"Test_name.c", line 17: error: invalid symbolic operand name "Angle"
+  	asm("fsinx %[Angle],%0" : [Out]"=f"(r) : [In]"[Out ]"(a));
+  	^
+
+"Test_name.c", line 16: warning: variable "r" was set but never used
+  	register float a, r;
+  	                  ^
+
+1 error detected in the compilation of "Test_name.c".

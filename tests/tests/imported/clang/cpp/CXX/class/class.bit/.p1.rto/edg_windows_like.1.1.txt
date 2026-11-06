@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 9: error: expected an identifier
+    int b, [[]] : 0; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 9: error: zero-length bit field must be unnamed
+    int b, [[]] : 0; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 12: error: expected a ";"
+    int : 2 = 1; // expected-error {{anonymous bit-field cannot have a default member initializer}}
+            ^
+
+"Test_name.c", line 13: error: expected a ";"
+    int : 0 { 1 }; // expected-error {{anonymous bit-field cannot have a default member initializer}}
+            ^
+
+"Test_name.c", line 15: error: expected a ";"
+    int : 1 = 12, e : 1; // expected-error {{anonymous bit-field cannot have a default member initializer}}
+            ^
+
+"Test_name.c", line 20: error: expected an identifier
+    int j, [[]] k; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 20: error: expected a ";"
+    int j, [[]] k; // expected-error {{an attribute list cannot appear here}}
+                ^
+
+7 errors detected in the compilation of "Test_name.c".

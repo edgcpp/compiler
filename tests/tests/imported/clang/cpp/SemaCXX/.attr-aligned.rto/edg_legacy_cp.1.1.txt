@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 8: error: static assertion failed with "attribute applied to original type"
+  static_assert((__alignof__(S1) == (1)), "attribute applied to original type");
+  ^
+"Test_name.c", line 8: note: the final comparison was 8 == 1
+  static_assert((__alignof__(S1) == (1)), "attribute applied to original type");
+                                 ^
+
+"Test_name.c", line 18: error: static assertion failed with "attribute clobbered"
+  static_assert((__alignof__(S3) == (4)), "attribute clobbered");
+  ^
+"Test_name.c", line 18: note: the final comparison was 8 == 4
+  static_assert((__alignof__(S3) == (4)), "attribute clobbered");
+                                 ^
+
+2 errors detected in the compilation of "Test_name.c".

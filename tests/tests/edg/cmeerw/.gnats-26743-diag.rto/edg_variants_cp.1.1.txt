@@ -1,0 +1,91 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 19: error: no instance of function template "pointer_arith::fp" matches the argument list
+             fp<&c.j - 1>(),     // error
+             ^
+"Test_name.c", line 6: note: candidate function template "pointer_arith::fp" failed deduction
+    template<int *> void fp() { }
+                         ^
+
+"Test_name.c", line 22: error: invalid nontype template argument of type "int *"
+             vp<&c.j - 1>,       // error
+                ^
+
+"Test_name.c", line 25: error: invalid nontype template argument of type "int *"
+             AP<&c.j - 1>(),     // error
+                ^
+
+"Test_name.c", line 50: error: no instance of function template "member_subobject::f" matches the argument list
+             f<D{&c.j - 1}>(),   // error
+             ^
+"Test_name.c", line 37: note: substituting explicit template arguments "<<expression>>" for function template "member_subobject::f" failed
+    template<D> void f() { }
+                     ^
+
+"Test_name.c", line 53: error: expression must have a constant value
+             v<D{&c.j - 1}>,     // error
+               ^
+"Test_name.c", line 53: note: invalid arithmetic on non-array pointer
+             v<D{&c.j - 1}>,     // error
+                      ^
+
+"Test_name.c", line 56: error: expression must have a constant value
+             A<D{&c.j - 1}>(),   // error
+               ^
+"Test_name.c", line 56: note: invalid arithmetic on non-array pointer
+             A<D{&c.j - 1}>(),   // error
+                      ^
+
+"Test_name.c", line 72: error: no instance of function template "member_string_literal::f" matches the argument list
+    int x = (f<D{""}>(),          // error
+             ^
+"Test_name.c", line 68: note: candidate function template "member_string_literal::f" failed deduction
+    template<D> void f() { }
+                     ^
+
+"Test_name.c", line 73: error: invalid nontype template argument of type "member_string_literal::D"
+             v<D{""}>,            // error
+               ^
+
+"Test_name.c", line 74: error: invalid nontype template argument of type "member_string_literal::D"
+             A<D{""}>(),          // error
+               ^
+
+"Test_name.c", line 95: error: a nontype template argument of reference type must bind to a function or to a complete object
+    int x = (fr<c.i[2]>(),       // error
+                ^
+
+"Test_name.c", line 95: error: no instance of function template "array::fr" matches the argument list
+    int x = (fr<c.i[2]>(),       // error
+             ^
+"Test_name.c", line 80: note: substituting explicit template arguments "<<expression>>" for function template "array::fr" failed
+    template<int &> void fr() { }
+                         ^
+
+"Test_name.c", line 99: error: a nontype template argument of reference type must bind to a function or to a complete object
+             fr<c.j[2]>(),       // error
+                ^
+
+"Test_name.c", line 99: error: no instance of function template "array::fr" matches the argument list
+             fr<c.j[2]>(),       // error
+             ^
+"Test_name.c", line 80: note: substituting explicit template arguments "<<expression>>" for function template "array::fr" failed
+    template<int &> void fr() { }
+                         ^
+
+"Test_name.c", line 103: error: a nontype template argument of reference type must bind to a function or to a complete object
+             vr<c.i[2]>,         // error
+                ^
+
+"Test_name.c", line 107: error: a nontype template argument of reference type must bind to a function or to a complete object
+             vr<c.j[2]>,         // error
+                ^
+
+"Test_name.c", line 111: error: a nontype template argument of reference type must bind to a function or to a complete object
+             AR<c.i[2]>(),       // error
+                ^
+
+"Test_name.c", line 115: error: a nontype template argument of reference type must bind to a function or to a complete object
+             AR<c.j[2]>(),       // error
+                ^
+
+17 errors detected in the compilation of "Test_name.c".

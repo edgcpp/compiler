@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=2 --c++20 --gn 150100 --target linux_armv7 Test_name.c
+"Test_name.c", line 22: error: identifier "__builtin_neon_oi" is undefined
+      __builtin_neon_oi *p = 1;
+      ^
+
+"Test_name.c", line 22: error: identifier "p" is undefined
+      __builtin_neon_oi *p = 1;
+                         ^
+
+"Test_name.c", line 26: error: identifier "__simd64_float32_t" is undefined
+      __simd64_float32_t *p = 2;
+      ^
+
+"Test_name.c", line 26: error: identifier "p" is undefined
+      __simd64_float32_t *p = 2;
+                          ^
+
+"Test_name.c", line 30: error: identifier "__simd64_poly16_t" is undefined
+      __simd64_poly16_t *p = 1;
+      ^
+
+"Test_name.c", line 30: error: identifier "p" is undefined
+      __simd64_poly16_t *p = 1;
+                         ^
+
+6 errors detected in the compilation of "Test_name.c".

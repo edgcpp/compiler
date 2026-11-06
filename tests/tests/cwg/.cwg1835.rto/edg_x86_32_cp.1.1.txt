@@ -1,6 +1,7 @@
 eccp -DTEST_NUMBER=1 --c++20 -tused -A Test_name.c
-/usr/sbin/ld: /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib/crt1.o: in function `__wrap_main':
-(.text+0xXX): undefined reference to `main'
-/usr/sbin/ld: Test_name.o: in function `_ZN1AILj0EE3barEv':
-Test_name.int.c:(.text+0xXX): undefined reference to `_ZN1Q1C1BILj0EE3fooEv'
-collect2: error: ld returned 1 exit status
+"Test_name.c", line 19: error: expected a ">"
+  return (b.C::B < N) > ::foo(); 
+                    ^
+          detected during instantiation of "void A<N>::bar() [with N=0U]" at line 24
+
+1 error detected in the compilation of "Test_name.c".

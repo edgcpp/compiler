@@ -1,0 +1,374 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 14: error: identifier "_Decimal64" is undefined
+  tests64 (_Decimal64 d)
+           ^
+
+"Test_name.c", line 20: error: identifier "_Decimal64" is undefined
+  testu64 (_Decimal64 d)
+           ^
+
+"Test_name.c", line 26: error: identifier "_Decimal32" is undefined
+  tests32 (_Decimal32 d)
+           ^
+
+"Test_name.c", line 32: error: identifier "_Decimal32" is undefined
+  testu32 (_Decimal32 d)
+           ^
+
+"Test_name.c", line 38: error: identifier "_Decimal128" is undefined
+  tests128 (_Decimal128 d)
+            ^
+
+"Test_name.c", line 44: error: identifier "_Decimal128" is undefined
+  testu128 (_Decimal128 d)
+            ^
+
+"Test_name.c", line 52: error: extra text after expected end of number
+    if (tests64 (0.DD) != 0
+                   ^
+
+"Test_name.c", line 53: error: extra text after expected end of number
+        || tests64 (0.9999999999999999DD) != 0
+                                      ^
+
+"Test_name.c", line 54: error: extra text after expected end of number
+        || tests64 (7.999999999999999DD) != 7
+                                     ^
+
+"Test_name.c", line 55: error: extra text after expected end of number
+        || tests64 (-0.DD) != 0
+                       ^
+
+"Test_name.c", line 56: error: extra text after expected end of number
+        || tests64 (-0.9999999999999999DD) != 0
+                                       ^
+
+"Test_name.c", line 57: error: extra text after expected end of number
+        || tests64 (-42.5DD) != -42
+                         ^
+
+"Test_name.c", line 58: error: extra text after expected end of number
+        || tests64 (-34242319854.45429e+27DD) != -C (0x19c2d4b6fefc3378, 0xa349b93967400000)
+                                          ^
+
+"Test_name.c", line 59: error: extra text after expected end of number
+        || tests64 (-213855087769445.9e+23DD) != -C (0x1016b2fcff8f2cf6, 0xd16cf61904c00000)
+                                          ^
+
+"Test_name.c", line 60: error: extra text after expected end of number
+        || tests64 (1701411834604692.0e+23DD) != C (0x7ffffffffffff947, 0xd26076f482000000)
+                                          ^
+
+"Test_name.c", line 61: error: extra text after expected end of number
+        || tests64 (-1701411834604692.0e+23DD) != -C (0x7ffffffffffff947, 0xd26076f482000000))
+                                           ^
+
+"Test_name.c", line 63: error: extra text after expected end of number
+    if (tests64 (1701411834604693.0e+23DD) != INT128_MAX
+                                       ^
+
+"Test_name.c", line 64: error: extra text after expected end of number
+        || tests64 (9999999999999999e+369DD) != INT128_MAX
+                                         ^
+
+"Test_name.c", line 65: error: extra text after expected end of number
+        || tests64 (-1701411834604693.0e+23DD) != -INT128_MAX - 1
+                                           ^
+
+"Test_name.c", line 66: error: extra text after expected end of number
+        || tests64 (-9999999999999999e+369DD) != -INT128_MAX - 1)
+                                          ^
+
+"Test_name.c", line 68: error: extra text after expected end of number
+    if (testu64 (0.DD) != 0
+                   ^
+
+"Test_name.c", line 69: error: extra text after expected end of number
+        || testu64 (0.9999999999999999DD) != 0
+                                      ^
+
+"Test_name.c", line 70: error: extra text after expected end of number
+        || testu64 (-0.9999999999999999DD) != 0
+                                       ^
+
+"Test_name.c", line 71: error: extra text after expected end of number
+        || testu64 (-0.0DD) != 0
+                        ^
+
+"Test_name.c", line 72: error: extra text after expected end of number
+        || testu64 (-0.5DD) != 0
+                        ^
+
+"Test_name.c", line 73: error: extra text after expected end of number
+        || testu64 (42.99999999999999DD) != 42
+                                     ^
+
+"Test_name.c", line 74: error: extra text after expected end of number
+        || testu64 (42.e+21DD) != UC (0x8e4, 0xd316827686400000)
+                           ^
+
+"Test_name.c", line 75: error: extra text after expected end of number
+        || testu64 (34272319854.45429e+27DD) != C (0x19c89bd43b04cab9, 0x49f2646567400000)
+                                         ^
+
+"Test_name.c", line 76: error: extra text after expected end of number
+        || testu64 (3402823669209384.0e+23DD) != C (0xfffffffffffff28f, 0xa4c0ede904000000))
+                                          ^
+
+"Test_name.c", line 78: error: extra text after expected end of number
+    if (testu64 (-1.DD) != 0
+                    ^
+
+"Test_name.c", line 79: error: extra text after expected end of number
+        || testu64 (-42.5e+15DD) != 0
+                             ^
+
+"Test_name.c", line 80: error: extra text after expected end of number
+        || testu64 (-9999999999999999e+369DD) != 0
+                                          ^
+
+"Test_name.c", line 81: error: extra text after expected end of number
+        || testu64 (3402823669209385.0e+23DD) != UINT128_MAX
+                                          ^
+
+"Test_name.c", line 82: error: extra text after expected end of number
+        || testu64 (9999999999999999e+369DD) != UINT128_MAX)
+                                         ^
+
+"Test_name.c", line 85: error: extra text after expected end of number
+    if (tests32 (0.DF) != 0
+                   ^
+
+"Test_name.c", line 86: error: extra text after expected end of number
+        || tests32 (0.9999999DF) != 0
+                             ^
+
+"Test_name.c", line 87: error: extra text after expected end of number
+        || tests32 (7.999999DF) != 7
+                            ^
+
+"Test_name.c", line 88: error: extra text after expected end of number
+        || tests32 (-0.000DF) != 0
+                          ^
+
+"Test_name.c", line 89: error: extra text after expected end of number
+        || tests32 (-0.9999999DF) != 0
+                              ^
+
+"Test_name.c", line 90: error: extra text after expected end of number
+        || tests32 (-1.DF) != -1
+                       ^
+
+"Test_name.c", line 91: error: extra text after expected end of number
+        || tests32 (-42.5DF) != -42
+                         ^
+
+"Test_name.c", line 92: error: extra text after expected end of number
+        || tests32 (-3424.231e+27DF) != -C (0x2b38497f00, 0x9c4e190b47000000)
+                                 ^
+
+"Test_name.c", line 93: error: extra text after expected end of number
+        || tests32 (-213855.9e+32DF) != -C (0x1016b6fe2d67e732, 0x717a483980000000)
+                                 ^
+
+"Test_name.c", line 94: error: extra text after expected end of number
+        || tests32 (1701411.0e+32DF) != C (0x7ffffbe294adefda, 0xd863b4a300000000)
+                                 ^
+
+"Test_name.c", line 95: error: extra text after expected end of number
+        || tests32 (-1701411.0e+32DF) != -C (0x7ffffbe294adefda, 0xd863b4a300000000))
+                                  ^
+
+"Test_name.c", line 97: error: extra text after expected end of number
+    if (tests32 (1701412.0e+32DF) != INT128_MAX
+                              ^
+
+"Test_name.c", line 98: error: extra text after expected end of number
+        || tests32 (9999999e+90DF) != INT128_MAX
+                               ^
+
+"Test_name.c", line 99: error: extra text after expected end of number
+        || tests32 (-1701412.0e+32DF) != -INT128_MAX - 1
+                                  ^
+
+"Test_name.c", line 100: error: extra text after expected end of number
+        || tests32 (-9999999e+90DF) != -INT128_MAX - 1)
+                                ^
+
+"Test_name.c", line 102: error: extra text after expected end of number
+    if (testu32 (0.DF) != 0
+                   ^
+
+"Test_name.c", line 103: error: extra text after expected end of number
+        || testu32 (0.9999999DF) != 0
+                             ^
+
+"Test_name.c", line 104: error: extra text after expected end of number
+        || testu32 (-0.9999999DF) != 0
+                              ^
+
+"Test_name.c", line 105: error: extra text after expected end of number
+        || testu32 (-0.5DF) != 0
+                        ^
+
+"Test_name.c", line 106: error: extra text after expected end of number
+        || testu32 (-0.0000DF) != 0
+                           ^
+
+"Test_name.c", line 107: error: extra text after expected end of number
+        || testu32 (-0.99999DF) != 0
+                            ^
+
+"Test_name.c", line 108: error: extra text after expected end of number
+        || testu32 (42.99999DF) != 42
+                            ^
+
+"Test_name.c", line 109: error: extra text after expected end of number
+        || testu32 (42.e+21DF) != UC (0x8e4, 0xd316827686400000)
+                           ^
+
+"Test_name.c", line 110: error: extra text after expected end of number
+        || testu32 (3402.823e+35DF) != UC (0xfffffcb356c92111, 0x367458c700000000))
+                                ^
+
+"Test_name.c", line 112: error: extra text after expected end of number
+    if (testu32 (-1.DF) != 0
+                    ^
+
+"Test_name.c", line 113: error: extra text after expected end of number
+        || testu32 (-42.5e+15DF) != 0
+                             ^
+
+"Test_name.c", line 114: error: extra text after expected end of number
+        || testu32 (-9999999e+90DF) != 0
+                                ^
+
+"Test_name.c", line 115: error: extra text after expected end of number
+        || testu32 (3402.824e+35DF) != UINT128_MAX
+                                ^
+
+"Test_name.c", line 116: error: extra text after expected end of number
+        || testu32 (9999999e+90DF) != UINT128_MAX)
+                               ^
+
+"Test_name.c", line 119: error: extra text after expected end of number
+    if (tests128 (0.DL) != 0
+                    ^
+
+"Test_name.c", line 120: error: extra text after expected end of number
+        || tests128 (0.9999999999999999999999999999999999DL) != 0
+                                                         ^
+
+"Test_name.c", line 121: error: extra text after expected end of number
+        || tests128 (7.999999999999999999999999999999999DL) != 7
+                                                        ^
+
+"Test_name.c", line 122: error: extra text after expected end of number
+        || tests128 (-0.DL) != 0
+                        ^
+
+"Test_name.c", line 123: error: extra text after expected end of number
+        || tests128 (-0.9999999999999999999999999999999999DL) != 0
+                                                          ^
+
+"Test_name.c", line 124: error: extra text after expected end of number
+        || tests128 (-1.DL) != -1
+                        ^
+
+"Test_name.c", line 125: error: extra text after expected end of number
+        || tests128 (-42.5DL) != -42
+                          ^
+
+"Test_name.c", line 126: error: extra text after expected end of number
+        || tests128 (-34242319854.45429439857871298745432e+27DL) != -C (0x19c2d4b6fefc3467, 0x15d47c047b56ad80)
+                                                             ^
+
+"Test_name.c", line 127: error: extra text after expected end of number
+        || tests128 (-213855087769445.9e+23DL) != -C (0x1016b2fcff8f2cf6, 0xd16cf61904c00000)
+                                           ^
+
+"Test_name.c", line 128: error: extra text after expected end of number
+        || tests128 (1701411834604692317316873037158841.0e+5DL) != C (0x7fffffffffffffff, 0xffffffffffffe9a0)
+                                                            ^
+
+"Test_name.c", line 129: error: extra text after expected end of number
+        || tests128 (-1701411834604692317316873037158841.0e+5DL) != -C (0x7fffffffffffffff, 0xffffffffffffe9a0))
+                                                             ^
+
+"Test_name.c", line 131: error: extra text after expected end of number
+    if (tests128 (1701411834604692317316873037158842.0e+5DL) != INT128_MAX
+                                                         ^
+
+"Test_name.c", line 132: error: extra text after expected end of number
+        || tests128 (9999999999999999999999999999999999e+6111DL) != INT128_MAX
+                                                             ^
+
+"Test_name.c", line 133: error: extra text after expected end of number
+        || tests128 (-1701411834604692317316873037158842.0e+5DL) != -INT128_MAX - 1
+                                                             ^
+
+"Test_name.c", line 134: error: extra text after expected end of number
+        || tests128 (-9999999999999999999999999999999999e+6111DL) != -INT128_MAX - 1)
+                                                              ^
+
+"Test_name.c", line 136: error: extra text after expected end of number
+    if (testu128 (0.DL) != 0
+                    ^
+
+"Test_name.c", line 137: error: extra text after expected end of number
+        || testu128 (0.9999999999999999999999999999999999DL) != 0
+                                                         ^
+
+"Test_name.c", line 138: error: extra text after expected end of number
+        || testu128 (-0.9999999999999999999999999999999999DL) != 0
+                                                          ^
+
+"Test_name.c", line 139: error: extra text after expected end of number
+        || testu128 (-0.DL) != 0
+                        ^
+
+"Test_name.c", line 140: error: extra text after expected end of number
+        || testu128 (-0.9999999999999999999999DL) != 0
+                                              ^
+
+"Test_name.c", line 141: error: extra text after expected end of number
+        || testu128 (-0.5DL) != 0
+                         ^
+
+"Test_name.c", line 142: error: extra text after expected end of number
+        || testu128 (42.99999999999999999999999999999999DL) != 42
+                                                        ^
+
+"Test_name.c", line 143: error: extra text after expected end of number
+        || testu128 (42.e+21DL) != UC (0x8e4, 0xd316827686400000)
+                            ^
+
+"Test_name.c", line 144: error: extra text after expected end of number
+        || testu128 (34242319854.45429439857871298745432e+21DL) != UC (0x1b032e71cc9, 0x24b5cd6d86a9473e)
+                                                            ^
+
+"Test_name.c", line 145: error: extra text after expected end of number
+        || testu128 (3402823669209384634633746074317.682e+8DL) != UC (0xffffffffffffffff, 0xffffffffffffd340))
+                                                           ^
+
+"Test_name.c", line 147: error: extra text after expected end of number
+    if (testu128 (-1.DL) != 0
+                     ^
+
+"Test_name.c", line 148: error: extra text after expected end of number
+        || testu128 (-42.5e+15DL) != 0
+                              ^
+
+"Test_name.c", line 149: error: extra text after expected end of number
+        || testu128 (-9999999999999999999999999999999999e+6111DL) != 0
+                                                              ^
+
+"Test_name.c", line 150: error: extra text after expected end of number
+        || testu128 (3402823669209384634633746074317.683e+8DL) != UINT128_MAX
+                                                           ^
+
+"Test_name.c", line 151: error: extra text after expected end of number
+        || testu128 (9999999999999999999999999999999999e+6111DL) != UINT128_MAX)
+                                                             ^
+
+93 errors detected in the compilation of "Test_name.c".

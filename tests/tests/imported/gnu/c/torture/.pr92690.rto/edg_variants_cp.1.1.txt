@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/pr92690.c", line 27: warning: function "feenableexcept" declared implicitly
+    feenableexcept (
+    ^
+
+/usr/sbin/ld: Test_name.o: undefined reference to symbol 'feenableexcept@@GLIBC_2.2.5'
+/usr/sbin/ld: /usr/lib64/libm.so.6: error adding symbols: DSO missing from command line
+collect2: error: ld returned 1 exit status

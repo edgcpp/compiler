@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+    typedef T X __attribute__ ((vector_size (8))); // { dg-error "not expanded|T" }
+                                ^
+
+"Test_name.c", line 8: error: parameter pack "T" was referenced but not expanded
+    typedef T X __attribute__ ((vector_size (8))); // { dg-error "not expanded|T" }
+            ^
+
+1 error detected in the compilation of "Test_name.c".

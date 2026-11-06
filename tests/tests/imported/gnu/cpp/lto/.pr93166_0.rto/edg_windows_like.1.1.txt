@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 134: warning: class "KXMLGUIBuilder" defines no constructor to initialize the following:
+            const member "KXMLGUIBuilder::d"
+  class KXMLGUIBuilder {
+        ^
+
+"Test_name.c", line 143: warning: class "KMainWindow" defines no constructor to initialize the following:
+            const member "KMainWindow::k_ptr"
+  class KMainWindow : public QMainWindow {
+        ^
+
+"Test_name.c", line 167: warning: unknown attribute "visibility"
+  int __attribute__((visibility("default"))) fn1() { new KMenuEdit; return 0; }
+                     ^
+

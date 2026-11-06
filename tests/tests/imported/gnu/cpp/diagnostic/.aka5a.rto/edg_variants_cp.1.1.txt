@@ -1,0 +1,246 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./diagnostic/aka5a.C", line 69: error: no suitable conversion function from "s" to "user_enum" (aka "__internal_enum") exists
+    ue1 = s1;
+          ^
+
+"./diagnostic/aka5a.C", line 70: error: no suitable conversion function from "s" to "user_enum_copy" (aka "__internal_enum") exists
+    ue2 = s1;
+          ^
+
+"./diagnostic/aka5a.C", line 71: error: a value of type "s *" cannot be assigned to an entity of type "user_enum_ptr" (aka "__internal_enum *")
+    ue_ptr1 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 72: error: a value of type "s *" cannot be assigned to an entity of type "user_enum *" (aka "__internal_enum *")
+    ue_ptr2 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 73: error: a value of type "s *" cannot be assigned to an entity of type "const user_enum *"
+    const_ue_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 74: error: a value of type "s *" cannot be assigned to an entity of type "const user_enum_copy *"
+    const_ue_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 75: error: a value of type "s *" cannot be assigned to an entity of type "volatile user_enum *"
+    volatile_ue_ptr1 = &s1;
+                     ^
+
+"./diagnostic/aka5a.C", line 76: error: a value of type "s *" cannot be assigned to an entity of type "volatile user_enum_copy *"
+    volatile_ue_ptr2 = &s1;
+                     ^
+
+"./diagnostic/aka5a.C", line 77: error: a value of type "s *" cannot be assigned to an entity of type "user_enum (*)[10]" (aka "__internal_enum (*)[10]")
+    ue_array_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 78: error: a value of type "s *" cannot be assigned to an entity of type "user_enum_copy (*)[10]" (aka "__internal_enum (*)[10]")
+    ue_array_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 79: error: a value of type "s *" cannot be assigned to an entity of type "user_enum (*)()" (aka "__internal_enum (*)()")
+    ue_fn_ptr1 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 80: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_enum)" (aka "void (*)(__internal_enum)")
+    ue_fn_ptr2 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 81: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_enum, ...)" (aka "void (*)(__internal_enum, ...)")
+    ue_fn_ptr3 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 82: error: a value of type "s *" cannot be assigned to an entity of type "user_enum_copy (*)()" (aka "__internal_enum (*)()")
+    ue_fn_ptr4 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 83: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_enum_copy)" (aka "void (*)(__internal_enum)")
+    ue_fn_ptr5 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 84: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_enum_copy, ...)" (aka "void (*)(__internal_enum, ...)")
+    ue_fn_ptr6 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 85: error: a value of type "s *" cannot be assigned to an entity of type "user_enum (*)()" (aka "__internal_enum (*)()")
+    unsafe_ue_fn_ptr1 = &s1;
+                      ^
+
+"./diagnostic/aka5a.C", line 86: error: a value of type "s *" cannot be assigned to an entity of type "user_enum_copy (*)()" (aka "__internal_enum (*)()")
+    unsafe_ue_fn_ptr2 = &s1;
+                      ^
+
+"./diagnostic/aka5a.C", line 88: error: no operator "=" matches these operands
+            operand types are: user_struct = s
+    us1 = s1;
+        ^
+"./diagnostic/aka5.h", line 8: note: function "__internal_struct::operator=(__internal_struct &&)" does not match because argument #1 does not match parameter
+  typedef struct __internal_struct { int i; } user_struct;
+                 ^
+"./diagnostic/aka5.h", line 8: note: function "__internal_struct::operator=(const __internal_struct &)" does not match because argument #1 does not match parameter
+  typedef struct __internal_struct { int i; } user_struct;
+                 ^
+
+"./diagnostic/aka5a.C", line 89: error: no operator "=" matches these operands
+            operand types are: user_struct_copy = s
+    us2 = s1;
+        ^
+"./diagnostic/aka5.h", line 8: note: function "__internal_struct::operator=(__internal_struct &&)" does not match because argument #1 does not match parameter
+  typedef struct __internal_struct { int i; } user_struct;
+                 ^
+"./diagnostic/aka5.h", line 8: note: function "__internal_struct::operator=(const __internal_struct &)" does not match because argument #1 does not match parameter
+  typedef struct __internal_struct { int i; } user_struct;
+                 ^
+
+"./diagnostic/aka5a.C", line 90: error: a value of type "s *" cannot be assigned to an entity of type "user_struct_ptr" (aka "__internal_struct *")
+    us_ptr1 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 91: error: a value of type "s *" cannot be assigned to an entity of type "user_struct *" (aka "__internal_struct *")
+    us_ptr2 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 92: error: a value of type "s *" cannot be assigned to an entity of type "const user_struct *"
+    const_us_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 93: error: a value of type "s *" cannot be assigned to an entity of type "const user_struct_copy *"
+    const_us_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 95: error: no operator "=" matches these operands
+            operand types are: user_union = s
+    uu1 = s1;
+        ^
+"./diagnostic/aka5.h", line 12: note: function "__internal_union::operator=(__internal_union &&)" does not match because argument #1 does not match parameter
+  typedef union __internal_union { int i; } user_union;
+                ^
+"./diagnostic/aka5.h", line 12: note: function "__internal_union::operator=(const __internal_union &)" does not match because argument #1 does not match parameter
+  typedef union __internal_union { int i; } user_union;
+                ^
+
+"./diagnostic/aka5a.C", line 96: error: no operator "=" matches these operands
+            operand types are: user_union_copy = s
+    uu2 = s1;
+        ^
+"./diagnostic/aka5.h", line 12: note: function "__internal_union::operator=(__internal_union &&)" does not match because argument #1 does not match parameter
+  typedef union __internal_union { int i; } user_union;
+                ^
+"./diagnostic/aka5.h", line 12: note: function "__internal_union::operator=(const __internal_union &)" does not match because argument #1 does not match parameter
+  typedef union __internal_union { int i; } user_union;
+                ^
+
+"./diagnostic/aka5a.C", line 97: error: a value of type "s *" cannot be assigned to an entity of type "user_union_ptr" (aka "__internal_union *")
+    uu_ptr1 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 98: error: a value of type "s *" cannot be assigned to an entity of type "user_union *" (aka "__internal_union *")
+    uu_ptr2 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 99: error: a value of type "s *" cannot be assigned to an entity of type "const user_union *"
+    const_uu_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 100: error: a value of type "s *" cannot be assigned to an entity of type "const user_union_copy *"
+    const_uu_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 102: error: no suitable conversion function from "s" to "user_vector" (aka "__attribute((vector_size(16))) unsigned int") exists
+    uv1 = s1;
+          ^
+
+"./diagnostic/aka5a.C", line 103: error: no suitable conversion function from "s" to "user_vector_copy" (aka "__attribute((vector_size(16))) unsigned int") exists
+    uv2 = s1;
+          ^
+
+"./diagnostic/aka5a.C", line 104: error: a value of type "s *" cannot be assigned to an entity of type "user_vector_ptr" (aka "__attribute((vector_size(16))) unsigned int *")
+    uv_ptr1 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 105: error: a value of type "s *" cannot be assigned to an entity of type "user_vector *" (aka "__attribute((vector_size(16))) unsigned int *")
+    uv_ptr2 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 106: error: a value of type "s *" cannot be assigned to an entity of type "const user_vector *"
+    const_uv_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 107: error: a value of type "s *" cannot be assigned to an entity of type "const user_vector_copy *"
+    const_uv_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 109: error: no suitable conversion function from "s" to "user_int" (aka "int") exists
+    ui1 = s1;
+          ^
+
+"./diagnostic/aka5a.C", line 110: error: no suitable conversion function from "s" to "user_int_copy" (aka "int") exists
+    ui2 = s1;
+          ^
+
+"./diagnostic/aka5a.C", line 111: error: a value of type "s *" cannot be assigned to an entity of type "user_int_ptr" (aka "int *")
+    ui_ptr1 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 112: error: a value of type "s *" cannot be assigned to an entity of type "user_int *" (aka "int *")
+    ui_ptr2 = &s1;
+            ^
+
+"./diagnostic/aka5a.C", line 113: error: a value of type "s *" cannot be assigned to an entity of type "const user_int *"
+    const_ui_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 114: error: a value of type "s *" cannot be assigned to an entity of type "const user_int_copy *"
+    const_ui_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 115: error: a value of type "s *" cannot be assigned to an entity of type "volatile user_int *"
+    volatile_ui_ptr1 = &s1;
+                     ^
+
+"./diagnostic/aka5a.C", line 116: error: a value of type "s *" cannot be assigned to an entity of type "volatile user_int_copy *"
+    volatile_ui_ptr2 = &s1;
+                     ^
+
+"./diagnostic/aka5a.C", line 117: error: a value of type "s *" cannot be assigned to an entity of type "user_int (*)[10]" (aka "int (*)[10]")
+    ui_array_ptr1 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 118: error: a value of type "s *" cannot be assigned to an entity of type "user_int_copy (*)[10]" (aka "int (*)[10]")
+    ui_array_ptr2 = &s1;
+                  ^
+
+"./diagnostic/aka5a.C", line 119: error: a value of type "s *" cannot be assigned to an entity of type "user_int (*)()" (aka "int (*)()")
+    ui_fn_ptr1 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 120: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_int)" (aka "void (*)(int)")
+    ui_fn_ptr2 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 121: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_int, ...)" (aka "void (*)(int, ...)")
+    ui_fn_ptr3 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 122: error: a value of type "s *" cannot be assigned to an entity of type "user_int_copy (*)()" (aka "int (*)()")
+    ui_fn_ptr4 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 123: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_int_copy)" (aka "void (*)(int)")
+    ui_fn_ptr5 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 124: error: a value of type "s *" cannot be assigned to an entity of type "void (*)(user_int_copy, ...)" (aka "void (*)(int, ...)")
+    ui_fn_ptr6 = &s1;
+               ^
+
+"./diagnostic/aka5a.C", line 125: error: a value of type "s *" cannot be assigned to an entity of type "user_int (*)()" (aka "int (*)()")
+    unsafe_ui_fn_ptr1 = &s1;
+                      ^
+
+"./diagnostic/aka5a.C", line 126: error: a value of type "s *" cannot be assigned to an entity of type "user_int_copy (*)()" (aka "int (*)()")
+    unsafe_ui_fn_ptr2 = &s1;
+                      ^
+
+54 errors detected in the compilation of "Test_name.c".

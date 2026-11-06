@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: error: _Complex can only be used with floating-point types
+  typedef __complex__ int C;
+  ^
+
+"Test_name.c", line 19: warning: excess initializers are ignored
+    V c1 = { 5, -10 };
+                ^
+
+"Test_name.c", line 20: warning: excess initializers are ignored
+    V c2 = { 32, 13 };
+                 ^
+
+"Test_name.c", line 32: warning: excess initializers are ignored
+    V c1 = { 5, -10 };
+                ^
+
+"Test_name.c", line 33: warning: excess initializers are ignored
+    V c2 = { 32, 13 };
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

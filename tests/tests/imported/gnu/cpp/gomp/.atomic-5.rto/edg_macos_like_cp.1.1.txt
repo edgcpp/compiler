@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 18: error: expression must be a modifiable lvalue
+      ++y;		/* { dg-error "read-only variable" } */
+        ^
+
+"Test_name.c", line 20: error: expression must be a modifiable lvalue
+      y--;		/* { dg-error "read-only variable" } */
+      ^
+
+"Test_name.c", line 22: error: expression must be a modifiable lvalue
+      y += 1;
+      ^
+
+"Test_name.c", line 26: error: expression must be a modifiable lvalue
+      bar() += 1;		/* { dg-error "lvalue required" } */
+      ^
+
+"Test_name.c", line 35: error: identifier "undef" is undefined
+    undef;		/* { dg-error "" } */
+    ^
+
+5 errors detected in the compilation of "Test_name.c".

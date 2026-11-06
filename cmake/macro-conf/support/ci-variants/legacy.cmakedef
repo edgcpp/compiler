@@ -1,0 +1,70 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+# CI-only (linux-gcc-legacy): the Cfront ABI with cfront/Sun/early-GNU
+# compatibility, a host without mmap, feature-off states, and SoftFloat host
+# floating point, for code coverage.
+# --- non-IA-64 (Cfront) ABI
+# Companions required for IA64_ABI=0 on the linux macro conf:
+IA64_ABI=0
+TIE_DEFAULT_GNU_ABI_VERSION_TO_GNU_VERSION=0
+HANDLE_VIRTUAL_BASES_IN_COMPLETE_CTOR_DTORS=0
+# The linux_i686 target configuration only has the IA-64 ABI macros; add the
+# non-IA-64 ones (values from src/defines_linux.h).
+TARG_ALIGNOF_PTR_TO_VIRTUAL_BASE_CLASS_linux_i686=4
+TARG_SIZEOF_PTR_TO_VIRTUAL_BASE_CLASS_linux_i686=4
+TARG_RUNTIME_ELEM_COUNT_INT_KIND_linux_i686=((an_integer_kind)ik_int)
+TARG_DELTA_INT_KIND_linux_i686=((an_integer_kind)ik_short)
+TARG_FORCE_ONE_BIT_BIT_FIELD_TO_BE_UNSIGNED_linux_i686=1
+TARG_ZERO_WIDTH_BIT_FIELD_ALIGNMENT_linux_i686=4
+# cfront 2.1 object-code compatibility, using EDG's own "cfront-like + latest features"
+# recipe from src/defines.h:3527-3566 (otherwise RTTI/array new/covariant returns are off,
+# and DEFAULT_DISTINCT_TEMPLATE_SIGNATURES=0 trips targ_def.h:4351 with EXPORT_ENABLING_POSSIBLE=1).
+CFRONT_2_1_OBJECT_CODE_COMPATIBILITY=1
+CFRONT_GLOBAL_VS_MEMBER_NAME_LOOKUP_BUG=1
+ABI_CHANGES_FOR_RTTI=1
+ABI_CHANGES_FOR_ARRAY_NEW_AND_DELETE=1
+ABI_CHANGES_FOR_PLACEMENT_DELETE=1
+ABI_CHANGES_FOR_COVARIANT_VIRTUAL_FUNC_RETURN=1
+ABI_CHANGES_FOR_CONSTRUCTION_VTBLS=1
+DEFAULT_REMOVE_QUALIFIERS_FROM_PARAM_TYPES=1
+DEFAULT_C_AND_CPP_FUNCTION_TYPES_ARE_DISTINCT=1
+DEFAULT_DISTINCT_TEMPLATE_SIGNATURES=1
+TARG_OPTIMIZE_EMPTY_BASE_CLASS_LAYOUT=1
+DEFAULT_COMPRESS_MANGLED_NAMES=1
+# Other cluster options at their non-baseline values:
+LINKER_CAN_DISCARD_DUPLICATE_DEFINITIONS=0
+NEW_CAN_BE_FOLDED_INTO_CTOR=1
+ASSIGNMENT_TO_THIS_ALLOWED=1
+ASSUME_THIS_CANNOT_BE_NULL_IN_CONDITIONAL_OPERATORS=1
+DEFAULT_SUN_COMPATIBILITY=1
+# SUN_TARGET_VERSION_NUMBER only matters with Sun extensions in the C++-generating back end
+SUN_EXTENSIONS_ALLOWED=1
+SUN_TARGET_VERSION_NUMBER=0x530
+# --- gnu_version_compat flips (TIE=0 already present above as an IA64_ABI=0 companion)
+MIN_GNU_VERSION=29500
+ACCEPT_GNU_CARRIAGE_RETURN_LINE_TERMINATOR=1
+DEFAULT_EMULATE_GNU_VALUE_INITIALIZATION_BUGS=1
+BUILTIN_VA_LIST_OVERRIDE_TYPE_NAME="__edg_va_list"
+GUARD_MACRO_FOR_VA_LIST="_VA_LIST"
+# --- more old-group knobs
+GNU_TARGET_VERSION_NUMBER=130300
+DEFAULT_EMULATE_MSVC_VALUE_INITIALIZATION_BUGS=1
+STDC_ZERO_IN_NONSTRICT_MODE=1
+INSTANTIATE_EXTERN_INLINE=BACK_END_IS_C_GEN_BE
+LOCALE_TO_SET_WHEN_MULTIBYTE_CHARS_ENABLED="C"
+# --- no-mmap host (Cygwin-style) with preallocated PCH memory
+USE_MMAP_FOR_MEMORY_REGIONS=0
+DEFAULT_PREALLOCATED_PCH_MEM_SIZE=8388608
+# --- feature-off states (they only remove code)
+UPC_EXTENSIONS_ALLOWED=0
+EXTRA_SOURCE_POSITIONS_IN_IL=0
+SEQUENCING_DIAGNOSTICS_ENABLED=0
+DUMP_LOWERED_EH_CONSTRUCTS_IN_C_GEN_BE=1
+# --- SoftFloat host FP with an IEEE binary128 long double (x86 stand-in for aarch64/riscv64 hosts)
+USE_SOFTFLOAT=1
+USE_QUADMATH_LIBRARY=0
+FP_LONG_DOUBLE_IS_80BIT_EXTENDED=0
+FP_LONG_DOUBLE_IS_BINARY128=1

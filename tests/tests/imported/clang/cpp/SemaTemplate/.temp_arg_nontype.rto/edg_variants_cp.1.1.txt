@@ -1,0 +1,290 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 10: error: type name is not allowed
+  A<int> *a2; // expected-error{{template argument for non-type template parameter must be an expression}}
+    ^
+
+"Test_name.c", line 15: error: argument list for class template "A" is missing
+  A<A> *a4; // expected-error{{must be an expression}}
+    ^
+
+"Test_name.c", line 18: error: type name is not allowed
+  A<E> *a5; // expected-error{{template argument for non-type template parameter must be an expression}}
+    ^
+
+"Test_name.c", line 21: error: argument of type "int" is incompatible with template parameter of type "E"
+  A1<17> *a7; // expected-error{{non-type template argument of type 'int' cannot be converted to a value of type 'E'}}
+     ^
+
+"Test_name.c", line 29: error: function call is not allowed in a constant expression
+  A<f(17)> *a10; // expected-error{{non-type template argument of type 'int' is not an integral constant expression}}
+    ^
+
+"Test_name.c", line 37: error: expression must have a constant value
+  A<X(17, 42)> *a11; // expected-error{{non-type template argument of type 'X' must have an integral or enumeration type}}
+    ^
+
+"Test_name.c", line 52: error: argument of type "float (*)(float)" is incompatible with template parameter of type "int (*)(int)"
+  A3<h2> *a14_6;  // expected-error{{non-type template argument of type 'float (float)' cannot be converted to a value of type 'int (*)(int)'}}
+     ^
+
+"Test_name.c", line 53: error: no instance of overloaded function "g" matches the required type
+  A3<g> *a14_7; // expected-error{{address of overloaded function 'g' does not match required type 'int (int)'}}
+     ^
+
+"Test_name.c", line 62: error: this operator is not allowed in a template argument expression
+  A4<*X_volatile_ptr> *a15_2; // expected-error{{non-type template argument does not refer to any declaration}}
+     ^
+
+"Test_name.c", line 63: error: initialization requiring a temporary or conversion is not allowed
+  A4<y> *15_3; //  expected-error{{non-type template parameter of reference type 'const X &' cannot bind to template argument of type 'struct Y'}} \
+     ^
+
+"Test_name.c", line 63: error: extra text after expected end of number
+  A4<y> *15_3; //  expected-error{{non-type template parameter of reference type 'const X &' cannot bind to template argument of type 'struct Y'}} \
+           ^
+
+"Test_name.c", line 63: error: expected an identifier
+  A4<y> *15_3; //  expected-error{{non-type template parameter of reference type 'const X &' cannot bind to template argument of type 'struct Y'}} \
+         ^
+
+"Test_name.c", line 69: error: a reference of type "int (&)(int)" (not const-qualified) cannot be initialized with a value of type "float (float)"
+  A5<h2> *a16_6;  // expected-error{{non-type template parameter of reference type 'int (&)(int)' cannot bind to template argument of type 'float (float)'}}
+     ^
+
+"Test_name.c", line 70: error: a reference of type "int (&)(int)" (not const-qualified) cannot be initialized with a value of type "<unknown-type>"
+  A5<g> *a14_7; // expected-error{{address of overloaded function 'g' does not match required type 'int (int)'}}
+     ^
+
+"Test_name.c", line 70: error: variable "a14_7" has already been defined (previous definition at line 53)
+  A5<g> *a14_7; // expected-error{{address of overloaded function 'g' does not match required type 'int (int)'}}
+         ^
+
+"Test_name.c", line 87: error: argument of type "double (Z::*)(double)" is incompatible with template parameter of type "int (Z::*)(int)"
+  A6<&Z::baz> *a17_3; // expected-error-re{{non-type template argument of type 'double (Z::*)(double){{( __attribute__\(\(thiscall\)\))?}}' cannot be converted to a value of type 'int (Z::*)(int){{( __attribute__\(\(thiscall\)\))?}}'}}
+     ^
+
+"Test_name.c", line 94: error: argument of type "float Z::*" is incompatible with template parameter of type "int Z::*"
+  A7<&Z::float_member> *a18_3; // expected-error{{non-type template argument of type 'float Z::*' cannot be converted to a value of type 'int Z::*'}}
+     ^
+
+"Test_name.c", line 102: warning: integer conversion resulted in truncation
+  Overflow<256> *overflow3; // expected-warning{{non-type template argument value '256' truncated to '0' for template parameter of type 'unsigned char'}}
+           ^
+
+"Test_name.c", line 107: warning: integer conversion resulted in a change of sign
+  Signedness<-10> *signedness2; // expected-warning{{non-type template argument with value '-10' converted to '4294967286' for unsigned template parameter of type 'unsigned int'}}
+             ^
+
+"Test_name.c", line 113: warning: integer conversion resulted in truncation
+  SignedOverflow<-129> *signedoverflow4; // expected-warning{{non-type template argument value '-129' truncated to '127' for template parameter of type 'signed char'}}
+                 ^
+
+"Test_name.c", line 115: warning: integer conversion resulted in a change of sign
+  SignedOverflow<128> *signedoverflow6; // expected-warning{{non-type template argument value '128' truncated to '-128' for template parameter of type 'signed char'}}
+                 ^
+
+"Test_name.c", line 116: warning: integer conversion resulted in a change of sign
+  SignedOverflow<(unsigned char)128> *signedoverflow7; // expected-warning{{non-type template argument value '128' truncated to '-128' for template parameter of type 'signed char'}}
+                 ^
+
+"Test_name.c", line 164: warning: variable "x01" was declared but never referenced
+    X0<X1::pfunc> x01;
+                  ^
+
+"Test_name.c", line 182: warning: integer conversion resulted in truncation
+      f<512>(arr512); // expected-error{{no matching function for call}}
+        ^
+
+"Test_name.c", line 182: error: no instance of function template "PR6723::f" matches the argument list
+            argument types are: (int [512])
+      f<512>(arr512); // expected-error{{no matching function for call}}
+      ^
+"Test_name.c", line 178: note: substituting explicit template arguments "<512>" for function template "PR6723::f" failed
+    template<unsigned char C> void f(int (&a)[C]); // expected-note 4{{candidate template ignored: substitution failure [with C = '\x00']}}
+                                   ^
+
+"Test_name.c", line 185: error: no instance of function template "PR6723::f" matches the argument list
+            argument types are: (int [0])
+      f(arr0); // expected-error{{no matching function for call}}
+      ^
+"Test_name.c", line 178: note: candidate function template "PR6723::f" failed deduction
+    template<unsigned char C> void f(int (&a)[C]); // expected-note 4{{candidate template ignored: substitution failure [with C = '\x00']}}
+                                   ^
+
+"Test_name.c", line 186: error: no instance of function template "PR6723::f" matches the argument list
+            argument types are: (int [0])
+      f<0>(arr0); // expected-error{{no matching function for call}}
+      ^
+"Test_name.c", line 178: note: substituting explicit template arguments "<0>" for function template "PR6723::f" failed
+    template<unsigned char C> void f(int (&a)[C]); // expected-note 4{{candidate template ignored: substitution failure [with C = '\x00']}}
+                                   ^
+
+"Test_name.c", line 208: warning: integer conversion resulted in truncation
+    template <typename ,int, int = 9223372036854775807L > // expected-warning {{non-type template argument value '9223372036854775807' truncated to '-1' for template parameter of type 'int'}} \
+                                   ^
+
+"Test_name.c", line 265: error: class "PR9227::enable_if_bool<false>" has no member "type"
+    void test_bool() { enable_if_bool<false>::type i; } // expected-error{{enable_if_bool<false>'; did you mean 'enable_if_bool<true>::type'?}}
+                                              ^
+
+"Test_name.c", line 269: error: class "PR9227::enable_if_char<'\000'>" has no member "type"
+    void test_char_0() { enable_if_char<0>::type i; } // expected-error{{enable_if_char<'\x00'>'; did you mean 'enable_if_char<'a'>::type'?}}
+                                            ^
+
+"Test_name.c", line 270: error: class "PR9227::enable_if_char<'b'>" has no member "type"
+    void test_char_b() { enable_if_char<'b'>::type i; } // expected-error{{enable_if_char<'b'>'; did you mean 'enable_if_char<'a'>::type'?}}
+                                              ^
+
+"Test_name.c", line 271: error: class "PR9227::enable_if_char<'\002'>" has no member "type"
+    void test_char_possibly_negative() { enable_if_char<'\x02'>::type i; } // expected-error{{enable_if_char<'\x02'>'; did you mean 'enable_if_char<'a'>::type'?}}
+                                                                 ^
+
+"Test_name.c", line 272: error: class "PR9227::enable_if_char<'\''>" has no member "type"
+    void test_char_single_quote() { enable_if_char<'\''>::type i; } // expected-error{{enable_if_char<'\''>'; did you mean 'enable_if_char<'a'>::type'?}}
+                                                          ^
+
+"Test_name.c", line 273: error: class "PR9227::enable_if_char<'\\'>" has no member "type"
+    void test_char_backslash() { enable_if_char<'\\'>::type i; } // expected-error{{enable_if_char<'\\'>'; did you mean 'enable_if_char<'a'>::type'?}}
+                                                       ^
+
+"Test_name.c", line 277: error: class "PR9227::enable_if_int<2>" has no member "type"
+    void test_int() { enable_if_int<2>::type i; } // expected-error{{enable_if_int<2>'; did you mean 'enable_if_int<1>::type'?}}
+                                        ^
+
+"Test_name.c", line 281: error: class "PR9227::enable_if_unsigned_int<2U>" has no member "type"
+    void test_unsigned_int() { enable_if_unsigned_int<2>::type i; } // expected-error{{enable_if_unsigned_int<2>'; did you mean 'enable_if_unsigned_int<1>::type'?}}
+                                                          ^
+
+"Test_name.c", line 285: error: class "PR9227::enable_if_unsigned_long_long<2ULL>" has no member "type"
+    void test_unsigned_long_long() { enable_if_unsigned_long_long<2>::type i; } // expected-error{{enable_if_unsigned_long_long<2>'; did you mean 'enable_if_unsigned_long_long<1>::type'?}}
+                                                                      ^
+
+"Test_name.c", line 289: error: class "PR9227::enable_if_long_long<2LL>" has no member "type"
+    void test_long_long() { enable_if_long_long<2>::type i; } // expected-error{{enable_if_long_long<2>'; did you mean 'enable_if_long_long<1>::type'?}}
+                                                    ^
+
+"Test_name.c", line 346: warning: missing return statement at end of non-void function "PR10579::main"
+    }
+    ^
+
+"Test_name.c", line 361: error: no instance of function template "rdar13000548::f" matches the argument list
+      f<int(int), int (*)(int), g>(); // expected-note{{in instantiation of}}
+      ^
+"Test_name.c", line 355: note: substituting explicit template arguments "<int (int), int (*)(int), <expression>>" for function template "rdar13000548::f" failed
+    U f() { return &F; } // expected-error{{cannot take the address of an rvalue of type 'int (*)(int)'}} expected-error{{cannot take the address of an rvalue of type 'int *'}}
+      ^
+
+"Test_name.c", line 362: error: no instance of function template "rdar13000548::f" matches the argument list
+      f<int[3], int*, y>(); // expected-note{{in instantiation of}}
+      ^
+"Test_name.c", line 355: note: substituting explicit template arguments "<int [3], int *, <expression>>" for function template "rdar13000548::f" failed
+    U f() { return &F; } // expected-error{{cannot take the address of an rvalue of type 'int (*)(int)'}} expected-error{{cannot take the address of an rvalue of type 'int *'}}
+      ^
+
+"Test_name.c", line 396: error: more than one partial specialization matches the template argument list of class "partial_order_different_types::A<0, 0, int, int, 0>"
+            "partial_order_different_types::A<0, N, T, U, V>" (declared at line 393)
+            "partial_order_different_types::A<0, N, T, U, V>" (declared at line 394)
+    A<0, 0, int, int, 0> a;
+                         ^
+
+"Test_name.c", line 417: error: qualifiers dropped in binding reference of type "int &" to initializer of type "const int"
+    template<const int &R> struct B<0, R> {};
+                                       ^
+
+"Test_name.c", line 417: warning: constant "R" is not used in or cannot be deduced from the template argument list of class template "partial_order_references::B<0, <error-constant>>"
+    template<const int &R> struct B<0, R> {};
+                        ^
+
+"Test_name.c", line 420: error: incomplete type "partial_order_references::B<0, partial_order_references::N>" is not allowed
+    B<0, N> b; // expected-error {{undefined}}
+            ^
+
+"Test_name.c", line 424: warning: constant "R" is not used in or cannot be deduced from the template argument list of class template "partial_order_references::C<0, <unnamed>>"
+    template<int &R> struct C<0, R> {};
+                  ^
+
+"Test_name.c", line 428: error: initialization requiring a temporary or conversion is not allowed
+    template<int N> struct D<0, N> {};
+                                ^
+
+"Test_name.c", line 428: warning: constant "N" is not used in or cannot be deduced from the template argument list of class template "partial_order_references::D<0, <error-constant>>"
+    template<int N> struct D<0, N> {};
+                 ^
+
+"Test_name.c", line 432: error: incomplete type "partial_order_references::D<0, partial_order_references::K>" is not allowed
+    D<0, K> d; // expected-error {{undefined}}
+            ^
+
+"Test_name.c", line 436: warning: alias templates are a C++11 feature
+    template<typename> using X = int; // expected-warning {{C++11}}
+                       ^
+
+"Test_name.c", line 442: error: the template argument list of the partial specialization includes a nontype argument whose type depends on a template parameter
+      template <typename T> struct B<T, 0> {}; // expected-error {{non-type template argument specializes a template parameter with dependent type 'dependent_nested_partial_specialization::Y<T>' (aka 'T *')}}
+                                   ^
+          detected during instantiation of class "dependent_nested_partial_specialization::A<X> [with X=dependent_nested_partial_specialization::Y]" at line 445
+
+"Test_name.c", line 445: error: incomplete type "dependent_nested_partial_specialization::A<dependent_nested_partial_specialization::Y>::B<int, &dependent_nested_partial_specialization::n>" is not allowed
+    A<Y>::B<int, &n> ay; // expected-error {{undefined}} expected-note {{instantiation of}}
+                     ^
+
+"Test_name.c", line 449: error: argument of type "dependent_nested_partial_specialization::Y<T>" (aka "T *") is incompatible with template parameter of type "int"
+      template<typename T, X<T> N> struct D<T*, N, N + 1> {}; // expected-error {{type of specialized non-type template argument depends on}}
+                                                ^
+          detected during instantiation of class "dependent_nested_partial_specialization::C<X> [with X=dependent_nested_partial_specialization::Y]" at line 452
+
+"Test_name.c", line 449: warning: constant "N" is not used in or cannot be deduced from the template argument list of class template "dependent_nested_partial_specialization::C<X>::D<T *, <error-constant>, <expression>> [with X=dependent_nested_partial_specialization::Y]"
+      template<typename T, X<T> N> struct D<T*, N, N + 1> {}; // expected-error {{type of specialized non-type template argument depends on}}
+                                ^
+          detected during instantiation of class "dependent_nested_partial_specialization::C<X> [with X=dependent_nested_partial_specialization::Y]" at line 452
+
+"Test_name.c", line 452: error: incomplete type "dependent_nested_partial_specialization::C<dependent_nested_partial_specialization::Y>::D<int *, 0, 1>" is not allowed
+    C<Y>::D<int*, 0, 1> cy; // expected-error {{undefined}} expected-note {{instantiation of}}
+                        ^
+
+"Test_name.c", line 480: error: more than one instance of overloaded function "nondependent_default_arg_ordering::f" matches the argument list:
+            function template "void nondependent_default_arg_ordering::f(nondependent_default_arg_ordering::X<A, (&nondependent_default_arg_ordering::n)>)" (declared at line 465)
+            function template "void nondependent_default_arg_ordering::f(nondependent_default_arg_ordering::X<A, B>)" (declared at line 469)
+            argument types are: (nondependent_default_arg_ordering::X<int *, &nondependent_default_arg_ordering::n>)
+      X<int *, &n> x; f(x); // expected-error {{call to 'f' is ambiguous}}
+                      ^
+"Test_name.c", line 467: note: function template "nondependent_default_arg_ordering::f(nondependent_default_arg_ordering::X<A, (&nondependent_default_arg_ordering::m)>)" does not match because argument #1 does not match parameter
+    template<typename A> void f(X<A, &m>);
+                              ^
+
+"Test_name.c", line 481: error: more than one instance of overloaded function "nondependent_default_arg_ordering::f" matches the argument list:
+            function template "void nondependent_default_arg_ordering::f(nondependent_default_arg_ordering::X<A, (&nondependent_default_arg_ordering::m)>)" (declared at line 467)
+            function template "void nondependent_default_arg_ordering::f(nondependent_default_arg_ordering::X<A, B>)" (declared at line 469)
+            argument types are: (nondependent_default_arg_ordering::X<int *, &nondependent_default_arg_ordering::m>)
+      X<int *, &m> y; f(y); // expected-error {{call to 'f' is ambiguous}}
+                      ^
+"Test_name.c", line 465: note: function template "nondependent_default_arg_ordering::f(nondependent_default_arg_ordering::X<A, (&nondependent_default_arg_ordering::n)>)" does not match because argument #1 does not match parameter
+    template<typename A> void f(X<A>);
+                              ^
+
+"Test_name.c", line 539: error: expression must have class type but it has type "T *"
+        g(V.f() ...); // expected-error {{base type 'T *' is not a structure or union}}
+          ^
+
+"Test_name.c", line 198: error: a value of type "int" cannot be assigned to an entity of type "int *"
+        x = 1; // expected-error{{incompatible integer to pointer conversion assigning to 'int *' from 'int'}}
+          ^
+          detected during instantiation of "void EntityReferenced::Y<T>::f(T) [with T=int *]" at line 203
+
+"Test_name.c", line 197: warning: parameter "x" was set but never used
+      static void f(T x) {
+                      ^
+          detected during instantiation of "void EntityReferenced::Y<T>::f(T) [with T=int *]" at line 203
+
+"Test_name.c", line 498: error: function "dependent_backreference::f(int)" returns incomplete type "dependent_backreference::Incomplete"
+    template<typename T, T Value, int(*)[sizeof(f(Value))]> struct X {}; // expected-error 2{{incomplete}}
+                                                 ^
+          detected during:
+            processing of template argument list for "dependent_backreference::X" based on template arguments <int, 0> at line 502
+            instantiation of "void dependent_backreference::f<T>() [with T=int]" at line 504
+
+"Test_name.c", line 137: warning: variable "ns::value" was declared but never referenced
+    const bool value = false;
+               ^
+
+46 errors detected in the compilation of "Test_name.c".

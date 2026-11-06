@@ -1,0 +1,110 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 12: error: floating-point template parameter is nonstandard
+  template<double d> class X; // cxx17-error{{cannot have type}}
+           ^
+
+"Test_name.c", line 16: error: a nontype template parameter may not have class type
+  template<A a> class X0; // expected-error{{has incomplete type 'A'}}
+           ^
+
+"Test_name.c", line 20: error: a nontype template parameter may not have class type
+  template<A a> class X0b; // cxx17-error{{cannot have type 'A' before C++20}}
+           ^
+
+"Test_name.c", line 23: error: a template parameter may not have void type
+  template<VOID a> class X01; // expected-error{{has incomplete type 'VOID'}}
+           ^
+
+"Test_name.c", line 28: error: a nontype template parameter cannot have rvalue reference type
+  template<int &&R> struct rval_ref; // expected-warning 0-1{{extension}} expected-error {{non-type template parameter has rvalue reference type 'int &&'}}
+           ^
+
+"Test_name.c", line 33: error: complex or imaginary template parameter type is nonstandard
+  template<_Complex float ci> struct ComplexFloat; // cxx17-error {{cannot have type '_Complex float' before C++20}}
+           ^
+
+"Test_name.c", line 34: error: _Complex can only be used with floating-point types
+  template<_Complex int ci> struct ComplexInt; // cxx17-error {{cannot have type '_Complex int' before C++20}}
+           ^
+
+"Test_name.c", line 38: error: floating-point template parameter is nonstandard
+  template<_Atomic float ci> struct AtomicFloat; // expected-error {{cannot have type '_Atomic(float)'}}
+           ^
+
+"Test_name.c", line 42: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__((ext_vector_type(4))) int VI4;
+                         ^
+
+"Test_name.c", line 43: warning: unknown attribute "ext_vector_type"
+  typedef __attribute__((ext_vector_type(4))) float VF4;
+                         ^
+
+"Test_name.c", line 45: error: floating-point template parameter is nonstandard
+  template<VF4> struct VectorFloat; // cxx17-error {{cannot have type 'VF4'}}
+           ^
+
+"Test_name.c", line 66: error: _Complex can only be used with floating-point types
+    _Complex int ci;
+    ^
+
+"Test_name.c", line 73: error: a nontype template parameter may not have class type
+  template<B> struct ClassNTTP {}; // cxx17-error {{cannot have type 'B'}}
+           ^
+
+"Test_name.c", line 75: error: a nontype template parameter may not have class type
+  template<RRef> struct WithRRef {}; // cxx17-error {{cannot have type 'RRef'}}
+           ^
+
+"Test_name.c", line 80: error: a nontype template parameter may not have class type
+  template<BadBase> struct WithBadBase {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 85: error: a nontype template parameter may not have class type
+  template<BadField> struct WithBadField {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 90: error: a nontype template parameter may not have class type
+  template<BadFieldArray> struct WithBadFieldArray {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 94: error: a nontype template parameter may not have class type
+  template<ProtectedBase> struct WithProtectedBase {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 98: error: a nontype template parameter may not have class type
+  template<PrivateBase> struct WithPrivateBase {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 102: error: a nontype template parameter may not have class type
+  template<Private2Base> struct WithPrivate2Base {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 108: error: a nontype template parameter may not have class type
+  template<ProtectedField> struct WithProtectedField {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 114: error: a nontype template parameter may not have class type
+  template<PrivateField> struct WithPrivateField {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 119: error: a nontype template parameter may not have class type
+  template<Private2Field> struct WithPrivate2Field {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 124: error: a nontype template parameter may not have class type
+  template<MutableField> struct WithMutableField {}; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 127: error: a nontype template parameter may not have class type
+  template<BadExtType<_Atomic float> > struct AtomicFloatField; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 128: error: a nontype template parameter may not have class type
+  template<BadExtType<_Atomic int> > struct AtomicInt; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+           ^
+
+"Test_name.c", line 128: warning: declaration is incompatible with constant "int ci" (declared at line 39)
+  template<BadExtType<_Atomic int> > struct AtomicInt; // cxx17-error {{cannot have type}} cxx20-error {{is not a structural type}}
+                                   ^
+
+24 errors detected in the compilation of "Test_name.c".

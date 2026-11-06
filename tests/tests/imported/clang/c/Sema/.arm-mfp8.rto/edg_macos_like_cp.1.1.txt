@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c --target linux_aarch64 Test_name.c
+"Test_name.c", line 6: error: identifier "__mfp8" is undefined
+  __mfp8 test_cast_from_float(unsigned in) {
+  ^
+
+"Test_name.c", line 7: error: identifier "__mfp8" is undefined
+    return (__mfp8)in; // expected-error {{used type '__mfp8' where arithmetic or pointer type is required}}
+            ^
+
+"Test_name.c", line 7: error: expected a ";"
+    return (__mfp8)in; // expected-error {{used type '__mfp8' where arithmetic or pointer type is required}}
+                   ^
+
+"Test_name.c", line 10: error: identifier "__mfp8" is undefined
+  unsigned test_cast_to_int(__mfp8 in) {
+                            ^
+
+4 errors detected in the compilation of "Test_name.c".

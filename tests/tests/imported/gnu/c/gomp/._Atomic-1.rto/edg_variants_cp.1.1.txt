@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 56: warning: variable "f" was declared but never referenced
+    _Atomic int b = 1, c = 2, f = 8, g = 8, h = 0;
+                              ^
+
+"Test_name.c", line 56: warning: variable "g" was declared but never referenced
+    _Atomic int b = 1, c = 2, f = 8, g = 8, h = 0;
+                                     ^
+
+"Test_name.c", line 56: warning: variable "h" was declared but never referenced
+    _Atomic int b = 1, c = 2, f = 8, g = 8, h = 0;
+                                            ^
+
+"Test_name.c", line 57: warning: variable "d" was declared but never referenced
+    _Atomic int d, e[3];
+                ^
+
+"Test_name.c", line 58: warning: variable "p" was set but never used
+    int *_Atomic p;
+                 ^
+
+"Test_name.c", line 59: warning: variable "q" was set but never used
+    _Atomic int *_Atomic q;
+                         ^
+

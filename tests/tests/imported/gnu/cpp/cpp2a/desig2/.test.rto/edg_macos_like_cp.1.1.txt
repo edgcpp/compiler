@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 10: error: mixing designated and non-designated initializers is nonstandard in C++
+  S c = { 1, .b = 2, .c = 3 };	// { dg-error "either all initializer clauses should be designated or none of them should be" "" { target c++20 } }
+                  ^
+
+"Test_name.c", line 11: error: mixing designated and non-designated initializers is nonstandard in C++
+  S d = { .a = 1, 2, 3 };		// { dg-error "either all initializer clauses should be designated or none of them should be" "" { target c++20 } }
+                  ^
+
+"Test_name.c", line 12: error: duplicate designator is not allowed
+  S e = { .b = 1, .b = 2 };	// { dg-error "designator used multiple times in the same initializer list" }
+                   ^
+
+"Test_name.c", line 19: error: pack expansion is not allowed in a designated initializer list
+    S f = { .a = N... };		// { dg-error "'...' not allowed in designated initializer list" "" { target c++20 } }
+                 ^
+
+"Test_name.c", line 19: warning: variable "f" was declared but never referenced
+    S f = { .a = N... };		// { dg-error "'...' not allowed in designated initializer list" "" { target c++20 } }
+      ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,65 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 5: warning: declaration of "size_t" does not match the expected type "unsigned long"
+  typedef unsigned int size_t;
+                       ^
+
+"Test_name.c", line 74: warning: variable "S" was declared but never referenced
+      std::span<int> S;      // no warn
+                     ^
+
+"Test_name.c", line 75: warning: variable "S1" was declared but never referenced
+      std::span<int> S1{};   // no warn
+                     ^
+
+"Test_name.c", line 77: warning: variable "S3" was declared but never referenced
+      std::span<int> S3{S2};  // no warn
+                     ^
+
+"Test_name.c", line 130: warning: variable "S" was set but never used
+      std::span<int> S = std::span{&X, 1}; // no-warning
+                     ^
+
+"Test_name.c", line 172: warning: variable "X" was declared but never referenced
+      if (auto X = std::span<int>{First, Last}; S10.data()) { // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+               ^
+
+"Test_name.c", line 161: warning: variable "S1" was declared but never referenced
+      std::span<int> S1(First, Last);                    // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+
+"Test_name.c", line 162: warning: variable "S2" was declared but never referenced
+      std::span<int> S2 = std::span<int>{First, Last};   // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+
+"Test_name.c", line 163: warning: variable "S3" was declared but never referenced
+      std::span<int> S3 = std::span<int>(First, Last);   // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+
+"Test_name.c", line 164: warning: variable "S4" was declared but never referenced
+      std::span<int> S4 = std::span<int>{First, Last};   // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+
+"Test_name.c", line 165: warning: variable "S5" was declared but never referenced
+      std::span<int> S5 = std::span<int>(First, Last);   // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+
+"Test_name.c", line 166: warning: variable "S6" was declared but never referenced
+      std::span<int> S6 = {First, Last};                 // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+
+"Test_name.c", line 167: warning: variable "S7" was declared but never referenced
+      auto S7 = std::span<int>{First, Last};             // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+           ^
+
+"Test_name.c", line 168: warning: variable "S8" was declared but never referenced
+      auto S8 = std::span<int>(First, Last);             // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+           ^
+
+"Test_name.c", line 169: warning: variable "S9" was declared but never referenced
+      const auto &S9 = std::span<int>{First, Last};      // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                  ^
+
+"Test_name.c", line 187: warning: variable "Arr" was declared but never referenced
+      std::span<int> Arr[1] = {std::span<int>{First, Last}}; // expected-warning{{the two-parameter std::span construction is unsafe as it can introduce mismatch between buffer size and the bound information}}
+                     ^
+

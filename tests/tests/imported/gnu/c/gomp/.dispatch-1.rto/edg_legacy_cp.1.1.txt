@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 16: warning: variable "a" is used before its value is set
+    int c = f0 (a);	/* { dg-error "expected expression before 'int'" } */
+                ^
+
+"Test_name.c", line 20: warning: variable "b" is used before its value is set
+    a = b;	/* { dg-error "expected a function name before ';' token" } */
+        ^
+
+"Test_name.c", line 11: warning: variable "x" was declared but never referenced
+    double x;
+           ^
+
+"Test_name.c", line 13: warning: variable "arr" was declared but never referenced
+    int arr[1];
+        ^
+

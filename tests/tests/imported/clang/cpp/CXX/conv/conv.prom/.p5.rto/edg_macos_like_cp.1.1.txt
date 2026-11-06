@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 8: warning: signed bit field of length 1
+  struct X { long long e : 1; };
+                       ^
+
+"Test_name.c", line 13: error: identifier "__LONG_LONG_MAX__" is undefined
+  enum E : long long { a = __LONG_LONG_MAX__ };
+                           ^
+
+"Test_name.c", line 18: warning: bit field cannot contain all values of the enumerated type
+  struct Y { E e : 1; };
+                   ^
+
+1 error detected in the compilation of "Test_name.c".

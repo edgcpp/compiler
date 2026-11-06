@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=3 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 -DC11 -D__thread=_Thread_local -DC11 -D__thread=_Thread_local Test_name.c
+"Test_name.c", line 19: warning: this declaration has no storage class or type specifier
+  __private_extern__ __thread int t4; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 19: error: expected a ";"
+  __private_extern__ __thread int t4; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                     ^
+
+"Test_name.c", line 20: error: a storage class may not be specified here
+  struct t5 { __thread int x; }; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+              ^
+
+"Test_name.c", line 28: error: thread-local storage class is not valid here
+  __thread int t6(void); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 37: error: invalid storage class for a parameter
+  int f(__thread int t7) { // expected-error {{' is only allowed on variable declarations}} \
+        ^
+
+"Test_name.c", line 39: error: a block-scope thread-local declaration must include static or extern
+    __thread int t8; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+    ^
+
+"Test_name.c", line 47: warning: expression has no effect
+    __private_extern__ __thread int t11; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+    ^
+
+"Test_name.c", line 47: error: expected a ";"
+    __private_extern__ __thread int t11; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                       ^
+
+"Test_name.c", line 49: error: only static and extern variables can use thread-local storage
+    __thread auto int t12a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local}}' declaration specifier}} \
+             ^
+
+"Test_name.c", line 49: error: a block-scope thread-local declaration must include static or extern
+    __thread auto int t12a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local}}' declaration specifier}} \
+             ^
+
+"Test_name.c", line 51: error: only static and extern variables can use thread-local storage
+    auto __thread int t12b; // expected-error {{cannot combine with previous 'auto' declaration specifier}} \
+    ^
+
+"Test_name.c", line 51: error: a block-scope thread-local declaration must include static or extern
+    auto __thread int t12b; // expected-error {{cannot combine with previous 'auto' declaration specifier}} \
+    ^
+
+"Test_name.c", line 59: error: only static and extern variables can use thread-local storage
+    __thread register int t13a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local|thread_local}}' declaration specifier}} \
+             ^
+
+"Test_name.c", line 59: error: a block-scope thread-local declaration must include static or extern
+    __thread register int t13a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local|thread_local}}' declaration specifier}} \
+             ^
+
+"Test_name.c", line 61: error: only static and extern variables can use thread-local storage
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+    ^
+
+"Test_name.c", line 61: error: a block-scope thread-local declaration must include static or extern
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+    ^
+
+"Test_name.c", line 63: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+"Test_name.c", line 39: warning: variable "t8" was declared but never referenced
+    __thread int t8; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                 ^
+
+"Test_name.c", line 46: warning: variable "t10" was declared but never referenced
+    static __thread int t10; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                        ^
+
+"Test_name.c", line 49: warning: variable "t12a" was declared but never referenced
+    __thread auto int t12a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local}}' declaration specifier}} \
+                      ^
+
+"Test_name.c", line 51: warning: variable "t12b" was declared but never referenced
+    auto __thread int t12b; // expected-error {{cannot combine with previous 'auto' declaration specifier}} \
+                      ^
+
+"Test_name.c", line 59: warning: variable "t13a" was declared but never referenced
+    __thread register int t13a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local|thread_local}}' declaration specifier}} \
+                          ^
+
+"Test_name.c", line 61: warning: variable "t13b" was declared but never referenced
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+                          ^
+
+"Test_name.c", line 65: error: thread-local storage class is not valid here
+  __thread typedef int t14; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local|thread_local}}' declaration specifier}} \
+           ^
+
+"Test_name.c", line 69: error: non-thread-local declaration follows thread-local declaration (declared at line 67)
+  extern int t15; // expected-error {{non-thread-local declaration of 't15' follows thread-local declaration}}
+             ^
+
+"Test_name.c", line 71: error: thread-local declaration follows non-thread-local declaration (declared at line 70)
+  __thread int t16; // expected-error {{thread-local declaration of 't16' follows non-thread-local declaration}} \
+               ^
+
+"Test_name.c", line 85: error: expression must have a constant value
+  int *thread_int_ptr = &thread_int;
+                        ^
+
+"Test_name.c", line 90: warning: variable "p" was declared but never referenced
+    int *p = &thread_int; // This is perfectly fine, though.
+         ^
+
+"Test_name.c", line 97: error: function call is not allowed in a constant expression
+  __thread int non_const_init = non_const(); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                                ^
+
+"Test_name.c", line 13: warning: variable "t3" was declared but never referenced
+  __thread static int t3; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                      ^
+
+19 errors detected in the compilation of "Test_name.c".

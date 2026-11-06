@@ -1,0 +1,89 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 11: warning: variable "b" was declared but never referenced
+    A<int>::B b;
+              ^
+
+"Test_name.c", line 32: error: invalid specifier outside a class declaration
+      friend class f; // expected-error{{'friend' used outside of class}}
+      ^
+
+"Test_name.c", line 33: error: invalid specifier outside a class declaration
+      friend class f1; // expected-error{{'friend' used outside of class}}
+      ^
+
+"Test_name.c", line 60: error: namespace "qualified_friend" has no member "g"
+      friend void qualified_friend::g(); // expected-error {{friend declaration of 'g' does not match any declaration in namespace 'qualified_friend'}}
+                                    ^
+
+"Test_name.c", line 59: error: no instance of overloaded function "qualified_friend::f" matches the specified type
+      friend void qualified_friend::f(double); // expected-error {{friend declaration of 'f' does not match any declaration in namespace 'qualified_friend'}}
+                                    ^
+          detected during instantiation of class "qualified_friend::X1<<unnamed>> [with <unnamed>=int]" at line 65
+
+"Test_name.c", line 63: error: no instance of overloaded function "qualified_friend::f" matches the specified type
+      friend void qualified_friend::f(T); // expected-error {{friend declaration of 'f' does not match any declaration in namespace 'qualified_friend'}}
+                                    ^
+          detected during instantiation of class "qualified_friend::X2<T> [with T=double]" at line 66
+
+"Test_name.c", line 77: error: class "qualified_friend::Y" has no member "g"
+      friend void Y::g(); // expected-error {{friend declaration of 'g' does not match any declaration in 'qualified_friend::Y'}}
+                     ^
+
+"Test_name.c", line 76: error: no instance of overloaded function "qualified_friend::Y::f" matches the specified type
+      friend void Y::f(double); // expected-error {{friend declaration of 'f' does not match any declaration in 'qualified_friend::Y'}}
+                     ^
+          detected during instantiation of class "qualified_friend::Z1<<unnamed>> [with <unnamed>=int]" at line 82
+
+"Test_name.c", line 80: error: no instance of overloaded function "qualified_friend::Y::f" matches the specified type
+      friend void Y::f(T); // expected-error {{friend declaration of 'f' does not match any declaration in 'qualified_friend::Y'}}
+                     ^
+          detected during instantiation of class "qualified_friend::Z2<T> [with T=double]" at line 83
+
+"Test_name.c", line 115: error: namespace "qualified_friend_finds_nothing::N" has no member "f"
+      friend void N::f(T); // expected-error {{friend declaration of 'f' does not match}}
+                     ^
+
+"Test_name.c", line 120: error: declaration is incompatible with "void qualified_friend_finds_nothing::N::f()" (declared at line 117)
+      friend void N::f(T); // expected-error {{friend declaration of 'f' does not match}}
+                     ^
+          detected during instantiation of class "qualified_friend_finds_nothing::B<T> [with T=float]" at line 122
+
+"Test_name.c", line 132: error: declaration is incompatible with "int PR37556::N::x2" (declared at line 132)
+      friend void PR37556::x2(int); // expected-error {{different kind}}
+                           ^
+
+"Test_name.c", line 135: warning: "void y1(T)" declares a non-template function -- add <> to refer to a template instance
+      friend void y1(T);
+                  ^
+
+"Test_name.c", line 136: error: declaration is incompatible with "int PR37556::N::y2" (declared at line 136)
+      friend void PR37556::y2(T); // expected-error {{different kind}}
+                           ^
+          detected during instantiation of class "PR37556::Y<T> [with T=int]" at line 138
+
+"Test_name.c", line 140: warning: "void z1(T)" declares a non-template function -- add <> to refer to a template instance
+      friend void z1(T);
+                  ^
+
+"Test_name.c", line 141: error: namespace "PR37556" has no member "z2"
+      friend void PR37556::z2(T); // expected-error {{does not match any}}
+                           ^
+
+"Test_name.c", line 141: error: declaration is incompatible with "int PR37556::N::z2" (declared at line 141)
+      friend void PR37556::z2(T); // expected-error {{does not match any}}
+                           ^
+          detected during instantiation of class "PR37556::Z<T> [with T=int]" at line 144
+
+"Test_name.c", line 151: error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "int"
+    int n = f((X1*)nullptr); // expected-error {{cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'}}
+            ^
+
+"Test_name.c", line 168: warning: variable "b" was declared but never referenced
+    A::Bar<int> b;
+                ^
+
+"Test_name.c", line 157: warning: variable "GH61851::A::B::foo" was declared but never referenced
+    constexpr struct {} foo;
+                        ^
+
+15 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,102 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 21: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvtss2si64(vec4floats);                       // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 22: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvttss2si64(vec4floats);                      // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 23: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvtsd2si64(vec2doubles);                      // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 24: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvttsd2si64(vec2doubles);                     // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 30: warning: variable "vp" is used before its value is set
+    (void)__builtin_ia32_fxrstor64(vp);                                // expected-error{{use of unknown builtin}}
+                                   ^
+
+"Test_name.c", line 38: warning: variable "ullp" is used before its value is set
+    (void)__builtin_ia32_addcarryx_u64(4, 4, 4, ullp);                 // expected-error{{use of unknown builtin}}
+                                                ^
+
+"Test_name.c", line 39: warning: function "__builtin_ia32_addcarry_u64" declared implicitly
+    (void)__builtin_ia32_addcarry_u64(4, 4, 4, ullp);                  // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 47: warning: function "__builtin_ia32_pbroadcastq512_gpr_mask" declared implicitly
+    (void)__builtin_ia32_pbroadcastq512_gpr_mask(4, vec8longlongs, 4); // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 47: warning: variable "vec8longlongs" is used before its value is set
+    (void)__builtin_ia32_pbroadcastq512_gpr_mask(4, vec8longlongs, 4); // expected-error{{use of unknown builtin}}
+                                                    ^
+
+"Test_name.c", line 48: warning: function "__builtin_ia32_pbroadcastq128_gpr_mask" declared implicitly
+    (void)__builtin_ia32_pbroadcastq128_gpr_mask(4, vec2longlongs, 4); // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 48: warning: variable "vec2longlongs" is used before its value is set
+    (void)__builtin_ia32_pbroadcastq128_gpr_mask(4, vec2longlongs, 4); // expected-error{{use of unknown builtin}}
+                                                    ^
+
+"Test_name.c", line 49: warning: function "__builtin_ia32_pbroadcastq256_gpr_mask" declared implicitly
+    (void)__builtin_ia32_pbroadcastq256_gpr_mask(4, vec4longlongs, 4); // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 49: warning: variable "vec4longlongs" is used before its value is set
+    (void)__builtin_ia32_pbroadcastq256_gpr_mask(4, vec4longlongs, 4); // expected-error{{use of unknown builtin}}
+                                                    ^
+
+"Test_name.c", line 50: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvtsd2si64(vec2doubles, 4);                  // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 51: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvtsd2usi64(vec2doubles, 4);                 // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 52: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvtss2si64(vec4floats, 4);                   // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 53: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvtss2usi64(vec4floats, 4);                  // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 54: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvttsd2si64(vec2doubles, 4);                 // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 55: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvttsd2usi64(vec2doubles, 4);                // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 56: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvttss2si64(vec4floats, 4);                  // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 57: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_vcvttss2usi64(vec4floats, 4);                 // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 58: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvtsi2sd64(vec2doubles, 4, 4);                // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 59: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvtsi2ss64(vec4floats, 4, 4);                 // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 60: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvtusi2sd64(vec2doubles, 4, 4);               // expected-error{{use of unknown builtin}}
+          ^
+
+"Test_name.c", line 61: error: builtin function is not available because vector types are not supported
+    (void)__builtin_ia32_cvtusi2ss64(vec4floats, 4, 4);                // expected-error{{use of unknown builtin}}
+          ^
+
+16 errors detected in the compilation of "Test_name.c".

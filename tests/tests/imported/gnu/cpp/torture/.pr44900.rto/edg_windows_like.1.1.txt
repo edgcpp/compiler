@@ -1,0 +1,30 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef float __m128 __attribute__ ((__vector_size__ (16), __may_alias__));
+                                       ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef float __v4sf __attribute__ ((__vector_size__ (16)));
+                                       ^
+
+"Test_name.c", line 14: error: too many initializer values
+    return __extension__ (__m128)(__v4sf){ __W, __X, __Y, __Z };
+                                                ^
+
+"Test_name.c", line 47: error: builtin function is not available because vector types are not supported
+                          __builtin_ia32_loadups(&a[0]),
+                          ^
+
+"Test_name.c", line 48: error: identifier "__builtin_ia32_loadups" is undefined
+                          __builtin_ia32_loadups(&a[4]));
+                          ^
+
+"Test_name.c", line 59: error: builtin function is not available because vector types are not supported
+  { return 0xf == __builtin_ia32_movmskps(__builtin_ia32_cmpeqps(a, b)); }
+                  ^
+
+"Test_name.c", line 59: error: builtin function is not available because vector types are not supported
+  { return 0xf == __builtin_ia32_movmskps(__builtin_ia32_cmpeqps(a, b)); }
+                                          ^
+
+5 errors detected in the compilation of "Test_name.c".

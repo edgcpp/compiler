@@ -1,0 +1,215 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++14 Test_name.c
+"Test_name.c", line 8: warning: declaration of "T" hides template parameter
+           typename T> struct X {}; // expected-error {{declaration of 'T' shadows template parameter}}
+                    ^
+
+"Test_name.c", line 8: error: invalid redeclaration of type name "T" (declared at line 7)
+           typename T> struct X {}; // expected-error {{declaration of 'T' shadows template parameter}}
+                    ^
+
+"Test_name.c", line 11: warning: declaration of "T" hides template parameter
+    template<typename T> struct A {}; // expected-error {{declaration of 'T' shadows template parameter}}
+                      ^
+
+"Test_name.c", line 14: warning: declaration of "T" hides template parameter
+      template<typename> struct T {}; // expected-error {{declaration of 'T' shadows template parameter}}
+                                ^
+
+"Test_name.c", line 17: warning: declaration of "T" hides template parameter
+      template<typename> void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+                              ^
+
+"Test_name.c", line 20: warning: declaration of "T" hides template parameter
+      struct T {}; // expected-error {{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 23: warning: declaration of "T" hides template parameter
+      typedef int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                  ^
+
+"Test_name.c", line 26: warning: declaration of "T" hides template parameter
+      using T = int; // expected-error {{declaration of 'T' shadows template parameter}}
+            ^
+
+"Test_name.c", line 29: warning: declaration of "T" hides template parameter
+      int T; // expected-error {{declaration of 'T' shadows template parameter}}
+          ^
+
+"Test_name.c", line 32: warning: declaration of "T" hides template parameter
+      static int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 35: warning: declaration of "T" hides template parameter
+      void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 38: warning: declaration of "T" hides template parameter
+      enum T { e }; // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 41: warning: declaration of "T" hides template parameter
+      enum E { T }; // expected-error {{declaration of 'T' shadows template parameter}}
+               ^
+
+"Test_name.c", line 67: warning: template parameter "T" may not be used in an elaborated type specifier
+    friend struct T; // expected-error {{declaration of 'T' shadows template parameter}}
+                  ^
+
+"Test_name.c", line 45: error: template parameter "T" may not be redeclared in this scope
+      extern int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 48: error: template parameter "T" may not be redeclared in this scope
+      int T; // expected-error {{declaration of 'T' shadows template parameter}}
+          ^
+
+"Test_name.c", line 48: warning: variable "T" was declared but never referenced
+      int T; // expected-error {{declaration of 'T' shadows template parameter}}
+          ^
+
+"Test_name.c", line 52: warning: declaration of "T" hides template parameter
+      catch (int T) {} // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 55: error: template parameter "T" may not be redeclared in this scope
+      void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 55: warning: declaration is incompatible with previous "T" (declared at line 45)
+      void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 65: warning: template parameter "T" may not be used in an elaborated type specifier
+      struct T *p; // expected-error {{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 65: warning: variable "p" was declared but never referenced
+      struct T *p; // expected-error {{declaration of 'T' shadows template parameter}}
+                ^
+
+"Test_name.c", line 71: warning: declaration of "T" hides template parameter
+    template<typename T> struct A {}; // expected-error {{declaration of 'T' shadows template parameter}}
+                      ^
+
+"Test_name.c", line 74: warning: declaration of "T" hides template parameter
+      template<typename> struct T {}; // expected-error {{declaration of 'T' shadows template parameter}}
+                                ^
+
+"Test_name.c", line 77: warning: declaration of "T" hides template parameter
+      template<typename> void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+                              ^
+
+"Test_name.c", line 80: warning: declaration of "T" hides template parameter
+      struct T {}; // expected-error {{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 83: warning: declaration of "T" hides template parameter
+      typedef int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                  ^
+
+"Test_name.c", line 86: warning: declaration of "T" hides template parameter
+      using T = int; // expected-error {{declaration of 'T' shadows template parameter}}
+            ^
+
+"Test_name.c", line 89: warning: declaration of "T" hides template parameter
+      int T; // expected-error {{declaration of 'T' shadows template parameter}}
+          ^
+
+"Test_name.c", line 92: warning: declaration of "T" hides template parameter
+      static int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 95: warning: declaration of "T" hides template parameter
+      void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 98: warning: declaration of "T" hides template parameter
+      enum T { e }; // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 101: warning: declaration of "T" hides template parameter
+      enum E { T }; // expected-error {{declaration of 'T' shadows template parameter}}
+               ^
+
+"Test_name.c", line 126: error: template parameter "T" may not be redeclared in this scope
+    friend struct T;
+                  ^
+
+"Test_name.c", line 105: warning: declaration is incompatible with previous "T" (declared at line 55)
+      extern int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 105: error: template parameter "T" may not be redeclared in this scope
+      extern int T; // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 108: error: template parameter "T" may not be redeclared in this scope
+      int T; // expected-error {{declaration of 'T' shadows template parameter}}
+          ^
+
+"Test_name.c", line 108: warning: variable "T" was declared but never referenced
+      int T; // expected-error {{declaration of 'T' shadows template parameter}}
+          ^
+
+"Test_name.c", line 112: warning: declaration of "T" hides template parameter
+      catch (int T) {} // expected-error {{declaration of 'T' shadows template parameter}}
+                 ^
+
+"Test_name.c", line 115: error: template parameter "T" may not be redeclared in this scope
+      void T(); // expected-error {{declaration of 'T' shadows template parameter}}
+           ^
+
+"Test_name.c", line 124: warning: variable "p" was declared but never referenced
+      struct T *p;
+                ^
+
+"Test_name.c", line 130: warning: declaration of "T" hides template parameter
+  void f(int T) {} // expected-error {{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 130: error: template parameter "T" may not be redeclared in this scope
+  void f(int T) {} // expected-error {{declaration of 'T' shadows template parameter}}
+             ^
+
+"Test_name.c", line 133: error: class template and template parameter may not have the same name
+    template<typename T> struct T {};  // expected-error{{declaration of 'T' shadows template parameter}}
+                                ^
+
+"Test_name.c", line 136: error: class template and template parameter may not have the same name
+      template<typename V> struct V {}; // expected-error{{declaration of 'V' shadows template parameter}}
+                                  ^
+
+"Test_name.c", line 141: warning: declaration of "T" hides template parameter
+    template<typename T> void T() {} // expected-warning{{declaration of 'T' shadows template parameter}}
+                              ^
+
+"Test_name.c", line 145: warning: declaration of "V" hides template parameter
+      template<typename V> void V(); // expected-warning{{declaration of 'V' shadows template parameter}}
+                                ^
+
+"Test_name.c", line 150: warning: declaration of "T" hides template parameter
+    template<typename T> int T; // expected-warning{{declaration of 'T' shadows template parameter}}
+                             ^
+
+"Test_name.c", line 153: warning: declaration of "V" hides template parameter
+      template<typename V> static int V; // expected-warning{{declaration of 'V' shadows template parameter}}
+                                      ^
+
+"Test_name.c", line 162: warning: declaration of "V" hides template parameter
+      template <int> friend struct V;  // expected-error{{declaration of 'V' shadows template parameter}}
+                                   ^
+          detected during instantiation of class "PR28023::A<V>::B [with V=0]" at line 165
+
+"Test_name.c", line 171: warning: structured bindings are a C++17 feature
+    auto [
+         ^
+
+"Test_name.c", line 172: error: template parameter "T" may not be redeclared in this scope
+      T // expected-error {{declaration of 'T' shadows template parameter}}
+      ^
+
+"Test_name.c", line 172: warning: structured binding "T" was declared but never referenced
+      T // expected-error {{declaration of 'T' shadows template parameter}}
+      ^
+
+12 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,21 @@
+eccp -DTEST_NUMBER=2 -r -x -tused --set_flag=no_checking_pragmas Test_name.c
+"Test_name.c", line 4: remark: return type "int" omitted in declaration of function "main"
+  main() {
+  ^
+
+"Test_name.c", line 12: remark: destructor for base class "B" (declared at line 5) is not virtual
+    struct C : B {
+               ^
+
+"Test_name.c", line 16: remark: destructor for base class "C" (declared at line 12) is not virtual
+    struct D : C {
+               ^
+
+"Test_name.c", line 21: warning: variable "dr" was declared but never referenced
+    D &dr = d;
+       ^
+
+"Test_name.c", line 22: warning: variable "pc" was declared but never referenced
+    C *pc = &d;
+       ^
+

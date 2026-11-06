@@ -1,0 +1,58 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 23: error: identifier "startwith" is undefined
+  void __GIMPLE (startwith("slp"))
+                 ^
+
+"Test_name.c", line 23: error: expected a ")"
+  void __GIMPLE (startwith("slp"))
+                           ^
+
+"Test_name.c", line 24: error: expected a "{"
+  NullB (void * misalignedPtr)
+  ^
+
+"Test_name.c", line 29: error: identifier "b_2" is undefined
+    b_2 = misalignedPtr_1(D) + _Literal (__SIZETYPE__) -__SIZEOF_POINTER__;
+    ^
+
+"Test_name.c", line 29: warning: function "misalignedPtr_1" declared implicitly
+    b_2 = misalignedPtr_1(D) + _Literal (__SIZETYPE__) -__SIZEOF_POINTER__;
+          ^
+
+"Test_name.c", line 29: error: identifier "D" is undefined
+    b_2 = misalignedPtr_1(D) + _Literal (__SIZETYPE__) -__SIZEOF_POINTER__;
+                          ^
+
+"Test_name.c", line 29: warning: function "_Literal" declared implicitly
+    b_2 = misalignedPtr_1(D) + _Literal (__SIZETYPE__) -__SIZEOF_POINTER__;
+                               ^
+
+"Test_name.c", line 29: error: identifier "__SIZETYPE__" is undefined
+    b_2 = misalignedPtr_1(D) + _Literal (__SIZETYPE__) -__SIZEOF_POINTER__;
+                                         ^
+
+"Test_name.c", line 30: error: identifier "__MEM" is undefined
+    __MEM <struct B> (b_2).a.a = _Literal (void *) 0;
+    ^
+
+"Test_name.c", line 30: error: expected an expression
+    __MEM <struct B> (b_2).a.a = _Literal (void *) 0;
+           ^
+
+"Test_name.c", line 31: error: expected an expression
+    __MEM <struct B> (b_2).a.b = _Literal (void *) 0;
+           ^
+
+"Test_name.c", line 26: warning: variable "b" was declared but never referenced
+    struct B * b;
+               ^
+
+"Test_name.c", line 28: warning: label "bb_2" was declared but never referenced
+    bb_2:
+    ^
+
+"Test_name.c", line 39: warning: function "NullB" declared implicitly
+    NullB (&b.misaligned);
+    ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+import <linux-gcc/base>
+import <support/ci-variants/macos-like>
+# --- language features macOS leaves off
+delete COROUTINE_ENABLING_POSSIBLE
+delete TIE_DEFAULT_GNU_ABI_VERSION_TO_GNU_VERSION
+delete BUILTIN_VA_LIST_OVERRIDE_TYPE_NAME
+delete ASSUME_THIS_CANNOT_BE_NULL_IN_CONDITIONAL_OPERATORS
+delete HANDLE_VIRTUAL_BASES_IN_SUBOBJECT_CTOR_DTORS
+# --- 128-bit host integers
+delete TYPE_FOR_AN_INTEGER_VALUE
+delete TYPE_FOR_A_SIGNED_INTEGER_VALUE
+delete TYPE_FOR_A_FIXED_POINT_VALUE
+# --- host floating point: long double is binary64, as on arm64 macOS
+delete FP_LONG_DOUBLE_IS_80BIT_EXTENDED

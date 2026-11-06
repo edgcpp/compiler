@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
+"Test_name.c", line 9: error: more than one operator "[]" matches these operands:
+            built-in operator "pointer-to-object[integer]"
+            function "S::operator[](I)" (declared at line 6)
+            operand types are: S [ int ]
+  int r = s[1];  // Should be ambiguous.
+           ^
+
+1 error detected in the compilation of "Test_name.c".

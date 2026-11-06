@@ -1,0 +1,658 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++11 --ms_extensions --exceptions --exceptions Test_name.c
+"Test_name.c", line 18: error: parameter pack "Types" was referenced but not expanded
+    typedef pair<Types, int...> expand_no_packs;  // expected-error{{pack expansion does not contain any unexpanded parameter packs}}
+                 ^
+
+"Test_name.c", line 18: error: pack expansion does not make use of any argument packs
+    typedef pair<Types, int...> expand_no_packs;  // expected-error{{pack expansion does not contain any unexpanded parameter packs}}
+                           ^
+
+"Test_name.c", line 19: error: pack expansion does not make use of any argument packs
+    typedef pair<pair<Types..., int>..., int> expand_with_expanded_nested; // expected-error{{pack expansion does not contain any unexpanded parameter packs}}
+                                    ^
+
+"Test_name.c", line 28: error: pack "OtherTypes" does not have the same number of elements as "Types"
+      typedef tuple<pair<Types, OtherTypes>...> type; // expected-error{{pack expansion contains parameter packs 'Types' and 'OtherTypes' that have different lengths (3 vs. 2)}}
+                                ^
+          detected during instantiation of class "ExpansionLengthMismatch<Types...>::Inner<OtherTypes...> [with Types=<short, int, long>, OtherTypes=<unsigned int, unsigned long>]" at line 36
+
+"Test_name.c", line 46: error: parameter pack "Types" was referenced but not expanded
+    : public Types, public T  // expected-error{{base type contains unexpanded parameter pack 'Types'}}
+             ^
+
+"Test_name.c", line 54: error: expected an identifier
+    typedef Types (^block_pointer_1)(int); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                   ^
+
+"Test_name.c", line 55: error: expected an identifier
+    typedef int (^block_pointer_2)(Types); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                 ^
+
+"Test_name.c", line 55: error: parameter pack "Types" was referenced but not expanded
+    typedef int (^block_pointer_2)(Types); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                                   ^
+
+"Test_name.c", line 93: error: parameter pack "Types" was referenced but not expanded
+    typedef int (function_type_2)(Types); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                                  ^
+
+"Test_name.c", line 107: warning: class member typedef may not be redeclared
+    typedef decltype((static_cast<Types>(0))) typeof_expr; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                                              ^
+
+"Test_name.c", line 119: error: parameter pack "Types" was referenced but not expanded
+    typedef pair<Types, int> template_specialization; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                 ^
+
+"Test_name.c", line 128: error: parameter pack "Types" was referenced but not expanded
+    typedef typename T::template apply<Types> dependent_name_2; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                                       ^
+
+"Test_name.c", line 51: error: parameter pack "Types" was referenced but not expanded
+    typedef Types *types_pointer; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 54: error: parameter pack "Types" was referenced but not expanded
+    typedef Types (^block_pointer_1)(int); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 58: error: parameter pack "Types" was referenced but not expanded
+    typedef Types &lvalue_ref; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 61: error: parameter pack "Types" was referenced but not expanded
+    typedef Types &&rvalue_ref; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 64: error: parameter pack "Types" was referenced but not expanded
+    typedef Types TestPPName::* member_pointer_1; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 65: error: parameter pack "Types" was referenced but not expanded
+    typedef int Types::*member_pointer_2; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                ^
+
+"Test_name.c", line 68: error: parameter pack "Types" was referenced but not expanded
+    typedef Types constant_array[17]; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 71: error: parameter pack "Types" was referenced but not expanded
+    typedef Types incomplete_array[]; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 81: error: parameter pack "Types" was referenced but not expanded
+    typedef Types dependent_sized_array[N]; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 84: error: parameter pack "Types" was referenced but not expanded
+    typedef Types dependent_sized_ext_vector __attribute__((ext_vector_type(N))); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 89: error: parameter pack "Types" was referenced but not expanded
+    typedef Types ext_vector __attribute__((ext_vector_type(4))); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 92: error: parameter pack "Types" was referenced but not expanded
+    typedef Types (function_type_1)(int); // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 101: error: parameter pack "Types" was referenced but not expanded
+    typedef __typeof__((static_cast<Types>(0))) typeof_expr; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                                    ^
+
+"Test_name.c", line 104: error: parameter pack "Types" was referenced but not expanded
+    typedef __typeof__(Types) typeof_type;  // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                       ^
+
+"Test_name.c", line 107: error: parameter pack "Types" was referenced but not expanded
+    typedef decltype((static_cast<Types>(0))) typeof_expr; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                                  ^
+
+"Test_name.c", line 114: error: parameter pack "Types" was referenced but not expanded
+    typedef Types template_type_parm; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 124: error: parameter pack "Types" was referenced but not expanded
+    typedef typename Types::type dependent_name; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                     ^
+
+"Test_name.c", line 127: error: parameter pack "Types" was referenced but not expanded
+    typedef typename Types::template apply<int> dependent_name_1; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                     ^
+
+"Test_name.c", line 75: error: parameter pack "Types" was referenced but not expanded
+      Types variable_array[i]; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}} \
+      ^
+
+"Test_name.c", line 140: error: parameter pack "Values" was referenced but not expanded
+    Values; // expected-error{{expression contains unexpanded parameter pack 'Values'}}
+    ^
+
+"Test_name.c", line 146: error: parameter pack "Values" was referenced but not expanded
+    (Values); // expected-error{{expression contains unexpanded parameter pack 'Values'}}
+     ^
+
+"Test_name.c", line 148: error: parameter pack "Values" was referenced but not expanded
+    -Values; // expected-error{{expression contains unexpanded parameter pack 'Values'}}
+     ^
+
+"Test_name.c", line 153: error: parameter pack "Values" was referenced but not expanded
+    __builtin_offsetof(OffsetMe, array[Values]); // expected-error{{expression contains unexpanded parameter pack 'Values'}}
+                                       ^
+
+"Test_name.c", line 159: error: parameter pack "Types" was referenced but not expanded
+    f(static_cast<Types>(i)); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                  ^
+
+"Test_name.c", line 164: error: parameter pack "Meta" was referenced but not expanded
+    typedef tuple<typename Meta<T>::type> type; // expected-error{{declaration type contains unexpanded parameter pack 'Meta'}}
+                           ^
+
+"Test_name.c", line 170: error: parameter pack "Types" was referenced but not expanded
+  struct alignas(Types) TestUnexpandedDecls : T{ // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                 ^
+
+"Test_name.c", line 171: error: parameter pack "Types" was referenced but not expanded
+    void member_function(Types);  // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                         ^
+
+"Test_name.c", line 173: error: parameter pack "Types" was referenced but not expanded
+    void member_function () throw(Types); // expected-error{{exception type contains unexpanded parameter pack 'Types'}}
+                                  ^
+
+"Test_name.c", line 191: error: parameter pack "Types" was referenced but not expanded
+    friend void friend_func(Types); // expected-error{{friend declaration contains unexpanded parameter pack 'Types'}}
+                            ^
+
+"Test_name.c", line 191: warning: "void friend_func(Types)" declares a non-template function -- add <> to refer to a template instance
+    friend void friend_func(Types); // expected-error{{friend declaration contains unexpanded parameter pack 'Types'}}
+                ^
+
+"Test_name.c", line 212: error: parameter pack "Types" was referenced but not expanded
+    template<template<typename> class = Types::template apply> // expected-error{{default argument contains unexpanded parameter pack 'Types'}}
+                                        ^
+
+"Test_name.c", line 215: error: parameter pack "Types" was referenced but not expanded
+    template<Types value> // expected-error{{non-type template parameter type contains unexpanded parameter pack 'Types'}}
+             ^
+
+"Test_name.c", line 176: error: parameter pack "Types" was referenced but not expanded
+    operator Types() const; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+             ^
+
+"Test_name.c", line 177: error: parameter pack "Types" was referenced but not expanded
+    Types data_member;  // expected-error{{data member type contains unexpanded parameter pack 'Types'}}
+    ^
+
+"Test_name.c", line 178: error: parameter pack "Types" was referenced but not expanded
+    static Types static_data_member; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+           ^
+
+"Test_name.c", line 179: error: parameter pack "Types" was referenced but not expanded
+    unsigned bit_field : static_cast<Types>(0);  // expected-error{{bit-field size contains unexpanded parameter pack 'Types'}}
+                                     ^
+
+"Test_name.c", line 180: error: parameter pack "Types" was referenced but not expanded
+    static_assert(static_cast<Types>(0), "Boom"); // expected-error{{static assertion contains unexpanded parameter pack 'Types'}}
+                              ^
+
+"Test_name.c", line 182: error: parameter pack "Types" was referenced but not expanded
+    enum E0 : Types {  // expected-error{{fixed underlying type contains unexpanded parameter pack 'Types'}}
+              ^
+
+"Test_name.c", line 183: error: parameter pack "Types" was referenced but not expanded
+      EnumValue = static_cast<Types>(0) // expected-error{{enumerator value contains unexpanded parameter pack 'Types'}}
+                              ^
+
+"Test_name.c", line 186: error: parameter pack "Types" was referenced but not expanded
+    using typename Types::type; // expected-error{{using declaration contains unexpanded parameter pack 'Types'}}
+                   ^
+
+"Test_name.c", line 187: error: parameter pack "Types" was referenced but not expanded
+    using Types::value; // expected-error{{using declaration contains unexpanded parameter pack 'Types'}}
+          ^
+
+"Test_name.c", line 188: error: parameter pack "Types" was referenced but not expanded
+    using T::operator Types; // expected-error{{using declaration contains unexpanded parameter pack 'Types'}}
+                      ^
+
+"Test_name.c", line 190: error: parameter pack "Types" was referenced but not expanded
+    friend class Types::foo; // expected-error{{friend declaration contains unexpanded parameter pack 'Types'}}
+                 ^
+
+"Test_name.c", line 192: error: parameter pack "Types" was referenced but not expanded
+    friend void Types::other_friend_func(int); // expected-error{{friend declaration contains unexpanded parameter pack 'Types'}}
+                ^
+
+"Test_name.c", line 208: error: parameter pack "Types" was referenced but not expanded
+    template<typename = Types*> // expected-error{{default argument contains unexpanded parameter pack 'Types'}}
+                        ^
+
+"Test_name.c", line 210: error: parameter pack "Types" was referenced but not expanded
+    template<int = static_cast<Types>(0)> // expected-error{{default argument contains unexpanded parameter pack 'Types'}}
+                               ^
+
+"Test_name.c", line 175: error: parameter pack "Types" was referenced but not expanded
+    void member_function2() noexcept(Types()); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                                     ^
+
+"Test_name.c", line 200: error: parameter pack "Types" was referenced but not expanded
+    T in_class_member_init = static_cast<Types>(0); // expected-error{{initializer contains unexpanded parameter pack 'Types'}}
+                                         ^
+
+"Test_name.c", line 196: error: parameter pack "Types" was referenced but not expanded
+      T direct_init(0, static_cast<Types>(0)); // expected-error{{initializer contains unexpanded parameter pack 'Types'}}
+                                   ^
+
+"Test_name.c", line 197: error: parameter pack "Types" was referenced but not expanded
+      T list_init = { static_cast<Types>(0) }; // expected-error{{initializer contains unexpanded parameter pack 'Types'}}
+                                  ^
+
+"Test_name.c", line 202: error: parameter pack "Types" was referenced but not expanded
+      Types(static_cast<Types>(0)), // expected-error{{initializer contains unexpanded parameter pack 'Types'}}
+      ^
+
+"Test_name.c", line 204: error: parameter pack "Types" was referenced but not expanded
+      in_class_member_init(static_cast<Types>(0)) {} // expected-error{{initializer contains unexpanded parameter pack 'Types'}}
+                                       ^
+
+"Test_name.c", line 220: warning: variable "t" was declared but never referenced
+      for (Types *t = 0; ; ) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                  ^
+
+"Test_name.c", line 221: warning: loop is not reachable
+      for (; Types *t = 0; ) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+      ^
+
+"Test_name.c", line 224: error: expression must have integral or enum type
+      switch(Types *t = 0) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+                    ^
+
+"Test_name.c", line 195: error: parameter pack "Types" was referenced but not expanded
+      T copy_init = static_cast<Types>(0); // expected-error{{initializer contains unexpanded parameter pack 'Types'}}
+                                ^
+
+"Test_name.c", line 219: error: parameter pack "Types" was referenced but not expanded
+      Types t; // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+      ^
+
+"Test_name.c", line 220: error: parameter pack "Types" was referenced but not expanded
+      for (Types *t = 0; ; ) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+           ^
+
+"Test_name.c", line 221: error: parameter pack "Types" was referenced but not expanded
+      for (; Types *t = 0; ) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+             ^
+
+"Test_name.c", line 223: error: parameter pack "Types" was referenced but not expanded
+      for (Types t : a) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+           ^
+
+"Test_name.c", line 224: error: parameter pack "Types" was referenced but not expanded
+      switch(Types *t = 0) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+             ^
+
+"Test_name.c", line 225: error: parameter pack "Types" was referenced but not expanded
+      while(Types *t = 0) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+            ^
+
+"Test_name.c", line 226: error: parameter pack "Types" was referenced but not expanded
+      if (Types *t = 0) { } // expected-error{{declaration type contains unexpanded parameter pack 'Types'}}
+          ^
+
+"Test_name.c", line 228: error: parameter pack "Types" was referenced but not expanded
+      } catch (Types*) { // expected-error{{exception type contains unexpanded parameter pack 'Types'}}
+               ^
+
+"Test_name.c", line 260: error: parameter pack "values" was referenced but not expanded
+    x.f(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+        ^
+
+"Test_name.c", line 262: error: parameter pack "Types" was referenced but not expanded
+    x.f<Types>(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+        ^
+
+"Test_name.c", line 288: warning: statement is unreachable
+    throw values; // expected-error{{expression contains unexpanded parameter pack 'values'}}
+    ^
+
+"Test_name.c", line 297: warning: statement is unreachable
+    (void)Types(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+    ^
+
+"Test_name.c", line 300: error: parameter pack "values" was referenced but not expanded
+    (void)X(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+            ^
+
+"Test_name.c", line 306: error: parameter pack "values" was referenced but not expanded
+    (void)new X(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                ^
+
+"Test_name.c", line 307: error: parameter pack "values" was referenced but not expanded
+    (void)new (values) X(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+               ^
+
+"Test_name.c", line 307: error: parameter pack "values" was referenced but not expanded
+    (void)new (values) X(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                         ^
+
+"Test_name.c", line 328: error: parameter pack "values" was referenced but not expanded
+    test_unexpanded_exprs(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                          ^
+
+"Test_name.c", line 329: error: parameter pack "Types" was referenced but not expanded
+    test_unexpanded_exprs<Types>(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                          ^
+
+"Test_name.c", line 333: error: parameter pack "Types" was referenced but not expanded
+    T::template test_unexpanded_exprs<Types>(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                                      ^
+
+"Test_name.c", line 340: error: parameter pack "values" was referenced but not expanded
+    t.foo(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+          ^
+
+"Test_name.c", line 347: error: parameter pack "Types" was referenced but not expanded
+    t.template foo<Types>(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                   ^
+
+"Test_name.c", line 350: error: parameter pack "Types" was referenced but not expanded
+    x.f<Types>(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+        ^
+
+"Test_name.c", line 351: error: parameter pack "values" was referenced but not expanded
+    x.f(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+        ^
+
+"Test_name.c", line 371: error: reference to local variable of enclosing function is not allowed
+    void f(int arg = values); // expected-error{{default argument contains unexpanded parameter pack 'values'}}
+                     ^
+
+"Test_name.c", line 371: error: parameter pack "values" was referenced but not expanded
+    void f(int arg = values); // expected-error{{default argument contains unexpanded parameter pack 'values'}}
+                     ^
+
+"Test_name.c", line 368: warning: label "test" was declared but never referenced
+  test:
+  ^
+
+"Test_name.c", line 254: error: parameter pack "values" was referenced but not expanded
+    (void)(values + 0); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+           ^
+
+"Test_name.c", line 255: error: parameter pack "values" was referenced but not expanded
+    (void)(0 + values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+               ^
+
+"Test_name.c", line 258: error: parameter pack "values" was referenced but not expanded
+    values.f(); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+    ^
+
+"Test_name.c", line 261: error: parameter pack "Types" was referenced but not expanded
+    x.Types::f(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+      ^
+
+"Test_name.c", line 265: error: parameter pack "Types" was referenced but not expanded
+    (void)static_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                      ^
+
+"Test_name.c", line 265: error: parameter pack "values" was referenced but not expanded
+    (void)static_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                              ^
+
+"Test_name.c", line 268: error: parameter pack "Types" was referenced but not expanded
+    (void)dynamic_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                       ^
+
+"Test_name.c", line 268: error: parameter pack "values" was referenced but not expanded
+    (void)dynamic_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                               ^
+
+"Test_name.c", line 271: error: parameter pack "Types" was referenced but not expanded
+    (void)reinterpret_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                           ^
+
+"Test_name.c", line 271: error: parameter pack "values" was referenced but not expanded
+    (void)reinterpret_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                                   ^
+
+"Test_name.c", line 274: error: parameter pack "Types" was referenced but not expanded
+    (void)const_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                     ^
+
+"Test_name.c", line 274: error: parameter pack "values" was referenced but not expanded
+    (void)const_cast<Types&>(values); // expected-error{{expression contains unexpanded parameter packs 'Types' and 'values'}}
+                             ^
+
+"Test_name.c", line 277: error: parameter pack "Types" was referenced but not expanded
+    (void)typeid(Types); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                 ^
+
+"Test_name.c", line 278: error: parameter pack "values" was referenced but not expanded
+    (void)typeid(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                 ^
+
+"Test_name.c", line 281: error: parameter pack "Types" was referenced but not expanded
+    (void)__uuidof(Types); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                   ^
+
+"Test_name.c", line 282: error: parameter pack "values" was referenced but not expanded
+    (void)__uuidof(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                   ^
+
+"Test_name.c", line 287: error: parameter pack "Types" was referenced but not expanded
+    throw Types(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+          ^
+
+"Test_name.c", line 288: error: parameter pack "values" was referenced but not expanded
+    throw values; // expected-error{{expression contains unexpanded parameter pack 'values'}}
+          ^
+
+"Test_name.c", line 297: error: parameter pack "Types" was referenced but not expanded
+    (void)Types(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+          ^
+
+"Test_name.c", line 305: error: parameter pack "Types" was referenced but not expanded
+    (void)new Types; // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+              ^
+
+"Test_name.c", line 308: error: parameter pack "values" was referenced but not expanded
+    (void)new X [values]; // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                 ^
+
+"Test_name.c", line 311: error: parameter pack "values" was referenced but not expanded
+    delete values; // expected-error{{expression contains unexpanded parameter pack 'values'}}
+           ^
+
+"Test_name.c", line 312: error: parameter pack "values" was referenced but not expanded
+    delete [] values; // expected-error{{expression contains unexpanded parameter pack 'values'}}
+              ^
+
+"Test_name.c", line 316: error: parameter pack "values" was referenced but not expanded
+    values.~T(); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+    ^
+
+"Test_name.c", line 318: error: parameter pack "Types" was referenced but not expanded
+    t.Types::~T(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+      ^
+
+"Test_name.c", line 321: error: parameter pack "Types" was referenced but not expanded
+    __is_pod(Types); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+             ^
+
+"Test_name.c", line 324: error: parameter pack "Types" was referenced but not expanded
+    __is_base_of(Types, T); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                 ^
+
+"Test_name.c", line 325: error: parameter pack "Types" was referenced but not expanded
+    __is_base_of(T, Types); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+                    ^
+
+"Test_name.c", line 332: error: parameter pack "Types" was referenced but not expanded
+    Types::test_unexpanded_exprs(); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+    ^
+
+"Test_name.c", line 336: error: parameter pack "Types" was referenced but not expanded
+    Types(5); // expected-error{{expression contains unexpanded parameter pack 'Types'}}
+    ^
+
+"Test_name.c", line 339: error: parameter pack "values" was referenced but not expanded
+    values.foo(); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+    ^
+
+"Test_name.c", line 354: error: parameter pack "values" was referenced but not expanded
+    noexcept(values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+             ^
+
+"Test_name.c", line 361: error: parameter pack "values" was referenced but not expanded
+    for (auto t : values) { } // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                  ^
+
+"Test_name.c", line 363: error: parameter pack "values" was referenced but not expanded
+    switch (values) { } // expected-error{{expression contains unexpanded parameter pack 'values'}}
+            ^
+
+"Test_name.c", line 364: error: parameter pack "values" was referenced but not expanded
+    switch (0) { case 0: case values: ; } // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                              ^
+
+"Test_name.c", line 366: error: parameter pack "values" was referenced but not expanded
+    do { } while (values); // expected-error{{expression contains unexpanded parameter pack 'values'}}
+                  ^
+
+"Test_name.c", line 369: error: parameter pack "values" was referenced but not expanded
+    goto *values; // expected-error{{expression contains unexpanded parameter pack 'values'}}
+          ^
+
+"Test_name.c", line 379: error: parameter pack "Ts" was referenced but not expanded
+    struct PrimaryClass<Ts>; // expected-error{{partial specialization contains unexpanded parameter pack 'Ts'}}
+                        ^
+
+"Test_name.c", line 384: error: parameter pack "Ts" was referenced but not expanded
+    void PrimaryFunction<Ts>(); // expected-error{{function template partial specialization is not allowed}}
+                         ^
+
+"Test_name.c", line 398: error: parameter pack "Ts" was referenced but not expanded
+      struct InnerClass<Ts>; // expected-error{{explicit specialization contains unexpanded parameter pack 'Ts'}}
+                        ^
+
+"Test_name.c", line 398: warning: invalid redeclaration of nested class
+      struct InnerClass<Ts>; // expected-error{{explicit specialization contains unexpanded parameter pack 'Ts'}}
+             ^
+
+"Test_name.c", line 400: error: parameter pack "Ts" was referenced but not expanded
+      struct InnerClass<U, Ts>; // expected-error{{partial specialization contains unexpanded parameter pack 'Ts'}}
+                           ^
+
+"Test_name.c", line 405: error: parameter pack "Ts" was referenced but not expanded
+      void InnerFunction<Ts>(); // expected-error{{explicit specialization contains unexpanded parameter pack 'Ts'}}
+                         ^
+
+"Test_name.c", line 407: error: parameter pack "Ts" was referenced but not expanded
+      friend void PrimaryFunction<Ts>(); // expected-error{{friend declaration contains unexpanded parameter pack 'Ts'}}
+                                  ^
+
+"Test_name.c", line 428: error: parameter pack "OuterTypes" was referenced but not expanded
+      typedef pair<OuterTypes, InnerTypes>* types; // expected-error{{declaration type contains unexpanded parameter packs 'OuterTypes' and 'InnerTypes'}}
+                   ^
+
+"Test_name.c", line 428: error: parameter pack "InnerTypes" was referenced but not expanded
+      typedef pair<OuterTypes, InnerTypes>* types; // expected-error{{declaration type contains unexpanded parameter packs 'OuterTypes' and 'InnerTypes'}}
+                               ^
+
+"Test_name.c", line 432: error: parameter pack "VeryInnerTypes" was referenced but not expanded
+        typedef pair<pair<VeryInnerTypes, OuterTypes>, pair<InnerTypes, OuterTypes> > types; // expected-error{{declaration type contains unexpanded parameter packs 'VeryInnerTypes', 'OuterTypes', ...}}
+                          ^
+
+"Test_name.c", line 432: error: parameter pack "OuterTypes" was referenced but not expanded
+        typedef pair<pair<VeryInnerTypes, OuterTypes>, pair<InnerTypes, OuterTypes> > types; // expected-error{{declaration type contains unexpanded parameter packs 'VeryInnerTypes', 'OuterTypes', ...}}
+                                          ^
+
+"Test_name.c", line 432: error: parameter pack "InnerTypes" was referenced but not expanded
+        typedef pair<pair<VeryInnerTypes, OuterTypes>, pair<InnerTypes, OuterTypes> > types; // expected-error{{declaration type contains unexpanded parameter packs 'VeryInnerTypes', 'OuterTypes', ...}}
+                                                            ^
+
+"Test_name.c", line 432: error: parameter pack "OuterTypes" was referenced but not expanded
+        typedef pair<pair<VeryInnerTypes, OuterTypes>, pair<InnerTypes, OuterTypes> > types; // expected-error{{declaration type contains unexpanded parameter packs 'VeryInnerTypes', 'OuterTypes', ...}}
+                                                                        ^
+
+"Test_name.c", line 444: error: pack "Args2" does not have the same number of elements as "Args1"
+        typedef Tuple<Pair<Args1, Args2> ... > type; // expected-error{{pack expansion contains parameter packs 'Args1' and 'Args2' that have different lengths (1 vs. 2)}}
+                                  ^
+          detected during instantiation of class "WorkingPaperExample::zip<Args1...>::with<Args2...> [with Args1=<short>, Args2=<unsigned short, unsigned int>]" at line 451
+
+"Test_name.c", line 459: error: pack expansion does not make use of any argument packs
+      f(5 ...); // expected-error{{pack expansion does not contain any unexpanded parameter packs}}
+          ^
+
+"Test_name.c", line 460: error: parameter pack "args" was referenced but not expanded
+      f(args); // expected-error{{expression contains unexpanded parameter pack 'args'}}
+        ^
+
+"Test_name.c", line 479: warning: variable templates are a C++14 feature
+    template<typename> const int vt = 0; // cxx11-warning {{extension}}
+                                    ^
+
+"Test_name.c", line 499: warning: missing return statement at end of non-void function "use_partial"
+  int use_partial() { partial<char> n; }
+                                       ^
+
+"Test_name.c", line 519: warning: missing return statement at end of non-void function "PR26017::fn"
+  }
+  ^
+
+"Test_name.c", line 524: error: pack "Bs" does not have the same number of elements as "As"
+    template <typename... Bs> using B = void(As...(Bs));
+                                                   ^
+          detected during:
+            instantiation of type "GH58452::A<As...>::B<Ds...> [with As=<int, int>]" at line 528
+            instantiation of class "GH58452::C<Cs...> [with Cs=<int, int>]" at line 531
+
+"Test_name.c", line 542: error: pack "Params" does not have the same number of elements as "Args"
+          using Return = SignatureType<int(ConditionalRewrite<Args, Params>...)>;
+                                                                    ^
+          detected during:
+            instantiation of type "GH58452::Type1<Args...>::Return<Params...> [with Args=<int, int>]" at line 551
+            instantiation of class "GH58452::Type2<Args...> [with Args=<int, int>]" at line 561
+
+"Test_name.c", line 469: error: pack "M" does not have the same number of elements as "N"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                   ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2>, M=<4, 5, 6>]" at line 472
+
+"Test_name.c", line 469: error: no default constructor exists for class "PR16303::A<1>"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                         ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2>, M=<4, 5, 6>]" at line 472
+
+"Test_name.c", line 469: error: no default constructor exists for class "PR16303::A<2>"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                         ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2>, M=<4, 5, 6>]" at line 472
+
+"Test_name.c", line 469: error: pack "M" does not have the same number of elements as "N"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                   ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2, 3, 4>, M=<4, 5, 6>]" at line 473
+
+"Test_name.c", line 469: error: no default constructor exists for class "PR16303::A<1>"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                         ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2, 3, 4>, M=<4, 5, 6>]" at line 473
+
+"Test_name.c", line 469: error: no default constructor exists for class "PR16303::A<2>"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                         ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2, 3, 4>, M=<4, 5, 6>]" at line 473
+
+"Test_name.c", line 469: error: no default constructor exists for class "PR16303::A<3>"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                         ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2, 3, 4>, M=<4, 5, 6>]" at line 473
+
+"Test_name.c", line 469: error: no default constructor exists for class "PR16303::A<4>"
+        C() : A<N>(M)... {} // expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (2 vs. 3)}} expected-error{{pack expansion contains parameter packs 'N' and 'M' that have different lengths (4 vs. 3)}}
+                         ^
+          detected during instantiation of "PR16303::B<N...>::C<M...>::C() [with N=<1, 2, 3, 4>, M=<4, 5, 6>]" at line 473
+
+149 errors detected in the compilation of "Test_name.c".

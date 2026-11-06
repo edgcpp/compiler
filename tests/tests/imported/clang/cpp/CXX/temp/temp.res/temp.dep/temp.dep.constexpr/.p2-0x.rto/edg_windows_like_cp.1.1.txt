@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 33: error: expression must have a constant value
+      typename S<i2>::T check5; // expected-error {{undefined template}}
+                 ^
+"Test_name.c", line 33: note: attempt to access run-time storage
+      typename S<i2>::T check5; // expected-error {{undefined template}}
+                 ^
+
+"Test_name.c", line 36: error: incomplete type "S<1>" is not allowed
+      typename S<true ? 1 : x.n>::T check6; // ok, x is value-dependent
+               ^
+
+"Test_name.c", line 39: error: incomplete type "S<2>" is not allowed
+      typename S<true ? 2 : y.n>::T check7; // expected-error {{undefined template}}
+               ^
+
+"Test_name.c", line 42: error: incomplete type "S<3>" is not allowed
+      typename S<true ? 3 : z.n>::T check8; // expected-error {{undefined template}}
+               ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,65 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 11: error: initial value of reference to non-const must be an lvalue
+  int &e = [] (int &r) -> auto { return r; } (a); // expected-error {{cannot bind to a temporary}}
+           ^
+
+"Test_name.c", line 12: error: initial value of reference to non-const must be an lvalue
+  int &f = [] (int r) -> decltype(auto) { return r; } (a); // expected-error {{non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'}}
+           ^
+
+"Test_name.c", line 13: warning: returning reference to local variable
+  int &g = [] (int r) -> decltype(auto) { return (r); } (a); // expected-warning {{reference to stack}}
+                                                 ^
+
+"Test_name.c", line 21: error: initial value of reference to non-const must be an lvalue
+      auto MRef = [](auto b) -> auto & { return b; }; //cxx14_20-warning{{reference to stack}}
+                                                ^
+          detected during instantiation of function "lambda [](auto)->auto & [with <auto-1>=X]" at line 29
+
+"Test_name.c", line 23: warning: returning pointer to local variable
+      auto MPtr = [](auto c) -> auto* { return &c; }; //expected-warning{{address of stack}}
+                                               ^
+          detected during instantiation of function "lambda [](auto)->auto * [with <auto-1>=X]" at line 30
+
+"Test_name.c", line 19: warning: variable "L" was declared but never referenced
+      auto L = [](auto F, auto a) { return F(a); };
+           ^
+
+"Test_name.c", line 28: warning: variable "x1" was declared but never referenced
+      auto &&x1 = M(X{});
+             ^
+
+"Test_name.c", line 39: warning: variable "x" was declared but never referenced
+      X x = M(X{});
+        ^
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "test_implicit_auto_return"
+  }
+  ^
+
+"Test_name.c", line 47: warning: variable "k" is used before its value is set
+        if (k)
+            ^
+
+"Test_name.c", line 50: error: deduced return type "int" conflicts with previously deduced type "char"
+          return 5; //expected-error{{deduced as 'int' here}}
+                 ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=char]" at line 53
+
+"Test_name.c", line 65: warning: missing return statement at end of non-void function "test_no_parameter_list"
+  }
+  ^
+
+"Test_name.c", line 60: warning: variable "M2" was declared but never referenced
+      auto M2 = [] -> auto && { return si; };
+           ^
+
+"Test_name.c", line 74: warning: missing return statement at end of non-void function "test_conditional_in_return"
+  }
+  ^
+
+"Test_name.c", line 68: warning: variable "Fac" was declared but never referenced
+    auto Fac = [](auto f, auto n) {
+         ^
+
+4 errors detected in the compilation of "Test_name.c".

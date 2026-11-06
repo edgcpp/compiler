@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef float __vector __ev64_fs__;
+                ^
+
+"Test_name.c", line 11: error: identifier "__ev64_opaque__" is undefined
+  __ev64_opaque__ o;
+  ^
+
+"Test_name.c", line 13: error: incomplete type "void" is not allowed
+  extern void bar (__ev64_opaque__);
+              ^
+
+"Test_name.c", line 13: error: identifier "__ev64_opaque__" is undefined
+  extern void bar (__ev64_opaque__);
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

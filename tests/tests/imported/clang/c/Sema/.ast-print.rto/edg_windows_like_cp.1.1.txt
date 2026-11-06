@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 76: warning: variable "x" was declared but never referenced
+    int *x = ((void *)0), *y = ((void *)0);
+         ^
+
+"Test_name.c", line 76: warning: variable "y" was declared but never referenced
+    int *x = ((void *)0), *y = ((void *)0);
+                           ^
+
+"Test_name.c", line 81: warning: variable "z" was declared but never referenced
+    } z = {(struct Z){}};
+      ^
+
+"Test_name.c", line 96: warning: attributes are ignored on an enum declaration that is not also a definition
+  enum __attribute__((deprecated)) EnumWithAttributes2 *EnumWithAttributes2Ptr;
+       ^
+
+"Test_name.c", line 103: warning: attributes are ignored on an enum declaration that is not also a definition
+    enum __attribute__((deprecated)) EnumWithAttributes3 *EnumWithAttributes3Ptr;
+         ^
+
+"Test_name.c", line 107: warning: variable "EnumWithAttributes3Ptr" is used before its value is set
+    void *p = EnumWithAttributes3Ptr;
+              ^
+
+"Test_name.c", line 107: warning: variable "p" was declared but never referenced
+    void *p = EnumWithAttributes3Ptr;
+          ^
+

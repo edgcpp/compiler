@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 6: warning: nested comment is not allowed
+  /* { dg-do run } */
+  ^
+
+"Test_name.c", line 19: warning: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  num_equality_op (lhs, rhs)
+                   ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function 'main':
+Test_name.c:33:47: error: too many arguments to function 'num_equality_op'; expected 0, have 2
+Test_name.c:19:16: note: declared here
+Test_name.c:37:18: error: too many arguments to function 'num_equality_op'; expected 0, have 2
+Test_name.c:19:16: note: declared here
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

@@ -1,0 +1,154 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions --exceptions Test_name.c
+"Test_name.c", line 37: error: class "cwg2100::X<&n, true>" has no member "n"
+        return X<&n>::n; // ok, value-dependent
+                      ^
+
+"Test_name.c", line 42: warning: this partial specialization would have been used to instantiate class "cwg2100::X<&n, true>"
+    template<const int *P> struct X<P> {
+                                  ^
+
+"Test_name.c", line 57: error: class "cwg2100::Y<1, true>" has no member "declared_later"
+        return Y<n>::declared_later;
+                     ^
+
+"Test_name.c", line 62: error: class "cwg2100::Y<2, true>" has no member "declared_later"
+        return Y<n>::declared_later;
+                     ^
+
+"Test_name.c", line 66: warning: this partial specialization would have been used to instantiate class "cwg2100::Y<2, true>"
+    template<int N> struct Y<N> {
+                           ^
+
+"Test_name.c", line 77: error: reference to local variable of enclosing function is not allowed
+          int &s = r;
+                   ^
+
+"Test_name.c", line 94: error: static assertion failed with ""
+    static_assert(!__is_standard_layout(E), "");
+    ^
+
+"Test_name.c", line 118: error: expression must have a constant value
+    static_assert(b.n == 1, "");
+                  ^
+"Test_name.c", line 118: note: attempt to access run-time storage
+    static_assert(b.n == 1, "");
+                   ^
+
+"Test_name.c", line 119: error: expression must have a constant value
+    static_assert(c.n == 1, "");
+                  ^
+"Test_name.c", line 119: note: attempt to access run-time storage
+    static_assert(c.n == 1, "");
+                   ^
+
+"Test_name.c", line 120: error: expression must have a constant value
+    static_assert(d.n == 1, "");
+                  ^
+"Test_name.c", line 120: note: attempt to access run-time storage
+    static_assert(d.n == 1, "");
+                   ^
+
+"Test_name.c", line 128: error: expression must have a constant value
+    static_assert(f.n == 1, "");
+                  ^
+"Test_name.c", line 128: note: attempt to access run-time storage
+    static_assert(f.n == 1, "");
+                   ^
+
+"Test_name.c", line 133: error: expression must have a constant value
+    static_assert(h.n == 1, "");
+                  ^
+"Test_name.c", line 133: note: attempt to access run-time storage
+    static_assert(h.n == 1, "");
+                   ^
+
+"Test_name.c", line 137: error: expression must have a constant value
+    static_assert(i.a.n == 1, "");
+                  ^
+"Test_name.c", line 137: note: attempt to access run-time storage
+    static_assert(i.a.n == 1, "");
+                   ^
+
+"Test_name.c", line 141: error: expression must have a constant value
+    static_assert(j.a.n == 1, "");
+                  ^
+"Test_name.c", line 141: note: attempt to access run-time storage
+    static_assert(j.a.n == 1, "");
+                   ^
+
+"Test_name.c", line 190: error: expression must have a constant value
+    static_assert(!test({123}), "u.b should be valid even when b is inactive");
+                  ^
+"Test_name.c", line 188: note: invalid access to inactive member "cwg2140::U::b" of union (member "cwg2140::U::a" is active)
+      return u.b;
+              ^
+
+"Test_name.c", line 202: error: incomplete type "S" is not allowed
+    struct S *a = (1 == 1) ? new struct S : new struct S;
+                                 ^
+
+"Test_name.c", line 202: error: incomplete type "S" is not allowed
+    struct S *a = (1 == 1) ? new struct S : new struct S;
+                                                ^
+
+"Test_name.c", line 209: error: type definition is not allowed
+    A *aa = new struct A{};
+                ^
+
+"Test_name.c", line 209: error: a value of type "A *" cannot be used to initialize an entity of type "cwg2141::A *"
+    A *aa = new struct A{};
+            ^
+
+"Test_name.c", line 210: error: class "cwg2141::B<int>" cannot be specialized in the current scope
+    B<int> *bb = new struct B<int>{};
+                            ^
+
+"Test_name.c", line 210: error: type definition is not allowed
+    B<int> *bb = new struct B<int>{};
+                     ^
+
+"Test_name.c", line 211: error: type definition is not allowed
+    (void)new struct C{};
+              ^
+
+"Test_name.c", line 215: error: class "A" has already been defined (previous definition at line 209)
+    struct A *c = (1 == 1) ? new struct A {} : new struct A {};
+                                        ^
+
+"Test_name.c", line 215: error: type definition is not allowed
+    struct A *c = (1 == 1) ? new struct A {} : new struct A {};
+                                 ^
+
+"Test_name.c", line 215: error: class "A" has already been defined (previous definition at line 215)
+    struct A *c = (1 == 1) ? new struct A {} : new struct A {};
+                                                          ^
+
+"Test_name.c", line 215: error: type definition is not allowed
+    struct A *c = (1 == 1) ? new struct A {} : new struct A {};
+                                                   ^
+
+"Test_name.c", line 215: error: operand types are incompatible ("A *" and "A *")
+    struct A *c = (1 == 1) ? new struct A {} : new struct A {};
+                                             ^
+
+"Test_name.c", line 217: error: type definition is not allowed
+    alignof(struct D{});
+            ^
+
+"Test_name.c", line 221: error: type definition is not allowed
+    sizeof(struct E{});
+           ^
+
+"Test_name.c", line 299: error: "cwg2180::A &cwg2180::A::operator=(const cwg2180::A &)" (declared at line 294) is inaccessible
+    struct B : virtual A { // #cwg2180-B
+                       ^
+
+"Test_name.c", line 299: error: "cwg2180::A &cwg2180::A::operator=(cwg2180::A &&)" (declared at line 295) is inaccessible
+    struct B : virtual A { // #cwg2180-B
+                       ^
+
+"Test_name.c", line 341: error: typedef "S" may not be used in an elaborated type specifier
+    struct S s;
+           ^
+
+30 errors detected in the compilation of "Test_name.c".

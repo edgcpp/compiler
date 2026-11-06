@@ -1,0 +1,45 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./pr94920.C", line 5: warning: unknown attribute "vector_size"
+  typedef int __attribute__((vector_size(4*sizeof(int)))) vint;
+                             ^
+
+"./pr94920.C", line 8: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int foo(int x) {
+                 ^
+
+"./pr94920.C", line 13: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int corge(int x) {
+                 ^
+
+"./pr94920.C", line 21: warning: unknown attribute "noipa"
+  __attribute__((noipa)) vint thud(vint x) {
+                 ^
+
+"./pr94920.C", line 29: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int bar(int x) {
+                 ^
+
+"./pr94920.C", line 34: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int baz(int x) {
+                 ^
+
+"./pr94920.C", line 39: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int quux(int x) {
+                 ^
+
+"./pr94920.C", line 44: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int waldo(int x) {
+                 ^
+
+"./pr94920.C", line 49: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int fred(int x) {
+                 ^
+
+"./pr94920.C", line 54: warning: unknown attribute "noipa"
+  __attribute__((noipa)) unsigned int goo(int x) {
+                 ^
+
+"./pr94920.C", line 59: warning: unknown attribute "noipa"
+  __attribute__((noipa)) int qux(int x) {
+                 ^
+

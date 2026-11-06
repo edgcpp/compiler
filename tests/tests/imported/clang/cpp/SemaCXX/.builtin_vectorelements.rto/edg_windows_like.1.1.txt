@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"SemaCXX/builtin_vectorelements.cpp", line 9: warning: unknown attribute "vector_size"
+  using VecT __attribute__((vector_size(16))) = T;
+                            ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 13: warning: unknown attribute "vector_size"
+    using VecT __attribute__((vector_size(8))) = T;
+                              ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 17: warning: unknown attribute "vector_size"
+    using veci4 __attribute__((vector_size(16))) = int;
+                               ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 18: error: type name is not allowed
+    (void) __builtin_vectorelements(veci4);
+                                    ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 21: error: type name is not allowed
+    (void) __builtin_vectorelements(some_other_vec);
+                                    ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 24: error: type name is not allowed
+    (void) __builtin_vectorelements(some_int);
+                                    ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 27: error: type name is not allowed
+    __builtin_vectorelements(Foo);
+                             ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 33: error: type name is not allowed
+    (void) __builtin_vectorelements(Baz::VecT);
+                                    ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 35: error: type name is not allowed
+    (void) __builtin_vectorelements(FooT::VecT<long>);
+                                    ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 36: error: type name is not allowed
+    (void) __builtin_vectorelements(VecT<char>);
+                                    ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 38: error: type name is not allowed
+    constexpr int i4 = __builtin_vectorelements(veci4);
+                                                ^
+
+"SemaCXX/builtin_vectorelements.cpp", line 39: error: type name is not allowed
+    constexpr int i4p8 = __builtin_vectorelements(veci4) + 8;
+                                                  ^
+
+9 errors detected in the compilation of "Test_name.c".

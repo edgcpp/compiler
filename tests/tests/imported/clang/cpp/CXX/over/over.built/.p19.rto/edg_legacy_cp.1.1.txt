@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 13: error: expression must have arithmetic or unscoped enum type
+    i -= pi; // expected-error {{invalid operands}}
+         ^
+
+"Test_name.c", line 23: error: expression must have arithmetic or unscoped enum type
+    f -= pi; // expected-error {{invalid operands}}
+         ^
+
+2 errors detected in the compilation of "Test_name.c".

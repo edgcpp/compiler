@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 14: error: expected an expression
+  static_assert(__has_unique_object_representations(volatile int), "vi");
+                                                    ^
+
+"Test_name.c", line 14: error: identifier "__has_unique_object_representations" is undefined
+  static_assert(__has_unique_object_representations(volatile int), "vi");
+                ^
+
+"Test_name.c", line 15: error: expected an expression
+  static_assert(__has_unique_object_representations(const volatile int),
+                                                    ^
+
+"Test_name.c", line 18: error: type name is not allowed
+  static_assert(__has_unique_object_representations(int), "i");
+                                                    ^
+
+"Test_name.c", line 19: error: expected an expression
+  static_assert(__has_unique_object_representations(const int), "ci");
+                                                    ^
+
+5 errors detected in the compilation of "Test_name.c".

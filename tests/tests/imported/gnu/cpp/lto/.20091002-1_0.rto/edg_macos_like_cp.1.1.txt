@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 50: warning: missing return statement at end of non-void function "std::basic_ostream<_CharT, _Traits>::operator<<"
+  	  __ostream_type&       operator<<(double __f)       { }
+  	                                                       ^
+
+"Test_name.c", line 55: warning: missing return statement at end of non-void function "std::Vector::operator[]"
+        Real operator[](int n) const    { }
+                                          ^
+
+"Test_name.c", line 60: warning: variable "i" is used before its value is set
+        s << vec[i] << ')';
+                 ^
+
+"Test_name.c", line 61: warning: missing return statement at end of non-void function "std::operator<<"
+      }
+      ^
+

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 17: error: a nonstatic member reference must be relative to a specific object
+      bar(&var); // expected-error{{invalid use of member 'var' in static member function}}
+           ^
+
+"Test_name.c", line 27: error: expression must be an lvalue or a function designator
+    (void)&Enumerator; // expected-error{{cannot take the address of an rvalue of type 'E'}}
+           ^
+
+"Test_name.c", line 32: error: expression must be an lvalue or a function designator
+    (void)&N; // expected-error{{cannot take the address of an rvalue of type 'int'}}
+           ^
+
+"Test_name.c", line 46: error: expression must be an lvalue or a function designator
+    int (PR11066::*ptr)(int) = & &PR11066::foo; // expected-error{{extra '&' taking address of overloaded function}}
+                                 ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,102 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++20 Test_name.c
+"Test_name.c", line 20: warning: variable "global" was declared but never referenced
+  	static int global; // expected-warning {{function with 'nonblocking' attribute must not have static local variables}}
+  	           ^
+
+"Test_name.c", line 73: error: expected an expression
+  	auto blk = ^() [[clang::nonblocking]] {
+  	           ^
+
+"Test_name.c", line 81: warning: variable "lambda" was declared but never referenced
+  	auto lambda = []() [[clang::nonblocking]] {
+  	     ^
+
+"Test_name.c", line 89: warning: variable "unsafeLambda" was declared but never referenced
+  	auto unsafeLambda = []() {
+  	     ^
+
+"Test_name.c", line 232: warning: variable "x" was declared but never referenced
+  	static int x; // expected-warning {{function with 'nonblocking' attribute must not have static local variables}}
+  	           ^
+
+"Test_name.c", line 265: warning: variable "vla" is used before its value is set
+  	FP h = vla[0];
+  	       ^
+
+"Test_name.c", line 259: warning: variable "f" was declared but never referenced
+  	FP f = src[idx]; // This should not generate a warning.
+  	   ^
+
+"Test_name.c", line 262: warning: variable "g" was declared but never referenced
+  	FP g = twoDim[1][1];
+  	   ^
+
+"Test_name.c", line 265: warning: variable "h" was declared but never referenced
+  	FP h = vla[0];
+  	   ^
+
+"Test_name.c", line 269: error: incomplete type "void" is not allowed
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+       ^
+
+"Test_name.c", line 269: error: expected an expression
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                  ^
+
+"Test_name.c", line 269: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+            ^
+
+"Test_name.c", line 269: error: two consecutive left square brackets always introduce an attribute list but an attribute list cannot appear here
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                          ^
+
+"Test_name.c", line 269: error: identifier "clang" is undefined
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                            ^
+
+"Test_name.c", line 269: error: expected a "]"
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                                 ^
+
+"Test_name.c", line 269: warning: omitting "()" in a lambda declarator is nonstandard in this mode
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                                               ^
+
+"Test_name.c", line 269: error: expected a "{" introducing a lambda body
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                                               ^
+
+"Test_name.c", line 269: error: expected a ";"
+  void nb17(void (^blk)() [[clang::nonblocking]]) [[clang::nonblocking]] {
+                                                  ^
+
+"Test_name.c", line 302: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 316: error: identifier "S" is undefined
+      S s1(3);   // expected-warning {{function with 'nonblocking' attribute must not call non-'nonblocking' constructor 'S::S'}}
+      ^
+
+"Test_name.c", line 317: error: identifier "S" is undefined
+      S s2(3.0); // expected-warning {{function with 'nonblocking' attribute must not call non-'nonblocking' constructor 'S::S'}}
+      ^
+
+"Test_name.c", line 410: warning: variable "a" was declared but never referenced
+      decltype(bad()) a; // doesn't generate a call so, OK
+                      ^
+
+"Test_name.c", line 486: warning: variable "b" was declared but never referenced
+  	auto b = a;            // Copy constructor.
+  	     ^
+
+"Test_name.c", line 497: warning: variable "x" was declared but never referenced
+  	bool x = __is_constructible(int, const int&);
+  	     ^
+
+"Test_name.c", line 505: warning: variable "lambda" was declared but never referenced
+  	auto lambda = []() [[clang::nonblocking]] {}; // expected-warning {{lambda with 'nonblocking' attribute should be declared noexcept}}
+  	     ^
+
+11 errors detected in the compilation of "Test_name.c".

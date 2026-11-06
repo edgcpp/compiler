@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: error: too many initializer values
+  constexpr vec v = { 3, 4 };
+                         ^
+
+"Test_name.c", line 8: error: identifier "__builtin_shuffle" is undefined
+  constexpr vec w = __builtin_shuffle (v, v);
+                    ^
+
+"Test_name.c", line 7: warning: variable "s" was declared but never referenced
+  constexpr vec s = v + v;
+                ^
+
+"Test_name.c", line 8: warning: variable "w" was declared but never referenced
+  constexpr vec w = __builtin_shuffle (v, v);
+                ^
+
+2 errors detected in the compilation of "Test_name.c".

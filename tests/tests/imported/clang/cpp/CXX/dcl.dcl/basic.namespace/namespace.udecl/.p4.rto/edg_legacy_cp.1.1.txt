@@ -1,0 +1,117 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 28: error: a class-qualified name is required
+      using NonClass::type; // expected-error {{not a class}}
+            ^
+
+"Test_name.c", line 29: error: a class-qualified name is required
+      using NonClass::hiding; // expected-error {{not a class}}
+            ^
+
+"Test_name.c", line 30: error: a class-qualified name is required
+      using NonClass::union_member; // expected-error {{not a class}}
+            ^
+
+"Test_name.c", line 31: error: a class-qualified name is required
+      using NonClass::enumerator; // expected-error {{not a class}}
+            ^
+
+"Test_name.c", line 54: warning: variable "t" was declared but never referenced
+        type t = 0;
+             ^
+
+"Test_name.c", line 59: warning: variable "_" was declared but never referenced
+        struct hiding _ = local();
+                      ^
+
+"Test_name.c", line 63: error: tag kind of union is incompatible with declaration of class "test1::A::hiding" (declared at line 40)
+        union hiding _; // expected-error {{tag type that does not match previous}}
+              ^
+
+"Test_name.c", line 67: warning: variable "array" was declared but never referenced
+        char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+             ^
+
+"Test_name.c", line 71: warning: variable "_" was declared but never referenced
+        enum tagname _ = enumerator;
+                     ^
+
+"Test_name.c", line 75: warning: variable "_" was declared but never referenced
+        Opaque0 _ = hiding;
+                ^
+
+"Test_name.c", line 97: warning: variable "t" was declared but never referenced
+        type t = 0;
+             ^
+
+"Test_name.c", line 102: warning: variable "_" was declared but never referenced
+        struct hiding _ = local();
+                      ^
+
+"Test_name.c", line 106: error: tag kind of union is incompatible with declaration of class "test2::A::hiding" (declared at line 83)
+        union hiding _; // expected-error {{tag type that does not match previous}}
+              ^
+
+"Test_name.c", line 110: warning: variable "array" was declared but never referenced
+        char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+             ^
+
+"Test_name.c", line 114: warning: variable "_" was declared but never referenced
+        enum tagname _ = enumerator;
+                     ^
+
+"Test_name.c", line 118: error: no suitable constructor exists to convert from "int" to "Opaque0"
+        Opaque0 _ = hiding;
+                    ^
+
+"Test_name.c", line 155: warning: variable "array" was declared but never referenced
+        char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+             ^
+
+"Test_name.c", line 183: error: type name is not allowed
+        Opaque0 _ = hiding; // expected-error {{does not refer to a value}}
+                    ^
+
+"Test_name.c", line 173: error: member "test3::A<T>::hiding [with T=int]" is not a type name
+      using typename A<T>::hiding; // expected-note {{declared here}} \
+                     ^
+          detected during instantiation of class "test3::C<T> [with T=int]" at line 187
+
+"Test_name.c", line 175: error: member "test3::A<T>::union_member [with T=int]" is not a type name
+      using typename A<T>::union_member; // expected-error {{'typename' keyword used on a non-type}}
+                     ^
+          detected during instantiation of class "test3::C<T> [with T=int]" at line 187
+
+"Test_name.c", line 176: error: constant "test3::A<T>::enumerator [with T=int]" is not a type name
+      using typename A<T>::enumerator; // expected-error {{'typename' keyword used on a non-type}}
+                     ^
+          detected during instantiation of class "test3::C<T> [with T=int]" at line 187
+
+"Test_name.c", line 208: error: a class-qualified name is required
+      using InnerNS::foo; // expected-error {{not a class}}
+            ^
+
+"Test_name.c", line 209: error: class "test4::Base" has no member "bar"
+      using Base::bar; // expected-error {{no member named 'bar'}}
+                  ^
+
+"Test_name.c", line 210: error: invalid base class
+      using Unrelated::foo; // expected-error {{not a base class}}
+            ^
+
+"Test_name.c", line 211: error: invalid base class
+      using C::foo; // expected-error {{refers to its own class}}
+            ^
+
+"Test_name.c", line 212: error: invalid base class
+      using Subclass::foo; // expected-error {{refers into 'Subclass', which is not a base class}}
+            ^
+
+"Test_name.c", line 214: error: invalid base class
+      using C::bar; // expected-error {{refers to its own class}}
+            ^
+
+"Test_name.c", line 231: warning: variable "b2" was set but never used
+      B b2(b);
+        ^
+
+17 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,112 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: error: a parameter may not have void type
+    void f(T x); // expected-error{{argument may not have 'void' type}}
+           ^
+          detected during instantiation of class "X<T> [with T=void]" at line 25
+
+"Test_name.c", line 10: error: a parameter may not have void type
+    static int h(T, T); // expected-error {{argument may not have 'void' type}}
+                 ^
+          detected during instantiation of class "X<T> [with T=void]" at line 25
+
+"Test_name.c", line 10: error: a parameter may not have void type
+    static int h(T, T); // expected-error {{argument may not have 'void' type}}
+                    ^
+          detected during instantiation of class "X<T> [with T=void]" at line 25
+
+"Test_name.c", line 25: warning: variable "xv" was declared but never referenced
+    X<void> xv; // expected-note{{in instantiation of template class 'X<void>' requested here}}
+            ^
+
+"Test_name.c", line 32: error: cannot overload functions distinguished by return type alone
+    float& f(T, U); // expected-error{{functions that differ only in their return type cannot be overloaded}}
+           ^
+          detected during instantiation of class "Overloading<T, U> [with T=float, U=float]" at line 41
+
+"Test_name.c", line 41: warning: variable "off" was declared but never referenced
+    Overloading<float, float> off; // expected-note{{in instantiation of template class 'Overloading<float, float>' requested here}}
+                              ^
+
+"Test_name.c", line 84: error: no suitable conversion function from "A1<int>" to "int *" exists
+    int *y1 = x1; // expected-error{{no viable conversion}}
+              ^
+
+"Test_name.c", line 85: warning: missing return statement at end of non-void function "a"
+  }
+  ^
+
+"Test_name.c", line 127: error: namespace "test1" has no member "Undeclared"
+      void foo(A<test1::Undeclared> &a) // expected-error {{no member named 'Undeclared' in namespace 'test1'}}
+                        ^
+
+"Test_name.c", line 141: warning: missing return statement at end of non-void function "PR6947::X<T>::f0"
+      }
+      ^
+
+"Test_name.c", line 139: warning: variable "pImpl" was declared but never referenced
+        impl_fun_ptr pImpl = &X::template
+                     ^
+
+"Test_name.c", line 144: warning: missing return statement at end of non-void function "PR6947::X<T>::f1"
+      }
+      ^
+
+"Test_name.c", line 154: warning: missing return statement at end of non-void function "PR6947::g0"
+    }
+    ^
+
+"Test_name.c", line 183: error: invalid redeclaration of member function "SameSignatureAfterInstantiation::S<T>::f(T *) [with T=const int]" (declared at line 182)
+      void f(const T*); // expected-error-re {{multiple overloads of 'f' instantiate to the same signature 'void (const int *){{( __attribute__\(\(thiscall\)\))?}}'}}
+           ^
+          detected during instantiation of class "SameSignatureAfterInstantiation::S<T> [with T=const int]" at line 185
+
+"Test_name.c", line 190: error: "bazqux" is not a class or function template name in the current scope
+      template <> void bazqux(typename T::type) {}  // expected-error {{no candidate function template was found for dependent member function template specialization}}
+                       ^
+
+"Test_name.c", line 190: error: name followed by "::" must be a class or namespace name
+      template <> void bazqux(typename T::type) {}  // expected-error {{no candidate function template was found for dependent member function template specialization}}
+                                       ^
+          detected during instantiation of class "PR22040::Foobar<T> [with T=void]" at line 194
+
+"Test_name.c", line 190: error: a class or namespace qualified name is required
+      template <> void bazqux(typename T::type) {}  // expected-error {{no candidate function template was found for dependent member function template specialization}}
+                                       ^
+          detected during instantiation of class "PR22040::Foobar<T> [with T=void]" at line 194
+
+"Test_name.c", line 190: error: global-scope qualifier (leading "::") is not allowed
+      template <> void bazqux(typename T::type) {}  // expected-error {{no candidate function template was found for dependent member function template specialization}}
+                                        ^
+          detected during instantiation of class "PR22040::Foobar<T> [with T=void]" at line 194
+
+"Test_name.c", line 194: error: class "PR22040::Foobar<void>" has no member "bazqux"
+      Foobar<void>::bazqux();
+                    ^
+
+"Test_name.c", line 190: error: a class or namespace qualified name is required
+      template <> void bazqux(typename T::type) {}  // expected-error {{no candidate function template was found for dependent member function template specialization}}
+                                       ^
+          detected during instantiation of class "PR22040::Foobar<T> [with T=int]" at line 195
+
+"Test_name.c", line 190: error: global-scope qualifier (leading "::") is not allowed
+      template <> void bazqux(typename T::type) {}  // expected-error {{no candidate function template was found for dependent member function template specialization}}
+                                        ^
+          detected during instantiation of class "PR22040::Foobar<T> [with T=int]" at line 195
+
+"Test_name.c", line 195: error: class "PR22040::Foobar<int>" has no member "bazqux"
+      Foobar<int>::bazqux();
+                   ^
+
+"Test_name.c", line 196: error: class "PR22040::Foobar<int>" has no member "bazqux"
+      Foobar<int>::bazqux(3);  // expected-error{{no member named 'bazqux' in }}
+                   ^
+
+"Test_name.c", line 203: error: the global scope has no "Fn"
+    void ::Fn(); // expected-error{{cannot have a qualified name}}
+           ^
+
+"Test_name.c", line 208: error: global-scope qualifier (leading "::") is not allowed
+    void ::f(); // expected-error{{cannot have a qualified name}}
+         ^
+
+18 errors detected in the compilation of "Test_name.c".

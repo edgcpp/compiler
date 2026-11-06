@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 33: error: expression must have a constant value
+  constexpr int b = bar ();
+                    ^
+"Test_name.c", line 33: note: some dynamic allocations (total number = 1) were not deallocated
+  constexpr int b = bar ();
+                    ^
+"Test_name.c", line 10: note: allocation occurred here
+    constexpr S () : d(new int[1]{}), n(1) {}
+                       ^
+
+"Test_name.c", line 32: warning: variable "a" was declared but never referenced
+  constexpr int a = baz ();
+                ^
+
+"Test_name.c", line 33: warning: variable "b" was declared but never referenced
+  constexpr int b = bar ();
+                ^
+
+1 error detected in the compilation of "Test_name.c".

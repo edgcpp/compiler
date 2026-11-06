@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 9: warning: name following "template" must be a template
+    void p() { this->template a<>(); }
+                              ^
+
+"Test_name.c", line 9: error: a pointer to a bound function may only be used to call the function
+    void p() { this->template a<>(); }
+                              ^
+
+"Test_name.c", line 9: error: expected an expression
+    void p() { this->template a<>(); }
+                                ^
+
+2 errors detected in the compilation of "Test_name.c".

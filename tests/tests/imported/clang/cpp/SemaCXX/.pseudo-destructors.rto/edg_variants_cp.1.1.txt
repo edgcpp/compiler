@@ -1,0 +1,221 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 28: error: invalid destructor name for type "A"
+    a->~foo(); // expected-error{{undeclared identifier 'foo' in destructor name}}
+        ^
+
+"Test_name.c", line 30: error: invalid destructor name for type "A"
+    a->~Bar(); // expected-error{{destructor type 'Bar' (aka 'Foo') in object destruction expression does not match the type 'A' of the object being destroyed}}
+        ^
+
+"Test_name.c", line 34: error: invalid destructor name for type "int"
+    i->~Bar(); // expected-error{{does not match}}
+       ^
+
+"Test_name.c", line 36: error: invalid destructor name for type "void"
+    g().~Bar(); // expected-error{{non-scalar}}
+        ^
+
+"Test_name.c", line 38: error: expected an identifier
+    f->::~Bar(); // expected-error {{not a structure or union}}
+         ^
+
+"Test_name.c", line 40: error: "Wibble" is not a type name
+    f->N::~Wibble(); // expected-error{{'N' does not refer to a type}} expected-error{{'Wibble' does not refer to a type}}
+          ^
+
+"Test_name.c", line 42: error: too many arguments in function call
+    f->Bar::~Bar(17, 42); // expected-error{{cannot have any arguments}}
+                 ^
+
+"Test_name.c", line 46: error: "OtherInteger" is not a type name
+    i->N::~OtherInteger(); // expected-error{{'N' does not refer to a type name in pseudo-destructor expression; expected the name of type 'int'}}
+          ^
+
+"Test_name.c", line 50: error: "Integer" is not a type name
+    i->N::OtherInteger::~Integer(); // expected-error{{'Integer' does not refer to a type name in pseudo-destructor expression; expected the name of type 'int'}}
+                        ^
+
+"Test_name.c", line 52: error: "Integer" is not a type name
+    i->N::OtherInteger::~Integer(); // expected-error{{'Integer' does not refer to a type name in pseudo-destructor expression; expected the name of type 'int'}}
+                        ^
+
+"Test_name.c", line 53: error: invalid destructor name for type "int"
+    i->Integer::~Double(); // expected-error{{the type of object expression ('int') does not match the type being destroyed ('Double' (aka 'double')) in pseudo-destructor expression}}
+                ^
+
+"Test_name.c", line 55: error: operator -> or ->* applied to "int" instead of to a pointer type
+    ii->~Integer(); // expected-error{{member reference type 'int' is not a pointer; did you mean to use '.'?}}
+    ^
+
+"Test_name.c", line 68: error: a pseudo-destructor reference can only be used for a pseudo-destructor call
+    ip->~Integer; // expected-error{{reference to pseudo-destructor must be called}}
+        ^
+
+"Test_name.c", line 96: error: "Id" is not a type name
+    p->~Id<int>();
+       ^
+
+"Test_name.c", line 96: error: type name is not allowed
+    p->~Id<int>();
+           ^
+
+"Test_name.c", line 96: error: expected an expression
+    p->~Id<int>();
+                ^
+
+"Test_name.c", line 97: error: "Id" is not a type name
+    p->template ~Id<int>(); // expected-error {{'template' keyword not permitted in destructor name}}
+                ^
+
+"Test_name.c", line 97: error: type name is not allowed
+    p->template ~Id<int>(); // expected-error {{'template' keyword not permitted in destructor name}}
+                    ^
+
+"Test_name.c", line 97: error: expected an expression
+    p->template ~Id<int>(); // expected-error {{'template' keyword not permitted in destructor name}}
+                         ^
+
+"Test_name.c", line 98: error: "Id" is not a type name
+    (0).~Id<int>();
+        ^
+
+"Test_name.c", line 98: error: type name is not allowed
+    (0).~Id<int>();
+            ^
+
+"Test_name.c", line 98: error: expected an expression
+    (0).~Id<int>();
+                 ^
+
+"Test_name.c", line 99: error: "Id" is not a type name
+    (0).template ~Id<int>(); // expected-error {{'template' keyword not permitted in destructor name}}
+                 ^
+
+"Test_name.c", line 99: error: type name is not allowed
+    (0).template ~Id<int>(); // expected-error {{'template' keyword not permitted in destructor name}}
+                     ^
+
+"Test_name.c", line 99: error: expected an expression
+    (0).template ~Id<int>(); // expected-error {{'template' keyword not permitted in destructor name}}
+                          ^
+
+"Test_name.c", line 113: error: invalid destructor name for type "dotPointerAccess::Base *"
+    static_cast<Base *>(&d).~Base(); // expected-error {{member reference type 'Base *' is a pointer; did you mean to use '->'}}
+                            ^
+
+"Test_name.c", line 114: error: operator -> or ->* applied to "dotPointerAccess::Derived" instead of to a pointer type
+    d->~Derived(); // expected-error {{member reference type 'Derived' is not a pointer; did you mean to use '.'}}
+    ^
+
+"Test_name.c", line 121: error: invalid destructor name for type "dotPointerAccess::Derived *"
+    d.~Derived(); // expected-error {{member reference type 'Foo' (aka 'Derived *') is a pointer; did you mean to use '->'}}
+      ^
+
+"Test_name.c", line 125: error: "undeclared_tempate_name" is not a type name
+  int pr45294 = 1 .~undeclared_tempate_name<>(); // expected-error {{use of undeclared 'undeclared_tempate_name'}}
+                   ^
+
+"Test_name.c", line 125: error: expected an expression
+  int pr45294 = 1 .~undeclared_tempate_name<>(); // expected-error {{use of undeclared 'undeclared_tempate_name'}}
+                                            ^
+
+"Test_name.c", line 166: error: invalid destructor name for type "T"
+      template<typename T> void f(T *p) { p->~G<int>(); } // expected-error {{no member named 'G'}}
+                                              ^
+
+"Test_name.c", line 177: warning: variable templates are a C++14 feature
+      template<typename> int B; // expected-note 2{{variable template 'B' declared here}} expected-warning {{extension}}
+                              ^
+
+"Test_name.c", line 180: error: "A" is not a type name
+      template<typename T> void f1(int *p) { p->~A<int>(); } // expected-error {{'A' does not refer to a template}}
+                                                ^
+
+"Test_name.c", line 180: error: type name is not allowed
+      template<typename T> void f1(int *p) { p->~A<int>(); } // expected-error {{'A' does not refer to a template}}
+                                                   ^
+
+"Test_name.c", line 180: error: expected an expression
+      template<typename T> void f1(int *p) { p->~A<int>(); } // expected-error {{'A' does not refer to a template}}
+                                                        ^
+
+"Test_name.c", line 181: error: "B" is not a type name
+      template<typename T> void f2(int *p) { p->~B<int>(); } // expected-error {{template name refers to non-type template 'B'}}
+                                                ^
+
+"Test_name.c", line 181: error: type name is not allowed
+      template<typename T> void f2(int *p) { p->~B<int>(); } // expected-error {{template name refers to non-type template 'B'}}
+                                                   ^
+
+"Test_name.c", line 181: error: expected an expression
+      template<typename T> void f2(int *p) { p->~B<int>(); } // expected-error {{template name refers to non-type template 'B'}}
+                                                        ^
+
+"Test_name.c", line 182: error: a pseudo-destructor reference can only be used for a pseudo-destructor call
+      template<typename T> void f3(int *p) { p->~C<int>(); } // expected-error {{'C' does not refer to a template}}
+                                                ^
+
+"Test_name.c", line 182: error: type name is not allowed
+      template<typename T> void f3(int *p) { p->~C<int>(); } // expected-error {{'C' does not refer to a template}}
+                                                   ^
+
+"Test_name.c", line 182: error: expected an expression
+      template<typename T> void f3(int *p) { p->~C<int>(); } // expected-error {{'C' does not refer to a template}}
+                                                        ^
+
+"Test_name.c", line 183: error: "A" is not a type name
+      template<typename T> void f4(int *p) { p->TemplateNamesNonTemplate::C::~A<int>(); } // expected-error {{'A' does not refer to a template}}
+                                                                             ^
+
+"Test_name.c", line 183: error: type name is not allowed
+      template<typename T> void f4(int *p) { p->TemplateNamesNonTemplate::C::~A<int>(); } // expected-error {{'A' does not refer to a template}}
+                                                                                ^
+
+"Test_name.c", line 183: error: expected an expression
+      template<typename T> void f4(int *p) { p->TemplateNamesNonTemplate::C::~A<int>(); } // expected-error {{'A' does not refer to a template}}
+                                                                                     ^
+
+"Test_name.c", line 184: error: "B" is not a type name
+      template<typename T> void f5(int *p) { p->TemplateNamesNonTemplate::C::~B<int>(); } // expected-error {{template name refers to non-type template 'TemplateNamesNonTemplate::B'}}
+                                                                             ^
+
+"Test_name.c", line 184: error: type name is not allowed
+      template<typename T> void f5(int *p) { p->TemplateNamesNonTemplate::C::~B<int>(); } // expected-error {{template name refers to non-type template 'TemplateNamesNonTemplate::B'}}
+                                                                                ^
+
+"Test_name.c", line 184: error: expected an expression
+      template<typename T> void f5(int *p) { p->TemplateNamesNonTemplate::C::~B<int>(); } // expected-error {{template name refers to non-type template 'TemplateNamesNonTemplate::B'}}
+                                                                                     ^
+
+"Test_name.c", line 185: error: a pseudo-destructor reference can only be used for a pseudo-destructor call
+      template<typename T> void f6(int *p) { p->TemplateNamesNonTemplate::C::~C<int>(); } // expected-error {{'C' does not refer to a template}}
+                                                                             ^
+
+"Test_name.c", line 185: error: type name is not allowed
+      template<typename T> void f6(int *p) { p->TemplateNamesNonTemplate::C::~C<int>(); } // expected-error {{'C' does not refer to a template}}
+                                                                                ^
+
+"Test_name.c", line 185: error: expected an expression
+      template<typename T> void f6(int *p) { p->TemplateNamesNonTemplate::C::~C<int>(); } // expected-error {{'C' does not refer to a template}}
+                                                                                     ^
+
+"Test_name.c", line 197: error: non-scalar type "void ()" cannot be used in a pseudo-destructor call
+    destroy_function->~T(); // expected-error {{object expression of non-scalar type 'void ()' cannot be used in a pseudo-destructor expression}}
+    ^
+
+"Test_name.c", line 88: error: "oops" is not a type name
+      p->~oops(); // expected-error{{undeclared identifier 'oops' in destructor name}}
+         ^
+          detected during instantiation of "void PR11339::destroy(T *) [with T=int]" at line 91
+
+"Test_name.c", line 141: error: invalid destructor name for type "TwoPhaseLookup::NonTemplateUndeclared::Y"
+      template<typename T> void f(T *p) { p->~G(); } // expected-error {{undeclared identifier 'G' in destructor name}}
+                                              ^
+          detected during instantiation of "void TwoPhaseLookup::NonTemplateUndeclared::f(T *) [with T=TwoPhaseLookup::NonTemplateUndeclared::Y]" at line 144
+
+"Test_name.c", line 166: error: G is not a template
+      template<typename T> void f(T *p) { p->~G<int>(); } // expected-error {{no member named 'G'}}
+                                              ^
+          detected during instantiation of "void TwoPhaseLookup::TemplateUndeclared::f(T *) [with T=TwoPhaseLookup::TemplateUndeclared::Y<int>]" at line 169
+
+53 errors detected in the compilation of "Test_name.c".

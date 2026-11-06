@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/pragma-pack-5.c", line 14: error: the size of an array must be greater than zero
+  extern int check[sizeof(struct s0) == 6 ? 1 : -1];
+                   ^
+
+"Sema/pragma-pack-5.c", line 21: error: the size of an array must be greater than zero
+  extern int check[sizeof(struct s1) == 5 ? 1 : -1];
+                   ^
+
+"Sema/pragma-pack-5.c", line 29: error: the size of an array must be greater than zero
+  extern int check[sizeof(struct s2) == 6 ? 1 : -1];
+                   ^
+
+"Sema/pragma-pack-5.c", line 37: error: the size of an array must be greater than zero
+  extern int check[sizeof(struct s3) == 8 ? 1 : -1];
+                   ^
+
+"Sema/pragma-pack-5.c", line 38: error: the size of an array must be greater than zero
+  extern int check[__builtin_offsetof(struct s3, f4) == 6 ? 1 : -1];
+                   ^
+
+5 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 33: warning: missing return statement at end of non-void function "s<i, <unnamed>>::p"
+  }
+  ^
+
+"Test_name.c", line 29: error: type "f::g" (declared at line 15) is inaccessible
+  template <class i, class> class s : f { s &p(const i *, const i *, g); };
+                                                                     ^
+          detected during instantiation of class "s<i, <unnamed>> [with i=char, <unnamed>=e<char>]" at line 49
+
+1 error detected in the compilation of "Test_name.c".

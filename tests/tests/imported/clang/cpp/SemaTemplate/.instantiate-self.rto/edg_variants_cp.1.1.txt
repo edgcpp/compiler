@@ -1,0 +1,61 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 10: error: incomplete type "test1::A<int>::B" is not allowed
+        B b; // expected-error {{has incomplete type 'B'}}
+          ^
+          detected during:
+            instantiation of class "test1::A<T>::B [with T=int]" at line 12
+            instantiation of class "test1::A<T> [with T=int]" at line 14
+
+"Test_name.c", line 21: error: no operator "+" matches these operands
+            operand types are: int + test2::A<int>::B::C
+        char c[1 + C()]; // expected-error {{invalid operands to binary expression}}
+                 ^
+"Test_name.c", line 21: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+        char c[1 + C()]; // expected-error {{invalid operands to binary expression}}
+                 ^
+"Test_name.c", line 21: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+        char c[1 + C()]; // expected-error {{invalid operands to binary expression}}
+                 ^
+"Test_name.c", line 21: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #2 does not match parameter
+        char c[1 + C()]; // expected-error {{invalid operands to binary expression}}
+                 ^
+          detected during:
+            instantiation of class "test2::A<T>::B [with T=int]" at line 24
+            instantiation of class "test2::A<T> [with T=int]" at line 26
+
+"Test_name.c", line 45: error: incomplete type "test4::A<int>::B" is not allowed
+        int k[typename A<typename M<T>::type>::B().k[0] + 1]; // expected-error {{incomplete type}}
+              ^
+          detected during:
+            instantiation of class "test4::A<T>::B [with T=int]" at line 47
+            instantiation of class "test4::A<T> [with T=int]" at line 49
+
+"Test_name.c", line 91: error: instantiation of initializer of member "test8::A<T>::n [with T=int]" depends on its own value
+      int n = A{}.n; // expected-error {{default member initializer for 'n' uses itself}}
+                 ^
+          detected during instantiation of class "test8::A<T> [with T=int]" at line 93
+
+"Test_name.c", line 99: error: enum "test9::A<T>::B [with T=int]" has no member "k2"
+    template<typename T> enum class A<T>::B { k = A<T>::B::k2, k2 = k }; // expected-error {{no member named 'k2'}}
+                                                           ^
+          detected during instantiation of enum "test9::A<T>::B [with T=int]" at line 100
+
+"Test_name.c", line 116: error: class "test11::X<int>" has no member "k"
+      static const int k = X<T>::b ? X<T>::k : 0;
+                                           ^
+          detected during instantiation of class "test11::X<T> [with T=int]" at line 119
+
+"Test_name.c", line 130: warning: missing return statement at end of non-void function "test12::f(T, int)"
+    template<typename T> int f(T t, int = f(T())) {} // expected-error {{recursive evaluation of default argument}}
+                                                   ^
+
+"Test_name.c", line 130: error: recursive instantiation of default argument
+    template<typename T> int f(T t, int = f(T())) {} // expected-error {{recursive evaluation of default argument}}
+                                          ^
+          detected during instantiation of "int test12::f(T, int) [with T=test12::X]" at line 132
+
+"Test_name.c", line 61: warning: variable "test5::x" was declared but never referenced
+    constexpr int x = A<int>().f(5); // ok
+                  ^
+
+7 errors detected in the compilation of "Test_name.c".

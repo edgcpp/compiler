@@ -1,0 +1,151 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/init.c", line 30: warning: initialization with "{...}" expected for aggregate object
+    int b[10] = a;
+                ^
+
+"Sema/init.c", line 30: warning: a value of type "int *" cannot be used to initialize an entity of type "int"
+    int b[10] = a;
+                ^
+
+"Sema/init.c", line 31: error: expected an identifier
+    int +;
+        ^
+
+"Sema/init.c", line 33: error: struct "union_crash" has no field "d"
+    struct union_crash u = { .d = 1 };
+                              ^
+
+"Sema/init.c", line 34: warning: missing return statement at end of non-void function "test"
+  }
+  ^
+
+"Sema/init.c", line 30: warning: variable "b" was declared but never referenced
+    int b[10] = a;
+        ^
+
+"Sema/init.c", line 56: error: expression must have a constant value
+    static short *bp = &b;
+                       ^
+
+"Sema/init.c", line 63: warning: variable "pbool1" was declared but never referenced
+    _Bool pbool1 = (void *) 0;
+          ^
+
+"Sema/init.c", line 80: warning: conversion from pointer to smaller integer
+             ((int)(&((struct sym_reg *)0)->nc_gpreg)) & 0,
+              ^
+
+"Sema/init.c", line 81: warning: conversion from pointer to smaller integer
+             8 * ((int)(&((struct sym_reg *)0)->nc_gpreg))
+                  ^
+
+"Sema/init.c", line 85: error: incomplete type "struct s1" is not allowed
+  struct s1 s2 = {
+            ^
+
+"Sema/init.c", line 87: error: incomplete type "struct s3" is not allowed
+      .a = sizeof(struct s3),
+                  ^
+
+"Sema/init.c", line 89: error: identifier "bogus" is undefined
+      .b = bogus
+           ^
+
+"Sema/init.c", line 93: error: expected a ";"
+  char t[] = ("Hello");
+  ^
+
+"Sema/init.c", line 119: warning: excess initializers are ignored
+  struct foo2 bar3 = { 1, 2 };
+                          ^
+
+"Sema/init.c", line 122: warning: excess initializers are ignored
+  struct foo2 bar3_silent = {1, 2};
+                                ^
+
+"Sema/init.c", line 152: error: expression must have a constant value
+  int PR4386_b = ((void *) PR4386_foo) != 0;
+                                       ^
+
+"Sema/init.c", line 162: error: static initialization with an address value requires a destination of the same size as the address
+  StructWithBitfield bitfieldvar = { (uintptr_t)&bitfieldvar };
+                                     ^
+
+"Sema/init.c", line 173: warning: use of a const variable in a constant expression is nonstandard in C
+      .foo = my_foo,
+             ^
+
+"Sema/init.c", line 176: warning: use of a const variable in a constant expression is nonstandard in C
+      .foo = my_foo,
+             ^
+
+"Sema/init.c", line 179: warning: use of a const variable in a constant expression is nonstandard in C
+      my_foo,
+      ^
+
+"Sema/init.c", line 182: warning: use of a const variable in a constant expression is nonstandard in C
+      my_foo
+      ^
+
+"Sema/init.c", line 186: error: expression must have a constant value
+    .foo = my_foo2,
+           ^
+"Sema/init.c", line 186: note: the value of variable "my_foo2" (declared at line 184) cannot be used as a constant
+    .foo = my_foo2,
+           ^
+
+"Sema/init.c", line 188: error: expression must have a constant value
+  const struct PR4517_foo my_foo3 = {.x = my_foo.x};
+                                          ^
+"Sema/init.c", line 188: note: attempt to access run-time storage
+  const struct PR4517_foo my_foo3 = {.x = my_foo.x};
+                                                ^
+
+"Sema/init.c", line 193: error: expression must have a constant value
+  int PR4517_x1 = PR4517_a[PR4517_idx];
+                           ^
+"Sema/init.c", line 193: note: the value of variable "PR4517_idx" (declared at line 191) cannot be used as a constant
+  int PR4517_x1 = PR4517_a[PR4517_idx];
+                           ^
+
+"Sema/init.c", line 194: warning: use of a const variable in a constant expression is nonstandard in C
+  int PR4517_x2 = PR4517_a[PR4517_idxc];
+                           ^
+
+"Sema/init.c", line 194: error: expression must have a constant value
+  int PR4517_x2 = PR4517_a[PR4517_idxc];
+                  ^
+"Sema/init.c", line 194: note: attempt to access run-time storage
+  int PR4517_x2 = PR4517_a[PR4517_idxc];
+                          ^
+
+"Sema/init.c", line 195: error: expression must have a constant value
+  int PR4517_x3 = PR4517_a[0];
+                  ^
+"Sema/init.c", line 195: note: attempt to access run-time storage
+  int PR4517_x3 = PR4517_a[0];
+                          ^
+
+"Sema/init.c", line 196: error: expression must have a constant value
+  int PR4517_y1 = PR4517_ca[PR4517_idx];
+                            ^
+"Sema/init.c", line 196: note: the value of variable "PR4517_idx" (declared at line 191) cannot be used as a constant
+  int PR4517_y1 = PR4517_ca[PR4517_idx];
+                            ^
+
+"Sema/init.c", line 197: warning: use of a const variable in a constant expression is nonstandard in C
+  int PR4517_y2 = PR4517_ca[PR4517_idxc];
+                            ^
+
+"Sema/init.c", line 204: warning: use of a const variable in a constant expression is nonstandard in C
+  const union PR4517_u u2 = u1;
+                            ^
+
+"Sema/init.c", line 205: error: expression must have a constant value
+  const union PR4517_u u3 = {u1.y};
+                             ^
+"Sema/init.c", line 205: note: attempt to access run-time storage
+  const union PR4517_u u3 = {u1.y};
+                               ^
+
+16 errors detected in the compilation of "Test_name.c".

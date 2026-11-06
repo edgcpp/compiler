@@ -1,0 +1,58 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 13: error: invalid alignment value specified by attribute
+  typedef POWALIGN (28) char T28;
+          ^
+
+"Test_name.c", line 18: error: invalid alignment value specified by attribute
+  typedef POWALIGN (29) char X29;  /* { dg-error "requested alignment .536870912. exceeds maximum 268435456" } */
+          ^
+
+"Test_name.c", line 19: error: invalid alignment value specified by attribute
+  typedef POWALIGN (30) char X30;  /* { dg-error "requested alignment .1073741824. exceeds maximum 268435456" } */
+          ^
+
+"Test_name.c", line 20: error: invalid alignment value specified by attribute
+  typedef POWALIGN (31) char X31;  /* { dg-error "requested alignment .2147483648. exceeds maximum 268435456" } */
+          ^
+
+"Test_name.c", line 21: error: invalid alignment value specified by attribute
+  typedef POWALIGN (32) char X32;  /* { dg-error "requested alignment .4294967296. exceeds maximum 268435456" } */
+          ^
+
+"Test_name.c", line 22: error: invalid alignment value specified by attribute
+  typedef POWALIGN (60) char X60;  /* { dg-error "requested alignment .1152921504606846976. exceeds maximum 268435456" } */
+          ^
+
+"Test_name.c", line 23: error: invalid alignment value specified by attribute
+  typedef POWALIGN (63) char X63;  /* { dg-error "requested alignment .9223372036854775808. exceeds maximum 268435456" } */
+          ^
+
+"Test_name.c", line 26: error: invalid alignment value specified by attribute
+  POWALIGN (28) char c28;
+  ^
+
+"Test_name.c", line 28: error: invalid alignment value specified by attribute
+  POWALIGN (29) char c29;  /* { dg-error "requested alignment .536870912. exceeds object file maximum 268435456" } */
+  ^
+
+"Test_name.c", line 29: error: invalid alignment value specified by attribute
+  POWALIGN (30) char x30;  /* { dg-error "requested alignment .1073741824. exceeds object file maximum 268435456" } */
+  ^
+
+"Test_name.c", line 30: error: invalid alignment value specified by attribute
+  POWALIGN (31) char x31;  /* { dg-error "requested alignment .2147483648. exceeds object file maximum 268435456" } */
+  ^
+
+"Test_name.c", line 31: error: invalid alignment value specified by attribute
+  POWALIGN (32) char x32;  /* { dg-error "requested alignment .4294967296. exceeds object file maximum 268435456" } */
+  ^
+
+"Test_name.c", line 32: error: invalid alignment value specified by attribute
+  POWALIGN (60) char x60;  /* { dg-error "requested alignment .1152921504606846976. exceeds object file maximum 268435456" } */
+  ^
+
+"Test_name.c", line 33: error: invalid alignment value specified by attribute
+  POWALIGN (63) char x63;  /* { dg-error "requested alignment .9223372036854775808. exceeds object file maximum 268435456" } */
+  ^
+
+14 errors detected in the compilation of "Test_name.c".

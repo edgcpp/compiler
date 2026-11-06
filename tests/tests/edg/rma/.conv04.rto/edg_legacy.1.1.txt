@@ -1,0 +1,36 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 8: warning: "Derived::operator Base()" will not be called for implicit or explicit conversions
+    operator Base()
+    ^
+
+"Test_name.c", line 10: warning: "Derived::operator const Base()" will not be called for implicit or explicit conversions
+    operator const Base()
+    ^
+
+"Test_name.c", line 12: warning: "Derived::operator Base &()" will not be called for implicit or explicit conversions
+    operator Base&()
+    ^
+
+"Test_name.c", line 14: warning: "Derived::operator const Base &()" will not be called for implicit or explicit conversions
+    operator const Base&()
+    ^
+
+Remark: function "Base::Base" cannot be inlined
+          detected during implicit generation of "Base::Base(const Base &)" at line 9 of "Test_name.c"
+
+"Test_name.c", line 19: warning: variable "b" was set but never used
+    Base b;
+         ^
+
+"Test_name.c", line 30: warning: variable "bc1" was declared but never referenced
+    const Base bc1 = d;
+               ^
+
+"Test_name.c", line 32: warning: variable "bc2" was declared but never referenced
+    const Base bc2 = (const Base)d;
+               ^
+
+"Test_name.c", line 34: warning: variable "bc3" was declared but never referenced
+    const Base bc3 = (const Base &)d;
+               ^
+

@@ -1,0 +1,272 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 13: warning: subscript out of range
+    y[2] = 2; // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+    ^
+
+"Test_name.c", line 18: warning: subscript out of range
+           y[-1] + // expected-warning {{array index -1 is before the beginning of the array}}
+            ^
+
+"Test_name.c", line 17: warning: subscript out of range
+    return x[2] +  // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+           ^
+
+"Test_name.c", line 19: warning: subscript out of range
+           x[sizeof(x)] +  // expected-warning {{array index 8 is past the end of the array (that has type 'int[2]')}}
+            ^
+
+"Test_name.c", line 20: warning: subscript out of range
+           x[sizeof(x) / sizeof(x[0])] +  // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+           ^
+
+"Test_name.c", line 22: warning: subscript out of range
+           x[sizeof(x[2])]; // expected-warning {{array index 4 is past the end of the array (that has type 'int[2]')}}
+            ^
+
+"Test_name.c", line 17: warning: variable "x" is used before its value is set
+    return x[2] +  // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+           ^
+
+"Test_name.c", line 8: warning: variable "z" was set but never used
+    int z[1]; // expected-note {{array 'z' declared here}}
+        ^
+
+"Test_name.c", line 9: warning: variable "w" was set but never used
+    int w[1][1]; // expected-note {{array 'w' declared here}}
+        ^
+
+"Test_name.c", line 10: warning: variable "v" was set but never used
+    int v[1][1][1]; // expected-note {{array 'v' declared here}}
+        ^
+
+"Test_name.c", line 11: warning: variable "p" was declared but never referenced
+    int *p = &y[2]; // no-warning
+         ^
+
+"Test_name.c", line 32: warning: variable "val" was declared but never referenced
+    int val = a[3]; // no warning for function argumnet
+        ^
+
+"Test_name.c", line 36: warning: subscript out of range
+    int val = a[3];  // expected-warning {{array index 3 is past the end of the array (that has type 'const int[2]')}}
+               ^
+
+"Test_name.c", line 36: warning: variable "val" was declared but never referenced
+    int val = a[3];  // expected-warning {{array index 3 is past the end of the array (that has type 'const int[2]')}}
+        ^
+
+"Test_name.c", line 49: warning: subscript out of range
+    u.a[3] = 1; // expected-warning {{array index 3 is past the end of the array (that has type 'short[2]')}}
+       ^
+
+"Test_name.c", line 52: warning: subscript out of range
+    p = &u.a[3]; // expected-warning {{array index 3 is past the end of the array (that has type 'short[2]')}}
+            ^
+
+"Test_name.c", line 54: warning: subscript out of range
+    *(&u.a[3]) = 1; // expected-warning {{array index 3 is past the end of the array (that has type 'short[2]')}}
+          ^
+
+"Test_name.c", line 59: warning: subscript out of range
+    array[const_subscript] = 0;  // expected-warning {{array index 3 is past the end of the array (that has type 'int[2]')}}
+         ^
+
+"Test_name.c", line 62: warning: variable "ptr" is used before its value is set
+    ptr[3] = 0; // no warning for pointer references
+    ^
+
+"Test_name.c", line 65: warning: subscript out of range
+    array2[3] = 0; // expected-warning {{array index 3 is past the end of the array (that has type 'int[3]')}}
+    ^
+
+"Test_name.c", line 66: warning: subscript out of range
+    array2[2+2] = 0; // expected-warning {{array index 4 is past the end of the array (that has type 'int[3]')}}
+          ^
+
+"Test_name.c", line 72: warning: subscript out of range
+    char c2 = str2[5]; // expected-warning {{array index 5 is past the end of the array (that has type 'const char[4]')}}
+                  ^
+
+"Test_name.c", line 75: warning: variable "array_ptr" is used before its value is set
+    (*array_ptr)[3] = 1; // expected-warning {{array index 3 is past the end of the array (that has type 'int[2]')}}
+      ^
+
+"Test_name.c", line 75: warning: subscript out of range
+    (*array_ptr)[3] = 1; // expected-warning {{array index 3 is past the end of the array (that has type 'int[2]')}}
+                ^
+
+"Test_name.c", line 42: warning: variable "s2" was set but never used
+    } s2;
+      ^
+
+"Test_name.c", line 51: warning: variable "p" was set but never used
+    short *p = &u.a[2]; // no warning
+           ^
+
+"Test_name.c", line 58: warning: variable "array" was set but never used
+    int array[2]; // expected-note {{declared here}}
+        ^
+
+"Test_name.c", line 63: warning: variable "array2" was set but never used
+    int array2[] = { 0, 1, 2 }; // expected-note 2 {{declared here}}
+        ^
+
+"Test_name.c", line 69: warning: variable "c1" was declared but never referenced
+    char c1 = str1[5]; // no warning for pointers
+         ^
+
+"Test_name.c", line 72: warning: variable "c2" was declared but never referenced
+    char c2 = str2[5]; // expected-warning {{array index 5 is past the end of the array (that has type 'const char[4]')}}
+         ^
+
+"Test_name.c", line 83: warning: subscript out of range
+    s.arr[4] = 0; // expected-warning 2 {{array index 4 is past the end of the array (that has type 'char[3]')}}
+         ^
+
+"Test_name.c", line 97: warning: subscript out of range
+           ARR_IN_MACRO(1, arr, SIZE); // expected-warning{{array index 10 is past the end of the array (that has type 'int[10]')}}
+           ^
+
+"Test_name.c", line 97: warning: variable "arr" is used before its value is set
+           ARR_IN_MACRO(1, arr, SIZE); // expected-warning{{array index 10 is past the end of the array (that has type 'int[10]')}}
+           ^
+
+"Test_name.c", line 103: warning: subscript out of range
+    return array[(unsigned long long) 100]; // expected-warning {{array index 100 is past the end of the array (that has type 'short[100]')}}
+           ^
+
+"Test_name.c", line 103: warning: variable "array" is used before its value is set
+    return array[(unsigned long long) 100]; // expected-warning {{array index 100 is past the end of the array (that has type 'short[100]')}}
+           ^
+
+"Test_name.c", line 133: warning: variable "array" is used before its value is set
+      return array[true]; // no-warning
+             ^
+
+"Test_name.c", line 147: warning: subscript out of range
+        arr[2] = 1; // no-warning
+        ^
+
+"Test_name.c", line 146: warning: variable "arr" was set but never used
+        int arr[2];
+            ^
+
+"Test_name.c", line 152: warning: subscript out of range
+        arr[2] = 1; // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+        ^
+
+"Test_name.c", line 151: warning: variable "arr" was set but never used
+        int arr[2]; // expected-note {{array 'arr' declared here}}
+            ^
+
+"Test_name.c", line 157: warning: subscript out of range
+        arr[2] = 1; // no-warning
+        ^
+
+"Test_name.c", line 156: warning: variable "arr" was set but never used
+        int arr[2];
+            ^
+
+"Test_name.c", line 169: warning: statement is unreachable
+      switch (myVal) { // expected-warning {{enumeration values 'enumB_X' and 'enumB_Z' not handled in switch}}
+      ^
+
+"Test_name.c", line 186: warning: subscript out of range
+    x[2] = 0; // no-warning
+    ^
+
+"Test_name.c", line 179: warning: variable "x" was set but never used
+    int x[2];
+        ^
+
+"Test_name.c", line 228: warning: subscript out of range
+    bar(foo[5]); // expected-warning {{array index 5 is past the end of the array (that has type 'int[5]')}}
+        ^
+
+"Test_name.c", line 228: warning: variable "foo" is used before its value is set
+    bar(foo[5]); // expected-warning {{array index 5 is past the end of the array (that has type 'int[5]')}}
+        ^
+
+"Test_name.c", line 229: warning: subscript out of range
+    ++foo[5]; // expected-warning {{array index 5 is past the end of the array (that has type 'int[5]')}}
+      ^
+
+"Test_name.c", line 230: warning: subscript out of range
+    if (foo[6]) // expected-warning {{array index 6 is past the end of the array (that has type 'int[5]')}}
+           ^
+
+"Test_name.c", line 231: warning: subscript out of range
+      return --foo[6]; // expected-warning {{array index 6 is past the end of the array (that has type 'int[5]')}}
+                  ^
+
+"Test_name.c", line 233: warning: subscript out of range
+      return foo[5]; // expected-warning {{array index 5 is past the end of the array (that has type 'int[5]')}}
+             ^
+
+"Test_name.c", line 237: warning: variable "foo" was set but never used
+      double foo[4096];  // expected-note {{array 'foo' declared here}}
+             ^
+
+"Test_name.c", line 253: warning: subscript out of range
+    test_pr11007_aux("foo", a[1000]); // expected-warning {{array index 1'000 is past the end of the array (that has type 'double[5]')}}
+                             ^
+
+"Test_name.c", line 253: warning: variable "a" is used before its value is set
+    test_pr11007_aux("foo", a[1000]); // expected-warning {{array index 1'000 is past the end of the array (that has type 'double[5]')}}
+                            ^
+
+"Test_name.c", line 259: warning: subscript out of range
+  	a[(unsigned char)'\xA1'] = 1; // expected-warning {{array index 161 is past the end of the array (that has type 'int[128]')}}
+  	 ^
+
+"Test_name.c", line 258: warning: variable "a" was set but never used
+  	int a[128]; // expected-note {{array 'a' declared here}}
+  	    ^
+
+"Test_name.c", line 269: warning: subscript out of range
+    p[11] = {0, 1}; // expected-warning {{array index 11 is past the end of the array (that has type 'struct P[10]')}}
+     ^
+
+"Test_name.c", line 268: warning: variable "p" was set but never used
+    struct P p[10]; // expected-note {{array 'p' declared here}}
+             ^
+
+"Test_name.c", line 275: warning: subscript out of range
+    return x[1] + x[11]; // expected-warning {{array index 11 is past the end of the array (that has type 'struct P[10]')}}
+                   ^
+
+"Test_name.c", line 280: warning: subscript out of range
+    return multi[2][0][0] + // expected-warning {{array index 2 is past the end of the array (that has type 'int[2][2][2]')}}
+           ^
+
+"Test_name.c", line 281: warning: subscript out of range
+           multi[0][2][0] + // expected-warning {{array index 2 is past the end of the array (that has type 'int[2][2]')}}
+           ^
+
+"Test_name.c", line 282: warning: subscript out of range
+           multi[0][0][2];  // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+           ^
+
+"Test_name.c", line 290: warning: subscript out of range
+    return multi2[4].arr[0]; // expected-warning {{array index 4 is past the end of the array (that has type 'struct multi_s[4]')}}
+           ^
+
+"Test_name.c", line 324: warning: subscript out of range
+    arr<int>[2] = 0;   // expected-warning {{array index 2 is past the end of the array (that has type 'int[2]')}}
+    ^
+
+"Test_name.c", line 84: warning: subscript out of range
+    s.arr[I] = 0; // expected-warning {{array index 5 is past the end of the array (that has type 'char[3]')}}
+         ^
+          detected during instantiation of "void f<I>() [with I=5]" at line 88
+
+"Test_name.c", line 113: warning: subscript out of range
+          arr[3] = 42; // no-warning
+          ^
+          detected during instantiation of "void pr9284<extendArray>() [with extendArray=false]" at line 126
+
+"Test_name.c", line 121: warning: subscript out of range
+          arr[3] = 42; // expected-warning{{array index 3 is past the end of the array (that has type 'int[3]')}}
+          ^
+          detected during instantiation of "void pr9284b<extendArray>() [with extendArray=false]" at line 128
+

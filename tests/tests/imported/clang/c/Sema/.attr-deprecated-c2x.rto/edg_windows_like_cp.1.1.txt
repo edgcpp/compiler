@@ -1,0 +1,88 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c23 Test_name.c
+"Test_name.c", line 12: warning: function "f" was declared deprecated
+    int (*ptr)(void) = f; // expected-warning {{'f' is deprecated}}
+                       ^
+"Test_name.c", line 5: note: because of a "deprecated" attribute
+  [[deprecated]] int f(void); // expected-note 2 {{'f' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 13: warning: function "f" was declared deprecated
+    f(); // expected-warning {{'f' is deprecated}}
+    ^
+"Test_name.c", line 5: note: because of a "deprecated" attribute
+  [[deprecated]] int f(void); // expected-note 2 {{'f' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 16: warning: function "g" was declared deprecated
+    g(); // expected-warning {{'g' is deprecated}}
+    ^
+"Test_name.c", line 6: note: because of a "deprecated" attribute
+  [[deprecated]] void g(void);// expected-note {{'g' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 18: warning: variable "var" was declared deprecated
+    return var; // expected-warning {{'var' is deprecated}}
+           ^
+"Test_name.c", line 9: note: because of a "deprecated" attribute
+  extern int var [[deprecated]]; // expected-note 2 {{'var' has been explicitly marked deprecated here}}
+                   ^
+
+"Test_name.c", line 12: warning: variable "ptr" was declared but never referenced
+    int (*ptr)(void) = f; // expected-warning {{'f' is deprecated}}
+          ^
+
+"Test_name.c", line 24: warning: variable "var" was declared deprecated
+    return var; // expected-warning {{'var' is deprecated}}
+           ^
+"Test_name.c", line 9: note: because of a "deprecated" attribute
+  extern int var [[deprecated]]; // expected-note 2 {{'var' has been explicitly marked deprecated here}}
+                   ^
+
+"Test_name.c", line 29: warning: function "old_fn" was declared deprecated
+  int (*fn_ptr)(void) = old_fn; // expected-warning {{'old_fn' is deprecated}}
+                        ^
+"Test_name.c", line 27: note: because of a "deprecated" attribute
+  [[deprecated]] int old_fn(void);// expected-note {{'old_fn' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 40: warning: field "x" was declared deprecated
+    ++F->x;  // expected-warning {{'x' is deprecated}}
+         ^
+"Test_name.c", line 36: note: because of a "deprecated" attribute
+    int x [[deprecated]]; // expected-note 3 {{'x' has been explicitly marked deprecated here}}
+            ^
+
+"Test_name.c", line 41: warning: variable "f1" was declared but never referenced
+    struct foo f1 = { .x = 17 }; // expected-warning {{'x' is deprecated}}
+               ^
+
+"Test_name.c", line 42: warning: variable "f2" was declared but never referenced
+    struct foo f2 = { 17 }; // expected-warning {{'x' is deprecated}}
+               ^
+
+"Test_name.c", line 46: warning: type "foo_dep" was declared deprecated
+  foo_dep *test2;    // expected-warning {{'foo_dep' is deprecated}}
+           ^
+"Test_name.c", line 45: note: because of a "deprecated" attribute
+  typedef struct foo foo_dep [[deprecated]]; // expected-note {{'foo_dep' has been explicitly marked deprecated here}}
+                               ^
+
+"Test_name.c", line 51: warning: struct "bar_dep" was declared deprecated
+  struct bar_dep *test3;   // expected-warning {{'bar_dep' is deprecated}}
+                  ^
+"Test_name.c", line 48: note: because of a "deprecated" attribute
+  struct [[deprecated, // expected-note {{'bar_dep' has been explicitly marked deprecated here}}
+           ^
+
+"Test_name.c", line 55: warning: variable "i" was declared deprecated ("this is the message")
+    i = 12; // expected-warning {{'i' is deprecated: this is the message}}
+    ^
+"Test_name.c", line 53: note: because of a "deprecated" attribute
+  [[deprecated("this is the message")]] int i; // expected-note {{'i' has been explicitly marked deprecated here}}
+    ^
+
+"Test_name.c", line 60: error: expected a ")"
+  [[deprecated("message", "replacement not supported")]] void test5(void); // expected-error {{'deprecated' attribute takes no more than 1 argument}}
+                        ^
+
+1 error detected in the compilation of "Test_name.c".

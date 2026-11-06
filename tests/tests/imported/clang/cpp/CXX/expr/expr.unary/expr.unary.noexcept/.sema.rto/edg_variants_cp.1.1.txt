@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++11 --ms_extensions Test_name.c
+"Test_name.c", line 115: warning: delete of pointer to incomplete class
+    P(delete (IncompleteStruct*)0);
+    ^
+
+"Test_name.c", line 139: error: static assertion failed with "expected nothrow"
+    P(dynamic_cast<V&>(*pd));
+    ^
+
+"Test_name.c", line 137: warning: variable "pv" was set but never used
+    V *pv = 0;
+       ^
+
+"Test_name.c", line 138: warning: variable "pd" was set but never used
+    D *pd = 0;
+       ^
+
+"Test_name.c", line 179: warning: function "operator new(unsigned long, int)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    P(new (0) T);
+    ^
+          detected during instantiation of "void late<T,b>() [with T=S3, b=false]" at line 197
+
+"Test_name.c", line 191: error: static assertion failed with "expected nothrow"
+    P(dynamic_cast<S3&>(f2<T&>()));
+    ^
+          detected during instantiation of "void late2<T>() [with T=S3]" at line 198
+
+2 errors detected in the compilation of "Test_name.c".

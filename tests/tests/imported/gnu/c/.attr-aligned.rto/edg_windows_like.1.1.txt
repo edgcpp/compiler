@@ -1,0 +1,182 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 61: error: invalid alignment value specified by attribute
+  typedef ALIGN (ALIGN_MAX_HARD) char CharAlignedMaxHard;
+          ^
+
+"Test_name.c", line 62: error: invalid alignment value specified by attribute
+  typedef ALIGN (ALIGN_MAX_AUTO) char CharAlignedMaxAuto;
+          ^
+
+"Test_name.c", line 63: error: invalid alignment value specified by attribute
+  typedef ALIGN (ALIGN_MAX_STATIC) char CharAlignedMaxStatic;
+          ^
+
+"Test_name.c", line 76: error: invalid alignment value specified by attribute
+  ALIGN (ALIGN_MAX_STATIC) static const char aligned_sc_max = 0;
+  ^
+
+"Test_name.c", line 77: error: invalid alignment value specified by attribute
+  ALIGN (ALIGN_MAX_STATIC) const char aligned_c_max = aligned_sc_max;
+  ^
+
+"Test_name.c", line 77: warning: use of a const variable in a constant expression is nonstandard in C
+  ALIGN (ALIGN_MAX_STATIC) const char aligned_c_max = aligned_sc_max;
+                                                      ^
+
+"Test_name.c", line 78: error: invalid alignment value specified by attribute
+  ALIGN (ALIGN_MAX_STATIC) char aligned_v_max;
+  ^
+
+"Test_name.c", line 79: error: invalid alignment value specified by attribute
+  ALIGN (ALIGN_MAX_STATIC) void aligned_f_max (void);
+  ^
+
+"Test_name.c", line 81: error: static assertion failed
+  _Static_assert (__alignof__ (aligned_sc_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 82: error: static assertion failed
+  _Static_assert (__alignof__ (aligned_c_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 83: error: static assertion failed
+  _Static_assert (__alignof__ (aligned_v_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 84: error: static assertion failed
+  _Static_assert (__alignof__ (aligned_f_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 89: error: invalid alignment value specified by attribute
+  _Alignas (ALIGN_MAX_STATIC) static const char alignas_sc_max = 0;
+            ^
+
+"Test_name.c", line 90: error: invalid alignment value specified by attribute
+  _Alignas (ALIGN_MAX_STATIC) const char alignas_c_max = alignas_sc_max;
+            ^
+
+"Test_name.c", line 90: warning: use of a const variable in a constant expression is nonstandard in C
+  _Alignas (ALIGN_MAX_STATIC) const char alignas_c_max = alignas_sc_max;
+                                                         ^
+
+"Test_name.c", line 91: error: invalid alignment value specified by attribute
+  _Alignas (ALIGN_MAX_STATIC) char alignas_v_max;
+            ^
+
+"Test_name.c", line 93: error: static assertion failed
+  _Static_assert (__alignof__ (alignas_sc_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 94: error: static assertion failed
+  _Static_assert (__alignof__ (alignas_c_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 95: error: static assertion failed
+  _Static_assert (__alignof__ (alignas_v_max) == ALIGN_MAX_STATIC);
+  ^
+
+"Test_name.c", line 111: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Static_assert (_Alignof (aligned_st_max) == ALIGN_MAX_STATIC);
+                             ^
+
+"Test_name.c", line 111: error: static assertion failed
+    _Static_assert (_Alignof (aligned_st_max) == ALIGN_MAX_STATIC);
+    ^
+
+"Test_name.c", line 114: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Static_assert (_Alignof (aligned_t_max) == ALIGN_MAX_AUTO);
+                             ^
+
+"Test_name.c", line 114: error: static assertion failed
+    _Static_assert (_Alignof (aligned_t_max) == ALIGN_MAX_AUTO);
+    ^
+
+"Test_name.c", line 116: error: invalid alignment value specified by attribute
+    ALIGN (ALIGN_MAX_STATIC) char aligned_s_max;
+    ^
+
+"Test_name.c", line 117: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Static_assert (_Alignof (aligned_s_max) == ALIGN_MAX_STATIC);
+                             ^
+
+"Test_name.c", line 117: error: static assertion failed
+    _Static_assert (_Alignof (aligned_s_max) == ALIGN_MAX_STATIC);
+    ^
+
+"Test_name.c", line 119: error: invalid alignment value specified by attribute
+    ALIGN (ALIGN_MAX_AUTO) char aligned_l_max;
+    ^
+
+"Test_name.c", line 120: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Static_assert (_Alignof (aligned_l_max) == ALIGN_MAX_AUTO);
+                             ^
+
+"Test_name.c", line 120: error: static assertion failed
+    _Static_assert (_Alignof (aligned_l_max) == ALIGN_MAX_AUTO);
+    ^
+
+"Test_name.c", line 122: warning: variable "aligned_t_max" is used before its value is set
+    return aligned_st_max++ + aligned_t_max++ + aligned_s_max++ + aligned_l_max++;
+                              ^
+
+"Test_name.c", line 122: warning: variable "aligned_s_max" is used before its value is set
+    return aligned_st_max++ + aligned_t_max++ + aligned_s_max++ + aligned_l_max++;
+                                                ^
+
+"Test_name.c", line 122: warning: variable "aligned_l_max" is used before its value is set
+    return aligned_st_max++ + aligned_t_max++ + aligned_s_max++ + aligned_l_max++;
+                                                                  ^
+
+"Test_name.c", line 128: error: invalid alignment value specified by attribute
+    _Alignas (ALIGN_MAX_STATIC) char alignas_s_max;
+              ^
+
+"Test_name.c", line 129: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Static_assert (_Alignof (alignas_s_max) == ALIGN_MAX_STATIC);
+                             ^
+
+"Test_name.c", line 129: error: static assertion failed
+    _Static_assert (_Alignof (alignas_s_max) == ALIGN_MAX_STATIC);
+    ^
+
+"Test_name.c", line 131: error: invalid alignment value specified by attribute
+    _Alignas (ALIGN_MAX_AUTO) char alignas_l_max;
+              ^
+
+"Test_name.c", line 132: warning: the standard "alignof" operator does not accept an expression argument (use a type instead)
+    _Static_assert (_Alignof (alignas_l_max) == ALIGN_MAX_AUTO);
+                             ^
+
+"Test_name.c", line 132: error: static assertion failed
+    _Static_assert (_Alignof (alignas_l_max) == ALIGN_MAX_AUTO);
+    ^
+
+"Test_name.c", line 134: warning: variable "alignas_l_max" is used before its value is set
+    return alignas_s_max++ + alignas_l_max++;
+                             ^
+
+"Test_name.c", line 134: warning: variable "alignas_s_max" is used before its value is set
+    return alignas_s_max++ + alignas_l_max++;
+           ^
+
+"Test_name.c", line 147: error: invalid alignment value specified by attribute
+    ALIGN (ALIGN_TOO_BIG_OFILE) static char aligned_sl_max;       /* { dg-error "requested alignment .\[0-9\]+. exceeds\( object file\)* maximum \[0-9\]+" } */
+    ^
+
+"Test_name.c", line 149: error: invalid alignment value specified by attribute
+    _Alignas (ALIGN_TOO_BIG_OFILE) static char alignas_sl_max;    /* { dg-error "alignment" } */
+              ^
+
+"Test_name.c", line 158: error: invalid alignment value specified by attribute
+  ALIGN (ALIGN_TOO_BIG_OFILE) char a_max_x_2;                    /* { dg-error "requested alignment .\[0-9\]+. exceeds\( object file\)* maximum \[0-9\]+" } */
+  ^
+
+"Test_name.c", line 160: error: invalid alignment value specified by attribute
+  _Alignas (ALIGN_TOO_BIG_OFILE) char a_max_x_2;                    /* { dg-error "alignment" } */
+            ^
+
+"Test_name.c", line 162: error: invalid alignment value specified by attribute
+  ALIGN (ALIGN_TOO_BIG_OFILE) void f_max_x_2 (void);             /* { dg-error "requested alignment .\[0-9\]+. exceeds\( object file\)* maximum \[0-9\]+" } */
+  ^
+
+32 errors detected in the compilation of "Test_name.c".

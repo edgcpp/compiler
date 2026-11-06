@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 13: warning: variable "fp1" was declared but never referenced
+    callback_1t fp1 = nsfptr; // expected-error{{incompatible function pointer types initializing 'callback_1t'}}
+                ^
+
+"Test_name.c", line 14: warning: variable "fp2" was declared but never referenced
+    callback_ns_1t fp2 = fptr; // expected-error{{incompatible function pointer types initializing 'callback_ns_1t'}}
+                   ^
+
+"Test_name.c", line 15: warning: variable "fp3" was declared but never referenced
+    callback_2t fp3 = fptr;
+                ^
+
+"Test_name.c", line 16: warning: variable "fp4" was declared but never referenced
+    callback_ns_2t fp4 = nsfptr;
+                   ^
+
+"Test_name.c", line 19: warning: function "bar" was declared but never referenced
+  static void bar(void) __attribute__((cmse_nonsecure_entry)) // expected-warning{{'cmse_nonsecure_entry' cannot be applied to functions with internal linkage}}
+              ^
+

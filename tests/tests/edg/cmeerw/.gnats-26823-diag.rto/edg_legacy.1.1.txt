@@ -1,0 +1,75 @@
+fe_only -DTEST_NUMBER=1 --c++26 -tused -w Test_name.c
+"Test_name.c", line 15: error: pack expansion does not make use of any argument packs
+      N...[N];             // error: must be a pack
+       ^
+
+"Test_name.c", line 16: error: pack expansion does not make use of any argument packs
+      x...[N];             // error: must be a pack
+       ^
+
+"Test_name.c", line 17: error: parameter pack "I" was referenced but not expanded
+      I...[I];             // error: pack not expanded
+           ^
+
+"Test_name.c", line 26: error: pack index exceeds number of pack elements
+      return Ts ... [I]{};        // error: exceeds number of pack elements
+             ^
+          detected during instantiation of "auto out_of_bounds::f1<I,Ts...>() [with I=4, Ts=<int>]" at line 29
+
+"Test_name.c", line 26: error: pack index exceeds number of pack elements
+      return Ts ... [I]{};        // error: exceeds number of pack elements
+             ^
+          detected during instantiation of "auto out_of_bounds::f1<I,Ts...>() [with I=1, Ts=<>]" at line 29
+
+"Test_name.c", line 34: error: pack index exceeds number of pack elements
+      return Vs ... [I];          // error: exceeds number of pack elements
+             ^
+          detected during instantiation of "auto out_of_bounds::f2<I,Vs...>() [with I=4, Vs=<1>]" at line 37
+
+"Test_name.c", line 34: error: pack index exceeds number of pack elements
+      return Vs ... [I];          // error: exceeds number of pack elements
+             ^
+          detected during instantiation of "auto out_of_bounds::f2<I,Vs...>() [with I=1, Vs=<>]" at line 37
+
+"Test_name.c", line 43: error: pack index exceeds number of pack elements
+      static auto f() -> Ts ... [I]; // error: exceeds number of pack elements
+                         ^
+          detected during instantiation of class "out_of_bounds::C<Ts...> [with Ts=<>]" at line 46
+
+"Test_name.c", line 60: error: pack index exceeds number of pack elements
+      return C<Ts...[Is]...>();   // error: exceeds number of pack elements
+               ^
+          detected during instantiation of "auto out_of_bounds_recover::f<Ts...,Is...>(out_of_bounds_recover::S<Is...>) [with Ts=<>, Is=<2>]" at line 63
+
+"Test_name.c", line 60: error: pack index exceeds number of pack elements
+      return C<Ts...[Is]...>();   // error: exceeds number of pack elements
+               ^
+          detected during instantiation of "auto out_of_bounds_recover::f<Ts...,Is...>(out_of_bounds_recover::S<Is...>) [with Ts=<int>, Is=<2>]" at line 64
+
+"Test_name.c", line 60: error: pack index exceeds number of pack elements
+      return C<Ts...[Is]...>();   // error: exceeds number of pack elements
+               ^
+          detected during instantiation of "auto out_of_bounds_recover::f<Ts...,Is...>(out_of_bounds_recover::S<Is...>) [with Ts=<int, long>, Is=<2>]" at line 65
+
+"Test_name.c", line 71: error: not a class or struct name
+    struct D : Ts ... [0]         // error: not a class or struct name
+               ^
+          detected during instantiation of class "base_class::D<Ts...> [with Ts=<int>]" at line 74
+
+"Test_name.c", line 94: error: expression must have a constant value
+      Ts ... [i] t;               // error: expression not constant
+              ^
+"Test_name.c", line 94: note: the value of parameter "i" (declared at line 92) cannot be used as a constant
+      Ts ... [i] t;               // error: expression not constant
+              ^
+          detected during instantiation of "void non_constant_index::f1<Ts...>(int) [with Ts=<int>]" at line 97
+
+"Test_name.c", line 102: error: expression must have a constant value
+      Is ... [i];                 // error: expression not constant
+              ^
+"Test_name.c", line 102: note: the value of parameter "i" (declared at line 100) cannot be used as a constant
+      Is ... [i];                 // error: expression not constant
+              ^
+          detected during instantiation of "void non_constant_index::f2<Is...>(int) [with Is=<1>]" at line 105
+
+14 errors detected in the compilation of "Test_name.c".

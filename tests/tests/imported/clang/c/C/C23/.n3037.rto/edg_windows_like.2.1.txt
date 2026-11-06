@@ -1,0 +1,354 @@
+fe_only -DTEST_NUMBER=2 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c17 Test_name.c
+"Test_name.c", line 19: error: argument of type "struct foo" is incompatible with parameter of type "struct foo"
+    baz(q); // c17-error {{passing 'struct foo' to parameter of incompatible type 'struct foo'}}
+        ^
+
+"Test_name.c", line 25: warning: declaration is not visible outside of function
+  void func1(PRODUCT(int, SUM(float, double)) x); // c17-warning {{declaration of 'struct prod' will not be visible outside of this function}} \
+             ^
+
+"Test_name.c", line 28: warning: declaration is not visible outside of function
+  void func2(PRODUCT(int, SUM(float, double)) y) { // c17-warning {{declaration of 'struct prod' will not be visible outside of this function}} \
+             ^
+
+"Test_name.c", line 30: error: argument of type "struct prod" is incompatible with parameter of type "struct prod"
+    func1(y); // c17-error {{passing 'struct prod' to parameter of incompatible type 'struct prod'}}
+          ^
+
+"Test_name.c", line 34: error: "foop" has already been declared in the current scope
+  struct foop { struct { int x; }; }; // c17-error {{redefinition of 'foop'}}
+         ^
+
+"Test_name.c", line 41: error: "AnonymousStructNotMatchingFields" has already been declared in the current scope
+  struct AnonymousStructNotMatchingFields { // c23-error {{type 'struct AnonymousStructNotMatchingFields' has incompatible definitions}} \
+         ^
+
+"Test_name.c", line 47: error: "barp" has already been declared in the current scope
+  union barp { int x; float y; };     // c17-error {{redefinition of 'barp'}}
+        ^
+
+"Test_name.c", line 49: error: "q" has already been declared in the current scope
+  typedef struct q { int x; } q_t;    // c17-error {{redefinition of 'q'}} \
+                 ^
+
+"Test_name.c", line 49: error: type "q_t" has already been defined (previous definition at line 48)
+  typedef struct q { int x; } q_t;    // c17-error {{redefinition of 'q'}} \
+                              ^
+
+"Test_name.c", line 52: error: type "untagged_q_t" has already been defined (previous definition at line 51)
+  typedef struct { int x; } untagged_q_t; // both-error {{typedef redefinition with different types}}
+                            ^
+
+"Test_name.c", line 56: error: "S" has already been declared in the current scope
+    struct S { int x; };       // c17-error {{redefinition of 'S'}}
+           ^
+
+"Test_name.c", line 57: error: "T" has already been declared in the current scope
+    struct T { struct S s; };  // c17-error {{redefinition of 'T'}}
+           ^
+
+"Test_name.c", line 62: error: "food" has already been declared in the current scope
+  struct food { int (*p)[]; };  // c23-error {{type 'struct food' has incompatible definitions}} \
+         ^
+
+"Test_name.c", line 67: error: "bard" has already been declared in the current scope
+  union bard { int z; float y; }; // c23-error {{type 'union bard' has incompatible definitions}} \
+        ^
+
+"Test_name.c", line 72: error: "purr" has already been declared in the current scope
+  union purr { float y; int x; }; // c23-error {{type 'union purr' has incompatible definitions}} \
+        ^
+
+"Test_name.c", line 82: error: "attr_test" has already been declared in the current scope
+  struct attr_test { // c17-error {{redefinition of 'attr_test'}} \
+         ^
+
+"Test_name.c", line 91: error: "attr_test_2" has already been declared in the current scope
+  struct [[gnu::packed]] attr_test_2 { // c17-error {{redefinition of 'attr_test_2'}} \
+                         ^
+
+"Test_name.c", line 103: error: "attr_test_3" has already been declared in the current scope
+  struct [[gnu::packed]] attr_test_3 { // c17-error {{redefinition of 'attr_test_3'}} \
+                         ^
+
+"Test_name.c", line 115: error: "field_attr_test_1" has already been declared in the current scope
+  struct field_attr_test_1 { // c17-error {{redefinition of 'field_attr_test_1'}} \
+         ^
+
+"Test_name.c", line 126: error: "field_attr_test_2" has already been declared in the current scope
+  struct field_attr_test_2 { // c17-error {{redefinition of 'field_attr_test_2'}} \
+         ^
+
+"Test_name.c", line 137: error: "field_attr_test_3" has already been declared in the current scope
+  struct field_attr_test_3 { // c17-error {{redefinition of 'field_attr_test_3'}} \
+         ^
+
+"Test_name.c", line 149: error: "equivalent_field_types" has already been declared in the current scope
+  struct equivalent_field_types { // c17-error {{redefinition of 'equivalent_field_types'}}
+         ^
+
+"Test_name.c", line 157: error: "quals_matter" has already been declared in the current scope
+  struct quals_matter { // c17-error {{redefinition of 'quals_matter'}} \
+         ^
+
+"Test_name.c", line 166: error: "qual_order_does_not_matter" has already been declared in the current scope
+  struct qual_order_does_not_matter { // c17-error {{redefinition of 'qual_order_does_not_matter'}}
+         ^
+
+"Test_name.c", line 172: error: "nested" has already been declared in the current scope
+    struct nested { // both-error {{nested redefinition of 'nested'}}
+           ^
+
+"Test_name.c", line 174: warning: expected an identifier
+    };
+     ^
+
+"Test_name.c", line 184: error: "bit_field_1" has already been declared in the current scope
+  struct bit_field_1 { // c17-error {{redefinition of 'bit_field_1'}}
+         ^
+
+"Test_name.c", line 190: error: "bit_field_1" has already been declared in the current scope
+  struct bit_field_1 { // c17-error {{redefinition of 'bit_field_1'}} \
+         ^
+
+"Test_name.c", line 201: error: "bit_field_2" has already been declared in the current scope
+  struct bit_field_2 { // c17-error {{redefinition of 'bit_field_2'}} \
+         ^
+
+"Test_name.c", line 213: error: "bit_field_3" has already been declared in the current scope
+  struct bit_field_3 { // c17-error {{redefinition of 'bit_field_3'}} \
+         ^
+
+"Test_name.c", line 224: error: "bit_field_4" has already been declared in the current scope
+  struct bit_field_4 { // c17-error {{redefinition of 'bit_field_4'}} \
+         ^
+
+"Test_name.c", line 235: error: "bit_field_5" has already been declared in the current scope
+  struct bit_field_5 { // c17-error {{redefinition of 'bit_field_5'}} \
+         ^
+
+"Test_name.c", line 245: error: "bit_field_6" has already been declared in the current scope
+  struct bit_field_6 { // c17-error {{redefinition of 'bit_field_6'}}
+         ^
+
+"Test_name.c", line 250: error: enum "E" has already been defined (previous definition at line 249)
+  enum E { A }; // c17-error {{redefinition of 'E'}} \
+       ^
+
+"Test_name.c", line 250: error: "A" has already been declared in the current scope
+  enum E { A }; // c17-error {{redefinition of 'E'}} \
+           ^
+
+"Test_name.c", line 254: error: enum "Q" has already been defined (previous definition at line 253)
+  enum Q { D = D }; // c17-error {{redefinition of 'Q'}} \
+       ^
+
+"Test_name.c", line 254: error: "D" has already been declared in the current scope
+  enum Q { D = D }; // c17-error {{redefinition of 'Q'}} \
+           ^
+
+"Test_name.c", line 259: error: enum "X" has already been defined (previous definition at line 258)
+  enum X { C = 2, B = 1 };     // c17-error {{redefinition of 'X'}} \
+       ^
+
+"Test_name.c", line 259: error: "C" has already been declared in the current scope
+  enum X { C = 2, B = 1 };     // c17-error {{redefinition of 'X'}} \
+           ^
+
+"Test_name.c", line 259: error: "B" has already been declared in the current scope
+  enum X { C = 2, B = 1 };     // c17-error {{redefinition of 'X'}} \
+                  ^
+
+"Test_name.c", line 266: error: enum "Y" has already been defined (previous definition at line 264)
+  enum Y { YA = 1, YB = 3 }; // c23-error {{type 'enum Y' has incompatible definitions}} \
+       ^
+
+"Test_name.c", line 266: error: "YA" has already been declared in the current scope
+  enum Y { YA = 1, YB = 3 }; // c23-error {{type 'enum Y' has incompatible definitions}} \
+           ^
+
+"Test_name.c", line 266: error: "YB" has already been declared in the current scope
+  enum Y { YA = 1, YB = 3 }; // c23-error {{type 'enum Y' has incompatible definitions}} \
+                   ^
+
+"Test_name.c", line 274: error: "ZC" has already been declared in the current scope
+  enum Z2 { ZC = 1 }; // both-error {{redefinition of enumerator 'ZC'}}
+            ^
+
+"Test_name.c", line 283: error: enum "enum_attr_test_1" has already been defined (previous definition at line 277)
+  enum [[deprecated]] enum_attr_test_1 { // c17-error {{redefinition of 'enum_attr_test_1'}} \
+                      ^
+
+"Test_name.c", line 287: error: "EAT1" has already been declared in the current scope
+    EAT1 [[deprecated]] // c17-error {{redefinition of enumerator 'EAT1'}} \
+    ^
+
+"Test_name.c", line 296: error: enum "enum_attr_test_2" has already been defined (previous definition at line 291)
+  enum enum_attr_test_2 { // c17-error {{redefinition of 'enum_attr_test_2'}} \
+       ^
+
+"Test_name.c", line 298: error: "EAT2" has already been declared in the current scope
+    EAT2 // c17-error {{redefinition of enumerator 'EAT2'}}
+    ^
+
+"Test_name.c", line 305: error: enum "enum_attr_test_3" has already been defined (previous definition at line 301)
+  enum [[deprecated]] enum_attr_test_3 { // c17-error {{redefinition of 'enum_attr_test_3'}} \
+                      ^
+
+"Test_name.c", line 308: error: "EAT3" has already been declared in the current scope
+    EAT3 // c17-error {{redefinition of enumerator 'EAT3'}}
+    ^
+
+"Test_name.c", line 315: error: enum "fixed_test_1" has already been defined (previous definition at line 314)
+  enum fixed_test_1 : int { FT1 }; // c17-error {{redefinition of 'fixed_test_1'}} \
+       ^
+
+"Test_name.c", line 315: error: "FT1" has already been declared in the current scope
+  enum fixed_test_1 : int { FT1 }; // c17-error {{redefinition of 'fixed_test_1'}} \
+                            ^
+
+"Test_name.c", line 319: error: enum "fixed_test_2" has already been defined (previous definition at line 318)
+  enum fixed_test_2 : typedef_of_type_int { FT2 }; // c17-error {{redefinition of 'fixed_test_2'}} \
+       ^
+
+"Test_name.c", line 319: error: "FT2" has already been declared in the current scope
+  enum fixed_test_2 : typedef_of_type_int { FT2 }; // c17-error {{redefinition of 'fixed_test_2'}} \
+                                            ^
+
+"Test_name.c", line 325: warning: declaration is not visible outside of function
+  declared_funny_func(struct declared_funny_1 { int x; } arg) { // c17-warning {{declaration of 'struct declared_funny_1' will not be visible outside of this function}}
+                             ^
+
+"Test_name.c", line 340: error: "Inner" has already been declared in the current scope
+  struct Inner {   // c17-error {{redefinition of 'Inner'}}
+         ^
+
+"Test_name.c", line 344: error: enum "InnerEnum" has already been defined (previous definition at line 335)
+  enum InnerEnum { // c17-error {{redefinition of 'InnerEnum'}}
+       ^
+
+"Test_name.c", line 345: error: "IE1" has already been declared in the current scope
+    IE1            // c17-error {{redefinition of enumerator 'IE1'}}
+    ^
+
+"Test_name.c", line 359: error: "array" has already been declared in the current scope
+  struct array { int y; int x[0]; };   // c17-error {{redefinition of 'array'}} \
+         ^
+
+"Test_name.c", line 367: error: "array_2" has already been declared in the current scope
+  struct array_2 { int y; int x[1 + 1 + 1]; }; // c17-error {{redefinition of 'array_2'}}
+         ^
+
+"Test_name.c", line 373: error: "alignment" has already been declared in the current scope
+  struct alignment { // c17-error {{redefinition of 'alignment'}} \
+         ^
+
+"Test_name.c", line 383: error: "tag" has already been declared in the current scope
+  _Static_assert(1 == _Generic(tagged, struct tag {int i;}:1, default:0)); // c17-error {{redefinition of 'tag'}} \
+                                              ^
+
+"Test_name.c", line 383: error: static assertion failed
+  _Static_assert(1 == _Generic(tagged, struct tag {int i;}:1, default:0)); // c17-error {{redefinition of 'tag'}} \
+  ^
+
+"Test_name.c", line 386: error: "tag" has already been declared in the current scope
+  _Static_assert(0 == _Generic(nontag, struct tag {int i;}:1, default:0)); // c17-error {{redefinition of 'tag'}}
+                                              ^
+
+"Test_name.c", line 404: error: expected an expression
+    _Static_assert(0 == _Generic(__typeof__(Arg1), __typeof__(Arg2) : 1, default : 0)); // both-warning {{passing a type argument as the first operand to '_Generic' is a C2y extension}}
+                                 ^
+
+"Test_name.c", line 437: error: a value of type "struct <unnamed>" cannot be assigned to an entity of type "struct <unnamed>"
+    inner_unnamed_tagged.untagged = matchingType.untagged; // both-error-re {{assigning to 'struct (unnamed at {{.*}})' from incompatible type 'struct (unnamed at {{.*}})'}}
+                                  ^
+
+"Test_name.c", line 438: error: a value of type "struct <unnamed>" cannot be assigned to an entity of type "struct <unnamed>"
+    inner_unnamed_tagged.untagged = differentFieldName.untaggedDifferent; // both-error-re {{assigning to 'struct (unnamed at {{.*}})' from incompatible type 'struct (unnamed at {{.*}})'}}
+                                  ^
+
+"Test_name.c", line 439: error: a value of type "struct <unnamed>" cannot be assigned to an entity of type "struct <unnamed>"
+    inner_unnamed_tagged.untagged = differentType.untagged; // both-error-re {{assigning to 'struct (unnamed at {{.*}})' from incompatible type 'struct (unnamed at {{.*}})'}}
+                                  ^
+
+"Test_name.c", line 445: error: "E_Untagged1" has already been declared in the current scope
+  _Static_assert(0 == _Generic(nontag_enum, enum { E_Untagged1 } : 1, default : 0)); // both-error {{redefinition of enumerator 'E_Untagged1'}}
+                                                   ^
+
+"Test_name.c", line 461: error: declaration is incompatible with "enum GH150594_E1 Fn1(void)" (declared at line 453)
+    extern enum GH150594_E1 Fn1(void); // both-error {{conflicting types for 'Fn1'}}
+                            ^
+
+"Test_name.c", line 463: error: declaration is incompatible with "enum GH150594_E3 Fn3(void)" (declared at line 455)
+    extern enum GH150594_E3 Fn3(void); // both-error {{conflicting types for 'Fn3'}}
+                            ^
+
+"Test_name.c", line 464: error: declaration is incompatible with "enum GH150594_E4 Fn4(void)" (declared at line 456)
+    extern enum GH150594_E4 Fn4(void); // both-error {{conflicting types for 'Fn4'}}
+                            ^
+
+"Test_name.c", line 468: error: enum "E1" (declared at line 467) was previously declared without an explicit enum base
+    enum E1 : int { e1 }; // both-error {{enumeration previously declared with nonfixed underlying type}}
+              ^
+
+"Test_name.c", line 468: error: enum "E1" has already been defined (previous definition at line 467)
+    enum E1 : int { e1 }; // both-error {{enumeration previously declared with nonfixed underlying type}}
+         ^
+
+"Test_name.c", line 468: error: "e1" has already been declared in the current scope
+    enum E1 : int { e1 }; // both-error {{enumeration previously declared with nonfixed underlying type}}
+                    ^
+
+"Test_name.c", line 471: error: enum "E2" has already been defined (previous definition at line 470)
+    enum E2 { e2 };       // both-error {{enumeration previously declared with fixed underlying type}}
+         ^
+
+"Test_name.c", line 471: error: "e2" has already been declared in the current scope
+    enum E2 { e2 };       // both-error {{enumeration previously declared with fixed underlying type}}
+              ^
+
+"Test_name.c", line 474: error: enum "E3" has already been defined (previous definition at line 473)
+    enum E3 : short { e3 }; // both-error {{enumeration redeclared with different underlying type 'short' (was 'int')}}
+         ^
+
+"Test_name.c", line 474: error: "e3" has already been declared in the current scope
+    enum E3 : short { e3 }; // both-error {{enumeration redeclared with different underlying type 'short' (was 'int')}}
+                      ^
+
+"Test_name.c", line 478: error: enum "E4" has already been defined (previous definition at line 477)
+    enum E4 : short { e4 }; // c17-error {{redefinition of 'E4'}} \
+         ^
+
+"Test_name.c", line 478: error: "e4" has already been declared in the current scope
+    enum E4 : short { e4 }; // c17-error {{redefinition of 'E4'}} \
+                      ^
+
+"Test_name.c", line 482: error: enum "E5" has already been defined (previous definition at line 481)
+    enum E5 : int { e5 }; // both-error {{enumeration redeclared with different underlying type 'int' (was 'foo' (aka 'short'))}}
+         ^
+
+"Test_name.c", line 482: error: "e5" has already been declared in the current scope
+    enum E5 : int { e5 }; // both-error {{enumeration redeclared with different underlying type 'int' (was 'foo' (aka 'short'))}}
+                    ^
+
+"Test_name.c", line 504: error: declaration is incompatible with "struct GH149965_1 x1" (declared at line 495)
+    extern struct GH149965_1 x1; // c17-error {{redeclaration of 'x1'}}
+                             ^
+
+"Test_name.c", line 505: error: declaration is incompatible with "struct GH149965_2 x2" (declared at line 496)
+    extern struct GH149965_2 x2; // c17-error {{redeclaration of 'x2'}}
+                             ^
+
+"Test_name.c", line 511: error: "GH149965_3" has already been declared in the current scope
+    struct GH149965_3 { enum E1 h; }; // c17-error {{redefinition of 'GH149965_3'}}
+           ^
+
+"Test_name.c", line 516: warning: variable "eptr" is used before its value is set
+    [[maybe_unused]] __typeof__(x1.h) *ptr = eptr;
+                                             ^
+
+"Test_name.c", line 518: warning: variable "eptr2" is used before its value is set
+    [[maybe_unused]] __typeof__(x2.h) *ptr2 = eptr2;
+                                              ^
+
+82 errors detected in the compilation of "Test_name.c".

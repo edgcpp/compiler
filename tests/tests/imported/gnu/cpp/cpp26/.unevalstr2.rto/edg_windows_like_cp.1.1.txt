@@ -1,0 +1,226 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 29: warning: unrecognized character escape sequence
+  static_assert (true, "\h");		// { dg-warning "unknown escape sequence" }
+                        ^
+
+"Test_name.c", line 34: error: unknown external linkage specification
+  extern L"C" int f3 ();			// { dg-error "a wide string is invalid in this context" }
+         ^
+
+"Test_name.c", line 35: error: unknown external linkage specification
+  extern L"C" { int f4 (); }		// { dg-error "a wide string is invalid in this context" }
+         ^
+
+"Test_name.c", line 36: error: unknown external linkage specification
+  extern u"C" int f5 ();			// { dg-error "a wide string is invalid in this context" }
+         ^
+
+"Test_name.c", line 37: error: unknown external linkage specification
+  extern u"C" { int f6 (); }		// { dg-error "a wide string is invalid in this context" }
+         ^
+
+"Test_name.c", line 38: error: unknown external linkage specification
+  extern U"C" int f7 ();			// { dg-error "a wide string is invalid in this context" }
+         ^
+
+"Test_name.c", line 39: error: unknown external linkage specification
+  extern U"C" { int f8 (); }		// { dg-error "a wide string is invalid in this context" }
+         ^
+
+"Test_name.c", line 69: warning: unrecognized character escape sequence
+  [[deprecated ("\h")]] int g20 ();	// { dg-warning "unknown escape sequence" }
+                 ^
+
+"Test_name.c", line 93: warning: unrecognized character escape sequence
+  [[nodiscard ("\h")]] int h20 ();	// { dg-warning "unknown escape sequence" }
+                ^
+
+"Test_name.c", line 97: error: invalid literal operator name
+  float operator L"" _my2 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 97: error: expected a ";"
+  float operator L"" _my2 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                     ^
+
+"Test_name.c", line 98: error: invalid literal operator name
+  float operator u"" _my3 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 98: error: expected a ";"
+  float operator u"" _my3 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                     ^
+
+"Test_name.c", line 99: error: invalid literal operator name
+  float operator U"" _my4 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 99: error: expected a ";"
+  float operator U"" _my4 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                     ^
+
+"Test_name.c", line 100: error: invalid literal operator name
+  float operator u8"" _my5 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 100: error: expected a ";"
+  float operator u8"" _my5 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                      ^
+
+"Test_name.c", line 101: error: invalid literal operator name
+  float operator L"" "" _my6 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 101: error: expected a ";"
+  float operator L"" "" _my6 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                        ^
+
+"Test_name.c", line 102: error: invalid literal operator name
+  float operator u"" "" _my7 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 102: error: expected a ";"
+  float operator u"" "" _my7 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                        ^
+
+"Test_name.c", line 103: error: invalid literal operator name
+  float operator U"" "" _my8 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 103: error: expected a ";"
+  float operator U"" "" _my8 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                        ^
+
+"Test_name.c", line 104: error: invalid literal operator name
+  float operator u8"" "" _my9 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 104: error: expected a ";"
+  float operator u8"" "" _my9 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                         ^
+
+"Test_name.c", line 105: error: invalid literal operator name
+  float operator "" L"" _my10 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 105: error: expected a ";"
+  float operator "" L"" _my10 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                        ^
+
+"Test_name.c", line 106: error: invalid literal operator name
+  float operator "" u"" _my11 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 106: error: expected a ";"
+  float operator "" u"" _my11 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                        ^
+
+"Test_name.c", line 107: error: invalid literal operator name
+  float operator "" U"" _my12 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 107: error: expected a ";"
+  float operator "" U"" _my12 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                        ^
+
+"Test_name.c", line 108: error: invalid literal operator name
+  float operator "" u8"" _my13 (const char *);	// { dg-error "invalid encoding prefix in literal operator" "" { target c++20 } }
+                 ^
+
+"Test_name.c", line 108: error: expected a ";"
+  float operator "" u8"" _my13 (const char *);	// { dg-error "invalid encoding prefix in literal operator" "" { target c++20 } }
+                         ^
+
+"Test_name.c", line 109: error: invalid literal operator name
+  float operator "\0" _my14 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                 ^
+
+"Test_name.c", line 109: error: expected a ";"
+  float operator "\0" _my14 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                      ^
+
+"Test_name.c", line 110: error: invalid literal operator name
+  float operator "\x00" _my15 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                 ^
+
+"Test_name.c", line 110: error: expected a ";"
+  float operator "\x00" _my15 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                        ^
+
+"Test_name.c", line 111: warning: unrecognized character escape sequence
+  float operator "\h" _my16 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                  ^
+
+"Test_name.c", line 111: error: invalid literal operator name
+  float operator "\h" _my16 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                 ^
+
+"Test_name.c", line 111: error: expected a ";"
+  float operator "\h" _my16 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                      ^
+
+"Test_name.c", line 133: error: invalid literal operator name
+  float operator L""_my22 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 134: error: invalid literal operator name
+  float operator u""_my23 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 135: error: invalid literal operator name
+  float operator U""_my24 (const char *);		// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 136: error: invalid literal operator name
+  float operator u8""_my25 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 137: error: invalid literal operator name
+  float operator L"" ""_my26 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 138: error: invalid literal operator name
+  float operator u"" ""_my27 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 139: error: invalid literal operator name
+  float operator U"" ""_my28 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 140: error: invalid literal operator name
+  float operator u8"" ""_my29 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 141: error: invalid literal operator name
+  float operator "" L""_my30 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 142: error: invalid literal operator name
+  float operator "" u""_my31 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 143: error: invalid literal operator name
+  float operator "" U""_my32 (const char *);	// { dg-error "invalid encoding prefix in literal operator" }
+                 ^
+
+"Test_name.c", line 144: error: invalid literal operator name
+  float operator "" u8""_my33 (const char *);	// { dg-error "invalid encoding prefix in literal operator" "" { target c++20 } }
+                 ^
+
+"Test_name.c", line 145: error: invalid literal operator name
+  float operator "\0"_my34 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                 ^
+
+"Test_name.c", line 146: error: invalid literal operator name
+  float operator "\x00"_my35 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                 ^
+
+"Test_name.c", line 147: warning: unrecognized character escape sequence
+  float operator "\h"_my36 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                  ^
+
+"Test_name.c", line 147: error: invalid literal operator name
+  float operator "\h"_my36 (const char *);	// { dg-error "expected empty string after 'operator' keyword" }
+                 ^
+
+51 errors detected in the compilation of "Test_name.c".

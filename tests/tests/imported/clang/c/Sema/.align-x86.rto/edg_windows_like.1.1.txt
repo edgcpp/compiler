@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 14: error: static assertion failed with "_Alignof(double) == 4"
+  CHECK_ALIGNMENT(double, g_double, 4, 8);
+  ^
+
+"Test_name.c", line 15: error: static assertion failed with "_Alignof(long long) == 4"
+  CHECK_ALIGNMENT(long long, g_longlong, 4, 8);
+  ^
+
+"Test_name.c", line 16: error: static assertion failed with "_Alignof(unsigned long long) == 4"
+  CHECK_ALIGNMENT(unsigned long long, g_ulonglong, 4, 8);
+  ^
+
+"Test_name.c", line 17: error: static assertion failed with "_Alignof(_Complex double) == 4"
+  CHECK_ALIGNMENT(_Complex double, g_complexdouble, 4, 8);
+  ^
+
+"Test_name.c", line 28: error: static assertion failed with "_Alignof(arr3double) == 4"
+  CHECK_ALIGNMENT(arr3double, g_arr3double, 4, 8);
+  ^
+
+"Test_name.c", line 31: error: static assertion failed with "_Alignof(enum big_enum) == 4"
+  CHECK_ALIGNMENT(enum big_enum, g_bigenum, 4, 8);
+  ^
+
+"Test_name.c", line 42: error: static assertion failed with "sizeof(aligned_before_struct[1]) == 4"
+  STATIC_ASSERT(sizeof(aligned_before_struct[1])    == 4); // expected-error {{size of array element}}
+  ^
+
+"Test_name.c", line 44: error: static assertion failed with "sizeof(aligned_before_struct[2][1]) == 8"
+  STATIC_ASSERT(sizeof(aligned_before_struct[2][1]) == 8); // expected-error {{size of array element}}
+  ^
+
+8 errors detected in the compilation of "Test_name.c".

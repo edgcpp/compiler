@@ -1,0 +1,57 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target, device_type (host))]];
+    ^
+
+"Test_name.c", line 9: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];
+    ^
+
+"Test_name.c", line 12: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target device_type (nohost))]];
+    ^
+
+"Test_name.c", line 17: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];// { dg-error "'begin declare target' in pragma syntax terminated with 'end declare target' in attribute syntax" }
+    ^
+
+"Test_name.c", line 19: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target)]];
+    ^
+
+"Test_name.c", line 24: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];// { dg-error "'begin declare target' in pragma syntax terminated with 'end declare target' in attribute syntax" }
+    ^
+
+"Test_name.c", line 26: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target device_type (any))]];
+    ^
+
+"Test_name.c", line 27: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target)]];
+    ^
+
+"Test_name.c", line 32: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];// { dg-error "'begin declare target' in pragma syntax terminated with 'end declare target' in attribute syntax" }
+    ^
+
+"Test_name.c", line 33: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];
+    ^
+
+"Test_name.c", line 34: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target)]];
+    ^
+
+"Test_name.c", line 40: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (begin declare target)]];
+    ^
+
+"Test_name.c", line 42: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];
+    ^
+
+"Test_name.c", line 43: warning: attribute namespace "omp" is unrecognized
+  [[omp::directive (end declare target)]];// { dg-error "'begin declare target' in pragma syntax terminated with 'end declare target' in attribute syntax" }
+    ^
+

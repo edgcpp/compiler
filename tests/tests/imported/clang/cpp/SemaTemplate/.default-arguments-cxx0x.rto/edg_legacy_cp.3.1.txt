@@ -1,0 +1,43 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 120: error: identifier "a" is undefined
+    template<typename T> void f(T a, int = decltype(a)());
+                                                    ^
+
+"Test_name.c", line 130: error: identifier "c" is undefined
+      (void) [](auto c, int x = sizeof(decltype(c))) {};
+                                                ^
+
+"Test_name.c", line 144: warning: constant "C" is not used in declaring the parameter types of function template "lambda [](int)->auto::operator auto (*)(int)"
+        auto l = []<int C>(int n = A + B + C) { return n; };
+                        ^
+          detected during instantiation of "int lambda::X<A>::f<B>() [with A=100, B=20]" at line 148
+
+"Test_name.c", line 144: error: identifier "C" is undefined
+        auto l = []<int C>(int n = A + B + C) { return n; };
+                                           ^
+          detected during:
+            instantiation of function "lambda [](int)->auto [with C=3]" at line 145
+            instantiation of "int lambda::X<A>::f<B>() [with A=100, B=20]" at line 148
+
+"Test_name.c", line 151: warning: constant "C" is not used in declaring the parameter types of function template "lambda [](int)->auto::operator auto (*)(int)"
+      auto l = []<int C>(int n = 300 + B + C) { return n; };
+                      ^
+          detected during instantiation of "int lambda::X<200>::f<B>() [with B=20]" at line 154
+
+"Test_name.c", line 151: error: identifier "C" is undefined
+      auto l = []<int C>(int n = 300 + B + C) { return n; };
+                                           ^
+          detected during:
+            instantiation of function "lambda [](int)->auto [with C=1]" at line 152
+            instantiation of "int lambda::X<200>::f<B>() [with B=20]" at line 154
+
+"Test_name.c", line 157: warning: constant "C" is not used in declaring the parameter types of function template "lambda [](int)->auto::operator auto (*)(int)"
+      auto l = []<int C>(int n = 450 + C) { return n; };
+                      ^
+
+"Test_name.c", line 157: error: identifier "C" is undefined
+      auto l = []<int C>(int n = 450 + C) { return n; };
+                                       ^
+          detected during instantiation of function "lambda [](int)->auto [with C=6]" at line 158
+
+5 errors detected in the compilation of "Test_name.c".

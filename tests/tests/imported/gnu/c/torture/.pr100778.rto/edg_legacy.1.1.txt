@@ -1,0 +1,15 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/pr100778.c", line 8: warning: unknown attribute "noipa"
+  void __attribute__((noipa)) foo ()
+                      ^
+
+"./torture/pr100778.c", line 24: warning: function "feenableexcept" declared implicitly
+    feenableexcept (
+    ^
+
+eccp: diagnostics generated from compilation of Test_name.int.c:
+./torture/pr100778.c: In function 'main':
+./torture/pr100778.c:24:1: error: too many arguments to function 'feenableexcept'; expected 0, have 1
+./torture/pr100778.c:24:12: note: declared here
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

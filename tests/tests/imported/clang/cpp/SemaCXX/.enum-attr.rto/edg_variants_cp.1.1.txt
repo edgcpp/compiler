@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 32: warning: variable "t0" is used before its value is set
+    switch (t0) { // expected-warning{{enumeration value 'A1' not handled in switch}}
+            ^
+
+"Test_name.c", line 45: warning: variable "t1" is used before its value is set
+    switch (t1) { // expected-warning{{enumeration value 'B1' not handled in switch}}
+            ^
+
+"Test_name.c", line 58: warning: variable "t2" is used before its value is set
+    switch (t2) { // expected-warning{{enumeration value 'C1' not handled in switch}}
+            ^
+
+"Test_name.c", line 71: warning: variable "t3" is used before its value is set
+    switch (t3) { // expected-warning{{enumeration value 'D1' not handled in switch}}
+            ^
+
+"Test_name.c", line 85: warning: variable "t4" is used before its value is set
+    switch (t4) { // expected-warning{{enumeration value 'E1' not handled in switch}}
+            ^
+
+"Test_name.c", line 99: warning: variable "t5" is used before its value is set
+    switch (t5) { // expected-warning{{enumeration value 'F1' not handled in switch}}
+            ^
+

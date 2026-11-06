@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++17 Test_name.c
+"Test_name.c", line 15: error: use the "typename" keyword to treat nontype "A<T>::foo [with T=T]" as a type in a dependent context
+    typedef A<T>::foo type;	// { dg-error "typename" }
+            ^
+
+"Test_name.c", line 16: error: use the "typename" keyword to treat nontype "A<T>::bar [with T=T]" as a type in a dependent context
+    A<T>::bar b;			// { dg-error "typename" "typename" }
+    ^
+
+"Test_name.c", line 24: error: use the "typename" keyword to treat nontype "A<T>::baz [with T=T]" as a type in a dependent context
+      A<T>::baz z;		// { dg-error "typename" "typename" }
+      ^
+
+"Test_name.c", line 30: error: use the "typename" keyword to treat nontype "A<T>::type [with T=T]" as a type in a dependent context
+  void g(const A<T>::type &t);	// { dg-error "typename" }
+               ^
+
+4 errors detected in the compilation of "Test_name.c".

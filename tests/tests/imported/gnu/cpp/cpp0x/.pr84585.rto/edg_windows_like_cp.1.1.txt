@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 5: error: "auto" is not allowed here
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                     ^
+
+"Test_name.c", line 5: error: expected an expression
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                            ^
+
+"Test_name.c", line 5: error: expected a ")"
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                                                    ^
+
+"Test_name.c", line 5: error: expected a "{" introducing a lambda body
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                                                    ^
+
+"Test_name.c", line 5: error: expected a ";"
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                                                    ^
+
+"Test_name.c", line 5: error: expected a "}"
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                                                    ^
+"Test_name.c", line 5: note: to match this "{"
+  template <typename a> void b() {[](auto = template <;{a c(auto){}}}  // { dg-error "" }
+                                 ^
+
+6 errors detected in the compilation of "Test_name.c".

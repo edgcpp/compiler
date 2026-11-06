@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 12: error: explicit type is missing ("int" assumed)
+    static __thread int *p;
+           ^
+
+"Test_name.c", line 12: error: expected a ";"
+    static __thread int *p;
+                    ^
+
+"Test_name.c", line 18: error: explicit type is missing ("int" assumed)
+    static __thread int *p;
+           ^
+
+"Test_name.c", line 18: error: expected a ";"
+    static __thread int *p;
+                    ^
+
+"Test_name.c", line 24: error: class "S" has no member "p"
+    return S::p;
+              ^
+
+"Test_name.c", line 30: error: class "T<0>" has no member "p"
+    return T<0>::p;
+                 ^
+
+6 errors detected in the compilation of "Test_name.c".

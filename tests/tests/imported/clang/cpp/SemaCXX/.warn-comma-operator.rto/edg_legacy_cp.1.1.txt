@@ -1,0 +1,69 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 38: warning: variable "x1" was declared but never referenced
+    int x1, x2, x3;
+        ^
+
+"Test_name.c", line 38: warning: variable "x2" was declared but never referenced
+    int x1, x2, x3;
+            ^
+
+"Test_name.c", line 38: warning: variable "x3" was declared but never referenced
+    int x1, x2, x3;
+                ^
+
+"Test_name.c", line 39: warning: variable "y1" was declared but never referenced
+    int y1, *y2 = 0, y3 = 5;
+        ^
+
+"Test_name.c", line 39: warning: variable "y2" was declared but never referenced
+    int y1, *y2 = 0, y3 = 5;
+             ^
+
+"Test_name.c", line 39: warning: variable "y3" was declared but never referenced
+    int y1, *y2 = 0, y3 = 5;
+                     ^
+
+"Test_name.c", line 65: warning: statement is unreachable
+    return return_four() + return_four();
+    ^
+
+"Test_name.c", line 70: warning: variable "y" was declared but never referenced
+    int x, y;
+           ^
+
+"Test_name.c", line 86: warning: variable "x" is used before its value is set
+    ++x, ++y;
+      ^
+
+"Test_name.c", line 86: warning: variable "y" is used before its value is set
+    ++x, ++y;
+           ^
+
+"Test_name.c", line 192: warning: variable "y" is used before its value is set
+    for (; y < 10; x++, y++) {}
+           ^
+
+"Test_name.c", line 300: warning: statement is unreachable
+    return (MutexLock(), Status);
+    ^
+
+"Test_name.c", line 305: warning: statement is unreachable
+    return (BuiltinMutex(), Status);
+    ^
+
+"Test_name.c", line 316: warning: expression has no effect
+    (void)42, 0;
+    ^
+
+"Test_name.c", line 317: warning: expression has no effect
+    static_cast<void>(42), 0;
+    ^
+
+"Test_name.c", line 273: warning: variable "test_template::X" was declared but never referenced
+  const auto X = Foo<true_type>();
+             ^
+
+"Test_name.c", line 331: warning: function "<unnamed>::whatever" was declared but never referenced
+  void whatever() {
+       ^
+

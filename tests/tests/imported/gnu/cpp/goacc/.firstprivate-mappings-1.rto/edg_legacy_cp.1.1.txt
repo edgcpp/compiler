@@ -1,0 +1,190 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./goacc/firstprivate-mappings-1.C", line 198: error: _Complex can only be used with floating-point types
+  c (_Complex unsigned char &cuci,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 199: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+     _Complex signed short &cssi,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 200: error: _Complex can only be used with floating-point types
+     _Complex unsigned int &cuii,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 201: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+     _Complex signed long &csli,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 205: error: _Complex can only be used with floating-point types
+    _Complex unsigned char cuco;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 206: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex signed short csso;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 207: error: _Complex can only be used with floating-point types
+    _Complex unsigned int cuio;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 208: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex signed long cslo;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 225: error: complex integral types are not supported
+      cuco = (cuci += (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 226: error: complex integral types are not supported
+      csso = (cssi -= (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 227: error: complex integral types are not supported
+      cuio = (cuii += (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 228: error: complex integral types are not supported
+      cslo = (csli -= (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 229: error: complex integral types are not supported
+      cflto = (cflti -= (1 + 1j));
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 230: error: complex integral types are not supported
+      cdblo = (cdbli -= (1 + 1j));
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 232: error: complex integral types are not supported
+    if (cuco != cuci + (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 234: error: complex integral types are not supported
+    if (csso != cssi - (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 236: error: complex integral types are not supported
+    if (cuio != cuii + (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 238: error: complex integral types are not supported
+    if (cslo != csli - (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 240: error: complex integral types are not supported
+    if (cflto != cflti - (1 + 1j))
+                               ^
+
+"./goacc/firstprivate-mappings-1.C", line 242: error: complex integral types are not supported
+    if (cdblo != cdbli - (1 + 1j))
+                               ^
+
+"./goacc/firstprivate-mappings-1.C", line 256: error: complex integral types are not supported
+      cldblo = (cldbli -= (1 + 1j));
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 258: error: complex integral types are not supported
+    if (cldblo != cldbli - (1 + 1j))
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 327: error: expression must have arithmetic, unscoped enum, or pointer type
+      v2u8o = ++v2u8i;
+                ^
+
+"./goacc/firstprivate-mappings-1.C", line 328: error: expression must have arithmetic, unscoped enum, or pointer type
+      v4i16o = --v4i16i;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 329: error: expression must have arithmetic, unscoped enum, or pointer type
+      v8u32o = ++v8u32i;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 330: error: expression must have arithmetic, unscoped enum, or pointer type
+      v16i64o = --v16i64i;
+                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 331: error: expression must have arithmetic, unscoped enum, or pointer type
+      v1flto = --v1flti;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 332: error: expression must have arithmetic, unscoped enum, or pointer type
+      v2flto = --v2flti;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 333: error: expression must have arithmetic, unscoped enum, or pointer type
+      v4flto = --v4flti;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 334: error: expression must have arithmetic, unscoped enum, or pointer type
+      v8flto = --v8flti;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 335: error: expression must have arithmetic, unscoped enum, or pointer type
+      v1dblo = --v1dbli;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 336: error: expression must have arithmetic, unscoped enum, or pointer type
+      v2dblo = --v2dbli;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 337: error: expression must have arithmetic, unscoped enum, or pointer type
+      v4dblo = --v4dbli;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 338: error: expression must have arithmetic, unscoped enum, or pointer type
+      v8dblo = --v8dbli;
+                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 392: error: expression must have arithmetic, unscoped enum, or pointer type
+      v1ldblo = --v1ldbli;
+                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 393: error: expression must have arithmetic, unscoped enum, or pointer type
+      v2ldblo = --v2ldbli;
+                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 394: error: expression must have arithmetic, unscoped enum, or pointer type
+      v4ldblo = --v4ldbli;
+                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 395: error: expression must have arithmetic, unscoped enum, or pointer type
+      v8ldblo = --v8ldbli;
+                  ^
+
+"./goacc/firstprivate-mappings-1.C", line 480: error: _Complex can only be used with floating-point types
+      _Complex unsigned char cuci = 1 + 2j;
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 480: error: complex integral types are not supported
+      _Complex unsigned char cuci = 1 + 2j;
+                                         ^
+
+"./goacc/firstprivate-mappings-1.C", line 481: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+      _Complex signed short cssi = -2 + (-4j);
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 481: error: complex integral types are not supported
+      _Complex signed short cssi = -2 + (-4j);
+                                           ^
+
+"./goacc/firstprivate-mappings-1.C", line 482: error: _Complex can only be used with floating-point types
+      _Complex unsigned int cuii = 3 + 6j;
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 482: error: complex integral types are not supported
+      _Complex unsigned int cuii = 3 + 6j;
+                                        ^
+
+"./goacc/firstprivate-mappings-1.C", line 483: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+      _Complex signed long csli = -4 + (-8j);
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 483: error: complex integral types are not supported
+      _Complex signed long csli = -4 + (-8j);
+                                          ^
+
+"./goacc/firstprivate-mappings-1.C", line 484: error: complex integral types are not supported
+      _Complex float cflti = .5 + 1j;
+                                   ^
+
+47 errors detected in the compilation of "Test_name.c".

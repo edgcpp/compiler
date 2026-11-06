@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./cpp0x/lambda/lambda-this8.C", line 10: warning: expression has no effect
+      return [=] { +x; print<T>(); };
+                   ^
+
+/usr/sbin/ld: Test_name.o: in function `T1 std::function<T1 (T2...)>::operator ()(T2...) const [with T1=void, T2...=]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_function_call()'
+collect2: error: ld returned 1 exit status

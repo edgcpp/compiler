@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size(4*sizeof (int))));
+                                  ^
+
+"Test_name.c", line 12: warning: excess initializers are ignored
+    v4si v1 = (v4si) { i, i, i, i };
+                          ^
+
+"Test_name.c", line 13: warning: excess initializers are ignored
+    v4si v2 = (v4si) { 3, 3, 3, 3 };
+                          ^
+
+"Test_name.c", line 15: warning: missing return statement at end of non-void function "foo"
+  }
+  ^
+

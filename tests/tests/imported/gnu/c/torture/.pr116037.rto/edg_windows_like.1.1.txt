@@ -1,0 +1,78 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 7: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (64))) unsigned char VC;
+                         ^
+
+"Test_name.c", line 8: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (64))) unsigned short VS;
+                         ^
+
+"Test_name.c", line 9: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (64))) unsigned int VI;
+                         ^
+
+"Test_name.c", line 10: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (64))) unsigned long long VL;
+                         ^
+
+"Test_name.c", line 11: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__ (64))) unsigned __int128 VV;
+                         ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+    x &= -((VC) vv)[0];
+                    ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                         ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                                ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                                       ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                                              ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                                                     ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                                                            ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                                                                      ^
+
+"Test_name.c", line 28: warning: excess initializers are ignored
+    vi *= (VI) (VS){ -vs[0], vc[0], vs[1], vi[7], vs[7], vl[7], x, vi[5] };
+                             ^
+
+"Test_name.c", line 35: warning: integer conversion resulted in a change of sign
+    VV v = foo (0x01aabbccdd, (VV) { -0xff });
+                                     ^
+
+"Test_name.c", line 36: error: expression must have pointer-to-object type but it has type "int"
+    if (v[0] != 0x01aabbccdd - 0xff)
+          ^
+
+"Test_name.c", line 38: error: expression must have pointer-to-object type but it has type "int"
+    if (v[1] != 0x01aabbccdd)
+          ^
+
+"Test_name.c", line 40: error: expression must have pointer-to-object type but it has type "int"
+    if (v[2] != 0x01aabbccdd)
+          ^
+
+"Test_name.c", line 42: error: expression must have pointer-to-object type but it has type "int"
+    if (v[3] != 0x01aabbccdd)
+          ^
+
+12 errors detected in the compilation of "Test_name.c".

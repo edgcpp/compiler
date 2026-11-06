@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++14 Test_name.c
+"Test_name.c", line 48: error: expression must have a constant value
+    unsigned constexpr char c = swbar(reinterpret_cast<__UINTPTR_TYPE__>(&foo)); // { dg-error "conversion from pointer type" }
+                                ^
+"Test_name.c", line 48: note: cannot use reinterpret_cast in constant-expression evaluation
+    unsigned constexpr char c = swbar(reinterpret_cast<__UINTPTR_TYPE__>(&foo)); // { dg-error "conversion from pointer type" }
+                                ^
+
+"Test_name.c", line 50: error: expression must have a constant value
+    unsigned constexpr char d = ifbar(reinterpret_cast<__UINTPTR_TYPE__>(&foo)); // { dg-error "conversion from pointer type" }
+                                ^
+"Test_name.c", line 50: note: cannot use reinterpret_cast in constant-expression evaluation
+    unsigned constexpr char d = ifbar(reinterpret_cast<__UINTPTR_TYPE__>(&foo)); // { dg-error "conversion from pointer type" }
+                                ^
+
+"Test_name.c", line 52: error: expression must have a constant value
+    unsigned constexpr char e = swbar((__UINTPTR_TYPE__) &foo); // { dg-error "conversion from pointer type" }
+                                ^
+"Test_name.c", line 52: note: conversion from "char *" to "unsigned long" is invalid in constant-expression evaluation
+    unsigned constexpr char e = swbar((__UINTPTR_TYPE__) &foo); // { dg-error "conversion from pointer type" }
+                                ^
+
+"Test_name.c", line 54: error: expression must have a constant value
+    unsigned constexpr char f = ifbar((__UINTPTR_TYPE__) &foo); // { dg-error "conversion from pointer type" }
+                                ^
+"Test_name.c", line 54: note: conversion from "char *" to "unsigned long" is invalid in constant-expression evaluation
+    unsigned constexpr char f = ifbar((__UINTPTR_TYPE__) &foo); // { dg-error "conversion from pointer type" }
+                                ^
+
+4 errors detected in the compilation of "Test_name.c".

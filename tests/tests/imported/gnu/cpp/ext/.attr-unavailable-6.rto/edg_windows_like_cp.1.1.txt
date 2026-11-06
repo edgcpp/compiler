@@ -1,0 +1,184 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 10: error: type "INT1" was declared unavailable ("You can't use INT1")
+  typedef INT1 INT1a; 			/* { dg-error "'INT1' is unavailable: You can't use INT1" "" } */
+               ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable("You can't use INT1")));
+                                  ^
+
+"Test_name.c", line 12: error: type "INT1" was declared unavailable ("You can't use INT1")
+  INT1 should_be_unavailable; 		/* { dg-error "'INT1' is unavailable: You can't use INT1" "" } */
+       ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable("You can't use INT1")));
+                                  ^
+
+"Test_name.c", line 16: error: type "INT1" was declared unavailable ("You can't use INT1")
+  INT1 f2(void) { return 0; }		/* { dg-error "'INT1' is unavailable: You can't use INT1" "" } */
+       ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable("You can't use INT1")));
+                                  ^
+
+"Test_name.c", line 19: error: type "INT2" was declared unavailable ("You can't use INT2")
+  INT2 f4(void) { return 0; }		/* { dg-error "'INT2' is unavailable: You can't use INT2" "" } */
+       ^
+"Test_name.c", line 8: note: because of an "unavailable" attribute
+  typedef INT1 INT2 __attribute__ ((__unavailable__("You can't use INT2")));
+                                    ^
+
+"Test_name.c", line 20: error: type "INT2" was declared unavailable ("You can't use INT2")
+  int f5(INT2 x);				/* { dg-error "'INT2' is unavailable" "" } */
+      ^
+"Test_name.c", line 8: note: because of an "unavailable" attribute
+  typedef INT1 INT2 __attribute__ ((__unavailable__("You can't use INT2")));
+                                    ^
+
+"Test_name.c", line 28: error: type "Color" was declared unavailable ("You can't use Color")
+  Color k;				/* { dg-error "'Color' is unavailable: You can't use Color" "" } */
+        ^
+"Test_name.c", line 23: note: because of an "unavailable" attribute
+  typedef enum Color {red, green, blue} Color __attribute__((unavailable("You can't use Color")));
+                                                             ^
+
+"Test_name.c", line 49: error: type "INT1" was declared unavailable ("You can't use INT1")
+     INT1 w;				/* { dg-error "'INT1' is unavailable: You can't use INT1" "" } */
+          ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable("You can't use INT1")));
+                                  ^
+
+"Test_name.c", line 53: error: function "f1" was declared unavailable ("You can't use f1")
+     int (*pf)() = f1;			/* { dg-error "'INT1 f1\\(\\)' is unavailable: You can't use f1" "" } */
+                   ^
+"Test_name.c", line 15: note: because of an "unavailable" attribute
+  INT1 f1(void) __attribute__ ((unavailable("You can't use f1")));
+                                ^
+
+"Test_name.c", line 55: warning: variable "w" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+         ^
+
+"Test_name.c", line 55: warning: variable "x" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+             ^
+
+"Test_name.c", line 55: error: variable "x" was declared unavailable ("You can't use x")
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+             ^
+"Test_name.c", line 50: note: because of an "unavailable" attribute
+     int x __attribute__ ((unavailable("You can't use x")));
+                           ^
+
+"Test_name.c", line 55: warning: variable "y" is used before its value is set
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+                 ^
+
+"Test_name.c", line 55: error: variable "y" was declared unavailable ("You can't use y")
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+                 ^
+"Test_name.c", line 51: note: because of an "unavailable" attribute
+     int y __attribute__ ((__unavailable__("You can't use y")));
+                           ^
+
+"Test_name.c", line 55: error: variable "g2" was declared unavailable ("You can't use g2")
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+                          ^
+"Test_name.c", line 26: note: because of an "unavailable" attribute
+  int g2 __attribute__ ((unavailable("You can't use g2")));
+                         ^
+
+"Test_name.c", line 55: error: variable "g3" was declared unavailable ("You can't use g3")
+     z = w + x + y + g1 + g2 + g3;	/* { dg-error "'x' is unavailable: You can't use x" "" } */
+                               ^
+"Test_name.c", line 27: note: because of an "unavailable" attribute
+  int g3 __attribute__ ((__unavailable__("You can't use g3")));
+                         ^
+
+"Test_name.c", line 59: error: function "f1" was declared unavailable ("You can't use f1")
+     return f1(); 			/* { dg-error "'INT1 f1\\(\\)' is unavailable: You can't use f1" "f1" } */
+            ^
+"Test_name.c", line 15: note: because of an "unavailable" attribute
+  INT1 f1(void) __attribute__ ((unavailable("You can't use f1")));
+                                ^
+
+"Test_name.c", line 52: warning: variable "z" was set but never used
+     int z;
+         ^
+
+"Test_name.c", line 53: warning: variable "pf" was declared but never referenced
+     int (*pf)() = f1;			/* { dg-error "'INT1 f1\\(\\)' is unavailable: You can't use f1" "" } */
+           ^
+
+"Test_name.c", line 67: error: member "S1::field2" was declared unavailable ("You can't use field2")
+       return p->field2;			/* { dg-error "'S1::field2' is unavailable: You can't use field2" "" } */
+                 ^
+"Test_name.c", line 32: note: because of an "unavailable" attribute
+    int field2 __attribute__ ((unavailable("You can't use field2")));
+                               ^
+
+"Test_name.c", line 68: error: member "S1::field4" was declared unavailable ("You can't use field4")
+    else if (lp.field4)			/* { dg-error "'S1::field4' is unavailable: You can't use field4" "" } */
+                ^
+"Test_name.c", line 34: note: because of an "unavailable" attribute
+    int field4 __attribute__ ((__unavailable__("You can't use field4")));
+                               ^
+
+"Test_name.c", line 68: warning: variable "lp" is used before its value is set
+    else if (lp.field4)			/* { dg-error "'S1::field4' is unavailable: You can't use field4" "" } */
+             ^
+
+"Test_name.c", line 72: warning: expression has no effect
+    p->u2.field9;				/* { dg-error "'S1::u2' is unavailable: You can't use u2" "" } */
+    ^
+
+"Test_name.c", line 72: error: member "S1::u2" was declared unavailable ("You can't use u2")
+    p->u2.field9;				/* { dg-error "'S1::u2' is unavailable: You can't use u2" "" } */
+       ^
+"Test_name.c", line 44: note: because of an "unavailable" attribute
+    } u2 __attribute__ ((unavailable("You can't use u2")));
+                         ^
+
+"Test_name.c", line 73: error: member "S1::<unnamed>::field6" was declared unavailable ("You can't use field6")
+    return p->u1.field6 + p->field8;	/* { dg-error "'S1::<unnamed union>::field6' is unavailable: You can't use field6" "" } */
+                 ^
+"Test_name.c", line 37: note: because of an "unavailable" attribute
+      int field6 __attribute__ ((unavailable("You can't use field6")));
+                                 ^
+
+"Test_name.c", line 73: error: member "S1::field8" was declared unavailable ("You can't use field8")
+    return p->u1.field6 + p->field8;	/* { dg-error "'S1::<unnamed union>::field6' is unavailable: You can't use field6" "" } */
+                             ^
+"Test_name.c", line 40: note: because of an "unavailable" attribute
+    int field8:1 __attribute__ ((unavailable("You can't use field8")));
+                                 ^
+
+"Test_name.c", line 79: error: type "INT1" was declared unavailable ("You can't use INT1")
+    INT1 y; 				/* { dg-error "'INT1' is unavailable: You can't use INT1" "" } */
+         ^
+"Test_name.c", line 7: note: because of an "unavailable" attribute
+  typedef int INT1 __attribute__((unavailable("You can't use INT1")));
+                                  ^
+
+"Test_name.c", line 82: error: class "SS1" was declared unavailable ("You can't use SS1")
+  struct SS1 *p1;				/* { dg-error "'SS1' is unavailable: You can't use SS1" "" } */
+              ^
+"Test_name.c", line 80: note: because of an "unavailable" attribute
+  } __attribute__ ((unavailable("You can't use SS1")));
+                    ^
+
+"Test_name.c", line 89: error: class "SS2" was declared unavailable ("You can't use SS2")
+  struct SS2 *p2;				/* { dg-error "'SS2' is unavailable: You can't use SS2" "" } */
+              ^
+"Test_name.c", line 84: note: because of an "unavailable" attribute
+  struct __attribute__ ((__unavailable__("You can't use SS2"))) SS2 {
+                         ^
+
+"Test_name.c", line 99: error: class "T" was declared unavailable ("You can't use T")
+  T *p3;				// { dg-error "'T' is unavailable: You can't use T" }
+     ^
+"Test_name.c", line 97: note: because of an "unavailable" attribute
+  } __attribute__ ((unavailable("You can't use T")));
+                    ^
+
+22 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,97 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 15: warning: variable "q1" was declared but never referenced
+      int *q1 = &a;
+           ^
+
+"Test_name.c", line 16: warning: variable "q2" was declared but never referenced
+      int *q2 = &this->a;
+           ^
+
+"Test_name.c", line 17: warning: variable "q3" was declared but never referenced
+      int q3 = a;
+          ^
+
+"Test_name.c", line 18: warning: variable "q4" was declared but never referenced
+      int q4 = this->a;
+          ^
+
+"Test_name.c", line 19: warning: variable "q5" was declared but never referenced
+      int *q5 = &t;
+           ^
+
+"Test_name.c", line 20: warning: variable "q6" was declared but never referenced
+      int *q6 = &this->t;
+           ^
+
+"Test_name.c", line 21: warning: variable "q7" was declared but never referenced
+      int q7 = t;
+          ^
+
+"Test_name.c", line 22: warning: variable "q8" was declared but never referenced
+      int q8 = this->t;
+          ^
+
+"Test_name.c", line 23: warning: variable "q9" was declared but never referenced
+      int q9 = T::t;
+          ^
+
+"Test_name.c", line 24: warning: variable "q10" was declared but never referenced
+      int q10 = this->T::t;
+          ^
+
+"Test_name.c", line 25: warning: variable "q11" was declared but never referenced
+      int &q11 = a;
+           ^
+
+"Test_name.c", line 26: warning: variable "q12" was declared but never referenced
+      int &q12 = this->a;
+           ^
+
+"Test_name.c", line 27: warning: variable "q13" was declared but never referenced
+      int &q13 = t;
+           ^
+
+"Test_name.c", line 28: warning: variable "q14" was declared but never referenced
+      int &q14 = this->t;
+           ^
+
+"Test_name.c", line 29: warning: variable "q15" was declared but never referenced
+      int &q15 = S::a;
+           ^
+
+"Test_name.c", line 30: warning: variable "q16" was declared but never referenced
+      int &q16 = this->S::a;
+           ^
+
+"Test_name.c", line 31: warning: variable "q17" was declared but never referenced
+      int &q17 = T::t;
+           ^
+
+"Test_name.c", line 32: warning: variable "q18" was declared but never referenced
+      int &q18 = this->T::t;
+           ^
+
+"Test_name.c", line 57: warning: variable "q19" was declared but never referenced
+  	int q19 = a + t;
+  	    ^
+
+"Test_name.c", line 76: warning: variable "q20" was declared but never referenced
+        int q20 = a + t;
+            ^
+
+"Test_name.c", line 141: warning: variable "q7" was declared but never referenced
+      int q7 = U<T>::t;
+          ^
+
+"Test_name.c", line 143: warning: variable "q9" was declared but never referenced
+      int q9 = U<T>::t;
+          ^
+
+"Test_name.c", line 147: warning: variable "q13" was declared but never referenced
+      int &q13 = U<T>::t;
+           ^
+
+"Test_name.c", line 151: warning: variable "q17" was declared but never referenced
+      int &q17 = U<T>::t;
+           ^
+

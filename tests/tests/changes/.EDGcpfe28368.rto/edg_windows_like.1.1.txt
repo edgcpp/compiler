@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --targ linux_aarch64 --clang_v 210100 --c++17 Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "neon_vector_type"
+  typedef __attribute__((neon_vector_type(16))) __mfp8 WV;
+                         ^
+
+"Test_name.c", line 11: error: identifier "__mfp8" is undefined
+  typedef __attribute__((neon_vector_type(16))) __mfp8 WV;
+                                                ^
+
+"Test_name.c", line 12: error: identifier "__mfp8" is undefined
+  __mfp8 wght;
+  ^
+
+2 errors detected in the compilation of "Test_name.c".

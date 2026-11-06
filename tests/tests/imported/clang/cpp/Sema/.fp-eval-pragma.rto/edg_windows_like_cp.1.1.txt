@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 17: error: identifier "__FLT_EVAL_METHOD__" is undefined
+    printf("FP: %d\n", __FLT_EVAL_METHOD__);
+                       ^
+
+"Test_name.c", line 24: error: identifier "__FLT_EVAL_METHOD__" is undefined
+    printf("FP: %d\n", __FLT_EVAL_METHOD__);
+                       ^
+
+"Test_name.c", line 43: error: identifier "__FLT_EVAL_METHOD__" is undefined
+    auto a = __FLT_EVAL_METHOD__;
+             ^
+
+"Test_name.c", line 58: error: identifier "__FLT_EVAL_METHOD__" is undefined
+      int i = __FLT_EVAL_METHOD__; // ok, not in a scope changed by the pragma
+              ^
+
+"Test_name.c", line 64: error: identifier "__FLT_EVAL_METHOD__" is undefined
+      int i = __FLT_EVAL_METHOD__;
+              ^
+
+"Test_name.c", line 72: error: identifier "__FLT_EVAL_METHOD__" is undefined
+    return __FLT_EVAL_METHOD__;
+           ^
+
+"Test_name.c", line 81: error: identifier "__FLT_EVAL_METHOD__" is undefined
+      return __FLT_EVAL_METHOD__;
+             ^
+
+"Test_name.c", line 87: error: identifier "__FLT_EVAL_METHOD__" is undefined
+      return __FLT_EVAL_METHOD__;
+             ^
+
+8 errors detected in the compilation of "Test_name.c".

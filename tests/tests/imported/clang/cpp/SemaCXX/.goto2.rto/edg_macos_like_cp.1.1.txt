@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++17 Test_name.c
+"Test_name.c", line 8: warning: variable "tmp" was declared but never referenced
+    const char *tmp = text;
+                ^
+
+IL entry write-read difference: region number   5
+     entry kind = 24 (object-lifetime), written = 3, read = 0
+        missing entry = 1
+        missing entry = 2
+        missing entry = 3
+"Test_name.c", line 52 (col. 6): internal error: read_memory_region: not all expected entries were read
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

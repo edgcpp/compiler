@@ -1,0 +1,6 @@
+cpfe -DTEST_NUMBER=1 --c++11 --multi_trans_unit Test_name.c gnats23161-2.C
+"Test_name.c", line 8: error: allowing all exceptions is incompatible with previous function "foo::~foo" (declared at line 3 of "test.h")
+  foo::~foo() = default;
+              ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,43 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 9: error: the deduced placeholder type "int" failed the type constraint
+  void g(auto x) { same_as<decltype(x)> auto y = 0; } // { dg-error "constraints" }
+                   ^
+"Test_name.c", line 6: note: atomic constraint evaluates to false
+  template <class T, class U> concept same_as = __is_same(T, U);
+                                                ^
+
+"Test_name.c", line 8: error: the deduced placeholder type "int" failed the type constraint
+  auto f(auto x) -> same_as<decltype(x)> auto { return 0; }; // { dg-error "constraints" }
+                    ^
+"Test_name.c", line 6: note: atomic constraint evaluates to false
+  template <class T, class U> concept same_as = __is_same(T, U);
+                                                ^
+          detected during instantiation of "auto f(auto)->same_as<...> auto [with <auto-1>=bool]" at line 15
+
+"Test_name.c", line 10: error: expression must have class type but it has type "int"
+  auto h(auto x) -> same_as<decltype(x.missing)> auto { return 0; } // { dg-error "constraints|missing" }
+                                     ^
+          detected during instantiation of "h" based on template argument <int> at line 18
+
+"Test_name.c", line 10: error: the deduced placeholder type "int" failed the type constraint
+  auto h(auto x) -> same_as<decltype(x.missing)> auto { return 0; } // { dg-error "constraints|missing" }
+                    ^
+"Test_name.c", line 6: note: atomic constraint failed substitution
+  template <class T, class U> concept same_as = __is_same(T, U);
+                                                ^
+          detected during instantiation of "auto h(auto)->same_as<...> auto [with <auto-1>=int]" at line 18
+
+"Test_name.c", line 20: error: no instance of function template "i" matches the argument list
+    i<int, true>(); // { dg-error "no match|constraints" }
+    ^
+"Test_name.c", line 11: note: substituting "<int, true>" for function template "i" failed constraints
+  template <class T, same_as<T> auto N> void i() {}
+                                             ^
+"Test_name.c", line 11: note: concept "same_as" not satisfied for "<bool, int>"
+  template <class T, same_as<T> auto N> void i() {}
+                     ^
+"Test_name.c", line 6: note: atomic constraint evaluates to false
+  template <class T, class U> concept same_as = __is_same(T, U);
+                                                ^
+
+5 errors detected in the compilation of "Test_name.c".

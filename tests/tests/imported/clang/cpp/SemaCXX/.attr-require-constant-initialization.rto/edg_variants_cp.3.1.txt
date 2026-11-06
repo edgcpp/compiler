@@ -1,0 +1,24 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 -DTEST_TWO -DTEST_THREE Test_name.c
+"Test_name.c", line 337: error: expression must have a constant value
+  constexpr TestCtor<NotC> inval_constexpr(42); // expected-error {{must be initialized by a constant expression}}
+                                           ^
+"Test_name.c", line 337: note: cannot call non-constexpr function "TestCtor<T>::TestCtor(int) [with T=NotC]" (declared at line 324)
+  constexpr TestCtor<NotC> inval_constexpr(42); // expected-error {{must be initialized by a constant expression}}
+                                           ^
+
+"Test_name.c", line 339: error: expression must have a constant value
+  ATTR constexpr TestCtor<NotC> inval_constexpr2(42); // expected-error {{must be initialized by a constant expression}}
+                                                 ^
+"Test_name.c", line 339: note: cannot call non-constexpr function "TestCtor<T>::TestCtor(int) [with T=NotC]" (declared at line 324)
+  ATTR constexpr TestCtor<NotC> inval_constexpr2(42); // expected-error {{must be initialized by a constant expression}}
+                                                 ^
+
+"Test_name.c", line 337: warning: variable "inval_constexpr" was declared but never referenced
+  constexpr TestCtor<NotC> inval_constexpr(42); // expected-error {{must be initialized by a constant expression}}
+                           ^
+
+"Test_name.c", line 339: warning: variable "inval_constexpr2" was declared but never referenced
+  ATTR constexpr TestCtor<NotC> inval_constexpr2(42); // expected-error {{must be initialized by a constant expression}}
+                                ^
+
+2 errors detected in the compilation of "Test_name.c".

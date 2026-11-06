@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: error: expression must have integral type
+    (void)(v2fa & v2fa); // expected-error{{invalid operands to binary expression}}
+           ^
+
+"Test_name.c", line 11: error: expression must have integral type
+    (void)(v2fa & v2fa); // expected-error{{invalid operands to binary expression}}
+                  ^
+
+"Test_name.c", line 15: error: expression must have integral type
+    (void)(~v2fa); // expected-error{{invalid argument type 'v2f' (vector of 2 'float' values) to unary}}
+            ^
+
+"Test_name.c", line 25: warning: variable "array2" is used before its value is set
+    (void)(array2[v2ua]); // expected-error{{array subscript is not an integer}}
+           ^
+
+"Test_name.c", line 29: warning: a value of type "v2u *" (aka "unsigned int *") cannot be assigned to an entity of type "v2s *" (aka "int *")
+    v2s_ptr = v2u_ptr; // expected-warning{{converts between pointers to integer types with different sign}}
+            ^
+
+"Test_name.c", line 22: warning: variable "array1" was declared but never referenced
+    int array1[v2ua]; // expected-error{{size of array has non-integer type 'v2u' (vector of 2 'unsigned int' values}}
+        ^
+
+"Test_name.c", line 28: warning: variable "v2s_ptr" was set but never used
+    v2s *v2s_ptr;
+         ^
+
+"Test_name.c", line 82: warning: variable "u1" is used before its value is set
+    v2ua = v2ua && u1; // expected-error {{logical expression with vector type 'v2u' (vector of 2 'unsigned int' values) and non-vector type 'unsigned int' is only supported in C++}} 
+                   ^
+
+"Test_name.c", line 100: warning: variable "s1" is used before its value is set
+    v2ua = v2ua && s1; // expected-error {{logical expression with vector type 'v2u' (vector of 2 'unsigned int' values) and non-vector type 'int' is only supported in C++}}
+                   ^
+
+"Test_name.c", line 119: warning: variable "f1" is used before its value is set
+    v2ua = v2ua && f1; // expected-error {{logical expression with vector type 'v2u' (vector of 2 'unsigned int' values) and non-vector type 'float' is only supported in C++}}
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

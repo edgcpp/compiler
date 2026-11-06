@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc -E Test_name.c
+# 1 "Test_name.c"
+
+
+ 
+
+void foo (void)
+{
+  int i1, j1, k1;
+
+
+
+
+#pragma omp parallel private (i1)   shared (j1)   firstprivate (k1)
+
+
+  ;
+}
+
+ 

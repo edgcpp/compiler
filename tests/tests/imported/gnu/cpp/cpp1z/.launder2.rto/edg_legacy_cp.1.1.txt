@@ -1,0 +1,81 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 6: error: expected an expression
+  int *b = __builtin_launder ();		// { dg-error "wrong number of arguments to" }
+                              ^
+
+"Test_name.c", line 7: error: expected a ")"
+  int *c = __builtin_launder (&a, 2);	// { dg-error "wrong number of arguments to" }
+                                ^
+
+"Test_name.c", line 7: error: expected an identifier
+  int *c = __builtin_launder (&a, 2);	// { dg-error "wrong number of arguments to" }
+                                  ^
+
+"Test_name.c", line 9: error: expression must have pointer type but it has type "int"
+  int e = __builtin_launder (a);		// { dg-error "not a pointer to object type" }
+                             ^
+
+"Test_name.c", line 11: error: expression must have pointer type but it has type "int"
+  int g = __builtin_launder (f);		// { dg-error "not a pointer to object type" }
+                             ^
+
+"Test_name.c", line 28: error: expected a ")"
+  template <typename T, typename... U> T *f4 (U... x) { return __builtin_launder (x...); }
+                                                                                   ^
+
+"Test_name.c", line 28: error: parameter pack "x" was referenced but not expanded
+  template <typename T, typename... U> T *f4 (U... x) { return __builtin_launder (x...); }
+                                                                                  ^
+
+"Test_name.c", line 29: error: expected a ")"
+  template <typename T, typename... U> T *f5 (U... x) { return __builtin_launder (x...); }	// { dg-error "wrong number of arguments to" }
+                                                                                   ^
+
+"Test_name.c", line 29: error: parameter pack "x" was referenced but not expanded
+  template <typename T, typename... U> T *f5 (U... x) { return __builtin_launder (x...); }	// { dg-error "wrong number of arguments to" }
+                                                                                  ^
+
+"Test_name.c", line 30: error: expected a ")"
+  template <typename T, typename... U> T *f6 (U... x) { return __builtin_launder (x...); }	// { dg-error "wrong number of arguments to" }
+                                                                                   ^
+
+"Test_name.c", line 30: error: parameter pack "x" was referenced but not expanded
+  template <typename T, typename... U> T *f6 (U... x) { return __builtin_launder (x...); }	// { dg-error "wrong number of arguments to" }
+                                                                                  ^
+
+"Test_name.c", line 31: error: expected a ")"
+  template <typename T, typename... U> T f7 (T x, U... y) { return __builtin_launder (x, y...); }	// { dg-error "wrong number of arguments to" }
+                                                                                       ^
+
+"Test_name.c", line 39: error: constexpr function return is non-constant
+  constexpr const int *f8 (const int *x) { return __builtin_launder (x); }
+                                                  ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+  constexpr const int *w = f9 (&u);
+                           ^
+"Test_name.c", line 43: note: cannot call non-constexpr function "f9(T) [with T=const int *]" (declared at line 40)
+  constexpr const int *w = f9 (&u);
+                           ^
+
+"Test_name.c", line 44: error: expression must have a constant value
+  static_assert (*f8 (&u) == 6 && *f9 (&u) == 6, "");
+                 ^
+"Test_name.c", line 44: note: cannot call non-constexpr function "f9(T) [with T=const int *]" (declared at line 40)
+  static_assert (*f8 (&u) == 6 && *f9 (&u) == 6, "");
+                                   ^
+
+"Test_name.c", line 13: error: expression must have pointer type but it has type "int"
+  template <typename T> T f1 (T x) { return __builtin_launder (x); }	// { dg-error "not a pointer to object type" }
+                                                               ^
+          detected during instantiation of "T f1(T) [with T=int]" at line 16
+
+"Test_name.c", line 42: warning: variable "v" was declared but never referenced
+  constexpr const int *v = f8 (&u);
+                       ^
+
+"Test_name.c", line 43: warning: variable "w" was declared but never referenced
+  constexpr const int *w = f9 (&u);
+                       ^
+
+16 errors detected in the compilation of "Test_name.c".

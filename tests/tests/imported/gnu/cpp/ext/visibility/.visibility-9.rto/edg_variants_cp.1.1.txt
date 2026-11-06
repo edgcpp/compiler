@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 15: error: expected a ")"
+  struct __attribute__((visibility("hidden")) S1 {
+                                              ^
+
+"Test_name.c", line 17: error: expected either a definition or a tag name
+  };
+   ^
+
+"Test_name.c", line 20: error: identifier "S1" is undefined
+    S1 s1;
+    ^
+
+3 errors detected in the compilation of "Test_name.c".

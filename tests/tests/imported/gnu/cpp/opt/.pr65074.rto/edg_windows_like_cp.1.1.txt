@@ -1,0 +1,28 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+/usr/sbin/ld: Test_name.o: in function `std::basic_streambuf<T1, T2>::~basic_streambuf<char, std::char_traits<char>>() [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for std::basic_streambuf<char, std::char_traits<char>>'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::locale::~locale()'
+/usr/sbin/ld: Test_name.o: in function `void std::basic_ios<T1, T2>::setstate(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `void std::basic_ios<T1, T2>::clear(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ios<T1, T2>::~basic_ios<char, std::char_traits<char>>() [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::ios_base::~ios_base()'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ios<T1, T2>::basic_ios<char, std::char_traits<char>>() [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::ios_base::ios_base()'
+/usr/sbin/ld: Test_name.o: in function `std::basic_istream<T1, T2>::basic_istream<char, std::char_traits<char>>() [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `void std::basic_ios<T1, T2>::init(std::basic_streambuf<T1, T2> *) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_filebuf<T1, T2>::~basic_filebuf<char, std::char_traits<char>>() [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for std::basic_filebuf<char, std::char_traits<char>>'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_filebuf<T1, T2> *std::basic_filebuf<T1, T2>::close() [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__basic_file<char>::~__basic_file<char>()'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ifstream<T1, T2>::basic_ifstream<char, std::char_traits<char>>(const char *, std::_Ios_Openmode) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_filebuf<T1, T2>::basic_filebuf<char, std::char_traits<char>>() [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `void std::basic_ios<T1, T2>::init(std::basic_streambuf<T1, T2> *) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `void std::basic_ifstream<T1, T2>::open(const char *, std::_Ios_Openmode) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_filebuf<T1, T2> *std::basic_filebuf<T1, T2>::open(const char *, std::_Ios_Openmode) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `void std::basic_ios<T1, T2>::clear(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o:(.data+0x0): undefined reference to `std::ios_base::~ios_base()'
+/usr/sbin/ld: Test_name.o:(.data+0xb0): undefined reference to `std::__basic_file<char>::~__basic_file<char>()'
+/usr/sbin/ld: Test_name.o:(.data+0xf0): undefined reference to `std::locale::~locale()'
+/usr/sbin/ld: Test_name.o:(.data+0x170): undefined reference to `std::ios_base::~ios_base()'
+/usr/sbin/ld: Test_name.o:(.rodata+0x0): undefined reference to `typeinfo for std::ios_base'
+collect2: error: ld returned 1 exit status

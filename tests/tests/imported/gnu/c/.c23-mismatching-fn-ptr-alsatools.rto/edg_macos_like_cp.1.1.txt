@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 20: warning: a value of type "__sighandler_t" (aka "void (*)(int)") cannot be assigned to an entity of type "void (*)(void)"
+    int_stat = signal(2,  ((__sighandler_t) 1)); /* { dg-error "assignment to '\[^\n\r\]*' from incompatible pointer type '__sighandler_t' \\{aka '\[^\n\r\]*'\\}" } */
+             ^
+
+"Test_name.c", line 22: warning: argument of type "void (*)(void)" is incompatible with parameter of type "__sighandler_t" (aka "void (*)(int)")
+    signal(2, int_stat); /* { dg-error "passing argument 2 of 'signal' from incompatible pointer type" } */
+              ^
+

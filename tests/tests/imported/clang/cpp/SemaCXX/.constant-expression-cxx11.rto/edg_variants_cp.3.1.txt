@@ -1,0 +1,1452 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --exceptions Test_name.c
+"SemaCXX/constant-expression-cxx11.cpp", line 12: error: this operator is not allowed in a constant expression
+  static_assert(++x, "test");
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 14: error: static assertion failed with "test"
+  static_assert(false, "test");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 38: error: missing initializer for constexpr variable
+  constexpr int arr[];
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 38: error: incomplete type "const int []" is not allowed
+  constexpr int arr[];
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 39: error: missing initializer for constexpr variable
+  constexpr int arr2[2];
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 109: error: a pointer to a bound function may only be used to call the function
+    using IntParam0 = IntParam<MemberZero().zero>;
+                                            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 109: error: invalid redeclaration of type name "TemplateArgumentConversion::IntParam0" (declared at line 107)
+    using IntParam0 = IntParam<MemberZero().zero>;
+          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 116: error: a pointer to a bound function may only be used to call the function
+      case MemberZero().zero:
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 119: error: invalid narrowing conversion from "unsigned long" to "int"
+      case __builtin_constant_p(true) ? (long unsigned int)&x : 0:;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 168: error: expression must have a constant value
+  static_assert(F(4, k) == 3, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 168: note: the value of variable "Ellipsis::k" (declared at line 167) cannot be used as a constant
+  static_assert(F(4, k) == 3, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 192: error: expression must have a constant value
+    int a[(int)DoubleFn(f)()];
+          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 192: note: conversion from "int (*)()" to "double (*)()" is invalid in constant-expression evaluation
+    int a[(int)DoubleFn(f)()];
+               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 213: warning: returning pointer to local variable
+    constexpr S *out_of_lifetime(S s) { return &s; }
+                                               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 239: error: expression must have a constant value
+    constexpr int a = MaybeReturnJunk(true, 0);
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 239: note: attempt to access expired storage
+    constexpr int a = MaybeReturnJunk(true, 0);
+                                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 241: warning: type qualifier on return type is meaningless
+    constexpr const int MaybeReturnNonstaticRef(bool b, const int a) {
+              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 250: error: expression must have a constant value
+    constexpr int n3 = InternalReturnJunk(0);
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 248: note: attempt to access expired storage
+      return MaybeReturnJunk(true, n);
+                            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 290: error: expression must have a constant value
+    constexpr int Invalid = Apply(Select(0), 0);
+                            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 286: note: callee is null
+    constexpr int Apply(int (*F)(int), int n) { return F(n); }
+                                                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 297: error: static assertion failed with "false"
+  static_assert(&x == &y, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 301: error: expression must have a constant value
+  constexpr bool g3 = &x <= &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 301: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool g3 = &x <= &y;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 302: error: expression must have a constant value
+  constexpr bool g4 = &x >= &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 302: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool g4 = &x >= &y;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 303: error: expression must have a constant value
+  constexpr bool g5 = &x < &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 303: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool g5 = &x < &y;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 304: error: expression must have a constant value
+  constexpr bool g6 = &x > &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 304: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool g6 = &x > &y;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 307: error: static assertion failed with "false"
+  static_assert(&s.x == &s.y, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 310: error: static assertion failed with "false"
+  static_assert(&s.x >= &s.y, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 312: error: static assertion failed with "false"
+  static_assert(&s.x > &s.y, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 314: error: static assertion failed with "false"
+  static_assert(0 == &y, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 316: error: expression must have a constant value
+  constexpr bool n3 = (int*)0 <= &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 316: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n3 = (int*)0 <= &y;
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 317: error: expression must have a constant value
+  constexpr bool n4 = (int*)0 >= &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 317: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n4 = (int*)0 >= &y;
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 318: error: expression must have a constant value
+  constexpr bool n5 = (int*)0 < &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 318: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n5 = (int*)0 < &y;
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 319: error: expression must have a constant value
+  constexpr bool n6 = (int*)0 > &y;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 319: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n6 = (int*)0 > &y;
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 321: error: static assertion failed with "false"
+  static_assert(&x == 0, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 323: error: expression must have a constant value
+  constexpr bool n9 = &x <= (int*)0;
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 323: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n9 = &x <= (int*)0;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 324: error: expression must have a constant value
+  constexpr bool n10 = &x >= (int*)0;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 324: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n10 = &x >= (int*)0;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 325: error: expression must have a constant value
+  constexpr bool n11 = &x < (int*)0;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 325: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n11 = &x < (int*)0;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 326: error: expression must have a constant value
+  constexpr bool n12 = &x > (int*)0;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 326: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+  constexpr bool n12 = &x > (int*)0;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 329: error: static assertion failed with "false"
+  static_assert(&x != &x, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 332: error: static assertion failed with "false"
+  static_assert(&x < &x, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 333: error: static assertion failed with "false"
+  static_assert(&x > &x, "false");
+  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 336: error: this operator is not allowed in a constant expression
+  constexpr bool dyncast = sptr == dynamic_cast<S*>(sptr);
+                                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 340: error: this operator is not allowed in a constant expression
+    int a : dynamic_cast<S*>(sptr) == dynamic_cast<S*>(sptr);
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 340: error: this operator is not allowed in a constant expression
+    int a : dynamic_cast<S*>(sptr) == dynamic_cast<S*>(sptr);
+                                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 343: warning: signed bit field of length 1
+    int b : reinterpret_cast<S*>(sptr) == reinterpret_cast<S*>(sptr);
+        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 346: error: expression must have a constant value
+    int c : (S*)(long)(sptr) == (S*)(long)(sptr);
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 346: note: conversion from "PointerComparison::S *" to "long" is invalid in constant-expression evaluation
+    int c : (S*)(long)(sptr) == (S*)(long)(sptr);
+                             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 349: warning: signed bit field of length 1
+    int d : (S*)(42) == (S*)(42);
+        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 352: error: expression must have a constant value
+    int e : (Str*)(sptr) == (Str*)(sptr);
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 352: note: conversion from "PointerComparison::S *" to "PointerComparison::Str *" is invalid in constant-expression evaluation
+    int e : (Str*)(sptr) == (Str*)(sptr);
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 355: error: expression must have a constant value
+    int f : &(U&)(*sptr) == &(U&)(*sptr);
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 355: note: conversion from "PointerComparison::S" to "PointerComparison::U" is invalid in constant-expression evaluation
+    int f : &(U&)(*sptr) == &(U&)(*sptr);
+             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 358: error: expression must have a constant value
+    int g : (S*)(void*)(sptr) == sptr;
+             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 364: error: expression must have a constant value
+  constexpr bool constaddress = (void *)externalvar == (void *)0x4000UL;
+                                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 364: note: comparison involves unknown address (e.g., the address of a weak variable)
+  constexpr bool constaddress = (void *)externalvar == (void *)0x4000UL;
+                                                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 401: error: statement may not appear in a constexpr function
+    (void)(getStr() - getStr());
+    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 405: error: expression must have a constant value
+  static_assert(strMinus() == 0, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 405: note: this call cannot be evaluated because the target function function "strMinus" (declared at line 400) is not constexpr or not completely defined yet
+  static_assert(strMinus() == 0, "");
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 410: error: expression must have a constant value
+  constexpr int n = &b - &a;
+                    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 410: note: invalid arithmetic on non-array pointer
+  constexpr int n = &b - &a;
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 414: error: expression must have a constant value
+  constexpr int k2 = &arrk[1] - &arrk2[0];
+                     ^
+"SemaCXX/constant-expression-cxx11.cpp", line 414: note: invalid arithmetic on non-array pointer
+  constexpr int k2 = &arrk[1] - &arrk2[0];
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 433: error: expression must have a constant value
+  constexpr B b1 { { 1 }, { 2 } };
+                 ^
+"SemaCXX/constant-expression-cxx11.cpp", line 433: note: reference or pointer to temporary with limited lifetime
+  constexpr B b1 { { 1 }, { 2 } };
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 437: error: expression must have a constant value
+  constexpr B &&b2 { { 3 }, { 4 } };
+                   ^
+"SemaCXX/constant-expression-cxx11.cpp", line 437: note: reference or pointer to temporary with limited lifetime
+  constexpr B &&b2 { { 3 }, { 4 } };
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 441: error: expression must have a constant value
+  constexpr thread_local B b3 { { 1 }, { 2 } };
+                              ^
+"SemaCXX/constant-expression-cxx11.cpp", line 441: note: reference or pointer to temporary with limited lifetime
+  constexpr thread_local B b3 { { 1 }, { 2 } };
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 443: error: expression must have a constant value
+    constexpr static B b1 { { 1 }, { 2 } };
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 443: note: reference or pointer to temporary with limited lifetime
+    constexpr static B b1 { { 1 }, { 2 } };
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 444: error: expression must have a constant value
+    constexpr thread_local B b2 { { 1 }, { 2 } };
+                                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 444: note: reference or pointer to temporary with limited lifetime
+    constexpr thread_local B b2 { { 1 }, { 2 } };
+                                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 445: error: expression must have a constant value
+    constexpr B b3 { { 1 }, { 2 } };
+                   ^
+"SemaCXX/constant-expression-cxx11.cpp", line 445: note: invalid use of address of interpreter storage
+    constexpr B b3 { { 1 }, { 2 } };
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 443: warning: variable "b1" was declared but never referenced
+    constexpr static B b1 { { 1 }, { 2 } };
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 444: warning: variable "b2" was declared but never referenced
+    constexpr thread_local B b2 { { 1 }, { 2 } };
+                             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 445: warning: variable "b3" was declared but never referenced
+    constexpr B b3 { { 1 }, { 2 } };
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 448: warning: expression has no effect
+  constexpr B &&b4 = ((1, 2), 3, 4, B { {10}, {{20}} });
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 448: warning: expression has no effect
+  constexpr B &&b4 = ((1, 2), 3, 4, B { {10}, {{20}} });
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 448: warning: expression has no effect
+  constexpr B &&b4 = ((1, 2), 3, 4, B { {10}, {{20}} });
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 448: warning: expression has no effect
+  constexpr B &&b4 = ((1, 2), 3, 4, B { {10}, {{20}} });
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 448: error: expression must have a constant value
+  constexpr B &&b4 = ((1, 2), 3, 4, B { {10}, {{20}} });
+                     ^
+"SemaCXX/constant-expression-cxx11.cpp", line 448: note: reference or pointer to temporary with limited lifetime
+  constexpr B &&b4 = ((1, 2), 3, 4, B { {10}, {{20}} });
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 453: error: expression must have a constant value
+  constexpr B b5 = B{ {0}, {0} };
+                   ^
+"SemaCXX/constant-expression-cxx11.cpp", line 453: note: reference or pointer to temporary with limited lifetime
+  constexpr B b5 = B{ {0}, {0} };
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 461: error: expression must have a constant value
+    constexpr B a = { A{0} };
+                    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 461: note: reference or pointer to temporary with limited lifetime
+    constexpr B a = { A{0} };
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 463: error: expression must have a constant value
+    constexpr B b = { A(A{0}) };
+                    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 463: note: reference or pointer to temporary with limited lifetime
+    constexpr B b = { A(A{0}) };
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 469: error: expression must have a constant value
+    constexpr init_list_2_init_list_3_ints ils = { { { { 1, 2, 3 } }, { { 4, 5, 6 } } } };
+                                                 ^
+"SemaCXX/constant-expression-cxx11.cpp", line 469: note: reference or pointer to temporary with limited lifetime
+    constexpr init_list_2_init_list_3_ints ils = { { { { 1, 2, 3 } }, { { 4, 5, 6 } } } };
+                                                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 477: error: expression must have a constant value
+    constexpr int n2 = r2;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 477: note: attempt to access run-time storage
+    constexpr int n2 = r2;
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 480: warning: type qualifier on return type is meaningless
+    struct B { constexpr operator const int() const { return 0; }};
+                                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 489: error: expression must have a constant value
+    constexpr const C &c2 = {2};
+                            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 489: note: reference or pointer to temporary with limited lifetime
+    constexpr const C &c2 = {2};
+                            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 491: error: expression must have a constant value
+    constexpr C &&c3 = {3};
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 491: note: reference or pointer to temporary with limited lifetime
+    constexpr C &&c3 = {3};
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 516: warning: subscript out of range
+  constexpr char c2 = "nasty index"[12];
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 516: error: expression must have a constant value
+  constexpr char c2 = "nasty index"[12];
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 516: note: attempt to access storage one position past the end of an array of 12 elements
+  constexpr char c2 = "nasty index"[12];
+                                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 517: warning: subscript out of range
+  constexpr char c3 = "negative index"[-1];
+                                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 517: error: expression must have a constant value
+  constexpr char c3 = "negative index"[-1];
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 517: note: cannot access position -1 in array of 15 elements
+  constexpr char c3 = "negative index"[-1];
+                                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 541: warning: subscript out of range
+    int n : "foo"[4];
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 541: error: expression must have a constant value
+    int n : "foo"[4];
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 541: note: attempt to access storage one position past the end of an array of 4 elements
+    int n : "foo"[4];
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 556: warning: subscript out of range
+  static_assert(t.c[6] == 0, "");
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 556: error: expression must have a constant value
+  static_assert(t.c[6] == 0, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 556: note: attempt to access storage one position past the end of an array of 6 elements
+  static_assert(t.c[6] == 0, "");
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 580: warning: subscript out of range
+    static_assert(f[6] == 0, "");
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 580: error: expression must have a constant value
+    static_assert(f[6] == 0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 580: note: attempt to access storage one position past the end of an array of 6 elements
+    static_assert(f[6] == 0, "");
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 614: error: expression must have a constant value
+  static_assert(ZipFoldR(SubMul, 3, xs+3, ys+3, 1), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 600: note: attempt to access storage one position past the end of an array of 5 elements
+                 *xs,
+                 ^
+"SemaCXX/constant-expression-cxx11.cpp", line 602: note: called from:
+                 ZipFoldR(F, n-1, xs+1, ys+1, c))
+                         ^
+"SemaCXX/constant-expression-cxx11.cpp", line 602: note: called from:
+                 ZipFoldR(F, n-1, xs+1, ys+1, c))
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 620: error: expression must have a constant value
+  constexpr int xs5 = p[2];
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 620: note: attempt to access storage one position past the end of an array of 5 elements
+  constexpr int xs5 = p[2];
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 621: error: expression must have a constant value
+  constexpr int xs6 = p[3];
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 621: note: cannot access position 6 in array of 5 elements
+  constexpr int xs6 = p[3];
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 623: warning: subscript out of range
+  constexpr int xs_1 = p[-4];
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 623: error: expression must have a constant value
+  constexpr int xs_1 = p[-4];
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 623: note: cannot access position -1 in array of 5 elements
+  constexpr int xs_1 = p[-4];
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 628: warning: subscript out of range
+  static_assert(zs[0][0][0][2] == 3, "");
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 628: error: expression must have a constant value
+  static_assert(zs[0][0][0][2] == 3, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 628: note: attempt to access storage one position past the end of an array of 2 elements
+  static_assert(zs[0][0][0][2] == 3, "");
+                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 631: warning: subscript out of range
+  static_assert(*(&(&(*(*&(&zs[2] - 1)[0] + 2 - 2))[2])[-1][-1] + 1) == 11, "");
+                                                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 631: error: expression must have a constant value
+  static_assert(*(&(&(*(*&(&zs[2] - 1)[0] + 2 - 2))[2])[-1][-1] + 1) == 11, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 631: note: cannot access position -1 in array of 2 elements
+  static_assert(*(&(&(*(*&(&zs[2] - 1)[0] + 2 - 2))[2])[-1][-1] + 1) == 11, "");
+                                                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 633: warning: subscript out of range
+  constexpr int err_zs_1_2_0_0 = zs[1][2][0][0];
+                                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 633: error: expression must have a constant value
+  constexpr int err_zs_1_2_0_0 = zs[1][2][0][0];
+                                 ^
+"SemaCXX/constant-expression-cxx11.cpp", line 633: note: attempt to access storage one position past the end of an array of 2 elements
+  constexpr int err_zs_1_2_0_0 = zs[1][2][0][0];
+                                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 640: error: expression must have a constant value
+  static_assert(fail(*(&(&(*(*&(&zs[2] - 1)[0] + 2 - 2))[2])[-1][2] - 2)) == 11, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 638: note: cannot access position 64 in array of 2 elements
+    return (&p)[64];
+               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 681: error: expression must have a constant value
+    constexpr X x2 = x1;
+                     ^
+"SemaCXX/constant-expression-cxx11.cpp", line 681: note: attempt to access run-time storage
+    constexpr X x2 = x1;
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 697: error: expression must have a constant value
+  constexpr int badselfref[2][2][2] = {
+                                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 698: note: access to uninitialized object
+    badselfref[1][0][0]
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 732: error: expression must have a constant value
+    constexpr int *q = &p->a;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 732: note: attempt to access storage one position past an object treated as an array of one element
+    constexpr int *q = &p->a;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 735: error: expression must have a constant value
+    constexpr int n = carr[0];
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 735: note: attempt to access run-time storage
+    constexpr int n = carr[0];
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 738: warning: variable "local_extern" was declared but never referenced
+    void f() { extern const int local_extern[]; }
+                                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 765: warning: variable "k" was declared but never referenced
+    constexpr int k = n;
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 824: error: expression must have a constant value
+  static_assert(g.t.u1.a == 42, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 824: note: invalid access to inactive member "Class::G::T::U1::a" of union (member "Class::G::T::U1::b" is active)
+  static_assert(g.t.u1.a == 42, "");
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 827: error: expression must have a constant value
+  static_assert(g.t.u2.d == 42, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 827: note: invalid access to inactive member "Class::G::T::U2::d" of union (member "Class::G::T::U2::c" is active)
+  static_assert(g.t.u2.d == 42, "");
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 871: warning: subscript out of range
+  static_assert(agg1.arr[-1] == 0, "");
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 871: error: expression must have a constant value
+  static_assert(agg1.arr[-1] == 0, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 871: note: cannot access position -1 in array of 5 elements
+  static_assert(agg1.arr[-1] == 0, "");
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 874: warning: subscript out of range
+  static_assert(agg1.arr[5] == 0, "");
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 874: error: expression must have a constant value
+  static_assert(agg1.arr[5] == 0, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 874: note: attempt to access storage one position past the end of an array of 5 elements
+  static_assert(agg1.arr[5] == 0, "");
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 938: error: expression must have a constant value
+  constexpr Base2 &fail = (Base2&)bot1;
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 938: note: invalid base-to-derived cast (actual derived class type is "Class::Base")
+  constexpr Base2 &fail = (Base2&)bot1;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 939: error: expression must have a constant value
+  constexpr Base &fail2 = (Base&)*pb2;
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 939: note: invalid base-to-derived cast (actual derived class type is "Class::Base2")
+  constexpr Base &fail2 = (Base&)*pb2;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 943: error: expression must have a constant value
+  constexpr Base2 *pfail = (Base2*)pb1;
+                           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 943: note: invalid base-to-derived cast (actual derived class type is "Class::Base")
+  constexpr Base2 *pfail = (Base2*)pb1;
+                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 944: error: expression must have a constant value
+  constexpr Base *pfail2 = (Base*)&bot2;
+                           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 944: note: invalid base-to-derived cast (actual derived class type is "Class::Base2")
+  constexpr Base *pfail2 = (Base*)&bot2;
+                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 953: error: a value of type "int" cannot be used to initialize an entity of type "Class::Base *const"
+  constexpr Base *nullB = 42 - 6 * 7;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 958: error: a value of type "char" cannot be used to initialize an entity of type "Class::Base *"
+  Base *nullB2 = '\0';
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 960: error: a value of type "bool" cannot be used to initialize an entity of type "Class::Base *"
+  Base *nullB4 = false;
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 962: error: a value of type "double" cannot be used to initialize an entity of type "Class::Base *"
+  Base *nullB6 = 0.;
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 964: error: a value of type "Class::Null" cannot be used to initialize an entity of type "Class::Base *"
+  Base *nullB7 = kNull;
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 965: error: operand types are incompatible ("Class::Base *" and "int")
+  static_assert(nullB1 == (1 - 1), "");
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1004: warning: variable "x" was declared but never referenced
+      constexpr int x = f();
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1006: warning: variable "y" was declared but never referenced
+      constexpr int y = this->f();
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1036: error: expression must have a constant value
+  static_assert(S().f(), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1027: note: invalid base-to-derived cast (actual derived class type is "Temporaries::S")
+    return static_cast<const T*>(this)->n;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1037: error: expression must have a constant value
+  static_assert(S().g(), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1031: note: invalid access to member "Temporaries::T::n" in object of complete type "Temporaries::S"
+    return this->*(int(S::*))&T::n;
+               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1042: error: expression must have a constant value
+  static_assert(sobj.f(), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1027: note: invalid base-to-derived cast (actual derived class type is "Temporaries::S")
+    return static_cast<const T*>(this)->n;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1044: error: expression must have a constant value
+  static_assert(sptr->f(), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1027: note: invalid base-to-derived cast (actual derived class type is "Temporaries::S")
+    return static_cast<const T*>(this)->n;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1046: error: expression must have a constant value
+  static_assert(slref.f(), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1027: note: invalid base-to-derived cast (actual derived class type is "Temporaries::S")
+    return static_cast<const T*>(this)->n;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1048: error: expression must have a constant value
+  static_assert(srref.f(), "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1027: note: invalid base-to-derived cast (actual derived class type is "Temporaries::S")
+    return static_cast<const T*>(this)->n;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1066: error: expression must have a constant value
+  constexpr int k = NonLiteral().f();
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1081: error: expression must have a constant value
+  static_assert(u[0].b, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1081: note: invalid access to inactive member "Union::U::b" of union (member "Union::U::a" is active)
+  static_assert(u[0].b, "");
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1083: error: expression must have a constant value
+  static_assert((&u[1].b)[1] == 2, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1083: note: attempt to access storage one position past an object treated as an array of one element
+  static_assert((&u[1].b)[1] == 2, "");
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1084: error: expression must have a constant value
+  static_assert(*(&(u[1].b) + 1 + 1) == 3, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1084: note: invalid arithmetic on non-array pointer
+  static_assert(*(&(u[1].b) + 1 + 1) == 3, "");
+                                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1097: error: expression must have a constant value
+  static_assert(y.b == 42, "");
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1097: note: invalid access to inactive member "Union::U::b" of union (member "Union::U::a" is active)
+  static_assert(y.b == 42, "");
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1179: error: expression must have a constant value
+    constexpr int *pbad = &(t17.*deepm);
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1179: note: attempt to access run-time storage
+    constexpr int *pbad = &(t17.*deepm);
+                               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1185: error: expression must have a constant value
+    constexpr T<13> *p17_13 = (T<13>*)p17_5;
+                              ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1185: note: attempt to access run-time storage
+    constexpr T<13> *p17_13 = (T<13>*)p17_5;
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1192: error: expression must have a constant value
+    constexpr T<23> *p30_23 = (T<23>*)p30_5;
+                              ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1192: note: attempt to access run-time storage
+    constexpr T<23> *p30_23 = (T<23>*)p30_5;
+                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1233: error: expression must have a constant value
+    constexpr int pb4n = pb4->n;
+                         ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1233: note: attempt to access storage one position past an object treated as an array of one element
+    constexpr int pb4n = pb4->n;
+                            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1234: error: expression must have a constant value
+    constexpr Base *err_pb5 = pb3 + 2;
+                              ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1234: note: invalid arithmetic on non-array pointer
+    constexpr Base *err_pb5 = pb3 + 2;
+                                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1236: error: expression must have a constant value
+    constexpr Base *err_pb2 = pb3 - 1;
+                              ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1236: note: invalid arithmetic on non-array pointer
+    constexpr Base *err_pb2 = pb3 - 1;
+                                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1241: error: expression must have a constant value
+    constexpr Derived *err_pd4 = (Derived*)pb4;
+                                 ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1241: note: invalid base-to-derived cast (actual derived class type is "ArrayBaseDerived::Base")
+    constexpr Derived *err_pd4 = (Derived*)pb4;
+                                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1246: error: expression must have a constant value
+    constexpr Derived *pd6 = pd3a + 3;
+                             ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1246: note: invalid arithmetic on non-array pointer
+    constexpr Derived *pd6 = pd3a + 3;
+                                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1320: error: complex integral types are not supported
+  constexpr auto GH55390 = 1 / 65536j;
+                                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1328: error: expression must have a constant value
+    static_assert(B().x == 3, "");
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1333: error: constexpr function return is non-constant
+      return B().x == k;
+             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1349: error: expression must have a constant value
+  constexpr int m1 = n1;
+                     ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1349: note: attempt to read from volatile storage
+  constexpr int m1 = n1;
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1350: error: expression must have a constant value
+  constexpr int m2 = n2;
+                     ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1350: note: attempt to read from volatile storage
+  constexpr int m2 = n2;
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1352: error: expression must have a constant value
+  constexpr int m2b = const_cast<const int&>(n2);
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1352: note: attempt to access run-time storage
+  constexpr int m2b = const_cast<const int&>(n2);
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1364: error: expression must have a constant value
+    int j : f(0);
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1358: note: attempt to read from volatile storage
+    return r;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1365: error: zero-length bit field must be unnamed
+    int k : g(0);
+        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1366: error: expression must have a constant value
+    int l : n3;
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1366: note: the value of variable "Volatile::n3" (declared at line 1347) cannot be used as a constant
+    int l : n3;
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1367: error: expression must have a constant value
+    int m : t.n;
+            ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1367: note: attempt to access run-time storage
+    int m : t.n;
+             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1374: error: missing initializer for constexpr variable
+    extern constexpr int m;
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1376: error: missing initializer for constexpr variable
+      extern constexpr int i;
+             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1378: error: missing initializer for constexpr variable
+      constexpr int k;
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1377: warning: variable "j" was declared but never referenced
+      constexpr int j = 0;
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1378: warning: variable "k" was declared but never referenced
+      constexpr int k;
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1383: error: expression must have a constant value
+    constexpr int q = g();
+                      ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1382: note: access to uninitialized object
+    constexpr int g() { return q; }
+                               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1391: error: expression must have a constant value
+    constexpr S s = {x()};
+                    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1390: note: access to uninitialized object
+    constexpr int x() { return s.n; }
+                                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1398: error: _Complex can only be used with floating-point types
+    constexpr _Complex int test4 = {4};
+    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1399: error: _Complex can only be used with floating-point types
+    constexpr _Complex int test5 = 4;
+    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1400: error: _Complex can only be used with floating-point types
+    constexpr _Complex int test6 = {5,6};
+    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1410: error: expression must have a constant value
+    static_assert(t2p[-1] == 0.0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1410: note: nonzero subscript for non-array object
+    static_assert(t2p[-1] == 0.0, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1412: error: expression must have a constant value
+    static_assert(t2p[1] == 2.0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1412: note: attempt to access storage one position past an object treated as an array of one element
+    static_assert(t2p[1] == 2.0, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1413: error: expression must have a constant value
+    static_assert(t2p[2] == 0.0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1413: note: nonzero subscript for non-array object
+    static_assert(t2p[2] == 0.0, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1414: error: expression must have a constant value
+    static_assert(t2p[3] == 0.0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1414: note: nonzero subscript for non-array object
+    static_assert(t2p[3] == 0.0, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1416: error: expression must have a constant value
+    constexpr float pr = __real *p;
+                         ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1416: note: attempt to access run-time storage
+    constexpr float pr = __real *p;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1417: error: expression must have a constant value
+    constexpr float pi = __imag *p;
+                         ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1417: note: attempt to access run-time storage
+    constexpr float pi = __imag *p;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1419: error: expression must have a constant value
+    constexpr double qr = __real *q;
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1419: note: attempt to access storage one position past an object treated as an array of one element
+    constexpr double qr = __real *q;
+                                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1420: error: expression must have a constant value
+    constexpr double qi = __imag *q;
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1420: note: attempt to access storage one position past an object treated as an array of one element
+    constexpr double qi = __imag *q;
+                                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1478: error: expression must have a constant value
+      en = n,
+           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1478: note: attempt to access run-time storage
+      en = n,
+           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1479: error: expression must have a constant value
+      eo = (m +
+           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1480: note: attempt to access run-time storage
+            n
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1513: error: expression must have a constant value
+    static_assert(s1.c == 0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1513: note: invalid access to inactive member "IndirectField::S::c" of union (member "IndirectField::S::<unnamed>::<unnamed>" is active)
+    static_assert(s1.c == 0, "");
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1516: error: expression must have a constant value
+    static_assert(s1.f == 0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1516: note: invalid access to inactive member "IndirectField::S::f" of union (member "IndirectField::S::e" is active)
+    static_assert(s1.f == 0, "");
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1518: error: expression must have a constant value
+    static_assert(s2.a == 0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1518: note: invalid access to inactive member "IndirectField::S::<unnamed>::<unnamed>" of union (member "IndirectField::S::c" is active)
+    static_assert(s2.a == 0, "");
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1519: error: expression must have a constant value
+    static_assert(s2.b == 0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1519: note: invalid access to inactive member "IndirectField::S::<unnamed>::<unnamed>" of union (member "IndirectField::S::c" is active)
+    static_assert(s2.b == 0, "");
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1522: error: expression must have a constant value
+    static_assert(s2.e == 0, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1522: note: invalid access to inactive member "IndirectField::S::e" of union (member "IndirectField::S::f" is active)
+    static_assert(s2.e == 0, "");
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1531: error: expression must have a constant value
+    constexpr int mmn = mm.n;
+                        ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1531: note: access to uninitialized object
+    constexpr int mmn = mm.n;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1533: error: expression must have a constant value
+    constexpr int mmn2 = mm.n;
+                         ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1533: note: access to uninitialized object
+    constexpr int mmn2 = mm.n;
+                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1540: error: expression must have a constant value
+      return Id<m.n>().k;
+                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1540: note: access to uninitialized object
+      return Id<m.n>().k;
+                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1622: error: expression must have a constant value
+  constexpr const int l = k;
+                          ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1622: note: attempt to access run-time storage
+  constexpr const int l = k;
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1627: error: expression must have a constant value
+    constexpr const int &i = 1;
+                             ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1627: note: reference or pointer to temporary with limited lifetime
+    constexpr const int &i = 1;
+                             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1627: warning: variable "i" was declared but never referenced
+    constexpr const int &i = 1;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1661: error: expression must have a constant value
+          sizeof(arr)
+          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1670: error: expression must have a constant value
+    static_assert(*p == 3, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1670: note: conversion from "int *" to "int *" is invalid in constant-expression evaluation
+    static_assert(*p == 3, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1673: error: a compound literal is not allowed in an integral constant expression
+    static_assert((int[2]){1, 2}[1] == 2, "");
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1680: error: expression must have a constant value
+    constexpr int *n = (X){1, 2}.a;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1680: note: reference or pointer to temporary with limited lifetime
+    constexpr int *n = (X){1, 2}.a;
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1686: error: expression must have a constant value
+      static constexpr int *p = (int*)(int[1]){3};
+                                ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1686: note: reference or pointer to temporary with limited lifetime
+      static constexpr int *p = (int*)(int[1]){3};
+                                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1690: error: a compound literal is not allowed in an integral constant expression
+      static_assert((int[2]){1, 2}[1] == 2, "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1686: warning: variable "p" was declared but never referenced
+      static constexpr int *p = (int*)(int[1]){3};
+                            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1712: error: incomplete type "X" is not allowed
+      struct Y { bool b; X x; };
+                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1714: warning: variable "b" was declared but never referenced
+      auto& b = y.b;
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1740: error: exception specification is incompatible with that of previous function "ImplicitConstexpr::Q::Q(const ImplicitConstexpr::Q &)" (declared at line 1727)
+      friend Q::Q(const Q&) noexcept;
+                            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1739: error: exception specification is incompatible with that of previous function "ImplicitConstexpr::Q::Q(ImplicitConstexpr::Q &&)" (declared at line 1727)
+      friend Q::Q(Q&&) noexcept;
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1738: error: exception specification is incompatible with that of previous function "ImplicitConstexpr::Q::Q()" (declared at line 1727)
+      friend Q::Q() noexcept;
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1809: error: expression must have a constant value
+    constexpr int *p = &n;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1809: note: a pointer or reference to variable "TLS::n" (declared at line 1804) cannot be used as a constant
+    constexpr int *p = &n;
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1812: error: expression must have a constant value
+    constexpr int *q = f();
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1812: note: a pointer or reference to variable "TLS::n" (declared at line 1804) cannot be used as a constant
+    constexpr int *q = f();
+                       ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1820: error: a constexpr function cannot have a nonliteral return type "void"
+    constexpr void f() { return; }
+                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1833: error: expression must have a constant value
+    static_assert(get(arr, 0) == 4, "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1826: note: cannot call non-constexpr function "Void::assert_failed" (declared at line 1822)
+      return ((k > 0 && k < S) ? static_cast<void>(0) : assert_failed("k > 0 && k < S", "SemaCXX/constant-expression-cxx11.cpp", 1826)), a[k];
+                                                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1844: error: this operator is not allowed in a constant expression
+    constexpr auto &y = typeid(g());
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1883: error: expression must be an lvalue or a function designator
+    constexpr S *p = &f();
+                      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1892: error: identifier "foobar" is undefined
+      return foobar;
+             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1951: warning: variable "a" was declared but never referenced
+      constexpr auto a = ({ A(); });
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1963: warning: statement is unreachable
+        1;
+        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1961: error: a constexpr function must contain exactly one return statement
+      return ({
+      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1978: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+      constexpr int f() { return sizeof(T); }
+      ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1978: error: a function cannot be both constexpr and virtual in this mode
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during:
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::S1]" at line 1975
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S1>]" at line 1982
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1978: error: a function cannot be both constexpr and virtual in this mode
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S1>]" at line 1982
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1984: error: expression must have a constant value
+    static_assert(p->f() == sizeof(X<S1>), "");
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 1984: note: cannot call non-constexpr function "VirtualFromBase::X<T>::f [with T=VirtualFromBase::X<VirtualFromBase::S1>]" (declared at line 1978)
+    static_assert(p->f() == sizeof(X<S1>), "");
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1978: warning: function "VirtualFromBase::S2::f()" is hidden by "VirtualFromBase::X<T>::f [with T=VirtualFromBase::S2]" -- virtual function override intended?
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during:
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::S2]" at line 1975
+            instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S2>]" at line 1991
+
+"SemaCXX/constant-expression-cxx11.cpp", line 1978: warning: function "VirtualFromBase::S2::f()" is hidden by "VirtualFromBase::X<T>::f [with T=VirtualFromBase::X<VirtualFromBase::S2>]" -- virtual function override intended?
+      constexpr int f() { return sizeof(T); }
+                    ^
+          detected during instantiation of class "VirtualFromBase::X<T> [with T=VirtualFromBase::X<VirtualFromBase::S2>]" at line 1991
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2007: error: a value of type "int" cannot be used to initialize an entity of type "ConstexprConstructorRecovery::X::E"
+        E val{0};
+              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2015: warning: variable "n" is used before its value is set
+      constexpr int &n = n;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2015: error: expression must have a constant value
+      constexpr int &n = n;
+                         ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2015: note: access to uninitialized object
+      constexpr int &n = n;
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2017: warning: variable "m" is used before its value is set
+      constexpr int m = m;
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2017: error: expression must have a constant value
+      constexpr int m = m;
+                        ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2017: note: access to uninitialized object
+      constexpr int m = m;
+                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2037: warning: returning pointer to local variable
+    constexpr Q *out_of_lifetime(Q q) { return &q; }
+                                               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2038: error: expression must have a constant value
+    constexpr int k3 = out_of_lifetime({})->n;
+                       ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2038: note: attempt to access expired storage
+    constexpr int k3 = out_of_lifetime({})->n;
+                                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2048: warning: subscript out of range
+    constexpr int pte3 = qa[3].f();
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2055: warning: subscript out of range
+    constexpr int cpte3 = cqa[3].f();
+                          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2075: warning: variable "r" was declared but never referenced
+      constexpr R r;
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2085: warning: declared size for bit field is larger than the size of the bit field type; truncated to 32 bits
+      unsigned u2 : 74;
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2086: warning: declared size for bit field is larger than the size of the bit field type; truncated to 32 bits
+      int n2 : 81;
+               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2099: error: static assertion failed with ""
+    static_assert(B(4).n == -4, "");
+    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2099: note: the final comparison was 4 == -4
+    static_assert(B(4).n == -4, "");
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2100: error: static assertion failed with ""
+    static_assert(B(7).n == -1, "");
+    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2100: note: the final comparison was 7 == -1
+    static_assert(B(7).n == -1, "");
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2101: error: static assertion failed with ""
+    static_assert(B(8).n == 0, "");
+    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2101: note: the final comparison was 8 == 0
+    static_assert(B(8).n == 0, "");
+                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2103: error: static assertion failed with ""
+    static_assert(B(-8889).n == -1, "");
+    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2103: note: the final comparison was -8889 == -1
+    static_assert(B(-8889).n == -1, "");
+                             ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2107: warning: signed bit field of length 1
+        int x : 1;
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2127: warning: variable "a" was declared but never referenced
+      int a = 1 / zero.b;
+          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2129: warning: variable "b" was declared but never referenced
+      int b = 1 / oneZero.b;
+          ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2149: warning: integer operation result is out of range
+      return &arr[3] - &arr[0];
+                     ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2158: error: incomplete type "BadDefaultInit::A" is not allowed
+          X<A().k>::n;
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2158: error: expression must have a constant value
+          X<A().k>::n;
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2163: error: incomplete type "BadDefaultInit::B" is not allowed
+          int k = X<B().k>::n) :
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2163: error: no instance of constructor "BadDefaultInit::B::B" matches the argument list
+          int k = X<B().k>::n) :
+                    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2161: note: number of parameters of function "BadDefaultInit::B::B(const BadDefaultInit::B &)" does not match the call
+    struct B {
+           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2161: note: number of parameters of function "BadDefaultInit::B::B(BadDefaultInit::B &&)" does not match the call
+    struct B {
+           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2162: note: number of parameters of function "BadDefaultInit::B::B(int)" does not match the call
+      constexpr B(
+                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2175: warning: division by zero
+          1 / 0 :
+            ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2180: error: expression must have a constant value
+        (int *)(long)&n == &n ?
+        ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2180: note: conversion from "const int *" to "const int *" is invalid in constant-expression evaluation
+        (int *)(long)&n == &n ?
+        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2207: error: static assertion failed with ""
+    static_assert(__builtin_strlen("foo") + 1 + "foo" == "foo", "");
+    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2230: warning: pointer points outside of underlying object
+    constexpr int under1 = __builtin_strlen(a - 1);
+                                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2230: error: expression must have a constant value
+    constexpr int under1 = __builtin_strlen(a - 1);
+                           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2230: note: cannot set pointer before the first array element
+    constexpr int under1 = __builtin_strlen(a - 1);
+                                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2231: warning: pointer points outside of underlying object
+    constexpr int under2 = __builtin_strlen(b - 1);
+                                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2231: error: expression must have a constant value
+    constexpr int under2 = __builtin_strlen(b - 1);
+                           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2231: note: cannot set pointer before the first array element
+    constexpr int under2 = __builtin_strlen(b - 1);
+                                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2232: warning: pointer points outside of underlying object
+    constexpr int under3 = __builtin_strlen(c - 1);
+                                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2232: error: expression must have a constant value
+    constexpr int under3 = __builtin_strlen(c - 1);
+                           ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2232: note: cannot set pointer before the first array element
+    constexpr int under3 = __builtin_strlen(c - 1);
+                                              ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2236: error: expression must have a constant value
+    constexpr int bad = __builtin_strlen(d);
+                        ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2236: note: not a null-terminated string
+    constexpr int bad = __builtin_strlen(d);
+                                         ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2246: warning: variable "t" was declared but never referenced
+    void test() { constexpr Test t; }
+                                 ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2284: error: non-void function "PR21859::Fun" should return a value
+    constexpr int Fun() { return; }
+                                ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2285: error: expression must have a constant value
+    constexpr int Var = Fun();
+                        ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2285: note: this call cannot be evaluated because the target function function "PR21859::Fun" (declared at line 2284) is not constexpr or not completely defined yet
+    constexpr int Var = Fun();
+                           ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2287: error: non-void function "PR21859::FunT1<T>()" should return a value
+    template <typename T> constexpr int FunT1() { return; }
+                                                        ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2290: error: non-void function "PR21859::FunT2<T>() [with T=int]" should return a value
+    template <> constexpr int FunT2<int>() { return; }
+                                                   ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2295: warning: constexpr non-static member function will not be implicitly 'const' in C++14
+    constexpr int f(void);
+    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2295: error: "f" has already been declared in the current scope
+    constexpr int f(void);
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2325: error: expression must have a constant value
+      static constexpr int i = f(static_cast<XX*>(nullptr));
+                               ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2325: note: constexpr function "IncompleteClass::XX::f" (declared at line 2322) is not defined
+      static constexpr int i = f(static_cast<XX*>(nullptr));
+                               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2326: error: expression must have a constant value
+      static constexpr int j = g(static_cast<XX*>(nullptr));
+                               ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2326: note: constexpr function "IncompleteClass::g" (declared at line 2323) is not defined
+      static constexpr int j = g(static_cast<XX*>(nullptr));
+                               ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2334: error: expression must have a constant value
+    constexpr B b(0);
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2334: note: cannot call non-constexpr function "InheritedCtor::B::A(int)" (declared implicitly)
+    constexpr B b(0);
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2338: error: expression must have a constant value
+    constexpr C c(0);
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2338: note: cannot call non-constexpr function "InheritedCtor::C::A(int)" (declared implicitly)
+    constexpr C c(0);
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2348: error: expression must have a constant value
+    constexpr D d(0);
+                  ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2348: note: cannot call non-constexpr function "InheritedCtor::D::A(int)" (declared implicitly)
+    constexpr D d(0);
+                  ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2356: error: expression must have a constant value
+      constexpr E e(0);
+                    ^
+"SemaCXX/constant-expression-cxx11.cpp", line 2356: note: cannot call non-constexpr function "InheritedCtor::E::A(int)" (declared implicitly)
+      constexpr E e(0);
+                    ^
+
+"SemaCXX/constant-expression-cxx11.cpp", line 2356: error: a constexpr variable must have a literal type or a reference type
+      constexpr E e(0);
+      ^
+
+Error limit reached.
+200 errors detected in the compilation of "Test_name.c".
+Compilation terminated.

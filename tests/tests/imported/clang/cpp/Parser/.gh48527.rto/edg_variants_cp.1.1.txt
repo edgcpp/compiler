@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 6: error: this attribute argument contains unmatched parentheses, brackets, or braces
+      auto a = [](void)__attribute__((b(({ // expected-note {{to match this '('}}
+                                        ^
+
+At end of source: error: expected a ")"
+
+At end of source: error: expected a ","
+
+At end of source: error: expected a "{" introducing a lambda body
+
+At end of source: error: expected a ";"
+
+At end of source: error: expected a "}"
+"Test_name.c", line 5: note: to match this "{"
+  int main() { // expected-note {{to match this '{'}}
+             ^
+
+6 errors detected in the compilation of "Test_name.c".

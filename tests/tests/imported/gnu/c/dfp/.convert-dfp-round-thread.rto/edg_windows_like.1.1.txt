@@ -1,0 +1,606 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c99 --strict_gnu Test_name.c
+"./dfp/convert-dfp-round-thread.c", line 25: warning: explicit type is missing ("int" assumed)
+  static __thread int failcnt = 0;
+         ^
+
+"./dfp/convert-dfp-round-thread.c", line 25: error: expected a ";"
+  static __thread int failcnt = 0;
+                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 52: error: variable "__thread" is not a type name
+  __thread _Decimal32 d32;
+  ^
+
+"./dfp/convert-dfp-round-thread.c", line 52: error: expected a ";"
+  __thread _Decimal32 d32;
+                      ^
+
+"./dfp/convert-dfp-round-thread.c", line 53: error: variable "__thread" is not a type name
+  __thread _Decimal64 d64;
+  ^
+
+"./dfp/convert-dfp-round-thread.c", line 53: error: expected a ";"
+  __thread _Decimal64 d64;
+                      ^
+
+"./dfp/convert-dfp-round-thread.c", line 54: error: variable "__thread" is not a type name
+  __thread _Decimal128 d128;
+  ^
+
+"./dfp/convert-dfp-round-thread.c", line 54: error: expected a ";"
+  __thread _Decimal128 d128;
+                       ^
+
+"./dfp/convert-dfp-round-thread.c", line 56: error: variable "_Decimal32" is not a type name
+  _Decimal32 d64_to_d32 (_Decimal64 d) { return d; }
+  ^
+
+"./dfp/convert-dfp-round-thread.c", line 56: error: variable "_Decimal64" is not a type name
+  _Decimal32 d64_to_d32 (_Decimal64 d) { return d; }
+                         ^
+
+"./dfp/convert-dfp-round-thread.c", line 57: error: variable "_Decimal64" is not a type name
+  _Decimal64 d128_to_d64 (_Decimal128 d) { return d; }
+  ^
+
+"./dfp/convert-dfp-round-thread.c", line 57: error: variable "_Decimal128" is not a type name
+  _Decimal64 d128_to_d64 (_Decimal128 d) { return d; }
+                          ^
+
+"./dfp/convert-dfp-round-thread.c", line 58: error: variable "_Decimal32" is not a type name
+  _Decimal32 d128_to_d32 (_Decimal128 d) { return d; }
+  ^
+
+"./dfp/convert-dfp-round-thread.c", line 58: error: variable "_Decimal128" is not a type name
+  _Decimal32 d128_to_d32 (_Decimal128 d) { return d; }
+                          ^
+
+"./dfp/convert-dfp-round-thread.c", line 61: error: variable "_Decimal64" is not a type name
+  do_d64_to_d32 (_Decimal64 orig, _Decimal32 exp)
+                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 61: error: variable "_Decimal32" is not a type name
+  do_d64_to_d32 (_Decimal64 orig, _Decimal32 exp)
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 63: error: identifier "d64" is undefined
+    d64 = orig;
+    ^
+
+"./dfp/convert-dfp-round-thread.c", line 64: error: identifier "d32" is undefined
+    d32 = d64_to_d32 (d64);
+    ^
+
+"./dfp/convert-dfp-round-thread.c", line 69: error: variable "_Decimal128" is not a type name
+  do_d128_to_d32 (_Decimal128 orig, _Decimal32 exp)
+                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 69: error: variable "_Decimal32" is not a type name
+  do_d128_to_d32 (_Decimal128 orig, _Decimal32 exp)
+                                    ^
+
+"./dfp/convert-dfp-round-thread.c", line 71: error: identifier "d128" is undefined
+    d128 = orig;
+    ^
+
+"./dfp/convert-dfp-round-thread.c", line 72: error: identifier "d32" is undefined
+    d32 = d128_to_d32 (d128);
+    ^
+
+"./dfp/convert-dfp-round-thread.c", line 77: error: variable "_Decimal128" is not a type name
+  do_d128_to_d64 (_Decimal128 orig, _Decimal64 exp)
+                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 77: error: variable "_Decimal64" is not a type name
+  do_d128_to_d64 (_Decimal128 orig, _Decimal64 exp)
+                                    ^
+
+"./dfp/convert-dfp-round-thread.c", line 79: error: identifier "d128" is undefined
+    d128 = orig;
+    ^
+
+"./dfp/convert-dfp-round-thread.c", line 80: error: identifier "d64" is undefined
+    d64 = d128_to_d64 (d128);
+    ^
+
+"./dfp/convert-dfp-round-thread.c", line 110: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111112df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 110: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111112df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 111: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111113df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 111: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111113df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 112: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 112: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111113df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 113: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111114df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 113: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111114df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 114: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111112df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 114: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111112df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 115: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 115: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111113df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 116: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111113df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 116: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111113df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 117: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111114df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 117: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111114df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 118: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111112dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 118: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111112dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 119: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111113dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 119: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111113dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 120: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111113dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 120: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111113dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 121: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111114dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 121: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111114dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 127: error: identifier "failcnt" is undefined
+    return (void *) (ptrdiff_t) failcnt;
+                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 155: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111112df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 155: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111112df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 156: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111114df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 156: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111114df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 157: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111112df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 157: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111112df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 158: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111114df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 158: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111114df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 159: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111112df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 159: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111112df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 160: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111114df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 160: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111114df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 161: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111112df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 161: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111112df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 162: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111114df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 162: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111114df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 163: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111112dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 163: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111112dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 164: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111114dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 164: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111114dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 165: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111112dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 165: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111112dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 166: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111114dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 166: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111114dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 172: error: identifier "failcnt" is undefined
+    return (void *) (ptrdiff_t) failcnt;
+                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 200: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111113df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 200: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111113df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 201: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111114df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 201: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111114df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 202: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 202: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111113df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 203: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111114df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 203: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111114df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 204: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 204: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111113df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 205: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111114df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 205: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111114df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 206: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111113df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 206: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111113df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 207: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111114df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 207: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111114df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 208: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111113dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 208: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111113dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 209: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111114dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 209: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111114dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 210: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111113dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 210: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111113dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 211: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111114dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 211: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111114dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 217: error: identifier "failcnt" is undefined
+    return (void *) (ptrdiff_t) failcnt;
+                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 245: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111112df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 245: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111112df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 246: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111113df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 246: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111113df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 247: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111112df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 247: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111112df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 248: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 248: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111113df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 249: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111112df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 249: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111112df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 250: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 250: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111113df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 251: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111112df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 251: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111112df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 252: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111113df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 252: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111113df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 253: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111112dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 253: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111112dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 254: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111113dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 254: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111113dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 255: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111112dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 255: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111112dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 256: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111113dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 256: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111113dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 262: error: identifier "failcnt" is undefined
+    return (void *) (ptrdiff_t) failcnt;
+                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 290: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111113df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 290: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111125dd, 1.111113df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 291: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111114df)) abort ();
+                                 ^
+
+"./dfp/convert-dfp-round-thread.c", line 291: error: extra text after expected end of number
+    if (!do_d64_to_d32 (1.1111135dd, 1.111114df)) abort ();
+                                             ^
+
+"./dfp/convert-dfp-round-thread.c", line 292: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111112df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 292: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111125dd, -1.111112df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 293: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 293: error: extra text after expected end of number
+    if (!do_d64_to_d32 (-1.1111135dd, -1.111113df)) abort ();
+                                               ^
+
+"./dfp/convert-dfp-round-thread.c", line 294: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111113df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 294: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111125dl, 1.111113df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 295: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111114df)) abort ();
+                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 295: error: extra text after expected end of number
+    if (!do_d128_to_d32 (1.1111135dl, 1.111114df)) abort ();
+                                              ^
+
+"./dfp/convert-dfp-round-thread.c", line 296: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111112df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 296: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111125dl, -1.111112df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 297: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111113df)) abort ();
+                                   ^
+
+"./dfp/convert-dfp-round-thread.c", line 297: error: extra text after expected end of number
+    if (!do_d128_to_d32 (-1.1111135dl, -1.111113df)) abort ();
+                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 298: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111113dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 298: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111125dl, 1.111111111111113dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 299: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111114dd)) abort ();
+                                           ^
+
+"./dfp/convert-dfp-round-thread.c", line 299: error: extra text after expected end of number
+    if (!do_d128_to_d64 (1.1111111111111135dl, 1.111111111111114dd)) abort ();
+                                                                ^
+
+"./dfp/convert-dfp-round-thread.c", line 300: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111112dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 300: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111125dl, -1.111111111111112dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 301: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111113dd)) abort ();
+                                            ^
+
+"./dfp/convert-dfp-round-thread.c", line 301: error: extra text after expected end of number
+    if (!do_d128_to_d64 (-1.1111111111111135dl, -1.111111111111113dd)) abort ();
+                                                                  ^
+
+"./dfp/convert-dfp-round-thread.c", line 307: error: identifier "failcnt" is undefined
+    return (void *) (ptrdiff_t) failcnt;
+                                ^
+
+150 errors detected in the compilation of "Test_name.c".

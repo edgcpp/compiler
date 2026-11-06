@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c17 --strict_gnu Test_name.c
+"Test_name.c", line 12: error: "s0" has already been declared in the current scope
+  struct s0 { }; /* { dg-error "redefinition of 'struct s0'" } */
+         ^
+
+"Test_name.c", line 15: error: "s1" has already been declared in the current scope
+  struct s1 { }; /* { dg-error "redefinition of 'struct s1'" } */
+         ^
+
+"Test_name.c", line 18: error: "s2" has already been declared in the current scope
+  struct s2 { int a : 1; }; /* { dg-error "redefinition of 'struct s2'" } */
+         ^
+
+"Test_name.c", line 21: error: "s3" has already been declared in the current scope
+  struct s3 { int a : 1; }; /* { dg-error "redefinition of 'struct s3'" } */
+         ^
+
+"Test_name.c", line 24: error: "s4" has already been declared in the current scope
+  struct s4 { }; /* { dg-error "redefinition of 'struct s4'" } */
+         ^
+
+5 errors detected in the compilation of "Test_name.c".

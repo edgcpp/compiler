@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 8: warning: variable "a" was set but never used
+    int a[10], b[10];
+        ^
+
+"Test_name.c", line 8: warning: variable "b" was set but never used
+    int a[10], b[10];
+               ^
+
+"Test_name.c", line 22: warning: variable "n" was declared but never referenced
+    [[clang::code_align(12)]] int n[10];
+                                  ^
+
+"Test_name.c", line 88: error: integer constant is too large
+    [[clang::code_align(9223372036854775808)]]
+                       ^
+
+"Test_name.c", line 117: warning: variable "a" was set but never used
+    int a[10];
+        ^
+
+"Test_name.c", line 120: warning: variable "foo2" was declared but never referenced
+    int foo2; // cpp-local-note {{declared here}}
+        ^
+
+1 error detected in the compilation of "Test_name.c".

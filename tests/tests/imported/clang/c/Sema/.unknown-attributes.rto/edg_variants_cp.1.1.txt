@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: attribute namespace "gmu" is unrecognized
+  [[gmu::deprected]] // expected-warning {{unknown attribute 'gmu::deprected' ignored; did you mean 'gnu::deprecated'?}}
+    ^
+
+"Test_name.c", line 11: warning: attribute namespace "gmu" is unrecognized
+  [[gmu::deprecated]] // expected-warning {{unknown attribute 'gmu::deprecated' ignored; did you mean 'gnu::deprecated'?}}
+    ^
+
+"Test_name.c", line 26: error: expected a ","
+  [[using gnu : deprected]] // c-error {{expected ','}} \
+          ^
+
+1 error detected in the compilation of "Test_name.c".

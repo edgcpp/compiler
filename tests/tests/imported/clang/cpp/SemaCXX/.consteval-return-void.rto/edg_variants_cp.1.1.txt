@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 5: warning: non-void function "Fun" should return a value
+  consteval int Fun() { return; } // expected-error {{non-void consteval function 'Fun' should return a value}}
+                              ^
+
+"Test_name.c", line 7: warning: non-void function "FunT1<T>()" should return a value
+  template <typename T> consteval int FunT1() { return; } // expected-error {{non-void consteval function 'FunT1' should return a value}}
+                                                      ^
+
+"Test_name.c", line 10: warning: non-void function "FunT2<T>() [with T=int]" should return a value
+  template <> consteval int FunT2<int>() { return; } // expected-error {{non-void consteval function 'FunT2<int>' should return a value}}
+                                                 ^
+
+"Test_name.c", line 14: warning: non-void function "operator+" should return a value
+  constexpr E operator+(E,E) { return; }	// expected-error {{non-void constexpr function 'operator+' should return a value}}
+                                     ^
+
+"Test_name.c", line 15: warning: non-void function "operator-" should return a value
+  consteval E operator-(E,E) { return; }  // expected-error {{non-void consteval function 'operator-' should return a value}}
+                                     ^
+
+"Test_name.c", line 16: warning: non-void function "operator+<T>(E, E)" should return a value
+  template <typename T> constexpr E operator+(E,E) { return; } // expected-error {{non-void constexpr function 'operator+' should return a value}}
+                                                           ^
+
+"Test_name.c", line 17: warning: non-void function "operator-<T>(E, E)" should return a value
+  template <typename T> consteval E operator-(E,E) { return; } // expected-error {{non-void consteval function 'operator-' should return a value}}
+                                                           ^
+
+"Test_name.c", line 21: warning: non-void function "operator*<T>(E, E) [with T=int]" should return a value
+  template <> constexpr E operator*<int>(E,E) { return; } // expected-error {{non-void constexpr function 'operator*<int>' should return a value}}
+                                                      ^
+
+"Test_name.c", line 22: warning: non-void function "operator/<T>(E, E) [with T=int]" should return a value
+  template <> consteval E operator/<int>(E,E) { return; } // expected-error {{non-void consteval function 'operator/<int>' should return a value}}
+                                                      ^
+

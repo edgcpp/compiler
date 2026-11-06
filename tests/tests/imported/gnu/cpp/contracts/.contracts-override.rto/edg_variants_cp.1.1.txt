@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 7: error: expected a ","
+    virtual int f0(int n) [[ pre: false ]] { return n; }
+                                ^
+
+"Test_name.c", line 7: error: expected a "]"
+    virtual int f0(int n) [[ pre: false ]] { return n; }
+                                ^
+
+"Test_name.c", line 7: error: expected a ";"
+    virtual int f0(int n) [[ pre: false ]] { return n; }
+                                ^
+
+"Test_name.c", line 20: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+"Test_name.c", line 23: error: expected a ","
+    [[ pre: n > -1 ]] int f0(int n = 0) override { return -n; } // { dg-error "contracts must appertain" }
+          ^
+
+"Test_name.c", line 24: error: expected a ","
+    int [[ pre: n > -2 ]] f1(int n = 0) override { return -n; } // { dg-error "contracts must appertain" }
+              ^
+
+"Test_name.c", line 24: error: expected a "]"
+    int [[ pre: n > -2 ]] f1(int n = 0) override { return -n; } // { dg-error "contracts must appertain" }
+              ^
+
+"Test_name.c", line 24: error: identifier "n" is undefined
+    int [[ pre: n > -2 ]] f1(int n = 0) override { return -n; } // { dg-error "contracts must appertain" }
+                ^
+
+"Test_name.c", line 24: error: expected a ";"
+    int [[ pre: n > -2 ]] f1(int n = 0) override { return -n; } // { dg-error "contracts must appertain" }
+                       ^
+
+"Test_name.c", line 44: warning: parsing restarts here after previous syntax error
+  };
+  ^
+
+8 errors detected in the compilation of "Test_name.c".

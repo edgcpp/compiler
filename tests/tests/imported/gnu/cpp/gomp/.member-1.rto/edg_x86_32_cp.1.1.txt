@@ -95,3 +95,9 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
       int &q17 = U<T>::t;
            ^
 
+"Test_name.c", line 139: error: a value of type "int U<int>::*" cannot be used to initialize an entity of type "int *"
+  int *q5 = (&U< T> ::t); 
+            ^
+          detected during instantiation of "void V<T>::foo() [with T=int]" at line 253
+
+1 error detected in the compilation of "Test_name.c".

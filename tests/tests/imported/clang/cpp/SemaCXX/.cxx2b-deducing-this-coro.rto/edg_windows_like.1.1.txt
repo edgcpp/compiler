@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 42: error: identifier "co_return" is undefined
+          co_return;
+          ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 43: warning: missing return statement at end of non-void function "S::ok"
+      }
+      ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 46: error: identifier "co_return" is undefined
+          co_return;
+          ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 47: warning: missing return statement at end of non-void function "S::ok2"
+      }
+      ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 54: error: identifier "co_return" is undefined
+          co_return;
+          ^
+
+"SemaCXX/cxx2b-deducing-this-coro.cpp", line 55: warning: missing return statement at end of non-void function "S::ko"
+      }
+      ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 40: warning: unknown attribute "__visibility__"
+  namespace std __attribute__((__visibility__("default"))) {
+                               ^
+
+"Test_name.c", line 255: warning: floating-point value does not fit in required integral type
+    j = std::numeric_limits<float>::infinity();
+        ^
+
+"Test_name.c", line 257: warning: floating-point value does not fit in required integral type
+    j = numeric_limits<float>::infinity(); // expected-no-diagnostics
+        ^
+

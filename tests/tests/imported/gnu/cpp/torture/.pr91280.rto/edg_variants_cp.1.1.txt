@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 97: warning: variable "contracting" is used before its value is set
+        if (contracting) {
+            ^
+
+"Test_name.c", line 222: warning: variable "contract_pairs" is used before its value is set
+      z.m_fn4(Run_d) = x.m_fn2(y, contract_pairs);
+                                  ^
+
+"Test_name.c", line 163: warning: variable "device" is used before its value is set
+      TensorEvaluator<Expression, int>(p1, device);
+                                           ^
+          detected during instantiation of "void F<Expression>::m_fn9(Expression) [with Expression=const TensorAssignOp<TensorChippingOp<0L, const M<J<int, 3, 1, int>, 1, I>>, const TensorContractionOp<array<int, 1>, TensorChippingOp<1L, M<J<float, 3, 1, int>, 0, I>>, const D<int, M<J<float, 3, 1, int>, 0, I>>, int>>]" at line 183
+

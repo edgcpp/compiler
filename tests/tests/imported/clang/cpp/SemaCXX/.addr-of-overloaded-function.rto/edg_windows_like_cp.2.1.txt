@@ -1,0 +1,144 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 16: error: no instance of overloaded function "f" matches the required type
+  int (*pfe)(...) = &f;    // expected-error{{address of overloaded function 'f' does not match required type 'int (...)'}}
+                    ^
+
+"Test_name.c", line 36: error: more than one instance of overloaded function "g" matches the argument list:
+            function "g(int (*)(int))" (declared at line 20)
+            function "g(int (*)(double))" (declared at line 22)
+            argument types are: (<unknown-type>)
+    g(g2); // expected-error{{call to 'g' is ambiguous}}
+    ^
+"Test_name.c", line 21: note: function "g(int (*)(float))" does not match because argument #1 does not match parameter
+  void g(int (*fp)(float));
+       ^
+
+"Test_name.c", line 48: error: more than one instance of overloaded function "h1" matches the required type
+    ha(h1);
+       ^
+
+"Test_name.c", line 64: error: a reference of type "C &" (not const-qualified) cannot be initialized with a value of type "<unknown-type>"
+      return makeAC; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+             ^
+
+"Test_name.c", line 75: error: a reference of type "int (&)()" (not const-qualified) cannot be initialized with a value of type "<unknown-type>"
+      int (&fp)() = f; // expected-error{{address of overloaded function 'f' does not match required type 'int ()'}}
+                    ^
+
+"Test_name.c", line 94: error: nonstandard form for taking the address of a member function
+      q1<int>; // expected-error-re{{reference to non-static member function must be called{{$}}}}
+      ^
+
+"Test_name.c", line 94: warning: expression has no effect
+      q1<int>; // expected-error-re{{reference to non-static member function must be called{{$}}}}
+      ^
+
+"Test_name.c", line 97: error: nonstandard form for taking the address of a member function
+      q2<int>; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 97: warning: expression has no effect
+      q2<int>; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 100: error: nonstandard form for taking the address of a member function
+      q3<int>; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 100: warning: expression has no effect
+      q3<int>; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 102: error: cannot determine which instance of function template "C::q4" is intended
+      q4<int>; // expected-error-re{{reference to non-static member function must be called{{$}}}}
+      ^
+
+"Test_name.c", line 104: error: cannot determine which instance of function template "C::q5" is intended
+      q5; // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+      ^
+
+"Test_name.c", line 137: error: more than one instance of overloaded function "PR8033::f" matches the required type
+    int (*p)(const int *, const int *) = f; // expected-error{{address of overloaded function 'f' is ambiguous}}
+                                         ^
+
+"Test_name.c", line 148: error: no instance of function template "PR8196::wrap_mean" matches the required type
+      add_property(&wrap_mean); // expected-error{{no matching function for call to 'add_property'}}
+                   ^
+
+"Test_name.c", line 185: error: a value of type "void (*)(int)" cannot be used to initialize an entity of type "void (*)(int, int)"
+      void (*ptr1)(int, int) = &fun; // expected-error {{cannot initialize a variable of type 'void (*)(int, int)' with an rvalue of type 'void (*)(int)': different number of parameters (2 vs 1)}}
+                               ^
+
+"Test_name.c", line 187: error: a value of type "void (*)(int)" cannot be assigned to an entity of type "void (*)(int, int)"
+      ptr2 = &fun;  // expected-error {{incompatible function pointer types assigning to 'void (*)(int, int)' from 'void (*)(int)'}}
+           ^
+
+"Test_name.c", line 186: warning: variable "ptr2" was set but never used
+      void (*ptr2)(int, int);
+             ^
+
+"Test_name.c", line 191: error: a value of type "void (*)(int)" cannot be used to initialize an entity of type "void (*)(double)"
+      void (*ptr1)(double) = &fun; // expected-error {{cannot initialize a variable of type 'void (*)(double)' with an rvalue of type 'void (*)(int)': type mismatch at 1st parameter ('double' vs 'int')}}
+                             ^
+
+"Test_name.c", line 193: error: a value of type "void (*)(int)" cannot be assigned to an entity of type "void (*)(double)"
+      ptr2 = &fun; // expected-error {{incompatible function pointer types assigning to 'void (*)(double)' from 'void (*)(int)'}}
+           ^
+
+"Test_name.c", line 192: warning: variable "ptr2" was set but never used
+      void (*ptr2)(double);
+             ^
+
+"Test_name.c", line 197: error: a value of type "void (*)(int)" cannot be used to initialize an entity of type "int (*)(int)"
+      int (*ptr1)(int) = &fun; // expected-error {{cannot initialize a variable of type 'int (*)(int)' with an rvalue of type 'void (*)(int)': different return type ('int' vs 'void')}}
+                         ^
+
+"Test_name.c", line 199: error: a value of type "void (*)(int)" cannot be assigned to an entity of type "int (*)(int)"
+      ptr2 = &fun;  // expected-error {{incompatible function pointer types assigning to 'int (*)(int)' from 'void (*)(int)'}}
+           ^
+
+"Test_name.c", line 198: warning: variable "ptr2" was set but never used
+      int (*ptr2)(int);
+            ^
+
+"Test_name.c", line 210: error: no instance of overloaded function "test1::foo" matches the required type
+    int (*ptr)(int) = &foo; // expected-error {{address of overloaded function 'foo' does not match required type 'int (int)'}}
+                      ^
+
+"Test_name.c", line 226: error: a value of type "void (test1::Qualifiers::*)() const" cannot be assigned to an entity of type "void (test1::Qualifiers::*)()"
+      X = &Qualifiers::C; // expected-error-re {{assigning to 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' from incompatible type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}} const': different qualifiers (unqualified vs 'const')}}
+        ^
+
+"Test_name.c", line 227: error: a value of type "void (test1::Qualifiers::*)() volatile" cannot be assigned to an entity of type "void (test1::Qualifiers::*)()"
+      X = &Qualifiers::V; // expected-error-re{{assigning to 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' from incompatible type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}} volatile': different qualifiers (unqualified vs 'volatile')}}
+        ^
+
+"Test_name.c", line 229: error: a value of type "void (test1::Qualifiers::*)() const volatile" cannot be assigned to an entity of type "void (test1::Qualifiers::*)()"
+      X = &Qualifiers::CV; // expected-error-re{{assigning to 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' from incompatible type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}} const volatile': different qualifiers (unqualified vs 'const volatile')}}
+        ^
+
+"Test_name.c", line 230: error: a value of type "void (test1::Qualifiers::*)() const __restrict__" cannot be assigned to an entity of type "void (test1::Qualifiers::*)()"
+      X = &Qualifiers::CR; // expected-error-re{{assigning to 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' from incompatible type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}} const __restrict': different qualifiers (unqualified vs 'const __restrict')}}
+        ^
+
+"Test_name.c", line 231: error: a value of type "void (test1::Qualifiers::*)() volatile __restrict__" cannot be assigned to an entity of type "void (test1::Qualifiers::*)()"
+      X = &Qualifiers::VR; // expected-error-re{{assigning to 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' from incompatible type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}} volatile __restrict': different qualifiers (unqualified vs 'volatile __restrict')}}
+        ^
+
+"Test_name.c", line 232: error: a value of type "void (test1::Qualifiers::*)() const volatile __restrict__" cannot be assigned to an entity of type "void (test1::Qualifiers::*)()"
+      X = &Qualifiers::CVR; // expected-error-re{{assigning to 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' from incompatible type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}} const volatile __restrict': different qualifiers (unqualified vs 'const volatile __restrict')}}
+        ^
+
+"Test_name.c", line 225: warning: variable "X" was set but never used
+      void (Qualifiers::*X)();
+                         ^
+
+"Test_name.c", line 239: error: a value of type "void (test1::Dummy::*)()" cannot be used to initialize an entity of type "void (test1::Qualifiers::*)()"
+    void (Qualifiers::*X)() = &Dummy::N; // expected-error-re{{cannot initialize a variable of type 'void (Qualifiers::*)(){{( __attribute__\(\(thiscall\)\))?}}' with an rvalue of type 'void (Dummy::*)(){{( __attribute__\(\(thiscall\)\))?}}': different classes ('Qualifiers' vs 'Dummy')}}
+                              ^
+
+"Test_name.c", line 243: error: nonstandard form for taking the address of a member function
+    virtual bool f() { if (f) {} return false; } // expected-error {{reference to non-static member function must be called}}
+                           ^
+
+27 errors detected in the compilation of "Test_name.c".

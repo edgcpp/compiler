@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 17: error: use the "typename" keyword to treat nontype "test1::container<T>::iterator [with T=T]" as a type in a dependent context
+        Container::iterator i = c.begin(); // expected-error{{missing 'typename'}}
+        ^
+
+"Test_name.c", line 33: error: use the "typename" keyword to treat nontype "test2::hash_map<Key, Value>::const_iterator [with Key=KeyType, Value=ValueType]" as a type in a dependent context
+      for (hash_map<KeyType, ValueType>::const_iterator it = map.begin(); // expected-error{{missing 'typename'}}
+           ^
+
+"Test_name.c", line 49: error: expected a ";"
+        Container::iterator const i; // expected-error{{missing 'typename'}}
+                            ^
+
+3 errors detected in the compilation of "Test_name.c".

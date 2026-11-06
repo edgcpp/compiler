@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef const int X __attribute((vector_size(8)));
+                                   ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  extern const int x[] __attribute((vector_size(8)));
+                                    ^
+

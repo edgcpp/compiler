@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=1 --c23 Test_name.c
+"Test_name.c", line 12: warning: function "printf" declared implicitly
+    printf("value %g\n", x);
+    ^
+
+"Test_name.c", line 11: error: function "f" is not a type name
+  __typeof__(f(5)) g(double x) { 
+             ^
+
+"Test_name.c", line 11: error: expected a ")"
+  __typeof__(f(5)) g(double x) { 
+               ^
+
+"Test_name.c", line 11: error: explicit type is missing ("int" assumed)
+  __typeof__(f(5)) g(double x) { 
+  ^
+
+"Test_name.c", line 11: error: expected a "{"
+  __typeof__(f(5)) g(double x) { 
+                   ^
+
+"Test_name.c", line 12: error: identifier "x" is undefined
+  printf("value %g\n", x); 
+                       ^
+
+"Test_name.c", line 15: error: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  __typeof__(g) *h; 
+             ^
+
+"Test_name.c", line 15: error: explicit type is missing ("int" assumed)
+  __typeof__(g) *h; 
+  ^
+
+"Test_name.c", line 15: error: function "__typeof__" has already been defined (previous definition at line 11)
+  __typeof__(g) *h; 
+  ^
+
+"Test_name.c", line 15: error: expected a "{"
+  __typeof__(g) *h; 
+                ^
+
+"Test_name.c", line 21: error: expected a ";"
+  __typeof__(D) C = {(0.7), (99)}; 
+                                ^
+
+"Test_name.c", line 23: error: identifier-only parameters can only be used in old-style function definitions, which are nonstandard since C23
+  __typeof__(D) D = {(5), (8.9), (0.1), (99)}; 
+             ^
+
+"Test_name.c", line 23: error: explicit type is missing ("int" assumed)
+  __typeof__(D) D = {(5), (8.9), (0.1), (99)}; 
+  ^
+
+"Test_name.c", line 23: error: expected a declaration
+  __typeof__(D) D = {(5), (8.9), (0.1), (99)}; 
+                ^
+
+"Test_name.c", line 24: error: expected a declaration
+  __typeof__(D) E; 
+  ^
+
+"Test_name.c", line 23: error: function "__typeof__" has already been defined (previous definition at line 11)
+  __typeof__(D) D = {(5), (8.9), (0.1), (99)}; 
+  ^
+
+At end of source: error: expected a "{"
+
+At end of source: error: expected a "}"
+
+17 errors detected in the compilation of "Test_name.c".

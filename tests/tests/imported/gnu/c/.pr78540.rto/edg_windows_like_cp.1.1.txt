@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 15: error: expression must have pointer-to-object type but it has type "int"
+    c[0] = 0;
+      ^
+
+"Test_name.c", line 15: warning: variable "c" is used before its value is set
+    c[0] = 0;
+    ^
+
+"Test_name.c", line 18: error: expression must have pointer-to-object type but it has type "int"
+    b[0] = 0;
+      ^
+
+"Test_name.c", line 18: warning: variable "b" is used before its value is set
+    b[0] = 0;
+    ^
+
+"Test_name.c", line 26: error: expression must have pointer-to-object type but it has type "int"
+    a[1] ^= 1;
+      ^
+
+"Test_name.c", line 27: error: expression must have pointer-to-object type but it has type "int"
+    b[foo (a)[0] & 3] |= 1;
+              ^
+
+4 errors detected in the compilation of "Test_name.c".

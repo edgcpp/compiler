@@ -1,0 +1,46 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 8: remark: function "B::B()" cannot be inlined
+  class B : public A { B() : A() { } };
+                       ^
+
+"Test_name.c", line 10: error: no suitable constructor exists to convert from "int" to "A"
+  A a2 = A(0);
+           ^
+
+"Test_name.c", line 11: error: no instance of constructor "A::A" matches the argument list
+            argument types are: (int)
+  A *pa2 = new A(0);
+                ^
+Note: number of parameters of function "A::A" does not match the call
+Note: function "A::A" does not match because argument #1 does not match parameter
+
+"Test_name.c", line 12: error: no instance of constructor "A::A" matches the argument list
+            argument types are: (int)
+  class C : public A { C() : A(0) { } };
+                              ^
+Note: number of parameters of function "A::A" does not match the call
+Note: function "A::A" does not match because argument #1 does not match parameter
+
+"Test_name.c", line 19: error: no suitable constructor exists to convert from "int" to "A"
+  A a4 = A(0,0);
+           ^
+
+"Test_name.c", line 19: error: expected a ")"
+  A a4 = A(0,0);
+            ^
+
+"Test_name.c", line 20: error: no instance of constructor "A::A" matches the argument list
+            argument types are: (int, int)
+  A *pa4 = new A(0,0);
+                ^
+Note: number of parameters of function "A::A" does not match the call
+Note: number of parameters of function "A::A" does not match the call
+
+"Test_name.c", line 21: error: no instance of constructor "A::A" matches the argument list
+            argument types are: (int, int)
+  class E : public A { E() : A(0,0) { } };
+                              ^
+Note: number of parameters of function "A::A" does not match the call
+Note: number of parameters of function "A::A" does not match the call
+
+7 errors detected in the compilation of "Test_name.c".

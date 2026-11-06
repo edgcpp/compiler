@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: error: expression must have pointer-to-object type but it has type "int"
+    int f1 () { return this->v[N-1]; }
+                               ^
+
+"Test_name.c", line 9: error: expression must have pointer-to-object type but it has type "int"
+    int f2 () { return v[N-1]; }
+                         ^
+
+"Test_name.c", line 15: warning: extra braces are nonstandard
+    D<4> a = { { 0, 1, 2, 3 } };
+               ^
+
+"Test_name.c", line 15: error: too many initializer values
+    D<4> a = { { 0, 1, 2, 3 } };
+                    ^
+
+"Test_name.c", line 16: warning: extra braces are nonstandard
+    D<8> b = { { 0, 1, 2, 3, 4, 5, 6, 7 } };
+               ^
+
+"Test_name.c", line 16: error: too many initializer values
+    D<8> b = { { 0, 1, 2, 3, 4, 5, 6, 7 } };
+                    ^
+
+4 errors detected in the compilation of "Test_name.c".

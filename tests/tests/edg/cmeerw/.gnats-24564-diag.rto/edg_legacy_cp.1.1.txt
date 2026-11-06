@@ -1,0 +1,91 @@
+fe_only -DTEST_NUMBER=1 -tused --c++20 Test_name.c
+"Test_name.c", line 7: error: missing initializer for constexpr variable
+    constexpr int ci;
+                    ^
+
+"Test_name.c", line 9: error: const variable "non_inst::i" requires an initializer
+    const int i;
+               ^
+
+"Test_name.c", line 11: error: const variable "non_inst::si" requires an initializer
+    static const int si;          // accepted by MSVC
+                       ^
+
+"Test_name.c", line 13: error: const variable "non_inst::ii" requires an initializer
+    inline const int ii;
+                       ^
+
+"Test_name.c", line 32: error: const variable "non_inst::ti<void>" requires an initializer
+    const int ti<void>;
+              ^
+
+"Test_name.c", line 43: error: const variable template "non_inst::C::sci" requires an initializer
+      static constexpr int sci;
+                           ^
+
+"Test_name.c", line 55: error: const member "non_inst::D<T>::sci" requires an initializer
+      static constexpr int sci;
+                           ^
+
+"Test_name.c", line 60: error: const variable template "non_inst::D<T>::tsci" requires an initializer
+      static constexpr int tsci;
+                           ^
+
+"Test_name.c", line 93: error: const variable template "inst::C::sci" requires an initializer
+      static constexpr int sci;   // error
+                           ^
+
+"Test_name.c", line 105: error: const member "inst::D<T>::sci" requires an initializer
+      static constexpr int sci;   // error
+                           ^
+
+"Test_name.c", line 110: error: const variable template "inst::D<T>::tsci" requires an initializer
+      static constexpr int tsci;  // error
+                           ^
+
+"Test_name.c", line 76: error: missing initializer for constexpr variable
+    constexpr int tci;            // error
+                  ^
+          detected during instantiation of "const int inst::tci [with T=int]" at line 122
+
+"Test_name.c", line 79: error: const variable "inst::ti<int>" requires an initializer
+    const int ti;                 // error
+              ^
+          detected during instantiation of "const int inst::ti [with T=int]" at line 122
+
+"Test_name.c", line 82: error: const variable "inst::tii<int>" requires an initializer
+    inline const int tii;         // error
+                     ^
+          detected during instantiation of "const int inst::tii [with T=int]" at line 122
+
+"Test_name.c", line 85: error: const variable "inst::tt<int>" requires an initializer
+    const T tt;                   // error
+            ^
+          detected during instantiation of "const T inst::tt [with T=int]" at line 122
+
+"Test_name.c", line 93: error: missing initializer for constexpr variable
+      static constexpr int sci;   // error
+                           ^
+          detected during instantiation of "const int inst::C::sci [with T=int]" at line 123
+
+"Test_name.c", line 100: error: const variable "inst::C::si<int>" requires an initializer
+    const int C::si;              // error
+                 ^
+          detected during instantiation of "const int inst::C::si [with T=int]" at line 123
+
+"Test_name.c", line 117: error: const member "inst::D<T>::si [with T=int]" requires an initializer
+    const int D<T>::si;           // error
+                    ^
+          detected during implicit definition of "const int inst::D<T>::si [with T=int]" at line 124
+
+"Test_name.c", line 110: error: missing initializer for constexpr variable
+      static constexpr int tsci;  // error
+                           ^
+          detected during instantiation of "const int inst::D<T>::tsci [with T=int, U=int]" at line 124
+
+"Test_name.c", line 120: error: const variable "inst::D<T>::tsi<int> [with T=int]" requires an initializer
+    const int D<T>::tsi;          // error
+                    ^
+          detected during instantiation of "const int inst::D<T>::tsi [with T=int, U=int]" at line 124
+
+20 errors detected in the compilation of "Test_name.c".

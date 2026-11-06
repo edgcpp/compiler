@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 29: error: storage class "mutable" is not allowed for anonymous unions
+    mutable union { // expected-error{{anonymous union at class scope must not have a storage specifier}}
+    ^
+
+"Test_name.c", line 40: error: identifier "f3" is undefined
+    f3 = 0; // expected-error{{use of undeclared identifier 'f3'}}
+    ^
+
+"Test_name.c", line 46: error: expression must be a modifiable lvalue
+    f2 = 0; // expected-error{{cannot assign to non-static data member within const member function 'test_unqual_references_const'}}
+    ^
+
+"Test_name.c", line 47: error: expression must be a modifiable lvalue
+    a = 0; // expected-error{{cannot assign to non-static data member within const member function 'test_unqual_references_const'}}
+    ^
+
+"Test_name.c", line 56: error: class "X" has no member "f3"
+    x.f3 = 0; // expected-error{{no member named 'f3'}}
+      ^
+
+"Test_name.c", line 60: error: expression must be a modifiable lvalue
+    xc.f = 0; // expected-error{{cannot assign to variable 'xc' with const-qualified type 'const X'}}
+    ^
+
+"Test_name.c", line 61: error: expression must be a modifiable lvalue
+    xc.a = 0; // expected-error{{cannot assign to variable 'xc' with const-qualified type 'const X'}}
+    ^
+
+"Test_name.c", line 70: error: "x" has already been declared in the current scope
+      int x; // expected-error{{member of anonymous union redeclares 'x'}}
+          ^
+
+"Test_name.c", line 76: error: "z" has already been declared in the current scope
+    int z; // expected-error{{duplicate member 'z'}}
+        ^
+
+"Test_name.c", line 77: error: "zz" has already been declared in the current scope
+    void zz(); // expected-error{{redefinition of 'zz' as different kind of symbol}}
+         ^
+
+"Test_name.c", line 80: error: anonymous union at global or namespace scope must be declared static
+  union { // expected-error{{anonymous unions at namespace or global scope must be declared 'static'}}
+  ^
+
+"Test_name.c", line 86: error: anonymous union at global or namespace scope must be declared static
+  union { int extern_cxx; }; // expected-error{{anonymous unions at namespace or global scope must be declared 'static'}}
+  ^
+
+"Test_name.c", line 113: error: invalid anonymous union -- member function is not allowed
+    union {
+          ^
+
+"Test_name.c", line 113: error: invalid anonymous union -- nonpublic member is not allowed
+    union {
+          ^
+
+"Test_name.c", line 114: warning: types cannot be declared in anonymous unions
+      struct X { }; // expected-error {{types cannot be declared in an anonymous union}}
+             ^
+
+"Test_name.c", line 123: warning: declaration requires a typedef name
+  typedef union { }; // expected-warning{{typedef requires a name}}
+                   ^
+
+"Test_name.c", line 156: error: member "test4::A::s0" (declared at line 137) is inaccessible
+      (void) a.s0;  // expected-error {{private member}}
+               ^
+
+"Test_name.c", line 157: error: member "test4::A::s1" (declared at line 138) is inaccessible
+      (void) a.s1;  // expected-error {{private member}}
+               ^
+
+"Test_name.c", line 160: error: member "test4::A::u0" (declared at line 145) is inaccessible
+      (void) a.u0;  // expected-error {{private member}}
+               ^
+
+"Test_name.c", line 161: error: member "test4::A::u1" (declared at line 146) is inaccessible
+      (void) a.u1;  // expected-error {{private member}}
+               ^
+
+"Test_name.c", line 197: warning: anonymous union qualifier is ignored
+      const union { // expected-warning{{anonymous union cannot be 'const'}}
+      ^
+
+"Test_name.c", line 214: error: member "PR16630::A::y" (declared at line 210) is inaccessible
+      b.y = 0; // expected-error {{'y' is a private member of 'PR16630::A'}}
+        ^
+
+19 errors detected in the compilation of "Test_name.c".

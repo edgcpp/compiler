@@ -1,0 +1,48 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 20: error: using-declaration of function "test0::ns::foo()" conflicts with function "test0::foo()" (declared at line 19)
+    using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+              ^
+
+"Test_name.c", line 26: error: function "test1::foo()" conflicts with using-declaration of function "test1::ns::foo()"
+    int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+        ^
+
+"Test_name.c", line 33: error: using-declaration of function "test2::ns::foo()" conflicts with function "foo()" (declared at line 32)
+      using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+                ^
+
+"Test_name.c", line 38: error: function "foo()" conflicts with using-declaration of function "test2::ns::foo()"
+      int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+          ^
+
+"Test_name.c", line 47: error: using-declaration of function "test3::ns::foo()" conflicts with function "foo()" (declared at line 46)
+        using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+                  ^
+
+"Test_name.c", line 54: error: function "foo()" conflicts with using-declaration of function "test3::ns::foo()"
+        int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+            ^
+
+"Test_name.c", line 64: error: using-declaration of function "test4::ns::foo()" conflicts with function "foo()" (declared at line 63)
+        using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+                  ^
+
+"Test_name.c", line 71: error: function "foo()" conflicts with using-declaration of function "test4::ns::foo()"
+        int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+            ^
+
+"Test_name.c", line 109: warning: using-declaration ignored -- it refers to the current namespace
+    using test7::foo;
+          ^
+
+"Test_name.c", line 82: error: using-declaration of function "test5::ns::foo(int)" conflicts with function "foo(int)" (declared at line 81)
+        using ns::foo;
+                  ^
+          detected during instantiation of "void test5::Test0<T>::test() [with T=int]" at line 93
+
+"Test_name.c", line 89: error: function "foo(int)" conflicts with using-declaration of function "test5::ns::foo(int)"
+        int foo(T);
+            ^
+          detected during instantiation of "void test5::Test1<T>::test() [with T=int]" at line 94
+
+10 errors detected in the compilation of "Test_name.c".

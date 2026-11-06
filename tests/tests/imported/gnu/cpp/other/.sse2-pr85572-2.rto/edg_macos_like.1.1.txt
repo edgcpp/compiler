@@ -1,0 +1,94 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef long long V __attribute__((vector_size (16)));
+                                     ^
+
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef long long W __attribute__((vector_size (32)));
+                                     ^
+
+"Test_name.c", line 11: warning: unknown attribute "noipa"
+  __attribute__((noipa)) V
+                 ^
+
+"Test_name.c", line 17: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+"Test_name.c", line 26: error: too many initializer values
+    V a = { 11LL, -15LL };
+                  ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    if (b[0] != 11LL || b[1] != 15LL)
+          ^
+
+"Test_name.c", line 28: error: expression must have pointer-to-object type but it has type "int"
+    if (b[0] != 11LL || b[1] != 15LL)
+                          ^
+
+"Test_name.c", line 30: error: too many initializer values
+    V c = { -123456789123456LL, 654321654321654LL };
+                                ^
+
+"Test_name.c", line 32: error: expression must have pointer-to-object type but it has type "int"
+    if (d[0] != 123456789123456LL || d[1] != 654321654321654LL)
+          ^
+
+"Test_name.c", line 32: error: expression must have pointer-to-object type but it has type "int"
+    if (d[0] != 123456789123456LL || d[1] != 654321654321654LL)
+                                       ^
+
+"Test_name.c", line 34: error: too many initializer values
+    V e = { 0, 1 };
+               ^
+
+"Test_name.c", line 36: error: expression must have pointer-to-object type but it has type "int"
+    if (f[0] != 0 || f[1] != 1)
+          ^
+
+"Test_name.c", line 36: error: expression must have pointer-to-object type but it has type "int"
+    if (f[0] != 0 || f[1] != 1)
+                       ^
+
+"Test_name.c", line 38: error: too many initializer values
+    W g = { 17LL, -32LL, -123456789123456LL, 654321654321654LL }, h;
+                  ^
+
+"Test_name.c", line 40: error: expression must have pointer-to-object type but it has type "int"
+    if (h[0] != 17LL || h[1] != 32LL
+          ^
+
+"Test_name.c", line 40: error: expression must have pointer-to-object type but it has type "int"
+    if (h[0] != 17LL || h[1] != 32LL
+                          ^
+
+"Test_name.c", line 41: error: expression must have pointer-to-object type but it has type "int"
+        || h[2] != 123456789123456LL || h[3] != 654321654321654LL)
+             ^
+
+"Test_name.c", line 41: error: expression must have pointer-to-object type but it has type "int"
+        || h[2] != 123456789123456LL || h[3] != 654321654321654LL)
+                                          ^
+
+"Test_name.c", line 43: error: too many initializer values
+    W i = { 0, 1, -1, 0 }, j;
+               ^
+
+"Test_name.c", line 45: error: expression must have pointer-to-object type but it has type "int"
+    if (j[0] != 0 || j[1] != 1 || j[2] != 1 || j[3] != 0)
+          ^
+
+"Test_name.c", line 45: error: expression must have pointer-to-object type but it has type "int"
+    if (j[0] != 0 || j[1] != 1 || j[2] != 1 || j[3] != 0)
+                       ^
+
+"Test_name.c", line 45: error: expression must have pointer-to-object type but it has type "int"
+    if (j[0] != 0 || j[1] != 1 || j[2] != 1 || j[3] != 0)
+                                    ^
+
+"Test_name.c", line 45: error: expression must have pointer-to-object type but it has type "int"
+    if (j[0] != 0 || j[1] != 1 || j[2] != 1 || j[3] != 0)
+                                                 ^
+
+19 errors detected in the compilation of "Test_name.c".

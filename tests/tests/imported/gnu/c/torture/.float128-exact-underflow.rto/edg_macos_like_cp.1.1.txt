@@ -1,0 +1,34 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/float128-exact-underflow.c", line 27: error: identifier "__float128" is undefined
+    volatile __float128 a = 0x1p-16382q, b = 0x1p-2q;
+             ^
+
+"./torture/float128-exact-underflow.c", line 27: error: extra text after expected end of number
+    volatile __float128 a = 0x1p-16382q, b = 0x1p-2q;
+                                      ^
+
+"./torture/float128-exact-underflow.c", line 27: warning: floating-point value cannot be represented exactly
+    volatile __float128 a = 0x1p-16382q, b = 0x1p-2q;
+                            ^
+
+"./torture/float128-exact-underflow.c", line 27: error: extra text after expected end of number
+    volatile __float128 a = 0x1p-16382q, b = 0x1p-2q;
+                                                   ^
+
+"./torture/float128-exact-underflow.c", line 28: error: identifier "__float128" is undefined
+    volatile __float128 r;
+             ^
+
+"./torture/float128-exact-underflow.c", line 32: error: extra text after expected end of number
+    if (r != 0x1p-16384q)
+                       ^
+
+"./torture/float128-exact-underflow.c", line 32: warning: floating-point value cannot be represented exactly
+    if (r != 0x1p-16384q)
+             ^
+
+"./torture/float128-exact-underflow.c", line 34: warning: function "feenableexcept" declared implicitly
+    feenableexcept (
+    ^
+
+5 errors detected in the compilation of "Test_name.c".

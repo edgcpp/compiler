@@ -1,0 +1,186 @@
+fe_only -DTEST_NUMBER=6 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --c++ Test_name.c
+"Test_name.c", line 11: error: this declaration has no storage class or type specifier
+  __thread int t1; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 11: error: expected a ";"
+  __thread int t1; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 12: error: this declaration has no storage class or type specifier
+  __thread extern int t2; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 12: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread extern int t2; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 12: error: expected a ";"
+  __thread extern int t2; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 13: error: this declaration has no storage class or type specifier
+  __thread static int t3; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 13: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread static int t3; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 13: error: expected a ";"
+  __thread static int t3; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 19: error: identifier "__private_extern__" is undefined
+  __private_extern__ __thread int t4; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 19: error: variable "__thread" has already been defined (previous definition at line 11)
+  __private_extern__ __thread int t4; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                     ^
+
+"Test_name.c", line 19: error: expected a ";"
+  __private_extern__ __thread int t4; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                              ^
+
+"Test_name.c", line 20: error: this declaration has no storage class or type specifier
+  struct t5 { __thread int x; }; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+              ^
+
+"Test_name.c", line 20: error: expected a ";"
+  struct t5 { __thread int x; }; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                       ^
+
+"Test_name.c", line 28: error: this declaration has no storage class or type specifier
+  __thread int t6(void); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 28: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread int t6(void); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 28: error: expected a ";"
+  __thread int t6(void); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 37: error: expected a ")"
+  int f(__thread int t7) { // expected-error {{' is only allowed on variable declarations}} \
+                 ^
+
+"Test_name.c", line 37: error: expected a ";"
+  int f(__thread int t7) { // expected-error {{' is only allowed on variable declarations}} \
+                         ^
+
+"Test_name.c", line 59: warning: parsing restarts here after previous syntax error
+    __thread register int t13a; // expected-error-re {{cannot combine with previous '{{__thread|_Thread_local|thread_local}}' declaration specifier}} \
+                              ^
+
+"Test_name.c", line 61: warning: use of the "register" storage class specifier is deprecated
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+    ^
+
+"Test_name.c", line 61: error: explicit type is missing ("int" assumed)
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+             ^
+
+"Test_name.c", line 61: error: a global-scope declaration may not have this storage class
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+    ^
+
+"Test_name.c", line 61: error: variable "__thread" has already been defined (previous definition at line 11)
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+             ^
+
+"Test_name.c", line 61: error: expected a ";"
+    register __thread int t13b; // expected-error {{cannot combine with previous 'register' declaration specifier}} \
+                      ^
+
+"Test_name.c", line 63: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 67: error: this declaration has no storage class or type specifier
+  __thread int t15; // expected-note {{previous definition is here}} \
+  ^
+
+"Test_name.c", line 67: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread int t15; // expected-note {{previous definition is here}} \
+  ^
+
+"Test_name.c", line 67: error: expected a ";"
+  __thread int t15; // expected-note {{previous definition is here}} \
+           ^
+
+"Test_name.c", line 71: error: this declaration has no storage class or type specifier
+  __thread int t16; // expected-error {{thread-local declaration of 't16' follows non-thread-local declaration}} \
+  ^
+
+"Test_name.c", line 71: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread int t16; // expected-error {{thread-local declaration of 't16' follows non-thread-local declaration}} \
+  ^
+
+"Test_name.c", line 71: error: expected a ";"
+  __thread int t16; // expected-error {{thread-local declaration of 't16' follows non-thread-local declaration}} \
+           ^
+
+"Test_name.c", line 84: error: this declaration has no storage class or type specifier
+  __thread int thread_int; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 84: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread int thread_int; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 84: error: expected a ";"
+  __thread int thread_int; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 85: error: identifier "thread_int" is undefined
+  int *thread_int_ptr = &thread_int;
+                         ^
+
+"Test_name.c", line 97: error: this declaration has no storage class or type specifier
+  __thread int non_const_init = non_const(); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 97: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread int non_const_init = non_const(); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 97: error: expected a ";"
+  __thread int non_const_init = non_const(); // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 111: error: variable "__thread" is not a type name
+  __thread S s; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 111: error: expected a ";"
+  __thread S s; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+             ^
+
+"Test_name.c", line 124: error: variable "__thread" is not a type name
+  __thread HasCtor var_with_ctor; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 124: error: expected a ";"
+  __thread HasCtor var_with_ctor; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+                   ^
+
+"Test_name.c", line 133: error: this declaration has no storage class or type specifier
+  __thread int aggregate[10] = {0}; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 133: error: variable "__thread" has already been defined (previous definition at line 11)
+  __thread int aggregate[10] = {0}; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+  ^
+
+"Test_name.c", line 133: error: expected a ";"
+  __thread int aggregate[10] = {0}; // thread-local-warning {{'_Thread_local' is a C11 extension}}
+           ^
+
+"Test_name.c", line 93: warning: variable "thread_int_ptr_2" was declared but never referenced
+  constexpr int *thread_int_ptr_2 = &thread_int; // expected-error {{must be initialized by a constant expression}}
+                 ^
+
+43 errors detected in the compilation of "Test_name.c".

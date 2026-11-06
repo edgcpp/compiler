@@ -1,0 +1,255 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: error: expression must have a constant value
+    static int y = sizeof(x);  // expected-error {{not a compile-time constant}}
+                   ^
+
+"Test_name.c", line 8: warning: missing return statement at end of non-void function "test1"
+  }
+  ^
+
+"Test_name.c", line 7: warning: variable "y" was declared but never referenced
+    static int y = sizeof(x);  // expected-error {{not a compile-time constant}}
+               ^
+
+"Test_name.c", line 13: warning: variable "e" was set but never used
+    int e[2][m];
+        ^
+
+"Test_name.c", line 19: error: expression must have a constant value
+  int x = sizeof(struct{char qq[x];}); // expected-error {{fields must have a constant size}}
+                                ^
+"Test_name.c", line 19: note: the value of variable "x" (declared at line 19) cannot be used as a constant
+  int x = sizeof(struct{char qq[x];}); // expected-error {{fields must have a constant size}}
+                                ^
+
+"Test_name.c", line 24: error: a variable length array cannot have static storage duration
+    extern int e1[2][m]; // expected-error {{variable length array declaration cannot have 'extern' linkage}}
+               ^
+
+"Test_name.c", line 32: error: expression must have a constant value
+  int c[][i]; // expected-error {{variably modified type declaration not allowed at file scope}}
+          ^
+"Test_name.c", line 32: note: the value of variable "i" (declared at line 31) cannot be used as a constant
+  int c[][i]; // expected-error {{variably modified type declaration not allowed at file scope}}
+          ^
+
+"Test_name.c", line 33: error: expression must have a constant value
+  int d[i]; // expected-error {{variable length array declaration not allowed at file scope}}
+        ^
+"Test_name.c", line 33: note: the value of variable "i" (declared at line 31) cannot be used as a constant
+  int d[i]; // expected-error {{variable length array declaration not allowed at file scope}}
+        ^
+
+"Test_name.c", line 35: error: expression must have a constant value
+  int (*e)[i]; // expected-error {{variably modified type declaration not allowed at file scope}}
+           ^
+"Test_name.c", line 35: note: the value of variable "i" (declared at line 31) cannot be used as a constant
+  int (*e)[i]; // expected-error {{variably modified type declaration not allowed at file scope}}
+           ^
+
+"Test_name.c", line 39: error: a variable length array cannot have static storage duration
+    static int a[i]; // expected-error {{variable length array declaration cannot have 'static' storage duration}}
+               ^
+
+"Test_name.c", line 40: error: a variable length array cannot have static storage duration
+    extern int b[i]; // expected-error {{variable length array declaration cannot have 'extern' linkage}}
+               ^
+
+"Test_name.c", line 42: error: an entity with linkage cannot have a type involving a variable length array
+    extern int (*c1)[i]; // expected-error {{variably modified type declaration cannot have 'extern' linkage}}
+                 ^
+
+"Test_name.c", line 39: warning: variable "a" was declared but never referenced
+    static int a[i]; // expected-error {{variable length array declaration cannot have 'static' storage duration}}
+               ^
+
+"Test_name.c", line 43: warning: variable "d" was declared but never referenced
+    static int (*d)[i];
+                 ^
+
+"Test_name.c", line 49: error: variable length array with unspecified bound is not allowed
+  int a[*]; // expected-error {{star modifier used outside of function prototype}}
+        ^
+
+"Test_name.c", line 53: error: an entity with linkage cannot have a type involving a variable length array
+  int pr2044(int b) {int (*c(void))[b];**c() = 2;} // expected-error {{variably modified type}}
+                           ^
+
+"Test_name.c", line 53: error: declaration is incompatible with previous "c" (declared at line 32)
+  int pr2044(int b) {int (*c(void))[b];**c() = 2;} // expected-error {{variably modified type}}
+                           ^
+
+"Test_name.c", line 53: warning: missing return statement at end of non-void function "pr2044"
+  int pr2044(int b) {int (*c(void))[b];**c() = 2;} // expected-error {{variably modified type}}
+                                                 ^
+
+"Test_name.c", line 55: error: expression must have a constant value
+  int (*pr2044c(void))[pr2044b]; // expected-error {{variably modified type}}
+                       ^
+"Test_name.c", line 55: note: the value of variable "pr2044b" (declared at line 54) cannot be used as a constant
+  int (*pr2044c(void))[pr2044b]; // expected-error {{variably modified type}}
+                       ^
+
+"Test_name.c", line 58: warning: use of a const variable in a constant expression is nonstandard in C
+  void f5(void) { char a[][f5_ci] = {""}; } // expected-error {{variable-sized object may not be initialized}}
+                           ^
+
+"Test_name.c", line 58: warning: variable "a" was declared but never referenced
+  void f5(void) { char a[][f5_ci] = {""}; } // expected-error {{variable-sized object may not be initialized}}
+                       ^
+
+"Test_name.c", line 62: error: variable length array with unspecified bound is not allowed
+  void pr5185(int a[*]) // expected-error {{variable length array must be bound in function definition}}
+              ^
+
+"Test_name.c", line 66: error: variable length array with unspecified bound is not allowed
+  void pr23151(int (*p1)[*]) // expected-error {{variable length array must be bound in function definition}}
+               ^
+
+"Test_name.c", line 77: error: function call is not allowed in a constant expression
+      implicitly_declared() // expected-error {{call to undeclared function 'implicitly_declared'; ISO C99 and later do not support implicit function declarations}}
+      ^
+
+"Test_name.c", line 75: warning: declaration does not declare anything
+  struct {
+  ^
+
+"Test_name.c", line 80: error: identifier "implicitly_declared" is undefined
+  int (*use_implicitly_declared)(void) = implicitly_declared; // ok, was implicitly declared at file scope
+                                         ^
+
+"Test_name.c", line 87: warning: a value of type "int (*)[2][3][size][4][5]" cannot be used to initialize an entity of type "int (*)[2][3][size][4][6]"
+    int (*p2)[2][3][size][4][6] = array; // expected-error {{incompatible pointer types}}
+                                  ^
+
+"Test_name.c", line 89: warning: a value of type "int (*)[2][3][size][4][5]" cannot be used to initialize an entity of type "int (*)[20][3][size][4][5]"
+    int (*p3)[20][3][size][4][5] = array; // expected-error {{incompatible pointer types}}
+                                   ^
+
+"Test_name.c", line 85: warning: variable "p" was declared but never referenced
+    int (*p)[2][3][size][4][5] = array;
+          ^
+
+"Test_name.c", line 87: warning: variable "p2" was declared but never referenced
+    int (*p2)[2][3][size][4][6] = array; // expected-error {{incompatible pointer types}}
+          ^
+
+"Test_name.c", line 89: warning: variable "p3" was declared but never referenced
+    int (*p3)[20][3][size][4][5] = array; // expected-error {{incompatible pointer types}}
+          ^
+
+"Test_name.c", line 92: warning: variable "p4" was declared but never referenced
+    int (*p4)[2][size][3][4][5] = array;
+          ^
+
+"Test_name.c", line 97: warning: variable "z" was declared but never referenced
+    int z[(int)(1.0 * 2)]; // expected-note {{bypasses initialization of variable length array}}
+        ^
+
+"Test_name.c", line 103: warning: use of a const variable in a constant expression is nonstandard in C
+    char c[pr44406_a]; // expected-warning {{folded to constant array as an extension}}
+           ^
+
+"Test_name.c", line 110: warning: use of a const variable in a constant expression is nonstandard in C
+    char a1[ksize]; // expected-note{{variable length array}}
+            ^
+
+"Test_name.c", line 114: warning: use of a const variable in a constant expression is nonstandard in C
+    char a2[ksize] = "foo"; // expected-warning{{variable length array folded to constant array as an extension}}
+            ^
+
+"Test_name.c", line 114: warning: dynamic initialization in unreachable code
+    char a2[ksize] = "foo"; // expected-warning{{variable length array folded to constant array as an extension}}
+         ^
+
+"Test_name.c", line 113: warning: transfer of control bypasses initialization of:
+            variable "a2" (declared at line 114)
+    goto jump_over_a2;
+    ^
+
+"Test_name.c", line 118: warning: use of a const variable in a constant expression is nonstandard in C
+    char a3[ksize] = {}; // expected-warning {{variable length array folded to constant array as an extension}} expected-warning{{use of an empty initializer is a C23 extension}}
+            ^
+
+"Test_name.c", line 118: warning: dynamic initialization in unreachable code
+    char a3[ksize] = {}; // expected-warning {{variable length array folded to constant array as an extension}} expected-warning{{use of an empty initializer is a C23 extension}}
+         ^
+
+"Test_name.c", line 117: warning: transfer of control bypasses initialization of:
+            variable "a3" (declared at line 118)
+    goto jump_over_a3;
+    ^
+
+"Test_name.c", line 122: warning: use of a const variable in a constant expression is nonstandard in C
+    char a4[ksize][2]; // expected-note{{variable length array}}
+            ^
+
+"Test_name.c", line 125: warning: use of a const variable in a constant expression is nonstandard in C
+    char a5[ksize][2] = {}; // expected-warning {{variable length array folded to constant array as an extension}} expected-warning{{use of an empty initializer is a C23 extension}}
+            ^
+
+"Test_name.c", line 127: warning: use of a const variable in a constant expression is nonstandard in C
+    int a6[ksize] = {1,2,3,4}; // expected-warning{{variable length array folded to constant array as an extension}}
+           ^
+
+"Test_name.c", line 130: warning: use of a const variable in a constant expression is nonstandard in C
+    int a7[ksize] __attribute__((annotate("foo"))) = {1,2,3,4};
+           ^
+
+"Test_name.c", line 133: warning: use of a const variable in a constant expression is nonstandard in C
+    char a8[2][ksize] = {{1,2,3,4},{4,3,2,1}};
+               ^
+
+"Test_name.c", line 136: warning: use of a const variable in a constant expression is nonstandard in C
+    char (*a9)[] = (char[2][ksize]) {{1,2,3,4},{4,3,2,1}};
+                            ^
+
+"Test_name.c", line 138: warning: use of a const variable in a constant expression is nonstandard in C
+    char (*a10)[ksize] = 0;
+                ^
+
+"Test_name.c", line 110: warning: variable "a1" was declared but never referenced
+    char a1[ksize]; // expected-note{{variable length array}}
+         ^
+
+"Test_name.c", line 114: warning: variable "a2" was declared but never referenced
+    char a2[ksize] = "foo"; // expected-warning{{variable length array folded to constant array as an extension}}
+         ^
+
+"Test_name.c", line 118: warning: variable "a3" was declared but never referenced
+    char a3[ksize] = {}; // expected-warning {{variable length array folded to constant array as an extension}} expected-warning{{use of an empty initializer is a C23 extension}}
+         ^
+
+"Test_name.c", line 122: warning: variable "a4" was declared but never referenced
+    char a4[ksize][2]; // expected-note{{variable length array}}
+         ^
+
+"Test_name.c", line 125: warning: variable "a5" was declared but never referenced
+    char a5[ksize][2] = {}; // expected-warning {{variable length array folded to constant array as an extension}} expected-warning{{use of an empty initializer is a C23 extension}}
+         ^
+
+"Test_name.c", line 127: warning: variable "a6" was declared but never referenced
+    int a6[ksize] = {1,2,3,4}; // expected-warning{{variable length array folded to constant array as an extension}}
+        ^
+
+"Test_name.c", line 130: warning: variable "a7" was declared but never referenced
+    int a7[ksize] __attribute__((annotate("foo"))) = {1,2,3,4};
+        ^
+
+"Test_name.c", line 133: warning: variable "a8" was declared but never referenced
+    char a8[2][ksize] = {{1,2,3,4},{4,3,2,1}};
+         ^
+
+"Test_name.c", line 136: warning: variable "a9" was declared but never referenced
+    char (*a9)[] = (char[2][ksize]) {{1,2,3,4},{4,3,2,1}};
+           ^
+
+"Test_name.c", line 138: warning: variable "a10" was declared but never referenced
+    char (*a10)[ksize] = 0;
+           ^
+
+"Test_name.c", line 47: warning: variable "array" was declared but never referenced
+  static const unsigned array[((2 * (int)((((4) / 2) + 1.0/3.0) * (4) - 1e-8)) + 1)]; // expected-warning {{variable length array folded to constant array as an extension}}
+                        ^
+
+17 errors detected in the compilation of "Test_name.c".

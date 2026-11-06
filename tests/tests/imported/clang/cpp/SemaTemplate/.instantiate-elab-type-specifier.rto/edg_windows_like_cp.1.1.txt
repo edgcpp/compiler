@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 13: error: member "Base<T>::foo [with T=int]" is not a type name
+  typedef typename Base< T> ::foo type; 
+                   ^
+          detected during instantiation of class "Derived<T> [with T=int]" at line 16
+
+1 error detected in the compilation of "Test_name.c".

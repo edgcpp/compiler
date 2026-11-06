@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"SemaCXX/builtin-dump-struct.cpp", line 78: error: cannot determine which instance of function template "Format" is intended
+      __builtin_dump_struct(&value, Format, s);
+                                    ^
+
+"SemaCXX/builtin-dump-struct.cpp", line 78: warning: a class type that is not trivially copyable passed through ellipsis
+      __builtin_dump_struct(&value, Format, s);
+                                            ^
+
+"SemaCXX/builtin-dump-struct.cpp", line 165: error: cannot determine which instance of function template "Format" is intended
+    __builtin_dump_struct(&b, Format, 0);
+                              ^
+
+"SemaCXX/builtin-dump-struct.cpp", line 168: error: cannot determine which instance of function template "Format" is intended
+    __builtin_dump_struct((Incomplete *)nullptr, Format, cs);
+                                                 ^
+
+"SemaCXX/builtin-dump-struct.cpp", line 168: warning: a class type that is not trivially copyable passed through ellipsis
+    __builtin_dump_struct((Incomplete *)nullptr, Format, cs);
+                                                         ^
+
+"SemaCXX/builtin-dump-struct.cpp", line 171: error: cannot determine which instance of function template "Format" is intended
+    __builtin_dump_struct((Class<int> *)nullptr, Format, cs);
+                                                 ^
+
+"SemaCXX/builtin-dump-struct.cpp", line 171: warning: a class type that is not trivially copyable passed through ellipsis
+    __builtin_dump_struct((Class<int> *)nullptr, Format, cs);
+                                                         ^
+
+4 errors detected in the compilation of "Test_name.c".

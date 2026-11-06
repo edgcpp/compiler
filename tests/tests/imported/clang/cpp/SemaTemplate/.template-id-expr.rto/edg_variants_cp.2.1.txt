@@ -1,0 +1,190 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 77: error: too few arguments in function call
+      Y0::template f3(); // expected-error {{'f3' following the 'template' keyword does not refer to a template}}
+                      ^
+
+"Test_name.c", line 81: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = Y0::f4<int>(0); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+
+"Test_name.c", line 85: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = this->f4<int>(0); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+
+"Test_name.c", line 86: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = this->template f4(0); // expected-error {{a template argument list is expected after a name prefixed by the template keyword}} expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+
+"Test_name.c", line 154: error: type name is not allowed
+      x = Y1::f4<int>(0); // expected-error {{use 'template'}} expected-error {{assigning to 'int' from incompatible type 'void'}}
+                 ^
+
+"Test_name.c", line 158: error: type name is not allowed
+      x = p->f4<int>(0); // expected-error {{assigning to 'int' from incompatible type 'void'}} expected-error {{use 'template'}}
+                ^
+
+"Test_name.c", line 182: error: explicit instantiation is not allowed in the current scope
+    template class D<C>;  // expected-error {{expected '<' after 'template'}}
+    ^
+
+"Test_name.c", line 183: error: class "D<C>" cannot be specialized in the current scope
+    template<> class D<C>;  // expected-error {{cannot specialize a template template parameter}}
+                     ^
+
+"Test_name.c", line 183: error: typedef "D" may not be used in an elaborated type specifier
+    template<> class D<C>;  // expected-error {{cannot specialize a template template parameter}}
+                     ^
+          detected during instantiation of class "E<D> [with D=D]" at line 190
+
+"Test_name.c", line 184: error: typedef "D" may not be used in an elaborated type specifier
+    friend class D<C>; // expected-error {{alias template 'D' cannot be referenced with the 'class' specifier}}
+                 ^
+          detected during instantiation of class "E<D> [with D=D]" at line 190
+
+"Test_name.c", line 229: error: namespace "non_functions::PR63243::std" has no member "__add_pointer"
+    std::__add_pointer<A>::type ptr;
+         ^
+
+"Test_name.c", line 229: error: type name is not allowed
+    std::__add_pointer<A>::type ptr;
+                       ^
+
+"Test_name.c", line 229: error: the global scope has no "type"
+    std::__add_pointer<A>::type ptr;
+                           ^
+
+"Test_name.c", line 229: error: expected a ";"
+    std::__add_pointer<A>::type ptr;
+                                ^
+
+"Test_name.c", line 235: error: identifier "__add_pointer" is undefined
+    __add_pointer<A>::type ptr2;
+    ^
+
+"Test_name.c", line 235: error: type name is not allowed
+    __add_pointer<A>::type ptr2;
+                  ^
+
+"Test_name.c", line 235: error: the global scope has no "type"
+    __add_pointer<A>::type ptr2;
+                      ^
+
+"Test_name.c", line 235: error: expected a ";"
+    __add_pointer<A>::type ptr2;
+                           ^
+
+"Test_name.c", line 239: warning: missing return statement at end of non-void function "non_functions::PR63243::main"
+  }
+  ^
+
+"Test_name.c", line 255: warning: expression has no effect
+      C<T1>::template Type<2>;
+      ^
+
+"Test_name.c", line 259: error: expected an expression
+      foo(C<T1>::Type<2>); // expected-error {{expected expression}}
+                        ^
+
+"Test_name.c", line 120: warning: name following "template" must be a template
+      Y1::template f3(0); // expected-error {{'f3' following the 'template' keyword does not refer to a template}}
+                   ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 121: warning: name following "template" must be a template
+      Y1::template f3(); // expected-error {{'f3' following the 'template' keyword does not refer to a template}}
+                   ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 121: error: too few arguments in function call
+      Y1::template f3(); // expected-error {{'f3' following the 'template' keyword does not refer to a template}}
+                      ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 125: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = Y1::f4<int>(0); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 126: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = Y1::template f4(0); // expected-error {{a template argument list is expected after a name prefixed by the template keyword}} expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 129: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = this->f4<int>(0); // expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 130: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = this->template f4(0); // expected-error {{a template argument list is expected after a name prefixed by the template keyword}} expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+          detected during instantiation of "void Y1<T>::f<U>() [with T=int, U=int]" at line 134
+
+"Test_name.c", line 149: warning: name following "template" must be a template
+      Y1::template f3(0); // expected-error {{'f3' following the 'template' keyword does not refer to a template}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+                   ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 150: warning: name following "template" must be a template
+      Y1::template f3(); // expected-error {{'f3' following the 'template' keyword does not refer to a template}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+                   ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 150: error: too few arguments in function call
+      Y1::template f3(); // expected-error {{'f3' following the 'template' keyword does not refer to a template}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+                      ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 154: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = Y1::f4<int>(0); // expected-error {{use 'template'}} expected-error {{assigning to 'int' from incompatible type 'void'}}
+        ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 155: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = Y1::template f4(0); // expected-error {{assigning to 'int' from incompatible type 'void'}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+        ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 158: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = p->f4<int>(0); // expected-error {{assigning to 'int' from incompatible type 'void'}} expected-error {{use 'template'}}
+        ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 159: error: a value of type "void" cannot be assigned to an entity of type "int"
+      x = p->template f4(0); // expected-error {{assigning to 'int' from incompatible type 'void'}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+        ^
+          detected during instantiation of "void Y2<T>::f<U>(Y2<T>::Y1 *) [with T=int, U=int]" at line 163
+
+"Test_name.c", line 174: warning: name following "template" must be a template
+    A::template B<I>::template b1(); // expected-error {{'b1' following the 'template' keyword does not refer to a template}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+                               ^
+          detected during instantiation of "void f5<I>() [with I=0]" at line 177
+
+"Test_name.c", line 201: error: member "non_functions::PR88832::O<T>::v [with T=int]" is not a type name
+    template <typename T> using I = typename O<T>::v; // #TypeAlias
+                                             ^
+          detected during:
+            instantiation of type "non_functions::PR88832::P::I<int>" at line 206
+            instantiation of "int non_functions::PR88832::Q::foo<T>() [with T=non_functions::PR88832::P]" at line 213
+
+"Test_name.c", line 206: error: type name is not allowed
+      return T::template I<int>;
+             ^
+          detected during instantiation of "int non_functions::PR88832::Q::foo<T>() [with T=non_functions::PR88832::P]" at line 213
+
+"Test_name.c", line 255: warning: declaration does not declare anything
+      C<T1>::template Type<2>;
+      ^
+          detected during instantiation of "void non_functions::PR48673::A<T1>::foo() [with T1=float]" at line 275
+
+"Test_name.c", line 259: error: type name is not allowed
+      foo(C<T1>::Type<2>); // expected-error {{expected expression}}
+          ^
+          detected during instantiation of "void non_functions::PR48673::A<T1>::foo() [with T1=float]" at line 275
+
+"Test_name.c", line 261: error: type name is not allowed
+      foo(C<T1>::template Type<2>);
+          ^
+          detected during instantiation of "void non_functions::PR48673::A<T1>::foo() [with T1=float]" at line 275
+
+33 errors detected in the compilation of "Test_name.c".

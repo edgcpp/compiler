@@ -1,0 +1,185 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 47: warning: variable "j" was declared but never referenced
+    auto explicit_by_value_unused_decltype = [i] { decltype(i) j = 0; }; // expected-warning{{lambda capture 'i' is not required to be captured for this use}}
+                                                               ^
+
+"Test_name.c", line 65: warning: variable "explicit_by_value_used" was declared but never referenced
+      auto explicit_by_value_used = [i] { return i + 1; };
+           ^
+
+"Test_name.c", line 66: warning: variable "explicit_by_value_unused" was declared but never referenced
+      auto explicit_by_value_unused = [i] {}; // expected-warning{{lambda capture 'i' is not used}}
+           ^
+
+"Test_name.c", line 35: warning: variable "captures_nothing" was declared but never referenced
+    auto captures_nothing = [] {};
+         ^
+
+"Test_name.c", line 37: warning: variable "captures_nothing_by_value" was declared but never referenced
+    auto captures_nothing_by_value = [=] {};
+         ^
+
+"Test_name.c", line 38: warning: variable "captures_nothing_by_reference" was declared but never referenced
+    auto captures_nothing_by_reference = [&] {};
+         ^
+
+"Test_name.c", line 40: warning: variable "implicit_by_value" was declared but never referenced
+    auto implicit_by_value = [=]() mutable { i++; };
+         ^
+
+"Test_name.c", line 41: warning: variable "implicit_by_reference" was declared but never referenced
+    auto implicit_by_reference = [&] { i++; };
+         ^
+
+"Test_name.c", line 43: warning: variable "explicit_by_value_used" was declared but never referenced
+    auto explicit_by_value_used = [i] { return i + 1; };
+         ^
+
+"Test_name.c", line 44: warning: variable "explicit_by_value_used_void" was declared but never referenced
+    auto explicit_by_value_used_void = [i] { (void)i; };
+         ^
+
+"Test_name.c", line 45: warning: variable "explicit_by_value_unused" was declared but never referenced
+    auto explicit_by_value_unused = [i] {}; // expected-warning{{lambda capture 'i' is not used}}
+         ^
+
+"Test_name.c", line 46: warning: variable "explicit_by_value_unused_sizeof" was declared but never referenced
+    auto explicit_by_value_unused_sizeof = [i] { return sizeof(i); }; // expected-warning{{lambda capture 'i' is not required to be captured for this use}}
+         ^
+
+"Test_name.c", line 47: warning: variable "explicit_by_value_unused_decltype" was declared but never referenced
+    auto explicit_by_value_unused_decltype = [i] { decltype(i) j = 0; }; // expected-warning{{lambda capture 'i' is not required to be captured for this use}}
+         ^
+
+"Test_name.c", line 48: warning: variable "explicit_by_value_unused_const" was declared but never referenced
+    auto explicit_by_value_unused_const = [k] { return k + 1; };         // expected-warning{{lambda capture 'k' is not required to be captured for this use}}
+         ^
+
+"Test_name.c", line 50: warning: variable "explicit_by_reference_used" was declared but never referenced
+    auto explicit_by_reference_used = [&i] { i++; };
+         ^
+
+"Test_name.c", line 51: warning: variable "explicit_by_reference_unused" was declared but never referenced
+    auto explicit_by_reference_unused = [&i] {}; // expected-warning{{lambda capture 'i' is not used}}
+         ^
+
+"Test_name.c", line 53: warning: variable "explicit_initialized_reference_used" was declared but never referenced
+    auto explicit_initialized_reference_used = [&j = i] { return j + 1; };
+         ^
+
+"Test_name.c", line 54: warning: variable "explicit_initialized_reference_unused" was declared but never referenced
+    auto explicit_initialized_reference_unused = [&j = i]{}; // expected-warning{{lambda capture 'j' is not used}}
+         ^
+
+"Test_name.c", line 56: warning: variable "explicit_initialized_value_used" was declared but never referenced
+    auto explicit_initialized_value_used = [j = 1] { return j + 1; };
+         ^
+
+"Test_name.c", line 57: warning: variable "explicit_initialized_value_unused" was declared but never referenced
+    auto explicit_initialized_value_unused = [j = 1] {}; // expected-warning{{lambda capture 'j' is not used}}
+         ^
+
+"Test_name.c", line 60: warning: variable "explicit_initialized_value_trivial_init" was declared but never referenced
+    auto explicit_initialized_value_trivial_init = [j = Trivial()]{}; // expected-warning{{lambda capture 'j' is not used}}
+         ^
+
+"Test_name.c", line 64: warning: variable "nested" was declared but never referenced
+    auto nested = [&i] {
+         ^
+
+"Test_name.c", line 70: warning: variable "explicit_by_value_trivial" was declared but never referenced
+    auto explicit_by_value_trivial = [trivial] {}; // expected-warning{{lambda capture 'trivial' is not used}}
+         ^
+
+"Test_name.c", line 73: warning: variable "explicit_by_value_non_trivial_constructor" was declared but never referenced
+    auto explicit_by_value_non_trivial_constructor = [cons] {}; // expected-warning{{lambda capture 'cons' is not used}}
+         ^
+
+"Test_name.c", line 87: warning: variable "explicit_this_used" was declared but never referenced
+      auto explicit_this_used = [this] { return i; };
+           ^
+
+"Test_name.c", line 88: warning: variable "explicit_this_used_void" was declared but never referenced
+      auto explicit_this_used_void = [this] { (void)this; };
+           ^
+
+"Test_name.c", line 89: warning: variable "explicit_this_unused" was declared but never referenced
+      auto explicit_this_unused = [this] {}; // expected-warning{{lambda capture 'this' is not used}}
+           ^
+
+"Test_name.c", line 90: warning: variable "explicit_star_this_used" was declared but never referenced
+      auto explicit_star_this_used = [*this] { return i; };
+           ^
+
+"Test_name.c", line 91: warning: variable "explicit_star_this_used_void" was declared but never referenced
+      auto explicit_star_this_used_void = [*this] { (void)this; };
+           ^
+
+"Test_name.c", line 92: warning: variable "explicit_star_this_unused" was declared but never referenced
+      auto explicit_star_this_unused = [*this] {}; // expected-warning{{lambda capture 'this' is not used}}
+           ^
+
+"Test_name.c", line 99: warning: variable "explicit_this_used" was declared but never referenced
+      auto explicit_this_used = [this] { return i; };
+           ^
+
+"Test_name.c", line 100: warning: variable "explicit_this_used_void" was declared but never referenced
+      auto explicit_this_used_void = [this] { (void)this; };
+           ^
+
+"Test_name.c", line 101: warning: variable "explicit_this_unused" was declared but never referenced
+      auto explicit_this_unused = [this] {}; // expected-warning{{lambda capture 'this' is not used}}
+           ^
+
+"Test_name.c", line 102: warning: variable "explicit_star_this_used" was declared but never referenced
+      auto explicit_star_this_used = [*this] { return i; };
+           ^
+
+"Test_name.c", line 103: warning: variable "explicit_star_this_used_void" was declared but never referenced
+      auto explicit_star_this_used_void = [*this] { (void)this; };
+           ^
+
+"Test_name.c", line 104: warning: variable "explicit_star_this_unused" was declared but never referenced
+      auto explicit_star_this_unused = [*this] {}; // expected-warning{{lambda capture 'this' is not used}}
+           ^
+
+"Test_name.c", line 111: warning: variable "explicit_this_used" was declared but never referenced
+      auto explicit_this_used = [this] { return i; };
+           ^
+
+"Test_name.c", line 112: warning: variable "explicit_this_used_void" was declared but never referenced
+      auto explicit_this_used_void = [this] { (void)this; };
+           ^
+
+"Test_name.c", line 113: warning: variable "explicit_this_unused" was declared but never referenced
+      auto explicit_this_unused = [this] {}; // expected-warning{{lambda capture 'this' is not used}}
+           ^
+
+"Test_name.c", line 123: warning: variable "explicit_this_used" was declared but never referenced
+      auto explicit_this_used = [this] { return i; };
+           ^
+
+"Test_name.c", line 124: warning: variable "explicit_this_used_void" was declared but never referenced
+      auto explicit_this_used_void = [this] { (void)this; };
+           ^
+
+"Test_name.c", line 125: warning: variable "explicit_this_unused" was declared but never referenced
+      auto explicit_this_unused = [this] {}; // expected-warning{{lambda capture 'this' is not used}}
+           ^
+
+"Test_name.c", line 152: warning: variable "j" was declared but never referenced
+    auto explicit_by_value_unused_decltype = [i] { decltype(i) j = 0; }; // expected-warning{{lambda capture 'i' is not used}}
+                                                               ^
+
+"Test_name.c", line 202: warning: variable "c" is used before its value is set
+    auto vla_used = [&c] { return c[0]; };
+                                  ^
+
+"Test_name.c", line 202: warning: variable "vla_used" was declared but never referenced
+    auto vla_used = [&c] { return c[0]; };
+         ^
+
+"Test_name.c", line 203: warning: variable "vla_unused" was declared but never referenced
+    auto vla_unused = [&c] {}; // expected-warning{{lambda capture 'c' is not used}}
+         ^
+

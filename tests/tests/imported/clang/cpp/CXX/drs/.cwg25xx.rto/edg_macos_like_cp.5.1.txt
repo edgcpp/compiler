@@ -1,0 +1,114 @@
+fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 --exceptions --exceptions Test_name.c
+"Test_name.c", line 20: error: incomplete type "cwg2512::A" is not allowed
+    typeid(*p);
+           ^
+
+"Test_name.c", line 32: error: identifier "E2" is undefined
+  enum E2 : S<E2>::I { e };
+              ^
+
+"Test_name.c", line 77: error: static assertion failed
+    static_assert(false);
+    ^
+          detected during instantiation of class "cwg2518::S<Ty> [with Ty=double]" at line 92
+
+"Test_name.c", line 93: warning: missing return statement at end of non-void function "cwg2518::test_specialization"
+  }
+  ^
+
+"Test_name.c", line 90: warning: variable "s1" was declared but never referenced
+    S<int> s1;
+           ^
+
+"Test_name.c", line 91: warning: variable "s2" was declared but never referenced
+    S<float> s2;
+             ^
+
+"Test_name.c", line 92: warning: variable "s3" was declared but never referenced
+    S<double> s3; // #cwg2518-S-double
+              ^
+
+"Test_name.c", line 110: warning: using-declaration ignored -- it refers to the current namespace
+  using ::cwg2521::operator"" _\u03C0___;
+        ^
+
+"Test_name.c", line 112: warning: using-declaration ignored -- it refers to the current namespace
+  using ::cwg2521::operator""_div;
+        ^
+
+"Test_name.c", line 218: warning: unnamed parameter in requires-expression has no effect
+         = bool_constant<requires (T&) { true; }>;
+                                    ^
+
+"Test_name.c", line 230: error: template constraint not satisfied
+    using TPSU = TwoParamsStruct<void, void>;
+                                           ^
+"Test_name.c", line 227: note: substitution of arguments "<void, void>" for requires-clause failed
+      requires TwoParams<T, U> // #cwg2565-TPSREQ
+               ^
+"Test_name.c", line 227: note: concept is false for arguments "<void, void>"
+      requires TwoParams<T, U> // #cwg2565-TPSREQ
+               ^
+"Test_name.c", line 224: note: atomic constraint evaluates to false
+    concept TwoParams = requires (T *a, U b){ true;}; // #cwg2565-TPC
+                        ^
+
+"Test_name.c", line 242: error: template constraint not satisfied
+    using VSU = VariadicStruct<void, int, char, double>;
+                                                      ^
+"Test_name.c", line 239: note: substitution of arguments "<void, int, char, double>" for requires-clause failed
+      requires Variadic<T, U...> // #cwg2565-VSREQ
+               ^
+"Test_name.c", line 239: note: concept is false for arguments "<void, int, char, double>"
+      requires Variadic<T, U...> // #cwg2565-VSREQ
+               ^
+"Test_name.c", line 236: note: atomic constraint evaluates to false
+    concept Variadic = requires (U* ... a, T b){ true;}; // #cwg2565-VC
+                       ^
+
+"Test_name.c", line 248: error: identifier "ErrorRequires" is undefined
+    concept ErrorRequires = requires (ErrorRequires auto x) { // #cwg2565-expr
+                                      ^
+
+"Test_name.c", line 248: error: invalid combination of type specifiers
+    concept ErrorRequires = requires (ErrorRequires auto x) { // #cwg2565-expr
+                                                    ^
+
+"Test_name.c", line 254: error: static assertion failed
+    static_assert(ErrorRequires<int>);
+    ^
+
+"Test_name.c", line 261: error: identifier "NestedErrorInRequires" is undefined
+      requires requires (NestedErrorInRequires auto y) { // #cwg2565-NEIR-inner
+                         ^
+
+"Test_name.c", line 261: error: invalid combination of type specifiers
+      requires requires (NestedErrorInRequires auto y) { // #cwg2565-NEIR-inner
+                                               ^
+
+"Test_name.c", line 268: error: static assertion failed
+    static_assert(NestedErrorInRequires<int>);
+    ^
+
+"Test_name.c", line 299: error: static assertion failed with ""
+  static_assert(__is_layout_compatible(U, V), "");
+  ^
+
+"Test_name.c", line 357: error: static assertion failed with ""
+  static_assert(__is_literal(anonymous3), "");
+  ^
+
+"Test_name.c", line 371: error: static assertion failed with ""
+  static_assert(__is_literal(union2), "");
+  ^
+
+"Test_name.c", line 384: error: static assertion failed with ""
+  static_assert(__is_literal(union6), "");
+  ^
+
+"Test_name.c", line 64: error: static assertion failed with "must be int-sized"
+      static_assert(false, "must be int-sized");
+      ^
+          detected during instantiation of "void cwg2518::f(T) [with T=char]" at line 72
+
+16 errors detected in the compilation of "Test_name.c".

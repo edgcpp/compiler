@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_compatibility --ms_compatibility Test_name.c
+"Test_name.c", line 8: error: vector_size attribute requires an arithmetic or enum type
+    auto P = new int * __attribute__((vector_size(8))); // expected-error {{an attribute list cannot appear here}} \
+                                      ^
+
+"Test_name.c", line 16: error: expected an expression
+  void g(int a[static [[]] 5]); // expected-error {{static array size is a C99 feature, not permitted in C++}}
+               ^
+
+"Test_name.c", line 53: error: no suitable constructor exists to convert from "int" to "Tu<int>"
+    tuTest1(x); // expected-error {{no matching function for call to 'tuTest1'}}
+            ^
+
+"Test_name.c", line 54: error: no suitable constructor exists to convert from "int" to "Tu3"
+    tuTest2(x); // expected-error {{no matching function for call to 'tuTest2'}}
+            ^
+
+"Test_name.c", line 61: error: static assertion failed
+  static_assert(__has_cpp_attribute(gnu::__const__));
+  ^
+
+"Test_name.c", line 62: error: static assertion failed
+  static_assert(__has_cpp_attribute(__gnu__::__const__));
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

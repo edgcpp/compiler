@@ -211,6 +211,15 @@ def _configure_extensive_posture(args: argparse.Namespace) -> TestRunPosture:
       edg_base = 'bases/docker/dev-env/gcc-i686',
     ),
   ]
+  for variant in ['macos-like', 'windows-like', 'variants', 'legacy']:
+    test_variant = variant.replace('-', '_')
+    base_posture.builds.append(TestRunPostureBuild(
+      cmake_preset = f'linux-gcc-{variant}-debug',
+      build_path = f'build/gcc-{variant}',
+      targets = ['all'],
+      test_configs = [f'edg_{test_variant}', f'edg_{test_variant}_cp'],
+      edg_base = edgdocker.DEFAULT_EDG_BASE,
+    ))
   return base_posture
 
 def _load_posture_builds(

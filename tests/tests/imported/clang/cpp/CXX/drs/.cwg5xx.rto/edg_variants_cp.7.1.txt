@@ -1,0 +1,614 @@
+fe_only -DTEST_NUMBER=7 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 --exceptions --exceptions Test_name.c
+"Test_name.c", line 49: error: identifier "f" is undefined
+        void (*p)() = &f;
+                       ^
+
+"Test_name.c", line 62: error: identifier "f" is undefined
+      void sanity() { Q arr[1]; f(arr); }
+                                ^
+
+"Test_name.c", line 71: warning: unrecognized character escape sequence
+    const char *exts = "\e\(\{\[\%";
+                          ^
+
+"Test_name.c", line 71: warning: unrecognized character escape sequence
+    const char *exts = "\e\(\{\[\%";
+                            ^
+
+"Test_name.c", line 71: warning: unrecognized character escape sequence
+    const char *exts = "\e\(\{\[\%";
+                              ^
+
+"Test_name.c", line 71: warning: unrecognized character escape sequence
+    const char *exts = "\e\(\{\[\%";
+                                ^
+
+"Test_name.c", line 77: warning: unrecognized character escape sequence
+    const char *unknown = "\Q";
+                           ^
+
+"Test_name.c", line 84: warning: a class type that is not trivially copyable passed through ellipsis
+    void g(NonPod np) { f(np); }
+                          ^
+
+"Test_name.c", line 124: warning: variable "k" was declared but never referenced
+    struct B { void f() { int k = sizeof(A::a); } };
+                              ^
+
+"Test_name.c", line 143: warning: this partial specialization would have been used to instantiate class "cwg517::S<int *>"
+    template<typename T> struct S<T*> {};
+                                ^
+
+"Test_name.c", line 147: warning: this partial specialization would have been used to instantiate class "cwg517::S<char &>"
+    template<typename T> struct S<T&> {};
+                                ^
+
+"Test_name.c", line 187: error: no instance of function template "cwg522::b2a" matches the argument list
+            argument types are: (int *cwg522::S::*[3])
+      b2a(am);
+      ^
+"Test_name.c", line 169: note: function template "cwg522::b2a" does not match because argument #1 does not match parameter
+    template<typename T> void b2a(volatile T *S::* const *); // #cwg522-b2a
+                              ^
+
+"Test_name.c", line 220: error: a class or namespace qualified name is required
+      template <class T> struct D { typename T::error e; };
+                                             ^
+          detected during instantiation of class "cwg525::after::D<T> [with T=double]" at line 224
+
+"Test_name.c", line 220: error: global-scope qualifier (leading "::") is not allowed
+      template <class T> struct D { typename T::error e; };
+                                              ^
+          detected during instantiation of class "cwg525::after::D<T> [with T=double]" at line 224
+
+"Test_name.c", line 220: error: expected a ";"
+      template <class T> struct D { typename T::error e; };
+                                                      ^
+          detected during instantiation of class "cwg525::after::D<T> [with T=double]" at line 224
+
+"Test_name.c", line 243: error: no instance of function template "cwg526::f3" matches the argument list
+            argument types are: (cwg526::S<3>)
+      f3(s);
+      ^
+"Test_name.c", line 233: note: candidate function template "cwg526::f3" failed deduction
+    template<int N> void f3(S<+N> s); // #cwg526-f3
+                         ^
+
+"Test_name.c", line 250: error: no instance of function template "cwg526::g3" matches the argument list
+            argument types are: (int [3])
+      g3(a);
+      ^
+"Test_name.c", line 236: note: candidate function template "cwg526::g3" failed deduction
+    template<int N> void g3(int (&)[+N]); // #cwg526-g3
+                         ^
+
+"Test_name.c", line 285: error: incomplete type "cwg528::S" is not allowed
+    typeid(S);
+           ^
+
+"Test_name.c", line 321: warning: variable "b" was declared but never referenced
+        A<int>::B b;
+                  ^
+
+"Test_name.c", line 322: warning: variable "c" was declared but never referenced
+        A<int>::C<int> c;
+                       ^
+
+"Test_name.c", line 350: error: specializing function "cwg531::bad::A<T>::f [with T=int]" requires "template<>" syntax
+      void A<int>::f(int) {}
+                   ^
+
+"Test_name.c", line 352: error: declaration is incompatible with function template "void cwg531::bad::A<T>::g(int, U) [with T=int]" (declared at line 343)
+      template<typename U> void A<int>::g(int, U) {}
+                                        ^
+
+"Test_name.c", line 354: error: specializing class "cwg531::bad::A<T>::B [with T=int]" requires "template<>" syntax
+      struct A<int>::B {};
+             ^
+
+"Test_name.c", line 356: error: template nesting depth does not match the previous declaration of class template "cwg531::bad::A<T>::C [with T=int]"
+      template<typename U> struct A<int>::C {};
+                                            ^
+
+"Test_name.c", line 360: error: specializing member "cwg531::bad::A<T>::n [with T=int]" requires "template<>" syntax
+      int A<int>::n = 0;
+                  ^
+
+"Test_name.c", line 371: error: "void cwg531::bad::A<char>::f(char)" is not an entity that can be explicitly specialized
+      template<> void A<char>::f(char) {}
+                               ^
+
+"Test_name.c", line 373: error: declaration is incompatible with function template "void cwg531::bad::A<char>::g(char, U)" (declared at line 365)
+      template<> template<typename U> void A<char>::g(char, U) {}
+                                                    ^
+
+"Test_name.c", line 376: error: class "cwg531::bad::A<char>::B" is not an entity that can be explicitly specialized
+      template<> struct A<char>::B {};
+                 ^
+
+"Test_name.c", line 380: error: template nesting depth does not match the previous declaration of class template "cwg531::bad::A<char>::C"
+      template<> template<typename U> struct A<char>::C {};
+                                                        ^
+
+"Test_name.c", line 383: error: "char cwg531::bad::A<char>::n" is not an entity that can be explicitly specialized
+      template<> char A<char>::n = 0;
+                               ^
+
+"Test_name.c", line 398: error: template argument list must match the parameter list
+      template<typename U> void A<int>::B<U>::g() {}
+                                ^
+
+"Test_name.c", line 402: error: template argument list must match the parameter list
+      template<typename U> template<typename V> void A<int>::B<U>::i() {}
+                                                     ^
+
+"Test_name.c", line 482: error: explicit type is missing ("int" assumed)
+      const a) {
+            ^
+
+"Test_name.c", line 480: warning: type qualifier on return type is meaningless
+  const f(
+  ^
+
+"Test_name.c", line 480: error: explicit type is missing ("int" assumed)
+  const f(
+        ^
+
+"Test_name.c", line 484: error: explicit type is missing ("int" assumed)
+    const b;
+          ^
+
+"Test_name.c", line 484: error: const variable "b" requires an initializer
+    const b;
+           ^
+
+"Test_name.c", line 486: error: explicit type is missing ("int" assumed)
+    new const;
+        ^
+
+"Test_name.c", line 486: error: const object requires an initializer
+    new const;
+        ^
+
+"Test_name.c", line 488: error: explicit type is missing ("int" assumed)
+    try {} catch (const n) {}
+                        ^
+
+"Test_name.c", line 490: error: explicit type is missing ("int" assumed)
+    try {} catch (const) {}
+                       ^
+
+"Test_name.c", line 492: error: explicit type is missing ("int" assumed)
+    if (const n = 0) {}
+              ^
+
+"Test_name.c", line 494: error: explicit type is missing ("int" assumed)
+    switch (const n = 0) {}
+                  ^
+
+"Test_name.c", line 496: error: explicit type is missing ("int" assumed)
+    while (const n = 0) {}
+                 ^
+
+"Test_name.c", line 498: error: explicit type is missing ("int" assumed)
+    for (const n = 0;
+               ^
+
+"Test_name.c", line 500: error: explicit type is missing ("int" assumed)
+         const m = 0; ) {}
+               ^
+
+"Test_name.c", line 498: warning: variable "n" was declared but never referenced
+    for (const n = 0;
+               ^
+
+"Test_name.c", line 502: error: explicit type is missing ("int" assumed)
+    sizeof(const);
+           ^
+
+"Test_name.c", line 502: warning: expression has no effect
+    sizeof(const);
+    ^
+
+"Test_name.c", line 505: error: explicit type is missing ("int" assumed)
+      const n;
+            ^
+
+"Test_name.c", line 507: error: explicit type is missing ("int" assumed)
+      operator const();
+               ^
+
+"Test_name.c", line 507: warning: type qualifier on return type is meaningless
+      operator const();
+               ^
+
+"Test_name.c", line 519: error: explicit type is missing ("int" assumed)
+    (void) [](const) {};
+                   ^
+
+"Test_name.c", line 521: error: explicit type is missing ("int" assumed)
+    (void) [](const n) {};
+                    ^
+
+"Test_name.c", line 523: error: explicit type is missing ("int" assumed)
+    enum E : const {};
+             ^
+
+"Test_name.c", line 525: error: explicit type is missing ("int" assumed)
+    using T = const;
+              ^
+
+"Test_name.c", line 527: error: explicit type is missing ("int" assumed)
+    auto f() -> const;
+                ^
+
+"Test_name.c", line 530: warning: missing return statement at end of non-void function "cwg539::f"
+  }
+  ^
+
+"Test_name.c", line 484: warning: variable "b" was declared but never referenced
+    const b;
+          ^
+
+"Test_name.c", line 535: warning: type qualifiers are ignored (underlying type is a reference)
+    typedef const a &a;
+            ^
+
+"Test_name.c", line 539: warning: type qualifiers are ignored (underlying type is a reference)
+    typedef const a &c; // #cwg540-typedef-a-c
+            ^
+
+"Test_name.c", line 541: warning: type qualifiers are ignored (underlying type is a reference)
+    typedef const b &c; // #cwg540-typedef-b-c
+            ^
+
+"Test_name.c", line 541: error: invalid redeclaration of type name "cwg540::c" (declared at line 539)
+    typedef const b &c; // #cwg540-typedef-b-c
+                     ^
+
+"Test_name.c", line 561: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof(<expression>)]" as a type in a dependent context
+        X<sizeof(f(0))>::type a;
+        ^
+
+"Test_name.c", line 564: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof(<expression>)]" as a type in a dependent context
+        X<sizeof(g(0))>::type b;
+        ^
+
+"Test_name.c", line 567: error: use the "typename" keyword to treat nontype "cwg541::X<<unnamed>>::type [with <unnamed>=sizeof(<expression>)]" as a type in a dependent context
+        X<sizeof(h(0))>::type b;
+        ^
+
+"Test_name.c", line 567: error: "b" has already been declared in the current scope
+        X<sizeof(h(0))>::type b;
+                              ^
+
+"Test_name.c", line 571: error: "a" has already been declared in the current scope
+        typename X<sizeof(f(0))>::type a;
+                                       ^
+
+"Test_name.c", line 572: error: "b" has already been declared in the current scope
+        typename X<sizeof(h(0))>::type b;
+                                       ^
+
+"Test_name.c", line 583: error: the default constructor of "cwg542::A" cannot be referenced -- it is a deleted function
+    A a[32] = {}; // #cwg542-a
+               ^
+
+"Test_name.c", line 593: error: "cwg542::B::B()" (declared at line 591) is inaccessible
+    B b[32] = {}; // ok, constructor not called
+               ^
+
+"Test_name.c", line 610: error: the default constructor of "cwg543::A" cannot be referenced -- it is a deleted function
+    A a = A();
+          ^
+
+"Test_name.c", line 651: warning: "inline" is not allowed
+    template inline void f<int>();
+             ^
+
+"Test_name.c", line 655: warning: "inline" is not allowed
+    template inline void g<int>();
+             ^
+
+"Test_name.c", line 661: warning: "inline" is not allowed
+    template inline void X<int>::f();
+             ^
+
+"Test_name.c", line 680: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, cwg553_class)
+    void *p = new (c) int;
+              ^
+"Test_name.c", line 26: note: function "operator new(size_t, std::align_val_t)" does not match because argument #2 does not match parameter
+  void *operator new(size_t, std::align_val_t); // #cwg5xx-global-operator-new-aligned
+        ^
+"Test_name.c", line 20: note: number of parameters of function "operator new(size_t)" does not match the call
+  void *operator new(size_t); // #cwg5xx-global-operator-new
+        ^
+
+"Test_name.c", line 686: error: allocation operator may not be declared in a namespace
+      friend void *operator new(size_t, namespace_scope);
+                   ^
+
+"Test_name.c", line 752: warning: "void f(cwg557::S<T> *)" declares a non-template function -- add <> to refer to a template instance
+      friend void f(S<T> *);
+                  ^
+
+"Test_name.c", line 753: warning: "void g(cwg557::S<cwg557::S<T>> *)" declares a non-template function -- add <> to refer to a template instance
+      friend void g(S<S<T> > *);
+                  ^
+
+"Test_name.c", line 764: warning: a universal character name cannot designate a surrogate code point
+    wchar_t c = L'\uD800';
+                  ^
+
+"Test_name.c", line 767: warning: a universal character name cannot designate a surrogate code point
+    wchar_t e = L'\uDFFF';
+                  ^
+
+"Test_name.c", line 873: warning: transfer of control bypasses initialization of:
+            variable "t" (declared at line 876)
+      goto x;
+      ^
+
+"Test_name.c", line 876: warning: variable "t" was declared but never referenced
+      trivial t; // #cwg568-t
+              ^
+
+"Test_name.c", line 891: error: variable "cwg570::r" has already been defined (previous definition at line 890)
+    int &r = n;
+         ^
+
+"Test_name.c", line 910: warning: expression must be a pointer to a complete object type
+    void f() { delete a; }
+                      ^
+
+"Test_name.c", line 913: error: expression must be a pointer to a complete object type
+    int n = d - a;
+            ^
+
+"Test_name.c", line 936: error: no operator "=" matches these operands
+            operand types are: cwg574::C = cwg574::C
+      C() = c;
+          ^
+
+"Test_name.c", line 939: error: no operator "=" matches these operands
+            operand types are: cwg574::D = cwg574::D
+      d = d;
+        ^
+
+"Test_name.c", line 946: error: declaration is incompatible with "cwg574::A &cwg574::A::operator=(const cwg574::A &) const" (declared at line 922)
+      friend A &A::operator=(const A&);
+                   ^
+
+"Test_name.c", line 949: error: declaration is incompatible with "cwg574::B &cwg574::B::operator=(const cwg574::B &) volatile" (declared at line 925)
+      friend B &B::operator=(const B&);
+                   ^
+
+"Test_name.c", line 953: error: declaration is incompatible with "cwg574::C &cwg574::C::operator=(const cwg574::C &) &" (declared at line 929)
+      friend C &C::operator=(const C&);
+                   ^
+
+"Test_name.c", line 956: error: declaration is incompatible with "cwg574::D &cwg574::D::operator=(const cwg574::D &) &&" (declared at line 932)
+      friend D &D::operator=(const D&);
+                   ^
+
+"Test_name.c", line 982: error: name followed by "::" must be a class or namespace name
+    template<typename T> void d(T, int = T::value); void d(...);
+                                         ^
+          detected during instantiation of "void cwg575::d(T, int) [with T=int]" at line 989
+
+"Test_name.c", line 1004: error: expected a ";"
+    typedef void f() {}
+                     ^
+
+"Test_name.c", line 1008: error: "f" has already been declared in the current scope
+    void f(char c) { typedef int n; }
+         ^
+
+"Test_name.c", line 1015: error: declaring a void parameter list with a qualified void type is nonstandard
+    void b(const void);
+           ^
+
+"Test_name.c", line 1018: error: declaring a void parameter list with a qualified void type is nonstandard
+    void d(CV);
+           ^
+
+"Test_name.c", line 1021: error: declaring a void parameter list with a qualified void type is nonstandard
+    void (*f)(const void);
+              ^
+
+"Test_name.c", line 1024: error: declaring a void parameter list with a qualified void type is nonstandard
+    void (*h)(CV);
+              ^
+
+"Test_name.c", line 1031: error: no instance of function template "cwg577::i" matches the argument list
+      i<void>();
+      ^
+"Test_name.c", line 1026: note: number of parameters of function template "cwg577::i" does not match the call
+    template<typename T> void i(T); // #cwg577-i
+                              ^
+
+"Test_name.c", line 1034: error: no instance of function template "cwg577::i" matches the argument list
+      i<const void>();
+      ^
+"Test_name.c", line 1026: note: number of parameters of function template "cwg577::i" does not match the call
+    template<typename T> void i(T); // #cwg577-i
+                              ^
+
+"Test_name.c", line 1037: error: no instance of function template "cwg577::j" matches the argument list
+            argument types are: (int)
+      j<void>(0);
+      ^
+"Test_name.c", line 1027: note: substituting explicit template arguments "<void>" for function template "cwg577::j" failed
+    template<typename T> void j(void (*)(T)); // #cwg577-j
+                              ^
+
+"Test_name.c", line 1040: error: no instance of function template "cwg577::j" matches the argument list
+            argument types are: (int)
+      j<const void>(0);
+      ^
+"Test_name.c", line 1027: note: substituting explicit template arguments "<const void>" for function template "cwg577::j" failed
+    template<typename T> void j(void (*)(T)); // #cwg577-j
+                              ^
+
+"Test_name.c", line 1062: error: type "cwg580::C::I" (declared at line 1054) is inaccessible
+    template<C::I> struct C::X {};
+                ^
+
+"Test_name.c", line 1063: error: type "cwg580::C::I" (declared at line 1054) is inaccessible
+    template<C::I> struct Y {};
+                ^
+
+"Test_name.c", line 1064: error: type "cwg580::C::I" (declared at line 1054) is inaccessible
+    template<C::I> struct Z {};
+                ^
+
+"Test_name.c", line 1078: error: type "cwg580::C2::X::I" (declared at line 1071) is inaccessible
+        template<X::I> struct A {};
+                    ^
+
+"Test_name.c", line 1089: error: "cwg580::C::C()" (declared at line 1051) is inaccessible
+    C B::c; // #cwg580-c
+         ^
+
+"Test_name.c", line 1089: error: "cwg580::C::~C() noexcept" (declared at line 1052) is inaccessible
+    C B::c; // #cwg580-c
+         ^
+
+"Test_name.c", line 1116: error: argument list for class template "cwg585::T" is missing
+      friend T;
+             ^
+
+"Test_name.c", line 1123: error: expected an identifier
+      template<typename U> friend T<U>;
+                                      ^
+
+"Test_name.c", line 1123: error: invalid friend declaration
+      template<typename U> friend T<U>;
+                                      ^
+
+"Test_name.c", line 1127: error: argument list for template template parameter "T" is missing
+      friend T;
+             ^
+
+"Test_name.c", line 1132: error: expected an identifier
+      template<typename U> friend T<U>;
+                                      ^
+
+"Test_name.c", line 1132: error: invalid friend declaration
+      template<typename U> friend T<U>;
+                                      ^
+
+"Test_name.c", line 1158: warning: missing return statement at end of non-void function "cwg588::f<T>()"
+    }
+    ^
+
+"Test_name.c", line 1153: warning: variable "b" was declared but never referenced
+      int b = s.n;
+          ^
+
+"Test_name.c", line 1169: warning: taking the address of a temporary
+    const B *p = &(a ? f() : b);
+                 ^
+
+"Test_name.c", line 1171: warning: taking the address of a temporary
+    const B *q = &(a ? D() : b);
+                 ^
+
+"Test_name.c", line 1183: warning: missing return statement at end of non-void function "cwg590::A<T>::B::C::f"
+    template<typename T> typename A<T>::B::C A<T>::B::C::f(A<T>::B::C) {}
+                                                                        ^
+
+"Test_name.c", line 1223: error: incomplete type "cwg591::A<T>::B::M" (aka "void") is not allowed
+      M m;
+        ^
+
+"Test_name.c", line 1227: error: incomplete type "cwg591::G<T>::B::C::M" (aka "void") is not allowed
+      M m;
+        ^
+
+"Test_name.c", line 1234: error: incomplete type "cwg591::H<T>::B<U>::C<F>::M" (aka "void") is not allowed
+      M m;
+        ^
+
+"Test_name.c", line 1238: warning: missing return statement at end of non-void function "cwg591::M<<unnamed>, <unnamed>>::P::foo"
+      int foo() { (void) M; }
+                            ^
+
+"Test_name.c", line 1242: error: incomplete type "cwg591::A<T>::B::M" (aka "void") is not allowed
+      M m;
+        ^
+
+"Test_name.c", line 1250: error: incomplete type "cwg591::H<T>::B<U>::C<F>::M" (aka "void") is not allowed
+      M m;
+        ^
+
+"Test_name.c", line 1261: error: dynamic exception specifications are not permitted in this mode
+      void f() throw(T) {}
+               ^
+
+"Test_name.c", line 1289: error: identifier "h" is undefined
+    int &s = h(N::f);
+             ^
+
+"Test_name.c", line 1301: warning: expression must be a pointer to a complete object type
+      delete p;
+             ^
+
+"Test_name.c", line 1304: error: a pointer to function may not be deleted
+      delete q;
+             ^
+
+"Test_name.c", line 1306: error: expression must be a pointer to a complete object type
+      delete s;
+             ^
+
+"Test_name.c", line 1309: error: expression must be a pointer to a complete object type
+      delete t;
+             ^
+
+"Test_name.c", line 196: error: identifier "operator+" is undefined
+    template<typename T> void f(T a, T b) { operator+(a, b); }
+                                            ^
+          detected during instantiation of "void cwg524::f(T, T) [with T=cwg524::N::S]" at line 207
+
+"Test_name.c", line 627: error: name followed by "::" must be a class or namespace name
+    template<typename T> void A<T>::f() { T::error; }
+                                          ^
+          detected during instantiation of "void cwg546::A<T>::f() [with T=int]" at line 626
+
+"Test_name.c", line 1151: error: "S::n" is ambiguous
+      struct S : A, T { int f() { return n; } } s;
+                                         ^
+          detected during instantiation of "int cwg588::f<T>() [with T=cwg588::B]" at line 1160
+
+"Test_name.c", line 1153: error: "S::n" is ambiguous
+      int b = s.n;
+                ^
+          detected during instantiation of "int cwg588::f<T>() [with T=cwg588::B]" at line 1160
+
+"Test_name.c", line 269: error: variable "cwg527::a", declared using a type with no linkage, must be defined in this translation unit
+    extern struct { int x; } a; // FIXME: We should reject this, per cwg389.
+                             ^
+
+"Test_name.c", line 274: error: member "cwg527::E::e", declared using a type with no linkage, must be defined in this translation unit
+    struct E { static P e; }; // FIXME: We should reject this, per cwg389.
+                        ^
+
+"Test_name.c", line 272: warning: variable "cwg527::<unnamed>::d" was referenced but not defined
+    namespace { extern struct { int x; } d; }
+                                         ^
+
+"Test_name.c", line 275: warning: member "cwg527::<unnamed>::F::f" was referenced but not defined
+    namespace { struct F { static P f; }; }
+                                    ^
+
+"Test_name.c", line 471: warning: variable "cwg535::x" was declared but never referenced
+    constexpr C x = c();
+                ^
+
+"Test_name.c", line 799: warning: function "cwg561::<unnamed>::f<T>(cwg561::<unnamed>::S) [with T=cwg561::<unnamed>::S]" was referenced but not defined
+      template<typename T> static void f(S);
+                                       ^
+
+101 errors detected in the compilation of "Test_name.c".

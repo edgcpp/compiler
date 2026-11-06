@@ -1,0 +1,72 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 9: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2
+             ^
+"Test_name.c", line 9: note: the final comparison was 1 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2
+                             ^
+          detected during:
+            instantiation of "default_member_init::B<I>::~B() [with I=1]" at line 17
+            implicit generation of "default_member_init::C1::~C1()" at line 17
+
+"Test_name.c", line 9: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2
+             ^
+"Test_name.c", line 9: note: the final comparison was 2 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2
+                             ^
+          detected during:
+            instantiation of "default_member_init::B<I>::~B() [with I=2]" at line 24
+            implicit generation of "default_member_init::C2::~C2()" at line 24
+
+"Test_name.c", line 34: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+             ^
+"Test_name.c", line 34: note: the final comparison was 1 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+                             ^
+          detected during:
+            instantiation of "member_ctor::B<I>::~B() [with I=1]" at line 42
+            implicit generation of "member_ctor::C1::~C1()" at line 42
+
+"Test_name.c", line 34: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+             ^
+"Test_name.c", line 34: note: the final comparison was 2 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+                             ^
+          detected during:
+            instantiation of "member_ctor::B<I>::~B() [with I=2]" at line 49
+            implicit generation of "member_ctor::C2::~C2()" at line 49
+
+"Test_name.c", line 34: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+             ^
+"Test_name.c", line 34: note: the final comparison was 3 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+                             ^
+          detected during:
+            instantiation of "member_ctor::B<I>::~B() [with I=3]" at line 56
+            implicit generation of "member_ctor::C3::~C3()" at line 56
+
+"Test_name.c", line 34: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+             ^
+"Test_name.c", line 34: note: the final comparison was 4 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+                             ^
+          detected during:
+            instantiation of "member_ctor::B<I>::~B() [with I=4]" at line 63
+            implicit generation of "member_ctor::C4::~C4()" at line 63
+
+"Test_name.c", line 34: error: static assertion failed
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+             ^
+"Test_name.c", line 34: note: the final comparison was 5 == -1
+      ~B() { static_assert(I == -1); } // error for I=1,2,3,4,5
+                             ^
+          detected during:
+            instantiation of "member_ctor::B<I>::~B() [with I=5]" at line 70
+            implicit generation of "member_ctor::C5::~C5()" at line 70
+
+7 errors detected in the compilation of "Test_name.c".

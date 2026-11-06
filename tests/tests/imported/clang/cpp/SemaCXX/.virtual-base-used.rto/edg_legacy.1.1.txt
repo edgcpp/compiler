@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 148: error: "NoDestroy::~NoDestroy()" (declared at line 14) is inaccessible
+  struct H : public virtual A {
+         ^
+          detected during implicit generation of "H::~H()" 
+
+"Test_name.c", line 82: error: "NoDestroy::~NoDestroy()" (declared at line 14) is inaccessible
+  struct E : public virtual A {
+         ^
+          detected during:
+            implicit generation of "E::~E()" 
+            implicit generation of "F::~F()" 
+
+"Test_name.c", line 29: error: "NoDestroy::~NoDestroy()" (declared at line 14) is inaccessible
+  struct B : public virtual A {
+         ^
+          detected during implicit generation of "B::~B()" 
+
+3 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,21 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef int V __attribute__((vector_size (sizeof (int) * 4)));
+                               ^
+
+"Test_name.c", line 10: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+"Test_name.c", line 13: warning: excess initializers are ignored
+    V v = { 1, 2, 3, 4 };
+               ^
+
+"Test_name.c", line 15: warning: excess initializers are ignored
+    v += (V) { 5, 6, 7, 8 };
+                  ^
+
+"Test_name.c", line 19: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+

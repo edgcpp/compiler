@@ -1,0 +1,33 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --strict Test_name.c
+"Test_name.c", line 6: remark: function "A::A()" cannot be inlined
+    A() { printf("A::A()\n"); }
+    ^
+
+"Test_name.c", line 7: remark: function "A::A(const A &)" cannot be inlined
+    A(const A&) { printf("A::A(const A&)\n"); }
+    ^
+
+"Test_name.c", line 11: remark: function "B::B(int)" cannot be inlined
+    B(int) { printf("B::B(int)\n"); }
+    ^
+
+"Test_name.c", line 12: remark: function "B::B()" cannot be inlined
+    B() { printf("B::B()\n"); }
+    ^
+
+"Test_name.c", line 16: remark: destructor for base class "A" (declared at line 5) is not virtual
+  struct C : public A, public B {
+                    ^
+
+"Test_name.c", line 16: remark: destructor for base class "B" (declared at line 10) is not virtual
+  struct C : public A, public B {
+                              ^
+
+"Test_name.c", line 18: remark: function "C::C()" cannot be inlined
+    C() : aa(B(1)) // Creates a temporary that must be destroyed
+    ^
+
+"Test_name.c", line 20: remark: function "C::~C" cannot be inlined
+    ~C() { A a1; A a2; printf("C::~C\n"); }
+    ^
+

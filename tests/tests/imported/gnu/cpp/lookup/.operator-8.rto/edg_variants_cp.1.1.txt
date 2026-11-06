@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"./lookup/operator-8.C", line 20: warning: ignoring return value from routine declared with "nodiscard" attribute
+    (void)(a < 0, 0 < a);
+             ^
+
+"./lookup/operator-8.C", line 21: warning: ignoring return value from routine declared with "nodiscard" attribute
+    (void)(a <= 0, 0 <= a);
+             ^
+
+"./lookup/operator-8.C", line 22: warning: ignoring return value from routine declared with "nodiscard" attribute
+    (void)(a > 0, 0 > a);
+             ^
+
+"./lookup/operator-8.C", line 23: warning: ignoring return value from routine declared with "nodiscard" attribute
+    (void)(a >= 0, 0 >= a);
+             ^
+
+"./lookup/operator-8.C", line 19: error: function "operator!=(A, int)" (declared at line 28) cannot be referenced -- it is a deleted function
+    ( void ) ( a != 0, 0 != a );
+                 ^
+
+"./lookup/operator-8.C", line 20: error: function "operator<(A, int)" (declared at line 29) cannot be referenced -- it is a deleted function
+    ( void ) ( a < 0, 0 < a );
+                 ^
+
+"./lookup/operator-8.C", line 21: error: function "operator<=(A, int)" (declared at line 30) cannot be referenced -- it is a deleted function
+    ( void ) ( a <= 0, 0 <= a );
+                 ^
+
+"./lookup/operator-8.C", line 22: error: function "operator>(A, int)" (declared at line 31) cannot be referenced -- it is a deleted function
+    ( void ) ( a > 0, 0 > a );
+                 ^
+
+"./lookup/operator-8.C", line 23: error: function "operator>=(A, int)" (declared at line 32) cannot be referenced -- it is a deleted function
+    ( void ) ( a >= 0, 0 >= a );
+                 ^
+
+5 errors detected in the compilation of "Test_name.c".

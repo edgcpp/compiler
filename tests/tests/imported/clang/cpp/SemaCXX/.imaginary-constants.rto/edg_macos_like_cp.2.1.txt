@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 -DCXX14=1 Test_name.c
+"Test_name.c", line 12: error: _Complex can only be used with floating-point types
+  _Complex int val1 = 2i;
+  ^
+
+"Test_name.c", line 12: error: complex integral types are not supported
+  _Complex int val1 = 2i;
+                       ^
+
+"Test_name.c", line 13: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+  _Complex long val2 = 2il;
+  ^
+
+"Test_name.c", line 13: warning: a user-provided literal suffix must begin with "_"
+  _Complex long val2 = 2il;
+                       ^
+
+"Test_name.c", line 13: error: complex integral types are not supported
+  _Complex long val2 = 2il;
+                        ^
+
+"Test_name.c", line 14: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+  _Complex long long val3 = 2ill;
+  ^
+
+"Test_name.c", line 14: warning: a user-provided literal suffix must begin with "_"
+  _Complex long long val3 = 2ill;
+                            ^
+
+"Test_name.c", line 14: error: complex integral types are not supported
+  _Complex long long val3 = 2ill;
+                             ^
+
+6 errors detected in the compilation of "Test_name.c".

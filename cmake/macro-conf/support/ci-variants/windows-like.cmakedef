@@ -1,0 +1,50 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+# CI-only (linux-gcc-windows-like): the ABI and feature choices of the
+# windows-msvc configuration on a Linux build, plus production code-generation
+# settings, for code coverage.  GNU extensions and the Linux target
+# configurations are kept, so tests still compile, link, and run.
+# --- non-IA-64 ABI
+IA64_ABI=0
+TIE_DEFAULT_GNU_ABI_VERSION_TO_GNU_VERSION=0
+HANDLE_VIRTUAL_BASES_IN_COMPLETE_CTOR_DTORS=0
+# The linux_i686 target configuration only has the IA-64 ABI macros; add the
+# non-IA-64 ones (values from src/defines_linux.h).
+TARG_ALIGNOF_PTR_TO_VIRTUAL_BASE_CLASS_linux_i686=4
+TARG_SIZEOF_PTR_TO_VIRTUAL_BASE_CLASS_linux_i686=4
+TARG_RUNTIME_ELEM_COUNT_INT_KIND_linux_i686=((an_integer_kind)ik_int)
+TARG_DELTA_INT_KIND_linux_i686=((an_integer_kind)ik_short)
+TARG_FORCE_ONE_BIT_BIT_FIELD_TO_BE_UNSIGNED_linux_i686=1
+TARG_ZERO_WIDTH_BIT_FIELD_ALIGNMENT_linux_i686=4
+LINKER_CAN_DISCARD_DUPLICATE_DEFINITIONS=0
+DEFAULT_COMPRESS_MANGLED_NAMES=1
+# --- language features Windows leaves off
+FIXED_POINT_ALLOWED=0
+EMBEDDED_C_ALLOWED=0
+GNU_VECTOR_TYPES_ALLOWED=0
+NAMED_ADDRESS_SPACES_ALLOWED=0
+NAMED_REGISTERS_ALLOWED=0
+THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED=0
+GNU_VISIBILITY_ATTRIBUTE_ALLOWED=0
+GNU_INIT_PRIORITY_ATTRIBUTE_ALLOWED=0
+GNU_FUNCTION_MULTIVERSIONING=0
+RISCV_VECTOR_BUILTINS_ENABLED=0
+# --- IL and memory management
+KEEP_OBJECT_LIFETIME_INFO_IN_LOWERED_IL_WHEN_EH_ENABLED=0
+FREE_MEMORY_REGIONS_EARLY=0
+TYPE_FOR_TARG_ALIGNMENT=uint16_t
+# --- production code generation (as in the release configurations)
+IL_SHOULD_BE_WRITTEN_TO_FILE=0
+LOWER_VARIABLE_LENGTH_ARRAYS=DO_IL_LOWERING
+VLA_DEALLOCATION_REQUIRED=DO_IL_LOWERING
+INSTANTIATE_BEFORE_PCH_CREATION=0
+# --- host floating point: __float128 without libquadmath (approximated);
+# long double is binary64, as on Windows
+USE_QUADMATH_LIBRARY=0
+APPROXIMATE_QUADMATH=1
+FLOAT80_ENABLING_POSSIBLE=0
+FP_LONG_DOUBLE_IS_80BIT_EXTENDED=0
+FP_LONG_DOUBLE_IS_BINARY64=1

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 29: error: type name is not allowed
+  static_assert(!__has_unique_object_representations(S), "S");
+                                                     ^
+
+"Test_name.c", line 29: error: identifier "__has_unique_object_representations" is undefined
+  static_assert(!__has_unique_object_representations(S), "S");
+                 ^
+
+"Test_name.c", line 30: error: type name is not allowed
+  static_assert(!__has_unique_object_representations(T), "T");
+                                                     ^
+
+"Test_name.c", line 31: error: type name is not allowed
+  static_assert(!__has_unique_object_representations(U), "U");
+                                                     ^
+
+"Test_name.c", line 32: error: type name is not allowed
+  static_assert(!__has_unique_object_representations(V), "V");
+                                                     ^
+
+"Test_name.c", line 34: error: type name is not allowed
+  static_assert(__has_unique_object_representations(N), "N");
+                                                    ^
+
+"Test_name.c", line 35: error: type name is not allowed
+  static_assert(__has_unique_object_representations(Z), "Z");
+                                                    ^
+
+7 errors detected in the compilation of "Test_name.c".

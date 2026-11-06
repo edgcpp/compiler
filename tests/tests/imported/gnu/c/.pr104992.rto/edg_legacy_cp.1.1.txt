@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 42: error: _Complex can only be used with floating-point types
+  __attribute__((noipa)) int goo(_Complex int x, _Complex int y)
+                                 ^
+
+"Test_name.c", line 42: error: _Complex can only be used with floating-point types
+  __attribute__((noipa)) int goo(_Complex int x, _Complex int y)
+                                                 ^
+
+"Test_name.c", line 44: error: _Complex can only be used with floating-point types
+      _Complex int z = x / y;
+      ^
+
+"Test_name.c", line 45: error: _Complex can only be used with floating-point types
+      _Complex int q = z * y;
+      ^
+
+4 errors detected in the compilation of "Test_name.c".

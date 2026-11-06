@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 7: warning: function "nop" was declared but never referenced
+  nop(void);
+  ^
+
+"Test_name.c", line 11: warning: function "noparens" was declared but never referenced
+  noparens(void);
+  ^
+
+"Test_name.c", line 15: warning: function "emptyparens" was declared but never referenced
+  emptyparens(void);
+  ^
+
+"Test_name.c", line 19: warning: function "stringliteral" was declared but never referenced
+  stringliteral(void);
+  ^
+
+"Test_name.c", line 23: warning: function "integer" was declared but never referenced
+  integer(void);
+  ^
+
+"Test_name.c", line 27: warning: function "twoargs" was declared but never referenced
+  twoargs(void);
+  ^
+
+"Test_name.c", line 30: warning: variable "variable" was declared but never referenced
+  int variable;
+      ^
+

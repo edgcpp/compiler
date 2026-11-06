@@ -1,0 +1,46 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/floatn-tg-2.h", line 27: error: identifier "_Float128x" is undefined
+  volatile _Float128x inf = __builtin_inf (), nanval = __builtin_nan ("");
+           ^
+
+"./torture/floatn-tg-2.h", line 28: error: identifier "_Float128x" is undefined
+  volatile _Float128x neginf = -__builtin_inf (), negnanval = -__builtin_nan ("");
+           ^
+
+"./torture/floatn-tg-2.h", line 29: error: identifier "_Float128x" is undefined
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+           ^
+
+"./torture/floatn-tg-2.h", line 29: error: extra text after expected end of number
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                    ^
+
+"./torture/floatn-tg-2.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                            ^
+
+"./torture/floatn-tg-2.h", line 29: error: extra text after expected end of number
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                         ^
+
+"./torture/floatn-tg-2.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                 ^
+
+"./torture/floatn-tg-2.h", line 29: error: extra text after expected end of number
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                                         ^
+
+"./torture/floatn-tg-2.h", line 29: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  volatile _Float128x zero = 0.0f128x, negzero = -0.0f128x, one = 1.0f128x;
+                                                                 ^
+
+"./torture/floatn-tg-2.h", line 30: error: identifier "_Float128x" is undefined
+  volatile _Float128x max = FLT128X_MAX, negmax = -FLT128X_MAX;
+           ^
+
+"./torture/floatn-tg-2.h", line 30: error: identifier "FLT128X_MAX" is undefined
+  volatile _Float128x max = FLT128X_MAX, negmax = -FLT128X_MAX;
+                            ^
+
+8 errors detected in the compilation of "Test_name.c".

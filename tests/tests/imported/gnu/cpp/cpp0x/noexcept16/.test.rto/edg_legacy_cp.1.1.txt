@@ -1,0 +1,174 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 9: error: expected a "{"
+  typedef long unsigned int size_t;
+  ^
+
+"Test_name.c", line 14: warning: parsing restarts here after previous syntax error
+  {
+  ^
+
+"Test_name.c", line 18: error: invalid combination of type specifiers
+  struct __add_rvalue_reference_helper<_Tp, true>
+  ^
+
+"Test_name.c", line 18: error: __add_rvalue_reference_helper is not a template
+  struct __add_rvalue_reference_helper<_Tp, true>
+         ^
+
+"Test_name.c", line 19: warning: variable templates are a C++14 feature
+  { typedef _Tp&& type; };
+                         ^
+
+"Test_name.c", line 22: error: __add_rvalue_reference_helper is not a template
+    : public __add_rvalue_reference_helper<_Tp>
+             ^
+
+"Test_name.c", line 30: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 35: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 36: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 43: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 44: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 50: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 57: error: __alloctr_rebind is not a template
+      typedef typename __alloctr_rebind<_Alloc, _Tp>::__type __type;
+                       ^
+
+"Test_name.c", line 60: error: expected a ";"
+    }
+    ^
+
+"Test_name.c", line 74: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 75: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 82: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 83: error: namespace "std" has no member "allocator"
+  template<typename _Tp, typename _Alloc = std::allocator<_Tp> >
+                                                ^
+
+"Test_name.c", line 83: error: expected a "," or ">"
+  template<typename _Tp, typename _Alloc = std::allocator<_Tp> >
+                                                         ^
+
+"Test_name.c", line 83: error: expected a declaration
+  template<typename _Tp, typename _Alloc = std::allocator<_Tp> >
+                                                               ^
+
+"Test_name.c", line 83: error: expected a ";"
+  template<typename _Tp, typename _Alloc = std::allocator<_Tp> >
+                                                               ^
+
+"Test_name.c", line 91: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 92: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 101: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+"Test_name.c", line 102: error: expected a declaration
+  };
+  ^
+
+"Test_name.c", line 103: error: namespace "std" has no member "size_t"
+  template<typename char_type, typename id_type = std::size_t>
+                                                       ^
+
+"Test_name.c", line 106: error: explicit type is missing ("int" assumed)
+    typedef detail::basic_internals<id_type> internals;
+            ^
+
+"Test_name.c", line 106: error: expected a ";"
+    typedef detail::basic_internals<id_type> internals;
+                  ^
+
+"Test_name.c", line 111: error: a class or namespace qualified name is required
+    typedef typename internals::id_type_vector id_type_vector;
+                     ^
+
+"Test_name.c", line 111: error: global-scope qualifier (leading "::") is not allowed
+    typedef typename internals::id_type_vector id_type_vector;
+                              ^
+
+"Test_name.c", line 111: error: expected a ";"
+    typedef typename internals::id_type_vector id_type_vector;
+                                               ^
+
+"Test_name.c", line 113: error: identifier "id_type_vector" is undefined
+  		     id_type_vector &dfa_, std::size_t size_)
+  		     ^
+
+"Test_name.c", line 113: error: namespace "std" has no member "size_t"
+  		     id_type_vector &dfa_, std::size_t size_)
+  		                                ^
+
+"Test_name.c", line 109: error: identifier "dfa_alphabet_" is undefined
+      minimise_dfa (dfa_alphabet_, *dfa_, size_);
+                    ^
+
+"Test_name.c", line 109: error: identifier "dfa_" is undefined
+      minimise_dfa (dfa_alphabet_, *dfa_, size_);
+                                    ^
+
+"Test_name.c", line 109: error: identifier "size_" is undefined
+      minimise_dfa (dfa_alphabet_, *dfa_, size_);
+                                          ^
+
+"Test_name.c", line 115: error: identifier "id_type_vector" is undefined
+      id_type_vector new_dfa_ (front_, front_ + dfa_alphabet_);
+      ^
+
+"Test_name.c", line 115: error: identifier "front_" is undefined
+      id_type_vector new_dfa_ (front_, front_ + dfa_alphabet_);
+                               ^
+
+"Test_name.c", line 119: error: expected a ";"
+    }
+    ^
+
+"Test_name.c", line 126: warning: parsing restarts here after previous syntax error
+    ;
+    ^
+
+"Test_name.c", line 127: error: explicit type is missing ("int" assumed)
+  typedef lexertl::basic_state_machine<char32_t> lexstate;
+          ^
+
+"Test_name.c", line 127: error: expected a ";"
+  typedef lexertl::basic_state_machine<char32_t> lexstate;
+                 ^
+
+"Test_name.c", line 128: error: identifier "lexstate" is undefined
+  lexstate m_state_machine;
+  ^
+
+33 errors detected in the compilation of "Test_name.c".

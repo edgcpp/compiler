@@ -1,0 +1,202 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -DTEST_ONE --c++03 -DTEST_ONE Test_name.c
+"Test_name.c", line 61: warning: unknown attribute "require_constant_initialization"
+  void test_func_local(ATTR int param) { // expected-error {{only applies to global variables}}
+                       ^
+
+"Test_name.c", line 62: warning: unknown attribute "require_constant_initialization"
+    ATTR int x = 42;                     // expected-error {{only applies to}}
+    ^
+
+"Test_name.c", line 63: warning: unknown attribute "require_constant_initialization"
+    ATTR extern int y;
+    ^
+
+"Test_name.c", line 62: warning: variable "x" was declared but never referenced
+    ATTR int x = 42;                     // expected-error {{only applies to}}
+             ^
+
+"Test_name.c", line 65: warning: unknown attribute "require_constant_initialization"
+  struct ATTR class_mem { // expected-error {{only applies to}}
+         ^
+
+"Test_name.c", line 66: warning: unknown attribute "require_constant_initialization"
+    ATTR int x;           // expected-error {{only applies to}}
+    ^
+
+"Test_name.c", line 79: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &glvalue_ref ATTR = glvalue_int;
+  ^
+
+"Test_name.c", line 79: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &glvalue_ref ATTR = glvalue_int;
+                              ^
+
+"Test_name.c", line 80: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &glvalue_ref2 ATTR = glvalue_int2;
+  ^
+
+"Test_name.c", line 80: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &glvalue_ref2 ATTR = glvalue_int2;
+                               ^
+
+"Test_name.c", line 81: warning: unknown attribute "require_constant_initialization"
+  ATTR __thread const int &glvalue_ref_tl = glvalue_int;
+  ^
+
+"Test_name.c", line 81: error: this declaration has no storage class or type specifier
+  ATTR __thread const int &glvalue_ref_tl = glvalue_int;
+       ^
+
+"Test_name.c", line 81: error: expected a ";"
+  ATTR __thread const int &glvalue_ref_tl = glvalue_int;
+                ^
+
+"Test_name.c", line 85: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &local_init = non_global; // expected-error {{variable does not have a constant initializer}}
+    ^
+
+"Test_name.c", line 93: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &global_init = glvalue_int;
+    ^
+
+"Test_name.c", line 94: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &temp_init = 42;
+    ^
+
+"Test_name.c", line 85: warning: variable "local_init" was declared but never referenced
+    ATTR static const int &local_init = non_global; // expected-error {{variable does not have a constant initializer}}
+                           ^
+
+"Test_name.c", line 93: warning: variable "global_init" was declared but never referenced
+    ATTR static const int &global_init = glvalue_int;
+                           ^
+
+"Test_name.c", line 94: warning: variable "temp_init" was declared but never referenced
+    ATTR static const int &temp_init = 42;
+                           ^
+
+"Test_name.c", line 97: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &temp_ref = 42;
+  ^
+
+"Test_name.c", line 98: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &temp_ref2 = ReturnInt(); // expected-error {{variable does not have a constant initializer}}
+  ^
+
+"Test_name.c", line 105: warning: unknown attribute "require_constant_initialization"
+  ATTR const NonLit &nl_temp_ref = 42; // expected-error {{variable does not have a constant initializer}}
+  ^
+
+"Test_name.c", line 118: warning: unknown attribute "require_constant_initialization"
+  ATTR const int &nl_subobj_ref = NonLit().value; // expected-error {{variable does not have a constant initializer}}
+  ^
+
+"Test_name.c", line 127: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &no_init;
+    ^
+
+"Test_name.c", line 128: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &glvalue_init;
+    ^
+
+"Test_name.c", line 129: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &temp_init;
+    ^
+
+"Test_name.c", line 130: warning: unknown attribute "require_constant_initialization"
+    ATTR static const int &subobj_init;
+    ^
+
+"Test_name.c", line 153: warning: unknown attribute "require_constant_initialization"
+    ATTR static PODType pod;
+    ^
+
+"Test_name.c", line 159: warning: unknown attribute "require_constant_initialization"
+    ATTR static PODType pot2 = {ReturnInt()}; // expected-error {{variable does not have a constant initializer}}
+    ^
+
+"Test_name.c", line 153: warning: variable "pod" was declared but never referenced
+    ATTR static PODType pod;
+                        ^
+
+"Test_name.c", line 181: warning: unknown attribute "require_constant_initialization"
+    ATTR static PODType pod_noinit;
+    ^
+
+"Test_name.c", line 185: warning: unknown attribute "require_constant_initialization"
+    ATTR static PODType pod_copy_init; // expected-note {{required by 'require_constant_initialization' attribute here}}
+    ^
+
+"Test_name.c", line 255: warning: unknown attribute "require_constant_initialization"
+    ATTR static int static_local = 42;
+    ^
+
+"Test_name.c", line 256: warning: unknown attribute "require_constant_initialization"
+    ATTR static int static_local2; // zero-initialization takes place
+    ^
+
+"Test_name.c", line 255: warning: variable "static_local" was declared but never referenced
+    ATTR static int static_local = 42;
+                    ^
+
+"Test_name.c", line 256: warning: variable "static_local2" was declared but never referenced
+    ATTR static int static_local2; // zero-initialization takes place
+                    ^
+
+"Test_name.c", line 262: warning: unknown attribute "require_constant_initialization"
+  ATTR int no_init; // zero initialization takes place
+  ^
+
+"Test_name.c", line 263: warning: unknown attribute "require_constant_initialization"
+  ATTR int arg_init = 42;
+  ^
+
+"Test_name.c", line 264: warning: unknown attribute "require_constant_initialization"
+  ATTR PODType pod_init = {};
+  ^
+
+"Test_name.c", line 265: warning: unknown attribute "require_constant_initialization"
+  ATTR PODType pod_missing_init = {42 /* should have second arg */};
+  ^
+
+"Test_name.c", line 266: warning: unknown attribute "require_constant_initialization"
+  ATTR PODType pod_full_init = {1, 2};
+  ^
+
+"Test_name.c", line 267: warning: unknown attribute "require_constant_initialization"
+  ATTR PODType pod_non_constexpr_init = {1, ReturnInt()}; // expected-error {{variable does not have a constant initializer}}
+  ^
+
+"Test_name.c", line 280: warning: unknown attribute "require_constant_initialization"
+  ATTR __thread int tl_init = 0;
+  ^
+
+"Test_name.c", line 280: error: this declaration has no storage class or type specifier
+  ATTR __thread int tl_init = 0;
+       ^
+
+"Test_name.c", line 280: error: variable "__thread" has already been defined (previous definition at line 81)
+  ATTR __thread int tl_init = 0;
+       ^
+
+"Test_name.c", line 280: error: expected a ";"
+  ATTR __thread int tl_init = 0;
+                ^
+
+"Test_name.c", line 303: warning: unknown attribute "require_constant_initialization"
+  ATTR const char *foo[] = {"abc", "def"};
+  ^
+
+"Test_name.c", line 304: warning: unknown attribute "require_constant_initialization"
+  ATTR PODType bar[] = {{}, {123, 456}};
+  ^
+
+"Test_name.c", line 311: warning: unknown attribute "require_constant_initialization"
+    ATTR const int A::n; // expected-warning {{added after initialization}}
+    ^
+
+"Test_name.c", line 314: warning: unknown attribute "require_constant_initialization"
+    extern ATTR int m; // expected-warning {{added after initialization}}
+           ^
+
+5 errors detected in the compilation of "Test_name.c".

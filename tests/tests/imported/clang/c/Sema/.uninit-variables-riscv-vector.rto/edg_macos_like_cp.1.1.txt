@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 8: error: identifier "__rvv_int32m1_t" is undefined
+    __rvv_int32m1_t x, y, z, w, X; // expected-note {{variable 'x' is declared here}} expected-note {{variable 'y' is declared here}} expected-note {{variable 'w' is declared here}}  expected-note {{variable 'z' is declared here}}
+    ^
+
+"Test_name.c", line 9: warning: function "__riscv_vxor_vv_i32m1" declared implicitly
+    x = __riscv_vxor_vv_i32m1(x,x, vl); // expected-warning {{variable 'x' is uninitialized when used here}}
+        ^
+
+"Test_name.c", line 13: warning: function "__riscv_vle32_v_i32m1" declared implicitly
+    X = __riscv_vle32_v_i32m1(&input[0], vl);
+        ^
+
+1 error detected in the compilation of "Test_name.c".

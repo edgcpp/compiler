@@ -1,0 +1,79 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 43: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() const"
+    Derived & derived () const {}
+                                ^
+
+"Test_name.c", line 54: warning: missing return statement at end of non-void function "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator="
+    }
+    ^
+
+"Test_name.c", line 74: warning: variable "align_cols" is used before its value is set
+    if (align_cols) {
+        ^
+
+"Test_name.c", line 78: warning: missing return statement at end of non-void function "f"
+  }
+  ^
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 2, 1, 2, 1>]"
+    Derived derived () {}
+                        ^
+          detected during:
+            instantiation of "Derived AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 2, 1, 2, 1>]" at line 57
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::lazyAssign(MatrixBase<OtherDerived>) [with _Scalar=float, <unnamed>=2, <unnamed>=1, _MaxRows=2, _MaxCols=1, OtherDerived=Matrix<float, 2, 1, 2, 1>]" at line 53
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator=(Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>) [with _Scalar=float, <unnamed>=2, <unnamed>=1, _MaxRows=2, _MaxCols=1]" at line 61
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::Matrix(const MatrixBase<OtherDerived> &) [with _Scalar=float, <unnamed>=2, <unnamed>=1, _MaxRows=2, _MaxCols=1, OtherDerived=CwiseNullaryOp<Matrix<float, 2, 1, 2, 1>>]" at line 104
+            instantiation of "void forward_jacobian(Func) [with Func=TestFunc1<2, 2>]" at line 113
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 2, 2, 2, 2>]"
+    Derived derived () {}
+                        ^
+          detected during:
+            instantiation of "Derived AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 2, 2, 2, 2>]" at line 57
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::lazyAssign(MatrixBase<OtherDerived>) [with _Scalar=float, <unnamed>=2, <unnamed>=2, _MaxRows=2, _MaxCols=2, OtherDerived=Matrix<float, 2, 2, 2, 2>]" at line 53
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator=(Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>) [with _Scalar=float, <unnamed>=2, <unnamed>=2, _MaxRows=2, _MaxCols=2]" at line 61
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::Matrix(const MatrixBase<OtherDerived> &) [with _Scalar=float, <unnamed>=2, <unnamed>=2, _MaxRows=2, _MaxCols=2, OtherDerived=CwiseNullaryOp<Matrix<float, 2, 2, 2, 2>>]" at line 106
+            instantiation of "void forward_jacobian(Func) [with Func=TestFunc1<2, 2>]" at line 113
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() [with Derived=Matrix<AutoDiffScalar<Matrix<int, 2, 1, 2, 1>>, 2, 1, 2, 1>]"
+    Derived derived () {}
+                        ^
+          detected during:
+            instantiation of "Derived AnyMatrixBase<Derived>::derived() [with Derived=Matrix<AutoDiffScalar<Matrix<int, 2, 1, 2, 1>>, 2, 1, 2, 1>]" at line 57
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::lazyAssign(MatrixBase<OtherDerived>) [with _Scalar=AutoDiffScalar<Matrix<int, 2, 1, 2, 1>>, <unnamed>=2, <unnamed>=1, _MaxRows=2, _MaxCols=1, OtherDerived=Matrix<AutoDiffScalar<Matrix<int, 2, 1, 2, 1>>, 2, 1, 2, 1>]" at line 53
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator=(Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>) [with _Scalar=AutoDiffScalar<Matrix<int, 2, 1, 2, 1>>, <unnamed>=2, <unnamed>=1, _MaxRows=2, _MaxCols=1]" at line 61
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::Matrix(const MatrixBase<OtherDerived> &) [with _Scalar=AutoDiffScalar<Matrix<int, 2, 1, 2, 1>>, <unnamed>=2, <unnamed>=1, _MaxRows=2, _MaxCols=1, OtherDerived=Matrix<float, 2, 1, 2, 1>]" at line 89
+            instantiation of "void AutoDiffJacobian<Functor>::operator()(AutoDiffJacobian<Functor>::InputType, AutoDiffJacobian<Functor>::ValueType *) [with Functor=TestFunc1<2, 2>]" at line 108
+            instantiation of "void forward_jacobian(Func) [with Func=TestFunc1<2, 2>]" at line 113
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 3, 1, 3, 1>]"
+    Derived derived () {}
+                        ^
+          detected during:
+            instantiation of "Derived AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 3, 1, 3, 1>]" at line 57
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::lazyAssign(MatrixBase<OtherDerived>) [with _Scalar=float, <unnamed>=3, <unnamed>=1, _MaxRows=3, _MaxCols=1, OtherDerived=Matrix<float, 3, 1, 3, 1>]" at line 53
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator=(Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>) [with _Scalar=float, <unnamed>=3, <unnamed>=1, _MaxRows=3, _MaxCols=1]" at line 61
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::Matrix(const MatrixBase<OtherDerived> &) [with _Scalar=float, <unnamed>=3, <unnamed>=1, _MaxRows=3, _MaxCols=1, OtherDerived=CwiseNullaryOp<Matrix<float, 3, 1, 3, 1>>]" at line 104
+            instantiation of "void forward_jacobian(Func) [with Func=TestFunc1<3, 2>]" at line 114
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 2, 3, 2, 3>]"
+    Derived derived () {}
+                        ^
+          detected during:
+            instantiation of "Derived AnyMatrixBase<Derived>::derived() [with Derived=Matrix<float, 2, 3, 2, 3>]" at line 57
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::lazyAssign(MatrixBase<OtherDerived>) [with _Scalar=float, <unnamed>=2, <unnamed>=3, _MaxRows=2, _MaxCols=3, OtherDerived=Matrix<float, 2, 3, 2, 3>]" at line 53
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator=(Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>) [with _Scalar=float, <unnamed>=2, <unnamed>=3, _MaxRows=2, _MaxCols=3]" at line 61
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::Matrix(const MatrixBase<OtherDerived> &) [with _Scalar=float, <unnamed>=2, <unnamed>=3, _MaxRows=2, _MaxCols=3, OtherDerived=CwiseNullaryOp<Matrix<float, 2, 3, 2, 3>>]" at line 106
+            instantiation of "void forward_jacobian(Func) [with Func=TestFunc1<3, 2>]" at line 114
+
+"Test_name.c", line 42: warning: missing return statement at end of non-void function "AnyMatrixBase<Derived>::derived() [with Derived=Matrix<AutoDiffScalar<Matrix<int, 3, 1, 3, 1>>, 3, 1, 3, 1>]"
+    Derived derived () {}
+                        ^
+          detected during:
+            instantiation of "Derived AnyMatrixBase<Derived>::derived() [with Derived=Matrix<AutoDiffScalar<Matrix<int, 3, 1, 3, 1>>, 3, 1, 3, 1>]" at line 57
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::lazyAssign(MatrixBase<OtherDerived>) [with _Scalar=AutoDiffScalar<Matrix<int, 3, 1, 3, 1>>, <unnamed>=3, <unnamed>=1, _MaxRows=3, _MaxCols=1, OtherDerived=Matrix<AutoDiffScalar<Matrix<int, 3, 1, 3, 1>>, 3, 1, 3, 1>]" at line 53
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols> Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::operator=(Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>) [with _Scalar=AutoDiffScalar<Matrix<int, 3, 1, 3, 1>>, <unnamed>=3, <unnamed>=1, _MaxRows=3, _MaxCols=1]" at line 61
+            instantiation of "Matrix<_Scalar, <unnamed>, <unnamed>, _MaxRows, _MaxCols>::Matrix(const MatrixBase<OtherDerived> &) [with _Scalar=AutoDiffScalar<Matrix<int, 3, 1, 3, 1>>, <unnamed>=3, <unnamed>=1, _MaxRows=3, _MaxCols=1, OtherDerived=Matrix<float, 3, 1, 3, 1>]" at line 89
+            instantiation of "void AutoDiffJacobian<Functor>::operator()(AutoDiffJacobian<Functor>::InputType, AutoDiffJacobian<Functor>::ValueType *) [with Functor=TestFunc1<3, 2>]" at line 108
+            instantiation of "void forward_jacobian(Func) [with Func=TestFunc1<3, 2>]" at line 114
+

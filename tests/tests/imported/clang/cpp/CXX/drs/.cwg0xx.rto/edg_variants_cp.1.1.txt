@@ -1,0 +1,539 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 --exceptions --exceptions Test_name.c
+"Test_name.c", line 39: error: redefinition of default argument
+      void z(int = 1);
+                   ^
+
+"Test_name.c", line 75: error: more than one instance of overloaded function "cwg4::cwg4_g" has "C" linkage
+      void cwg4_g(float) {}
+           ^
+
+"Test_name.c", line 110: error: "cwg7::X::~X()" (declared at line 109) is inaccessible
+    class Y : X { ~Y() {} };
+                  ^
+
+"Test_name.c", line 148: error: member "cwg9::B::m" (declared at line 142) is inaccessible
+    int R1() { return n.m; }
+                        ^
+
+"Test_name.c", line 170: error: nontype "T::V" is not a type name
+      V v;
+      ^
+
+"Test_name.c", line 222: error: "cwg14::U" is ambiguous
+    U u;
+    ^
+
+"Test_name.c", line 230: warning: specifying a default argument when redeclaring an unreferenced function template is nonstandard
+    template<typename T> void f(int = 0);
+                              ^
+
+"Test_name.c", line 243: error: function "cwg16::A::f" (declared at line 237) is inaccessible
+        f();
+        ^
+
+"Test_name.c", line 247: error: type "cwg16::A::A" (declared at line 236) is inaccessible
+        A::f(); // #cwg16-A-f-call
+        ^
+
+"Test_name.c", line 247: error: conversion to inaccessible base class "cwg16::A" is not allowed
+        A::f(); // #cwg16-A-f-call
+        ^
+
+"Test_name.c", line 280: error: protected member "cwg19::A::n" (declared at line 274) is not accessible through a "cwg19::C" pointer or object
+      int get1() { return c.n; }
+                            ^
+
+"Test_name.c", line 296: error: "cwg20::X::X(const cwg20::X &)" (declared at line 293) is inaccessible
+    X x = f();
+          ^
+
+"Test_name.c", line 304: warning: default argument is not allowed on a friend class template declaration
+      template<typename T = int> friend struct A;
+                                               ^
+
+"Test_name.c", line 306: warning: default argument is not allowed on a friend class template declaration
+      template<typename T = int> friend struct B;
+                                               ^
+
+"Test_name.c", line 312: error: identifier "cwg22_T" is undefined
+    template<typename cwg22_T = cwg22_T> struct X;
+                                ^
+
+"Test_name.c", line 321: error: more than one instance of overloaded function "cwg23::f" matches the argument list:
+            function template "void cwg23::f(T, T)" (declared at line 319)
+            function template "void cwg23::f(T, int)" (declared at line 320)
+            argument types are: (int, int)
+    void g() { f(0, 0); }
+               ^
+
+"Test_name.c", line 338: error: incompatible exception specifications
+    void (A::*g)() throw () = f;
+                              ^
+
+"Test_name.c", line 345: error: incompatible exception specifications
+    void (A::*i)() throw () = &A::f;
+                              ^
+
+"Test_name.c", line 353: error: incompatible exception specifications
+      g2 = f;
+         ^
+
+"Test_name.c", line 357: error: incompatible exception specifications
+      i2 = &A::f;
+         ^
+
+"Test_name.c", line 365: error: copy constructor for class "cwg26::A" may not have a parameter of type "cwg26::A"
+    struct A { A(A, const A & = A()); };
+                 ^
+
+"Test_name.c", line 365: error: no instance of constructor "cwg26::A::A" matches the argument list
+    struct A { A(A, const A & = A()); };
+                                ^
+"Test_name.c", line 365: note: number of parameters of function "cwg26::A::A(const cwg26::A &)" does not match the call
+    struct A { A(A, const A & = A()); };
+           ^
+"Test_name.c", line 365: note: number of parameters of function "cwg26::A::A(<error-type>, const cwg26::A &)" does not match the call
+    struct A { A(A, const A & = A()); };
+               ^
+
+"Test_name.c", line 370: error: copy constructor for class "cwg26::B" may not have a parameter of type "cwg26::B"
+      B(const B &, B = B());
+                   ^
+
+"Test_name.c", line 378: error: copy constructor for class "cwg26::C" may not have a parameter of type "cwg26::C"
+      C(const C &, C = f());
+                   ^
+
+"Test_name.c", line 407: error: linkage specification is incompatible with previous "cwg29::cwg29_f2" (declared at line 406)
+    extern "C" void cwg29_f2();
+                    ^
+
+"Test_name.c", line 412: error: linkage specification is incompatible with previous "cwg29::cwg29_f3" (declared at line 411)
+    extern "C++" void cwg29_f3();
+                      ^
+
+"Test_name.c", line 417: error: linkage specification is incompatible with previous "cwg29::cwg29_f4" (declared at line 416)
+    extern "C" void cwg29_f4();
+                    ^
+
+"Test_name.c", line 457: warning: the "template" keyword used for syntactic disambiguation may only be used within a template
+    int y = a.template f<0>();
+              ^
+
+"Test_name.c", line 459: warning: the "template" keyword used for syntactic disambiguation may only be used within a template
+    int z = p->template f<0>();
+               ^
+
+"Test_name.c", line 470: error: function "cwg31::X::operator delete" (declared at line 466) is inaccessible
+    X *p = new X;
+           ^
+
+"Test_name.c", line 482: error: more than one instance of "f" matches the argument list:
+            function "cwg33::Y::f(void (*)(cwg33::Y::T))" (declared at line 479)
+            function "cwg33::X::f(void (*)(cwg33::X::S))" (declared at line 478)
+            argument types are: (<unknown-type>)
+    void h() { f(&g); }
+               ^
+
+"Test_name.c", line 503: warning: missing return statement at end of non-void function "operator+"
+        friend int operator+(X, void(*)(Y)) {}
+                                             ^
+
+"Test_name.c", line 507: error: no operator "+" matches these operands
+            operand types are: cwg33::dependent::X + <unknown-type>
+      int use = X() + f<int>;
+                    ^
+"Test_name.c", line 507: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+      int use = X() + f<int>;
+                    ^
+"Test_name.c", line 507: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      int use = X() + f<int>;
+                    ^
+"Test_name.c", line 507: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      int use = X() + f<int>;
+                    ^
+
+"Test_name.c", line 537: error: "i" has already been declared in the current scope
+      using A::i;
+               ^
+
+"Test_name.c", line 554: warning: duplicate using-declaration of "cwg36::example2::B::i" ignored
+      using B::i;
+      ^
+
+"Test_name.c", line 559: warning: duplicate using-declaration of "cwg36::example2::C::i" ignored
+      using C::i;
+      ^
+
+"Test_name.c", line 564: warning: duplicate using-declaration of "cwg36::example2::B::j" ignored
+      using B::j;
+      ^
+
+"Test_name.c", line 569: warning: duplicate using-declaration of "cwg36::example2::C::j" ignored
+      using C::j;
+      ^
+
+"Test_name.c", line 592: warning: duplicate using-declaration of "cwg36::example3::B<T>::i [with T=T]" ignored
+      using B<T>::i;
+      ^
+
+"Test_name.c", line 597: warning: duplicate using-declaration of "cwg36::example3::C<T>::i [with T=T]" ignored
+      using C<T>::i;
+      ^
+
+"Test_name.c", line 602: warning: duplicate using-declaration of "cwg36::example3::B<T>::j [with T=T]" ignored
+      using B<T>::j;
+      ^
+
+"Test_name.c", line 607: warning: duplicate using-declaration of "cwg36::example3::C<T>::j [with T=T]" ignored
+      using C<T>::j;
+      ^
+
+"Test_name.c", line 621: warning: duplicate using-declaration of "cwg36::example4::E<T>::k [with T=T]" ignored
+      using E<T>::k;
+      ^
+
+"Test_name.c", line 667: error: "cwg39::example2::C::x" is ambiguous
+      int &x = c.x(0);
+                 ^
+
+"Test_name.c", line 673: error: "cwg39::example2::C::y" is ambiguous
+      int &y = c.y(0);
+                 ^
+
+"Test_name.c", line 692: error: "cwg39::example4::D::n" is ambiguous
+      struct D : B, C { int f() { return n; } };
+                                         ^
+
+"Test_name.c", line 706: error: "cwg39::PR5916::D::n" is ambiguous
+      int k = sizeof(D::n); // #cwg39-sizeof
+                        ^
+
+"Test_name.c", line 755: error: "template" is not allowed
+    template template struct A<int>::B<int>;
+             ^
+
+"Test_name.c", line 755: error: invalid combination of type specifiers
+    template template struct A<int>::B<int>;
+                      ^
+
+"Test_name.c", line 755: error: invalid explicit instantiation declaration
+    template template struct A<int>::B<int>;
+             ^
+
+"Test_name.c", line 761: error: function "cwg47::f" has already been defined (previous definition at line 761)
+      friend void f() { T t; } // #cwg47-f
+                  ^
+          detected during instantiation of class "cwg47::A<T> [with T=float]" at line 767
+
+"Test_name.c", line 797: error: invalid nontype template argument of type "int *"
+    A<p> b; // #cwg49-b
+      ^
+
+"Test_name.c", line 803: error: expression must have a constant value
+    A<q> c; // #cwg49-c
+      ^
+
+"Test_name.c", line 822: error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+    X *u = dynamic_cast<X*>(p);
+                        ^
+
+"Test_name.c", line 840: error: conversion to inaccessible base class "cwg52::A" is not allowed
+    int k = b.A::n; // #cwg52-k
+            ^
+
+"Test_name.c", line 859: error: conversion to inaccessible base class "cwg54::A" is not allowed
+    A &sab = static_cast<A&>(b);
+                             ^
+
+"Test_name.c", line 862: error: conversion to inaccessible base class "cwg54::A" is not allowed
+    A *spab = static_cast<A*>(&b);
+                          ^
+
+"Test_name.c", line 865: error: conversion to inaccessible base class "cwg54::A" is not allowed
+    int A::*smab = static_cast<int A::*>(&B::b);
+                   ^
+
+"Test_name.c", line 868: error: conversion from inaccessible base class "cwg54::A" is not allowed
+    B &sba = static_cast<B&>(a);
+             ^
+
+"Test_name.c", line 871: error: conversion from inaccessible base class "cwg54::A" is not allowed
+    B *spba = static_cast<B*>(&a);
+              ^
+
+"Test_name.c", line 874: error: conversion from inaccessible base class "cwg54::A" is not allowed
+    int B::*smba = static_cast<int B::*>(&A::a);
+                               ^
+
+"Test_name.c", line 880: error: cannot convert pointer to member of derived class "cwg54::B" to pointer to member of base class "cwg54::V" -- base class is virtual
+    int V::*smvb = static_cast<int V::*>(&B::b);
+                               ^
+
+"Test_name.c", line 882: error: cannot convert pointer to base class "cwg54::V" to pointer to derived class "cwg54::B" -- base class is virtual
+    B &sbv = static_cast<B&>(v);
+                             ^
+
+"Test_name.c", line 884: error: cannot convert pointer to base class "cwg54::V" to pointer to derived class "cwg54::B" -- base class is virtual
+    B *spbv = static_cast<B*>(&v);
+                          ^
+
+"Test_name.c", line 886: error: cannot convert pointer to member of base class "cwg54::V" to pointer to member of derived class "cwg54::B" -- base class is virtual
+    int B::*smbv = static_cast<int B::*>(&V::v);
+                               ^
+
+"Test_name.c", line 898: error: cannot convert pointer to member of derived class "cwg54::B" to pointer to member of base class "cwg54::V" -- base class is virtual
+    int V::*cmvb = (int V::*)(&B::b);
+                   ^
+
+"Test_name.c", line 900: error: cannot convert pointer to base class "cwg54::V" to pointer to derived class "cwg54::B" -- base class is virtual
+    B &cbv = (B&)(v);
+                 ^
+
+"Test_name.c", line 902: error: cannot convert pointer to base class "cwg54::V" to pointer to derived class "cwg54::B" -- base class is virtual
+    B *cpbv = (B*)(&v);
+              ^
+
+"Test_name.c", line 904: error: cannot convert pointer to member of base class "cwg54::V" to pointer to member of derived class "cwg54::B" -- base class is virtual
+    int B::*cmbv = (int B::*)(&V::v);
+                   ^
+
+"Test_name.c", line 916: warning: class member typedef may not be redeclared
+      typedef int T;
+                  ^
+
+"Test_name.c", line 923: warning: class member typedef may not be redeclared
+      typedef X X;
+                ^
+
+"Test_name.c", line 950: error: class "cwg59::A" has no suitable copy constructor
+    A a4 = convert_to<const volatile A>();
+           ^
+
+"Test_name.c", line 955: error: class "cwg59::A" has no suitable copy constructor
+    A a5 = convert_to<const volatile A&>();
+           ^
+
+"Test_name.c", line 964: error: class "cwg59::B" has no suitable copy constructor
+    B b4 = convert_to<const volatile B>();
+           ^
+
+"Test_name.c", line 969: error: class "cwg59::B" has no suitable copy constructor
+    B b5 = convert_to<const volatile B&>();
+           ^
+
+"Test_name.c", line 978: error: class "cwg59::A" has no suitable copy constructor
+    A c4 = convert_to<const volatile B>();
+           ^
+
+"Test_name.c", line 983: error: class "cwg59::A" has no suitable copy constructor
+    A c5 = convert_to<const volatile B&>();
+           ^
+
+"Test_name.c", line 1015: error: a pointer to a bound function may only be used to call the function
+    void (*q)() = &y.f;
+                     ^
+
+"Test_name.c", line 1017: error: a pointer to a bound function may only be used to call the function
+    void (*r)() = y.f;
+                    ^
+
+"Test_name.c", line 1039: error: a template argument may not reference an unnamed type
+    X<NoNameForLinkagePtr> x2;
+      ^
+
+"Test_name.c", line 1042: error: a template argument may not reference an unnamed type
+    X<const NoNameForLinkagePtr> x3;
+      ^
+
+"Test_name.c", line 1045: error: a template argument may not reference an unnamed type
+    NoNameForLinkagePtr p1 = get<NoNameForLinkagePtr>();
+                             ^
+
+"Test_name.c", line 1049: error: a template argument may not reference an unnamed type
+    NoNameForLinkagePtr p2 = get<const NoNameForLinkagePtr>();
+                             ^
+
+"Test_name.c", line 1053: error: a template argument may not reference an unnamed type
+    int n1 = take(noNameForLinkagePtr);
+             ^
+
+"Test_name.c", line 1062: error: a template argument may not reference a local type
+      X<NoLinkage> a;
+        ^
+
+"Test_name.c", line 1064: error: a template argument may not reference a local type
+      X<const NoLinkage> b;
+        ^
+
+"Test_name.c", line 1066: error: a template argument may not reference a local type
+      get<NoLinkage>();
+      ^
+
+"Test_name.c", line 1069: error: a template argument may not reference a local type
+      get<const NoLinkage>();
+      ^
+
+"Test_name.c", line 1072: error: a template argument may not reference a local type
+      X<void (*)(NoLinkage A::*)> c;
+        ^
+
+"Test_name.c", line 1074: error: a template argument may not reference a local type
+      X<int NoLinkage::*> d;
+        ^
+
+"Test_name.c", line 1062: warning: variable "a" was declared but never referenced
+      X<NoLinkage> a;
+                   ^
+
+"Test_name.c", line 1064: warning: variable "b" was declared but never referenced
+      X<const NoLinkage> b;
+                         ^
+
+"Test_name.c", line 1072: warning: variable "c" was declared but never referenced
+      X<void (*)(NoLinkage A::*)> c;
+                                  ^
+
+"Test_name.c", line 1074: warning: variable "d" was declared but never referenced
+      X<int NoLinkage::*> d;
+                          ^
+
+"Test_name.c", line 1109: error: too many arguments in function call
+    int c = f(1, 2);
+                 ^
+
+"Test_name.c", line 1130: warning: extended friend syntax is a C++11 feature
+      friend typename ::cwg68::X<double>;
+      ^
+
+"Test_name.c", line 1143: error: a template argument may not reference a non-external entity
+    Q<&f<int> > q;
+      ^
+
+"Test_name.c", line 1174: error: a member with an in-class initializer must be const
+      static int n = 0;
+                   ^
+
+"Test_name.c", line 1181: error: constant value is not known
+    static_assert(n, "");
+    ^
+
+"Test_name.c", line 1196: error: const variable "cwg78::k" requires an initializer
+    const int k;
+               ^
+
+"Test_name.c", line 1207: error: declaration of a member with the same name as its class
+      static int B;
+                 ^
+
+"Test_name.c", line 1211: error: a field with the same name as its class cannot be declared in a class with a user-declared constructor
+      int C;
+          ^
+
+"Test_name.c", line 1217: error: declaration of a member with the same name as its class
+      int D;
+          ^
+
+"Test_name.c", line 1243: warning: "cwg84::B::B(cwg84::B &)", required for copy that was eliminated, is not callable because reference parameter cannot be bound to rvalue
+    B b = a;
+          ^
+
+"Test_name.c", line 1253: warning: invalid redeclaration of nested class
+      struct B;
+             ^
+
+"Test_name.c", line 1259: warning: invalid redeclaration of nested class
+      union U;
+            ^
+
+"Test_name.c", line 1281: warning: invalid redeclaration of nested class
+      struct B;
+             ^
+
+"Test_name.c", line 1326: error: identifier "cwg90_f" is undefined
+      cwg90_f(B::C());
+      ^
+
+"Test_name.c", line 1334: error: identifier "cwg90_g" is undefined
+      cwg90_g(A());
+      ^
+
+"Test_name.c", line 1354: error: incompatible exception specifications
+    void (*p)() throw(int) = &f; // #cwg92-p
+                             ^
+
+"Test_name.c", line 1362: error: exception specification is not allowed
+    void (**pp)() throw() = &q;
+                  ^
+
+"Test_name.c", line 1369: error: incompatible exception specifications
+      g(f);
+        ^
+
+"Test_name.c", line 1373: error: incompatible exception specifications
+      g(q);
+        ^
+
+"Test_name.c", line 1384: error: incompatible exception specifications
+    X<&f> xp;
+      ^
+
+"Test_name.c", line 1412: error: function "cwg95::N::C::f" (declared at line 1407) is inaccessible
+    struct B { void f() { N::C::f(); } };
+                                ^
+
+"Test_name.c", line 1433: warning: variable "s" was declared but never referenced
+      A::template S<int> s;
+                         ^
+
+"Test_name.c", line 1434: warning: variable "b" was declared but never referenced
+      B<A::template S> b;
+                       ^
+
+"Test_name.c", line 1448: warning: statement is unreachable
+        try { // #cwg98-try
+        ^
+
+"Test_name.c", line 1447: error: transfer of control into a try block
+      switch (n) {
+      ^
+
+"Test_name.c", line 1447: error: transfer of control into an exception handler
+      switch (n) {
+      ^
+
+"Test_name.c", line 1462: error: transfer of control into a try block
+          goto x;
+          ^
+
+"Test_name.c", line 1466: error: transfer of control into an exception handler
+          goto y;
+          ^
+
+"Test_name.c", line 1026: error: a template argument may not reference an unnamed type
+    template<typename T> T get() { return get<T>(); }
+                                          ^
+          detected during instantiation of "T cwg62::get<T>() [with T=cwg62::NoNameForLinkagePtr]" at line 1045
+
+"Test_name.c", line 1026: error: a template argument may not reference an unnamed type
+    template<typename T> T get() { return get<T>(); }
+                                          ^
+          detected during instantiation of "T cwg62::get<T>() [with T=const cwg62::NoNameForLinkagePtr]" at line 1049
+
+"Test_name.c", line 73: warning: function "cwg4::cwg4_f(float)" was declared but never referenced
+      static void cwg4_f(float) {}
+                  ^
+
+"Test_name.c", line 72: warning: function "cwg4::cwg4_f(int)" was declared but never referenced
+      static void cwg4_f(int) {}
+                  ^
+
+"Test_name.c", line 1136: warning: function "cwg69::f<T>() [with T=char]" was declared but never referenced
+    template<typename T> static void f() {} // #cwg69-f
+                                     ^
+
+"Test_name.c", line 1196: warning: variable "cwg78::k" was declared but never referenced
+    const int k;
+              ^
+
+95 errors detected in the compilation of "Test_name.c".

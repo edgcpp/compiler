@@ -1,0 +1,162 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 243: error: identifier "_Float128" is undefined
+  flt128 (_Float128 f1, _Float128 f2, _Float128 f3, _Float128 f4, _Float128 f5,
+          ^
+
+"Test_name.c", line 243: error: identifier "_Float128" is undefined
+  flt128 (_Float128 f1, _Float128 f2, _Float128 f3, _Float128 f4, _Float128 f5,
+                        ^
+
+"Test_name.c", line 243: error: identifier "_Float128" is undefined
+  flt128 (_Float128 f1, _Float128 f2, _Float128 f3, _Float128 f4, _Float128 f5,
+                                      ^
+
+"Test_name.c", line 243: error: identifier "_Float128" is undefined
+  flt128 (_Float128 f1, _Float128 f2, _Float128 f3, _Float128 f4, _Float128 f5,
+                                                    ^
+
+"Test_name.c", line 243: error: identifier "_Float128" is undefined
+  flt128 (_Float128 f1, _Float128 f2, _Float128 f3, _Float128 f4, _Float128 f5,
+                                                                  ^
+
+"Test_name.c", line 244: error: identifier "_Float128" is undefined
+  	_Float128 f6, _Float128 f7, _Float128 f8, _Float128 f9)
+  	^
+
+"Test_name.c", line 244: error: identifier "_Float128" is undefined
+  	_Float128 f6, _Float128 f7, _Float128 f8, _Float128 f9)
+  	              ^
+
+"Test_name.c", line 244: error: identifier "_Float128" is undefined
+  	_Float128 f6, _Float128 f7, _Float128 f8, _Float128 f9)
+  	                            ^
+
+"Test_name.c", line 244: error: identifier "_Float128" is undefined
+  	_Float128 f6, _Float128 f7, _Float128 f8, _Float128 f9)
+  	                                          ^
+
+"Test_name.c", line 246: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f1 >= -1.0f128 && f1 <= 1.0f128)) __builtin_unreachable ();
+                ^
+
+"Test_name.c", line 246: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f1 >= -1.0f128 && f1 <= 1.0f128)) __builtin_unreachable ();
+                                 ^
+
+"Test_name.c", line 247: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_acosf128 (f1);
+    ^
+
+"Test_name.c", line 248: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_asinf128 (f1);
+    ^
+
+"Test_name.c", line 249: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f2 >= 1.0f128 && f2 <= __builtin_inff128 ())) __builtin_unreachable ();
+               ^
+
+"Test_name.c", line 249: error: builtin function is not available because 128-bit floating-point types are not supported
+    if (!(f2 >= 1.0f128 && f2 <= __builtin_inff128 ())) __builtin_unreachable ();
+                                 ^
+
+"Test_name.c", line 250: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_acoshf128 (f2);
+    ^
+
+"Test_name.c", line 251: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f3 > -1.0f128 && f3 < 1.0f128)) __builtin_unreachable ();
+               ^
+
+"Test_name.c", line 251: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f3 > -1.0f128 && f3 < 1.0f128)) __builtin_unreachable ();
+                               ^
+
+"Test_name.c", line 252: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_atanhf128 (f3);
+    ^
+
+"Test_name.c", line 253: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f4 > 0.0f128 && f4 < __builtin_inff128 ())) __builtin_unreachable ();
+              ^
+
+"Test_name.c", line 253: warning: function "__builtin_inff128" declared implicitly
+    if (!(f4 > 0.0f128 && f4 < __builtin_inff128 ())) __builtin_unreachable ();
+                               ^
+
+"Test_name.c", line 254: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_logf128 (f4);
+    ^
+
+"Test_name.c", line 255: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_log2f128 (f4);
+    ^
+
+"Test_name.c", line 256: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_log10f128 (f4);
+    ^
+
+"Test_name.c", line 257: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f5 > -1.0f128 && f5 < __builtin_inff128 ())) __builtin_unreachable ();
+               ^
+
+"Test_name.c", line 257: warning: function "__builtin_inff128" declared implicitly
+    if (!(f5 > -1.0f128 && f5 < __builtin_inff128 ())) __builtin_unreachable ();
+                                ^
+
+"Test_name.c", line 258: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_log1pf128 (f5);
+    ^
+
+"Test_name.c", line 259: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f6 >= 0.0f128 && f6 < __builtin_inff128 ())) __builtin_unreachable ();
+               ^
+
+"Test_name.c", line 259: warning: function "__builtin_inff128" declared implicitly
+    if (!(f6 >= 0.0f128 && f6 < __builtin_inff128 ())) __builtin_unreachable ();
+                                ^
+
+"Test_name.c", line 260: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_sqrtf128 (f6);
+    ^
+
+"Test_name.c", line 261: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f7 > -11357.0f128 && f7 < 11357.0f128)) __builtin_unreachable ();
+                   ^
+
+"Test_name.c", line 261: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f7 > -11357.0f128 && f7 < 11357.0f128)) __builtin_unreachable ();
+                                       ^
+
+"Test_name.c", line 262: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_coshf128 (f7);
+    ^
+
+"Test_name.c", line 263: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_sinhf128 (f7);
+    ^
+
+"Test_name.c", line 264: warning: function "__builtin_inff128" declared implicitly
+    if (!(f8 > -__builtin_inff128 () && f8 < 11356.0f128)) __builtin_unreachable ();
+                ^
+
+"Test_name.c", line 264: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f8 > -__builtin_inff128 () && f8 < 11356.0f128)) __builtin_unreachable ();
+                                                ^
+
+"Test_name.c", line 265: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_expf128 (f8);
+    ^
+
+"Test_name.c", line 266: warning: function "__builtin_inff128" declared implicitly
+    if (!(f9 > -__builtin_inff128 () && f9 < 16384.0f128)) __builtin_unreachable ();
+                ^
+
+"Test_name.c", line 266: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (!(f9 > -__builtin_inff128 () && f9 < 16384.0f128)) __builtin_unreachable ();
+                                                ^
+
+"Test_name.c", line 267: error: builtin function is not available because 128-bit floating-point types are not supported
+    __builtin_exp2f128 (f9);
+    ^
+
+23 errors detected in the compilation of "Test_name.c".

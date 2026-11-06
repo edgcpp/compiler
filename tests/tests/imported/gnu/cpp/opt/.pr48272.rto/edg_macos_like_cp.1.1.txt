@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 52: warning: missing return statement at end of non-void function "__gnu_cxx::__exchange_and_add_dispatch"
+    }
+    ^
+
+"Test_name.c", line 95: warning: missing return statement at end of non-void function "std::basic_string<_CharT, _Traits, _Alloc>::_S_empty_rep"
+      }
+      ^
+
+"Test_name.c", line 107: warning: missing return statement at end of non-void function "std::basic_string<_CharT, _Traits, _Alloc>::get_allocator [with _CharT=char, _Traits=std::char_traits<char>, _Alloc=std::allocator<char>]"
+      }
+      ^
+          detected during:
+            instantiation of "std::basic_string<_CharT, _Traits, _Alloc>::allocator_type std::basic_string<_CharT, _Traits, _Alloc>::get_allocator() const [with _CharT=char, _Traits=std::char_traits<char>, _Alloc=std::allocator<char>]" at line 103
+            instantiation of "std::basic_string<_CharT, _Traits, _Alloc>::~basic_string() [with _CharT=char, _Traits=std::char_traits<char>, _Alloc=std::allocator<char>]" at line 127
+

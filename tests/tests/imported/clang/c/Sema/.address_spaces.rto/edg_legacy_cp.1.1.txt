@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 14: error: identifier "x" is undefined
+    _AS2 *x;// expected-error {{type specifier missing, defaults to 'int'}}
+          ^
+
+"Test_name.c", line 15: warning: variable "B" was declared but never referenced
+    _AS1 float * _AS2 *B;
+                       ^
+
+"Test_name.c", line 17: warning: variable "Y" was declared but never referenced
+    int _AS1 _AS2 *Y;   // expected-error {{multiple address spaces specified for type}}
+                   ^
+
+"Test_name.c", line 18: warning: variable "Z" was declared but never referenced
+    int *_AS1 _AS2 *Z;  // expected-error {{multiple address spaces specified for type}}
+                    ^
+
+"Test_name.c", line 19: warning: variable "M" was declared but never referenced
+    int *_AS1 _AS1 *M;  // expected-warning {{multiple identical address spaces specified for type}}
+                    ^
+
+"Test_name.c", line 21: warning: variable "local" was declared but never referenced
+    _AS1 int local;     // expected-error {{automatic variable qualified with an address space}}
+             ^
+
+"Test_name.c", line 22: warning: variable "array" was declared but never referenced
+    _AS1 int array[5];  // expected-error {{automatic variable qualified with an address space}}
+             ^
+
+"Test_name.c", line 23: warning: variable "arrarr" was declared but never referenced
+    _AS1 int arrarr[5][5]; // expected-error {{automatic variable qualified with an address space}}
+             ^
+
+"Test_name.c", line 25: warning: variable "_boundsA" was declared but never referenced
+    __attribute__((address_space(-1))) int *_boundsA; // expected-error {{address space is negative}}
+                                            ^
+
+"Test_name.c", line 26: warning: variable "_boundsB" was declared but never referenced
+    __attribute__((address_space(0x7FFFFF))) int *_boundsB; // expected-error {{address space is larger than the maximum supported}}
+                                                  ^
+
+"Test_name.c", line 27: warning: variable "_boundsC" was declared but never referenced
+    __attribute__((address_space(0x1000000))) int *_boundsC; // expected-error {{address space is larger than the maximum supported}}
+                                                   ^
+
+"Test_name.c", line 29: warning: variable "_boundsD" was declared but never referenced
+    __attribute__((address_space(4294967500))) int *_boundsD; // expected-error {{address space is larger than the maximum supported}}
+                                                    ^
+
+"Test_name.c", line 66: error: expression must have struct or union type but it has type "void (*)(int)"
+      (void) bar.as_field;
+             ^
+
+"Test_name.c", line 65: warning: variable "x" was declared but never referenced
+      struct HasASFields x;
+                         ^
+
+"Test_name.c", line 78: warning: return value type does not match the function type
+    return x - y; // expected-error {{arithmetic operation with operands of type  ('_AS1 char *' and '_AS2 char *') which are pointers to non-overlapping address spaces}}
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

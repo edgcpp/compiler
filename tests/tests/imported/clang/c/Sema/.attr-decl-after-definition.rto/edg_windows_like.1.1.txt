@@ -1,0 +1,33 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 22: warning: unknown attribute "visibility"
+                         visibility("hidden"))); // expected-warning {{must precede definition}}
+                         ^
+
+"Test_name.c", line 27: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) zed; // expected-warning {{must precede definition}}
+                        ^
+
+"Test_name.c", line 29: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) zed2 {
+                        ^
+
+"Test_name.c", line 31: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) zed2;
+                        ^
+
+"Test_name.c", line 33: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) zed3 {  // expected-note {{previous definition is here}}
+                        ^
+
+"Test_name.c", line 35: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"),
+                        ^
+
+"Test_name.c", line 39: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("hidden"))) zed4 {  // expected-note {{previous attribute is here}}
+                        ^
+
+"Test_name.c", line 41: warning: unknown attribute "visibility"
+  struct __attribute__((visibility("default"))) zed4; // expected-error {{visibility does not match previous declaration}}
+                        ^
+

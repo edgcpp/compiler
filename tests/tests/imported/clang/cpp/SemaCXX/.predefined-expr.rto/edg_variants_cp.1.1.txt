@@ -1,0 +1,63 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 17: error: static assertion failed with "int bar()"
+    static_assert(sizeof(__PRETTY_FUNCTION__) == 10, "int bar()");
+    ^
+"Test_name.c", line 17: note: the final comparison was 16 == 10
+    static_assert(sizeof(__PRETTY_FUNCTION__) == 10, "int bar()");
+                                              ^
+
+"Test_name.c", line 37: error: expected an expression
+    ^{
+    ^
+
+"Test_name.c", line 41: warning: parsing restarts here after previous syntax error
+    }();
+       ^
+
+"Test_name.c", line 61: error: static assertion failed with "auto main()::<lambda>::operator()() const"
+      static_assert(sizeof(__PRETTY_FUNCTION__) == 42,
+      ^
+"Test_name.c", line 61: note: the final comparison was 38 == 42
+      static_assert(sizeof(__PRETTY_FUNCTION__) == 42,
+                                                ^
+
+"Test_name.c", line 67: error: expected an expression
+    ^{
+    ^
+
+"Test_name.c", line 71: warning: parsing restarts here after previous syntax error
+    }();
+       ^
+
+"Test_name.c", line 92: error: static assertion failed with "auto main()::<lambda>::operator()() const"
+        static_assert(sizeof(__PRETTY_FUNCTION__) == 42,
+        ^
+"Test_name.c", line 92: note: the final comparison was 38 == 42
+        static_assert(sizeof(__PRETTY_FUNCTION__) == 42,
+                                                  ^
+
+"Test_name.c", line 26: error: static assertion failed with "int baz() [T = int]"
+    static_assert(sizeof(__PRETTY_FUNCTION__) == 20, "int baz() [T = int]");
+    ^
+"Test_name.c", line 26: note: the final comparison was 25 == 20
+    static_assert(sizeof(__PRETTY_FUNCTION__) == 20, "int baz() [T = int]");
+                                              ^
+          detected during instantiation of "int baz<T>() [with T=int]" at line 98
+
+"Test_name.c", line 31: error: static assertion failed with "auto baz()::<lambda>::operator()() const"
+      static_assert(sizeof(__PRETTY_FUNCTION__) == 41,
+      ^
+"Test_name.c", line 31: note: the final comparison was 38 == 41
+      static_assert(sizeof(__PRETTY_FUNCTION__) == 41,
+                                                ^
+          detected during instantiation of "int baz<T>() [with T=int]" at line 98
+
+"Test_name.c", line 47: error: static assertion failed with "int baz() [T = int]"
+      static_assert(sizeof(__PRETTY_FUNCTION__) == 20, "int baz() [T = int]");
+      ^
+"Test_name.c", line 47: note: the final comparison was 25 == 20
+      static_assert(sizeof(__PRETTY_FUNCTION__) == 20, "int baz() [T = int]");
+                                                ^
+          detected during instantiation of "int baz<T>() [with T=int]" at line 98
+
+8 errors detected in the compilation of "Test_name.c".

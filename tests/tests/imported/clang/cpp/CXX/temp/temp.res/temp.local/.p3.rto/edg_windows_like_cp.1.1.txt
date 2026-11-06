@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++03 Test_name.c
+"Test_name.c", line 15: error: "Derived<T>::Base" is ambiguous
+    typename Derived::Base b;	// expected-error{{member 'Base' found in multiple base classes of different types}}
+                      ^
+
+"Test_name.c", line 21: error: "Derived<T>::Base" is ambiguous
+      t->Base::f(); // expected-error{{member 'Base' found in multiple base classes of different types}}
+         ^
+
+"Test_name.c", line 30: error: expected a ";"
+      WebVector(const WebVector<T>& other) { } // expected-error{{undeclared identifier 'T'}} \
+      ^
+
+"Test_name.c", line 36: warning: parsing restarts here after previous syntax error
+  }
+  ^
+
+3 errors detected in the compilation of "Test_name.c".

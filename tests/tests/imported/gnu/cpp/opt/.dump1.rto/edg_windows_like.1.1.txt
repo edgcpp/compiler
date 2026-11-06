@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 16: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 523: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__ ((__visibility__ ("default")))
+                                      ^
+
+"Test_name.c", line 529: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 563: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 655: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 342: warning: missing return statement at end of non-void function "std::reference_wrapper<_Tp>::get"
+        {}
+         ^
+          detected during:
+            instantiation of "std::result_of<_Tp &(_Args &&...)>::type std::reference_wrapper<_Tp>::operator()(_Args &&...) const [with _Tp=std::_Bind_simple<std::reference_wrapper<lambda []()->int> ()>, _Args=<>]" at line 424
+            instantiation of "_Res std::_Function_handler<_Res (_ArgTypes...), _Functor>::_M_invoke(const std::_Any_data &, _ArgTypes...) [with _Res=int, _Functor=std::reference_wrapper<std::_Bind_simple<std::reference_wrapper<lambda []()->int> ()>>, _ArgTypes=<>]" at line 455
+            instantiation of "std::function<_Res (_ArgTypes...)>::function(_Functor) [with _Res=int, _ArgTypes=<>, _Functor=std::reference_wrapper<std::_Bind_simple<std::reference_wrapper<lambda []()->int> ()>>, <unnamed>=void]" at line 691
+            instantiation of "std::__future_base::_Task_setter<_Res_ptr, _Res_ptr::element_type::result_type> std::__future_base::_S_task_setter(_Res_ptr &, _BoundFn &&) [with _Res_ptr=std::unique_ptr<std::__future_base::_Result<int>, std::__future_base::_Result_base::_Deleter>, _BoundFn=std::_Bind_simple<std::reference_wrapper<lambda []()->int> ()>]" at line 722
+            instantiation of "void std::__future_base::_Task_state<_Fn, _Alloc, _Res (_Args...)>::_M_run(_Args...) [with _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>, _Res=int, _Args=<>]" at line 716
+            [ 7 instantiation contexts not shown ]
+            instantiation of "std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_make_shared_tag, const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Lp=__gnu_cxx::_S_atomic, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 644
+            instantiation of "std::shared_ptr<_Tp>::shared_ptr(std::_Sp_make_shared_tag, const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 652
+            instantiation of "std::shared_ptr<_Tp> std::allocate_shared<_Tp,_Alloc,_Args...>(const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 736
+            instantiation of "std::shared_ptr<std::__future_base::_Task_state_base<_Signature>> std::__create_task_state<_Signature,_Fn,_Alloc>(_Fn &&, const _Alloc &) [with _Signature=int (), _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>]" at line 752
+            instantiation of "std::packaged_task<_Res (_ArgTypes...)>::packaged_task(std::allocator_arg_t, const _Alloc &, _Fn &&) [with _Res=int, _ArgTypes=<>, _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>, <unnamed>=void]" at line 770
+
+"Test_name.c", line 513: warning: function "operator new(std::size_t, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+   { ::new((void*)__p) _Tp(std::forward<_Args>(__args)...); }
+       ^
+          detected during:
+            instantiation of "std::enable_if<std::__and_<std::__not_<std::allocator_traits<_Alloc>::__construct_helper<_Tp, _Args...>>, std::is_constructible<_Tp, _Args...>>::value, void>::type std::allocator_traits<_Alloc>::_S_construct(_Alloc &, _Tp *, _Args &&...) [with _Alloc=__gnu_test::SimpleAllocator<int>, _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 520
+            instantiation of "auto std::allocator_traits<_Alloc>::construct(_Alloc &, _Tp *, _Args &&...)->decltype((<expression>)) [with _Alloc=__gnu_test::SimpleAllocator<int>, _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 588
+            instantiation of "std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Lp=__gnu_cxx::_S_atomic, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 513
+            instantiation of "std::enable_if<std::__and_<std::__not_<std::allocator_traits<_Alloc>::__construct_helper<_Tp, _Args...>>, std::is_constructible<_Tp, _Args...>>::value, void>::type std::allocator_traits<_Alloc>::_S_construct(_Alloc &, _Tp *, _Args &&...) [with _Alloc=__gnu_test::SimpleAllocator<std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>>, _Tp=std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>, _Args=<const __gnu_test::SimpleAllocator<int>, lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 520
+            instantiation of "auto std::allocator_traits<_Alloc>::construct(_Alloc &, _Tp *, _Args &&...)->decltype((<expression>)) [with _Alloc=__gnu_test::SimpleAllocator<std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>>, _Tp=std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>, _Args=<const __gnu_test::SimpleAllocator<int>, lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 609
+            instantiation of "std::__shared_count<_Lp>::__shared_count(std::_Sp_make_shared_tag, _Tp *, const _Alloc &, _Args &&...) [with _Lp=__gnu_cxx::_S_atomic, _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 628
+            instantiation of "std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_make_shared_tag, const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Lp=__gnu_cxx::_S_atomic, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 644
+            instantiation of "std::shared_ptr<_Tp>::shared_ptr(std::_Sp_make_shared_tag, const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 652
+            instantiation of "std::shared_ptr<_Tp> std::allocate_shared<_Tp,_Alloc,_Args...>(const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 736
+            instantiation of "std::shared_ptr<std::__future_base::_Task_state_base<_Signature>> std::__create_task_state<_Signature,_Fn,_Alloc>(_Fn &&, const _Alloc &) [with _Signature=int (), _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>]" at line 752
+            instantiation of "std::packaged_task<_Res (_ArgTypes...)>::packaged_task(std::allocator_arg_t, const _Alloc &, _Fn &&) [with _Res=int, _ArgTypes=<>, _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>, <unnamed>=void]" at line 770
+
+"Test_name.c", line 513: warning: function "operator new(std::size_t, void *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+   { ::new((void*)__p) _Tp(std::forward<_Args>(__args)...); }
+       ^
+          detected during:
+            instantiation of "std::enable_if<std::__and_<std::__not_<std::allocator_traits<_Alloc>::__construct_helper<_Tp, _Args...>>, std::is_constructible<_Tp, _Args...>>::value, void>::type std::allocator_traits<_Alloc>::_S_construct(_Alloc &, _Tp *, _Args &&...) [with _Alloc=__gnu_test::SimpleAllocator<std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>>, _Tp=std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>, _Args=<const __gnu_test::SimpleAllocator<int>, lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 520
+            instantiation of "auto std::allocator_traits<_Alloc>::construct(_Alloc &, _Tp *, _Args &&...)->decltype((<expression>)) [with _Alloc=__gnu_test::SimpleAllocator<std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>>, _Tp=std::_Sp_counted_ptr_inplace<std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, __gnu_test::SimpleAllocator<int>, __gnu_cxx::_S_atomic>, _Args=<const __gnu_test::SimpleAllocator<int>, lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 609
+            instantiation of "std::__shared_count<_Lp>::__shared_count(std::_Sp_make_shared_tag, _Tp *, const _Alloc &, _Args &&...) [with _Lp=__gnu_cxx::_S_atomic, _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 628
+            instantiation of "std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_make_shared_tag, const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Lp=__gnu_cxx::_S_atomic, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 644
+            instantiation of "std::shared_ptr<_Tp>::shared_ptr(std::_Sp_make_shared_tag, const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 652
+            instantiation of "std::shared_ptr<_Tp> std::allocate_shared<_Tp,_Alloc,_Args...>(const _Alloc &, _Args &&...) [with _Tp=std::__future_base::_Task_state<lambda []()->int, __gnu_test::SimpleAllocator<int>, int ()>, _Alloc=__gnu_test::SimpleAllocator<int>, _Args=<lambda []()->int, const __gnu_test::SimpleAllocator<int> &>]" at line 736
+            instantiation of "std::shared_ptr<std::__future_base::_Task_state_base<_Signature>> std::__create_task_state<_Signature,_Fn,_Alloc>(_Fn &&, const _Alloc &) [with _Signature=int (), _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>]" at line 752
+            instantiation of "std::packaged_task<_Res (_ArgTypes...)>::packaged_task(std::allocator_arg_t, const _Alloc &, _Fn &&) [with _Res=int, _ArgTypes=<>, _Fn=lambda []()->int, _Alloc=__gnu_test::SimpleAllocator<int>, <unnamed>=void]" at line 770
+

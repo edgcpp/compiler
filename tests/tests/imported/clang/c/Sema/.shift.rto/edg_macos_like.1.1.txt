@@ -1,0 +1,77 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Sema/shift.c", line 21: warning: shift count is negative
+    c = 1 << -1;
+             ^
+
+"Sema/shift.c", line 22: warning: shift count is negative
+    c = 1 >> -1;
+             ^
+
+"Sema/shift.c", line 23: warning: shift count is too large
+    c = 1 << (unsigned)-1;
+             ^
+
+"Sema/shift.c", line 25: warning: shift count is too large
+    c = 1 >> (unsigned)-1;
+             ^
+
+"Sema/shift.c", line 31: warning: shift count is negative
+    c <<= -1;
+          ^
+
+"Sema/shift.c", line 32: warning: shift count is negative
+    c >>= -1;
+          ^
+
+"Sema/shift.c", line 33: warning: shift count is too large
+    c <<= 999999;
+          ^
+
+"Sema/shift.c", line 34: warning: shift count is too large
+    c >>= 999999;
+          ^
+
+"Sema/shift.c", line 35: warning: shift count is too large
+    c <<= 8;
+          ^
+
+"Sema/shift.c", line 36: warning: shift count is too large
+    c >>= 8;
+          ^
+
+"Sema/shift.c", line 37: warning: shift count is too large
+    c <<= 8 +1;
+          ^
+
+"Sema/shift.c", line 38: warning: shift count is too large
+    c >>= 8 +1;
+          ^
+
+"Sema/shift.c", line 41: warning: variable "i" was set but never used
+    int i;
+        ^
+
+"Sema/shift.c", line 50: warning: variable "u" was set but never used
+    unsigned u;
+             ^
+
+"Sema/shift.c", line 54: warning: variable "lli" was set but never used
+    long long int lli;
+                  ^
+
+"Sema/shift.c", line 70: warning: shift count is too large
+      (void) (x >> 80);
+                   ^
+
+"Sema/shift.c", line 71: warning: shift count is too large
+    (void) (x >> 80);
+                 ^
+
+"Sema/shift.c", line 74: warning: unknown attribute "vector_size"
+  typedef unsigned vec16 __attribute__((vector_size(16)));
+                                        ^
+
+"Sema/shift.c", line 75: warning: unknown attribute "vector_size"
+  typedef unsigned vec8 __attribute__((vector_size(8)));
+                                       ^
+

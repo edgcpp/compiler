@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: target attribute not recognized
+  void __attribute__((target("arch=mips1")))
+                             ^
+
+"Test_name.c", line 10: error: function "foo" has already been defined (previous definition at line 6)
+  foo(void) {}
+  ^
+
+"Test_name.c", line 9: warning: target attribute not recognized
+  void __attribute__((target("arch=mips2")))
+                             ^
+
+"Test_name.c", line 13: warning: target attribute not recognized
+  void __attribute__((target("default")))
+                             ^
+
+1 error detected in the compilation of "Test_name.c".

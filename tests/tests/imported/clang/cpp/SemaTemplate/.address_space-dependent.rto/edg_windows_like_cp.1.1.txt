@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 14: error: identifier "x" is undefined
+    __attribute__((address_space(J))) * x; // expected-error {{a type specifier is required for all declarations}}
+                                        ^
+
+"Test_name.c", line 7: warning: variable "Y" was declared but never referenced
+    int __attribute__((address_space(I))) __attribute__((address_space(J))) * Y;  // expected-error {{multiple address spaces specified for type}}
+                                                                              ^
+
+"Test_name.c", line 8: warning: variable "Z" was declared but never referenced
+    int *__attribute__((address_space(I))) __attribute__((address_space(J))) * Z; // expected-error {{multiple address spaces specified for type}}
+                                                                               ^
+
+"Test_name.c", line 10: warning: variable "local" was declared but never referenced
+    __attribute__((address_space(I))) int local;        // expected-error {{automatic variable qualified with an address space}}
+                                          ^
+
+"Test_name.c", line 11: warning: variable "array" was declared but never referenced
+    __attribute__((address_space(J))) int array[5];     // expected-error {{automatic variable qualified with an address space}}
+                                          ^
+
+"Test_name.c", line 12: warning: variable "arrarr" was declared but never referenced
+    __attribute__((address_space(I))) int arrarr[5][5]; // expected-error {{automatic variable qualified with an address space}}
+                                          ^
+
+"Test_name.c", line 16: warning: variable "B" was declared but never referenced
+    __attribute__((address_space(I))) float *B;
+                                             ^
+
+"Test_name.c", line 43: warning: variable "bounds" was declared but never referenced
+    __attribute__((address_space(I))) int *bounds; // expected-error {{address space is negative}}
+                                           ^
+
+"Test_name.c", line 48: warning: variable "bounds" was declared but never referenced
+    __attribute__((address_space(I))) int *bounds; // expected-error {{address space is larger than the maximum supported (8388581)}}
+                                           ^
+
+"Test_name.c", line 53: warning: variable "bounds" was declared but never referenced
+    __attribute__((address_space(I))) int *bounds;
+                                           ^
+
+"Test_name.c", line 94: warning: constant "AS" is not used in or cannot be deduced from the template argument list of class template "partial_spec_deduce_as<T *>"
+  template <typename T, unsigned AS>
+                                 ^
+
+"Test_name.c", line 101: error: no instance of function template "GetAddressSpaceValue" matches the argument list
+            argument types are: (int *)
+    int p = GetAddressSpaceValue(p1);
+            ^
+"Test_name.c", line 81: note: candidate function template "GetAddressSpaceValue" failed deduction
+  int GetAddressSpaceValue(T __attribute__((address_space(N))) * p) {
+      ^
+
+"Test_name.c", line 111: warning: variable "x" is used before its value is set
+    cmp<1, 2>(x, y); // expected-note {{in instantiation of function template specialization 'cmp<1, 2>' requested here}}
+              ^
+
+"Test_name.c", line 111: warning: variable "y" is used before its value is set
+    cmp<1, 2>(x, y); // expected-note {{in instantiation of function template specialization 'cmp<1, 2>' requested here}}
+                 ^
+
+"Test_name.c", line 118: error: incomplete type "partial_spec_deduce_as<int *>" is not allowed
+    static_assert(partial_spec_deduce_as<int __attribute__((address_space(3))) *>::value == 3, "address space value has been incorrectly deduced");
+                  ^
+
+"Test_name.c", line 104: warning: variable "HASTF" was declared but never referenced
+    HasASTemplateFields<1> HASTF;
+                           ^
+
+3 errors detected in the compilation of "Test_name.c".

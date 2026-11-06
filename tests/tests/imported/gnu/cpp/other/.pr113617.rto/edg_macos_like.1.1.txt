@@ -1,0 +1,42 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./other/pr113617.h", line 22: warning: unknown attribute "noipa"
+    __attribute__((noipa)) static _R bar(const H &) {}
+                   ^
+
+"./other/pr113617.h", line 43: warning: unknown attribute "noipa"
+  __attribute__((noipa)) typename V<W<_F>::value, _F, _B...>::type
+                 ^
+
+"./other/pr113617.h", line 61: warning: unknown attribute "noipa"
+    __attribute__((noipa)) void boo(long long, long long, long long, _F &) {}
+                   ^
+
+"./other/pr113617.h", line 68: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void garply(void *, long long, long long, long long) {}
+                 ^
+
+"./other/pr113617.h", line 95: warning: unknown attribute "noipa"
+    __attribute__((noipa)) C(_F) {}
+                   ^
+
+"./other/pr113617.h", line 121: warning: unknown attribute "noipa"
+  template <typename> struct D { __attribute__((noipa)) D(int *) {} };
+                                                ^
+
+"./other/pr113617.C", line 17: warning: unknown attribute "vector_size"
+  typedef unsigned long int VV __attribute__((vector_size (2 * sizeof (long))));
+                                              ^
+
+"./other/pr113617.C", line 19: warning: unknown attribute "noipa"
+  __attribute__((noipa)) static void fn1 (void) {}
+                 ^
+
+"./other/pr113617.C", line 20: warning: unknown attribute "noipa"
+  __attribute__((noipa)) static void fn2 (void) {}
+                 ^
+
+"./other/pr113617.C", line 25: error: too many initializer values
+    VV a = { (unsigned long) &fn1, (unsigned long) &fn2 };
+                                   ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./gcov/gcov-18.C", line 278: warning: variable "v2" was declared but never referenced
+      constexpr int v2 = mcdc010a (4, 2);
+                    ^
+
+"./gcov/gcov-18.C", line 280: warning: variable "v3" was declared but never referenced
+      constexpr int v3 = mcdc010b (2, 4);
+                    ^
+
+/usr/sbin/ld: Test_name.o: in function `throws(int)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::~runtime_error()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `typeinfo for std::runtime_error'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::runtime_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `throw_if(int)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::~runtime_error()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `typeinfo for std::runtime_error'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::runtime_error(const char *)'
+collect2: error: ld returned 1 exit status

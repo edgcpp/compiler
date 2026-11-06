@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --ms_extensions --c++11 Test_name.c
+"Test_name.c", line 8: error: identifier "undeclared" is undefined
+         undeclared();
+         ^
+
+"Test_name.c", line 16: error: invalid redeclaration of member function "B<T>::foo4()" (declared at line 15)
+     void foo4() { } // expected-error {{class member cannot be redeclared}}
+          ^
+
+"Test_name.c", line 20: error: identifier "undeclared" is undefined
+         undeclared();
+         ^
+
+"Test_name.c", line 26: error: function "B<T>::foo5" has already been defined (previous definition at line 17)
+  void B<T>::foo5() { // expected-error {{redefinition of 'foo5'}}
+             ^
+
+"Test_name.c", line 31: error: identifier "undeclared" is undefined
+      undeclared();
+      ^
+
+"Test_name.c", line 37: error: identifier "undeclared" is undefined
+     undeclared();
+     ^
+
+"Test_name.c", line 49: error: function template "foo5" has already been defined (previous definition at line 48)
+  template <class T> void foo5() {} // expected-error {{redefinition of 'foo5'}}
+                          ^
+
+"Test_name.c", line 97: warning: variable "IdxList" was declared but never referenced
+    ArrayRef<> IdxList;
+               ^
+
+"Test_name.c", line 111: error: identifier "Bogus" is undefined
+  auto invalidTrailingRetType() -> Bogus {} // expected-error {{unknown type name 'Bogus'}}
+                                   ^
+
+"Test_name.c", line 177: error: identifier "use_delayed_identifier" is undefined
+            use_delayed_identifier();
+            ^
+
+"Test_name.c", line 191: warning: missing return statement at end of non-void function "PR38460_2<<unnamed>>::p::G::operator()"
+        bool operator()(int) {}
+                              ^
+
+"Test_name.c", line 107: warning: variable "PR17661::Var" was declared but never referenced
+  constexpr int Var = Fun(20);
+                ^
+
+"Test_name.c", line 135: warning: function "PR19613::f" was declared but never referenced
+  static void f() {
+              ^
+
+"Test_name.c", line 151: warning: function "PR19613::g" was declared but never referenced
+  static void g() {
+              ^
+
+"Test_name.c", line 165: warning: function "PR19613::h" was declared but never referenced
+  static void h() {
+              ^
+
+9 errors detected in the compilation of "Test_name.c".

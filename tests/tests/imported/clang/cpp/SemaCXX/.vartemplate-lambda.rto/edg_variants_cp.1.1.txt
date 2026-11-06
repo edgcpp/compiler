@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 16: error: a lambda is not allowed in a constant expression
+    static constexpr T t = [](int f = T(7)){return f;}(); // expected-error{{constexpr variable 't<int>' must be initialized by a constant expression}} expected-note{{cannot be used in a constant expression}}
+                           ^
+
+"Test_name.c", line 9: error: default argument of type "int *" is incompatible with parameter of type "int"
+  template<typename T> auto v1 = [](int a = T()) { return a; }();
+                                            ^
+          detected during instantiation of "auto v1 [with T=int *]" at line 24
+
+"Test_name.c", line 31: error: name followed by "::" must be a class or namespace name
+    C::m1(); // expected-error{{type 'long long' cannot be used prior to '::' because it has no members}}
+    ^
+          detected during instantiation of "int foo3<C>() [with C=long long]" at line 36
+
+3 errors detected in the compilation of "Test_name.c".

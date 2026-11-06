@@ -1,0 +1,85 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc --c23 Test_name.c
+"Test_name.c", line 23: error: static assertion failed
+  static_assert (expr_has_type (s4.a + 1uwb, _BitInt(195)));
+  ^
+
+"Test_name.c", line 24: error: static assertion failed
+  static_assert (expr_has_type (s4.b + 1uwb, _BitInt(282)));
+  ^
+
+"Test_name.c", line 25: error: static assertion failed
+  static_assert (expr_has_type (s4.c + 1uwb, _BitInt(389)));
+  ^
+
+"Test_name.c", line 30: error: static assertion failed
+  static_assert (expr_has_type (s5.a + 1uwb, _BitInt(192)));
+  ^
+
+"Test_name.c", line 32: error: static assertion failed
+  static_assert (expr_has_type (s5.c + 1uwb, _BitInt(192)));
+  ^
+
+"Test_name.c", line 37: error: static assertion failed
+  static_assert (sizeof (struct S1) == 2);
+  ^
+"Test_name.c", line 37: note: the final comparison was 8 == 2
+  static_assert (sizeof (struct S1) == 2);
+                                    ^
+
+"Test_name.c", line 38: error: static assertion failed
+  static_assert (sizeof (struct S2) == 5);
+  ^
+"Test_name.c", line 38: note: the final comparison was 8 == 5
+  static_assert (sizeof (struct S2) == 5);
+                                    ^
+
+"Test_name.c", line 39: error: static assertion failed
+  static_assert (sizeof (struct S3) == 9);
+  ^
+"Test_name.c", line 39: note: the final comparison was 8 == 9
+  static_assert (sizeof (struct S3) == 9);
+                                    ^
+
+"Test_name.c", line 41: error: static assertion failed
+  static_assert (sizeof (struct S5) == 88);
+  ^
+"Test_name.c", line 41: note: the final comparison was 112 == 88
+  static_assert (sizeof (struct S5) == 88);
+                                    ^
+
+"Test_name.c", line 43: error: static assertion failed
+  static_assert (alignof (struct S1) == 1);
+  ^
+"Test_name.c", line 43: note: the final comparison was 4 == 1
+  static_assert (alignof (struct S1) == 1);
+                                     ^
+
+"Test_name.c", line 44: error: static assertion failed
+  static_assert (alignof (struct S2) == 1);
+  ^
+"Test_name.c", line 44: note: the final comparison was 4 == 1
+  static_assert (alignof (struct S2) == 1);
+                                     ^
+
+"Test_name.c", line 45: error: static assertion failed
+  static_assert (alignof (struct S3) == 1);
+  ^
+"Test_name.c", line 45: note: the final comparison was 4 == 1
+  static_assert (alignof (struct S3) == 1);
+                                     ^
+
+"Test_name.c", line 46: error: static assertion failed
+  static_assert (alignof (struct S4) == 8);
+  ^
+"Test_name.c", line 46: note: the final comparison was 16 == 8
+  static_assert (alignof (struct S4) == 8);
+                                     ^
+
+"Test_name.c", line 47: error: static assertion failed
+  static_assert (alignof (struct S5) == 8);
+  ^
+"Test_name.c", line 47: note: the final comparison was 16 == 8
+  static_assert (alignof (struct S5) == 8);
+                                     ^
+
+14 errors detected in the compilation of "Test_name.c".

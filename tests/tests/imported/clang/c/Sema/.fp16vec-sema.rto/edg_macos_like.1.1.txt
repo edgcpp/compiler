@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef __fp16 half4 __attribute__ ((vector_size (8)));
+                                       ^
+
+"Test_name.c", line 7: warning: unknown attribute "vector_size"
+  typedef float float4 __attribute__ ((vector_size (16)));
+                                       ^
+
+"Test_name.c", line 8: warning: unknown attribute "vector_size"
+  typedef short short4 __attribute__ ((vector_size (8)));
+                                       ^
+
+"Test_name.c", line 9: warning: unknown attribute "vector_size"
+  typedef int int4 __attribute__ ((vector_size (16)));
+                                   ^
+
+"Test_name.c", line 10: warning: unknown attribute "ext_vector_type"
+  typedef __fp16 exthalf4 __attribute__((ext_vector_type(4)));
+                                         ^
+
+"Test_name.c", line 35: warning: expression has no effect
+    hv0, 1;
+    ^
+
+"Test_name.c", line 35: warning: expression has no effect
+    hv0, 1;
+    ^
+
+"Test_name.c", line 36: warning: expression has no effect
+    1, hv0;
+    ^
+
+"Test_name.c", line 36: warning: expression has no effect
+    1, hv0;
+    ^
+
+"Test_name.c", line 61: error: expression must have struct or union type but it has type "exthalf4" (aka "__fp16")
+    __fp16 t0 = (-a).z;
+                ^
+
+1 error detected in the compilation of "Test_name.c".

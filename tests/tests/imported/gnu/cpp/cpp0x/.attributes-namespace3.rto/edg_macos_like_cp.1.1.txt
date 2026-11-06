@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 28: warning: variable "j" was declared but never referenced
+    N::T j; // { dg-warning ".N. is deprecated" }
+         ^
+
+"Test_name.c", line 31: warning: variable "l" was declared but never referenced
+    M::M2::T l; // { dg-warning ".M::M2. is deprecated" }
+             ^
+
+"Test_name.c", line 34: warning: variable "k" was declared but never referenced
+    N::N2::T k; // { dg-warning ".N. is deprecated" }
+             ^
+

@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 11: warning: invalid attribute for "struct test4"
+  struct __attribute__((visibility("hidden"))) test4; // expected-note {{previous attribute is here}}
+                        ^
+
+"Test_name.c", line 13: warning: invalid attribute for "struct test4"
+  struct __attribute__((visibility("default"))) test4; // expected-error {{visibility does not match previous declaration}}
+                        ^
+
+"Test_name.c", line 16: warning: invalid attribute for "struct test5"
+  struct __attribute__((visibility("hidden"))) test5; // expected-note {{previous attribute is here}}
+                        ^
+
+"Test_name.c", line 17: warning: invalid attribute for "struct test5"
+  struct __attribute__((visibility("default"))) test5; // expected-error {{visibility does not match previous declaration}}
+                        ^
+
+"Test_name.c", line 20: warning: visibility attribute ignored because it conflicts with a previous declaration
+                              visibility("hidden"))); // expected-note {{previous attribute is here}}
+                              ^
+
+"Test_name.c", line 23: warning: visibility attribute ignored because it conflicts with a previous declaration
+  extern int test7 __attribute__((visibility("hidden"))); // expected-error {{visibility does not match previous declaration}}
+                                  ^
+
+"Test_name.c", line 25: warning: attribute "visibility" does not apply here
+  typedef int __attribute__((visibility("default"))) bar; // expected-warning {{'visibility' attribute ignored}}
+                             ^
+
+"Test_name.c", line 29: error: expected a string literal
+  int PR17105 __attribute__((visibility(hidden))); // expected-error {{'visibility' attribute requires a string}}
+                                        ^
+
+1 error detected in the compilation of "Test_name.c".

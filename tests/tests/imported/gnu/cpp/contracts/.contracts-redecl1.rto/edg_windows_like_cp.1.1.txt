@@ -1,0 +1,186 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 8: error: expected a ","
+  int g0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 9: error: expected a ","
+  int g0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 11: error: expected a ","
+  int g0b(int a) [[ pre: a > 0 ]];
+                       ^
+
+"Test_name.c", line 12: error: expected a ","
+  int g0b(int b) [[ pre: b > 0 ]];
+                       ^
+
+"Test_name.c", line 13: error: expected a ","
+  int g0b(int c) [[ pre: c > 0 ]]
+                       ^
+
+"Test_name.c", line 19: error: expected a ","
+  int g1(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 24: error: expected a ","
+  int g2(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 27: error: expected a ","
+  int g2b(int b) [[ pre: b > 0 ]];
+                       ^
+
+"Test_name.c", line 36: error: expected a ","
+  int G0::f(int a) [[ pre: a > 0 ]]
+                         ^
+
+"Test_name.c", line 47: error: expected a ","
+  int G1::f1(int a) [[ pre: a > 0 ]];
+                          ^
+
+"Test_name.c", line 47: error: member function "G1::f1" may not be redeclared outside its class
+  int G1::f1(int a) [[ pre: a > 0 ]];
+          ^
+
+"Test_name.c", line 55: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 56: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]]; // { dg-error "different number of contracts" }
+                      ^
+
+"Test_name.c", line 56: error: expected a ","
+  int f0(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]]; // { dg-error "different number of contracts" }
+                                       ^
+
+"Test_name.c", line 58: error: expected a ","
+  int f1(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]];
+                      ^
+
+"Test_name.c", line 58: error: expected a ","
+  int f1(int a) [[ pre: a > 0 ]] [[ pre: a > 10 ]];
+                                       ^
+
+"Test_name.c", line 59: error: expected a ","
+  int f1(int a) [[ pre: a > 0 ]]; // { dg-error "different number of contracts" }
+                      ^
+
+"Test_name.c", line 61: error: expected a ","
+  int f2(int a) [[ pre: a > 0 ]];
+                      ^
+
+"Test_name.c", line 62: error: expected a ","
+  int f2(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                      ^
+
+"Test_name.c", line 65: error: expected a ","
+  int f3(int a) [[ pre: a < 0 ]]; // { dg-error "cannot add contracts" }
+                      ^
+
+"Test_name.c", line 69: error: expected a ","
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 69: error: expected a "]"
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 69: error: expected a ";"
+    virtual int f(int a) [[ pre: a > 0 ]];
+                               ^
+
+"Test_name.c", line 74: error: expected a ","
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 74: error: expected a "]"
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 74: error: expected a ";"
+    int f(int a) [[ pre: a < 0 ]]; // { dg-error "mismatched contract" }
+                       ^
+
+"Test_name.c", line 82: error: expected a ","
+  int S1::f(int a) [[ pre: a > 0 ]] // { dg-error "cannot add" }
+                         ^
+
+"Test_name.c", line 92: error: member function "S2::f" may not be redeclared outside its class
+  int S2::f(); // OK?
+          ^
+
+"Test_name.c", line 100: error: expected a ","
+  int S3::f() [[pre: true]]; // { dg-error "cannot add contracts" }
+                   ^
+
+"Test_name.c", line 100: error: member function "S3::f" may not be redeclared outside its class
+  int S3::f() [[pre: true]]; // { dg-error "cannot add contracts" }
+          ^
+
+"Test_name.c", line 109: error: class "S4" has no member "g"
+  int S4::g(int a) [[ pre: a > 0 ]]; // { dg-error "no declaration matches" }
+          ^
+
+"Test_name.c", line 109: error: expected a ","
+  int S4::g(int a) [[ pre: a > 0 ]]; // { dg-error "no declaration matches" }
+                         ^
+
+"Test_name.c", line 119: error: expected a ","
+  S5::S5(T a) [[ pre: a > 0 ]]
+                    ^
+
+"Test_name.c", line 119: error: expected a "]"
+  S5::S5(T a) [[ pre: a > 0 ]]
+                    ^
+
+"Test_name.c", line 119: error: "a" is not a nonstatic data member or base class of class "S5"
+  S5::S5(T a) [[ pre: a > 0 ]]
+                      ^
+
+"Test_name.c", line 119: error: expected a "(" or a "{"
+  S5::S5(T a) [[ pre: a > 0 ]]
+                        ^
+
+"Test_name.c", line 130: error: expected a ","
+  S6::S6(T a) [[ pre: a > 0 ]];
+                    ^
+
+"Test_name.c", line 130: error: expected a "]"
+  S6::S6(T a) [[ pre: a > 0 ]];
+                    ^
+
+"Test_name.c", line 138: error: expected a ","
+    [[ post r: r > 0 && r == n ]]
+            ^
+
+"Test_name.c", line 139: error: expected a ","
+    [[ post r: r > 1 && r == n ]]
+            ^
+
+"Test_name.c", line 140: error: expected a ","
+    [[ post r: r > 2 && r == n ]]
+            ^
+
+"Test_name.c", line 141: error: expected a ","
+    [[ post r: r > 3 && r == n ]];
+            ^
+
+"Test_name.c", line 144: error: expected a ","
+    [[ post r: r > 0 && r == z ]]
+            ^
+
+"Test_name.c", line 145: error: expected a ","
+    [[ post r1: r1 > 1 && r1 == z ]]
+            ^
+
+"Test_name.c", line 146: error: expected a ","
+    [[ post r2: r2 > 2 && r2 == z ]]
+            ^
+
+"Test_name.c", line 147: error: expected a ","
+    [[ post r3: r3 > 3 && r3 == z ]]
+            ^
+
+46 errors detected in the compilation of "Test_name.c".

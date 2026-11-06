@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 5: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+  void f1() { return {1,2}; } // expected-error {{void function 'f1' must not return a value}}
+                     ^
+
+"Test_name.c", line 7: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+  template <typename T> void f2() { return {1,2}; } // expected-error {{void function 'f2' must not return a value}}
+                                           ^
+
+"Test_name.c", line 9: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+  template <> void f2<float>() { return {1, 2}; } // expected-error {{void function 'f2<float>' must not return a value}}
+                                        ^
+
+"Test_name.c", line 17: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+    void f3() { return {1,2}; } // expected-error {{void function 'f3' must not return a value}}
+                       ^
+
+"Test_name.c", line 18: error: a constructor or destructor may not return a value
+    S() { return {1,2}; } // expected-error {{constructor 'S' must not return a value}}
+                 ^
+
+"Test_name.c", line 18: error: too many initializer values
+    S() { return {1,2}; } // expected-error {{constructor 'S' must not return a value}}
+                    ^
+
+"Test_name.c", line 19: error: a constructor or destructor may not return a value
+    ~S() { return {1,2}; } // expected-error {{destructor '~S' must not return a value}}
+                  ^
+
+"Test_name.c", line 19: error: too many initializer values
+    ~S() { return {1,2}; } // expected-error {{destructor '~S' must not return a value}}
+                     ^
+
+"Test_name.c", line 23: error: list-initialization of an object type "void" is not allowed because the type is incomplete
+    void f4() { return {1,2}; } // expected-error {{void function 'f4' must not return a value}}
+                       ^
+
+"Test_name.c", line 24: error: a constructor or destructor may not return a value
+    ST() { return {1,2}; } // expected-error {{constructor 'ST<T>' must not return a value}}
+                  ^
+
+"Test_name.c", line 24: error: too many initializer values
+    ST() { return {1,2}; } // expected-error {{constructor 'ST<T>' must not return a value}}
+                     ^
+
+"Test_name.c", line 25: error: a constructor or destructor may not return a value
+    ~ST() { return {1,2}; } // expected-error {{destructor '~ST<T>' must not return a value}}
+                   ^
+
+"Test_name.c", line 25: error: too many initializer values
+    ~ST() { return {1,2}; } // expected-error {{destructor '~ST<T>' must not return a value}}
+                      ^
+
+13 errors detected in the compilation of "Test_name.c".

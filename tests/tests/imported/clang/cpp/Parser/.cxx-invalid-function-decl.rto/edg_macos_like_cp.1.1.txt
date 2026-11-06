@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 9: error: expected a "{"
+  void f1() : X() ::new{}; // expected-error{{only constructors take base initializers}}
+            ^
+
+"Test_name.c", line 12: error: expected a "{"
+  void f2() : ::delete, ::new, X() ::new ::delete{} // expected-error{{expected class member or base class name}}
+            ^
+
+"Test_name.c", line 16: error: expected a "{"
+  void f3() : ::, ::delete X(), ::new {}; // expected-error2{{expected class member or base class name}}
+            ^
+
+"Test_name.c", line 35: error: no default constructor exists for class "Base2<float>"
+    S() : ::Base1<int>(0) ::new, ::Base2<float>(1.0) ::delete x(2) {} // expected-error{{expected class member or base class name}}
+                          ^
+
+"Test_name.c", line 35: error: expected a "{"
+    S() : ::Base1<int>(0) ::new, ::Base2<float>(1.0) ::delete x(2) {} // expected-error{{expected class member or base class name}}
+                          ^
+
+"Test_name.c", line 39: error: expected an identifier
+    S(int a) : Base1<int>(a), ::Base2<float>(1.0), ::, // expected-error{{expected class member or base class name}}
+                                                     ^
+
+"Test_name.c", line 39: error: expected a "(" or a "{"
+    S(int a) : Base1<int>(a), ::Base2<float>(1.0), ::, // expected-error{{expected class member or base class name}}
+                                                     ^
+
+"Test_name.c", line 40: error: expected an identifier
+               ::new, ! ::delete, ::Base2<() x(3) {}   // expected-error{{expected class member or base class name}}
+               ^
+
+"Test_name.c", line 40: error: expected an identifier
+               ::new, ! ::delete, ::Base2<() x(3) {}   // expected-error{{expected class member or base class name}}
+                      ^
+
+"Test_name.c", line 40: error: expected a type specifier
+               ::new, ! ::delete, ::Base2<() x(3) {}   // expected-error{{expected class member or base class name}}
+                                          ^
+
+"Test_name.c", line 40: error: expected a ">"
+               ::new, ! ::delete, ::Base2<() x(3) {}   // expected-error{{expected class member or base class name}}
+                                                  ^
+
+"Test_name.c", line 40: error: expected a "{"
+               ::new, ! ::delete, ::Base2<() x(3) {}   // expected-error{{expected class member or base class name}}
+                                                   ^
+
+"Test_name.c", line 40: error: expected a "}"
+               ::new, ! ::delete, ::Base2<() x(3) {}   // expected-error{{expected class member or base class name}}
+                                                   ^
+
+"Test_name.c", line 43: error: no default constructor exists for class "Base2<float>"
+    S(const S &) : Base1<int>(0) ::Base2<float>(1.0) x(2) {} // expected-error2{{missing ',' between base or member initializers}}
+                                 ^
+
+"Test_name.c", line 43: error: expected a "{"
+    S(const S &) : Base1<int>(0) ::Base2<float>(1.0) x(2) {} // expected-error2{{missing ',' between base or member initializers}}
+                                 ^
+
+"Test_name.c", line 48: error: expected a ")"
+    void m(int x = 0;   // expected-error {{unexpected end of default argument expression}} \
+                    ^
+
+"Test_name.c", line 53: error: expected a ";"
+  };
+  ^
+
+"Test_name.c", line 54: error: expected a declaration
+  }                     // expected-error {{extraneous closing brace ('}')}}
+  ^
+
+18 errors detected in the compilation of "Test_name.c".

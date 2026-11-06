@@ -1,0 +1,230 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 16: error: expected an identifier
+  enum { [[]] Six }; // expected-error {{expected identifier}}
+         ^
+
+"Test_name.c", line 19: error: forward declaration of enum type is nonstandard
+  enum E3 [[]] { Seven }; // expected-error {{expected identifier or '('}}
+       ^
+
+"Test_name.c", line 19: error: expected an identifier
+  enum E3 [[]] { Seven }; // expected-error {{expected identifier or '('}}
+               ^
+
+"Test_name.c", line 19: error: incomplete type "E3" is not allowed
+  enum E3 [[]] { Seven }; // expected-error {{expected identifier or '('}}
+               ^
+
+"Test_name.c", line 19: error: identifier "Seven" is undefined
+  enum E3 [[]] { Seven }; // expected-error {{expected identifier or '('}}
+                 ^
+
+"Test_name.c", line 21: error: expected a string literal
+  [[deprecated([""])]] int WrongArgs; // expected-error {{expected string literal as argument of 'deprecated' attribute}}
+               ^
+
+"Test_name.c", line 26: error: expected a ","
+  [[foo bar]] int NoComma; // expected-error {{expected ','}} \
+        ^
+
+"Test_name.c", line 44: error: expected an identifier
+    int p, [[]] : 0; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 44: error: zero-length bit field must be unnamed
+    int p, [[]] : 0; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 45: error: expected an identifier
+    int q, [[]] r; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 45: error: expected a ";"
+    int q, [[]] r; // expected-error {{an attribute list cannot appear here}}
+                ^
+
+"Test_name.c", line 46: error: declaration does not declare anything
+    [[]] int; // expected-error {{an attribute list cannot appear here}} \
+         ^
+
+"Test_name.c", line 51: error: expected an identifier
+  struct S3 [[]] { int a; }; // expected-error {{an attribute list cannot appear here}}
+                 ^
+
+"Test_name.c", line 51: error: incomplete type "S3" is not allowed
+  struct S3 [[]] { int a; }; // expected-error {{an attribute list cannot appear here}}
+                 ^
+
+"Test_name.c", line 51: error: type name is not allowed
+  struct S3 [[]] { int a; }; // expected-error {{an attribute list cannot appear here}}
+                   ^
+
+"Test_name.c", line 51: error: expected a ","
+  struct S3 [[]] { int a; }; // expected-error {{an attribute list cannot appear here}}
+                       ^
+
+"Test_name.c", line 51: error: expected a "}"
+  struct S3 [[]] { int a; }; // expected-error {{an attribute list cannot appear here}}
+                        ^
+
+"Test_name.c", line 51: error: expected a declaration
+  struct S3 [[]] { int a; }; // expected-error {{an attribute list cannot appear here}}
+                          ^
+
+"Test_name.c", line 59: error: expected an identifier
+  union U3 [[]] { double d; }; // expected-error {{an attribute list cannot appear here}}
+                ^
+
+"Test_name.c", line 59: error: incomplete type "U3" is not allowed
+  union U3 [[]] { double d; }; // expected-error {{an attribute list cannot appear here}}
+                ^
+
+"Test_name.c", line 59: error: type name is not allowed
+  union U3 [[]] { double d; }; // expected-error {{an attribute list cannot appear here}}
+                  ^
+
+"Test_name.c", line 59: error: expected a ","
+  union U3 [[]] { double d; }; // expected-error {{an attribute list cannot appear here}}
+                         ^
+
+"Test_name.c", line 59: error: expected a "}"
+  union U3 [[]] { double d; }; // expected-error {{an attribute list cannot appear here}}
+                          ^
+
+"Test_name.c", line 59: error: expected a declaration
+  union U3 [[]] { double d; }; // expected-error {{an attribute list cannot appear here}}
+                            ^
+
+"Test_name.c", line 63: error: forward declaration of enum type is nonstandard
+  enum [[]] IncompleteEnum;
+            ^
+
+"Test_name.c", line 64: error: forward declaration of enum type is nonstandard
+  enum __attribute__((deprecated)) IncompleteEnum2;
+                                   ^
+
+"Test_name.c", line 64: warning: attributes are ignored on an enum declaration that is not also a definition
+  enum __attribute__((deprecated)) IncompleteEnum2;
+       ^
+
+"Test_name.c", line 73: error: incomplete type "void" is not allowed
+  void f6(a, b) [[]] int a; int b; { // notc2x-error {{an attribute list cannot appear here}} \
+       ^
+
+"Test_name.c", line 73: error: identifier "a" is undefined
+  void f6(a, b) [[]] int a; int b; { // notc2x-error {{an attribute list cannot appear here}} \
+          ^
+
+"Test_name.c", line 73: error: identifier "b" is undefined
+  void f6(a, b) [[]] int a; int b; { // notc2x-error {{an attribute list cannot appear here}} \
+             ^
+
+"Test_name.c", line 73: error: expected a ";"
+  void f6(a, b) [[]] int a; int b; { // notc2x-error {{an attribute list cannot appear here}} \
+                ^
+
+"Test_name.c", line 73: error: expected a declaration
+  void f6(a, b) [[]] int a; int b; { // notc2x-error {{an attribute list cannot appear here}} \
+                                   ^
+
+"Test_name.c", line 85: error: "a" is not a type name
+  int (*f7(a, b))(int, int) [[]] int a; int b; { // c2x-error {{unknown type name 'a'}} \
+           ^
+
+"Test_name.c", line 85: error: variable "b" is not a type name
+  int (*f7(a, b))(int, int) [[]] int a; int b; { // c2x-error {{unknown type name 'a'}} \
+              ^
+
+"Test_name.c", line 85: error: expected a "{"
+  int (*f7(a, b))(int, int) [[]] int a; int b; { // c2x-error {{unknown type name 'a'}} \
+                                 ^
+
+"Test_name.c", line 93: error: variable "b" has already been defined (previous definition at line 73)
+  [[]] int a, b;
+              ^
+
+"Test_name.c", line 97: warning: variable "i" was declared but never referenced
+    [[]] int i, j;
+             ^
+
+"Test_name.c", line 97: warning: variable "j" was declared but never referenced
+    [[]] int i, j;
+                ^
+
+"Test_name.c", line 98: warning: variable "k" was declared but never referenced
+    int k, l [[]];
+        ^
+
+"Test_name.c", line 98: warning: variable "l" was declared but never referenced
+    int k, l [[]];
+           ^
+
+"Test_name.c", line 102: warning: variable "i" was declared but never referenced
+    int i[10] [[]];
+        ^
+
+"Test_name.c", line 103: warning: variable "fp1" was declared but never referenced
+    int (*fp1)(void)[[]];
+          ^
+
+"Test_name.c", line 104: warning: variable "fp2" was declared but never referenced
+    int (*fp2 [[]])(void);
+          ^
+
+"Test_name.c", line 106: warning: variable "ipp" was declared but never referenced
+    int * [[]] *ipp;
+                ^
+
+"Test_name.c", line 109: error: expected an expression
+  void f10(int j[static 10] [[]], int k[*] [[]]);
+                 ^
+
+"Test_name.c", line 109: error: variable length array with unspecified bound is not allowed
+  void f10(int j[static 10] [[]], int k[*] [[]]);
+                                        ^
+
+"Test_name.c", line 124: warning: loop is not reachable
+    [[]] while (1);
+         ^
+
+"Test_name.c", line 125: warning: loop is not reachable
+    [[]] do [[]] { } while(1);
+         ^
+
+"Test_name.c", line 127: warning: statement is unreachable
+    [[]] (void)1;
+         ^
+
+"Test_name.c", line 132: error: type definition is not allowed
+    (void)sizeof(struct [[]] S3 { int a [[]]; });
+                 ^
+
+"Test_name.c", line 138: warning: attribute namespace "vendor" is unrecognized
+  [[vendor::attr]] void f13(void); // expected-warning {{unknown attribute 'vendor::attr' ignored}}
+    ^
+
+"Test_name.c", line 143: error: identifier "xx" is undefined
+    asm("foo" :: "r" (xx)); // expected-error {{use of undeclared identifier 'xx'}}
+                      ^
+
+"Test_name.c", line 147: warning: attribute namespace "vendor" is unrecognized
+  [[using vendor: attr1, attr2]] void f14(void); // expected-error {{expected ','}} \
+          ^
+
+"Test_name.c", line 150: error: attributes are not allowed here
+  struct [[]] S4 *s; // expected-error {{an attribute list cannot appear here}}
+           ^
+
+"Test_name.c", line 152: error: variable "c" has already been defined (previous definition at line 94)
+  int c = sizeof(struct [[]] S5); // expected-error {{an attribute list cannot appear here}}
+      ^
+
+"Test_name.c", line 152: error: attributes are not allowed here
+  int c = sizeof(struct [[]] S5); // expected-error {{an attribute list cannot appear here}}
+                          ^
+
+"Test_name.c", line 155: error: expected a ";"
+  double n::v; // expected-error {{expected ';' after top level declarator}}
+          ^
+
+43 errors detected in the compilation of "Test_name.c".

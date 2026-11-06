@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 15: error: expression must have pointer-to-object type but it has type "int"
+    v32u64_1[1] |= ((1));
+             ^
+
+"Test_name.c", line 16: error: expression must have pointer-to-object type but it has type "int"
+    v32u16_0 /= (v16hi){~u64_1, 1, 0xb56c, 0xd279, 0x26b6, 0x74d9, 0xf764, 0, 0, -v32u16_1[6]} | 1;
+                                                                                           ^
+
+"Test_name.c", line 16: warning: excess initializers are ignored
+    v32u16_0 /= (v16hi){~u64_1, 1, 0xb56c, 0xd279, 0x26b6, 0x74d9, 0xf764, 0, 0, -v32u16_1[6]} | 1;
+                                ^
+
+"Test_name.c", line 17: error: expression must have pointer-to-object type but it has type "int"
+    v32u16_1 ^= (v16hi){0xc98d, 1, 0x8c71, u32_0, 0x5366, 0, ~v32u64_1[1]} & 31;
+                                                                       ^
+
+"Test_name.c", line 17: warning: excess initializers are ignored
+    v32u16_1 ^= (v16hi){0xc98d, 1, 0x8c71, u32_0, 0x5366, 0, ~v32u64_1[1]} & 31;
+                                ^
+
+"Test_name.c", line 19: error: expression must have pointer-to-object type but it has type "int"
+    v32u32_1[2] |= 0x1f;
+             ^
+
+"Test_name.c", line 20: error: expression must have pointer-to-object type but it has type "int"
+    v32u16_0 %= (v16hi){2, 0xffff, u32_0, 1, v32u64_0[1], u32_0 };
+                                                      ^
+
+"Test_name.c", line 20: warning: excess initializers are ignored
+    v32u16_0 %= (v16hi){2, 0xffff, u32_0, 1, v32u64_0[1], u32_0 };
+                           ^
+
+"Test_name.c", line 21: error: expression must have pointer-to-object type but it has type "int"
+    v32u32_1 /= (v8si){0x1e7390, v32u16_0[12], ~v32u16_1[2], -u64_0};
+                                          ^
+
+"Test_name.c", line 21: error: expression must have pointer-to-object type but it has type "int"
+    v32u32_1 /= (v8si){0x1e7390, v32u16_0[12], ~v32u16_1[2], -u64_0};
+                                                         ^
+
+"Test_name.c", line 21: warning: excess initializers are ignored
+    v32u32_1 /= (v8si){0x1e7390, v32u16_0[12], ~v32u16_1[2], -u64_0};
+                                 ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+    return v32u16_0[4] + v32u16_0[5] + v32u32_0[5] + v32u32_1[6] + v32u64_1[3];
+                    ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+    return v32u16_0[4] + v32u16_0[5] + v32u32_0[5] + v32u32_1[6] + v32u64_1[3];
+                                  ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+    return v32u16_0[4] + v32u16_0[5] + v32u32_0[5] + v32u32_1[6] + v32u64_1[3];
+                                                ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+    return v32u16_0[4] + v32u16_0[5] + v32u32_0[5] + v32u32_1[6] + v32u64_1[3];
+                                                              ^
+
+"Test_name.c", line 22: error: expression must have pointer-to-object type but it has type "int"
+    return v32u16_0[4] + v32u16_0[5] + v32u32_0[5] + v32u32_1[6] + v32u64_1[3];
+                                                                            ^
+
+12 errors detected in the compilation of "Test_name.c".

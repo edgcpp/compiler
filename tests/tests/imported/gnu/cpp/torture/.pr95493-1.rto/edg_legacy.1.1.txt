@@ -1,0 +1,53 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(bad_alloc.o): in function `std::bad_alloc::bad_alloc()':
+/edg/workspace/lib_src/bad_alloc.c:39: multiple definition of `std::bad_alloc::bad_alloc()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(exception.o): in function `std::exception::exception()':
+/edg/workspace/lib_src/exception.c:37: multiple definition of `std::exception::exception()'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::operator ==(const std::type_info &) const':
+/edg/workspace/lib_src/typeinfo.c:35: multiple definition of `std::type_info::operator ==(const std::type_info &) const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: /edg/workspace/build/gcc-legacy/lib/libedgrt.a(typeinfo.o): in function `std::type_info::name() const':
+/edg/workspace/lib_src/typeinfo.c:93: multiple definition of `std::type_info::name() const'; Test_name.o:Test_name.int.c:(.text+0xXX): first defined here
+/usr/sbin/ld: Test_name.o: in function `operator <<(std::basic_ostream<char, std::char_traits<char>> &, const Cell &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::basic_ostream<T1, T2>::operator <<(int) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `main':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::cout'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=char]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `T1 *std::__new_allocator<T1>::allocate(unsigned long, const void *) [with T1=wchar_t]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_array_new_length()'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_alloc()'
+/usr/sbin/ld: Test_name.o: in function `std::_Hash_impl::hash(const void *, unsigned long, unsigned long)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::_Hash_bytes(const void *, unsigned long, unsigned long)'
+/usr/sbin/ld: Test_name.o: in function `std::system_error::system_error(std::error_code, const char *)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::runtime_error::runtime_error(const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>> &)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `virtual function table for std::system_error'
+/usr/sbin/ld: Test_name.o: in function `std::ctype<char>::widen(char) const':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::ctype<char>::_M_widen_init() const'
+/usr/sbin/ld: Test_name.o: in function `void std::basic_ios<T1, T2>::setstate(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `void std::basic_ios<T1, T2>::clear(std::_Ios_Iostate) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<T1, T2> &std::basic_ostream<T1, T2>::operator <<(unsigned long) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<char, std::char_traits<char>> &std::basic_ostream<T1, T2>::_M_insert<U1>(U1) [with T1=char, T2=std::char_traits<char>, U1=unsigned long]'
+/usr/sbin/ld: Test_name.o: in function `T1 &std::array<T1, N2>::operator [](unsigned long) [with T1=int, N2=(unsigned long)3]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__glibcxx_assert_fail(const char *, int, const char *, const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type &, __gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type) [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type std::__cxx11::basic_string<T1, T2, T3>::_M_check(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type, const char *) const [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_out_of_range_fmt(const char *, ...)'
+/usr/sbin/ld: Test_name.o: in function `void std::__cxx11::basic_string<T1, T2, T3>::_M_check_length(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type, __gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type, const char *) const [with T1=char, T2=std::char_traits<char>, T3=std::allocator<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::pointer std::__cxx11::basic_string<T1, T2, T3>::_M_create(__gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type &, __gnu_cxx::__alloc_traits<__gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other, __gnu_cxx::__alloc_traits<T3, T3::value_type>::rebind<T1>::other::value_type>::size_type) [with T1=wchar_t, T2=std::char_traits<wchar_t>, T3=std::allocator<wchar_t>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_length_error(const char *)'
+/usr/sbin/ld: Test_name.o: in function `std::__exception_ptr::exception_ptr::exception_ptr(const std::__exception_ptr::exception_ptr &)':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__exception_ptr::exception_ptr::_M_addref()'
+/usr/sbin/ld: Test_name.o: in function `std::__exception_ptr::exception_ptr::~exception_ptr()':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__exception_ptr::exception_ptr::_M_release()'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<T1, T2> &std::endl<T1, T2>(std::basic_ostream<T1, T2> &) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::basic_ostream<T1, T2>::put(T1) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<T1, T2> &std::flush<T1, T2>(std::basic_ostream<T1, T2> &) [with T1=char, T2=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::basic_ostream<T1, T2>::flush() [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `std::basic_ostream<char, T1> &std::operator <<<T1>(std::basic_ostream<char, T1> &, const char *) [with T1=std::char_traits<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::basic_ostream<T1, T2> &std::__ostream_insert<T1, T2>(std::basic_ostream<T1, T2> &, const T1 *, long) [with T1=char, T2=std::char_traits<char>]'
+/usr/sbin/ld: Test_name.o: in function `const T1 &std::__check_facet<T1>(const T1 *) [with T1=std::ctype<char>]':
+Test_name.int.c:(.text+0xXX): undefined reference to `std::__throw_bad_cast()'
+/usr/sbin/ld: Test_name.o:(.data+0x3b0): undefined reference to `std::runtime_error::~runtime_error()'
+collect2: error: ld returned 1 exit status

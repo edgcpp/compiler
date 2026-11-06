@@ -1,0 +1,178 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"./goacc/firstprivate-mappings-1.C", line 198: error: _Complex can only be used with floating-point types
+  c (_Complex unsigned char &cuci,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 199: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+     _Complex signed short &cssi,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 200: error: _Complex can only be used with floating-point types
+     _Complex unsigned int &cuii,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 201: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+     _Complex signed long &csli,
+     ^
+
+"./goacc/firstprivate-mappings-1.C", line 205: error: _Complex can only be used with floating-point types
+    _Complex unsigned char cuco;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 206: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex signed short csso;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 207: error: _Complex can only be used with floating-point types
+    _Complex unsigned int cuio;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 208: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+    _Complex signed long cslo;
+    ^
+
+"./goacc/firstprivate-mappings-1.C", line 225: error: complex integral types are not supported
+      cuco = (cuci += (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 226: error: complex integral types are not supported
+      csso = (cssi -= (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 227: error: complex integral types are not supported
+      cuio = (cuii += (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 228: error: complex integral types are not supported
+      cslo = (csli -= (1 + 1j));
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 229: error: complex integral types are not supported
+      cflto = (cflti -= (1 + 1j));
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 230: error: complex integral types are not supported
+      cdblo = (cdbli -= (1 + 1j));
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 232: error: complex integral types are not supported
+    if (cuco != cuci + (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 234: error: complex integral types are not supported
+    if (csso != cssi - (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 236: error: complex integral types are not supported
+    if (cuio != cuii + (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 238: error: complex integral types are not supported
+    if (cslo != csli - (1 + 1j))
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 240: error: complex integral types are not supported
+    if (cflto != cflti - (1 + 1j))
+                               ^
+
+"./goacc/firstprivate-mappings-1.C", line 242: error: complex integral types are not supported
+    if (cdblo != cdbli - (1 + 1j))
+                               ^
+
+"./goacc/firstprivate-mappings-1.C", line 256: error: complex integral types are not supported
+      cldblo = (cldbli -= (1 + 1j));
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 258: error: complex integral types are not supported
+    if (cldblo != cldbli - (1 + 1j))
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 480: error: _Complex can only be used with floating-point types
+      _Complex unsigned char cuci = 1 + 2j;
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 480: error: complex integral types are not supported
+      _Complex unsigned char cuci = 1 + 2j;
+                                         ^
+
+"./goacc/firstprivate-mappings-1.C", line 481: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+      _Complex signed short cssi = -2 + (-4j);
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 481: error: complex integral types are not supported
+      _Complex signed short cssi = -2 + (-4j);
+                                           ^
+
+"./goacc/firstprivate-mappings-1.C", line 482: error: _Complex can only be used with floating-point types
+      _Complex unsigned int cuii = 3 + 6j;
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 482: error: complex integral types are not supported
+      _Complex unsigned int cuii = 3 + 6j;
+                                        ^
+
+"./goacc/firstprivate-mappings-1.C", line 483: error: a floating-point type must be included in the type specifier for a _Complex or _Imaginary type
+      _Complex signed long csli = -4 + (-8j);
+      ^
+
+"./goacc/firstprivate-mappings-1.C", line 483: error: complex integral types are not supported
+      _Complex signed long csli = -4 + (-8j);
+                                          ^
+
+"./goacc/firstprivate-mappings-1.C", line 484: error: complex integral types are not supported
+      _Complex float cflti = .5 + 1j;
+                                   ^
+
+"./goacc/firstprivate-mappings-1.C", line 495: error: too many initializer values
+      v2u8 v2u8i = {2, 3};
+                       ^
+
+"./goacc/firstprivate-mappings-1.C", line 496: error: too many initializer values
+      v4i16 v4i16i = { -1, -2, 5, 4 };
+                           ^
+
+"./goacc/firstprivate-mappings-1.C", line 497: error: too many initializer values
+      v8u32 v8u32i = { 3, 6, 9, 11};
+                          ^
+
+"./goacc/firstprivate-mappings-1.C", line 498: error: too many initializer values
+      v16i64 v16i64i = { 10, 21, -25, 44, 31, -1, 1, 222, -1, -12, 52, -44, -13, 1, -1, -222};
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 500: error: too many initializer values
+      v2flt v2flti = { 1.5, -2.5 };
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 501: error: too many initializer values
+      v4flt v4flti = { 3.5, -4.5, -5.5, -6.5 };
+                            ^
+
+"./goacc/firstprivate-mappings-1.C", line 502: error: too many initializer values
+      v8flt v8flti = { -7.5, 8.5, 9.5, 10.5, -11.5, -12.5, 13.5, 14.5 };
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 504: error: too many initializer values
+      v2dbl v2dbli = { -1.25, -2.25 };
+                              ^
+
+"./goacc/firstprivate-mappings-1.C", line 505: error: too many initializer values
+      v4dbl v4dbli = { 3.25, -4.25, 5.25, 6.25 };
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 506: error: too many initializer values
+      v8dbl v8dbli = { 7.25, 8.25, -9.25, -10.25, -11.25, 12.25, 13.25, -14.25 };
+                             ^
+
+"./goacc/firstprivate-mappings-1.C", line 515: error: too many initializer values
+      v2ldbl v2ldbli = { 1.125, -2.125 };
+                                ^
+
+"./goacc/firstprivate-mappings-1.C", line 516: error: too many initializer values
+      v4ldbl v4ldbli = { -3.125, -4.125, 5.125, -6.125 };
+                                 ^
+
+"./goacc/firstprivate-mappings-1.C", line 517: error: too many initializer values
+      v8ldbl v8ldbli = { 7.125, -8.125, -9.125, 10.125, 11.125, 12.125, 13.125, 14.125 };
+                                ^
+
+44 errors detected in the compilation of "Test_name.c".

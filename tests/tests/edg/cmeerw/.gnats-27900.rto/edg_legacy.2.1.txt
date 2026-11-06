@@ -1,0 +1,205 @@
+fe_only -DTEST_NUMBER=2 -w -tused --c++20 Test_name.c
+"Test_name.c", line 11: error: expression must have a constant value
+    constexpr bool v1 = u<int[1]>;
+                        ^
+"Test_name.c", line 11: note: the value of variable "minimal::u<int [1]>" (declared at line 9) cannot be used as a constant
+    constexpr bool v1 = u<int[1]>;
+                        ^
+
+"Test_name.c", line 12: error: expression must have a constant value
+    constexpr bool v2 = u<int[1][2]>;
+                        ^
+"Test_name.c", line 12: note: the value of variable "minimal::u<int [1][2]>" (declared at line 10) cannot be used as a constant
+    constexpr bool v2 = u<int[1][2]>;
+                        ^
+
+"Test_name.c", line 29: error: expression must have a constant value
+    constexpr bool v0 = u<int>;
+                        ^
+"Test_name.c", line 29: note: the value of variable "file_scope::u<int>" (declared at line 21) cannot be used as a constant
+    constexpr bool v0 = u<int>;
+                        ^
+
+"Test_name.c", line 30: error: expression must have a constant value
+    constexpr bool v1 = u<C<int, 1>>;
+                        ^
+"Test_name.c", line 30: note: the value of variable "file_scope::u<file_scope::C<int, 1>>" (declared at line 24) cannot be used as a constant
+    constexpr bool v1 = u<C<int, 1>>;
+                        ^
+
+"Test_name.c", line 31: error: expression must have a constant value
+    constexpr bool v2 = u<C<int, 2>>;
+                        ^
+"Test_name.c", line 31: note: the value of variable "file_scope::u<file_scope::C<int, 2>>" (declared at line 27) cannot be used as a constant
+    constexpr bool v2 = u<C<int, 2>>;
+                        ^
+
+"Test_name.c", line 69: error: expression must have a constant value
+    constexpr bool vv0 = D<void>::u<int>;
+                         ^
+"Test_name.c", line 69: note: the value of variable "static_data_member::D<V>::u<int> [with V=void]" (declared at line 43) cannot be used as a constant
+    constexpr bool vv0 = D<void>::u<int>;
+                         ^
+
+"Test_name.c", line 70: error: expression must have a constant value
+    constexpr bool vv1 = D<void>::u<C<int, 1>>;
+                         ^
+"Test_name.c", line 70: note: the value of variable "static_data_member::D<V>::u<static_data_member::C<int, 1>> [with V=void]" (declared at line 43) cannot be used as a constant
+    constexpr bool vv1 = D<void>::u<C<int, 1>>;
+                         ^
+
+"Test_name.c", line 72: error: expression must have a constant value
+    constexpr bool vi0 = D<int>::u<int>;
+                         ^
+"Test_name.c", line 72: note: the value of variable "static_data_member::D<int>::u<int>" (declared at line 63) cannot be used as a constant
+    constexpr bool vi0 = D<int>::u<int>;
+                         ^
+
+"Test_name.c", line 73: error: expression must have a constant value
+    constexpr bool vi1 = D<int>::u<C<int, 1>>;
+                         ^
+"Test_name.c", line 73: note: the value of variable "static_data_member::D<int>::u<static_data_member::C<int, 1>>" (declared at line 63) cannot be used as a constant
+    constexpr bool vi1 = D<int>::u<C<int, 1>>;
+                         ^
+
+"Test_name.c", line 75: error: expression must have a constant value
+    constexpr bool vp0 = D<int *>::u<int>;
+                         ^
+"Test_name.c", line 75: note: the value of variable "static_data_member::D<V *>::u<int> [with V=int]" (declared at line 53) cannot be used as a constant
+    constexpr bool vp0 = D<int *>::u<int>;
+                         ^
+
+"Test_name.c", line 76: error: expression must have a constant value
+    constexpr bool vp1 = D<int *>::u<C<int, 1>>;
+                         ^
+"Test_name.c", line 76: note: the value of variable "static_data_member::D<V *>::u<static_data_member::C<int, 1>> [with V=int]" (declared at line 53) cannot be used as a constant
+    constexpr bool vp1 = D<int *>::u<C<int, 1>>;
+                         ^
+
+"Test_name.c", line 85: error: variable "var::v<int [1]>" explicitly instantiated more than once
+    template int v<int[1]>;
+                 ^
+
+"Test_name.c", line 87: error: expression must have a constant value
+    constexpr int i1 = v<int>;
+                       ^
+"Test_name.c", line 87: note: the value of variable "var::v<int>" (declared at line 80) cannot be used as a constant
+    constexpr int i1 = v<int>;
+                       ^
+
+"Test_name.c", line 88: error: expression must have a constant value
+    constexpr int i2 = v<int[2]>;
+                       ^
+"Test_name.c", line 88: note: the value of variable "var::v<int [2]>" (declared at line 81) cannot be used as a constant
+    constexpr int i2 = v<int[2]>;
+                       ^
+
+"Test_name.c", line 89: error: expression must have a constant value
+    constexpr int i3 = v<void>;
+                       ^
+"Test_name.c", line 89: note: the value of variable "var::v<void>" (declared at line 82) cannot be used as a constant
+    constexpr int i3 = v<void>;
+                       ^
+
+"Test_name.c", line 104: error: expression must have a constant value
+    constexpr int i1 = C<char>::v<int>;
+                       ^
+"Test_name.c", line 104: note: the value of variable "member::C<U>::v<int> [with U=char]" (declared at line 95) cannot be used as a constant
+    constexpr int i1 = C<char>::v<int>;
+                       ^
+
+"Test_name.c", line 105: error: expression must have a constant value
+    constexpr int i2 = C<char>::v<int[2]>;
+                       ^
+"Test_name.c", line 105: note: the value of variable "member::C<U>::v<int [2]> [with U=char]" (declared at line 96) cannot be used as a constant
+    constexpr int i2 = C<char>::v<int[2]>;
+                       ^
+
+"Test_name.c", line 106: error: expression must have a constant value
+    constexpr int i3 = C<char>::v<void>;
+                       ^
+"Test_name.c", line 106: note: the value of variable "member::C<U>::v<void> [with U=char]" (declared at line 97) cannot be used as a constant
+    constexpr int i3 = C<char>::v<void>;
+                       ^
+
+"Test_name.c", line 108: error: class "member::C<U>::D<int> [with U=char]" has no member "x"
+    constexpr int j1 = C<char>::D<int>::x;
+                                        ^
+
+"Test_name.c", line 109: error: class "member::C<U>::D<int [3]> [with U=char]" has no member "x"
+    constexpr int j2 = C<char>::D<int[3]>::x;
+                                           ^
+
+"Test_name.c", line 110: error: class "member::C<U>::D<void> [with U=char]" has no member "x"
+    constexpr int j3 = C<char>::D<void>::x;
+                                         ^
+
+"Test_name.c", line 118: error: class "cls::C<int>" explicitly instantiated more than once
+    template struct C<int>;
+             ^
+
+"Test_name.c", line 121: error: class "cls::C<int [1]>" explicitly instantiated more than once
+    template struct C<int[1]>;
+             ^
+
+"Test_name.c", line 134: error: expression must have a constant value
+        static constexpr int v = non_const;
+                                 ^
+"Test_name.c", line 134: note: the value of variable "instantiation_context::non_const" (declared at line 126) cannot be used as a constant
+        static constexpr int v = non_const;
+                                 ^
+          detected during instantiation of class "instantiation_context::O<S>::C<T> [with S=int, T=int]" at line 156
+
+"Test_name.c", line 137: error: expression must have a constant value
+        static constexpr int vt = non_const;
+                                  ^
+"Test_name.c", line 137: note: the value of variable "instantiation_context::non_const" (declared at line 126) cannot be used as a constant
+        static constexpr int vt = non_const;
+                                  ^
+          detected during:
+            instantiation of class "instantiation_context::O<S>::C<T> [with S=int, T=int]" at line 137
+            instantiation of class "instantiation_context::O<S> [with S=int]" at line 137
+            instantiation of "const int instantiation_context::O<S>::C<T>::vt [with S=int, T=int, U=int]" at line 137
+
+"Test_name.c", line 140: error: expression must have a constant value
+        static constexpr int vt<V *> = non_const;
+                                       ^
+"Test_name.c", line 140: note: the value of variable "instantiation_context::non_const" (declared at line 126) cannot be used as a constant
+        static constexpr int vt<V *> = non_const;
+                                       ^
+          detected during:
+            instantiation of class "instantiation_context::O<S>::C<T> [with S=int, T=int]" at line 140
+            instantiation of class "instantiation_context::O<S> [with S=int]" at line 140
+            instantiation of "const int instantiation_context::O<S>::C<T>::vt [with S=int, T=int, U=int *]" at line 140
+
+"Test_name.c", line 146: error: expression must have a constant value
+        static constexpr int v = non_const;
+                                 ^
+"Test_name.c", line 146: note: the value of variable "instantiation_context::non_const" (declared at line 126) cannot be used as a constant
+        static constexpr int v = non_const;
+                                 ^
+          detected during instantiation of class "instantiation_context::O<S>::C<T *> [with S=int, T=int]" at line 159
+
+"Test_name.c", line 149: error: expression must have a constant value
+        static constexpr int vt = non_const;
+                                  ^
+"Test_name.c", line 149: note: the value of variable "instantiation_context::non_const" (declared at line 126) cannot be used as a constant
+        static constexpr int vt = non_const;
+                                  ^
+          detected during:
+            instantiation of class "instantiation_context::O<S>::C<T *> [with S=int, T=int]" at line 149
+            instantiation of class "instantiation_context::O<S> [with S=int]" at line 149
+            instantiation of "const int instantiation_context::O<S>::C<T *>::vt [with S=int, T=int, U=int]" at line 149
+
+"Test_name.c", line 152: error: expression must have a constant value
+        static constexpr int vt<V *> = non_const;
+                                       ^
+"Test_name.c", line 152: note: the value of variable "instantiation_context::non_const" (declared at line 126) cannot be used as a constant
+        static constexpr int vt<V *> = non_const;
+                                       ^
+          detected during:
+            instantiation of class "instantiation_context::O<S>::C<T *> [with S=int, T=int]" at line 152
+            instantiation of class "instantiation_context::O<S> [with S=int]" at line 152
+            instantiation of "const int instantiation_context::O<S>::C<T *>::vt [with S=int, T=int, U=int *]" at line 152
+
+29 errors detected in the compilation of "Test_name.c".

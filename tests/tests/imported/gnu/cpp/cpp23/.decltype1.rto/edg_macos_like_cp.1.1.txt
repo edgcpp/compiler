@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"Test_name.c", line 16: warning: returning reference to local variable
+  auto f2(int x) -> decltype((x)) { return (x); }   // { dg-error "cannot bind" }
+                                           ^
+
+"Test_name.c", line 18: warning: returning reference to local variable
+  auto f3(int x) -> decltype(auto) { return (x); }  // { dg-warning "reference to local variable" }
+                                            ^
+
+"Test_name.c", line 19: error: static assertion failed
+  static_assert(same_type<decltype(f3), int&& (int)>::value);
+  ^
+
+"Test_name.c", line 22: error: initial value of reference to non-const must be an lvalue
+  auto g2(int x) -> decltype((x)) { return x; }	  // { dg-error "cannot bind" }
+                                           ^
+
+"Test_name.c", line 43: error: initial value of reference to non-const must be an lvalue
+    return x; // { dg-error "cannot bind non-const lvalue reference" }
+           ^
+
+"Test_name.c", line 50: warning: returning reference to local variable
+    return x; // { dg-warning "reference to local variable" }
+           ^
+
+"Test_name.c", line 64: warning: returning reference to local variable
+    return (x); // { dg-error "cannot bind non-const lvalue reference" }
+           ^
+
+"Test_name.c", line 71: warning: returning reference to local variable
+    return (x); // { dg-warning "reference to local variable" }
+           ^
+
+"Test_name.c", line 73: error: static assertion failed
+  static_assert(same_type<decltype(f9), X&&(X)>::value);
+  ^
+
+"Test_name.c", line 85: warning: returning reference to local variable
+    return (x); // { dg-warning "reference to local variable" }
+           ^
+
+"Test_name.c", line 87: error: static assertion failed
+  static_assert(same_type<decltype(f11), X&&(X)>::value);
+  ^
+
+"Test_name.c", line 115: error: static assertion failed
+  static_assert(same_type<decltype(f15), X&&(X&&)>::value);
+  ^
+
+6 errors detected in the compilation of "Test_name.c".

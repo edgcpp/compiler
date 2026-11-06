@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc -w Test_name.c
+"./pr98807.c", line 32: error: expression must have pointer-to-object type but it has type "int"
+    if (x[0] != 0) __builtin_abort();
+          ^
+
+"./pr98807.c", line 33: error: expression must have pointer-to-object type but it has type "int"
+    if (x[1] != 0xffffffffffffffff) __builtin_abort();
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,126 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c11 Test_name.c
+"Test_name.c", line 12: error: identifier "_Defer" is undefined
+    defer 1; // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 12: error: expected a ";"
+    defer 1; // expected-warning {{expression result unused}}
+          ^
+
+"Test_name.c", line 13: error: expected a ";"
+    defer 1 + 1; // expected-warning {{expression result unused}}
+          ^
+
+"Test_name.c", line 14: error: expected a ";"
+    defer "a"; // expected-warning {{expression result unused}}
+          ^
+
+"Test_name.c", line 15: error: expected a ";"
+    defer "a" "b" "c"; // expected-warning {{expression result unused}}
+          ^
+
+"Test_name.c", line 16: error: expected a ";"
+    defer defer 1; // expected-warning {{expression result unused}}
+          ^
+
+"Test_name.c", line 17: error: expected a ";"
+    defer defer defer defer 1; // expected-warning {{expression result unused}}
+          ^
+
+"Test_name.c", line 18: error: expected an expression
+    defer (int) 4; // expected-warning {{expression result unused}}
+           ^
+
+"Test_name.c", line 18: error: expected a ";"
+    defer (int) 4; // expected-warning {{expression result unused}}
+                ^
+
+"Test_name.c", line 19: error: expected a ";"
+    defer g();
+          ^
+
+"Test_name.c", line 21: error: expected a ";"
+    defer {}
+          ^
+
+"Test_name.c", line 25: warning: parsing restarts here after previous syntax error
+    defer if (g()) g();
+                      ^
+
+"Test_name.c", line 26: error: expected a ";"
+    defer while (g()) g();
+          ^
+
+"Test_name.c", line 27: error: expected a ";"
+    defer for (int i = 0; i < 10; i++) h(i);
+          ^
+
+"Test_name.c", line 28: error: expected a ";"
+    defer switch (g()) { case 1: g(); }
+          ^
+
+"Test_name.c", line 34: error: expected a ";"
+    defer a: g(); // expected-error {{substatement of defer must not be a label}}
+          ^
+
+"Test_name.c", line 35: error: expected a ";"
+    defer b: {} // expected-error {{substatement of defer must not be a label}}
+          ^
+
+"Test_name.c", line 38: warning: parsing restarts here after previous syntax error
+    if (g()) defer g();
+                      ^
+
+"Test_name.c", line 39: error: expected a ";"
+    while (g()) defer g();
+                      ^
+
+"Test_name.c", line 40: error: expected an expression
+    defer ({});
+           ^
+
+"Test_name.c", line 41: error: expected a ";"
+    ({ defer g(); });
+             ^
+
+"Test_name.c", line 43: error: expected a ";"
+    defer int x; // expected-error {{expected expression}}
+          ^
+
+"Test_name.c", line 44: error: expected a ";"
+    defer void q() {} // expected-error {{expected expression}}
+          ^
+
+"Test_name.c", line 48: error: identifier "_Defer" is undefined
+    [[some, attributes]] defer g(); // expected-warning 2 {{unknown attribute}}
+                         ^
+
+"Test_name.c", line 49: error: identifier "_Defer" is undefined
+    __attribute__((some_attribute)) defer g(); // expected-warning {{unknown attribute}}
+                                    ^
+
+"Test_name.c", line 50: error: identifier "_Defer" is undefined
+    [[some, attributes]] defer { g(); } // expected-warning 2 {{unknown attribute}}
+                         ^
+
+"Test_name.c", line 50: error: expected a ";"
+    [[some, attributes]] defer { g(); } // expected-warning 2 {{unknown attribute}}
+                               ^
+
+"Test_name.c", line 55: error: identifier "_Defer" is undefined
+    _Defer 1; // expected-warning {{expression result unused}}
+    ^
+
+"Test_name.c", line 55: error: expected a ";"
+    _Defer 1; // expected-warning {{expression result unused}}
+           ^
+
+"Test_name.c", line 56: error: expected a ";"
+    _Defer {}
+           ^
+
+"Test_name.c", line 59: warning: parsing restarts here after previous syntax error
+    _Defer if (g()) g();
+                       ^
+
+28 errors detected in the compilation of "Test_name.c".

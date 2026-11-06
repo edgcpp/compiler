@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 33: warning: the "always_inline" attribute is ignored on non-inline functions
+  __attribute__((always_inline)) void optnone1(void) { } // expected-warning {{'always_inline' attribute ignored}}
+                 ^
+
+"Test_name.c", line 38: warning: the "always_inline" attribute is ignored on non-inline functions
+  __attribute__((always_inline)) void optnone3(void) { } // expected-warning {{'always_inline' attribute ignored}}
+                 ^
+

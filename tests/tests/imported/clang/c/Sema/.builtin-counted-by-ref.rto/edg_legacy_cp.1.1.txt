@@ -1,0 +1,98 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c99 Test_name.c
+"Test_name.c", line 24: error: operand of "*" must be a pointer but has type "int"
+    *__builtin_counted_by_ref(ptr->array) = size;                     // ok
+     ^
+
+"Test_name.c", line 25: error: operand of "*" must be a pointer but has type "int"
+    *_Generic(__builtin_counted_by_ref(ptr->array),
+     ^
+
+"Test_name.c", line 28: error: operand of "*" must be a pointer but has type "int"
+    h(*__builtin_counted_by_ref(ptr->array));                         // ok
+       ^
+
+"Test_name.c", line 20: warning: variable "size_of" was declared but never referenced
+    size_t size_of = sizeof(__builtin_counted_by_ref(ptr->array));    // ok
+           ^
+
+"Test_name.c", line 21: warning: variable "align_of" was declared but never referenced
+    int align_of = __alignof(__builtin_counted_by_ref(ptr->array));   // ok
+        ^
+
+"Test_name.c", line 53: warning: a value of type "int" cannot be used to initialize an entity of type "char *"
+    char *ref = __builtin_counted_by_ref(ptr->array);                 // expected-error {{value returned by '__builtin_counted_by_ref' cannot be assigned to a variable}}
+                ^
+
+"Test_name.c", line 57: warning: a value of type "int" cannot be assigned to an entity of type "char *"
+    ref = __builtin_counted_by_ref(ptr->array);                       // expected-error {{value returned by '__builtin_counted_by_ref' cannot be assigned to a variable}}
+        ^
+
+"Test_name.c", line 58: warning: argument of type "int" is incompatible with parameter of type "char *"
+    g(__builtin_counted_by_ref(ptr->array));                          // expected-error {{value returned by '__builtin_counted_by_ref' cannot be passed into a function}}
+      ^
+
+"Test_name.c", line 59: warning: a value of type "int" cannot be assigned to an entity of type "char *"
+    g(ref = __builtin_counted_by_ref(ptr->array));                    // expected-error {{value returned by '__builtin_counted_by_ref' cannot be assigned to a variable}}
+          ^
+
+"Test_name.c", line 61: warning: a value of type "int" cannot be assigned to an entity of type "char *"
+    if ((ref = __builtin_counted_by_ref(ptr->array)))                 // expected-error {{value returned by '__builtin_counted_by_ref' cannot be assigned to a variable}}
+             ^
+
+"Test_name.c", line 64: warning: a value of type "int" cannot be assigned to an entity of type "char *"
+    for (p = __builtin_counted_by_ref(ptr->array); p && *p; ++p)      // expected-error {{value returned by '__builtin_counted_by_ref' cannot be assigned to a variable}}
+           ^
+
+"Test_name.c", line 67: warning: return value type does not match the function type
+    return __builtin_counted_by_ref(ptr->array);                      // expected-error {{value returned by '__builtin_counted_by_ref' cannot be returned from a function}}
+           ^
+
+"Test_name.c", line 54: warning: variable "int_ptr" was declared but never referenced
+    char *int_ptr;
+          ^
+
+"Test_name.c", line 71: error: operand of "*" must be a pointer but has type "int"
+    *(__builtin_counted_by_ref(ptr->array) + 4) = 37;                 // expected-error {{value returned by '__builtin_counted_by_ref' cannot be used in a binary expression}}
+     ^
+
+"Test_name.c", line 72: error: expression must have pointer-to-object type but it has type "int"
+    __builtin_counted_by_ref(ptr->array)[3] = 37;                     // expected-error {{value returned by '__builtin_counted_by_ref' cannot be used in an array subscript expression}}
+                                         ^
+
+"Test_name.c", line 84: warning: function "_Static_assert" declared implicitly
+    _Static_assert(_Generic(__builtin_counted_by_ref(ptr->array), void * : 1, default : 0) == 1, "should be void*");
+    ^
+
+"Test_name.c", line 89: warning: missing return statement at end of non-void function "test7"
+  }
+  ^
+
+"Test_name.c", line 122: warning: function "_Static_assert" declared implicitly
+    _Static_assert(_Generic(__builtin_counted_by_ref(cp->array), char * : 1, default : 0) == 1, "wrong return type");
+    ^
+
+"Test_name.c", line 166: error: operand of "*" must be a pointer but has type "int"
+    *__builtin_counted_by_ref(ptr->ptr) = size;                       // ok
+     ^
+
+"Test_name.c", line 167: error: operand of "*" must be a pointer but has type "int"
+    *_Generic(__builtin_counted_by_ref(ptr->ptr),
+     ^
+
+"Test_name.c", line 162: warning: variable "size_of" was declared but never referenced
+    size_t size_of = sizeof(__builtin_counted_by_ref(ptr->ptr));      // ok
+           ^
+
+"Test_name.c", line 163: warning: variable "align_of" was declared but never referenced
+    int align_of = __alignof(__builtin_counted_by_ref(ptr->ptr));     // ok
+        ^
+
+"Test_name.c", line 173: warning: function "_Static_assert" declared implicitly
+    _Static_assert(_Generic(__builtin_counted_by_ref(pcp->ptr), char * : 1, default : 0) == 1, "wrong return type");
+    ^
+
+"Test_name.c", line 188: warning: function "_Static_assert" declared implicitly
+    _Static_assert(_Generic(__builtin_counted_by_ref(p->ptr), void * : 1, default : 0) == 1, "should be void*");
+    ^
+
+7 errors detected in the compilation of "Test_name.c".

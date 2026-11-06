@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 7: error: class template and template parameter may not have the same name
+  a <int>; // { dg-error "does not declare anything" }
+  ^
+
+"Test_name.c", line 7: error: class "a<int>" may not be redeclared in the current scope
+  a <int>; // { dg-error "does not declare anything" }
+  ^
+
+"Test_name.c", line 5: warning: template template parameter "a" is not used in or cannot be deduced from the template argument list of class template "a<int>"
+  template <template <class> class a>
+                                   ^
+
+2 errors detected in the compilation of "Test_name.c".

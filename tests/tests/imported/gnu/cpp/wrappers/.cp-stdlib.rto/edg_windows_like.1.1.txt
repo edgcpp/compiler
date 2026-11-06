@@ -1,0 +1,76 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 13: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__ ((__visibility__ ("default")))
+                                      ^
+
+"Test_name.c", line 26: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 28: error: expected a declaration
+      {
+      ^
+
+"Test_name.c", line 35: error: not a class or struct name
+      struct allocator_traits : __allocator_traits_base
+                                ^
+
+"Test_name.c", line 44: error: identifier "size_type" is undefined
+        allocate(allocator_type& __a, size_type __n)
+                                      ^
+
+"Test_name.c", line 44: error: explicit type is missing ("int" assumed)
+        allocate(allocator_type& __a, size_type __n)
+        ^
+
+"Test_name.c", line 45: error: expected a ";"
+      };
+      ^
+
+"Test_name.c", line 47: warning: unknown attribute "__visibility__"
+  namespace __gnu_cxx __attribute__ ((__visibility__ ("default")))
+                                      ^
+
+"Test_name.c", line 58: error: expected a declaration
+  {
+  ^
+
+"Test_name.c", line 63: error: expected a declaration
+      {
+      ^
+
+"Test_name.c", line 67: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 71: error: class "std::char_traits" may not have a template argument list
+    template<typename _CharT, typename _Traits = char_traits<_CharT>,
+                                                 ^
+
+"Test_name.c", line 76: warning: unknown attribute "__visibility__"
+  namespace std __attribute__ ((__visibility__ ("default")))
+                                ^
+
+"Test_name.c", line 86: error: expected a declaration
+        {
+        ^
+
+"Test_name.c", line 105: warning: parsing restarts here after previous syntax error
+       }
+       ^
+
+"Test_name.c", line 106: error: expected a ";"
+  namespace filesystem
+  ^
+
+At end of source: error: expected a "}"
+"Test_name.c", line 78: note: to match this "{"
+  namespace __cxx11 {
+                    ^
+
+At end of source: error: expected a "}"
+"Test_name.c", line 77: note: to match this "{"
+  {
+  ^
+
+12 errors detected in the compilation of "Test_name.c".

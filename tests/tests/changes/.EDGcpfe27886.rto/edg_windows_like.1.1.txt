@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++14 --clang_version=100000 Test_name.c
+"Test_name.c", line 14: warning: unknown attribute "vector_size"
+  using VD = double __attribute((vector_size(16)));
+                                 ^
+
+"Test_name.c", line 15: warning: unknown attribute "vector_size"
+  using VL = long __attribute((vector_size(16)));
+                               ^
+

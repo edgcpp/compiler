@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 -w --exceptions Test_name.c
+"Test_name.c", line 44: error: try block requires at least one handler
+        __except(EXCEPTION_EXECUTE_HANDLER)
+        ^
+
+"Test_name.c", line 55: error: try block requires at least one handler
+    __finally
+    ^
+
+"Test_name.c", line 65: error: identifier "__try" is undefined
+    __try {
+    ^
+
+"Test_name.c", line 65: error: expected a ";"
+    __try {
+          ^
+
+"Test_name.c", line 72: error: identifier "__try" is undefined
+    __try {
+    ^
+
+"Test_name.c", line 72: error: expected a ";"
+    __try {
+          ^
+
+"Test_name.c", line 88: error: identifier "__leave" is undefined
+      __leave; // expected-error{{'__leave' statement not in __try block}}
+      ^
+
+"Test_name.c", line 89: error: try block requires at least one handler
+    } __finally {
+      ^
+
+8 errors detected in the compilation of "Test_name.c".

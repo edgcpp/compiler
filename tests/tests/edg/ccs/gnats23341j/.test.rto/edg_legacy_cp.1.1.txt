@@ -1,0 +1,18 @@
+cpfe -DTEST_NUMBER=1 --definition_list_file=def_list Test_name.c
+"Test_name.c", line 51: error: no instance of function template "TY<T, N>::func3 [with T=Y, N=0]" matches the argument list
+            argument types are: (int)
+            object type is: TY<Y, 0>
+    return TY < Y, N > ( ) . func3 ( 0 );
+                             ^
+"Test_name.c", line 41: note: candidate function template "TY<T, N>::func3 [with T=Y, N=0]" failed deduction
+    template < typename U > X func3 ( U ) throw ( TX < U > );
+                              ^
+          detected during:
+            instantiation of "X TY<T, N>::func2() [with T=X, N=0]" at line 30
+            instantiation of "Derived<T, N>::Derived() [with T=X, N=0]" at line 25
+            instantiation of "Base<T>::Base() [with T=X]" at line 46
+            instantiation of "void TX<T>::func() [with T=int]" at line 51
+            instantiation of "X TY<T, N>::func2() [with T=Y, N=0]" at line 30
+            instantiation of "Derived<T, N>::Derived() [with T=Y, N=0]" at line 54
+
+1 error detected in the compilation of "Test_name.c".

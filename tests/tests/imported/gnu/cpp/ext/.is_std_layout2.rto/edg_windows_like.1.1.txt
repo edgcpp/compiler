@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+struct T, offset = 0, new field = __b_S, old field = T::c
+"Test_name.c", line 7: internal error: add_field: two fields have the same offset
+  struct T : public S { int b[0]; int c; };
+         ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

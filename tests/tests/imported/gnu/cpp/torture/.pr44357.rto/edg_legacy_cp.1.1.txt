@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 72: warning: missing return statement at end of non-void function "std::vector<_Tp, _Alloc>::size"
+      } const_reference operator[] (size_type __n) const
+      ^
+
+"Test_name.c", line 163: warning: missing return statement at end of non-void function "llvm::SmallVectorTemplateCommon<T>::begin"
+      } iterator end ()
+      ^
+
+"Test_name.c", line 165: warning: missing return statement at end of non-void function "llvm::SmallVectorTemplateCommon<T>::end"
+      } size_type size () const
+      ^
+
+"Test_name.c", line 167: warning: missing return statement at end of non-void function "llvm::SmallVectorTemplateCommon<T>::size"
+    }};
+    ^
+
+"Test_name.c", line 221: warning: missing return statement at end of non-void function "llvm::DwarfException::PadLT"
+  }
+  ^
+
+"Test_name.c", line 74: warning: missing return statement at end of non-void function "std::vector<_Tp, _Alloc>::operator[] [with _Tp=int, _Alloc=std::allocator<int>]"
+    }};
+    ^
+          detected during instantiation of "std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) const [with _Tp=int, _Alloc=std::allocator<int>]" at line 219
+

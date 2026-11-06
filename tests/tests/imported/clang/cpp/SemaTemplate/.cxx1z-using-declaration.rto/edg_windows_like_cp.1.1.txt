@@ -1,0 +1,198 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 7: error: parameter pack "T" was referenced but not expanded
+    using T::f; // expected-error {{unexpanded}}
+          ^
+
+"Test_name.c", line 8: error: parameter pack "T" was referenced but not expanded
+    using typename T::type; // expected-error {{unexpanded}}
+                   ^
+
+"Test_name.c", line 11: error: pack expansion does not make use of any argument packs
+      Unexpanded<type...> *p; // expected-error {{undeclared identifier 'type'}}
+                     ^
+
+"Test_name.c", line 11: warning: variable "p" was declared but never referenced
+      Unexpanded<type...> *p; // expected-error {{undeclared identifier 'type'}}
+                           ^
+
+"Test_name.c", line 8: error: class "A" has no member "type"
+    using typename T::type; // expected-error {{unexpanded}}
+                      ^
+          detected during instantiation of class "Unexpanded<T...> [with T=<A, B>]" at line 17
+
+"Test_name.c", line 70: error: more than one instance of constructor "A<T...>::A [with T=<test_A::X, test_A::Y, test_A::Z>]" matches the argument list:
+            function "test_A::X::X(int)" (declared at line 36), inherited via using decl at line 22
+            function "test_A::Z::Z(int)" (declared at line 50), inherited via using decl at line 22
+            argument types are: (int)
+      A<X, Y, Z>(0); // expected-error {{ambiguous}}
+      ^
+"Test_name.c", line 22: note: number of parameters of function "A<T...>::Y(int, int) [with T=<test_A::X, test_A::Y, test_A::Z>]" does not match the call
+    using T::T ...; // expected-note 2{{inherited here}}
+    ^
+"Test_name.c", line 21: note: number of parameters of function "A<T...>::A() [with T=<test_A::X, test_A::Y, test_A::Z>]" does not match the call
+  template<typename ...T> struct A : T... {
+                                 ^
+
+"Test_name.c", line 76: error: more than one instance of overloaded function "A<T...>::operator() [with T=<test_A::X, test_A::Y, test_A::Z>]" matches the argument list:
+            function "test_A::X::operator()(int)" (declared at line 37)
+            function "test_A::Z::operator()(int)" (declared at line 51)
+            argument types are: (int)
+            object type is: A<test_A::X, test_A::Y, test_A::Z>
+      axyz(0); // expected-error {{ambiguous}}
+      ^
+"Test_name.c", line 44: note: number of parameters of function "test_A::Y::operator()" does not match the call
+      void operator()(int, int);
+           ^
+
+"Test_name.c", line 80: error: no suitable conversion function from "A<>" to "test_A::X *" exists
+      x = a; // expected-error {{incompatible}}
+          ^
+
+"Test_name.c", line 83: error: class "A<>" has no member "operator test_A::X *"
+      x = a.operator X*(); // expected-error {{no member}}
+            ^
+
+"Test_name.c", line 79: warning: variable "x" was set but never used
+      X *x;
+         ^
+
+"Test_name.c", line 87: warning: variable "z" was set but never used
+      Z *z;
+         ^
+
+"Test_name.c", line 104: error: more than one conversion function from "B<test_B::X, test_B::Y, int, float>" to "char *" applies:
+            function "test_B::X::operator char *()" (declared at line 99)
+            function "test_B::Y::operator char *()" (declared at line 100)
+    char *pc = bif; // expected-error {{ambiguous}}
+               ^
+
+"Test_name.c", line 109: error: "type" has already been declared in the current scope
+    using typename T::type ...; // expected-error {{target of using declaration conflicts}}
+                      ^
+          detected during instantiation of class "C<T...> [with T=<test_C::X, test_C::Y>]" at line 122
+
+"Test_name.c", line 109: error: "type" has already been declared in the current scope
+    using typename T::type ...; // expected-error {{target of using declaration conflicts}}
+                      ^
+          detected during instantiation of class "C<T...> [with T=<test_C::X, test_C::Y, test_C::Z>]" at line 125
+
+"Test_name.c", line 132: error: a class-qualified name is not allowed
+    using T::e ...; // expected-error 2{{class member}} expected-note 2{{instead}}
+          ^
+
+"Test_name.c", line 134: error: identifier "e" is undefined
+    return e; // expected-error {{using declaration 'e' instantiates to an empty pack}}
+           ^
+
+"Test_name.c", line 156: error: a class-qualified name is not allowed
+    using typename T::type ...; // expected-error {{class member}}
+                   ^
+
+"Test_name.c", line 157: error: identifier "type" is undefined
+    type x; // expected-error {{unknown type name 'type'}}
+    ^
+
+"Test_name.c", line 157: error: expected a ";"
+    type x; // expected-error {{unknown type name 'type'}}
+         ^
+
+"Test_name.c", line 166: error: identifier "f" is undefined
+        void g(int n) { f(n); } // expected-error {{empty pack}} expected-error {{expected 2, have 1}} expected-error {{ambiguous}}
+                        ^
+          detected during instantiation of "auto lambda1<T...>() [with T=<>]" at line 196
+
+"Test_name.c", line 167: error: identifier "type" is undefined
+        void h() { type value; } // expected-error {{empty pack}}
+                   ^
+          detected during instantiation of "auto lambda1<T...>() [with T=<>]" at line 196
+
+"Test_name.c", line 167: error: expected a ";"
+        void h() { type value; } // expected-error {{empty pack}}
+                        ^
+          detected during instantiation of "auto lambda1<T...>() [with T=<>]" at line 196
+
+"Test_name.c", line 166: error: too few arguments in function call
+        void g(int n) { f(n); } // expected-error {{empty pack}} expected-error {{expected 2, have 1}} expected-error {{ambiguous}}
+                           ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 204
+
+"Test_name.c", line 165: error: "type" has already been declared in the current scope
+        using typename T::template X<decltype(x)>::type ...;
+                                                   ^
+          detected during instantiation of "auto lambda1<T...>() [with T=<test_lambda1::A, test_lambda1::B, test_lambda1::C>]" at line 206
+
+"Test_name.c", line 166: error: more than one instance of overloaded function "A::f" matches the argument list:
+            function "test_lambda1::A::X<<unnamed>>::f(int) [with <unnamed>=int]" (declared at line 176)
+            function "test_lambda1::C::X<<unnamed>>::f(int) [with <unnamed>=int]" (declared at line 188)
+            argument types are: (int)
+        void g(int n) { f(n); } // expected-error {{empty pack}} expected-error {{expected 2, have 1}} expected-error {{ambiguous}}
+                        ^
+"Test_name.c", line 189: note: number of parameters of function "test_lambda1::C::X<<unnamed>>::f(int, int) [with <unnamed>=int]" does not match the call
+        void f(int, int);
+             ^
+"Test_name.c", line 182: note: number of parameters of function "test_lambda1::B::X<<unnamed>>::f [with <unnamed>=int]" does not match the call
+        void f(int, int); // expected-note {{declared here}}
+             ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 207
+
+"Test_name.c", line 230: error: no instance of overloaded function "p0195r2_example::Overloader<Ts...>::operator() [with Ts=<lambda [](int &)->int &, lambda [](float &)->float &>]" matches the argument list
+            argument types are: (double)
+            object type is: p0195r2_example::Overloader<lambda [](int &)->int &, lambda [](float &)->float &>
+      double &rd = o(d); // expected-error {{no matching function}}
+                   ^
+"Test_name.c", line 225: note: function "lambda [](float &)->float &" does not match because argument #1 does not match parameter
+        [&](float &r) -> float & { return r; } // expected-note {{candidate function}}
+           ^
+"Test_name.c", line 224: note: function "lambda [](int &)->int &" does not match because argument #1 does not match parameter
+        [&](int &r) -> int & { return r; }, // expected-note {{candidate function}}
+           ^
+
+"Test_name.c", line 9: error: too many arguments in function call
+    template<typename ...U> void g(U ...u) { f(u...); } // expected-error {{explicit qualification required to use member 'f' from dependent base class}}
+                                               ^
+          detected during instantiation of "void Unexpanded<T...>::g(U...) [with T=<A, B>, U=<int>]" at line 17
+
+"Test_name.c", line 28: error: identifier "h" is undefined
+    void f(int n, int m) { h(n, m); } // expected-error {{member using declaration 'h' instantiates to an empty pack}}
+                           ^
+          detected during instantiation of "void A<T...>::f(int, int) [with T=<>]" at line 58
+
+"Test_name.c", line 30: error: call of an object of a class type without appropriate operator() or conversion functions to pointer-to-function type
+    void g(int n, int m) { (*this)(n, m); } // expected-error {{does not provide a call operator}}
+                           ^
+          detected during instantiation of "void A<T...>::g(int, int) [with T=<>]" at line 59
+
+"Test_name.c", line 27: error: more than one instance of overloaded function "A<T...>::h [with T=<test_A::X, test_A::Y, test_A::Z>]" matches the argument list:
+            function "test_A::X::h(int)" (declared at line 39)
+            function "test_A::Z::h(int)" (declared at line 53)
+            argument types are: (int)
+    void f(int n) { h(n); } // expected-error {{ambiguous}}
+                    ^
+"Test_name.c", line 46: note: number of parameters of function "test_A::Y::h" does not match the call
+      void h(int, int);
+           ^
+          detected during instantiation of "void A<T...>::f(int) [with T=<test_A::X, test_A::Y, test_A::Z>]" at line 72
+
+"Test_name.c", line 29: error: more than one instance of overloaded function "A<T...>::operator() [with T=<test_A::X, test_A::Y, test_A::Z>]" matches the argument list:
+            function "test_A::X::operator()(int)" (declared at line 37)
+            function "test_A::Z::operator()(int)" (declared at line 51)
+            argument types are: (int)
+            object type is: A<test_A::X, test_A::Y, test_A::Z>
+    void g(int n) { (*this)(n); } // expected-error {{ambiguous}}
+                    ^
+"Test_name.c", line 44: note: number of parameters of function "test_A::Y::operator()" does not match the call
+      void operator()(int, int);
+           ^
+          detected during instantiation of "void A<T...>::g(int) [with T=<test_A::X, test_A::Y, test_A::Z>]" at line 74
+
+"Test_name.c", line 110: error: identifier "type" is undefined
+    void f() { type value; } // expected-error {{member using declaration 'type' instantiates to an empty pack}}
+               ^
+          detected during instantiation of "void C<T...>::f() [with T=<>]" at line 120
+
+"Test_name.c", line 110: error: expected a ";"
+    void f() { type value; } // expected-error {{member using declaration 'type' instantiates to an empty pack}}
+                    ^
+          detected during instantiation of "void C<T...>::f() [with T=<>]" at line 120
+
+30 errors detected in the compilation of "Test_name.c".

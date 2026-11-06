@@ -1,0 +1,30 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/float128-mul-underflow.c", line 14: error: identifier "__float128" is undefined
+    volatile __float128 a = 0x1.fffffffffffffffp-16382q, b = 0x1.0000000000000008p-1q, c;
+             ^
+
+"./torture/float128-mul-underflow.c", line 14: error: extra text after expected end of number
+    volatile __float128 a = 0x1.fffffffffffffffp-16382q, b = 0x1.0000000000000008p-1q, c;
+                                                      ^
+
+"./torture/float128-mul-underflow.c", line 14: warning: floating-point value cannot be represented exactly
+    volatile __float128 a = 0x1.fffffffffffffffp-16382q, b = 0x1.0000000000000008p-1q, c;
+                            ^
+
+"./torture/float128-mul-underflow.c", line 14: error: extra text after expected end of number
+    volatile __float128 a = 0x1.fffffffffffffffp-16382q, b = 0x1.0000000000000008p-1q, c;
+                                                                                    ^
+
+"./torture/float128-mul-underflow.c", line 14: warning: floating-point value cannot be represented exactly
+    volatile __float128 a = 0x1.fffffffffffffffp-16382q, b = 0x1.0000000000000008p-1q, c;
+                                                             ^
+
+"./torture/float128-mul-underflow.c", line 18: error: extra text after expected end of number
+    if (c != 0x1p-16382q)
+                       ^
+
+"./torture/float128-mul-underflow.c", line 18: warning: floating-point value cannot be represented exactly
+    if (c != 0x1p-16382q)
+             ^
+
+4 errors detected in the compilation of "Test_name.c".

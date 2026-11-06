@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 8: warning: expression has no effect
+    sizeof (A < int>);
+    ^
+
+"Test_name.c", line 14: error: incomplete type "B<int>" is not allowed
+    sizeof (B<int>); // { dg-error "3:invalid application of .sizeof. to incomplete type" }
+            ^
+
+1 error detected in the compilation of "Test_name.c".

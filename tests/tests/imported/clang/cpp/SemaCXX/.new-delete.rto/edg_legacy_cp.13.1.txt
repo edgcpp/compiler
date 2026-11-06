@@ -1,0 +1,656 @@
+fe_only -DTEST_NUMBER=13 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 -DNEW_INTERP Test_name.c
+"SemaCXX/new-delete.cpp", line 46: warning: declaring a new or delete operator "inline" is nonstandard
+  inline void operator delete(void *);
+  ^
+
+"SemaCXX/new-delete.cpp", line 49: warning: declaring a new or delete operator "inline" is nonstandard
+  inline void *operator new(size_t) {
+  ^
+
+"SemaCXX/new-delete.cpp", line 69: warning: function "operator new(size_t, float *)" has no corresponding operator delete (to be called if an exception is thrown during initialization of an allocated object)
+    ps = new (pf) (S)(1, 2, 3.4);
+         ^
+
+"SemaCXX/new-delete.cpp", line 103: error: expected a type specifier
+    (void)new;
+             ^
+
+"SemaCXX/new-delete.cpp", line 104: error: expected a type specifier
+    (void)new 4;
+              ^
+
+"SemaCXX/new-delete.cpp", line 105: error: expected an expression
+    (void)new () int;
+               ^
+
+"SemaCXX/new-delete.cpp", line 115: error: expression must have a constant value
+    (void)new int[1][i];
+                     ^
+"SemaCXX/new-delete.cpp", line 115: note: the value of variable "i" (declared at line 102) cannot be used as a constant
+    (void)new int[1][i];
+                     ^
+
+"SemaCXX/new-delete.cpp", line 116: error: expression must have a constant value
+    (void)new (int[1][i]);
+                      ^
+"SemaCXX/new-delete.cpp", line 116: note: the value of variable "i" (declared at line 102) cannot be used as a constant
+    (void)new (int[1][i]);
+                      ^
+
+"SemaCXX/new-delete.cpp", line 125: error: no suitable conversion function from "S" to "int" exists
+    (void)new int(*(S*)0);
+                  ^
+
+"SemaCXX/new-delete.cpp", line 126: error: expected a ")"
+    (void)new int(1, 2);
+                   ^
+
+"SemaCXX/new-delete.cpp", line 127: error: no instance of constructor "S::S" matches the argument list
+            argument types are: (int)
+    (void)new S(1);
+               ^
+"SemaCXX/new-delete.cpp", line 25: note: function "S::S(const S &)" does not match because argument #1 does not match parameter
+  struct S
+         ^
+"SemaCXX/new-delete.cpp", line 25: note: function "S::S(S &&)" does not match because argument #1 does not match parameter
+  struct S
+         ^
+"SemaCXX/new-delete.cpp", line 29: note: number of parameters of function "S::S(float, int)" does not match the call
+    S(float, int);
+    ^
+"SemaCXX/new-delete.cpp", line 28: note: number of parameters of function "S::S(double, int)" does not match the call
+    S(double, int);
+    ^
+"SemaCXX/new-delete.cpp", line 27: note: number of parameters of function "S::S(int, int, double)" does not match the call
+    S(int, int, double);
+    ^
+
+"SemaCXX/new-delete.cpp", line 128: error: more than one instance of constructor "S::S" matches the argument list:
+            function "S::S(double, int)" (declared at line 28)
+            function "S::S(float, int)" (declared at line 29)
+            argument types are: (int, int)
+    (void)new S(1, 1);
+               ^
+"SemaCXX/new-delete.cpp", line 25: note: number of parameters of function "S::S(const S &)" does not match the call
+  struct S
+         ^
+"SemaCXX/new-delete.cpp", line 25: note: number of parameters of function "S::S(S &&)" does not match the call
+  struct S
+         ^
+"SemaCXX/new-delete.cpp", line 27: note: number of parameters of function "S::S(int, int, double)" does not match the call
+    S(int, int, double);
+    ^
+
+"SemaCXX/new-delete.cpp", line 129: error: const object requires an initializer
+    (void)new const int;
+              ^
+
+"SemaCXX/new-delete.cpp", line 130: error: a value of type "int *" cannot be used to initialize an entity of type "float *"
+    (void)new float*(ip);
+                     ^
+
+"SemaCXX/new-delete.cpp", line 132: error: the size of an array in "new" must be non-negative
+    (void)new int[-1];
+                  ^
+
+"SemaCXX/new-delete.cpp", line 139: error: expression must have integral or unscoped enum type
+    (void)new int[*(S*)0];
+                  ^
+
+"SemaCXX/new-delete.cpp", line 148: error: expected an identifier
+    (void)::S::new int;
+               ^
+
+"SemaCXX/new-delete.cpp", line 148: error: expected a ";"
+    (void)::S::new int;
+               ^
+
+"SemaCXX/new-delete.cpp", line 149: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, int, int)
+    (void)new (0, 0) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: number of parameters of function "operator new(size_t, S)" does not match the call
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: number of parameters of function "operator new(size_t, float *)" does not match the call
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: number of parameters of function "operator new(size_t, int *)" does not match the call
+  void* operator new(size_t, int*);
+        ^
+Note: number of parameters of function "operator new(unsigned long, std::align_val_t)" does not match the call
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 150: error: more than one instance of overloaded function "operator new" matches the argument list:
+            function "operator new(size_t, int *)" (declared at line 55)
+            function "operator new(size_t, float *)" (declared at line 56)
+            argument types are: (unsigned long, long)
+    (void)new (0L) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 152: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, S *)
+    (void)::new ((S*)0) U;
+            ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 154: error: function "U::operator new" cannot be called with the given argument list
+            argument types are: (unsigned long)
+    (void)new U;
+          ^
+"SemaCXX/new-delete.cpp", line 35: note: number of parameters of function "U::operator new" does not match the call
+    void* operator new(size_t, S*);
+          ^
+
+"SemaCXX/new-delete.cpp", line 155: error: incomplete type "int []" is not allowed
+    (void)new (int[]);
+               ^
+
+"SemaCXX/new-delete.cpp", line 156: error: type must be an object type
+    (void)new int&;
+              ^
+
+"SemaCXX/new-delete.cpp", line 157: error: incomplete type "int []" is not allowed
+    (void)new int[];
+              ^
+
+"SemaCXX/new-delete.cpp", line 168: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, unsigned char [4])
+    (void)new(buffer) X;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 169: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, unsigned char *)
+    (void)new(+buffer) X;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 170: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, unsigned char (*)[4])
+    (void)new(&buffer) X;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 175: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const int *)
+    (void)new(&value) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 178: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const X *)
+    (void)new(&cx) X{10};
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 180: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const X *const)
+    (void)new(cx2) X{10};
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 182: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const int *)
+    (void)new(&arr[0]) int(10);
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 184: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const void *)
+    (void)new(ptr) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 186: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const int *)
+    (void)new(&complex_arr[0][0]) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 187: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const int [3])
+    (void)new(complex_arr[0]) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 189: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const char [5])
+    (void)new(str) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 191: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const int *const *)
+    (void)new(ptr_to_const_ptr_to_const) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 193: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, int *const *)
+    (void)new(ptr_to_const_ptr) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 196: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, ConstIntPtr)
+    (void)new(cip) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 201: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const void *)
+    new (ptr) int;
+    ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+
+"SemaCXX/new-delete.cpp", line 224: error: expression must be a pointer to a complete object type
+    delete 0;
+           ^
+
+"SemaCXX/new-delete.cpp", line 225: error: delete array size expression used (anachronism)
+    delete [0] (int*)0;
+            ^
+
+"SemaCXX/new-delete.cpp", line 226: warning: expression must be a pointer to a complete object type
+    delete (void*)0;
+           ^
+
+"SemaCXX/new-delete.cpp", line 229: error: delete of pointer to incomplete class
+    delete (T*)0;
+           ^
+
+"SemaCXX/new-delete.cpp", line 232: error: expected an identifier
+    ::S::delete (int*)0;
+         ^
+
+"SemaCXX/new-delete.cpp", line 232: error: expected a ";"
+    ::S::delete (int*)0;
+         ^
+
+"SemaCXX/new-delete.cpp", line 248: error: expression must be a pointer to a complete object type
+    delete x0;
+           ^
+
+"SemaCXX/new-delete.cpp", line 250: error: more than one conversion function from "X2" to a built-in type applies:
+            function "X2::operator int *()" (declared at line 243)
+            function "X2::operator float *()" (declared at line 244)
+    delete x2;
+           ^
+
+"SemaCXX/new-delete.cpp", line 277: warning: the "throw()" specification is not part of C++20 and later
+    static void *operator new(signed char) throw();
+                                           ^
+
+"SemaCXX/new-delete.cpp", line 277: error: first parameter of allocation function must be of type "size_t"
+    static void *operator new(signed char) throw();
+                 ^
+
+"SemaCXX/new-delete.cpp", line 278: warning: the "throw()" specification is not part of C++20 and later
+    static int operator new[] (size_t) throw();
+                                       ^
+
+"SemaCXX/new-delete.cpp", line 278: error: allocation function requires "void *" return type
+    static int operator new[] (size_t) throw();
+               ^
+
+"SemaCXX/new-delete.cpp", line 291: warning: variable "dict" is used before its value is set
+    new Thai(dict);
+             ^
+
+"SemaCXX/new-delete.cpp", line 295: error: first parameter of allocation function must be of type "size_t"
+    void* operator new(T size, int);
+          ^
+
+"SemaCXX/new-delete.cpp", line 314: error: "X8::operator delete" is ambiguous
+    delete x8;
+    ^
+
+"SemaCXX/new-delete.cpp", line 324: error: no appropriate operator delete is visible
+    delete x9;
+    ^
+
+"SemaCXX/new-delete.cpp", line 334: error: a non-placement operator delete must be visible in a class with a virtual destructor
+  struct X11 : X10 {
+         ^
+          detected during:
+            implicit generation of "X11::~X11() noexcept" at line 348
+            implicit generation of "X11::X11() noexcept" at line 348
+
+"SemaCXX/new-delete.cpp", line 385: error: "X15::X15()" (declared at line 380) is inaccessible
+    new X15();
+           ^
+
+"SemaCXX/new-delete.cpp", line 386: error: "X15::~X15() noexcept" (declared at line 381) is inaccessible
+    delete x;
+           ^
+
+"SemaCXX/new-delete.cpp", line 441: error: function "PR7436::S2::operator delete" (declared at line 436) is inaccessible
+    delete s2;
+    ^
+
+"SemaCXX/new-delete.cpp", line 443: error: function "PR7436::S1::operator delete(void *, void *) noexcept" (declared at line 432) is inaccessible
+    (void)new (0L) S1();
+          ^
+
+"SemaCXX/new-delete.cpp", line 443: error: function "PR7436::S1::operator new(size_t, void *)" (declared at line 431) is inaccessible
+    (void)new (0L) S1();
+          ^
+
+"SemaCXX/new-delete.cpp", line 444: error: function "PR7436::S2::operator delete" (declared at line 436) is inaccessible
+    (void)new S2();
+          ^
+
+"SemaCXX/new-delete.cpp", line 444: error: function "PR7436::S2::operator new" (declared at line 435) is inaccessible
+    (void)new S2();
+          ^
+
+"SemaCXX/new-delete.cpp", line 489: warning: a volatile function parameter is deprecated
+      static void operator delete(void *volatile);
+                                  ^
+
+"SemaCXX/new-delete.cpp", line 510: error: first parameter of deallocation function must be of type "void *"
+      void operator delete(X*);
+           ^
+
+"SemaCXX/new-delete.cpp", line 537: error: expected a type specifier
+      new DoesNotExist;
+          ^
+
+"SemaCXX/new-delete.cpp", line 554: error: function "ArrayNewNeedsDtor::B::~B()" (declared implicitly) cannot be referenced -- it is a deleted function
+      return new B[5];
+                 ^
+
+"SemaCXX/new-delete.cpp", line 566: error: incomplete type "DeleteIncompleteClass::A" is not allowed
+    void f() { delete x; }
+                      ^
+
+"SemaCXX/new-delete.cpp", line 571: error: delete of pointer to incomplete class
+    void f(A *x) { 1+delete x; }
+                            ^
+
+"SemaCXX/new-delete.cpp", line 571: error: expression must have arithmetic or unscoped enum type
+    void f(A *x) { 1+delete x; }
+                     ^
+
+"SemaCXX/new-delete.cpp", line 601: warning: the "throw()" specification is not part of C++20 and later
+  inline void *operator new[](size_t, const PlacementArg &) throw () {
+                                                            ^
+
+"SemaCXX/new-delete.cpp", line 604: warning: the "throw()" specification is not part of C++20 and later
+  inline void operator delete[](void *, const PlacementArg &) throw () {
+                                                              ^
+
+"SemaCXX/new-delete.cpp", line 685: error: nonstandard form for taking the address of a member function
+      delete f;
+             ^
+
+"SemaCXX/new-delete.cpp", line 685: error: expression must be a pointer to a complete object type
+      delete f;
+             ^
+
+"SemaCXX/new-delete.cpp", line 689: error: nonstandard form for taking the address of a member function
+      delete g;
+             ^
+
+"SemaCXX/new-delete.cpp", line 689: error: expression must be a pointer to a complete object type
+      delete g;
+             ^
+
+"SemaCXX/new-delete.cpp", line 695: warning: declaring a new or delete operator "inline" is nonstandard
+    inline void *operator new(size_t);
+    ^
+
+"SemaCXX/new-delete.cpp", line 695: error: allocation operator may not be declared in a namespace
+    inline void *operator new(size_t);
+                 ^
+
+"SemaCXX/new-delete.cpp", line 699: error: too few parameters for this operator function
+  inline void* operator new();
+               ^
+
+"SemaCXX/new-delete.cpp", line 704: error: expected a member name
+    void f() { this->::new; }
+                     ^
+
+"SemaCXX/new-delete.cpp", line 705: error: expected a member name
+    void g() { this->::delete; }
+                     ^
+
+"SemaCXX/new-delete.cpp", line 720: error: expression must have a constant value
+  int (*const_fold)[12] = new int[3][&const_fold + 12 - &const_fold];
+                                     ^
+"SemaCXX/new-delete.cpp", line 720: note: invalid arithmetic on non-array pointer
+  int (*const_fold)[12] = new int[3][&const_fold + 12 - &const_fold];
+                                                 ^
+
+"SemaCXX/new-delete.cpp", line 206: error: no instance of overloaded "operator new" matches the argument list
+            argument types are: (unsigned long, const int *)
+    (void)new(storage) int;
+          ^
+"SemaCXX/new-delete.cpp", line 57: note: function "operator new(size_t, S)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, S);
+        ^
+"SemaCXX/new-delete.cpp", line 56: note: function "operator new(size_t, float *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, float*);
+        ^
+"SemaCXX/new-delete.cpp", line 55: note: function "operator new(size_t, int *)" does not match because argument #2 does not match parameter
+  void* operator new(size_t, int*);
+        ^
+Note: function "operator new(unsigned long, std::align_val_t)" does not match because argument #2 does not match parameter
+"SemaCXX/new-delete.cpp", line 49: note: number of parameters of function "operator new(size_t)" does not match the call
+  inline void *operator new(size_t) {
+               ^
+          detected during instantiation of "void const_template_placement_new(const T *) [with T=int]" at line 211
+
+"SemaCXX/new-delete.cpp", line 620: warning: NULL reference is not allowed
+      new (*(PlacementArg*)0) T[1];
+           ^
+          detected during instantiation of "void r150682::tfn<X>() [with X=int]" at line 624
+
+"SemaCXX/new-delete.cpp", line 46: warning: extern inline function "operator delete(void *) noexcept" was referenced but not defined
+  inline void operator delete(void *);
+              ^
+
+73 errors detected in the compilation of "Test_name.c".

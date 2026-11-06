@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=1 -tused tu2.cpp --c++17 Test_name.c
+tu2.cpp:
+Test_name.c:
+/usr/sbin/ld: Test_name.o:(.rodata+0x4): multiple definition of `ici'; tu2.o:(.rodata+0x4): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x8): multiple definition of `tici<void>'; tu2.o:(.rodata+0x8): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0xc): multiple definition of `tci<int>'; tu2.o:(.rodata+0xc): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x10): multiple definition of `tci<int *>'; tu2.o:(.rodata+0x10): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x14): multiple definition of `tici<int>'; tu2.o:(.rodata+0x14): first defined here
+/usr/sbin/ld: Test_name.o:(.rodata+0x18): multiple definition of `tici<int *>'; tu2.o:(.rodata+0x18): first defined here
+collect2: error: ld returned 1 exit status

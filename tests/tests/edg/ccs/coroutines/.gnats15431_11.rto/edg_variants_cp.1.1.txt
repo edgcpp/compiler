@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --microsoft_version 1900 --set_flag coroutines -tused Test_name.c
+"Test_name.c", line 6: warning: missing co_return statement while "std::coroutine_traits<std::generator<int>, int>::promise_type" (aka "std::generator<int>::promise_type") has no "return_void" at end of function "f(T) [with T=int]"
+  std::generator<int> f(T) {
+                      ^
+          detected during instantiation of "std::generator<int> f(T) [with T=int]" at line 10
+
+"/edg/workspace/bases/docker/dev-env/gcc/include/coroutine.stdh", line 71: error: constexpr function return is non-constant
+  return *((std::coroutine_handle< void>  *)addr); 
+         ^
+
+1 error detected in the compilation of "Test_name.c".

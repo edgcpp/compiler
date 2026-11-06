@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 5: error: expected a ";"
+  extern "C" __inline float __cdecl fabsf(  float _X);
+                                    ^
+
+"Test_name.c", line 8: error: expected a ";"
+    __inline float __cdecl fabsf(  float _X)
+                           ^
+
+"Test_name.c", line 28: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+2 errors detected in the compilation of "Test_name.c".

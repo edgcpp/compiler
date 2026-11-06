@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 13: error: explicit type is missing ("int" assumed)
+  template<typename T> struct U { typedef __underlying_type(T) R; };
+                                          ^
+
+"Test_name.c", line 13: error: expected a ";"
+  template<typename T> struct U { typedef __underlying_type(T) R; };
+                                                               ^
+
+"Test_name.c", line 16: error: explicit type is missing ("int" assumed)
+  auto x = f(e);  // Previously failed deduction, causing no matching f
+       ^
+
+"Test_name.c", line 16: error: a global-scope declaration may not have this storage class
+  auto x = f(e);  // Previously failed deduction, causing no matching f
+  ^
+
+"Test_name.c", line 16: error: no instance of function template "f" matches the argument list
+            argument types are: (E)
+  auto x = f(e);  // Previously failed deduction, causing no matching f
+           ^
+"Test_name.c", line 14: note: candidate function template "f" failed deduction
+  template<typename T> typename U<T>::R f(T);
+                                        ^
+
+5 errors detected in the compilation of "Test_name.c".

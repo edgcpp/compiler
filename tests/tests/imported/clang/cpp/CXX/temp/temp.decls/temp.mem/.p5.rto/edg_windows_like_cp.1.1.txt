@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 Test_name.c
+"Test_name.c", line 18: warning: variable "ip" was set but never used
+    int *ip;
+         ^
+
+"Test_name.c", line 70: warning: missing return statement at end of non-void function "X0::operator T *()"
+    }
+    ^
+
+"Test_name.c", line 89: error: declaration is incompatible with "X0::operator const T *() const [with T=int]" (declared at line 79)
+  template X0::operator const int*(); // expected-note{{'X0::operator const int *<const int>' requested here}}
+               ^
+
+"Test_name.c", line 81: error: return value type does not match the function type
+      return x; // cxx98_20-error{{cannot initialize return object of type 'const char *' with an lvalue of type 'char'}} \
+             ^
+          detected during instantiation of "X0::operator const T *() const [with T=char]" at line 103
+
+"Test_name.c", line 81: error: return value type does not match the function type
+      return x; // cxx98_20-error{{cannot initialize return object of type 'const char *' with an lvalue of type 'char'}} \
+             ^
+          detected during instantiation of "X0::operator const T *() const [with T=int]" at line 101
+
+"Test_name.c", line 91: error: function "X0::operator T *() const [with T=float]" cannot be instantiated -- no template definition was supplied
+  template X0::operator float*() const; // expected-error{{explicit instantiation of undefined function template 'operator type-parameter-0-0 *'}}
+           ^
+
+"Test_name.c", line 92: error: function "X0::operator B<V>() const [with V=0]" cannot be instantiated -- no template definition was supplied
+  template X0::operator B<0>() const; // expected-error {{undefined function template 'operator B<value-parameter-0-0>'}}
+           ^
+
+"Test_name.c", line 95: error: function "X0::operator C<T [V]>() const [with T=int, V=1]" cannot be instantiated -- no template definition was supplied
+  template X0::operator C<int[1]>() const; // expected-error {{undefined function template 'operator C<type-parameter-0-0[V]>'}}
+           ^
+
+"Test_name.c", line 97: error: function "X0::operator D<int, V>() const [with V=0]" cannot be instantiated -- no template definition was supplied
+  template X0::operator D<int, 0>() const; // expected-error {{undefined function template 'operator D<decltype(value-parameter-0-0), value-parameter-0-0>'}}
+           ^
+
+7 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+cpfe -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 12: error: expected an operator
+    explicit operator __underlying_type(E)();
+                      ^
+
+"Test_name.c", line 12: error: function returning function is not allowed
+    explicit operator __underlying_type(E)();
+                                           ^
+
+"Test_name.c", line 20: error: no suitable conversion function from "Wrap" to "int" exists
+    static_cast<int>(E::a | E::b);
+                     ^
+
+3 errors detected in the compilation of "Test_name.c".

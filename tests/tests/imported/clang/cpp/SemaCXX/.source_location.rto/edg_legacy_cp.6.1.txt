@@ -1,0 +1,242 @@
+fe_only -DTEST_NUMBER=6 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions --exceptions -DNEW_INTERP Test_name.c
+"SemaCXX/source_location.cpp", line 93: error: static assertion failed
+  static_assert(is_same<decltype(__builtin_LINE()), unsigned>);
+  ^
+
+"SemaCXX/source_location.cpp", line 94: error: static assertion failed
+  static_assert(is_same<decltype(__builtin_COLUMN()), unsigned>);
+  ^
+
+"SemaCXX/source_location.cpp", line 141: error: static assertion failed with ""
+    static_assert(S2.line() == ExpectLine, "");
+    ^
+"SemaCXX/source_location.cpp", line 141: note: the final comparison was 139 == 134
+    static_assert(S2.line() == ExpectLine, "");
+                            ^
+
+"SemaCXX/source_location.cpp", line 143: error: static assertion failed with ""
+    static_assert(
+    ^
+"SemaCXX/source_location.cpp", line 149: note: the final comparison was 144 == 148
+      == 149 - 1, "");
+      ^
+
+"SemaCXX/source_location.cpp", line 150: error: static assertion failed with ""
+    static_assert( __builtin_LINE() == 154 - 2, "");
+    ^
+"SemaCXX/source_location.cpp", line 150: note: the final comparison was 150 == 152
+    static_assert( __builtin_LINE() == 154 - 2, "");
+                                    ^
+
+"SemaCXX/source_location.cpp", line 155: error: static assertion failed with ""
+    static_assert( __builtin_LINE()
+    ^
+"SemaCXX/source_location.cpp", line 158: note: the final comparison was 155 == 156
+            == 158 - 2, "");
+            ^
+
+"SemaCXX/source_location.cpp", line 197: error: static assertion failed with ""
+  static_assert(InMemInit{}.check(197 - 3), "");
+  ^
+
+"SemaCXX/source_location.cpp", line 214: error: static assertion failed with ""
+    static_assert(InMemInitTemplate<int>{}.check(214 - line_offset), "");
+    ^
+
+"SemaCXX/source_location.cpp", line 700: error: static assertion failed with ""
+  static_assert(ClassDer{}.x == 500, "");
+  ^
+"SemaCXX/source_location.cpp", line 700: note: the final comparison was 700 == 500
+  static_assert(ClassDer{}.x == 500, "");
+                             ^
+
+"SemaCXX/source_location.cpp", line 701: error: static assertion failed with ""
+  static_assert(ClassDer{42}.x == 501, "");
+  ^
+"SemaCXX/source_location.cpp", line 701: note: the final comparison was 502 == 501
+  static_assert(ClassDer{42}.x == 501, "");
+                               ^
+
+"SemaCXX/source_location.cpp", line 703: error: static assertion failed with ""
+  static_assert(ClassDer{42, 42}.x == 501, "");
+  ^
+"SemaCXX/source_location.cpp", line 703: note: the final comparison was 502 == 501
+  static_assert(ClassDer{42, 42}.x == 501, "");
+                                   ^
+
+"SemaCXX/source_location.cpp", line 803: error: static assertion failed with ""
+  static_assert(ClassAggDer{}.x == 100, "");
+  ^
+"SemaCXX/source_location.cpp", line 803: note: the final comparison was 803 == 100
+  static_assert(ClassAggDer{}.x == 100, "");
+                                ^
+
+"SemaCXX/source_location.cpp", line 321: error: static assertion failed with ""
+    static_assert(is_equal(Default.info.file(), SLF::FILE), "");
+    ^
+
+"SemaCXX/source_location.cpp", line 318: warning: variable "Template" was declared but never referenced
+    constexpr TestClass Template{42, 42};
+                        ^
+
+"SemaCXX/source_location.cpp", line 320: warning: variable "Char" was declared but never referenced
+    constexpr auto Char = F[0];
+                   ^
+
+"SemaCXX/source_location.cpp", line 321: error: static assertion failed with ""
+    static_assert(is_equal(Default.info_file_name, SLF::FILE_NAME), "");
+    ^
+
+"SemaCXX/source_location.cpp", line 318: warning: variable "Template" was declared but never referenced
+    constexpr TestClass Template{42, 42};
+                        ^
+
+"SemaCXX/source_location.cpp", line 320: warning: variable "Char" was declared but never referenced
+    constexpr auto Char = F[0];
+                   ^
+
+"SemaCXX/source_location.cpp", line 356: error: static assertion failed
+    static_assert(is_equal(__PRETTY_FUNCTION__, U::current().function()));
+    ^
+          detected during instantiation of "Pair<U, U> test_func::test_func_template(T, U) [with T=int, U=SL]" at line 361
+
+"SemaCXX/source_location.cpp", line 379: error: static assertion failed
+    static_assert(is_equal(Default.info.function(), "test_func::TestCtor<>::TestCtor() [T = std::source_location]"));
+    ^
+
+"SemaCXX/source_location.cpp", line 381: error: static assertion failed
+    static_assert(is_equal(Template.info.function(), "test_func::TestCtor<>::TestCtor(int, U) [T = std::source_location, U = std::source_location]"));
+    ^
+
+"SemaCXX/source_location.cpp", line 382: error: static assertion failed
+    static_assert(is_equal(Template.ctor_info.function(), __PRETTY_FUNCTION__));
+    ^
+
+"SemaCXX/source_location.cpp", line 378: warning: variable "XYZZY" was declared but never referenced
+    static const char *XYZZY = Template.info.function();
+                       ^
+
+"SemaCXX/source_location.cpp", line 577: error: static assertion failed with ""
+      static_assert(S2.column() == ExpectCol, "");
+      ^
+"SemaCXX/source_location.cpp", line 577: note: the final comparison was 19 == 7
+      static_assert(S2.column() == ExpectCol, "");
+                                ^
+
+"SemaCXX/source_location.cpp", line 423: error: static assertion failed
+  static_assert(SL::current().column() == __builtin_strlen("static_assert(S"));
+  ^
+"SemaCXX/source_location.cpp", line 423: note: the final comparison was 27 == 15
+  static_assert(SL::current().column() == __builtin_strlen("static_assert(S"));
+                                       ^
+
+"SemaCXX/source_location.cpp", line 456: error: expression must have a constant value
+  static_assert(test_class());
+                ^
+"SemaCXX/source_location.cpp", line 435: note: expression cannot be interpreted
+      ((V == (__builtin_strlen(S) + indent)) ? ((void)0) : throw 42);
+                                                           ^
+"SemaCXX/source_location.cpp", line 439: note: called from:
+      check(t.x, "   T", 0);
+           ^
+
+"test_passed.cpp", line 4301: error: static assertion failed with ""
+  static_assert(b.a.n == 4300, "");
+  ^
+"test_passed.cpp", line 4301: note: the final comparison was 4201 == 4300
+  static_assert(b.a.n == 4300, "");
+                      ^
+
+"test_passed.cpp", line 4302: error: static assertion failed with ""
+  static_assert(b.a.n2 == 4300, "");
+  ^
+"test_passed.cpp", line 4302: note: the final comparison was 4201 == 4300
+  static_assert(b.a.n2 == 4300, "");
+                       ^
+
+"test_passed.cpp", line 4303: error: static assertion failed with ""
+  static_assert(b.a.info.line() == 4300, "");
+  ^
+"test_passed.cpp", line 4303: note: the final comparison was 4201 == 4300
+  static_assert(b.a.info.line() == 4300, "");
+                                ^
+
+"test_passed.cpp", line 4304: error: static assertion failed
+  static_assert(is_equal(b.a.f, "test_passed.cpp"));
+  ^
+
+"test_passed.cpp", line 4305: error: static assertion failed
+  static_assert(is_equal(b.a.f2, "test_passed.cpp"));
+  ^
+
+"test_passed.cpp", line 4306: error: static assertion failed
+  static_assert(is_equal(b.a.info.file(), "test_passed.cpp"));
+  ^
+
+"test_func_passed.cpp", line 4401: error: static assertion failed with ""
+    static_assert(b.a.n == 4400, "");
+    ^
+"test_func_passed.cpp", line 4401: note: the final comparison was 4201 == 4400
+    static_assert(b.a.n == 4400, "");
+                        ^
+
+"test_func_passed.cpp", line 4402: error: static assertion failed with ""
+    static_assert(b.a.n2 == 4400, "");
+    ^
+"test_func_passed.cpp", line 4402: note: the final comparison was 4201 == 4400
+    static_assert(b.a.n2 == 4400, "");
+                         ^
+
+"test_func_passed.cpp", line 4403: error: static assertion failed with ""
+    static_assert(b.a.info.line() == 4400, "");
+    ^
+"test_func_passed.cpp", line 4403: note: the final comparison was 4201 == 4400
+    static_assert(b.a.info.line() == 4400, "");
+                                  ^
+
+"test_func_passed.cpp", line 4404: error: static assertion failed
+    static_assert(is_equal(b.a.f, "test_func_passed.cpp"));
+    ^
+
+"test_func_passed.cpp", line 4405: error: static assertion failed
+    static_assert(is_equal(b.a.f2, "test_func_passed.cpp"));
+    ^
+
+"test_func_passed.cpp", line 4406: error: static assertion failed
+    static_assert(is_equal(b.a.info.file(), "test_func_passed.cpp"));
+    ^
+
+"test_func_passed.cpp", line 4407: error: static assertion failed
+    static_assert(is_equal(b.a.func, "test_in_func"));
+    ^
+
+"test_func_passed.cpp", line 4408: error: static assertion failed
+    static_assert(is_equal(b.a.func2, "test_in_func"));
+    ^
+
+"test_func_passed.cpp", line 4409: error: static assertion failed
+    static_assert(is_equal(b.a.info.function(), "bool test_out_of_line_init::test_in_func()"));
+    ^
+
+"TestLambda.cpp", line 8020: error: static assertion failed
+  static_assert(compound_literal_fun() == 8020);
+  ^
+"TestLambda.cpp", line 8020: note: the final comparison was 8018 == 8020
+  static_assert(compound_literal_fun() == 8020);
+                                       ^
+
+"TestLambda.cpp", line 8043: error: static assertion failed
+  static_assert(test_init_capture() == 8043 );
+  ^
+"TestLambda.cpp", line 8043: note: the final comparison was 8037 == 8043
+  static_assert(test_init_capture() == 8043 );
+                                    ^
+
+"TestLambda.cpp", line 8064: error: expression must have a constant value
+  static_assert(f<int>() !=
+                ^
+"TestLambda.cpp", line 8050: note: expression cannot be interpreted
+      T line = __builtin_LINE();
+                             ^
+
+39 errors detected in the compilation of "Test_name.c".

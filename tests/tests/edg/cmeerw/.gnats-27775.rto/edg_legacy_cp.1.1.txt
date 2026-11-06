@@ -1,0 +1,475 @@
+fe_only -DTEST_NUMBER=1 -w -tused --c++26 Test_name.c
+"Test_name.c", line 352: error: fold expression does not refer to a parameter pack
+      return (b + ... );
+                  ^
+          detected during instantiation of "int constant_evaluation::f(auto) [with <auto-1>=constant_evaluation::C1]" at line 355
+
+"Test_name.c", line 352: error: fold expression does not refer to a parameter pack
+      return (b + ... );
+                  ^
+          detected during instantiation of "int constant_evaluation::f(auto) [with <auto-1>=constant_evaluation::C2]" at line 356
+
+"Test_name.c", line 352: error: fold expression does not refer to a parameter pack
+      return (b + ... );
+                  ^
+          detected during instantiation of "int constant_evaluation::f(auto) [with <auto-1>=constant_evaluation::C3]" at line 357
+
+"Test_name.c", line 375: error: fold expression does not refer to a parameter pack
+        return ( b1 + ... ) + ( b2 + ... ) + ( ( b1 + b2 ) + ... );
+                      ^
+          detected during instantiation of "int multiple_packs_in_same_scope::f(multiple_packs_in_same_scope::C, auto) [with <auto-1>=multiple_packs_in_same_scope::C]" at line 383
+
+"Test_name.c", line 375: error: fold expression does not refer to a parameter pack
+        return ( b1 + ... ) + ( b2 + ... ) + ( ( b1 + b2 ) + ... );
+                                     ^
+          detected during instantiation of "int multiple_packs_in_same_scope::f(multiple_packs_in_same_scope::C, auto) [with <auto-1>=multiple_packs_in_same_scope::C]" at line 383
+
+"Test_name.c", line 375: error: fold expression does not refer to a parameter pack
+        return ( b1 + ... ) + ( b2 + ... ) + ( ( b1 + b2 ) + ... );
+                                                             ^
+          detected during instantiation of "int multiple_packs_in_same_scope::f(multiple_packs_in_same_scope::C, auto) [with <auto-1>=multiple_packs_in_same_scope::C]" at line 383
+
+"Test_name.c", line 427: error: fold expression does not refer to a parameter pack
+               ( b1 + ... ) + ( b2 + ... ) + ( b1 + b2 + ... );
+                      ^
+          detected during instantiation of "int lambda_capture::f(lambda_capture::C, auto) [with <auto-1>=lambda_capture::C]" at line 431
+
+"Test_name.c", line 427: error: fold expression does not refer to a parameter pack
+               ( b1 + ... ) + ( b2 + ... ) + ( b1 + b2 + ... );
+                                     ^
+          detected during instantiation of "int lambda_capture::f(lambda_capture::C, auto) [with <auto-1>=lambda_capture::C]" at line 431
+
+"Test_name.c", line 427: error: fold expression does not refer to a parameter pack
+               ( b1 + ... ) + ( b2 + ... ) + ( b1 + b2 + ... );
+                                                         ^
+          detected during instantiation of "int lambda_capture::f(lambda_capture::C, auto) [with <auto-1>=lambda_capture::C]" at line 431
+
+"Test_name.c", line 448: error: the operand of sizeof... must be a parameter pack name
+        return sizeof ... (b1) + sizeof ... (b2) +
+                           ^
+          detected during instantiation of "int generic_lambda_capture::f(generic_lambda_capture::C, auto) [with <auto-1>=generic_lambda_capture::C]" at line 453
+
+"Test_name.c", line 448: error: the operand of sizeof... must be a parameter pack name
+        return sizeof ... (b1) + sizeof ... (b2) +
+                                             ^
+          detected during instantiation of "int generic_lambda_capture::f(generic_lambda_capture::C, auto) [with <auto-1>=generic_lambda_capture::C]" at line 453
+
+"Test_name.c", line 449: error: fold expression does not refer to a parameter pack
+               ( b1 + ... ) + ( b2 + ... ) + ( b1 + b2 + ... );
+                      ^
+          detected during instantiation of "int generic_lambda_capture::f(generic_lambda_capture::C, auto) [with <auto-1>=generic_lambda_capture::C]" at line 453
+
+"Test_name.c", line 449: error: fold expression does not refer to a parameter pack
+               ( b1 + ... ) + ( b2 + ... ) + ( b1 + b2 + ... );
+                                     ^
+          detected during instantiation of "int generic_lambda_capture::f(generic_lambda_capture::C, auto) [with <auto-1>=generic_lambda_capture::C]" at line 453
+
+"Test_name.c", line 449: error: fold expression does not refer to a parameter pack
+               ( b1 + ... ) + ( b2 + ... ) + ( b1 + b2 + ... );
+                                                         ^
+          detected during instantiation of "int generic_lambda_capture::f(generic_lambda_capture::C, auto) [with <auto-1>=generic_lambda_capture::C]" at line 453
+
+"Test_name.c", line 472: error: fold expression does not refer to a parameter pack
+        sum += (b + ...);
+                    ^
+          detected during instantiation of "int for_range_loop::f(auto (&)[N]) [with N=1U, <auto-1>=const for_range_loop::C]" at line 480
+
+"Test_name.c", line 472: error: fold expression does not refer to a parameter pack
+        sum += (b + ...);
+                    ^
+          detected during instantiation of "int for_range_loop::f(auto (&)[N]) [with N=2U, <auto-1>=const for_range_loop::C]" at line 486
+
+"Test_name.c", line 43: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 43: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 44: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 53: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 53: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 54: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 63: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 63: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 64: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 73: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 73: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 74: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 83: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 83: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 84: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 94: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 103: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 112: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 121: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 129: error: static assertion failed
+        static_assert(sizeof ... (b) == 2);
+        ^
+"Test_name.c", line 129: note: the final comparison was 1 == 2
+        static_assert(sizeof ... (b) == 2);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 130: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 137: error: static assertion failed
+        static_assert(sizeof ... (b) == 2);
+        ^
+"Test_name.c", line 137: note: the final comparison was 1 == 2
+        static_assert(sizeof ... (b) == 2);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 138: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 145: error: static assertion failed
+        static_assert(sizeof ... (b) == 2);
+        ^
+"Test_name.c", line 145: note: the final comparison was 1 == 2
+        static_assert(sizeof ... (b) == 2);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 146: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 153: error: static assertion failed
+        static_assert(sizeof ... (b) == 3);
+        ^
+"Test_name.c", line 153: note: the final comparison was 1 == 3
+        static_assert(sizeof ... (b) == 3);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 154: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 160: error: static assertion failed
+        static_assert(sizeof ... (b) == 3);
+        ^
+"Test_name.c", line 160: note: the final comparison was 1 == 3
+        static_assert(sizeof ... (b) == 3);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 161: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 167: error: static assertion failed
+        static_assert(sizeof ... (b) == 4);
+        ^
+"Test_name.c", line 167: note: the final comparison was 1 == 4
+        static_assert(sizeof ... (b) == 4);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 168: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 173: error: static assertion failed
+        static_assert(sizeof ... (b) == 4);
+        ^
+"Test_name.c", line 173: note: the final comparison was 1 == 4
+        static_assert(sizeof ... (b) == 4);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 174: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 179: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 179: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 180: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 189: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 189: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 190: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 199: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 199: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 200: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 209: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 209: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 210: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 219: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 219: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 220: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 230: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 239: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 248: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 257: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 265: error: static assertion failed
+        static_assert(sizeof ... (b) == 2);
+        ^
+"Test_name.c", line 265: note: the final comparison was 1 == 2
+        static_assert(sizeof ... (b) == 2);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 266: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 273: error: static assertion failed
+        static_assert(sizeof ... (b) == 2);
+        ^
+"Test_name.c", line 273: note: the final comparison was 1 == 2
+        static_assert(sizeof ... (b) == 2);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 274: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 281: error: static assertion failed
+        static_assert(sizeof ... (b) == 2);
+        ^
+"Test_name.c", line 281: note: the final comparison was 1 == 2
+        static_assert(sizeof ... (b) == 2);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 282: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 289: error: static assertion failed
+        static_assert(sizeof ... (b) == 3);
+        ^
+"Test_name.c", line 289: note: the final comparison was 1 == 3
+        static_assert(sizeof ... (b) == 3);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 290: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 296: error: static assertion failed
+        static_assert(sizeof ... (b) == 3);
+        ^
+"Test_name.c", line 296: note: the final comparison was 1 == 3
+        static_assert(sizeof ... (b) == 3);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 297: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 303: error: static assertion failed
+        static_assert(sizeof ... (b) == 4);
+        ^
+"Test_name.c", line 303: note: the final comparison was 1 == 4
+        static_assert(sizeof ... (b) == 4);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 304: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 309: error: static assertion failed
+        static_assert(sizeof ... (b) == 4);
+        ^
+"Test_name.c", line 309: note: the final comparison was 1 == 4
+        static_assert(sizeof ... (b) == 4);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 310: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 315: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 315: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 316: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 321: error: static assertion failed
+        static_assert(sizeof ... (b) == 0);
+        ^
+"Test_name.c", line 321: note: the final comparison was 1 == 0
+        static_assert(sizeof ... (b) == 0);
+                                     ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 322: error: fold expression does not refer to a parameter pack
+        ( b , ... );
+              ^
+          detected during instantiation of "void expansions::f(T, expansions::C) [with T=expansions::C]" at line 326
+
+"Test_name.c", line 401: error: fold expression does not refer to a parameter pack
+        return ( b1 + ... ) + ( b2 + ... ) + ( ( b1 + b2 ) + ... );
+                      ^
+          detected during instantiation of "int multiple_static_packs_in_same_scope::f(multiple_static_packs_in_same_scope::C, auto) [with <auto-1>=multiple_static_packs_in_same_scope::C]" at line 409
+
+"Test_name.c", line 401: error: fold expression does not refer to a parameter pack
+        return ( b1 + ... ) + ( b2 + ... ) + ( ( b1 + b2 ) + ... );
+                                     ^
+          detected during instantiation of "int multiple_static_packs_in_same_scope::f(multiple_static_packs_in_same_scope::C, auto) [with <auto-1>=multiple_static_packs_in_same_scope::C]" at line 409
+
+"Test_name.c", line 401: error: fold expression does not refer to a parameter pack
+        return ( b1 + ... ) + ( b2 + ... ) + ( ( b1 + b2 ) + ... );
+                                                             ^
+          detected during instantiation of "int multiple_static_packs_in_same_scope::f(multiple_static_packs_in_same_scope::C, auto) [with <auto-1>=multiple_static_packs_in_same_scope::C]" at line 409
+
+79 errors detected in the compilation of "Test_name.c".

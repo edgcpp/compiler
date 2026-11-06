@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 13: error: too few arguments for class template "__builtin_common_type"
+    __builtin_common_type<> a; // expected-error {{too few template arguments for template '__builtin_common_type'}}
+                          ^
+
+"Test_name.c", line 14: error: expected an identifier
+    __builtin_common_type<1> b; // expected-error {{template argument for template template parameter must be a class template or type alias template}}
+                          ^
+
+"Test_name.c", line 14: error: too few arguments for class template "__builtin_common_type"
+    __builtin_common_type<1> b; // expected-error {{template argument for template template parameter must be a class template or type alias template}}
+                           ^
+
+"Test_name.c", line 15: error: expected an identifier
+    __builtin_common_type<int, 1> c; // expected-error {{template argument for template template parameter must be a class template or type alias template}}
+                          ^
+
+"Test_name.c", line 15: error: expected an identifier
+    __builtin_common_type<int, 1> c; // expected-error {{template argument for template template parameter must be a class template or type alias template}}
+                               ^
+
+"Test_name.c", line 15: error: too few arguments for class template "__builtin_common_type"
+    __builtin_common_type<int, 1> c; // expected-error {{template argument for template template parameter must be a class template or type alias template}}
+                                ^
+
+"Test_name.c", line 34: error: a template argument may not reference a variable-length array type
+    __builtin_common_type<common_type_t, type_identity, empty_type, decltype(VLA)> d; // expected-error {{variably modified type 'decltype(VLA)' (aka 'int[i]') cannot be used as a template argument}}
+                                                                    ^
+
+"Test_name.c", line 34: warning: variable "d" was declared but never referenced
+    __builtin_common_type<common_type_t, type_identity, empty_type, decltype(VLA)> d; // expected-error {{variably modified type 'decltype(VLA)' (aka 'int[i]') cannot be used as a template argument}}
+                                                                                   ^
+
+7 errors detected in the compilation of "Test_name.c".

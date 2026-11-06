@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 7: error: expression must have pointer-to-object type but it has type "m<double, 3, 1>" (aka "double")
+  double index1(m<double,3,1> X, int      i) { return X[i][0]; }
+                                                      ^
+
+"Test_name.c", line 9: error: expression must have pointer-to-object type but it has type "m<double, 3, 1>" (aka "double")
+  double index2(m<double,3,1> X, unsigned i) { return X[i][0]; }
+                                                      ^
+
+"Test_name.c", line 11: error: expression must have pointer-to-object type but it has type "m<double, 3, 1>" (aka "double")
+  double index3(m<double,3,1> X, char     i) { return X[i][0]; }
+                                                      ^
+
+"Test_name.c", line 13: error: expression must have pointer-to-object type but it has type "m<double, 3, 1>" (aka "double")
+  double index4(m<double,3,1> X, int      i) { return X[0][i]; }
+                                                      ^
+
+"Test_name.c", line 15: error: expression must have pointer-to-object type but it has type "m<double, 3, 1>" (aka "double")
+  double index5(m<double,3,1> X, unsigned i) { return X[0][i]; }
+                                                      ^
+
+"Test_name.c", line 17: error: expression must have pointer-to-object type but it has type "m<double, 3, 1>" (aka "double")
+  double index6(m<double,3,1> X, char     i) { return X[0][i]; }
+                                                      ^
+
+6 errors detected in the compilation of "Test_name.c".

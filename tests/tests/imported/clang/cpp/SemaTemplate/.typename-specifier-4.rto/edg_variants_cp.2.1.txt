@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 71: error: invalid redeclaration of member function "X0<T>::f0(X0<T>::Inner<T *, T &>)" (declared at line 70)
+    void f0(typename X0<T>::Inner<T*, T&>); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 74: error: invalid redeclaration of member function "X0<T>::f1(X0<T>::Inner<T *, T &>)" (declared at line 73)
+    void f1(typename X0<T>::template Inner<T*, T&>); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 77: error: invalid redeclaration of member function "X0<T>::f2(X0<T>::Inner<T *, T &>::type)" (declared at line 76)
+    void f2(typename X0<T>::template Inner<T*, T&>::type); // expected-error{{redecl}}
+         ^
+
+"Test_name.c", line 123: error: "PR6463::A<T>::type" is ambiguous
+    typename A<T>::type& A<T>::a() { // expected-error{{found in multiple base classes}}
+                   ^
+
+"Test_name.c", line 141: warning: missing return statement at end of non-void function "PR7419::S<T>::f"
+    template <typename T> typename T::Y::Z::W *S<T>::f() { }
+                                                           ^
+
+"Test_name.c", line 142: warning: missing return statement at end of non-void function "PR7419::S<T>::g"
+    template <typename T> typename T::template Y<int>::template Z<float>::template W<double> S<T>::g() { }
+                                                                                                         ^
+
+4 errors detected in the compilation of "Test_name.c".

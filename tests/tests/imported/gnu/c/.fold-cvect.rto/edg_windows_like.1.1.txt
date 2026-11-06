@@ -1,0 +1,54 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 12: warning: unknown attribute "vector_size"
+  typedef int v4si __attribute__((vector_size(16)));
+                                  ^
+
+"Test_name.c", line 17: warning: extra braces are nonstandard
+  } xconstant = { &blah, { { 0, 1, 2, 3 }, { 2, 3, 4, 5 } } };
+                           ^
+
+"Test_name.c", line 17: warning: excess initializers are ignored
+  } xconstant = { &blah, { { 0, 1, 2, 3 }, { 2, 3, 4, 5 } } };
+                                ^
+
+"Test_name.c", line 17: warning: extra braces are nonstandard
+  } xconstant = { &blah, { { 0, 1, 2, 3 }, { 2, 3, 4, 5 } } };
+                                           ^
+
+"Test_name.c", line 17: warning: excess initializers are ignored
+  } xconstant = { &blah, { { 0, 1, 2, 3 }, { 2, 3, 4, 5 } } };
+                                                ^
+
+"Test_name.c", line 23: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[0][0] != 0)
+                                ^
+
+"Test_name.c", line 25: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[0][1] != 1)
+                                ^
+
+"Test_name.c", line 27: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[0][2] != 2)
+                                ^
+
+"Test_name.c", line 29: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[0][3] != 3)
+                                ^
+
+"Test_name.c", line 31: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[1][0] != 2)
+                                ^
+
+"Test_name.c", line 33: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[1][1] != 3)
+                                ^
+
+"Test_name.c", line 35: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[1][2] != 4)
+                                ^
+
+"Test_name.c", line 37: error: expression must have pointer-to-object type but it has type "int"
+    if (*(int *)&xconstant.x[1][3] != 5)
+                                ^
+
+8 errors detected in the compilation of "Test_name.c".

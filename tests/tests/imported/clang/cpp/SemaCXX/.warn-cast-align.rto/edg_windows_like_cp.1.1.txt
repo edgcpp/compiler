@@ -1,0 +1,53 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 7: warning: variable "a" was set but never used
+    char *a; short *b; int *c;
+          ^
+
+"Test_name.c", line 7: warning: variable "b" was set but never used
+    char *a; short *b; int *c;
+                    ^
+
+"Test_name.c", line 7: warning: variable "c" was set but never used
+    char *a; short *b; int *c;
+                            ^
+
+"Test_name.c", line 28: warning: variable "a" was set but never used
+    char *a; short *b; int *c;
+          ^
+
+"Test_name.c", line 28: warning: variable "b" was set but never used
+    char *a; short *b; int *c;
+                    ^
+
+"Test_name.c", line 28: warning: variable "c" was set but never used
+    char *a; short *b; int *c;
+                            ^
+
+"Test_name.c", line 51: warning: expression has no effect
+    (long *)lut; // expected-warning {{cast from 'int *' to 'long *'}}
+    ^
+
+"Test_name.c", line 147: warning: expression has no effect
+    a = (A *)(0, 0, &m[sizeof(A)]);
+              ^
+
+"Test_name.c", line 147: warning: expression has no effect
+    a = (A *)(0, 0, &m[sizeof(A)]);
+              ^
+
+"Test_name.c", line 148: warning: expression has no effect
+    a = (A *)&(0, 0, *&m[sizeof(A)]);
+               ^
+
+"Test_name.c", line 148: warning: expression has no effect
+    a = (A *)&(0, 0, *&m[sizeof(A)]);
+               ^
+
+"Test_name.c", line 153: warning: pointer points outside of underlying object
+    a = (A *)(a2->m0 + sizeof(A)); // expected-warning {{cast from 'char *' to 'A *'}}
+                     ^
+
+"Test_name.c", line 137: warning: variable "a" was set but never used
+    A *a;
+       ^
+

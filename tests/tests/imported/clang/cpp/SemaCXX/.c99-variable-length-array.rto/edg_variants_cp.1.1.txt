@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 24: warning: variable "array1" was declared but never referenced
+    int array1[N]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+        ^
+
+"Test_name.c", line 25: warning: variable "array2" was declared but never referenced
+    POD array2[N]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+        ^
+
+"Test_name.c", line 26: warning: variable "array3" was declared but never referenced
+    NonPOD array3[N]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+           ^
+
+"Test_name.c", line 27: warning: variable "array4" was declared but never referenced
+    NonPOD2 array4[N][3]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+            ^
+
+"Test_name.c", line 33: warning: variable "array1" was declared but never referenced
+    int array1[N]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+        ^
+
+"Test_name.c", line 46: warning: variable "array2" was declared but never referenced
+    int array2[T::value]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+        ^
+
+"Test_name.c", line 58: error: a template argument may not reference a variable-length array type
+    X0<__typeof__(array)> x0a; // expected-error{{variably modified type 'typeof (array)' (aka 'int[N]') cannot be used as a template argument}}
+       ^
+
+"Test_name.c", line 58: warning: variable "x0a" was declared but never referenced
+    X0<__typeof__(array)> x0a; // expected-error{{variably modified type 'typeof (array)' (aka 'int[N]') cannot be used as a template argument}}
+                          ^
+
+"Test_name.c", line 63: error: expression must have a constant value
+    template<int (&Array)[T::value]> // expected-error{{non-type template parameter of variably modified type 'int (&)[HasNonConstantValue::value]'}}  \
+                          ^
+"Test_name.c", line 63: note: the value of member "HasNonConstantValue::value" (declared at line 41) cannot be used as a constant
+    template<int (&Array)[T::value]> // expected-error{{non-type template parameter of variably modified type 'int (&)[HasNonConstantValue::value]'}}  \
+                          ^
+          detected during instantiation of class "X1<T> [with T=HasNonConstantValue]" at line 71
+
+"Test_name.c", line 80: error: no instance of function template "accept_array" matches the argument list
+            argument types are: (int [N])
+    accept_array(array); // expected-error{{no matching function for call to 'accept_array'}}
+    ^
+"Test_name.c", line 76: note: candidate function template "accept_array" failed deduction
+  void accept_array(T (&array)[N]); // expected-note{{candidate template ignored: could not match 'T[N]' against 'int[N]'}}
+       ^
+
+"Test_name.c", line 87: error: reference to local variable of enclosing function is not allowed
+      int array[N]; // expected-error{{fields must have a constant size: 'variable length array in structure' extension will never be supported}} \
+                ^
+
+"Test_name.c", line 99: warning: variable "edgeInfo" was declared but never referenced
+      struct edge_info edgeInfo[x]; // expected-warning{{variable length arrays in C++ are a Clang extension}}
+                       ^
+
+"Test_name.c", line 107: warning: variable "array" was declared but never referenced
+      int array[value * i]; // expected-warning 2{{variable length arrays in C++ are a Clang extension}} expected-note 2{{initializer of 'value' is not a constant}}
+          ^
+
+"Test_name.c", line 130: error: a variable-length array type is not allowed
+      (void)new vla_type; // expected-error{{variably}}
+                ^
+
+"Test_name.c", line 140: warning: missing return statement at end of non-void function "rdar8733881::f"
+    }
+    ^
+
+"Test_name.c", line 139: warning: variable "rgch" was declared but never referenced
+      char rgch[k_cVal3] = {0};
+           ^
+
+"Test_name.c", line 159: warning: variable "arr" was declared but never referenced
+      int arr[A1::sz]; // expected-warning{{variable length arrays in C++ are a Clang extension}} expected-note {{initializer of 'sz' is unknown}}
+          ^
+
+"Test_name.c", line 163: warning: variable "arr" was declared but never referenced
+      int arr[A1::sz2];
+          ^
+
+5 errors detected in the compilation of "Test_name.c".

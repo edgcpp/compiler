@@ -1,0 +1,78 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 7: error: a requires-clause is not allowed here (not a templated function)
+    requires true;
+    ^
+
+"Test_name.c", line 16: error: this operator cannot appear at the top level (without parentheses) in a requires-clause
+  -> bool;
+  ^
+
+"Test_name.c", line 15: error: operator -> or ->* applied to "bool" instead of to a pointer type
+    requires true
+             ^
+
+"Test_name.c", line 16: error: expected a member name
+  -> bool;
+     ^
+
+"Test_name.c", line 20: error: a requires-clause is not allowed here (not a templated function)
+    requires true;
+    ^
+
+"Test_name.c", line 23: error: incomplete type "void" is not allowed
+  void g(int (*)() requires true);
+       ^
+
+"Test_name.c", line 23: error: expected an expression
+  void g(int (*)() requires true);
+               ^
+
+"Test_name.c", line 23: error: expected a ")"
+  void g(int (*)() requires true);
+                   ^
+
+"Test_name.c", line 26: error: incomplete type "void" is not allowed
+  auto *p = new void(*)(char)
+                ^
+
+"Test_name.c", line 26: error: expected an expression
+  auto *p = new void(*)(char)
+                      ^
+
+"Test_name.c", line 26: error: this operator is not allowed at this point; parenthesize the preceding new-expression
+  auto *p = new void(*)(char)
+                       ^
+
+"Test_name.c", line 26: error: type name is not allowed
+  auto *p = new void(*)(char)
+                        ^
+
+"Test_name.c", line 26: error: cannot deduce "auto" type
+  auto *p = new void(*)(char)
+  ^
+
+"Test_name.c", line 27: error: expected a ";"
+    requires true;
+    ^
+
+"Test_name.c", line 33: error: a friend declaration with a trailing-requires-clause must be a definition
+    friend void declared_friend() requires(sizeof(T) > 1);
+                                  ^
+
+"Test_name.c", line 43: error: a requires-clause is not allowed here (not a templated function)
+    void bad() requires(sizeof(T) > 1);
+               ^
+
+"Test_name.c", line 45: error: a requires-clause is not allowed here (not a templated function)
+    void still_bad() requires(sizeof(T) > 1) {}
+                     ^
+
+"Test_name.c", line 45: error: expected a ";"
+    void still_bad() requires(sizeof(T) > 1) {}
+                                             ^
+
+"Test_name.c", line 51: error: a requires-clause is not allowed here (not a templated function)
+    (void)[]() requires (sizeof(int)>1){};
+               ^
+
+19 errors detected in the compilation of "Test_name.c".

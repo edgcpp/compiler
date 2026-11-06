@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./lto/pr46940_0.c", line 9: warning: unknown attribute "visibility"
+  extern __attribute__((visibility("hidden"))) void _moz_foo (void);
+                        ^
+
+"./lto/pr46940_0.c", line 10: warning: unknown attribute "__visibility__"
+  extern __typeof (_moz_foo) _moz_foo __asm__ ("" "INT__foo") __attribute__((__visibility__("hidden"))) ;
+                                                                             ^
+

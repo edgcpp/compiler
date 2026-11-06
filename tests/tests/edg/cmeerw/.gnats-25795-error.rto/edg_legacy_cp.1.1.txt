@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 13: error: no instance of function template "PR_test::fff" matches the argument list
+            argument types are: (int)
+      fff(1);
+      ^
+"Test_name.c", line 11: note: candidate function template "PR_test::fff" failed deduction
+    template <class FA> eee<FA> fff(FA) { return {}; }
+                                ^
+
+"Test_name.c", line 20: error: identifier "X" is undefined
+    template <class BA> using bbb = aaa<X>;
+                                        ^
+
+"Test_name.c", line 39: error: no instance of function template "type_unknown_member::fff" matches the argument list
+            argument types are: (int)
+      fff(1);
+      ^
+"Test_name.c", line 36: note: candidate function template "type_unknown_member::fff" failed deduction
+    template <class FA> ddd<int, FA> fff(FA) { return {}; }
+                                     ^
+
+"Test_name.c", line 52: error: no instance of function template "type_unknown_typename_member::fff" matches the argument list
+            argument types are: (int)
+      fff(1);
+      ^
+"Test_name.c", line 49: note: candidate function template "type_unknown_typename_member::fff" failed deduction
+    template <class FA> ddd<int, FA> fff(FA) { return {}; }
+                                     ^
+
+"Test_name.c", line 59: error: identifier "X" is undefined
+    template <class BA> using bbb = aaa<X>;
+                                        ^
+
+"Test_name.c", line 65: error: no instance of function template "nontype_unknown_id::fff" matches the argument list
+            argument types are: (int)
+      fff(1);
+      ^
+"Test_name.c", line 62: note: candidate function template "nontype_unknown_id::fff" failed deduction
+    template <class FA> ddd<int, FA> fff(FA) { return {}; }
+                                     ^
+
+"Test_name.c", line 78: error: no instance of function template "nontype_unknown_member::fff" matches the argument list
+            argument types are: (int)
+      fff(1);
+      ^
+"Test_name.c", line 75: note: candidate function template "nontype_unknown_member::fff" failed deduction
+    template <class FA> ddd<int, FA> fff(FA) { return {}; }
+                                     ^
+
+7 errors detected in the compilation of "Test_name.c".

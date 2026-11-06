@@ -1,0 +1,37 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 34: warning: variable "b6" was declared but never referenced
+      static const B b6;
+                     ^
+
+"Test_name.c", line 35: warning: variable "b7" was declared but never referenced
+      static B b7;// expected-warning {{object of type 'B' cannot be placed in read-only memory}}
+               ^
+
+"Test_name.c", line 37: warning: variable "b8" was declared but never referenced
+      B b8; // no-warning
+        ^
+
+"Test_name.c", line 38: warning: variable "b9" was declared but never referenced
+      const B b9; // no-warning
+              ^
+
+"Test_name.c", line 167: warning: variable "c" was declared but never referenced
+      C c; // FIXME: warn the user the instance of 'C' won't be placed in the read only program memory
+        ^
+
+"Test_name.c", line 12: warning: variable "a2" was declared but never referenced
+  const A a2[10]; // no-warning
+          ^
+
+"Test_name.c", line 24: warning: variable "b2" was declared but never referenced
+  const B b2; // no-warning
+          ^
+
+"Test_name.c", line 25: warning: variable "b3" was declared but never referenced
+  const B b3[4]; // no-warning
+          ^
+
+"Test_name.c", line 152: warning: variable "cec1" was declared but never referenced
+  constexpr ConstExprCtor cec1(10); // no-warning
+                          ^
+

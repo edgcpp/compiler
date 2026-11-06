@@ -1,0 +1,27 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 42: warning: namespace "ns3" was declared deprecated
+    ns3::i = 0; // { dg-warning ".ns3. is deprecated" }
+    ^
+"Test_name.c", line 8: note: because of a "deprecated" attribute
+  namespace __attribute__((deprecated)) ns3 { int i; }
+                           ^
+
+"Test_name.c", line 43: warning: namespace "ns4" was declared deprecated ("foo")
+    ns4::i = 0; // { dg-warning ".ns4. is deprecated" }
+    ^
+"Test_name.c", line 9: note: because of a "deprecated" attribute
+  namespace __attribute__((deprecated("foo"))) ns4 { int i; }
+                           ^
+
+"Test_name.c", line 44: warning: variable "i" was declared but never referenced
+    int i = ns1::i; // { dg-warning ".ns1. is deprecated" }
+        ^
+
+"Test_name.c", line 45: warning: variable "k" was declared but never referenced
+    int k = ns6::E::X;  // { dg-warning ".ns6. is deprecated" }
+        ^
+
+"Test_name.c", line 49: warning: variable "s" was declared but never referenced
+    ns7::S s; // { dg-warning ".ns7. is deprecated" }
+           ^
+

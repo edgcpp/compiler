@@ -1,0 +1,289 @@
+fe_only -DTEST_NUMBER=12 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++23 --exceptions --exceptions Test_name.c
+"Test_name.c", line 30: error: identifier "var1" is undefined
+        Check<true ? 0 : A::unknown_spec>::type *var1;
+                                                 ^
+
+"Test_name.c", line 43: error: identifier "var5" is undefined
+        Check<true ? 0 : (d(), 0)>::type *var5;
+                                          ^
+
+"Test_name.c", line 48: error: expression must be an lvalue or a function designator
+        Check<true ? 0 : (&A::d(), 0)>::type *var5;
+                           ^
+
+"Test_name.c", line 34: warning: variable "var2" was declared but never referenced
+        Check<true ? 0 : a>::type *var2; // #cwg1413-var2
+                                   ^
+
+"Test_name.c", line 35: warning: variable "var3" was declared but never referenced
+        Check<true ? 0 : b>::type *var3;
+                                   ^
+
+"Test_name.c", line 38: warning: variable "var4" was declared but never referenced
+        Check<true ? 0 : ((void)c, 0)>::type *var4;
+                                              ^
+
+"Test_name.c", line 57: error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "bool"
+    bool b1 = nullptr;
+              ^
+
+"Test_name.c", line 61: error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "bool"
+    bool b3 = {nullptr};
+               ^
+
+"Test_name.c", line 117: error: a value of type "cwg1458::A *" cannot be used to initialize an entity of type "const int"
+    constexpr int p = &*a;
+                      ^
+
+"Test_name.c", line 119: warning: variable "p2" was declared but never referenced
+    constexpr A *p2 = &*a;
+                 ^
+
+"Test_name.c", line 147: error: defaulted default constructor cannot be constexpr because the corresponding implicitly declared default constructor would not be constexpr
+        constexpr B() = default;
+                  ^
+
+"Test_name.c", line 159: warning: variable "c" was declared but never referenced
+      constexpr void f() { C c; }
+                             ^
+
+"Test_name.c", line 248: error: a union can have at most one field initializer -- member "cwg1460::G::a" (declared at line 247) also has an initializer
+      int b = 0;
+          ^
+
+"Test_name.c", line 257: error: a union can have at most one field initializer -- member "cwg1460::H::a" (declared at line 254) also has an initializer
+        int b = 0;
+            ^
+
+"Test_name.c", line 265: error: a union can have at most one field initializer -- member "cwg1460::I::<unnamed>::a" (declared at line 264) also has an initializer
+        int b = 0;
+            ^
+
+"Test_name.c", line 290: error: expression must have a constant value
+      static_assert(B().b == 2, "");
+                    ^
+"Test_name.c", line 290: note: invalid access to inactive member "cwg1460::Overriding::B::b" of union (member "cwg1460::Overriding::B::a" is active)
+      static_assert(B().b == 2, "");
+                       ^
+
+"Test_name.c", line 293: error: expression must have a constant value
+      static_assert(B('x').a == 0, "");
+                    ^
+"Test_name.c", line 293: note: invalid access to inactive member "cwg1460::Overriding::B::a" of union (member "cwg1460::Overriding::B::b" is active)
+      static_assert(B('x').a == 0, "");
+                          ^
+
+"Test_name.c", line 297: error: expression must have a constant value
+      static_assert(B(123).b == 2, "");
+                    ^
+"Test_name.c", line 297: note: invalid access to inactive member "cwg1460::Overriding::B::b" of union (member "cwg1460::Overriding::B::c" is active)
+      static_assert(B(123).b == 2, "");
+                          ^
+
+"Test_name.c", line 301: error: expression must have a constant value
+      static_assert(B("").a == 1, "");
+                    ^
+"Test_name.c", line 301: note: invalid access to inactive member "cwg1460::Overriding::B::a" of union (member "cwg1460::Overriding::B::b" is active)
+      static_assert(B("").a == 1, "");
+                         ^
+
+"Test_name.c", line 305: error: expression must have a constant value
+      static_assert(B("").c == 3, "");
+                    ^
+"Test_name.c", line 305: note: invalid access to inactive member "cwg1460::Overriding::B::c" of union (member "cwg1460::Overriding::B::b" is active)
+      static_assert(B("").c == 3, "");
+                         ^
+
+"Test_name.c", line 320: error: expression must have a constant value
+      static_assert(C().b == 2, "");
+                    ^
+"Test_name.c", line 320: note: invalid access to inactive member "cwg1460::Overriding::C::b" of union (member "cwg1460::Overriding::C::a" is active)
+      static_assert(C().b == 2, "");
+                       ^
+
+"Test_name.c", line 323: error: expression must have a constant value
+      static_assert(C().d == 4, "");
+                    ^
+"Test_name.c", line 323: note: invalid access to inactive member "cwg1460::Overriding::C::d" of union (member "cwg1460::Overriding::C::e" is active)
+      static_assert(C().d == 4, "");
+                       ^
+
+"Test_name.c", line 328: error: expression must have a constant value
+      static_assert(C('x').b == 2, "");
+                    ^
+"Test_name.c", line 328: note: invalid access to inactive member "cwg1460::Overriding::C::b" of union (member "cwg1460::Overriding::C::c" is active)
+      static_assert(C('x').b == 2, "");
+                          ^
+
+"Test_name.c", line 332: error: expression must have a constant value
+      static_assert(C('x').d == 4, "");
+                    ^
+"Test_name.c", line 332: note: invalid access to inactive member "cwg1460::Overriding::C::d" of union (member "cwg1460::Overriding::C::e" is active)
+      static_assert(C('x').d == 4, "");
+                          ^
+
+"Test_name.c", line 338: error: expression must have a constant value
+      static_assert(C(1).c == 3, "");
+                    ^
+"Test_name.c", line 338: note: invalid access to inactive member "cwg1460::Overriding::C::c" of union (member "cwg1460::Overriding::C::b" is active)
+      static_assert(C(1).c == 3, "");
+                        ^
+
+"Test_name.c", line 342: error: expression must have a constant value
+      static_assert(C(1).e == 5, "");
+                    ^
+"Test_name.c", line 342: note: invalid access to inactive member "cwg1460::Overriding::C::e" of union (member "cwg1460::Overriding::C::d" is active)
+      static_assert(C(1).e == 5, "");
+                        ^
+
+"Test_name.c", line 347: error: expression must have a constant value
+      static_assert(C(1.f).c == 3, "");
+                    ^
+"Test_name.c", line 347: note: invalid access to inactive member "cwg1460::Overriding::C::c" of union (member "cwg1460::Overriding::C::b" is active)
+      static_assert(C(1.f).c == 3, "");
+                          ^
+
+"Test_name.c", line 350: error: expression must have a constant value
+      static_assert(C(1.f).e == 5, "");
+                    ^
+"Test_name.c", line 350: note: invalid access to inactive member "cwg1460::Overriding::C::e" of union (member "cwg1460::Overriding::C::f" is active)
+      static_assert(C(1.f).e == 5, "");
+                          ^
+
+"Test_name.c", line 355: error: expression must have a constant value
+      static_assert(C("").a == 1, "");
+                    ^
+"Test_name.c", line 355: note: invalid access to inactive member "cwg1460::Overriding::C::a" of union (member "cwg1460::Overriding::C::b" is active)
+      static_assert(C("").a == 1, "");
+                         ^
+
+"Test_name.c", line 359: error: expression must have a constant value
+      static_assert(C("").c == 3, "");
+                    ^
+"Test_name.c", line 359: note: invalid access to inactive member "cwg1460::Overriding::C::c" of union (member "cwg1460::Overriding::C::b" is active)
+      static_assert(C("").c == 3, "");
+                         ^
+
+"Test_name.c", line 362: error: expression must have a constant value
+      static_assert(C("").d == 4, "");
+                    ^
+"Test_name.c", line 362: note: invalid access to inactive member "cwg1460::Overriding::C::d" of union (member "cwg1460::Overriding::C::e" is active)
+      static_assert(C("").d == 4, "");
+                         ^
+
+"Test_name.c", line 366: error: expression must have a constant value
+      static_assert(C("").f == 6, "");
+                    ^
+"Test_name.c", line 366: note: invalid access to inactive member "cwg1460::Overriding::C::f" of union (member "cwg1460::Overriding::C::e" is active)
+      static_assert(C("").f == 6, "");
+                         ^
+
+"Test_name.c", line 487: error: function "cwg1467::dr_example::f1(std::initializer_list<long>)" (declared at line 486) cannot be referenced -- it is a deleted function
+      void g1() { f1({42}); }
+                  ^
+
+"Test_name.c", line 502: error: function "cwg1467::dr_example::f2(std::initializer_list<cwg1467::dr_example::String>)" (declared at line 501) cannot be referenced -- it is a deleted function
+      void g2() { f2({"foo", "bar"}); }
+                  ^
+
+"Test_name.c", line 527: warning: variable "y" was declared but never referenced
+        NonAggregate y{x};
+                     ^
+
+"Test_name.c", line 528: warning: variable "z" was declared but never referenced
+        NonAggregate z{{x}};
+                     ^
+
+"Test_name.c", line 569: error: function "cwg1467::StringLiterals::f(const char (&&)[5])" (declared at line 557) cannot be referenced -- it is a deleted function
+      f({"abc"});
+      ^
+
+"Test_name.c", line 579: error: function "cwg1467::StringLiterals::f(const char (&&)[5])" (declared at line 557) cannot be referenced -- it is a deleted function
+      f({((("abc")))});
+      ^
+
+"Test_name.c", line 589: error: function "cwg1467::StringLiterals::f(const wchar_t (&&)[5])" (declared at line 559) cannot be referenced -- it is a deleted function
+      f({L"abc"});
+      ^
+
+"Test_name.c", line 600: error: function "cwg1467::StringLiterals::f2(const char8_t (&&)[5])" (declared at line 562) cannot be referenced -- it is a deleted function
+      f2({u8"abc"});
+      ^
+
+"Test_name.c", line 605: error: function "cwg1467::StringLiterals::f(const char16_t (&&)[5])" (declared at line 565) cannot be referenced -- it is a deleted function
+      f({uR"(abc)"});
+      ^
+
+"Test_name.c", line 615: error: function "cwg1467::StringLiterals::f(const char32_t (&&)[5])" (declared at line 567) cannot be referenced -- it is a deleted function
+      f({(UR"(abc)")});
+      ^
+
+"Test_name.c", line 665: error: identifier "E2" is undefined
+  enum E2 : S<E2>::I { e };
+              ^
+
+"Test_name.c", line 674: warning: inheriting constructors must be inherited from a direct base class
+      using A::A;
+               ^
+
+"Test_name.c", line 678: error: incomplete type "cwg1487::A" is not allowed
+    struct C : A {
+               ^
+
+"Test_name.c", line 681: warning: inheriting constructors must be inherited from a direct base class
+      using A::A;
+               ^
+
+"Test_name.c", line 699: error: expected an identifier
+    std::initializer_list<char>{"abc"};
+                               ^
+
+"Test_name.c", line 699: error: a value of type "const char *" cannot be used to initialize an entity of type "const char"
+    std::initializer_list<char>{"abc"};
+                                ^
+
+"Test_name.c", line 714: error: a parameter pack must be the final template argument in a partial specialization
+    template<typename ...Ts> struct B<Ts...> {};
+                                    ^
+
+"Test_name.c", line 720: error: a parameter pack must be the final template argument in a partial specialization
+    template<typename ...Ts> struct C<0, Ts...> {};
+                                    ^
+
+"Test_name.c", line 187: warning: variable "cwg1460::a" was declared but never referenced
+    constexpr A a = A();
+                ^
+
+"Test_name.c", line 188: warning: variable "cwg1460::b" was declared but never referenced
+    constexpr B b = B();
+                ^
+
+"Test_name.c", line 189: warning: variable "cwg1460::c" was declared but never referenced
+    constexpr C c = C();
+                ^
+
+"Test_name.c", line 190: warning: variable "cwg1460::d" was declared but never referenced
+    constexpr D d = D();
+                ^
+
+"Test_name.c", line 191: warning: variable "cwg1460::e" was declared but never referenced
+    constexpr E e = E();
+                ^
+
+"Test_name.c", line 192: warning: variable "cwg1460::f" was declared but never referenced
+    constexpr F f = F();
+                ^
+
+"Test_name.c", line 140: warning: variable "cwg1460::DRExample::a" was declared but never referenced
+      constexpr A a = A();
+                  ^
+
+"Test_name.c", line 149: warning: variable "cwg1460::DRExample::b" was declared but never referenced
+      constexpr B b = B();
+                  ^
+
+"Test_name.c", line 157: warning: variable "cwg1460::DRExample::c" was declared but never referenced
+      constexpr C c = C();
+                  ^
+
+41 errors detected in the compilation of "Test_name.c".

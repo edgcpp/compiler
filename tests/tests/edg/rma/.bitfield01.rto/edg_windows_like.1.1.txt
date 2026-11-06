@@ -1,0 +1,46 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 17: error: the type "long long" is nonstandard
+    unsigned long long m:2;
+                  ^
+
+"Test_name.c", line 18: error: the type "long long" is nonstandard
+    signed long long n:2;
+                ^
+
+"Test_name.c", line 19: error: the type "long long" is nonstandard
+    long long o:2;
+         ^
+
+"Test_name.c", line 23: warning: signed bit field of length 1
+    signed char b:1;
+                ^
+
+"Test_name.c", line 26: warning: signed bit field of length 1
+    signed short e:1;
+                 ^
+
+"Test_name.c", line 29: warning: signed bit field of length 1
+    signed int h:1;
+               ^
+
+"Test_name.c", line 32: warning: signed bit field of length 1
+    signed long k:1;
+                ^
+
+"Test_name.c", line 34: error: the type "long long" is nonstandard
+    unsigned long long m:1;
+                  ^
+
+"Test_name.c", line 35: error: the type "long long" is nonstandard
+    signed long long n:1;
+                ^
+
+"Test_name.c", line 35: warning: signed bit field of length 1
+    signed long long n:1;
+                     ^
+
+"Test_name.c", line 36: error: the type "long long" is nonstandard
+    long long o:1;
+         ^
+
+6 errors detected in the compilation of "Test_name.c".

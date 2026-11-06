@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 17: warning: expression has no effect
+    static void exec() { MetaFunction::template exec<Type>; }
+                         ^
+
+"Test_name.c", line 27: warning: expression has no effect
+      searchGen(0, 0, 0, [=](T) { [=] { target; }; });
+                                        ^
+
+"Test_name.c", line 31: warning: expression has no effect
+  void ____C_A_T_C_H____T_E_S_T____75() { forEachType<C, int>; }
+                                          ^
+
+"Test_name.c", line 17: error: nonstandard form for taking the address of a member function
+    static void exec() { MetaFunction::template exec<Type>; }
+                         ^
+          detected during:
+            instantiation of "void B<MetaFunction, Type, Types...>::exec() [with MetaFunction=<unnamed>::C, Type=int, Types=<>]" at line 20
+            instantiation of "void forEachType<MetaFunction,Types...>() [with MetaFunction=<unnamed>::C, Types=<int>]" 
+
+"Test_name.c", line 20: warning: expression has no effect
+    B<MetaFunction, Types...>::exec;
+    ^
+          detected during instantiation of "void forEachType<MetaFunction,Types...>() [with MetaFunction=<unnamed>::C, Types=<int>]" 
+
+1 error detected in the compilation of "Test_name.c".

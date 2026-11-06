@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 9: error: identifier "i" is undefined
+    for (i = 0; i < 1; ++i); // { dg-error "not declared|expected iteration decl" }
+         ^
+
+"Test_name.c", line 17: error: identifier "j" is undefined
+    for (i = j; i < 1; ++i); // { dg-error "not declared|expected iteration decl" }
+             ^
+
+"Test_name.c", line 25: error: identifier "j" is undefined
+    for (i = 0; i < j; ++i); // { dg-error "not declared|invalid controlling predicate" }
+                    ^
+
+"Test_name.c", line 33: error: identifier "j" is undefined
+    for (i = 0; i < 10; i += j); // { dg-error "not declared|invalid increment expression" }
+                             ^
+
+4 errors detected in the compilation of "Test_name.c".

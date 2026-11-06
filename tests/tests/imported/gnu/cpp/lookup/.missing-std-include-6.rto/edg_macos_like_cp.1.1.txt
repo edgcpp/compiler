@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"./lookup/missing-std-include-6.C", line 8: error: namespace "std" has no member "make_shared"
+    auto p = std::make_shared<T>();
+                  ^
+
+"./lookup/missing-std-include-6.C", line 8: error: type name is not allowed
+    auto p = std::make_shared<T>();
+                              ^
+
+"./lookup/missing-std-include-6.C", line 8: error: expected an expression
+    auto p = std::make_shared<T>();
+                                 ^
+
+"./lookup/missing-std-include-6.C", line 14: error: namespace "std" has no member "shared_ptr"
+  std::shared_ptr<int> test_shared_ptr;
+       ^
+
+"./lookup/missing-std-include-6.C", line 14: error: expected a ";"
+  std::shared_ptr<int> test_shared_ptr;
+                 ^
+
+"./lookup/missing-std-include-6.C", line 17: error: namespace "std" has no member "unique_ptr"
+  std::unique_ptr<int> test_unique_ptr;
+       ^
+
+"./lookup/missing-std-include-6.C", line 17: error: expected a ";"
+  std::unique_ptr<int> test_unique_ptr;
+                 ^
+
+"./lookup/missing-std-include-6.C", line 20: error: namespace "std" has no member "weak_ptr"
+  std::weak_ptr<int> test_weak_ptr;
+       ^
+
+"./lookup/missing-std-include-6.C", line 20: error: expected a ";"
+  std::weak_ptr<int> test_weak_ptr;
+               ^
+
+"./lookup/missing-std-include-6.C", line 27: error: namespace "std" has no member "make_tuple"
+    auto t = std::make_tuple (i, j, k);
+                  ^
+
+"./lookup/missing-std-include-6.C", line 36: error: namespace "std" has no member "forward"
+    std::forward<T>(arg);
+         ^
+
+"./lookup/missing-std-include-6.C", line 36: error: type name is not allowed
+    std::forward<T>(arg);
+                 ^
+
+"./lookup/missing-std-include-6.C", line 43: error: namespace "std" has no member "make_pair"
+    auto p = std::make_pair (i, j);
+                  ^
+
+"./lookup/missing-std-include-6.C", line 50: error: namespace "std" has no member "move"
+    std::move<T>(arg);
+         ^
+
+"./lookup/missing-std-include-6.C", line 50: error: type name is not allowed
+    std::move<T>(arg);
+              ^
+
+"./lookup/missing-std-include-6.C", line 57: error: namespace "std" has no member "array"
+    std::array a;
+         ^
+
+"./lookup/missing-std-include-6.C", line 63: error: namespace "std" has no member "tuple"
+    std::tuple<int,float> p;
+         ^
+
+"./lookup/missing-std-include-6.C", line 63: error: type name is not allowed
+    std::tuple<int,float> p;
+               ^
+
+"./lookup/missing-std-include-6.C", line 63: error: type name is not allowed
+    std::tuple<int,float> p;
+                   ^
+
+"./lookup/missing-std-include-6.C", line 63: error: identifier "p" is undefined
+    std::tuple<int,float> p;
+                          ^
+
+20 errors detected in the compilation of "Test_name.c".

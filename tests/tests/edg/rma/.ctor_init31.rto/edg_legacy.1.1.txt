@@ -1,0 +1,17 @@
+cpfe -DTEST_NUMBER=1 -r -x -tused --strict Test_name.c
+"Test_name.c", line 5: remark: function "a::a()" cannot be inlined
+    a() { }
+    ^
+
+"Test_name.c", line 6: remark: function "a::a(int)" cannot be inlined
+    a(int)  { }
+    ^
+
+"Test_name.c", line 10: remark: function "aa::aa(int)" cannot be inlined
+    aa(int)  { }
+    ^
+
+"Test_name.c", line 15: remark: function "b::b(int)" cannot be inlined
+    b(int i) : a(2*i) { /* a::a(i);*/ }  // initialize b::a or call a::a() ?
+    ^
+

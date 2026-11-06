@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions Test_name.c
+"Test_name.c", line 16: warning: variable "ip" was declared but never referenced
+      int *ip = I; // expected-error{{cannot initialize}}
+           ^
+
+"Test_name.c", line 38: warning: variable "ip" was declared but never referenced
+      int *ip = I; // expected-error{{cannot initialize}}
+           ^
+
+"Test_name.c", line 12: error: return value type does not match the function type
+      return I; // expected-error{{cannot initialize}}
+             ^
+          detected during instantiation of "void *X0<I>::operator new(size_t) [with I=3]" at line 25
+
+"Test_name.c", line 16: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int *ip = I; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X0<I>::operator delete(void *) [with I=3]" at line 25
+
+"Test_name.c", line 34: error: return value type does not match the function type
+      return I; // expected-error{{cannot initialize}}
+             ^
+          detected during instantiation of "void *X1<I>::operator new[](size_t) [with I=3]" at line 47
+
+"Test_name.c", line 38: error: a value of type "int" cannot be used to initialize an entity of type "int *"
+      int *ip = I; // expected-error{{cannot initialize}}
+                ^
+          detected during instantiation of "void X1<I>::operator delete[](void *) [with I=3]" at line 47
+
+4 errors detected in the compilation of "Test_name.c".

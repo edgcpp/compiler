@@ -1,0 +1,39 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 29: error: function "t::br" returns incomplete type "s<8U>"
+    template <typename...> void operator()() { ba(br()); }
+                                                    ^
+
+"Test_name.c", line 76: warning: variable "e" is used before its value is set
+    for (; e;)
+           ^
+
+"Test_name.c", line 80: warning: variable "b" is used before its value is set
+    a < b;
+        ^
+          detected during:
+            instantiation of "void K<co>::cx(v<co> &) [with co=8U]" at line 71
+            instantiation of "void v<co>::cx(int, unsigned char *, unsigned long long) [with co=8U]" at line 92
+            instantiation of "void s<co>::operator()() [with co=8U]" at line 19
+            instantiation of "void ax<<unnamed>,aw>(aw) [with <unnamed>=int, aw=s<8U>]" at line 23
+            instantiation of "void ba(az) [with az=s<8U>]" at line 29
+            instantiation of "void t::operator()<<unnamed>...>() [with <unnamed>=<>]" at line 36
+
+"Test_name.c", line 92: warning: variable "f" is used before its value is set
+    dh->cx(f, &g, h);
+           ^
+          detected during:
+            instantiation of "void s<co>::operator()() [with co=8U]" at line 19
+            instantiation of "void ax<<unnamed>,aw>(aw) [with <unnamed>=int, aw=s<8U>]" at line 23
+            instantiation of "void ba(az) [with az=s<8U>]" at line 29
+            instantiation of "void t::operator()<<unnamed>...>() [with <unnamed>=<>]" at line 36
+
+"Test_name.c", line 92: warning: variable "h" is used before its value is set
+    dh->cx(f, &g, h);
+                  ^
+          detected during:
+            instantiation of "void s<co>::operator()() [with co=8U]" at line 19
+            instantiation of "void ax<<unnamed>,aw>(aw) [with <unnamed>=int, aw=s<8U>]" at line 23
+            instantiation of "void ba(az) [with az=s<8U>]" at line 29
+            instantiation of "void t::operator()<<unnamed>...>() [with <unnamed>=<>]" at line 36
+
+1 error detected in the compilation of "Test_name.c".

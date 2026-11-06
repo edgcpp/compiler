@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./vect/costmodel/riscv/rvv/dynamic-lmul2-6.c", line 5: warning: unknown attribute "vector_size"
+  typedef int8_t v128qi __attribute__ ((vector_size (128)));
+                                        ^
+
+"./vect/costmodel/riscv/rvv/dynamic-lmul2-6.c", line 19: error: expression must have pointer-to-object type but it has type "int"
+      b[i] = global_v[i] + 8;
+                      ^
+
+1 error detected in the compilation of "Test_name.c".

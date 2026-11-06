@@ -1,0 +1,51 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 423: error: too many arguments for concept "GH62272::A"
+  template<typename T> struct X { A<T> auto f(); };
+                                    ^
+
+"Test_name.c", line 424: error: too many arguments for concept "GH62272::A"
+  template<typename T> A<T> auto X<T>::f() {}
+                         ^
+
+"Test_name.c", line 424: error: template argument list must match the parameter list
+  template<typename T> A<T> auto X<T>::f() {}
+                                 ^
+
+"Test_name.c", line 529: error: declaration is incompatible with "void GH74314::X<T>::foo()" (declared at line 524)
+  void X<T>::foo() requires requires { requires something_interesting<T>; } {}
+             ^
+
+"Test_name.c", line 538: error: declaration is incompatible with "void GH74314::X<T>::bar(bool)" (declared at line 525)
+  void X<T>::bar(decltype(requires { requires something_interesting<T>; })) {}
+             ^
+
+"Test_name.c", line 571: warning: constant "V" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "GH74447::S<T>::test"
+    template <typename... U, int V>
+                                 ^
+
+"Test_name.c", line 581: warning: constant "V" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "GH74447::S<T>::test"
+  template <typename... U, int V>
+                               ^
+
+"Test_name.c", line 605: warning: missing return statement at end of non-void function "GH72557::DerivedCollection<DerTs...>::index<DerT>()"
+  unsigned long DerivedCollection<DerTs...>::index() {}
+                                                      ^
+
+"Test_name.c", line 690: error: requires-clause incompatible with class template "GH93099::TTP" (declared at line 704)
+      requires(sizeof...(TTp) > 0)
+      ^
+          detected during instantiation of class "GH93099::C<T> [with T=int]" at line 706
+
+"Test_name.c", line 752: error: declaration is incompatible with function template "GH123441::foo<<unnamed>...>::foo(auto &&...)" (declared at line 747)
+  constexpr foo<T...>::foo(auto&&... initList) // expected-error {{does not match any declaration}}
+                       ^
+
+"Test_name.c", line 767: warning: missing return statement at end of non-void function "GH114685::make_item<U,<auto-1>>(auto &&)"
+    requires(sizeof(args) > 1) {}
+                                ^
+
+"Test_name.c", line 817: error: function template "GH138255::fr2" has already been defined (previous definition at line 802)
+  auto fr2() -> void {} // expected-error{{redefinition of 'fr2'}}
+       ^
+
+8 errors detected in the compilation of "Test_name.c".

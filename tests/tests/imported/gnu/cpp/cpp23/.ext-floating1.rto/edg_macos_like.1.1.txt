@@ -1,0 +1,238 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++23 Test_name.c
+"./cpp23/ext-floating.h", line 15: error: identifier "_Float128" is undefined
+    using float128_t = _Float128;
+                       ^
+
+"./cpp23/ext-floating1.C", line 72: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f128), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 72: error: static assertion failed
+  static_assert (is_same<decltype (0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 73: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 73: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 74: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (!is_same<decltype (0.0f128), long double>::value);
+                                   ^
+
+"./cpp23/ext-floating1.C", line 75: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (!is_same<decltype (0.0F128), long double>::value);
+                                   ^
+
+"./cpp23/ext-floating1.C", line 76: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f128 + 0.0f128), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 76: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f128 + 0.0f128), float128_t>::value);
+                                            ^
+
+"./cpp23/ext-floating1.C", line 76: error: static assertion failed
+  static_assert (is_same<decltype (0.0f128 + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 77: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0F128), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 77: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0F128), float128_t>::value);
+                                            ^
+
+"./cpp23/ext-floating1.C", line 77: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0F128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 130: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (!is_same<decltype (0.0f128), _Float32x>::value);
+                                   ^
+
+"./cpp23/ext-floating1.C", line 131: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (!is_same<decltype (0.0F128), _Float32x>::value);
+                                   ^
+
+"./cpp23/ext-floating1.C", line 170: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (!is_same<decltype (0.0f128), _Float64x>::value);
+                                   ^
+
+"./cpp23/ext-floating1.C", line 171: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (!is_same<decltype (0.0F128), _Float64x>::value);
+                                   ^
+
+"./cpp23/ext-floating1.C", line 249: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f16 + 0.0f128), float128_t>::value);
+                                           ^
+
+"./cpp23/ext-floating1.C", line 249: error: static assertion failed
+  static_assert (is_same<decltype (0.0f16 + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 250: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0F16), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 250: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0F16), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 271: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f32 + 0.0f128), float128_t>::value);
+                                           ^
+
+"./cpp23/ext-floating1.C", line 271: error: static assertion failed
+  static_assert (is_same<decltype (0.0f32 + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 272: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0F32), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 272: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0F32), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 288: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f64 + 0.0f128), float128_t>::value);
+                                           ^
+
+"./cpp23/ext-floating1.C", line 288: error: static assertion failed
+  static_assert (is_same<decltype (0.0f64 + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 289: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0F64), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 289: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0F64), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 298: error: static assertion failed
+  static_assert (is_same<decltype (0.0f64 + 0.0f64x), _Float64x>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 299: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64x + 0.0F64), _Float64x>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 308: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f128 + 0.0f32x), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 308: error: static assertion failed
+  static_assert (is_same<decltype (0.0f128 + 0.0f32x), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 309: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F32x + 0.0F128), float128_t>::value);
+                                            ^
+
+"./cpp23/ext-floating1.C", line 309: error: static assertion failed
+  static_assert (is_same<decltype (0.0F32x + 0.0F128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 314: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f128 + 0.0f64x), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 314: error: static assertion failed
+  static_assert (is_same<decltype (0.0f128 + 0.0f64x), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 315: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F64x + 0.0F128), float128_t>::value);
+                                            ^
+
+"./cpp23/ext-floating1.C", line 315: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64x + 0.0F128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 333: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0bf16 + 0.0f128), float128_t>::value);
+                                            ^
+
+"./cpp23/ext-floating1.C", line 333: error: static assertion failed
+  static_assert (is_same<decltype (0.0bf16 + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 334: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0BF16), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 334: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0BF16), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 370: error: static assertion failed
+  static_assert (is_same<decltype (0.0 + 0.0f64), float64_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 371: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64 + 0.0), float64_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 374: error: static assertion failed
+  static_assert (is_same<decltype (0.0L + 0.0f64), long double>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 375: error: static assertion failed
+  static_assert (is_same<decltype (0.0F64 + 0.0l), long double>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 389: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0f + 0.0f128), float128_t>::value);
+                                         ^
+
+"./cpp23/ext-floating1.C", line 389: error: static assertion failed
+  static_assert (is_same<decltype (0.0f + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 390: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0F), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 390: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0F), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 393: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0 + 0.0f128), float128_t>::value);
+                                        ^
+
+"./cpp23/ext-floating1.C", line 393: error: static assertion failed
+  static_assert (is_same<decltype (0.0 + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 394: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 394: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 398: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0L + 0.0f128), float128_t>::value);
+                                         ^
+
+"./cpp23/ext-floating1.C", line 398: error: static assertion failed
+  static_assert (is_same<decltype (0.0L + 0.0f128), float128_t>::value);
+  ^
+
+"./cpp23/ext-floating1.C", line 399: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+  static_assert (is_same<decltype (0.0F128 + 0.0l), float128_t>::value);
+                                  ^
+
+"./cpp23/ext-floating1.C", line 399: error: static assertion failed
+  static_assert (is_same<decltype (0.0F128 + 0.0l), float128_t>::value);
+  ^
+
+29 errors detected in the compilation of "Test_name.c".

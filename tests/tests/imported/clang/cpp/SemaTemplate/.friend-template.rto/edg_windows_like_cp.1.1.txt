@@ -1,0 +1,77 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 27: error: function template "test1::f1" has already been defined (previous definition at line 19)
+    template<typename T> void f1(T) { } // expected-error{{redefinition}}
+                              ^
+
+"Test_name.c", line 82: warning: declaration is incompatible with constant "int Size" (declared at line 74)
+      template<typename U, T Value> friend struct X2b; // expected-error {{template non-type parameter has a different type 'long' in template redeclaration}} \
+                             ^
+          detected during instantiation of class "test3::X3<T> [with T=long]" at line 88
+
+"Test_name.c", line 98: warning: variable "a" was declared but never referenced
+      int a[sizeof(T) ? -1 : -1]; // expected-error {{array with a negative size}}
+          ^
+
+"Test_name.c", line 139: warning: variable "value" was declared but never referenced
+        int value = N;
+            ^
+
+"Test_name.c", line 216: error: a friend declaration may not declare a partial specialization
+      template<unsigned M> friend class X<T, U, M>; // expected-error{{partial specialization cannot be declared as a friend}}
+                                        ^
+
+"Test_name.c", line 225: error: expected an identifier
+      template <typename U> friend S<U>; // expected-error{{friend type templates must use an elaborated type}}
+                                       ^
+
+"Test_name.c", line 225: error: invalid friend declaration
+      template <typename U> friend S<U>; // expected-error{{friend type templates must use an elaborated type}}
+                                       ^
+
+"Test_name.c", line 232: error: an explicit specialization declaration may not be a friend declaration
+      template <> friend class B; // expected-error{{extraneous 'template<>' in declaration of class 'B'}}
+                  ^
+
+"Test_name.c", line 232: error: class "PR10660::B" is not an entity that can be explicitly specialized
+      template <> friend class B; // expected-error{{extraneous 'template<>' in declaration of class 'B'}}
+                  ^
+
+"Test_name.c", line 274: error: "Foo" has already been declared in the current scope
+      template <typename> friend struct Foo; // expected-error {{redefinition of 'Foo' as different kind of symbol}}
+                                        ^
+
+"Test_name.c", line 283: error: class "PR12585::A" has no member "does_not_exist"
+      template<typename> friend class A::does_not_exist; // \
+                                         ^
+
+"Test_name.c", line 307: warning: declaration is incompatible with constant "int <unnamed>" (declared at line 302)
+      template<T> friend struct F::G; // \
+                ^
+
+"Test_name.c", line 322: warning: variable "a" was declared but never referenced
+        A<int> a;
+               ^
+
+"Test_name.c", line 325: warning: variable "array" was declared but never referenced
+        int array[sizeof(T) == sizeof(U) ? -1 : 1]; // expected-error {{negative size}}
+            ^
+
+"Test_name.c", line 339: error: class "StackUseAfterScope::Bar<int>" cannot be specialized in the current scope
+    template <> friend class Bar<int>; // expected-error {{template specialization declaration cannot be a friend}}
+                             ^
+
+"Test_name.c", line 339: error: an explicit specialization declaration may not be a friend declaration
+    template <> friend class Bar<int>; // expected-error {{template specialization declaration cannot be a friend}}
+                ^
+
+"Test_name.c", line 98: error: the size of an array must be greater than zero
+      int a[sizeof(T) ? -1 : -1]; // expected-error {{array with a negative size}}
+            ^
+          detected during instantiation of "void test4::f(const test4::A<T> &) [with T=int]" at line 102
+
+"Test_name.c", line 325: error: the size of an array must be greater than zero
+        int array[sizeof(T) == sizeof(U) ? -1 : 1]; // expected-error {{negative size}}
+                  ^
+          detected during instantiation of "void rdar12350696::foo(const rdar12350696::A<U> &) [with U=int]" at line 331
+
+12 errors detected in the compilation of "Test_name.c".

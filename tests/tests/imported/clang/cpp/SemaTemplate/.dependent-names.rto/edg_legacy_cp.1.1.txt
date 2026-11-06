@@ -1,0 +1,214 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 166: warning: missing return statement at end of non-void function "PR10053::N::M::g(T)"
+        };
+        ^
+
+"Test_name.c", line 181: error: initial value of reference to non-const must be an lvalue
+        static const int n = f(T()); // expected-error {{no matching function}}
+                               ^
+          detected during instantiation of class "PR10053::O::C<T> [with T=double]" at line 186
+
+"Test_name.c", line 201: warning: missing return statement at end of non-void function "PR10053::my_file::main"
+      }
+      ^
+
+"Test_name.c", line 274: error: identifier "__range" is undefined
+            __range(a); // expected-error {{undeclared identifier '__range'}}
+            ^
+
+"Test_name.c", line 340: error: incomplete type "PR11421::X<3U>::Y<3U>" is not allowed
+    struct Y: Y<dim> { }; // expected-error{{base class has incomplete type}}
+              ^
+          detected during instantiation of class "PR11421::X<<unnamed>>::Y<dim> [with <unnamed>=3U, dim=3U]" at line 344
+
+"Test_name.c", line 344: error: class "PR11421::X<<unnamed>>::Y<3U> [with <unnamed>=3U]" has no member "iterator"
+  X3::Y<>::iterator it; // expected-error {{no type named 'iterator' in 'PR11421::X<3>::Y<>'}}
+           ^
+
+"Test_name.c", line 415: error: function template "PR19936::f" has already been defined (previous definition at line 405)
+    template<typename T> decltype(*T()) f() {} // expected-error {{redefinition}}
+                                        ^
+
+"Test_name.c", line 416: error: function template "PR19936::g" has already been defined (previous definition at line 406)
+    template<typename T> decltype(T() * T()) g() {} // expected-error {{redefinition}}
+                                             ^
+
+"Test_name.c", line 422: error: too few arguments for class template "CT2<<unnamed>>::X [with <unnamed>=int]"
+  template <typename T> int CT2<int>::X<>; // expected-error {{template parameter list matching the non-templated nested type 'CT2<int>' should be empty}}
+                                        ^
+
+"Test_name.c", line 422: warning: variable templates are a C++14 feature
+  template <typename T> int CT2<int>::X<>; // expected-error {{template parameter list matching the non-templated nested type 'CT2<int>' should be empty}}
+                                         ^
+
+"Test_name.c", line 484: error: declaration is incompatible with function template "void TransformNestedName::N<T>::F()" (declared at line 479)
+    inline void N<T>::F() {}
+                      ^
+
+"Test_name.c", line 42: error: a nonstatic member reference must be relative to a specific object
+        Base<T>::Inner::instance_foo(); // expected-error {{call to non-static member function without an object argument}}
+        ^
+          detected during instantiation of "void test0::Derived1<T>::test1() [with T=int]" at line 82
+
+"Test_name.c", line 47: error: a nonstatic member reference must be relative to a specific object
+        Base<T>::instance_foo(); // expected-error {{call to non-static member function without an object argument}}
+        ^
+          detected during instantiation of "void test0::Derived1<T>::test2() [with T=int]" at line 83
+
+"Test_name.c", line 52: error: a nonstatic member reference must be relative to a specific object
+        Base<T>::Inner::instance_foo(); // expected-error {{call to non-static member function without an object argument}}
+        ^
+          detected during instantiation of "void test0::Derived1<T>::test3() [with T=int]" at line 84
+
+"Test_name.c", line 60: error: a nonstatic member reference must be relative to a specific object
+        Base<T>::instance_foo(); // expected-error {{call to non-static member function without an object argument}}
+        ^
+          detected during instantiation of "void test0::Derived2<T>::test0() [with T=int]" at line 87
+
+"Test_name.c", line 70: error: a nonstatic member reference must be relative to a specific object
+        Base<T>::instance_foo(); // expected-error {{call to non-static member function without an object argument}}
+        ^
+          detected during instantiation of "void test0::Derived2<T>::test2() [with T=int]" at line 89
+
+"Test_name.c", line 75: error: a nonstatic member reference must be relative to a specific object
+        Base<T>::Inner::instance_foo(); // expected-error {{call to non-static member function without an object argument}}
+        ^
+          detected during instantiation of "void test0::Derived2<T>::test3() [with T=int]" at line 90
+
+"Test_name.c", line 153: error: identifier "f" is undefined
+        f(t); // expected-error {{call to function 'f' that is neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+          detected during instantiation of "PR10053::A<T>::A() [with T=int]" at line 159
+
+"Test_name.c", line 165: error: no instance of overloaded function "PR10053::f" matches the argument list
+            argument types are: (char)
+          f(t); // expected-error {{call to function 'f' that is neither visible in the template definition nor found by argument-dependent lookup}}
+          ^
+"Test_name.c", line 157: note: function "PR10053::f(int &)" does not match because argument #1 does not match parameter
+    void f(int&); // expected-note {{'f' should be declared prior to the call site}}
+         ^
+          detected during instantiation of "int PR10053::N::M::g(T) [with T=char]" at line 174
+
+"Test_name.c", line 192: error: identifier "Multiply" is undefined
+        return Multiply(x, x); // expected-error {{neither visible in the template definition nor found by argument-dependent lookup}}
+               ^
+          detected during instantiation of "T PR10053::my_file::Squared(T) [with T=int]" at line 200
+
+"Test_name.c", line 208: error: no operator "<<" matches these operands
+            operand types are: std::ostream << const PR10053::my_file2::ns::Data
+        std::cout << value << "\n"; // expected-error {{neither visible in the template definition nor found by argument-dependent lookup}}
+                  ^
+"Test_name.c", line 146: note: function "std::operator<<" does not match because argument #2 does not match parameter
+    std::ostream &operator<<(std::ostream &out, const char *);
+                  ^
+"Test_name.c", line 208: note: built-in operator<<(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+        std::cout << value << "\n"; // expected-error {{neither visible in the template definition nor found by argument-dependent lookup}}
+                  ^
+          detected during instantiation of "void PR10053::my_file2::Dump(const T &) [with T=PR10053::my_file2::ns::Data]" at line 220
+
+"Test_name.c", line 227: error: identifier "print" is undefined
+        print(std::cout, value); // expected-error 4{{neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+          detected during instantiation of "void PR10053::my_file2_a::Dump(const T &) [with T=int]" at line 243
+
+"Test_name.c", line 227: error: identifier "print" is undefined
+        print(std::cout, value); // expected-error 4{{neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+          detected during instantiation of "void PR10053::my_file2_a::Dump(const T &) [with T=PR10053::my_file2_a::ns::Data]" at line 244
+
+"Test_name.c", line 227: error: identifier "print" is undefined
+        print(std::cout, value); // expected-error 4{{neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+          detected during instantiation of "void PR10053::my_file2_a::Dump(const T &) [with T=std::inner::vector<PR10053::my_file2_a::ns2::Data>]" at line 245
+
+"Test_name.c", line 227: error: identifier "print" is undefined
+        print(std::cout, value); // expected-error 4{{neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+          detected during instantiation of "void PR10053::my_file2_a::Dump(const T &) [with T=std::pair<PR10053::my_file2_a::ns::Data, PR10053::my_file2_a::ns2::Data>]" at line 246
+
+"Test_name.c", line 253: error: no operator "!" matches these operands
+            operand types are: ! const PR10053::unary::ns::Data
+        return !value; // expected-error {{call to function 'operator!' that is neither visible in the template definition nor found by argument-dependent lookup}}
+               ^
+"Test_name.c", line 253: note: built-in operator!(<bool>) does not match because argument #1 does not match parameter
+        return !value; // expected-error {{call to function 'operator!' that is neither visible in the template definition nor found by argument-dependent lookup}}
+               ^
+          detected during instantiation of "T PR10053::unary::Negate(const T &) [with T=PR10053::unary::ns::Data]" at line 263
+
+"Test_name.c", line 285: error: identifier "__range" is undefined
+            __range(a); // expected-error {{undeclared identifier '__range'}}
+            ^
+          detected during instantiation of "void PR10187::A2::S<T>::f() [with T=int]" at line 290
+
+"Test_name.c", line 302: error: no instance of overloaded function "PR10187::B::g" matches the argument list
+            argument types are: (PR10187::B::<unnamed>::S)
+        g<int>(T()); // expected-error {{no matching function}}
+        ^
+"Test_name.c", line 300: note: number of parameters of function template "PR10187::B::g<T>()" does not match the call
+      template<typename T> void g(); // expected-note {{not viable}}
+                                ^
+          detected during instantiation of "void PR10187::B::f<T>() [with T=PR10187::B::<unnamed>::S]" at line 310
+
+"Test_name.c", line 371: error: no operator "+" matches these operands
+            operand types are: test_reserved_identifiers::__gnu_cxx::X + test_reserved_identifiers::ns::Y
+      a + b;  // expected-error{{call to function 'operator+' that is neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+"Test_name.c", line 371: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+      a + b;  // expected-error{{call to function 'operator+' that is neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+"Test_name.c", line 371: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+      a + b;  // expected-error{{call to function 'operator+' that is neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+"Test_name.c", line 371: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+      a + b;  // expected-error{{call to function 'operator+' that is neither visible in the template definition nor found by argument-dependent lookup}}
+        ^
+          detected during instantiation of "void test_reserved_identifiers::tempf(A, B) [with A=test_reserved_identifiers::__gnu_cxx::X, B=test_reserved_identifiers::ns::Y]" at line 379
+
+"Test_name.c", line 394: error: no instance of overloaded function "operator new" matches the argument list
+            argument types are: (int, OperatorNew::X)
+      operator new(100, t); // expected-error{{call to function 'operator new' that is neither visible in the template definition nor found by argument-dependent lookup}}
+      ^
+Note: number of parameters of function "operator new(unsigned long)" does not match the call
+          detected during instantiation of "void OperatorNew::f(T) [with T=OperatorNew::X]" at line 402
+
+"Test_name.c", line 436: warning: name following "template" must be a template
+      void f() { this->template foo(); } // expected-error {{does not refer to a template}} expected-error {{a template argument list is expected after a name prefixed by the template keyword}}
+                                ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::f() [with T=DependentUnresolvedUsingTemplate::B]" at line 446
+
+"Test_name.c", line 437: warning: name following "template" must be a template
+      void g() { this->template foo<>(); } // expected-error {{does not refer to a template}}
+                                ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::g() [with T=DependentUnresolvedUsingTemplate::B]" at line 447
+
+"Test_name.c", line 437: error: a pointer to a bound function may only be used to call the function
+      void g() { this->template foo<>(); } // expected-error {{does not refer to a template}}
+                                ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::g() [with T=DependentUnresolvedUsingTemplate::B]" at line 447
+
+"Test_name.c", line 437: error: expected an expression
+      void g() { this->template foo<>(); } // expected-error {{does not refer to a template}}
+                                    ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::g() [with T=DependentUnresolvedUsingTemplate::B]" at line 447
+
+"Test_name.c", line 438: warning: name following "template" must be a template
+      void h() { this->template foo<int>(); } // expected-error {{does not refer to a template}}
+                                ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::h() [with T=DependentUnresolvedUsingTemplate::B]" at line 448
+
+"Test_name.c", line 438: error: a pointer to a bound function may only be used to call the function
+      void h() { this->template foo<int>(); } // expected-error {{does not refer to a template}}
+                                ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::h() [with T=DependentUnresolvedUsingTemplate::B]" at line 448
+
+"Test_name.c", line 438: error: type name is not allowed
+      void h() { this->template foo<int>(); } // expected-error {{does not refer to a template}}
+                                    ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::h() [with T=DependentUnresolvedUsingTemplate::B]" at line 448
+
+"Test_name.c", line 438: error: expected an expression
+      void h() { this->template foo<int>(); } // expected-error {{does not refer to a template}}
+                                         ^
+          detected during instantiation of "void DependentUnresolvedUsingTemplate::X<T>::h() [with T=DependentUnresolvedUsingTemplate::B]" at line 448
+
+32 errors detected in the compilation of "Test_name.c".

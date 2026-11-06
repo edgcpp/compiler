@@ -1,0 +1,254 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 8: warning: variable "i" is used before its value is set
+    asm ("foo\n" : : "a" (i + 2));
+                          ^
+
+"Test_name.c", line 11: error: expression must be a modifiable lvalue
+    asm ("foo\n" : "=a" (f())); // expected-error {{invalid lvalue in asm output}}
+                         ^
+
+"Test_name.c", line 12: error: expression must be a modifiable lvalue
+    asm ("foo\n" : "=a" (i + 2)); // expected-error {{invalid lvalue in asm output}}
+                         ^
+
+"Test_name.c", line 15: error: invalid symbolic operand name ""
+    asm ("foo\n" : "=a" (i) : "[" (i)); // expected-error {{invalid input constraint '[' in asm}}
+                              ^
+
+"Test_name.c", line 16: error: invalid symbolic operand name "foo"
+    asm ("foo\n" : "=a" (i) : "[foo" (i)); // expected-error {{invalid input constraint '[foo' in asm}}
+                              ^
+
+"Test_name.c", line 17: error: invalid symbolic operand name "symbolic_name"
+    asm ("foo\n" : "=a" (i) : "[symbolic_name]" (i)); // expected-error {{invalid input constraint '[symbolic_name]' in asm}}
+                              ^
+
+"Test_name.c", line 19: error: asm operand has no constraint letter
+    asm ("foo\n" : : "" (i)); // expected-error {{invalid input constraint '' in asm}}
+                     ^
+
+"Test_name.c", line 20: error: asm operand has no constraint letter
+    asm ("foo\n" : "=a" (i) : "" (i)); // expected-error {{invalid input constraint '' in asm}}
+                              ^
+
+"Test_name.c", line 24: error: unknown register name "#ax"
+    asm ("nop" : : : "ax", "#ax", "%ax");
+                           ^
+
+"Test_name.c", line 24: warning: register "ax" clobbered more than once
+    asm ("nop" : : : "ax", "#ax", "%ax");
+    ^
+
+"Test_name.c", line 25: warning: register "ax" clobbered more than once
+    asm ("nop" : : : "eax", "rax", "ah", "al");
+    ^
+
+"Test_name.c", line 26: error: unknown register name "#0"
+    asm ("nop" : : : "0", "%0", "#0");
+                                ^
+
+"Test_name.c", line 26: warning: register "ax" clobbered more than once
+    asm ("nop" : : : "0", "%0", "#0");
+    ^
+
+"Test_name.c", line 27: error: unknown register name "foo"
+    asm ("nop" : : : "foo"); // expected-error {{unknown register name 'foo' in asm}}
+                     ^
+
+"Test_name.c", line 29: error: unknown register name "204"
+    asm ("nop" : : : "204"); // expected-error {{unknown register name '204' in asm}}
+                     ^
+
+"Test_name.c", line 30: error: unknown register name "-1"
+    asm ("nop" : : : "-1"); // expected-error {{unknown register name '-1' in asm}}
+                     ^
+
+"Test_name.c", line 31: error: unknown register name "+1"
+    asm ("nop" : : : "+1"); // expected-error {{unknown register name '+1' in asm}}
+                     ^
+
+"Test_name.c", line 38: error: register "cx" is both used and clobbered
+    asm ("nop" : "=c" (a) : "r" (no_clobber_conflict) : "%rcx"); // expected-error {{asm-specifier for input or output variable conflicts with asm clobber list}}
+    ^
+
+"Test_name.c", line 39: warning: variable "c" is used before its value is set
+    asm ("nop" : "=r" (no_clobber_conflict) : "c" (c) : "%rcx"); // expected-error {{asm-specifier for input or output variable conflicts with asm clobber list}}
+                                                   ^
+
+"Test_name.c", line 39: error: register "cx" is both used and clobbered
+    asm ("nop" : "=r" (no_clobber_conflict) : "c" (c) : "%rcx"); // expected-error {{asm-specifier for input or output variable conflicts with asm clobber list}}
+    ^
+
+"Test_name.c", line 40: error: register "cx" is both used and clobbered
+    asm ("nop" : "=r" (clobber_conflict) : "c" (c) : "%rcx"); // expected-error {{asm-specifier for input or output variable conflicts with asm clobber list}}
+    ^
+
+"Test_name.c", line 41: warning: variable "b" is used before its value is set
+    asm ("nop" : "=a" (a) : "b" (b) : "%rcx", "%rbx"); // expected-error {{asm-specifier for input or output variable conflicts with asm clobber list}} 
+                                 ^
+
+"Test_name.c", line 41: error: register "bx" is both used and clobbered
+    asm ("nop" : "=a" (a) : "b" (b) : "%rcx", "%rbx"); // expected-error {{asm-specifier for input or output variable conflicts with asm clobber list}} 
+    ^
+
+"Test_name.c", line 34: warning: variable "a" was set but never used
+    int a,b,c;
+        ^
+
+"Test_name.c", line 46: error: a wide string is invalid in an "asm" statement
+    asm(L"foo" : "=r"(x)); // expected-error {{wide string}}
+        ^
+
+"Test_name.c", line 47: error: a wide string is invalid in an "asm" statement
+    asm("foo" : L"=r"(x)); // expected-error {{wide string}}
+                ^
+
+"Test_name.c", line 45: warning: variable "x" was declared but never referenced
+    int x;
+        ^
+
+"Test_name.c", line 77: error: invalid symbolic operand name "somename"
+    asm ("%[somename]" :: "i"(4)); // expected-error {{unknown symbolic operand name in inline assembly string}}
+    ^
+
+"Test_name.c", line 78: error: invalid symbolic operand name "somename"
+    asm ("%[somename" :: "i"(4)); // expected-error {{unterminated symbolic operand name in inline assembly string}}
+    ^
+
+"Test_name.c", line 79: error: invalid symbolic operand name ""
+    asm ("%[]" :: "i"(4)); // expected-error {{empty symbolic operand name in inline assembly string}}
+    ^
+
+"Test_name.c", line 108: error: identifier "__private_extern__" is undefined
+    __private_extern__ int ggg asm ("ggg_asm");
+    ^
+
+"Test_name.c", line 108: error: expected a ";"
+    __private_extern__ int ggg asm ("ggg_asm");
+                       ^
+
+"Test_name.c", line 110: warning: an asm name is ignored on a non-register automatic variable
+    int a asm ("a_asm"); // expected-warning{{ignored asm label 'a_asm' on automatic variable}}
+          ^
+
+"Test_name.c", line 111: warning: an asm name is ignored on a non-register automatic variable
+    auto int aa asm ("aa_asm"); // expected-warning{{ignored asm label 'aa_asm' on automatic variable}}
+                ^
+
+"Test_name.c", line 114: error: unknown register name "rr_asm"
+    register int rr asm ("rr_asm"); // expected-error{{unknown register name 'rr_asm' in asm}}
+                         ^
+
+"Test_name.c", line 115: error: unknown register name "%"
+    register int rrr asm ("%"); // expected-error{{unknown register name '%' in asm}}
+                          ^
+
+"Test_name.c", line 106: warning: variable "g" was declared but never referenced
+    static int g asm ("g_asm") = 0;
+               ^
+
+"Test_name.c", line 110: warning: variable "a" was declared but never referenced
+    int a asm ("a_asm"); // expected-warning{{ignored asm label 'a_asm' on automatic variable}}
+        ^
+
+"Test_name.c", line 111: warning: variable "aa" was declared but never referenced
+    auto int aa asm ("aa_asm"); // expected-warning{{ignored asm label 'aa_asm' on automatic variable}}
+             ^
+
+"Test_name.c", line 113: warning: variable "r" was declared but never referenced
+    register int r asm ("cx");
+                 ^
+
+"Test_name.c", line 114: warning: variable "rr" was declared but never referenced
+    register int rr asm ("rr_asm"); // expected-error{{unknown register name 'rr_asm' in asm}}
+                 ^
+
+"Test_name.c", line 115: warning: variable "rrr" was declared but never referenced
+    register int rrr asm ("%"); // expected-error{{unknown register name '%' in asm}}
+                 ^
+
+"Test_name.c", line 121: warning: variable "b" was set but never used
+    _Bool b;
+          ^
+
+"Test_name.c", line 126: warning: variable "cc" was declared but never referenced
+    register int cc __asm ("cc"); // expected-error{{unknown register name 'cc' in asm}}
+                 ^
+
+"Test_name.c", line 131: warning: variable "esp" was set but never used
+    void *esp;
+          ^
+
+"Test_name.c", line 137: error: incomplete type "struct S" is not allowed
+    __asm("": : "a"(*s)); // expected-error {{dereference of pointer to incomplete type 'struct S'}}
+                    ^
+
+"Test_name.c", line 138: error: expression must be a modifiable lvalue
+    __asm("": "=a" (*s) :); // expected-error {{dereference of pointer to incomplete type 'struct S'}}
+                    ^
+
+"Test_name.c", line 144: error: asm operand has no constraint letter
+    __asm("0.0":"="(ret)); // expected-error {{invalid output constraint '=' in asm}}
+                ^
+
+"Test_name.c", line 151: error: unknown asm constraint modifier '='
+    __asm("0.0":"=,="(ret)); // expected-error {{invalid output constraint '=,=' in asm}}
+                ^
+
+"Test_name.c", line 211: warning: variable "result" is used before its value is set
+    __asm("foo1": "+f" (result)); // expected-error {{invalid output constraint '+f' in asm}}
+                        ^
+
+"Test_name.c", line 219: error: the number of operand constraints must be the same in each constraint string
+            : "[l],m"(l)); // expected-error {{asm constraint has an unexpected number of alternatives: 1 vs 2}}
+              ^
+
+"Test_name.c", line 225: warning: variable "l" is used before its value is set
+            : "+&m"(l)); // expected-error {{invalid output constraint '+&m' in asm}}
+                    ^
+
+"Test_name.c", line 231: warning: variable "l" is used before its value is set
+            : "+#r"(l)); // expected-error {{invalid output constraint '+#r' in asm}}
+                    ^
+
+"Test_name.c", line 244: warning: variable "l" is used before its value is set
+            : [g] "+r"(l)
+                       ^
+
+"Test_name.c", line 275: error: expression must have pointer-to-object type but it has type "int"
+            : "=rm" (b[2])); // expected-error {{reference to a vector element in asm input with a memory constraint '=rm'}}
+                       ^
+
+"Test_name.c", line 275: warning: variable "b" is used before its value is set
+            : "=rm" (b[2])); // expected-error {{reference to a vector element in asm input with a memory constraint '=rm'}}
+                     ^
+
+"Test_name.c", line 275: error: expression must be a modifiable lvalue
+            : "=rm" (b[2])); // expected-error {{reference to a vector element in asm input with a memory constraint '=rm'}}
+                     ^
+
+"Test_name.c", line 278: error: expression must have pointer-to-object type but it has type "int"
+            : "m" (b[3])); // expected-error {{reference to a vector element in asm output with a memory constraint 'm'}}
+                     ^
+
+"Test_name.c", line 308: warning: variable "x1" was set but never used
+    int x,x1;
+          ^
+
+"Test_name.c", line 353: warning: variable "b" was set but never used
+    st_size96 b;
+              ^
+
+"Test_name.c", line 354: warning: variable "c" was set but never used
+    st_size16 c;
+              ^
+
+"Test_name.c", line 384: warning: variable "a" is used before its value is set
+    asm ("fabs" : "=t" (d): "0" (a)); // expected-error {{unsupported inline asm: input with type 'st_size64' (aka 'struct _st_size64') matching output with type 'double'}}
+                                 ^
+
+"Test_name.c", line 388: warning: variable "v" is used before its value is set
+    asm ("fabs" : "=t" (d): "0" (v)); // expected-error {{unsupported inline asm: input with type 'int2' (vector of 2 'int' values) matching output with type 'double'}}
+                                 ^
+
+34 errors detected in the compilation of "Test_name.c".

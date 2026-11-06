@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Test_name.c", line 156: error: reinterpret_cast cannot cast away const or other type qualifiers
+    (void)reinterpret_cast<A_ptr_2>(cvp1); // expected-error{{casts away qualifiers}}
+          ^
+
+"Test_name.c", line 187: warning: variable "vpA" was declared but never referenced
+    void_ptr vpA = ap;
+             ^
+
+"Test_name.c", line 188: warning: variable "vp_1A" was declared but never referenced
+    void_ptr_1 vp_1A = ap1;
+               ^
+
+"Test_name.c", line 189: warning: variable "vp_2A" was declared but never referenced
+    void_ptr_2 vp_2A = ap2;
+               ^
+
+"Test_name.c", line 190: warning: variable "ap_A" was declared but never referenced
+    A_ptr ap_A = bp;
+          ^
+
+"Test_name.c", line 191: warning: variable "ap_A1" was declared but never referenced
+    A_ptr_1 ap_A1 = bp1;
+            ^
+
+"Test_name.c", line 192: warning: variable "ap_A2" was declared but never referenced
+    A_ptr_2 ap_A2 = bp2;
+            ^
+
+"Test_name.c", line 195: warning: variable "vpB" was declared but never referenced
+    void_ptr vpB = ap1; // expected-error{{cannot initialize a variable of type}}
+             ^
+
+"Test_name.c", line 196: warning: variable "vp_1B" was declared but never referenced
+    void_ptr_1 vp_1B = ap2; // expected-error{{cannot initialize a variable of type}}
+               ^
+
+"Test_name.c", line 197: warning: variable "ap_B" was declared but never referenced
+    A_ptr ap_B = bp1; // expected-error{{cannot initialize a variable of type}}
+          ^
+
+"Test_name.c", line 198: warning: variable "ap_B1" was declared but never referenced
+    A_ptr_1 ap_B1 = bp2; // expected-error{{cannot initialize a variable of type}}
+            ^
+
+1 error detected in the compilation of "Test_name.c".

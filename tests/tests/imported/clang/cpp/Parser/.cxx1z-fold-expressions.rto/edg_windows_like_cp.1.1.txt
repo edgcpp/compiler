@@ -1,0 +1,180 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 Test_name.c
+"Test_name.c", line 10: error: fold expression does not refer to a parameter pack
+  int k1 = (1 + ... + 2); // expected-error {{does not contain any unexpanded parameter packs}}
+                ^
+
+"Test_name.c", line 11: error: fold expression does not refer to a parameter pack
+  int k2 = (1 + ...); // expected-error {{does not contain any unexpanded parameter packs}}
+                ^
+
+"Test_name.c", line 12: error: fold expression does not refer to a parameter pack
+  int k3 = (... + 2); // expected-error {{does not contain any unexpanded parameter packs}}
+            ^
+
+"Test_name.c", line 17: error: a binary fold expression cannot apply to two parameter packs
+  template<int ...N> void bad1() { (N + ... + N); } // expected-error {{unexpanded parameter packs in both operands}}
+                                        ^
+
+"Test_name.c", line 20: error: expected an expression
+  template<int ...N> void bad3() { (2 + N * ... * 1); } // expected-error {{expression not permitted as operand}}
+                                            ^
+
+"Test_name.c", line 20: error: parameter pack "N" was referenced but not expanded
+  template<int ...N> void bad3() { (2 + N * ... * 1); } // expected-error {{expression not permitted as operand}}
+                                        ^
+
+"Test_name.c", line 21: warning: constant "M" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "bad4"
+  template<int ...N, int ...M> void bad4(int (&...x)[N]) { (N + M * ... * 1); } // expected-error {{expression not permitted as operand}}
+                            ^
+
+"Test_name.c", line 21: error: expected an expression
+  template<int ...N, int ...M> void bad4(int (&...x)[N]) { (N + M * ... * 1); } // expected-error {{expression not permitted as operand}}
+                                                                    ^
+
+"Test_name.c", line 21: error: parameter pack "N" was referenced but not expanded
+  template<int ...N, int ...M> void bad4(int (&...x)[N]) { (N + M * ... * 1); } // expected-error {{expression not permitted as operand}}
+                                                            ^
+
+"Test_name.c", line 21: error: parameter pack "M" was referenced but not expanded
+  template<int ...N, int ...M> void bad4(int (&...x)[N]) { (N + M * ... * 1); } // expected-error {{expression not permitted as operand}}
+                                                                ^
+
+"Test_name.c", line 22: warning: constant "M" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "fixed4"
+  template<int ...N, int ...M> void fixed4(int (&...x)[N]) { ((N + M) * ... * 1); }
+                            ^
+
+"Test_name.c", line 29: error: expected an expression
+  template<int ...N> void bad5() { N + ...; } // expected-error {{expected expression}} expected-error +{{}}
+                                       ^
+
+"Test_name.c", line 29: error: parameter pack "N" was referenced but not expanded
+  template<int ...N> void bad5() { N + ...; } // expected-error {{expected expression}} expected-error +{{}}
+                                   ^
+
+"Test_name.c", line 30: error: expected an expression
+  template<int ...N> void bad6() { ... + N; } // expected-error {{expected expression}}
+                                   ^
+
+"Test_name.c", line 31: error: expected an expression
+  template<int ...N> void bad7() { N + ... + N; } // expected-error {{expected expression}} expected-error +{{}}
+                                       ^
+
+"Test_name.c", line 31: error: parameter pack "N" was referenced but not expanded
+  template<int ...N> void bad7() { N + ... + N; } // expected-error {{expected expression}} expected-error +{{}}
+                                   ^
+
+"Test_name.c", line 34: error: second operator in binary fold expression does not match first
+  template<int ...N> int bad8() { return (N + ... * 3); } // expected-error {{operators in fold expression must be the same}}
+                                                  ^
+
+"Test_name.c", line 34: error: operand of "*" must be a pointer but has type "int"
+  template<int ...N> int bad8() { return (N + ... * 3); } // expected-error {{operators in fold expression must be the same}}
+                                                    ^
+
+"Test_name.c", line 35: error: second operator in binary fold expression does not match first
+  template<int ...N> int bad9() { return (3 + ... * N); } // expected-error {{operators in fold expression must be the same}}
+                                                  ^
+
+"Test_name.c", line 35: error: operand of "*" must be a pointer but has type "int"
+  template<int ...N> int bad9() { return (3 + ... * N); } // expected-error {{operators in fold expression must be the same}}
+                                                    ^
+
+"Test_name.c", line 36: error: invalid fold expression operator
+  template<int ...N> int bad10() { return (3 ? ... : N); } // expected-error +{{}} expected-note {{to match}}
+                                             ^
+
+"Test_name.c", line 36: error: second operator in binary fold expression does not match first
+  template<int ...N> int bad10() { return (3 ? ... : N); } // expected-error +{{}} expected-note {{to match}}
+                                                   ^
+
+"Test_name.c", line 36: error: expected an expression
+  template<int ...N> int bad10() { return (3 ? ... : N); } // expected-error +{{}} expected-note {{to match}}
+                                                   ^
+
+"Test_name.c", line 36: error: pack expansion does not make use of any argument packs
+  template<int ...N> int bad10() { return (3 ? ... : N); } // expected-error +{{}} expected-note {{to match}}
+                                               ^
+
+"Test_name.c", line 36: warning: expression has no effect
+  template<int ...N> int bad10() { return (3 ? ... : N); } // expected-error +{{}} expected-note {{to match}}
+                                           ^
+
+"Test_name.c", line 37: error: second operator in binary fold expression does not match first
+  template<int ...N> int bad11() { return (N + ... 0); } // expected-error {{expected a foldable binary operator}} expected-error {{expected expression}}
+                                                   ^
+
+"Test_name.c", line 38: error: invalid fold expression operator
+  template<int ...N> int bad12() { return (... N); } // expected-error {{expected expression}}
+                                               ^
+
+"Test_name.c", line 38: error: expected an expression
+  template<int ...N> int bad12() { return (... N); } // expected-error {{expected expression}}
+                                                ^
+
+"Test_name.c", line 38: error: pack expansion does not make use of any argument packs
+  template<int ...N> int bad12() { return (... N); } // expected-error {{expected expression}}
+                                           ^
+
+"Test_name.c", line 42: error: identifier "undeclared_junk" is undefined
+      (int)(a + ... + undeclared_junk) + // expected-error {{undeclared}}
+                      ^
+
+"Test_name.c", line 42: error: pack expansion does not make use of any argument packs
+      (int)(a + ... + undeclared_junk) + // expected-error {{undeclared}}
+                ^
+
+"Test_name.c", line 42: error: fold expression does not refer to a parameter pack
+      (int)(a + ... + undeclared_junk) + // expected-error {{undeclared}}
+                ^
+
+"Test_name.c", line 44: error: pack expansion does not make use of any argument packs
+      (int)(... + undeclared_junk) + // expected-error {{undeclared}}
+            ^
+
+"Test_name.c", line 44: error: fold expression does not refer to a parameter pack
+      (int)(... + undeclared_junk) + // expected-error {{undeclared}}
+            ^
+
+"Test_name.c", line 45: error: fold expression does not refer to a parameter pack
+      (int)(undeclared_junk + ...) + // expected-error {{undeclared}}
+                              ^
+
+"Test_name.c", line 46: error: fold expression does not refer to a parameter pack
+      (int)(a + ...) + // expected-error {{does not contain any unexpanded}}
+                ^
+
+"Test_name.c", line 47: error: fold expression does not refer to a parameter pack
+      (int)(a, ...) + // expected-error {{does not contain any unexpanded}}
+               ^
+
+"Test_name.c", line 48: error: pack expansion does not make use of any argument packs
+      (int)(..., a) + // expected-error {{does not contain any unexpanded}}
+            ^
+
+"Test_name.c", line 48: error: fold expression does not refer to a parameter pack
+      (int)(..., a) + // expected-error {{does not contain any unexpanded}}
+            ^
+
+"Test_name.c", line 49: error: pack expansion does not make use of any argument packs
+      (int)(a, ..., undeclared_junk) + // expected-error {{undeclared}}
+               ^
+
+"Test_name.c", line 49: warning: expression has no effect
+      (int)(a, ..., undeclared_junk) + // expected-error {{undeclared}}
+            ^
+
+"Test_name.c", line 49: error: fold expression does not refer to a parameter pack
+      (int)(a, ..., undeclared_junk) + // expected-error {{undeclared}}
+               ^
+
+"Test_name.c", line 77: error: expression must have class type but it has type "int"
+    return (T)(Args + ...).Value; // expected-error{{member reference base type 'int' is not a structure or union}}
+              ^
+          detected during instantiation of "auto castSum<T,Ts...>(Ts...) [with T=int, Ts=<int, int>]" at line 86
+
+"Test_name.c", line 82: error: expression must have class type but it has type "int"
+    return (... + Args).Value; // expected-error{{member reference base type 'int' is not a structure or union}}
+           ^
+          detected during instantiation of "auto simpleSum(Ts...) [with Ts=<int, int>]" at line 88
+
+40 errors detected in the compilation of "Test_name.c".

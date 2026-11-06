@@ -1,0 +1,234 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./diag-aka-5b.c", line 72: error: a value of type "struct s" cannot be assigned to an entity of type "user_enum" (aka "enum __internal_enum")
+    ue1 = s;
+        ^
+
+"./diag-aka-5b.c", line 73: error: a value of type "struct s" cannot be assigned to an entity of type "user_enum_copy" (aka "enum __internal_enum")
+    ue2 = s;
+        ^
+
+"./diag-aka-5b.c", line 74: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum_ptr" (aka "enum __internal_enum *")
+    ue_ptr1 = &s;
+            ^
+
+"./diag-aka-5b.c", line 75: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum *" (aka "enum __internal_enum *")
+    ue_ptr2 = &s;
+            ^
+
+"./diag-aka-5b.c", line 76: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_enum *"
+    const_ue_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 77: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_enum_copy *"
+    const_ue_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 78: warning: a value of type "struct s *" cannot be assigned to an entity of type "volatile user_enum *"
+    volatile_ue_ptr1 = &s;
+                     ^
+
+"./diag-aka-5b.c", line 79: warning: a value of type "struct s *" cannot be assigned to an entity of type "volatile user_enum_copy *"
+    volatile_ue_ptr2 = &s;
+                     ^
+
+"./diag-aka-5b.c", line 80: warning: a value of type "struct s *" cannot be assigned to an entity of type "_Atomic(user_enum) *"
+    atomic_ue_ptr1 = &s;
+                   ^
+
+"./diag-aka-5b.c", line 81: warning: a value of type "struct s *" cannot be assigned to an entity of type "_Atomic(user_enum_copy) *"
+    atomic_ue_ptr2 = &s;
+                   ^
+
+"./diag-aka-5b.c", line 82: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum (*)[10]" (aka "enum __internal_enum (*)[10]")
+    ue_array_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 83: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum_copy (*)[10]" (aka "enum __internal_enum (*)[10]")
+    ue_array_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 84: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum (*)(void)" (aka "enum __internal_enum (*)(void)")
+    ue_fn_ptr1 = &s;
+               ^
+
+"./diag-aka-5b.c", line 85: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_enum)" (aka "void (*)(enum __internal_enum)")
+    ue_fn_ptr2 = &s;
+               ^
+
+"./diag-aka-5b.c", line 86: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_enum, ...)" (aka "void (*)(enum __internal_enum, ...)")
+    ue_fn_ptr3 = &s;
+               ^
+
+"./diag-aka-5b.c", line 87: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum_copy (*)(void)" (aka "enum __internal_enum (*)(void)")
+    ue_fn_ptr4 = &s;
+               ^
+
+"./diag-aka-5b.c", line 88: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_enum_copy)" (aka "void (*)(enum __internal_enum)")
+    ue_fn_ptr5 = &s;
+               ^
+
+"./diag-aka-5b.c", line 89: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_enum_copy, ...)" (aka "void (*)(enum __internal_enum, ...)")
+    ue_fn_ptr6 = &s;
+               ^
+
+"./diag-aka-5b.c", line 90: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum (*)(void)" (aka "enum __internal_enum (*)(void)")
+    unsafe_ue_fn_ptr1 = &s;
+                      ^
+
+"./diag-aka-5b.c", line 91: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_enum_copy (*)(void)" (aka "enum __internal_enum (*)(void)")
+    unsafe_ue_fn_ptr2 = &s;
+                      ^
+
+"./diag-aka-5b.c", line 93: error: a value of type "struct s" cannot be assigned to an entity of type "user_struct" (aka "struct __internal_struct")
+    us1 = s;
+        ^
+
+"./diag-aka-5b.c", line 94: error: a value of type "struct s" cannot be assigned to an entity of type "user_struct_copy" (aka "struct __internal_struct")
+    us2 = s;
+        ^
+
+"./diag-aka-5b.c", line 95: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_struct_ptr" (aka "struct __internal_struct *")
+    us_ptr1 = &s;
+            ^
+
+"./diag-aka-5b.c", line 96: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_struct *" (aka "struct __internal_struct *")
+    us_ptr2 = &s;
+            ^
+
+"./diag-aka-5b.c", line 97: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_struct *"
+    const_us_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 98: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_struct_copy *"
+    const_us_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 100: error: a value of type "struct s" cannot be assigned to an entity of type "user_union" (aka "union __internal_union")
+    uu1 = s;
+        ^
+
+"./diag-aka-5b.c", line 101: error: a value of type "struct s" cannot be assigned to an entity of type "user_union_copy" (aka "union __internal_union")
+    uu2 = s;
+        ^
+
+"./diag-aka-5b.c", line 102: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_union_ptr" (aka "union __internal_union *")
+    uu_ptr1 = &s;
+            ^
+
+"./diag-aka-5b.c", line 103: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_union *" (aka "union __internal_union *")
+    uu_ptr2 = &s;
+            ^
+
+"./diag-aka-5b.c", line 104: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_union *"
+    const_uu_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 105: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_union_copy *"
+    const_uu_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 107: error: a value of type "struct s" cannot be assigned to an entity of type "user_vector" (aka "__attribute((vector_size(16))) unsigned int")
+    uv1 = s;
+        ^
+
+"./diag-aka-5b.c", line 108: error: a value of type "struct s" cannot be assigned to an entity of type "user_vector_copy" (aka "__attribute((vector_size(16))) unsigned int")
+    uv2 = s;
+        ^
+
+"./diag-aka-5b.c", line 109: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_vector_ptr" (aka "__attribute((vector_size(16))) unsigned int *")
+    uv_ptr1 = &s;
+            ^
+
+"./diag-aka-5b.c", line 110: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_vector *" (aka "__attribute((vector_size(16))) unsigned int *")
+    uv_ptr2 = &s;
+            ^
+
+"./diag-aka-5b.c", line 111: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_vector *"
+    const_uv_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 112: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_vector_copy *"
+    const_uv_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 114: error: a value of type "struct s" cannot be assigned to an entity of type "user_int" (aka "int")
+    ui1 = s;
+        ^
+
+"./diag-aka-5b.c", line 115: error: a value of type "struct s" cannot be assigned to an entity of type "user_int_copy" (aka "int")
+    ui2 = s;
+        ^
+
+"./diag-aka-5b.c", line 116: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int_ptr" (aka "int *")
+    ui_ptr1 = &s;
+            ^
+
+"./diag-aka-5b.c", line 117: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int *" (aka "int *")
+    ui_ptr2 = &s;
+            ^
+
+"./diag-aka-5b.c", line 118: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_int *"
+    const_ui_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 119: warning: a value of type "struct s *" cannot be assigned to an entity of type "const user_int_copy *"
+    const_ui_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 120: warning: a value of type "struct s *" cannot be assigned to an entity of type "volatile user_int *"
+    volatile_ui_ptr1 = &s;
+                     ^
+
+"./diag-aka-5b.c", line 121: warning: a value of type "struct s *" cannot be assigned to an entity of type "volatile user_int_copy *"
+    volatile_ui_ptr2 = &s;
+                     ^
+
+"./diag-aka-5b.c", line 122: warning: a value of type "struct s *" cannot be assigned to an entity of type "_Atomic(user_int) *"
+    atomic_ui_ptr1 = &s;
+                   ^
+
+"./diag-aka-5b.c", line 123: warning: a value of type "struct s *" cannot be assigned to an entity of type "_Atomic(user_int_copy) *"
+    atomic_ui_ptr2 = &s;
+                   ^
+
+"./diag-aka-5b.c", line 124: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int (*)[10]" (aka "int (*)[10]")
+    ui_array_ptr1 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 125: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int_copy (*)[10]" (aka "int (*)[10]")
+    ui_array_ptr2 = &s;
+                  ^
+
+"./diag-aka-5b.c", line 126: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int (*)(void)" (aka "int (*)(void)")
+    ui_fn_ptr1 = &s;
+               ^
+
+"./diag-aka-5b.c", line 127: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_int)" (aka "void (*)(int)")
+    ui_fn_ptr2 = &s;
+               ^
+
+"./diag-aka-5b.c", line 128: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_int, ...)" (aka "void (*)(int, ...)")
+    ui_fn_ptr3 = &s;
+               ^
+
+"./diag-aka-5b.c", line 129: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int_copy (*)(void)" (aka "int (*)(void)")
+    ui_fn_ptr4 = &s;
+               ^
+
+"./diag-aka-5b.c", line 130: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_int_copy)" (aka "void (*)(int)")
+    ui_fn_ptr5 = &s;
+               ^
+
+"./diag-aka-5b.c", line 131: warning: a value of type "struct s *" cannot be assigned to an entity of type "void (*)(user_int_copy, ...)" (aka "void (*)(int, ...)")
+    ui_fn_ptr6 = &s;
+               ^
+
+"./diag-aka-5b.c", line 132: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int (*)(void)" (aka "int (*)(void)")
+    unsafe_ui_fn_ptr1 = &s;
+                      ^
+
+"./diag-aka-5b.c", line 133: warning: a value of type "struct s *" cannot be assigned to an entity of type "user_int_copy (*)(void)" (aka "int (*)(void)")
+    unsafe_ui_fn_ptr2 = &s;
+                      ^
+
+10 errors detected in the compilation of "Test_name.c".

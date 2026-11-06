@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 5: warning: unknown attribute "__vector_size__"
+  typedef __attribute__((__vector_size__(4))) float V;
+                         ^
+
+"Test_name.c", line 7: error: expression must have a constant value
+  V v = (float)-v; /* { dg-error "vector value used" } */
+                ^
+"Test_name.c", line 7: note: the value of variable "v" (declared at line 7) cannot be used as a constant
+  V v = (float)-v; /* { dg-error "vector value used" } */
+                ^
+
+1 error detected in the compilation of "Test_name.c".

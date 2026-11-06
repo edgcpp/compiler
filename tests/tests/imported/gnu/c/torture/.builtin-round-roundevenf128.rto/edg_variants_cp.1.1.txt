@@ -1,0 +1,78 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 15: error: builtin function is not available because 128-bit floating-point types are not supported
+    TEST(roundeven,  (0x1p64+0.5f128), (0x1p64f128));
+    ^
+
+"Test_name.c", line 15: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p64+0.5f128), (0x1p64f128));
+    ^
+
+"Test_name.c", line 15: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p64+0.5f128), (0x1p64f128));
+    ^
+
+"Test_name.c", line 16: warning: function "__builtin_roundevenf128" declared implicitly
+    TEST(roundeven,  (0x1p63+0.5f128), (0x1p63f128));
+    ^
+
+"Test_name.c", line 16: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p63+0.5f128), (0x1p63f128));
+    ^
+
+"Test_name.c", line 16: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p63+0.5f128), (0x1p63f128));
+    ^
+
+"Test_name.c", line 17: warning: function "__builtin_roundevenf128" declared implicitly
+    TEST(roundeven,  (0x1p63-0.5f128), (0x1p63f128));
+    ^
+
+"Test_name.c", line 17: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p63-0.5f128), (0x1p63f128));
+    ^
+
+"Test_name.c", line 17: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p63-0.5f128), (0x1p63f128));
+    ^
+
+"Test_name.c", line 18: warning: function "__builtin_roundevenf128" declared implicitly
+    TEST(roundeven,  (0x1p64-0.5f128), (0x1p64f128));
+    ^
+
+"Test_name.c", line 18: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p64-0.5f128), (0x1p64f128));
+    ^
+
+"Test_name.c", line 18: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p64-0.5f128), (0x1p64f128));
+    ^
+
+"Test_name.c", line 19: warning: function "__builtin_roundevenf128" declared implicitly
+    TEST(roundeven,  (0x1p64+0.501f128), (0x1p64+1.0f128));
+    ^
+
+"Test_name.c", line 19: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p64+0.501f128), (0x1p64+1.0f128));
+    ^
+
+"Test_name.c", line 19: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1p64+0.501f128), (0x1p64+1.0f128));
+    ^
+
+"Test_name.c", line 20: warning: function "__builtin_roundevenf128" declared implicitly
+    TEST(roundeven,  (0x1.C00000000000039A5653p1f128), (0x1p2f128))
+    ^
+
+"Test_name.c", line 20: warning: floating-point value cannot be represented exactly
+    TEST(roundeven,  (0x1.C00000000000039A5653p1f128), (0x1p2f128))
+    ^
+
+"Test_name.c", line 20: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1.C00000000000039A5653p1f128), (0x1p2f128))
+    ^
+
+"Test_name.c", line 20: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    TEST(roundeven,  (0x1.C00000000000039A5653p1f128), (0x1p2f128))
+    ^
+
+1 error detected in the compilation of "Test_name.c".

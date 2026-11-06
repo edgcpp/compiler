@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 14: error: incomplete type "basic_string<_CharT, _Traits, _Alloc>" is not allowed
+  basic_string<_CharT, _Traits, _Alloc>::_Rep::_S_max_size // expected-error{{no member named '_Rep' in 'basic_string<_CharT, _Traits, _Alloc>'}}
+  ^
+
+"Test_name.c", line 14: error: "basic_string<_CharT, _Traits, _Alloc>::_Rep" is not a class template
+  basic_string<_CharT, _Traits, _Alloc>::_Rep::_S_max_size // expected-error{{no member named '_Rep' in 'basic_string<_CharT, _Traits, _Alloc>'}}
+  ^
+
+"Test_name.c", line 15: warning: variable templates are a C++14 feature
+    = (((npos - sizeof(_Rep_base))/sizeof(_CharT)) - 1) / 4;
+    ^
+
+"Test_name.c", line 29: error: identifier "p" is undefined
+     int aa() { return p; } // expected-error{{use of undeclared identifier 'p'}}
+                       ^
+
+"Test_name.c", line 47: error: no suitable constructor exists to convert from "rdar8605381::Y *" to "rdar8605381::Y"
+    new Y // expected-error{{no viable conversion}}
+    ^
+
+"Test_name.c", line 108: error: expected an identifier
+      if (C<T> == 1) // expected-error{{expected unqualified-id}}
+               ^
+
+"Test_name.c", line 108: error: a condition declaration must include an initializer
+      if (C<T> == 1) // expected-error{{expected unqualified-id}}
+               ^
+
+"Test_name.c", line 120: error: identifier "uint" is undefined
+    cc_rgb( uint p ); // expected-error {{unknown type name}}
+            ^
+
+"Test_name.c", line 176: warning: variable "x" was declared but never referenced
+      int& x = dimenX.*sides;
+           ^
+
+"Test_name.c", line 184: error: explicit type is missing ("int" assumed)
+      member();  // expected-error{{a type specifier is required for all declarations}}
+      ^
+
+"Test_name.c", line 184: error: static and nonstatic member functions with same parameter types cannot be overloaded
+      member();  // expected-error{{a type specifier is required for all declarations}}
+      ^
+
+"Test_name.c", line 185: error: explicit type is missing ("int" assumed)
+      static member();  // expected-error{{a type specifier is required for all declarations}}
+             ^
+
+"Test_name.c", line 185: error: cannot overload functions distinguished by return type alone
+      static member();  // expected-error{{a type specifier is required for all declarations}}
+             ^
+
+"Test_name.c", line 189: error: cannot determine which instance of overloaded function "pr16964::bs<<unnamed>>::member" is intended
+    template<typename T> bs<T>::bs() { member; }  // expected-error{{did you mean to call it}}
+                                       ^
+
+"Test_name.c", line 208: error: identifier "size_type" is undefined
+      static _CharT* _S_construct(size_type __req, _CharT __c, const _Alloc& __a); // expected-error{{unknown type name 'size_type'}}
+                                  ^
+
+"Test_name.c", line 219: warning: missing return statement at end of non-void function "pr12791::basic_stringbuf<_CharT, _Traits, _Alloc>::str"
+      __string_type str() const {__string_type((char_type*)0,(char_type*)0);}
+                                                                            ^
+
+"Test_name.c", line 228: error: expected an expression
+      C tpl_mem(T *) { return }    // expected-error{{expected expression}}
+                              ^
+
+"Test_name.c", line 228: error: expected a ";"
+      C tpl_mem(T *) { return }    // expected-error{{expected expression}}
+                              ^
+
+"Test_name.c", line 240: error: explicit type is missing ("int" assumed)
+   appendList(int[]...);     // expected-error {{a type specifier is required for all declarations}}
+   ^
+
+"Test_name.c", line 241: error: explicit type is missing ("int" assumed)
+   appendList(int[]...) { }  // expected-error {{a type specifier is required for all declarations}}
+   ^
+
+"Test_name.c", line 241: warning: missing return statement at end of non-void function "pr20660::appendList"
+   appendList(int[]...) { }  // expected-error {{a type specifier is required for all declarations}}
+                          ^
+
+17 errors detected in the compilation of "Test_name.c".

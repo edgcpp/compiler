@@ -1,0 +1,122 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 22: error: initial value of reference to non-const must be an lvalue
+      int &ri2 = {1}; // expected-error {{cannot bind to an initializer list temporary}}
+                  ^
+
+"Test_name.c", line 15: warning: variable "cri1a" was declared but never referenced
+      const int &cri1a = {1};
+                 ^
+
+"Test_name.c", line 16: warning: variable "cri1b" was declared but never referenced
+      const int &cri1b{1};
+                 ^
+
+"Test_name.c", line 19: warning: variable "ri1a" was declared but never referenced
+      int &ri1a = {i};
+           ^
+
+"Test_name.c", line 20: warning: variable "ri1b" was declared but never referenced
+      int &ri1b{i};
+           ^
+
+"Test_name.c", line 25: warning: variable "ra1a" was declared but never referenced
+      A &ra1a = {a};
+         ^
+
+"Test_name.c", line 26: warning: variable "ra1b" was declared but never referenced
+      A &ra1b{a};
+         ^
+
+"Test_name.c", line 31: error: initial value of reference to non-const must be an lvalue
+      A &ra2{1, 2}; // expected-error {{cannot bind to an initializer list temporary}}
+            ^
+
+"Test_name.c", line 34: error: incomplete type "const int []" is not allowed
+      static_assert(sizeof(arrayRef) == 3 * sizeof(int), "bad array size");
+                          ^
+
+"Test_name.c", line 30: warning: variable "ra1" was declared but never referenced
+      const A &ra1{1, 2};
+               ^
+
+"Test_name.c", line 33: warning: variable "arrayRef" was set but never used
+      const int (&arrayRef)[] = {1, 2, 3};
+                  ^
+
+"Test_name.c", line 46: error: initial value of reference to non-const must be an lvalue
+      g({1}); // expected-error {{cannot bind to an initializer list temporary}}
+         ^
+
+"Test_name.c", line 54: error: initial value of reference to non-const must be an lvalue
+      a({1}); // expected-error {{cannot bind to an initializer list temporary}}
+        ^
+
+"Test_name.c", line 80: warning: variable "b" was declared but never referenced
+      int const &b({0}); // expected-error {{cannot initialize reference type 'const int &' with a parenthesized initializer list}}
+                 ^
+
+"Test_name.c", line 81: warning: variable "arr" was declared but never referenced
+      const int (&arr)[3] ({1, 2, 3}); // expected-error {{cannot initialize reference type 'const int (&)[3]' with a parenthesized initializer list}}
+                  ^
+
+"Test_name.c", line 82: warning: variable "x" was declared but never referenced
+      const X &x({}); // expected-error {{cannot initialize reference type 'const X &' with a parenthesized initializer list}}
+               ^
+
+"Test_name.c", line 118: error: no suitable constructor exists to convert from "int" to "inner_init::A"
+    B b1 { 0 }; // expected-error {{reference to type 'A' could not bind to an rvalue of type 'int'}}
+           ^
+
+"Test_name.c", line 120: warning: extra braces are nonstandard
+    B b3 { { { 0 } } }; // expected-warning {{braces around scalar init}}
+             ^
+
+"Test_name.c", line 128: error: no instance of constructor "inner_init::C::C" matches the argument list
+            argument types are: ({...})
+    D d4 { { { { 0 } } } }; // expected-error {{no matching constructor for initialization of 'C &&'}}
+           ^
+"Test_name.c", line 122: note: function "inner_init::C::C(const inner_init::C &)" does not match because argument #1 does not match parameter
+    struct C { C(int); };   // expected-note 2{{candidate constructor (the implicit}} \
+           ^
+"Test_name.c", line 122: note: function "inner_init::C::C(inner_init::C &&)" does not match because argument #1 does not match parameter
+    struct C { C(int); };   // expected-note 2{{candidate constructor (the implicit}} \
+           ^
+"Test_name.c", line 122: note: function "inner_init::C::C(int)" does not match because argument #1 does not match parameter
+    struct C { C(int); };   // expected-note 2{{candidate constructor (the implicit}} \
+               ^
+
+"Test_name.c", line 132: error: no suitable constructor exists to convert from "int" to "inner_init::E"
+    F f1 { 0 }; // expected-error {{could not bind to an rvalue of type 'int'}}
+           ^
+
+"Test_name.c", line 133: error: copy-list-initialization cannot use a constructor marked "explicit"
+    F f2 { { 0 } }; // expected-error {{chosen constructor is explicit}}
+           ^
+
+"Test_name.c", line 134: error: copy-list-initialization cannot use a constructor marked "explicit"
+    F f3 { { { 0 } } }; // expected-error {{chosen constructor is explicit}}
+           ^
+
+"Test_name.c", line 140: error: too many initializer values
+    A &a{b}; // expected-error {{excess elements}} expected-note {{in initialization of temporary of type 'A'}}
+         ^
+
+"Test_name.c", line 144: error: a compound literal of type "const int &" is not allowed
+  const int &a = (const int &){0}; // expected-error {{cannot bind to an initializer list}}
+                  ^
+
+"Test_name.c", line 157: warning: variable "t" was declared but never referenced
+    auto t = T{};
+         ^
+
+"Test_name.c", line 87: error: a brace-enclosed list is not allowed here
+      T({}); // expected-error-re 3{{cannot initialize reference type {{.*}} with a parenthesized init}}
+        ^
+          detected during instantiation of "void reference::dependent_edge_cases<T>() [with T=const int &]" at line 90
+
+"Test_name.c", line 87: error: a brace-enclosed list is not allowed here
+      T({}); // expected-error-re 3{{cannot initialize reference type {{.*}} with a parenthesized init}}
+        ^
+          detected during instantiation of "void reference::dependent_edge_cases<T>() [with T=const int (&)[1]]" at line 91
+
+14 errors detected in the compilation of "Test_name.c".

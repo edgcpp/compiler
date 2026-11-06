@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 --ms_extensions Test_name.c
+"Test_name.c", line 33: error: declaration is incompatible with "void __vectorcall free_func_vectorcall()" (declared at line 15)
+  void __cdecl    free_func_vectorcall(); // expected-error {{function declared 'cdecl' here was previously declared 'vectorcall'}}
+                  ^
+
+"Test_name.c", line 41: error: __thiscall can only appear on nonstatic member function declarations
+  void __thiscall free_func_cdecl(char *);
+                  ^
+
+"Test_name.c", line 62: internal error: assertion failed at: "decls.c", line <suppressed> in add_src_seq_end_of_routine_if_needed
+
+    void_fun_t __stdcall member_typedef_stdcall;
+                         ^
+
+2 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134

@@ -1,0 +1,76 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 13: warning: attribute is supported only in 32-bit x86 configurations
+  [[gnu::fastcall]] void pr17424_1();
+    ^
+
+"Test_name.c", line 15: warning: attribute is supported only in 32-bit x86 configurations
+  [[gnu::fastcall]] [[gnu::stdcall]] void pr17424_2();
+    ^
+
+"Test_name.c", line 15: warning: attribute is supported only in 32-bit x86 configurations
+  [[gnu::fastcall]] [[gnu::stdcall]] void pr17424_2();
+                      ^
+
+"Test_name.c", line 18: error: explicit type is missing ("int" assumed)
+  [[gnu::fastcall]] __stdcall void pr17424_3();
+                    ^
+
+"Test_name.c", line 18: warning: attribute "gnu::fastcall" does not apply to non-function type "int"
+  [[gnu::fastcall]] __stdcall void pr17424_3();
+    ^
+
+"Test_name.c", line 18: warning: attribute is supported only in 32-bit x86 configurations
+  [[gnu::fastcall]] __stdcall void pr17424_3();
+    ^
+
+"Test_name.c", line 18: error: expected a ";"
+  [[gnu::fastcall]] __stdcall void pr17424_3();
+                              ^
+
+"Test_name.c", line 21: warning: attribute is supported only in 32-bit x86 configurations
+  [[gnu::fastcall]] void pr17424_4() [[gnu::stdcall]];
+                                       ^
+
+"Test_name.c", line 21: warning: attribute is supported only in 32-bit x86 configurations
+  [[gnu::fastcall]] void pr17424_4() [[gnu::stdcall]];
+    ^
+
+"Test_name.c", line 24: warning: attribute is supported only in 32-bit x86 configurations
+  void pr17424_5 [[gnu::fastcall]]();
+                   ^
+
+"Test_name.c", line 51: warning: function "deprecated1" was declared deprecated
+    deprecated1(); // expected-warning {{deprecated}}
+    ^
+"Test_name.c", line 48: note: because of a "deprecated" attribute
+  void deprecated1 [[gnu::deprecated]] (); // expected-note {{here}}
+                     ^
+
+"Test_name.c", line 52: warning: function "deprecated2" was declared deprecated ("custom message")
+    deprecated2(); // expected-warning {{custom message}}
+    ^
+"Test_name.c", line 49: note: because of a "deprecated" attribute
+  [[gnu::deprecated("custom message")]] void deprecated2(); // expected-note {{here}}
+    ^
+
+"Test_name.c", line 57: warning: no parameter has pointer type
+  void nonnull [[gnu::nonnull]] (); // expected-warning {{applied to function with no pointer arguments}}
+                 ^
+
+"Test_name.c", line 61: warning: attribute "gnu::noreturn" does not apply to non-function type "int"
+  int noreturn [[gnu::noreturn]]; // expected-warning {{'noreturn' only applies to function types}}
+                 ^
+
+"Test_name.c", line 29: error: declaration aliased to undefined entity "_Z6alias1v"
+  void aliasb [[gnu::alias("_Z6alias1v")]] ();
+                ^
+
+"Test_name.c", line 31: error: declaration aliased to undefined entity "_Z6alias1v"
+  void aliasa [[gnu::alias("_Z6alias1v")]] ();
+                ^
+
+"Test_name.c", line 34: error: declaration aliased to undefined entity "_ZN7pcrecpp2RE6no_argE"
+  } PR22493 [[gnu::alias("_ZN7pcrecpp2RE6no_argE")]];
+              ^
+
+5 errors detected in the compilation of "Test_name.c".

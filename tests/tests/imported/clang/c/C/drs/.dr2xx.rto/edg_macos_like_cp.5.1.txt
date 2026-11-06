@@ -1,0 +1,106 @@
+fe_only -DTEST_NUMBER=5 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c17 Test_name.c
+"Test_name.c", line 110: error: identifier "_Imaginary" is undefined
+    _Imaginary float f; /* expected-error {{imaginary types are not supported}}
+    ^
+
+"Test_name.c", line 110: error: expected a ";"
+    _Imaginary float f; /* expected-error {{imaginary types are not supported}}
+               ^
+
+"Test_name.c", line 143: error: identifier "__INT_MAX__" is undefined
+      Value = __INT_MAX__
+              ^
+
+"Test_name.c", line 170: error: unrecognized preprocessing directive
+  # nope /* expected-error {{invalid preprocessing directive}} */
+    ^
+
+"Test_name.c", line 175: error: unrecognized preprocessing directive
+  # 'a
+    ^
+
+"Test_name.c", line 206: error: identifier "i" is undefined
+    int i[i]; /* expected-error {{use of undeclared identifier 'i'}} */
+          ^
+
+"Test_name.c", line 220: error: unrecognized preprocessing directive
+  #nondirective    /* expected-error {{invalid preprocessing directive}}
+   ^
+
+"Test_name.c", line 233: error: tag kind of class or struct is incompatible with declaration of union "dr251_fred" (declared at line 231)
+    struct dr251_fred *ptr; /* expected-error {{use of 'dr251_fred' with tag type that does not match previous declaration}} */
+           ^
+
+"Test_name.c", line 233: warning: variable "ptr" was declared but never referenced
+    struct dr251_fred *ptr; /* expected-error {{use of 'dr251_fred' with tag type that does not match previous declaration}} */
+                       ^
+
+"Test_name.c", line 246: error: too many arguments in function call
+    dr252_proto(dr252_no_proto()); /* expected-error {{too many arguments to function call, expected 0, have 1}} */
+                ^
+
+"Test_name.c", line 251: error: incomplete type "void" is not allowed
+    dr252_no_proto(dr252_proto()); /* expected-error {{argument type 'void' is incomplete}}
+                   ^
+
+"Test_name.c", line 283: error: identifier "__INT_MAX__" is undefined
+      ex1 = __INT_MAX__ + 1  /* expected-warning {{overflow in expression; result is -2'147'483'648 with type 'int'}}
+            ^
+
+"Test_name.c", line 292: error: this operator is not allowed in a constant expression
+      ex2 = __INT_MAX__ + (0, 1) /* expected-warning {{expression is not an integer constant expression; folding it to a constant is a GNU extension}}
+                            ^
+
+"Test_name.c", line 307: warning: expression has no effect
+    char *p2 = (42, 1 - 1); /* expected-error {{incompatible integer to pointer conversion initializing 'char *' with an expression of type 'int'}}
+                ^
+
+"Test_name.c", line 307: warning: a value of type "int" cannot be used to initialize an entity of type "char *"
+    char *p2 = (42, 1 - 1); /* expected-error {{incompatible integer to pointer conversion initializing 'char *' with an expression of type 'int'}}
+               ^
+
+"Test_name.c", line 310: warning: expression has no effect
+    p1 = (42, 1 - 1);       /* expected-error {{incompatible integer to pointer conversion assigning to 'char *' from 'int'}}
+          ^
+
+"Test_name.c", line 310: warning: a value of type "int" cannot be assigned to an entity of type "char *"
+    p1 = (42, 1 - 1);       /* expected-error {{incompatible integer to pointer conversion assigning to 'char *' from 'int'}}
+       ^
+
+"Test_name.c", line 317: warning: expression has no effect
+    short s1 = 42 + (0, 1); /* c89only-warning {{mixing declarations and code is a C99 extension}}
+                     ^
+
+"Test_name.c", line 320: warning: expression has no effect
+    s1 = (42, 69); /* expected-warning {{left operand of comma operator has no effect}} */
+          ^
+
+"Test_name.c", line 302: warning: variable "p1" was set but never used
+    char *p1 = (1 - 1); /* expected-warning {{expression which evaluates to zero treated as a null pointer constant of type 'char *'}} */
+          ^
+
+"Test_name.c", line 307: warning: variable "p2" was set but never used
+    char *p2 = (42, 1 - 1); /* expected-error {{incompatible integer to pointer conversion initializing 'char *' with an expression of type 'int'}}
+          ^
+
+"Test_name.c", line 317: warning: variable "s1" was set but never used
+    short s1 = 42 + (0, 1); /* c89only-warning {{mixing declarations and code is a C99 extension}}
+          ^
+
+"Test_name.c", line 336: error: invalid size for bit field
+      short other_field : __CHAR_BIT__ * 2 + 1; /* expected-error-re {{width of bit-field 'other_field' ({{[0-9]+}} bits) exceeds the width of its type ({{[0-9]+}} bits)}} */
+                          ^
+
+"Test_name.c", line 375: error: identifier "__SIZE_MAX__" is undefined
+    (void)sizeof(int[__SIZE_MAX__ / 2][__SIZE_MAX__ / 2]); /* expected-error-re 2 {{array is too large ({{[0-9']+}} elements)}} */
+                     ^
+
+"Test_name.c", line 426: error: incomplete type "struct NotCompleted" is not allowed
+  void dr295_1(struct NotCompleted Val) { /* expected-error {{variable has incomplete type 'struct NotCompleted'}} */
+               ^
+
+"Test_name.c", line 435: error: a parameter may not have void type
+  void dr295_2(void param); /* expected-error {{argument may not have 'void' type}} */
+               ^
+
+16 errors detected in the compilation of "Test_name.c".

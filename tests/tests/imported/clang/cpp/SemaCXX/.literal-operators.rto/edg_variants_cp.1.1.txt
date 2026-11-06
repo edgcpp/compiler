@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"SemaCXX/literal-operators.cpp", line 6: error: a literal operator cannot be a member of a class
+    void operator ""_tag_bad (const char *);
+         ^
+
+"SemaCXX/literal-operators.cpp", line 38: error: invalid first parameter type ("const volatile char *") for literal operator; pointer to non-const type is not allowed
+  void operator ""_cv_good (volatile const char *, const size_t);
+       ^
+
+"SemaCXX/literal-operators.cpp", line 43: error: a string literal operator template must have a template parameter list equivalent to "<typename T, T ...>"
+  template <typename...> void operator ""_invalid();
+                              ^
+
+"SemaCXX/literal-operators.cpp", line 44: error: a literal operator template must have a template parameter list equivalent to "<char ...>"
+  template <wchar_t...> void operator ""_invalid();
+                             ^
+
+"SemaCXX/literal-operators.cpp", line 45: error: a literal operator template must have a template parameter list equivalent to "<char ...>"
+  template <unsigned long long...> void operator ""_invalid();
+                                        ^
+
+"SemaCXX/literal-operators.cpp", line 47: warning: a user-provided literal suffix must begin with "_"
+  _Complex float operator""if(long double);
+                         ^
+
+"SemaCXX/literal-operators.cpp", line 49: error: user-defined literal operator not found
+  void test_if_2() { "foo"if; }
+                     ^
+
+"SemaCXX/literal-operators.cpp", line 52: error: class "T" has no member "operator ""_foo"
+    T().template operator""_foo<int>();
+                 ^
+
+"SemaCXX/literal-operators.cpp", line 52: error: type name is not allowed
+    T().template operator""_foo<int>();
+                                ^
+
+"SemaCXX/literal-operators.cpp", line 52: error: expected an expression
+    T().template operator""_foo<int>();
+                                     ^
+
+"SemaCXX/literal-operators.cpp", line 58: error: a string literal operator template must have a template parameter list equivalent to "<typename T, T ...>"
+  constexpr auto operator ""_l();
+                 ^
+
+10 errors detected in the compilation of "Test_name.c".

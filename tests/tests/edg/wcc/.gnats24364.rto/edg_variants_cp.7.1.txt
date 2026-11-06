@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=7 -W --c++14 Test_name.c
+"Test_name.c", line 10: error: variable "y" was declared but never referenced
+    [[maybe_unused]] const int y = 1;
+                               ^
+
+"Test_name.c", line 7: error: variable "<unnamed>::z" was declared but never referenced
+  [[maybe_unused]] const int z = 1;
+                             ^
+
+2 errors detected in the compilation of "Test_name.c".

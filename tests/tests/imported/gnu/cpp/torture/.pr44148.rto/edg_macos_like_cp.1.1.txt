@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 12: warning: missing return statement at end of non-void function "S2<T>::operator*"
+    t2 operator* () const {}
+                           ^
+
+"Test_name.c", line 32: warning: missing return statement at end of non-void function "S9<T>::operator[]"
+    inline t3 &operator[] (unsigned int) {}
+                                          ^
+
+"Test_name.c", line 18: warning: missing return statement at end of non-void function "foo1(T1, T2) [with T1=S8::t6, T2=t10]"
+  template <typename T1, typename T2> T2 foo1 (T1 x, T2 y) { y (*x); }
+                                                                     ^
+          detected during instantiation of "T2 foo1(T1, T2) [with T1=S8::t6, T2=t10]" at line 62
+

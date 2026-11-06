@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++03 Test_name.c
+"./lookup/missing-std-include-8.C", line 10: error: namespace "std" has no member "make_shared"
+    std::make_shared<T>();
+         ^
+
+"./lookup/missing-std-include-8.C", line 10: error: type name is not allowed
+    std::make_shared<T>();
+                     ^
+
+"./lookup/missing-std-include-8.C", line 10: error: expected an expression
+    std::make_shared<T>();
+                        ^
+
+"./lookup/missing-std-include-8.C", line 19: error: namespace "std" has no member "make_unique"
+    std::make_unique<T>();
+         ^
+
+"./lookup/missing-std-include-8.C", line 19: error: type name is not allowed
+    std::make_unique<T>();
+                     ^
+
+"./lookup/missing-std-include-8.C", line 19: error: expected an expression
+    std::make_unique<T>();
+                        ^
+
+"./lookup/missing-std-include-8.C", line 27: error: namespace "std" has no member "array"
+    std::array a;
+         ^
+
+"./lookup/missing-std-include-8.C", line 33: error: namespace "std" has no member "tuple"
+    std::tuple<int,float> p;
+         ^
+
+"./lookup/missing-std-include-8.C", line 33: error: type name is not allowed
+    std::tuple<int,float> p;
+               ^
+
+"./lookup/missing-std-include-8.C", line 33: error: type name is not allowed
+    std::tuple<int,float> p;
+                   ^
+
+"./lookup/missing-std-include-8.C", line 33: error: identifier "p" is undefined
+    std::tuple<int,float> p;
+                          ^
+
+"./lookup/missing-std-include-8.C", line 39: error: namespace "std" has no member "shared_timed_mutex"
+  std::shared_timed_mutex m;
+       ^
+
+"./lookup/missing-std-include-8.C", line 43: error: namespace "std" has no member "string_view"
+  std::string_view sv;
+       ^
+
+"./lookup/missing-std-include-8.C", line 50: error: identifier "shared_ptr" is undefined
+    shared_ptr<int> p;
+    ^
+
+"./lookup/missing-std-include-8.C", line 50: error: type name is not allowed
+    shared_ptr<int> p;
+               ^
+
+"./lookup/missing-std-include-8.C", line 50: error: identifier "p" is undefined
+    shared_ptr<int> p;
+                    ^
+
+16 errors detected in the compilation of "Test_name.c".

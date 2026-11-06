@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=2 --c++11 -w --gn 40604 Test_name.c
+"Test_name.c", line 12: error: identifier "__float128" is undefined
+  using float128 = __float128;
+                   ^
+
+"Test_name.c", line 13: error: identifier "__float128" is undefined
+  using complex128 = __float128 __complex__;
+                     ^
+
+"Test_name.c", line 13: error: _Complex can only be used with floating-point types
+  using complex128 = __float128 __complex__;
+                     ^
+
+"Test_name.c", line 20: error: builtin function is not available because 128-bit floating-point types are not supported
+    complex128 v1 = __divtc3(f, f, f, f);
+                    ^
+
+"Test_name.c", line 21: error: builtin function is not available because 128-bit floating-point types are not supported
+    complex128 v2 = __multc3(f, f, f, f);
+                    ^
+
+"Test_name.c", line 23: error: identifier "__divtc3" is undefined
+    complex128 (*p) (float128, float128, float128, float128) = &__divtc3;
+                                                                ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -38,110 +38,110 @@ file-scope type#8
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#4
 
+file-scope type#9
+  name:                  file-scope id-name#5: "INT1"
+  decl_position.seq:     27
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: int
+kind:                    is_alias
+
+file-scope type#11
+  name:                  file-scope id-name#6: "INT2"
+  decl_position.seq:     28
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: int
+kind:                    is_alias
+
 file-scope class-type-supplement#5
 template_arg_list:       
-  type:                  file-scope type#9: int
+  type:                  file-scope type#10: int
   explicitly_specified:  TRUE
 
-file-scope type#10
+file-scope type#12
   name:                  file-scope id-name#4: "D"
   decl_position.seq:     24
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#5
 
-file-scope type#11
-  name:                  file-scope id-name#5: "DI2"
-  decl_position.seq:     32
-kind:                    tk_typeref
-typeref_type:            file-scope type#10: D<int>
-kind:                    is_alias
-
-file-scope type#12
-kind:                    tk_ptr_to_member
-class_of_which_a_member: file-scope type#10: D<int>
-orig_class_of_which_a_member: file-scope type#11: DI2
-type:                    file-scope type#9: int
-
 file-scope type#13
-  name:                  file-scope id-name#6: "DI1"
-  decl_position.seq:     31
-kind:                    tk_typeref
-typeref_type:            file-scope type#10: D<int>
-kind:                    is_alias
-
-file-scope type#14
-kind:                    tk_ptr_to_member
-class_of_which_a_member: file-scope type#10: D<int>
-orig_class_of_which_a_member: file-scope type#13: DI1
-type:                    file-scope type#9: int
-
-file-scope type#15
   name:                  file-scope id-name#7: "DI"
   decl_position.seq:     30
 kind:                    tk_typeref
-typeref_type:            file-scope type#10: D<int>
+typeref_type:            file-scope type#12: D<int>
 kind:                    is_alias
 
-file-scope type#16
-kind:                    tk_ptr_to_member
-class_of_which_a_member: file-scope type#10: D<int>
-orig_class_of_which_a_member: file-scope type#15: DI
-type:                    file-scope type#9: int
+file-scope type#14
+  name:                  file-scope id-name#8: "DI1"
+  decl_position.seq:     31
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: D<int>
+kind:                    is_alias
 
-file-scope type#17
-kind:                    tk_ptr_to_member
-class_of_which_a_member: file-scope type#10: D<int>
-type:                    file-scope type#9: int
+file-scope type#15
+  name:                  file-scope id-name#9: "DI2"
+  decl_position.seq:     32
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: D<int>
+kind:                    is_alias
 
 file-scope class-type-supplement#6
 
-file-scope type#18
+file-scope type#16
 kind:                    tk_ptr_to_member
-class_of_which_a_member: file-scope type#19: T
-orig_class_of_which_a_member: file-scope type#20: T#(1,2)
-type:                    file-scope type#9: int
-
-file-scope type#21
-  name:                  file-scope id-name#8: "INT1"
-  decl_position.seq:     27
-kind:                    tk_typeref
-typeref_type:            file-scope type#9: int
-kind:                    is_alias
-
-file-scope type#22
-  name:                  file-scope id-name#9: "INT2"
-  decl_position.seq:     28
-kind:                    tk_typeref
-typeref_type:            file-scope type#9: int
-kind:                    is_alias
+class_of_which_a_member: file-scope type#17: T
+orig_class_of_which_a_member: file-scope type#18: T#(1,2)
+type:                    file-scope type#10: int
 
 file-scope variable#1
   name:                  file-scope id-name#10: "p"
   decl_position.seq:     35
-type:                    file-scope type#18: int T::*
+type:                    file-scope type#16: int T::*
+
+file-scope type#19
+kind:                    tk_ptr_to_member
+class_of_which_a_member: file-scope type#12: D<int>
+orig_class_of_which_a_member: file-scope type#15: DI2
+type:                    file-scope type#10: int
+
+file-scope type#20
+kind:                    tk_ptr_to_member
+class_of_which_a_member: file-scope type#12: D<int>
+orig_class_of_which_a_member: file-scope type#14: DI1
+type:                    file-scope type#10: int
+
+file-scope type#21
+kind:                    tk_ptr_to_member
+class_of_which_a_member: file-scope type#12: D<int>
+orig_class_of_which_a_member: file-scope type#13: DI
+type:                    file-scope type#10: int
+
+file-scope type#22
+kind:                    tk_ptr_to_member
+class_of_which_a_member: file-scope type#12: D<int>
+type:                    file-scope type#10: int
 
 file-scope variable#2
   name:                  file-scope id-name#11: "v"
   decl_position.seq:     37
-type:                    file-scope type#12: int D<int>::*
+type:                    file-scope type#19: int D<int>::*
 
 file-scope variable#3
   name:                  file-scope id-name#10: "p"
   decl_position.seq:     35
-type:                    file-scope type#17: int D<int>::*
+type:                    file-scope type#22: int D<int>::*
 
 file-scope variable#4
   name:                  file-scope id-name#10: "p"
   decl_position.seq:     35
-type:                    file-scope type#16: int D<int>::*
+type:                    file-scope type#21: int D<int>::*
 
 file-scope variable#5
   name:                  file-scope id-name#10: "p"
   decl_position.seq:     35
-type:                    file-scope type#14: int D<int>::*
+type:                    file-scope type#20: int D<int>::*
 
 file-scope variable#6
   name:                  file-scope id-name#10: "p"
   decl_position.seq:     35
-type:                    file-scope type#12: int D<int>::*
+type:                    file-scope type#19: int D<int>::*
 

@@ -1,0 +1,25 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+                vector float v;
+                ^
+
+"Test_name.c", line 17: warning: unknown attribute "vector_size"
+          static vector float foo();
+                 ^
+
+"Test_name.c", line 25: warning: unknown attribute "vector_size"
+  	friend vector float fTest();
+  	       ^
+
+"Test_name.c", line 28: warning: unknown attribute "vector_size"
+  vector float Star::foo()
+  ^
+
+"Test_name.c", line 33: warning: unknown attribute "vector_size"
+  vector float fTest()
+  ^
+
+"Test_name.c", line 35: warning: unknown attribute "vector_size"
+      vector float vf = Star::foo();
+      ^
+

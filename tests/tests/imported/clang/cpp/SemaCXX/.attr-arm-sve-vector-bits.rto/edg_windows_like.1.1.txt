@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --target linux_aarch64 Test_name.c
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 8: error: identifier "__SVInt8_t" is undefined
+  typedef __SVInt8_t svint8_t;
+          ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 9: warning: unknown attribute "arm_sve_vector_bits"
+  typedef svint8_t fixed_int8_t __attribute__((arm_sve_vector_bits(__ARM_FEATURE_SVE_BITS)));
+                                               ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 10: warning: unknown attribute "vector_size"
+  typedef int8_t gnu_int8_t __attribute__((vector_size(__ARM_FEATURE_SVE_BITS / 8)));
+                                           ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 12: error: identifier "__SVBool_t" is undefined
+  typedef __SVBool_t svbool_t;
+          ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 13: warning: unknown attribute "arm_sve_vector_bits"
+  typedef svbool_t fixed_bool_t __attribute__((arm_sve_vector_bits(__ARM_FEATURE_SVE_BITS)));
+                                               ^
+
+"SemaCXX/attr-arm-sve-vector-bits.cpp", line 14: warning: unknown attribute "vector_size"
+  typedef int8_t gnu_bool_t __attribute__((vector_size(__ARM_FEATURE_SVE_BITS / 64)));
+                                           ^
+
+2 errors detected in the compilation of "Test_name.c".

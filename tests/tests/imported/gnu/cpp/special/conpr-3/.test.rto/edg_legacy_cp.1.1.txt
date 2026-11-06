@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics conpr-3a.cc conpr-3b.cc Test_name.c
+conpr-3a.cc:
+conpr-3b.cc:
+Test_name.c:
+/usr/sbin/ld: conpr-3b.o: in function `foo_t::foo_t()':
+conpr-3b.int.c:(.text+0xXX): multiple definition of `foo_t::foo_t()'; conpr-3a.o:conpr-3a.int.c:(.text+0xXX): first defined here
+collect2: error: ld returned 1 exit status

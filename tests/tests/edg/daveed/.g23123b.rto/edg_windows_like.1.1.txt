@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --c11 --gnu=70300 Test_name.c
+"Test_name.c", line 4: warning: unknown attribute "vector_size"
+    typedef long long VLL1 __attribute((vector_size(8)));
+                                        ^
+
+"Test_name.c", line 5: warning: unknown attribute "vector_size"
+    typedef int VI2 __attribute((vector_size(8)));
+                                 ^
+
+"Test_name.c", line 6: warning: parameter "x" was set but never used
+    void g(VLL1 x, VI2 y) {
+                ^
+

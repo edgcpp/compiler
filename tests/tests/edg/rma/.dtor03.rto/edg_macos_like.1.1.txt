@@ -1,0 +1,52 @@
+eccp -DTEST_NUMBER=1 -r -x -tused --set_flag=no_checking_pragmas --cfront_3.0 Test_name.c
+"Test_name.c", line 37: remark: destructor for base class "A" (declared at line 28) is not virtual
+  struct D : virtual public A, virtual public B
+                            ^
+
+"Test_name.c", line 37: remark: destructor for base class "B" (declared at line 32) is not virtual
+  struct D : virtual public A, virtual public B
+                                              ^
+
+"Test_name.c", line 43: remark: destructor for base class "D" (declared at line 37) is not virtual
+  struct G : virtual public D, public E
+                            ^
+
+"Test_name.c", line 43: remark: destructor for base class "E" (declared at line 41) is not virtual
+  struct G : virtual public D, public E
+                                      ^
+
+"Test_name.c", line 45: remark: function "G::~G" cannot be inlined
+  	~G() { ieq(++dtor, ivalue(1)); }
+  	^
+
+"Test_name.c", line 43: remark: function "G::G()" cannot be inlined
+  struct G : virtual public D, public E
+         ^
+          detected during:
+            implicit generation of "G::G()" at line 52
+            implicit generation of "H::H()" at line 52
+
+"Test_name.c", line 42: remark: function "F::F()" cannot be inlined
+  struct F : public C, virtual public D { };
+         ^
+          detected during:
+            implicit generation of "F::F()" at line 52
+            implicit generation of "H::H()" at line 52
+
+"Test_name.c", line 42: remark: function "F::~F" cannot be inlined
+  struct F : public C, virtual public D { };
+         ^
+          detected during:
+            implicit generation of "F::~F()" at line 52
+            implicit generation of "H::H()" at line 52
+
+"Test_name.c", line 47: remark: function "H::H()" cannot be inlined
+  struct H : public F, virtual public G, virtual public B { };
+         ^
+          detected during implicit generation of "H::H()" at line 52
+
+"Test_name.c", line 47: remark: function "H::~H" cannot be inlined
+  struct H : public F, virtual public G, virtual public B { };
+         ^
+          detected during implicit generation of "H::~H()" at line 52
+

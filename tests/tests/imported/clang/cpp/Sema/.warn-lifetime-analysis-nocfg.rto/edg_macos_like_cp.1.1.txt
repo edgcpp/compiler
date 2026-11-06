@@ -1,0 +1,254 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 Test_name.c
+"Sema/Inputs/lifetime-analysis.h", line 134: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer]] iterator {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 3: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner(int)]] MyIntOwner {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 8: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer(int)]] MyIntPointer {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 23: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner(int)]] MyOwnerIntPointer : MyIntPointer {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 26: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer(long)]] MyLongPointerFromConversion {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 31: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner(long)]] MyLongOwnerWithConversion {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 264: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner]] XOwner {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 296: warning: parameter "a2" was set but never used
+  void danglingStringviewAssignment(std::string_view a1, std::string_view a2) {
+                                                                          ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 428: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer]] S {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 474: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner]] StatusOr {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 508: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=std::string_view, Alloc=std::allocator<std::string_view>]" matches the argument list
+            argument types are: ({...})
+    std::vector<std::string_view> v1({std::string()});
+                                     ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(const std::vector<std::string_view, std::allocator<std::string_view>> &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(std::vector<std::string_view, std::allocator<std::string_view>> &&) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 509: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=std::string_view, Alloc=std::allocator<std::string_view>]" matches the argument list
+            argument types are: ({...})
+    std::vector<std::string_view> v2({
+                                     ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(const std::vector<std::string_view, std::allocator<std::string_view>> &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(std::vector<std::string_view, std::allocator<std::string_view>> &&) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 513: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=std::string_view, Alloc=std::allocator<std::string_view>]" matches the argument list
+            argument types are: ({...})
+    std::vector<std::string_view> v3({
+                                     ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(const std::vector<std::string_view, std::allocator<std::string_view>> &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(std::vector<std::string_view, std::allocator<std::string_view>> &&) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 530: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=std::string_view, Alloc=std::allocator<std::string_view>]" matches the argument list
+            argument types are: (std::string)
+    v1 = {std::string()};
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(const std::vector<std::string_view, std::allocator<std::string_view>> &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(std::vector<std::string_view, std::allocator<std::string_view>> &&) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 534: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=std::string_view, Alloc=std::allocator<std::string_view>]" matches the argument list
+            argument types are: (std::string_view)
+    std::vector<std::string_view> n1 = {std::string_view()};
+                                       ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(const std::vector<std::string_view, std::allocator<std::string_view>> &) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(std::vector<std::string_view, std::allocator<std::string_view>> &&) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=std::string_view, Alloc=std::allocator<std::string_view>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 554: warning: attribute namespace "gsl" is unrecognized
+  class [[gsl::Owner]] FooOwner {
+          ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 562: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner]] Container1 {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 566: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner]] Container2 {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 577: warning: dynamic initialization in unreachable code
+    Container2<std::string_view> c1 = Container1<Foo>();
+                                 ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 580: warning: statement is unreachable
+    return GetFooOwner();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 589: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner]] StatusOr {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 595: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer]] Span {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 612: warning: dynamic initialization in unreachable code
+    std::string_view b = StatusOr<std::string_view>().valueNoLB();
+                     ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 635: warning: statement is unreachable
+    return aa.valueNoLB();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 641: warning: statement is unreachable
+    return aa.valueNoLB();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 649: warning: statement is unreachable
+    return aa.valueNoLB();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 657: warning: statement is unreachable
+    return aa.valueNoLB();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 663: warning: statement is unreachable
+    return a.getFieldNoLB();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 711: warning: dynamic initialization in unreachable code
+    std::string_view t2 = TakeSv(std::string());
+                     ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 715: warning: dynamic initialization in unreachable code
+    std::string_view t3 = TakeStrRef(std::string());
+                     ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 720: warning: dynamic initialization in unreachable code
+    std::string_view t4 = TakeStr(std::string());
+                     ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 735: warning: dynamic initialization in unreachable code
+    std::string_view t2 = Foo<std::string_view>().get();
+                     ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 740: warning: dynamic initialization in unreachable code
+    std::string_view t3 = Foo<std::string>().getNoLB();
+                     ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 746: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Pointer]] Pointer {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 765: error: no instance of constructor "std::vector<T, Alloc>::vector [with T=int, Alloc=std::allocator<int>]" matches the argument list
+            argument types are: (int)
+    std::vector<int> v{1};
+                      ^
+"Sema/Inputs/lifetime-analysis.h", line 45: note: function "std::vector<T, Alloc>::vector(std::initializer_list<T>, const Alloc &) [with T=int, Alloc=std::allocator<int>]" does not match because argument #1 does not match parameter
+    vector(initializer_list<T> __l,
+    ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(const std::vector<int, std::allocator<int>> &) [with T=int, Alloc=std::allocator<int>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 39: note: function "std::vector<T, Alloc>::vector(std::vector<int, std::allocator<int>> &&) [with T=int, Alloc=std::allocator<int>]" does not match because argument #1 does not match parameter
+  struct vector {
+         ^
+"Sema/Inputs/lifetime-analysis.h", line 49: note: number of parameters of function template "std::vector<T, Alloc>::vector(InputIterator, InputIterator) [with T=int, Alloc=std::allocator<int>]" does not match the call
+   vector(InputIterator first, InputIterator __last);
+   ^
+"Sema/Inputs/lifetime-analysis.h", line 44: note: number of parameters of function "std::vector<T, Alloc>::vector() [with T=int, Alloc=std::allocator<int>]" does not match the call
+    vector();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 786: warning: attribute namespace "gsl" is unrecognized
+  struct [[gsl::Owner]] Q1 {
+           ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 868: warning: statement is unreachable
+    return s2->data();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 871: warning: statement is unreachable
+    return s3.value()->value()->data();
+    ^
+
+"Sema/warn-lifetime-analysis-nocfg.cpp", line 875: warning: statement is unreachable
+    return s4.value()->value()->data();
+    ^
+
+6 errors detected in the compilation of "Test_name.c".

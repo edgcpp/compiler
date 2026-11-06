@@ -1,0 +1,150 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++14 Test_name.c
+"Test_name.c", line 12: error: incomplete type "int []" is not allowed
+    int value1 = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                       ^
+
+"Test_name.c", line 14: error: incomplete type "int []" is not allowed
+    int value2 = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                       ^
+
+"Test_name.c", line 22: error: incomplete type "int []" is not allowed
+      int x = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                    ^
+
+"Test_name.c", line 29: error: incomplete type "int []" is not allowed
+    int value = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                      ^
+
+"Test_name.c", line 36: error: incomplete type "int []" is not allowed
+      int x = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                    ^
+
+"Test_name.c", line 44: warning: variable "x" was declared but never referenced
+      int x = sizeof(array);
+          ^
+
+"Test_name.c", line 46: error: incomplete type "int []" is not allowed
+    int y = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                  ^
+
+"Test_name.c", line 53: warning: variable "x" was declared but never referenced
+      int x = sizeof(array);
+          ^
+
+"Test_name.c", line 62: error: incomplete type "int []" is not allowed
+        int x = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                      ^
+
+"Test_name.c", line 64: warning: variable "y" was declared but never referenced
+      int y = sizeof(array);
+          ^
+
+"Test_name.c", line 66: warning: variable "z" was declared but never referenced
+      int z = sizeof(array);
+          ^
+
+"Test_name.c", line 74: error: incomplete type "int []" is not allowed
+      int x = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                    ^
+
+"Test_name.c", line 85: warning: variable "x" was declared but never referenced
+      int x = sizeof(array);
+          ^
+
+"Test_name.c", line 87: error: incomplete type "int []" is not allowed
+    int y = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                  ^
+
+"Test_name.c", line 89: error: incomplete type "int []" is not allowed
+    int z = sizeof(array); // expected-error {{invalid application of 'sizeof' to an incomplete type 'int[]'}}
+                  ^
+
+"Test_name.c", line 95: error: declaration is incompatible with "int arr1[]" (declared at line 94)
+      extern T arr1;
+               ^
+
+"Test_name.c", line 97: error: declaration is incompatible with "T arr2" (declared at line 96)
+      extern int arr2[];
+                 ^
+
+"Test_name.c", line 98: error: incomplete type "int []" is not allowed
+      static_assert(sizeof(arr1) == 12, "");
+                          ^
+
+"Test_name.c", line 115: error: incomplete type "int []" is not allowed
+          (void)sizeof(arr3); // expected-error {{incomplete}}
+                      ^
+
+"Test_name.c", line 111: warning: variable "arr3" was declared but never referenced
+        int arr3;
+            ^
+
+"Test_name.c", line 123: warning: variable "arr4" was declared but never referenced
+        int arr4;
+            ^
+
+"Test_name.c", line 150: error: declaration is incompatible with "T arrX" (declared at line 149)
+      extern U arrX; // expected-error {{different type: 'int[4]' vs 'int[3]'}}
+               ^
+
+"Test_name.c", line 202: error: incomplete type "int []" is not allowed
+    int x = sizeof(A::b); // expected-error {{incomplete}}
+                  ^
+
+"Test_name.c", line 207: error: incomplete type "int []" is not allowed
+      int h() { return sizeof(b); } // expected-error {{incomplete}}
+                             ^
+
+"Test_name.c", line 215: error: declaration is incompatible with previous "arr" (declared at line 213)
+  void f2() { extern int arr[3]; } // expected-error {{different type: 'int[3]' vs 'int[2]'}}
+                         ^
+
+"Test_name.c", line 102: error: static assertion failed with ""
+      static_assert(sizeof(arr2) == 13, ""); // expected-error {{failed}} \
+      ^
+"Test_name.c", line 102: note: the final comparison was 12 == 13
+      static_assert(sizeof(arr2) == 13, ""); // expected-error {{failed}} \
+                                 ^
+          detected during instantiation of "void dependent::f<T>() [with T=int [3]]" at line 106
+
+"Test_name.c", line 127: error: incomplete type "int []" is not allowed
+          (void)sizeof(arr4); // expected-error {{incomplete}}
+                      ^
+          detected during instantiation of "void dependent::h2<T>() [with T=int []]" at line 134
+
+"Test_name.c", line 141: error: incomplete type "int []" is not allowed
+      (void)sizeof(arr5); // expected-error {{incomplete}}
+                  ^
+          detected during instantiation of "void dependent::j<T>() [with T=int []]" at line 146
+
+"Test_name.c", line 142: error: incomplete type "int []" is not allowed
+      (void)sizeof(arr6); // expected-error {{incomplete}}
+                  ^
+          detected during instantiation of "void dependent::j<T>() [with T=int []]" at line 146
+
+"Test_name.c", line 151: error: incomplete type "int []" is not allowed
+      (void)sizeof(arrX); // expected-error {{incomplete}}
+                  ^
+          detected during instantiation of "void dependent::l<T,U>() [with T=int [], U=int []]" at line 159
+
+"Test_name.c", line 163: error: declaration is incompatible with previous "dependent::n_var" (declared at line 163)
+      extern T n_var; // expected-error {{redeclaration of 'n_var' with a different type: 'double' vs 'int'}} expected-note {{previous}}
+               ^
+          detected during instantiation of "void dependent::n<T>() [with T=double]" at line 167
+
+"Test_name.c", line 164: error: declaration is incompatible with previous "dependent::n_fn" (declared at line 164)
+      extern T n_fn(); // expected-error {{functions that differ only in their return type cannot be overloaded}} expected-note {{previous}}
+               ^
+          detected during instantiation of "void dependent::n<T>() [with T=double]" at line 167
+
+"Test_name.c", line 170: error: declaration is incompatible with previous "dependent::o_var" (declared at line 174)
+      extern T o_var; // expected-note {{previous}}
+               ^
+          detected during instantiation of "void dependent::o<T>() [with T=int]" at line 173
+
+"Test_name.c", line 171: error: declaration is incompatible with previous "dependent::o_fn" (declared at line 175)
+      extern T o_fn(); // expected-note {{previous}}
+               ^
+          detected during instantiation of "void dependent::o<T>() [with T=int]" at line 173
+
+27 errors detected in the compilation of "Test_name.c".

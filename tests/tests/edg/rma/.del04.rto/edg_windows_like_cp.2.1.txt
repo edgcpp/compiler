@@ -1,0 +1,10 @@
+eccp -DTEST_NUMBER=2 -r -x -tused --set_flag=no_checking_pragmas Test_name.c
+"Test_name.c", line 15: remark: variable "px2" was declared but never referenced
+            X *px2 = new (pc) X(0);
+               ^
+
+/usr/sbin/ld: Test_name.o: in function `main':
+Test_name.int.c:(.text+0xXX): undefined reference to `void *X::operator new<T1>(unsigned long, T1) [with T1=char *]'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `X::X(int)'
+/usr/sbin/ld: Test_name.int.c:(.text+0xXX): undefined reference to `void X::operator delete<T1>(void *, T1) [with T1=char *]'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,170 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: attribute "overloadable" does not apply here
+  int var __attribute__((overloadable)); // expected-error{{'overloadable' attribute only applies to functions}}
+                         ^
+
+"Test_name.c", line 7: error: attribute "overloadable" does not take arguments
+  void params(void) __attribute__((overloadable(12))); // expected-error {{'overloadable' attribute takes no arguments}}
+                                               ^
+
+"Test_name.c", line 26: error: cannot overload functions distinguished by return type alone
+  float *accept_funcptr(int (*)(int, double)) __attribute__((overloadable)); //  \
+         ^
+
+"Test_name.c", line 31: warning: a value of type "int *" cannot be used to initialize an entity of type "float *"
+    float *fp = accept_funcptr(f1);
+                ^
+
+"Test_name.c", line 32: warning: argument of type "int (*)(int, float)" is incompatible with parameter of type "int (*)()"
+    accept_funcptr(f2); // expected-error{{no matching function for call to 'accept_funcptr'}}
+                   ^
+
+"Test_name.c", line 45: error: cannot overload functions distinguished by return type alone
+  double *f(int) __attribute__((overloadable)); // expected-error{{conflicting types for 'f'}}
+          ^
+
+"Test_name.c", line 55: error: function "promote(...) C++" was declared declared unavailable
+    promote(sp); // expected-error{{'promote' is unavailable}}
+    ^
+"Test_name.c", line 51: note: because of an "unavailable" attribute
+  void promote(...) __attribute__((__overloadable__, __unavailable__)); // expected-note {{marked unavailable here}}
+                                                     ^
+
+"Test_name.c", line 60: warning: unknown attribute "vector_size"
+  typedef Double DoubleVec __attribute__((vector_size(16)));
+                                          ^
+
+"Test_name.c", line 62: warning: unknown attribute "vector_size"
+  typedef Int IntVec __attribute__((vector_size(16)));
+                                    ^
+
+"Test_name.c", line 70: error: the "overloadable" attribute requires a prototyped function declaration
+  extern int __attribute__((overloadable)) f0(); // expected-error{{'overloadable' function 'f0' must have a prototype}}
+                            ^
+
+"Test_name.c", line 72: error: the "overloadable" attribute requires a prototyped function declaration
+  f1_type __attribute__((overloadable)) f1; // expected-error{{'overloadable' function 'f1' must have a prototype}}
+                         ^
+
+"Test_name.c", line 80: error: the "overloadable" attribute requires a prototyped function declaration
+  int __attribute__((overloadable)) invalid(); // expected-error{{'overloadable' function 'invalid' must have a prototype}}
+                     ^
+
+"Test_name.c", line 84: error: too few arguments in function call
+    invalid(); // expected-error{{too few arguments to function call, expected 1, have 0}}
+            ^
+
+"Test_name.c", line 94: error: declaration is incompatible with previous "before_local_2" (declared at line 90)
+    void before_local_2(char); // expected-error {{conflicting types}}
+         ^
+
+"Test_name.c", line 110: warning: variable "ptr" is used before its value is set
+    foo(ptr);
+        ^
+
+"Test_name.c", line 115: warning: variable "c" is used before its value is set
+    multi_type(c);
+               ^
+
+"Test_name.c", line 122: error: more than one instance of overloaded function "foo" matches the required type
+    void (*ptr1)(void *) = &foo;
+                           ^
+
+"Test_name.c", line 123: error: more than one instance of overloaded function "foo" matches the required type
+    void (*ptr2)(char *) = &foo;
+                           ^
+
+"Test_name.c", line 124: error: more than one instance of overloaded function "foo" matches the required type
+    void (*ambiguous)(int *) = &foo; // expected-error{{initializing 'void (*)(int *)' with an expression of incompatible type '<overloaded function type>'}} expected-note@-4{{candidate function}} expected-note@-3{{candidate function}}
+                               ^
+
+"Test_name.c", line 125: error: more than one instance of overloaded function "foo" matches the required type
+    void *vp_ambiguous = &foo; // expected-error{{initializing 'void *' with an expression of incompatible type '<overloaded function type>'}} expected-note@-5{{candidate function}} expected-note@-4{{candidate function}}
+                         ^
+
+"Test_name.c", line 127: error: cannot determine which instance of overloaded function "foo" is intended
+    void (*specific1)(int *) = (void (*)(void *))&foo; // expected-error{{incompatible function pointer types initializing 'void (*)(int *)' with an expression of type 'void (*)(void *)'}}
+                                                 ^
+
+"Test_name.c", line 128: error: cannot determine which instance of overloaded function "foo" is intended
+    void *specific2 = (void (*)(void *))&foo;
+                                        ^
+
+"Test_name.c", line 134: error: more than one instance of overloaded function "disabled" matches the required type
+    void (*dptr1)(char *c) = &disabled;
+                             ^
+
+"Test_name.c", line 135: error: more than one instance of overloaded function "disabled" matches the required type
+    void (*dptr2)(void *c) = &disabled; // expected-error{{incompatible function pointer types initializing 'void (*)(void *)' with an expression of type '<overloaded function type>'}} expected-note@-5{{candidate function made ineligible by enable_if}} expected-note@-4{{candidate function made ineligible by enable_if}} expected-note@-3{{candidate function has type mismatch at 1st parameter (expected 'void *' but has 'char *')}}
+                             ^
+
+"Test_name.c", line 136: error: more than one instance of overloaded function "disabled" matches the required type
+    void (*dptr3)(int *c) = &disabled; // expected-error{{incompatible function pointer types initializing 'void (*)(int *)' with an expression of type '<overloaded function type>'}} expected-note@-6{{candidate function made ineligible by enable_if}} expected-note@-5{{candidate function made ineligible by enable_if}} expected-note@-4{{candidate function has type mismatch at 1st parameter (expected 'int *' but has 'char *')}}
+                            ^
+
+"Test_name.c", line 138: error: more than one instance of overloaded function "disabled" matches the required type
+    void *specific_disabled = &disabled;
+                              ^
+
+"Test_name.c", line 149: error: no instance of overloaded function "foo" matches the argument list
+            argument types are: (unsigned char [1])
+    foo(ucharbuf); // expected-error{{call to 'foo' is ambiguous}} expected-note@-3{{candidate function}} expected-note@-2{{candidate function}}
+    ^
+"Test_name.c", line 147: note: function "foo(short *) C++" does not match because argument #1 does not match parameter
+    void foo(short *c) __attribute__((overloadable));
+         ^
+"Test_name.c", line 146: note: function "foo(char *) C++" does not match because argument #1 does not match parameter
+    void foo(char *c) __attribute__((overloadable));
+         ^
+
+"Test_name.c", line 150: error: no instance of overloaded function "foo" matches the argument list
+            argument types are: (int [1])
+    foo(intbuf); // expected-error{{call to 'foo' is ambiguous}} expected-note@-4{{candidate function}} expected-note@-3{{candidate function}}
+    ^
+"Test_name.c", line 147: note: function "foo(short *) C++" does not match because argument #1 does not match parameter
+    void foo(short *c) __attribute__((overloadable));
+         ^
+"Test_name.c", line 146: note: function "foo(char *) C++" does not match because argument #1 does not match parameter
+    void foo(char *c) __attribute__((overloadable));
+         ^
+
+"Test_name.c", line 154: error: no instance of overloaded function "bar" matches the argument list
+            argument types are: (char [1])
+    bar(charbuf); // expected-error{{call to 'bar' is ambiguous}} expected-note@-2{{candidate function}} expected-note@-1{{candidate function}}
+    ^
+"Test_name.c", line 153: note: function "bar(signed char *) C++" does not match because argument #1 does not match parameter
+    void bar(signed char *c) __attribute__((overloadable));
+         ^
+"Test_name.c", line 152: note: function "bar(unsigned char *) C++" does not match because argument #1 does not match parameter
+    void bar(unsigned char *c) __attribute__((overloadable));
+         ^
+
+"Test_name.c", line 156: error: no instance of overloaded function "bar" matches the argument list
+            argument types are: (int [1])
+    bar(intbuf); // expected-error{{call to 'bar' is ambiguous}} expected-note@-4{{candidate function}} expected-note@-3{{candidate function}}
+    ^
+"Test_name.c", line 153: note: function "bar(signed char *) C++" does not match because argument #1 does not match parameter
+    void bar(signed char *c) __attribute__((overloadable));
+         ^
+"Test_name.c", line 152: note: function "bar(unsigned char *) C++" does not match because argument #1 does not match parameter
+    void bar(unsigned char *c) __attribute__((overloadable));
+         ^
+
+"Test_name.c", line 166: warning: argument is incompatible with formal parameter
+    foo(ccharbuf); // expected-error{{call to 'foo' is ambiguous}} expected-note@-3{{candidate function}} expected-note@-2{{candidate function}}
+        ^
+
+"Test_name.c", line 167: warning: argument is incompatible with formal parameter
+    foo(vcharbuf); // expected-error{{call to 'foo' is ambiguous}} expected-note@-4{{candidate function}} expected-note@-3{{candidate function}}
+        ^
+
+"Test_name.c", line 175: error: declaration is incompatible with previous "wg_foo" (declared at line 172)
+  int wg_foo; // expected-error{{redefinition of 'wg_foo' as different kind of symbol}}
+      ^
+
+"Test_name.c", line 178: catastrophic error: #error directive: "We should have unmarked overload support"
+  #error "We should have unmarked overload support"
+   ^
+
+24 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

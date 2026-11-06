@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --clang Test_name.c
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+  typedef long V2L __attribute((vector_size(2*sizeof(long long))));
+                                ^
+
+"Test_name.c", line 12: warning: unknown attribute "vector_size"
+  typedef double V2D __attribute((vector_size(2*sizeof(double))));
+                                  ^
+

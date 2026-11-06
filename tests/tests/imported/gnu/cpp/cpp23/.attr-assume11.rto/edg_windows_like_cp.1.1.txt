@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 10: error: pack expansion does not make use of any argument packs
+    [[assume (1 > 0)...]];		// { dg-error "expansion pattern '\\\(1 > 0\\\)' contains no parameter packs" }
+                    ^
+
+"Test_name.c", line 17: error: pack expansion does not make use of any argument packs
+    [[gnu::assume (1 > 0)...]];		// { dg-error "expansion pattern '\\\(1 > 0\\\)' contains no parameter packs" }
+                         ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 5: warning: #pragma GCC system_header cannot be used in the primary source file
+  _Pragma ("GCC system_header")  // expected-warning {{system_header ignored in main file}}
+           ^
+
+"Test_name.c", line 7: warning: unrecognized #pragma
+  _Pragma("#define macro")    // expected-warning {{unknown pragma ignored}}
+          ^
+
+"Test_name.c", line 9: warning: unrecognized #pragma
+  _Pragma("") // expected-warning {{unknown pragma ignored}}
+          ^
+
+"Test_name.c", line 16: error: expected a string literal
+  _Pragma(unroll 1 // expected-error{{_Pragma takes a parenthesized string literal}}
+          ^
+
+"Test_name.c", line 16: error: expected a declaration
+  _Pragma(unroll 1 // expected-error{{_Pragma takes a parenthesized string literal}}
+                 ^
+
+"Test_name.c", line 18: error: expected a string literal
+  _Pragma(clang diagnostic push) // expected-error{{_Pragma takes a parenthesized string literal}}
+          ^
+
+At end of source: error: expected a string literal
+
+4 errors detected in the compilation of "Test_name.c".

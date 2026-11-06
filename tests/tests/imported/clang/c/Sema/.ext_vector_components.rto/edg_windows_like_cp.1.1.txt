@@ -1,0 +1,286 @@
+fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c Test_name.c
+"Test_name.c", line 19: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.z; // expected-error {{vector component access exceeds type 'float2'}}
+      ^
+
+"Test_name.c", line 20: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.xyzw; // expected-error {{vector component access exceeds type 'float2'}}
+      ^
+
+"Test_name.c", line 21: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.xyzw; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 22: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.xyzc; // expected-error {{illegal vector component name 'c'}}
+      ^
+
+"Test_name.c", line 23: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.s01z; // expected-error {{illegal vector component name 'z'}}
+      ^
+
+"Test_name.c", line 24: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec2 = vec4.s01; // legal, shorten
+             ^
+
+"Test_name.c", line 25: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec2 = vec4.S01; // legal, shorten
+             ^
+
+"Test_name.c", line 27: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec3 = vec4.xyz; // legal, shorten
+             ^
+
+"Test_name.c", line 28: error: expression must have struct or union type but it has type "float2" (aka "float")
+      f = vec2.x; // legal, shorten
+          ^
+
+"Test_name.c", line 29: error: expression must have struct or union type but it has type "float4" (aka "float")
+      f = vec4.xy.x; // legal, shorten
+          ^
+
+"Test_name.c", line 31: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.xyzx = vec4.xyzw; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 31: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.xyzx = vec4.xyzw; // expected-error {{vector is not assignable (contains duplicate components)}}
+                    ^
+
+"Test_name.c", line 32: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.xyzz = vec4.xyzw; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 32: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.xyzz = vec4.xyzw; // expected-error {{vector is not assignable (contains duplicate components)}}
+                    ^
+
+"Test_name.c", line 33: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.xyyw = vec4.xyzw; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 33: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.xyyw = vec4.xyzw; // expected-error {{vector is not assignable (contains duplicate components)}}
+                    ^
+
+"Test_name.c", line 34: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.x = f;
+      ^
+
+"Test_name.c", line 35: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.xx = vec2_2.xy; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 35: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.xx = vec2_2.xy; // expected-error {{vector is not assignable (contains duplicate components)}}
+                ^
+
+"Test_name.c", line 36: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.yx = vec2_2.xy;
+      ^
+
+"Test_name.c", line 36: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.yx = vec2_2.xy;
+                ^
+
+"Test_name.c", line 37: warning: excess initializers are ignored
+      vec4 = (float4){ 1,2,3,4 };
+                         ^
+
+"Test_name.c", line 38: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.xy.w; // expected-error {{vector component access exceeds type 'float2'}}
+      ^
+
+"Test_name.c", line 39: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.s06; // expected-error {{vector component access exceeds type 'float4'}}
+      ^
+
+"Test_name.c", line 40: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.x = vec16.sf;
+      ^
+
+"Test_name.c", line 40: error: expression must have struct or union type but it has type "float16" (aka "float")
+      vec4.x = vec16.sf;
+               ^
+
+"Test_name.c", line 41: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.x = vec16.sF;
+      ^
+
+"Test_name.c", line 41: error: expression must have struct or union type but it has type "float16" (aka "float")
+      vec4.x = vec16.sF;
+               ^
+
+"Test_name.c", line 43: error: expression must have pointer-to-struct-or-union type but it has type "float4 *" (aka "float *")
+      vec4p->yz = vec4p->xy;
+      ^
+
+"Test_name.c", line 43: error: expression must have pointer-to-struct-or-union type but it has type "float4 *" (aka "float *")
+      vec4p->yz = vec4p->xy;
+                  ^
+
+"Test_name.c", line 43: warning: variable "vec4p" is used before its value is set
+      vec4p->yz = vec4p->xy;
+                  ^
+
+"Test_name.c", line 45: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.a; // expected-error {{vector component access exceeds type 'float2'}}
+      ^
+
+"Test_name.c", line 46: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.rgba; // expected-error {{vector component access exceeds type 'float2'}}
+      ^
+
+"Test_name.c", line 47: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.rgba; // expected-warning {{expression result unused}}
+      ^
+
+"Test_name.c", line 48: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.rgbz; // expected-error {{illegal vector component name 'z'}}
+      ^
+
+"Test_name.c", line 49: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.rgbc; // expected-error {{illegal vector component name 'c'}}
+      ^
+
+"Test_name.c", line 50: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.xyzr; // expected-error {{illegal vector component name 'r'}}
+      ^
+
+"Test_name.c", line 51: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.s01b; // expected-error {{vector component access exceeds type 'float4'}}
+      ^
+
+"Test_name.c", line 53: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec3 = vec4.rgb; // legal, shorten
+             ^
+
+"Test_name.c", line 54: error: expression must have struct or union type but it has type "float2" (aka "float")
+      f = vec2.r; // legal, shorten
+          ^
+
+"Test_name.c", line 55: error: expression must have struct or union type but it has type "float4" (aka "float")
+      f = vec4.rg.r; // legal, shorten
+          ^
+
+"Test_name.c", line 56: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgba = vec4.xyzw; // legal, no intermingling
+      ^
+
+"Test_name.c", line 56: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgba = vec4.xyzw; // legal, no intermingling
+                    ^
+
+"Test_name.c", line 58: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgbr = vec4.rgba; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 58: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgbr = vec4.rgba; // expected-error {{vector is not assignable (contains duplicate components)}}
+                    ^
+
+"Test_name.c", line 59: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgbb = vec4.rgba; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 59: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgbb = vec4.rgba; // expected-error {{vector is not assignable (contains duplicate components)}}
+                    ^
+
+"Test_name.c", line 60: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgga = vec4.rgba; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 60: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4_2.rgga = vec4.rgba; // expected-error {{vector is not assignable (contains duplicate components)}}
+                    ^
+
+"Test_name.c", line 61: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.x = f;
+      ^
+
+"Test_name.c", line 62: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.rr = vec2_2.rg; // expected-error {{vector is not assignable (contains duplicate components)}}
+      ^
+
+"Test_name.c", line 62: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.rr = vec2_2.rg; // expected-error {{vector is not assignable (contains duplicate components)}}
+                ^
+
+"Test_name.c", line 63: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.gr = vec2_2.rg;
+      ^
+
+"Test_name.c", line 63: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.gr = vec2_2.rg;
+                ^
+
+"Test_name.c", line 64: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.gr.g = vec2_2.r;
+      ^
+
+"Test_name.c", line 64: error: expression must have struct or union type but it has type "float2" (aka "float")
+      vec2.gr.g = vec2_2.r;
+                  ^
+
+"Test_name.c", line 65: warning: excess initializers are ignored
+      vec4 = (float4){ 1,2,3,4 };
+                         ^
+
+"Test_name.c", line 66: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.rg.b; // expected-error {{vector component access exceeds type 'float2'}}
+      ^
+
+"Test_name.c", line 67: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.r = vec16.sf;
+      ^
+
+"Test_name.c", line 67: error: expression must have struct or union type but it has type "float16" (aka "float")
+      vec4.r = vec16.sf;
+               ^
+
+"Test_name.c", line 68: error: expression must have struct or union type but it has type "float4" (aka "float")
+      vec4.g = vec16.sF;
+      ^
+
+"Test_name.c", line 68: error: expression must have struct or union type but it has type "float16" (aka "float")
+      vec4.g = vec16.sF;
+               ^
+
+"Test_name.c", line 70: error: expression must have pointer-to-struct-or-union type but it has type "float4 *" (aka "float *")
+      vec4p->gb = vec4p->rg;
+      ^
+
+"Test_name.c", line 70: error: expression must have pointer-to-struct-or-union type but it has type "float4 *" (aka "float *")
+      vec4p->gb = vec4p->rg;
+                  ^
+
+"Test_name.c", line 14: warning: variable "vec3" was set but never used
+      float3 vec3;
+             ^
+
+"Test_name.c", line 73: error: expression must have struct or union type but it has type "float3" (aka "float")
+  float2 lo(float3 x) { return x.lo; }
+                               ^
+
+"Test_name.c", line 74: error: expression must have struct or union type but it has type "float3" (aka "float")
+  float2 hi(float3 x) { return x.hi; }
+                               ^
+
+"Test_name.c", line 75: error: expression must have struct or union type but it has type "float3" (aka "float")
+  float2 ev(float3 x) { return x.even; }
+                               ^
+
+"Test_name.c", line 76: error: expression must have struct or union type but it has type "float3" (aka "float")
+  float2 od(float3 x) { return x.odd; }
+                               ^
+
+"Test_name.c", line 10: warning: variable "vec4_0" was declared but never referenced
+  static float4 vec4_0 = (float4)0.5f;
+                ^
+
+"Test_name.c", line 12: warning: function "test" was declared but never referenced
+  static void test(void) {
+              ^
+
+65 errors detected in the compilation of "Test_name.c".

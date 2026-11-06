@@ -1,0 +1,46 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --gnu_version=80200 -tused -e 200 --no_wrap Test_name.c
+"./ext/mv16.C", line 18: error: function "foo" has already been defined (previous definition at line 12)
+  foo ()
+  ^
+
+"./ext/mv16.C", line 24: error: function "foo" has already been defined (previous definition at line 12)
+  foo ()
+  ^
+
+"./ext/mv16.C", line 30: error: function "foo" has already been defined (previous definition at line 12)
+  foo ()
+  ^
+
+"./ext/mv16.C", line 36: error: function "foo" has already been defined (previous definition at line 12)
+  foo ()
+  ^
+
+"./ext/mv16.C", line 42: error: function "foo" has already been defined (previous definition at line 12)
+  foo ()
+  ^
+
+"./ext/mv16.C", line 47: error: function "foo" has already been defined (previous definition at line 12)
+  int __attribute__ ((target("arch=broadwell"))) foo () {
+                                                 ^
+
+"./ext/mv16.C", line 51: error: function "foo" has already been defined (previous definition at line 12)
+  int __attribute__ ((target("arch=skylake"))) foo () {
+                                               ^
+
+"./ext/mv16.C", line 55: error: function "foo" has already been defined (previous definition at line 12)
+  int __attribute__ ((target("arch=skylake-avx512"))) foo () {
+                                                      ^
+
+"./ext/mv16.C", line 59: error: function "foo" has already been defined (previous definition at line 12)
+  int __attribute__ ((target("arch=cannonlake"))) foo () {
+                                                  ^
+
+"./ext/mv16.C", line 63: error: function "foo" has already been defined (previous definition at line 12)
+  int __attribute__ ((target("arch=icelake-client"))) foo () {
+                                                      ^
+
+"./ext/mv16.C", line 67: error: function "foo" has already been defined (previous definition at line 12)
+  int __attribute__ ((target("arch=icelake-server"))) foo () {
+                                                      ^
+
+11 errors detected in the compilation of "Test_name.c".

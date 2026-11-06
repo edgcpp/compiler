@@ -1,0 +1,57 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"Test_name.c", line 10: warning: unknown attribute "vector_size"
+  typedef unsigned char V __attribute__((vector_size (2)));
+                                         ^
+
+"Test_name.c", line 11: warning: unknown attribute "vector_size"
+  typedef unsigned char W __attribute__((vector_size (8)));
+                                         ^
+
+"Test_name.c", line 13: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+"Test_name.c", line 16: warning: excess initializers are ignored
+    *p = (V) { x >> 8, x };
+                       ^
+
+"Test_name.c", line 19: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+"Test_name.c", line 22: warning: excess initializers are ignored
+    *p = (W) { x >> 56, x >> 48, x >> 40, x >> 32, x >> 24, x >> 16, x >> 8, x };
+                        ^
+
+"Test_name.c", line 25: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+"Test_name.c", line 28: warning: excess initializers are ignored
+    *p = (V) { x, x >> 8 };
+                  ^
+
+"Test_name.c", line 31: warning: unknown attribute "noipa"
+  __attribute__((noipa)) void
+                 ^
+
+"Test_name.c", line 34: warning: excess initializers are ignored
+    *p = (W) { x, x >> 8, x >> 16, x >> 24, x >> 32, x >> 40, x >> 48, x >> 56 };
+                  ^
+
+"Test_name.c", line 46: warning: excess initializers are ignored
+    e = (V) { 0xca, 0xfe };
+                    ^
+
+"Test_name.c", line 47: warning: excess initializers are ignored
+    f = (W) { 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe, 0xba, 0xbe };
+                    ^
+
+"Test_name.c", line 48: warning: excess initializers are ignored
+    g = (V) { 0xad, 0xde };
+                    ^
+
+"Test_name.c", line 49: warning: excess initializers are ignored
+    h = (W) { 0xad, 0xde, 0xef, 0xbe, 0xc1, 0xba, 0xed, 0xfe };
+                    ^
+

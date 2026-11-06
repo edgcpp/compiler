@@ -1,0 +1,66 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
+"Test_name.c", line 7: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_nothrow_assign(int)(); // { dg-error "'__has_nothrow_assign\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 8: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_trivial_assign(int)(); // { dg-error "'__has_trivial_assign\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 9: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_nothrow_constructor(int)(); // { dg-error "'__has_nothrow_constructor\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 10: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_trivial_constructor(int)(); // { dg-error "'__has_trivial_constructor\\(int\\)' cannot be used" } 
+    ^
+
+"Test_name.c", line 11: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_nothrow_copy(int)(); // { dg-error "'__has_nothrow_copy\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 12: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_trivial_copy(int)(); // { dg-error "'__has_trivial_copy\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 13: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_trivial_destructor(int)(); // { dg-error "'__has_trivial_destructor\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 14: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __has_virtual_destructor(int)(); // { dg-error "'__has_virtual_destructor\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 15: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_abstract(int)(); // { dg-error "'__is_abstract\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 16: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_base_of(int, float)(); // { dg-error "'__is_base_of\\(int, float\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 17: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_class(int)(); // { dg-error "'__is_class\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 18: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_empty(int)(); // { dg-error "'__is_empty\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 19: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_enum(int)(); // { dg-error "'__is_enum\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 20: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_pod(int)(); // { dg-error "'__is_pod\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 21: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_polymorphic(int)(); // { dg-error "'__is_polymorphic\\(int\\)' cannot be used" }
+    ^
+
+"Test_name.c", line 22: error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+    __is_union(int)(); // { dg-error "'__is_union\\(int\\)' cannot be used" }
+    ^
+
+16 errors detected in the compilation of "Test_name.c".

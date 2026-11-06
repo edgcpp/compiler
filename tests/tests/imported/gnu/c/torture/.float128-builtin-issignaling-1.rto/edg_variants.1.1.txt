@@ -1,0 +1,58 @@
+eccp -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnostics --gcc Test_name.c
+"./torture/builtin-issignaling-1.c", line 73: error: builtin function is not available because 128-bit floating-point types are not supported
+    return __builtin_issignaling (__builtin_nansf128 (""));
+                                  ^
+
+"./torture/builtin-issignaling-1.c", line 79: error: builtin function is not available because 128-bit floating-point types are not supported
+    return __builtin_issignaling (__builtin_nanf128 (""));
+                                  ^
+
+"./torture/builtin-issignaling-1.c", line 85: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    return __builtin_issignaling (0.0f128);
+                                 ^
+
+"./torture/builtin-issignaling-1.c", line 89: error: identifier "_Float128" is undefined
+  f4 (_Float128 x)
+      ^
+
+"./torture/builtin-issignaling-1.c", line 100: error: identifier "_Float128" is undefined
+  _Float128 w;
+  ^
+
+"./torture/builtin-issignaling-1.c", line 132: warning: function "__builtin_nansf128" declared implicitly
+    if (f4 (w) || !f4 (__builtin_nansf128 ("0x123")) || f4 (42.0f128) || f4 (__builtin_nanf128 ("0x234"))
+                       ^
+
+"./torture/builtin-issignaling-1.c", line 132: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+    if (f4 (w) || !f4 (__builtin_nansf128 ("0x123")) || f4 (42.0f128) || f4 (__builtin_nanf128 ("0x234"))
+                                                            ^
+
+"./torture/builtin-issignaling-1.c", line 132: warning: function "__builtin_nanf128" declared implicitly
+    if (f4 (w) || !f4 (__builtin_nansf128 ("0x123")) || f4 (42.0f128) || f4 (__builtin_nanf128 ("0x234"))
+                                                                             ^
+
+"./torture/builtin-issignaling-1.c", line 133: error: builtin function is not available because 128-bit floating-point types are not supported
+        || f4 (__builtin_inff128 ()) || f4 (-__builtin_inff128 ()) || f4 (-42.0f128) || f4 (-0.0f128) || f4 (0.0f128))
+               ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: function "__builtin_inff128" declared implicitly
+        || f4 (__builtin_inff128 ()) || f4 (-__builtin_inff128 ()) || f4 (-42.0f128) || f4 (-0.0f128) || f4 (0.0f128))
+                                             ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f4 (__builtin_inff128 ()) || f4 (-__builtin_inff128 ()) || f4 (-42.0f128) || f4 (-0.0f128) || f4 (0.0f128))
+                                                                           ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f4 (__builtin_inff128 ()) || f4 (-__builtin_inff128 ()) || f4 (-42.0f128) || f4 (-0.0f128) || f4 (0.0f128))
+                                                                                            ^
+
+"./torture/builtin-issignaling-1.c", line 133: warning: the std::float128_t type is not supported; std::float64_t will be used instead
+        || f4 (__builtin_inff128 ()) || f4 (-__builtin_inff128 ()) || f4 (-42.0f128) || f4 (-0.0f128) || f4 (0.0f128))
+                                                                                                            ^
+
+"./torture/builtin-issignaling-1.c", line 135: warning: function "__builtin_nansf128" declared implicitly
+    w = __builtin_nansf128 ("");
+        ^
+
+5 errors detected in the compilation of "Test_name.c".

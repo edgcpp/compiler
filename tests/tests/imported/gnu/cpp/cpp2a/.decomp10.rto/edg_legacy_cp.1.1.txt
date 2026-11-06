@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
+"Test_name.c", line 8: warning: variable templates are a C++14 feature
+  constexpr bool is_same = false;	// { dg-warning "variable template" "" { target c++11_down } }
+                         ^
+
+"Test_name.c", line 16: warning: structured bindings are a C++17 feature
+      auto [v, r] = t; // { dg-warning "structured bindings" "" { target c++14_down } }
+           ^
+
+"Test_name.c", line 17: warning: capturing structured bindings is a C++20 feature
+      (void)[v, r] {   // { dg-warning "captured structured" "" { target c++17_down } }
+             ^
+
+"Test_name.c", line 17: warning: capturing structured bindings is a C++20 feature
+      (void)[v, r] {   // { dg-warning "captured structured" "" { target c++17_down } }
+                ^
+
+"Test_name.c", line 18: warning: variable "x" was declared but never referenced
+          decltype(v) x;
+                      ^
+

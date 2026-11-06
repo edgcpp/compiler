@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --c++03 --exceptions Test_name.c
+"Test_name.c", line 6: warning: unknown attribute "vector_size"
+  typedef int V4i __attribute__((vector_size(16)));
+                                 ^
+
+"Test_name.c", line 8: error: incomplete type "void" is not allowed
+  void test_vec_step(vector short arg1) {
+       ^
+
+"Test_name.c", line 8: error: identifier "vector" is undefined
+  void test_vec_step(vector short arg1) {
+                     ^
+
+"Test_name.c", line 8: error: expected a ")"
+  void test_vec_step(vector short arg1) {
+                            ^
+
+"Test_name.c", line 8: error: expected a ";"
+  void test_vec_step(vector short arg1) {
+                                        ^
+
+"Test_name.c", line 29: warning: parsing restarts here after previous syntax error
+    int res7[vec_step(vus) == 8 ? 1 : -1];
+                                         ^
+
+"Test_name.c", line 30: error: function call is not allowed in a constant expression
+    int res8[vec_step(vp) == 8 ? 1 : -1];
+             ^
+
+"Test_name.c", line 30: error: identifier "vp" is undefined
+    int res8[vec_step(vp) == 8 ? 1 : -1];
+                      ^
+
+"Test_name.c", line 31: error: function call is not allowed in a constant expression
+    int res9[vec_step(vbi) == 4 ? 1 : -1];
+             ^
+
+"Test_name.c", line 31: error: identifier "vbi" is undefined
+    int res9[vec_step(vbi) == 4 ? 1 : -1];
+                      ^
+
+"Test_name.c", line 32: error: function call is not allowed in a constant expression
+    int res10[vec_step(vi) == 4 ? 1 : -1];
+              ^
+
+"Test_name.c", line 32: error: identifier "vi" is undefined
+    int res10[vec_step(vi) == 4 ? 1 : -1];
+                       ^
+
+"Test_name.c", line 33: error: function call is not allowed in a constant expression
+    int res11[vec_step(vui) == 4 ? 1 : -1];
+              ^
+
+"Test_name.c", line 33: error: identifier "vui" is undefined
+    int res11[vec_step(vui) == 4 ? 1 : -1];
+                       ^
+
+"Test_name.c", line 34: error: function call is not allowed in a constant expression
+    int res12[vec_step(vf) == 4 ? 1 : -1];
+              ^
+
+"Test_name.c", line 34: error: identifier "vf" is undefined
+    int res12[vec_step(vf) == 4 ? 1 : -1];
+                       ^
+
+"Test_name.c", line 35: error: function call is not allowed in a constant expression
+    int res13[vec_step(*pvi) == 4 ? 1 : -1];
+              ^
+
+"Test_name.c", line 35: error: identifier "pvi" is undefined
+    int res13[vec_step(*pvi) == 4 ? 1 : -1];
+                        ^
+
+"Test_name.c", line 35: error: this operator is not allowed in an integral constant expression
+    int res13[vec_step(*pvi) == 4 ? 1 : -1];
+                       ^
+
+"Test_name.c", line 36: error: expected a declaration
+  }
+  ^
+
+"Test_name.c", line 86: warning: parsing restarts here after previous syntax error
+  };
+   ^
+
+18 errors detected in the compilation of "Test_name.c".
