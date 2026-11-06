@@ -190,6 +190,18 @@ class Normalizer:
             'time_of_compilation:     IL BUILD TIME'
           ),
         )
+      # The predefined __DATE__ and __TIME__ macros appear as macro text in
+      # IL displays of configurations that keep predefined macros.
+      self.replacements.extend([
+        (
+          r'#define __DATE__ \\"[A-Z][a-z]{2} [ \d]\d \d{4}\\"',
+          r'#define __DATE__ \"Mmm DD YYYY\"'
+        ),
+        (
+          r'#define __TIME__ \\"\d\d:\d\d:\d\d\\"',
+          r'#define __TIME__ \"HH:MM:SS\"'
+        )
+      ])
 
     replacement_groups = [f"({r})" for r, _ in self.replacements]
     self.normalization_regex = re.compile(f"{'|'.join(replacement_groups)}")
