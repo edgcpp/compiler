@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=2 --c++26 --clear_flag=constexpr_exceptions Test_name.c
+"Test_name.c", line 19: error: expression must have a constant value
+  static_assert(f(-3) == 3);
+                ^
+"Test_name.c", line 13: note: expression cannot be interpreted
+      if (n < 0) throw n;
+                 ^
+
+"Test_name.c", line 20: error: identifier "__cpp_constexpr_exceptions" is undefined
+  static_assert(__cpp_constexpr_exceptions == 202411L);
+                ^
+
+2 errors detected in the compilation of "Test_name.c".

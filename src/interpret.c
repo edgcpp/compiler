@@ -77,6 +77,68 @@ certain large value, the interpretation is deemed too expensive.  Deeply nested
 recursion is also limited.
 
 
+Control Transfers and Exceptions
+--------------------------------
+A break, continue, or return statement, or a thrown exception, transfers
+control from the work item that initiates it to an enclosing one.  Such a
+transfer is recorded in the interpreter state while it is pending (see
+an_interpreter_state::transfer and a_control_transfer_kind).  run_pushed_work
+then pops the intervening work items without interpreting them any further,
+except for those that have cleanup to perform (e.g., a block whose local
+objects must be destroyed), and the target of the transfer (e.g., a loop, a
+call, or a try-block with a matching handler) completes it.  A failure of the
+interpretation (an_interpreter_state::failed) is different: The interpreted
+code cannot recover from it, and no transfer is pending after it.
+
+Exceptions can be thrown during constant evaluation if
+constexpr_exceptions_enabled is TRUE.  Their implementation involves the
+following:
+
+  - Exception objects.  A throw-expression creates an a_constexpr_exception on
+    the list of exceptions of the interpreter state (see create_exception),
+    initializes the exception object (which is stored in a block of its own),
+    and then starts the throw (see start_throw), which makes a ctk_throw
+    transfer pending.  The exception exists until it is no longer being thrown
+    and no handler for it is active (see the counts in a_constexpr_exception);
+    its object is then destroyed (see release_exception_if_unused).
+
+  - Stack unwinding.  The destructions of the objects whose lifetime ends with
+    a scope or a full-expression are recorded in a_constexpr_destruction
+    entries, which are performed by iwk_destructions work items when the scope
+    or full-expression is exited, including when an exception is thrown.  The
+    pending transfer is set aside while the destructors run; a destructor that
+    exits by throwing an exception during the unwinding for another one calls
+    std::terminate (see replace_deferred_transfer), which is a failure.  The
+    subobjects of an object under construction are registered in the same way
+    as they are initialized (see register_partial_destruction), so that they
+    are destroyed if the initialization exits by throwing an exception (see
+    end_partial_construction).
+
+  - Handlers.  When a ctk_throw transfer reaches the work item of a try-block
+    (see process_stmt_work), or of a constructor or destructor whose body is a
+    function-try-block (see process_ctor_work and process_dtor_work),
+    find_matching_handler selects the handler (if any) that catches the
+    exception (see exception_matches_handler in types.c).  enter_handler then
+    activates the handler: The exception is pushed on the stack of handled
+    exceptions (see an_interpreter_state::handled_exceptions, whose entries of
+    type a_handled_exception are part of the work items of the try-blocks), and
+    the compound statement of the handler is pushed, which initializes the
+    handler parameter (if any) when it starts (see init_handler_parameter).  A
+    rethrow ("throw;") throws the exception of the top entry of that stack
+    again.  When the compound statement completes, leave_handler deactivates
+    the handler, which releases the exception if it is no longer used.
+
+  - Escaping exceptions.  An exception that escapes from a non-throwing
+    function calls std::terminate (see check_exception_escape), and one that
+    escapes from the outermost evaluation is not caught (see run_pushed_work).
+    Both are failures.
+
+  - Ignored evaluations.  When the failure of an evaluation is ignored (that of
+    an assumption expression or of the operand of __builtin_constant_p),
+    save_exception_state and restore_exception_state undo the effects of the
+    evaluation on the exceptions.
+
+
 Storage
 -------
 The interpreter manages several pools of storage:
@@ -385,7 +447,15 @@ typedef struct a_constexpr_destruction {
 		*next;	/* Next destruction to perform, or NULL if this is the
 			   last destruction on the list. */
   a_dynamic_init_ptr
-		dip;	/* An entry describing the destructor to execute. */
+		dip;	/* The dynamic initialization of the object, whose
+			   destructor field is the destructor to execute.  It
+			   also identifies the destruction on the run-time
+			   destruction list of an enclosing full-expression
+			   (see interpret_constexpr_call).  NULL for the
+			   destruction of a subobject of an object under
+			   construction (see register_partial_destruction),
+			   whose destructor is then determined by type (see
+			   nontrivial_destructor_for_type). */
   a_type	*type;	/* The type of the object to destroy.  It can be an
 			   array type. */
   a_byte	*sub_obj;
@@ -1136,13 +1206,13 @@ typedef struct a_call_frame {
 
 
 /*
-Kinds of control transfers.  The interpretation of a statement can end
-abnormally because of a break, continue, or return statement, and the
-interpretation of a statement or an expression can end abnormally because an
-exception is thrown.  Such a transfer is recorded in the interpreter state
-(see an_interpreter_state::transfer) while it is pending: The work items
-between the origin of the transfer and its target are then visited only to
-perform their cleanup, and the target completes the transfer.
+Kinds of control transfers.  Instead of completing normally, the interpretation
+of a statement can transfer control elsewhere because of a break, continue, or
+return statement, and the interpretation of a statement or an expression can do
+so because an exception is thrown.  Such a transfer is recorded in the
+interpreter state (see an_interpreter_state::transfer) while it is pending:
+The work items between the origin of the transfer and its target are then
+visited only to perform their cleanup, and the target completes the transfer.
 */
 typedef enum a_control_transfer_kind {
   ctk_none,		/* No control transfer is pending. */
@@ -1158,13 +1228,81 @@ typedef enum a_control_transfer_kind {
 
 
 /*
+An exception object created by the constant evaluation of a throw-expression.
+These are maintained on a doubly-linked list in the interpreter state.  The
+object itself is stored in a block obtained like a dynamic allocation, but that
+block is not on the list of dynamic allocations (so it cannot be deallocated by
+a delete-expression, and it is not reported as a leftover allocation).
+*/
+typedef struct a_constexpr_exception *a_constexpr_exception_ptr;
+typedef struct a_constexpr_exception {
+  a_constexpr_exception_ptr
+		next, prev;
+			/* Next and previous exception on the list. */
+  a_constexpr_allocation_ptr
+		allocation;
+			/* The block holding the exception object. */
+  a_type_ptr	type;	/* The type of the exception object (without
+			   top-level cv-qualifiers). */
+  a_constexpr_address
+		address;
+			/* The address of the exception object (a complete
+			   object). */
+  a_routine_ptr	destructor;
+			/* The destructor that destroys the exception object,
+			   or NULL if none is needed. */
+  a_source_position
+		position;
+			/* The position of the throw-expression that created
+			   the exception. */
+  unsigned int	handler_count;
+			/* The number of handlers that are active for the
+			   exception (i.e., that caught it and have not yet
+			   exited). */
+  unsigned int	throw_count;
+			/* The number of throws (or rethrows) of the exception
+			   that are in progress, i.e., that a handler has not
+			   yet caught (by completing the initialization of its
+			   parameter).  (The pending control transfer for a
+			   throw is set aside while destructors run during the
+			   unwinding, so it cannot be used to determine this.
+			   The count can exceed one because such a destructor
+			   can rethrow the exception that is being
+			   rethrown.) */
+  a_boolean	is_initialized;
+			/* TRUE once the initialization of the exception object
+			   has completed (so that it must be destroyed
+			   eventually). */
+} a_constexpr_exception;
+
+
+/*
 Description of a pending control transfer.
 */
 typedef struct a_control_transfer {
   a_control_transfer_kind
 		kind;	/* The kind of transfer (ctk_none if no transfer is
 			   pending). */
+  a_constexpr_exception_ptr
+		exception;
+			/* For ctk_throw, the exception being thrown. */
 } a_control_transfer;
+
+
+/*
+An entry on the stack of exceptions that are being handled, i.e., for which a
+handler is active (see an_interpreter_state::handled_exceptions).  The entry is
+embedded in the work item of the try-block whose handler is active.
+*/
+typedef struct a_handled_exception *a_handled_exception_ptr;
+typedef struct a_handled_exception {
+  a_constexpr_exception_ptr
+		exception;
+			/* The exception. */
+  a_handled_exception_ptr
+		prev;	/* The entry for the exception that was handled when
+			   the handler became active, or NULL. */
+} a_handled_exception;
 
 
 /*
@@ -1177,7 +1315,9 @@ enum an_interpreter_work_kind {
   iwk_ctor,		/* Interpret a constructor dynamic-init. */
   iwk_dtor,		/* Interpret a destructor call. */
   iwk_stmt,		/* Interpret a statement. */
-  iwk_block		/* Interpret a block statement and its scope. */
+  iwk_block,		/* Interpret a block statement and its scope. */
+  iwk_destructions	/* Perform the destructions registered in a storage
+			   stack state. */
 };
 
 
@@ -1189,7 +1329,9 @@ continuations that run when a pushed child has completed.
 enum an_interpreter_work_phase {
   iwp_start,		/* First visit: Set up and/or push children. */
   iwp_1st_resume,	/* First continuation. */
-  iwp_2nd_resume	/* Second continuation. */
+  iwp_2nd_resume,	/* Second continuation. */
+  iwp_3rd_resume,	/* Third continuation. */
+  iwp_4th_resume	/* Fourth continuation. */
 };
 
 
@@ -1266,6 +1408,12 @@ typedef struct an_expr_work {
   a_boolean	temp_lifetime;
 			/* TRUE if that temporary's lifetime is being tracked
 			   for a later destruction. */
+  a_storage_stack_state
+		*temp_extension_state;
+			/* If that temporary is lifetime-extended, the storage
+			   stack state in which its destruction is registered
+			   once it has been initialized (see
+			   register_extended_destruction); otherwise NULL. */
   a_saved_value_category
 		saved_result_opnd;
 			/* The operand that produces the result of the
@@ -1275,6 +1423,10 @@ typedef struct an_expr_work {
 			   the second operand of a comma-like operator --
 			   along with the value category to restore once it
 			   has been interpreted. */
+  a_constexpr_exception_ptr
+		exception;
+			/* For a throw-expression, the exception whose object
+			   is being initialized. */
 } an_expr_work;
 
 
@@ -1339,12 +1491,30 @@ typedef struct an_init_work {
   a_byte	*subobject;
 			/* The subobject to mark as initialized once the
 			   pending mem-initializer completes, or NULL. */
+  a_dynamic_init_ptr
+		sub_dip;
+  a_type_ptr	sub_type;
+			/* The initialization and the type of that
+			   subobject. */
   unsigned long	up_front_cost;
 			/* The cost charged before the call. */
   an_alloc_seq_number
 		alloc_seq_number;
 			/* Allocation sequence number of the argument
 			   storage. */
+  a_constexpr_destruction
+		*saved_destructions;
+			/* When exceptions can be thrown during constant
+			   evaluation, the destructions of the subobjects that
+			   a constructor has constructed are registered (so
+			   that they are destroyed if the constructor exits by
+			   throwing an exception) ahead of this entry of the
+			   list of destructions. */
+  a_handled_exception
+		handled;
+			/* For a constructor whose body is a
+			   function-try-block, the same as the corresponding
+			   field of a_stmt_work. */
 } an_init_work;
 
 
@@ -1368,6 +1538,32 @@ typedef struct a_dtor_work {
 			/* Allocation sequence number of that storage. */
   a_boolean	nonvirtual;
 			/* TRUE if no virtual dispatch is to be performed. */
+  a_constructor_init_ptr
+		next_dtor_init;
+			/* The entry describing the subobject destructions to
+			   perform after those of the current entry. */
+  a_dynamic_init_ptr
+		sub_dip;
+			/* The destruction of the current entry. */
+  a_byte	*next_sub_bytes;
+			/* The next subobject of the current entry to
+			   destroy. */
+  a_byte_count	elem_size;
+			/* The size of the array elements of the current entry
+			   (0 if it is not an array). */
+  int		n_subobjects_left;
+			/* The number of subobjects of the current entry that
+			   remain to be destroyed. */
+  a_control_transfer
+		deferred_transfer;
+			/* The control transfer that exited the destructor
+			   body, if any, which is set aside while the
+			   subobjects are destroyed. */
+  a_handled_exception
+		handled;
+			/* For a destructor whose body is a function-try-block,
+			   the same as the corresponding field of
+			   a_stmt_work. */
 } a_dtor_work;
 
 
@@ -1413,6 +1609,11 @@ typedef struct a_stmt_work {
 			   restored when the statement completes. */
   a_boolean	saved_consteval;
 			/* The value to restore in that case. */
+  a_handled_exception
+		handled;
+			/* For a try-block whose handler is active, the entry
+			   for the caught exception on the stack of handled
+			   exceptions. */
 } a_stmt_work;
 
 
@@ -1434,6 +1635,33 @@ typedef struct a_block_work {
 			/* TRUE if the block allocated local storage that
 			   saved_stack must reclaim. */
 } a_block_work;
+
+
+/*
+The state that the handler for an iwk_destructions work item carries from one
+visit to the next.
+*/
+typedef struct a_destructions_work {
+  a_constexpr_destruction
+		*curr_destruction;
+			/* The destruction being performed. */
+  a_routine_ptr	dtor;	/* The destructor for that destruction. */
+  a_byte	*next_obj;
+			/* The next object of the current destruction to
+			   destroy. */
+  a_byte_count	elem_size;
+			/* The size of the array elements of the current
+			   destruction (0 if it is not an array). */
+  int		n_objects_left;
+			/* The number of objects of the current destruction
+			   that remain to be destroyed. */
+  a_control_transfer
+		deferred_transfer;
+			/* The control transfer that was pending when the
+			   destructions started or that a destructor exited by
+			   since, which is set aside while the destructors
+			   run. */
+} a_destructions_work;
 
 
 /*
@@ -1473,8 +1701,10 @@ struct an_interpreter_work_item {
 			/* Which visit comes next. */
   void		*il_entry;
 			/* The IL entry being interpreted: an expression node,
-			   a statement, a dynamic initialization, or (for
-			   iwk_dtor) the destructor being called. */
+			   a statement, a dynamic initialization, (for
+			   iwk_dtor) the destructor being called, or (for
+			   iwk_destructions) the first a_constexpr_destruction
+			   to perform. */
   a_byte	*result_storage;
 			/* Interpreter storage that receives the result, or
 			   for iwk_dtor the object being destroyed.  Not used
@@ -1505,6 +1735,8 @@ struct an_interpreter_work_item {
 		stmt;
     a_block_work
 		block;
+    a_destructions_work
+		destructions;
   } variant;
 			/* The payload of the item's kind. */
 };
@@ -2022,6 +2254,21 @@ typedef struct an_interpreter_state {
 		dyn_allocations;
 			/* Pointer to a doubly-linked list of allocations
 			   performed during the evaluation. */
+  a_constexpr_exception_ptr
+		exceptions;
+			/* Pointer to a doubly-linked list of the exception
+			   objects that exist, most recently created first. */
+  a_handled_exception_ptr
+		handled_exceptions;
+			/* The stack of exceptions for which a handler is
+			   active, innermost first.  The top entry is the
+			   exception rethrown by "throw;". */
+  a_handler_ptr	entering_handler;
+			/* While the block of a handler is pushed for an
+			   exception that it caught (the exception of the top
+			   entry of handled_exceptions), the handler; NULL
+			   otherwise.  The block initializes the handler
+			   parameter (if any) when it starts. */
 } an_interpreter_state;
 
 
@@ -2037,6 +2284,13 @@ initiating a control transfer.
 */
 #define work_completed_normally(ips)                                         \
   (!(ips)->failed && !transfer_pending(ips))
+
+/*
+Return TRUE if the given interpreter state has dynamic allocations that have
+not been freed or exception objects that have not been destroyed.
+*/
+#define has_leftover_allocations(ips)                                        \
+  ((ips)->dyn_allocations != NULL || (ips)->exceptions != NULL)
 
 
 STATIC_THREAD unsigned long
@@ -2421,7 +2675,8 @@ a_statement_ptr function_body_block(a_scope_ptr  routine_scope)
 /*
 Return the compound statement that makes up the body of the routine whose
 scope is routine_scope.  For a function-try-block, that is the compound
-statement of the try-block: The interpreter does not handle the handlers.
+statement of the try-block (callers that need the handlers interpret the
+try-block statement instead).
 */
 {
   a_statement_ptr  block_stmt = routine_scope->assoc_block;
@@ -3060,8 +3315,36 @@ result of calls to std::is_constant_evaluated().
   ips->switch_entry = NULL;
   ips->reattempt_state = {};
   ips->dyn_allocations = NULL;
+  ips->exceptions = NULL;
+  ips->handled_exceptions = NULL;
+  ips->entering_handler = NULL;
   n_active_interpreter_states += 1;
 }  /* init_interpreter_state */
+
+
+static void free_exception(an_interpreter_state       *ips,
+                           a_constexpr_exception_ptr  exc)
+/*
+Remove the given exception from the list of exceptions of *ips and release it,
+along with the storage of the exception object (which has already been
+destroyed, if needed).
+*/
+{
+  if (exc->prev == NULL) {
+    ips->exceptions = exc->next;
+  } else {
+    exc->prev->next = exc->next;
+  }  /* if */
+  if (exc->next != NULL) {
+    exc->next->prev = exc->prev;
+  }  /* if */
+  if (exc->allocation != NULL) {
+    remove_from_live_set(&ips->live_set, exc->allocation->alloc_seq_number);
+    free_for_interpreter((void*)exc->allocation,
+                         (sizeof_t)exc->allocation->total_size);
+  }  /* if */
+  free_for_interpreter((void*)exc, (sizeof_t)sizeof(*exc));
+}  /* free_exception */
 
 
 static void release_interpreter_state(an_interpreter_state  *ips)
@@ -3077,6 +3360,11 @@ Release the storage allocated for the given interpreter state.
     }  /* while */
     ips->work_stack = NULL;
   }  /* if */
+  while (ips->exceptions != NULL) {
+    /* Interpretation was abandoned while exceptions existed (or it leaked an
+       exception object, which has been diagnosed). */
+    free_exception(ips, ips->exceptions);
+  }  /* while */
   release_constexpr_stack(&ips->storage_stack);
   release_data_map_table(&ips->map);
   ips->map.table = NULL;
@@ -3417,7 +3705,6 @@ if a destruction fails or throws.
 */
 #define restore_storage_stack(ips, state, result_flag)                       \
 {                                                                            \
-  a_byte     *curr_large_blocks;                                             \
   a_boolean  unwind_storage = (result_flag) ||                               \
                               (!(ips)->failed && transfer_pending(ips));     \
   if ((ips)->storage_stack.destructions != NULL && unwind_storage) {         \
@@ -3426,26 +3713,33 @@ if a destruction fails or throws.
       unwind_storage = transfer_pending(ips);                                \
     }  /* if */                                                              \
   }  /* if */                                                                \
-  if (unwind_storage) {                                                      \
-    curr_large_blocks = (ips)->storage_stack.large_blocks;                   \
-    remove_from_live_set(&(ips)->live_set,                                   \
-                         (ips)->storage_stack.alloc_seq());                  \
-    (ips)->storage_stack = (state);                                          \
-    if (curr_large_blocks != NULL &&                                         \
-        curr_large_blocks != (state).large_blocks) {                         \
-      /* Delete large blocks no longer in the live set. */                   \
-      do {                                                                   \
-        a_byte  *large_block = curr_large_blocks;                            \
-        an_alloc_seq_number  seq = ((a_large_block_header*)large_block)      \
-                                                         ->alloc_seq_number; \
-        if (in_live_set(&(ips)->live_set, seq)) break;                       \
-        curr_large_blocks = ((a_large_block_header*)large_block)             \
-                                                        ->prev_large_block;  \
-        free_general(large_block,                                            \
-                     ((a_large_block_header*)large_block)->block_size);      \
-      } while (curr_large_blocks != NULL);                                   \
-      (ips)->storage_stack.large_blocks = curr_large_blocks;                 \
-    }  /* if */                                                              \
+  if (unwind_storage) rewind_storage_stack((ips), (state));                  \
+}
+
+/*
+Restore the storage stack state saved in state, discarding everything that was
+allocated since it was saved.  The destructions registered since then have
+already been performed.
+*/
+#define rewind_storage_stack(ips, state)                                     \
+{                                                                            \
+  a_byte  *curr_large_blocks = (ips)->storage_stack.large_blocks;            \
+  remove_from_live_set(&(ips)->live_set, (ips)->storage_stack.alloc_seq());  \
+  (ips)->storage_stack = (state);                                            \
+  if (curr_large_blocks != NULL &&                                           \
+      curr_large_blocks != (state).large_blocks) {                           \
+    /* Delete large blocks no longer in the live set. */                     \
+    do {                                                                     \
+      a_byte  *large_block = curr_large_blocks;                              \
+      an_alloc_seq_number  seq = ((a_large_block_header*)large_block)        \
+                                                       ->alloc_seq_number;   \
+      if (in_live_set(&(ips)->live_set, seq)) break;                         \
+      curr_large_blocks = ((a_large_block_header*)large_block)               \
+                                                      ->prev_large_block;    \
+      free_general(large_block,                                              \
+                   ((a_large_block_header*)large_block)->block_size);        \
+    } while (curr_large_blocks != NULL);                                     \
+    (ips)->storage_stack.large_blocks = curr_large_blocks;                   \
   }  /* if */                                                                \
 }
 
@@ -6078,6 +6372,52 @@ static a_boolean do_constexpr_dynamic_init(
                               a_constexpr_address const  *implied_src = NULL);
 
 
+static a_boolean replace_deferred_transfer(an_interpreter_state  *ips,
+                                           a_control_transfer    *deferred)
+/*
+Work that was interpreted while the control transfer *deferred (which can be
+ctk_none) was set aside has just completed without failing.  If that work
+exited by a control transfer of its own (i.e., by throwing an exception: a
+destructor, for example, cannot be exited by a break, continue, or return
+statement), the new transfer replaces *deferred -- unless *deferred is itself a
+throw: An exception that escapes from a destructor during stack unwinding
+causes std::terminate to be called, which is reported as a failure of the
+interpretation.  Return FALSE in that case.  ips->transfer is cleared.
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (transfer_pending(ips)) {
+    if (deferred->kind == ctk_throw && ips->transfer.kind == ctk_throw) {
+      info_with_pos(ec_constexpr_exception_during_unwinding,
+                    &ips->transfer.exception->position, ips);
+      deferred->kind = ctk_none;
+      result = FALSE;
+    } else {
+      *deferred = ips->transfer;
+    }  /* if */
+    ips->transfer.kind = ctk_none;
+  }  /* if */
+  return result;
+}  /* replace_deferred_transfer */
+
+
+static INLINE void push_destructions_work(
+                                        an_interpreter_state     *ips,
+                                        a_constexpr_destruction  *dlist)
+/*
+Push a work item that performs the destructions on the list dlist.  The item is
+visited even while a control transfer is pending, since the destructions are
+then part of the unwinding for that transfer.
+*/
+{
+  push_work(ips, iwk_destructions, dlist)->needs_cleanup = TRUE;
+}  /* push_destructions_work */
+
+
+static a_boolean run_pushed_work(an_interpreter_state      *ips,
+                                 an_interpreter_work_item  *base);
+
 static a_boolean perform_destructions(an_interpreter_state  *ips)
 /*
 Perform the destructions for the current storage stack, and return TRUE if
@@ -6088,40 +6428,10 @@ A control transfer that is pending when this is called is preserved (see
 run_pushed_work).
 */
 {
-  a_boolean  result = TRUE;
-  a_constexpr_destruction
-             *dlist = ips->storage_stack.destructions;
+  an_interpreter_work_item  *base = ips->work_stack->top;
 
-  do {
-    int        n = 1;
-    a_byte     *sub_obj = dlist->sub_obj, *complete_obj = dlist->complete_obj;
-    a_routine  *dtor = dlist->dip->destructor;
-    a_type     *tp = dlist->type;
-    a_source_position
-               *pos = dlist->pos;
-    a_byte_count
-               size = 0;
-    a_boolean  nonvirtual = FALSE;
-    if (type_is(tp, tk_array)) {
-      n = (int)num_array_elements(tp);
-      tp = skip_typerefs(underlying_array_element_type(tp));
-      size = value_bytes_for_type(ips, tp, &result); 
-      check_assertion(result);
-      nonvirtual = TRUE;
-    }  /* if */
-    /* The elements of an array are destroyed in reverse order. */
-    for (int k = n; k > 0; --k) {
-      if (!do_constexpr_dtor(ips, dtor, pos,
-                             sub_obj + (a_byte_count)(k-1)*size,
-                             complete_obj, nonvirtual)) {
-        result = FALSE;
-        if (!transfer_pending(ips)) goto done;
-      }  /* if */
-    }  /* for */
-    dlist = dlist->next;
-  } while (dlist != NULL);
-done:
-  return result;
+  push_destructions_work(ips, ips->storage_stack.destructions);
+  return run_pushed_work(ips, base);
 }  /* perform_destructions */
 
 
@@ -6307,18 +6617,171 @@ move, or NULL.
 }  /* push_dyn_init_work */
 
 
-static a_boolean routine_body_completed(an_interpreter_state  *ips)
+static a_routine_ptr nontrivial_destructor_for_type(a_type_ptr  tp)
 /*
-The top-level block of a routine that was pushed as a work item has just been
-interpreted.  Complete a pending return statement, and return TRUE if the
-block completed normally or through such a return statement.
+Return the destructor that destroys an object of type tp (or, if tp is an array
+type, its elements) if that destructor is nontrivial, and NULL otherwise.
+*/
+{
+  a_routine_ptr  dtor = NULL;
+
+  tp = skip_typerefs(tp);
+  if (type_is(tp, tk_array)) {
+    tp = skip_typerefs(underlying_array_element_type(tp));
+  }  /* if */
+  if (is_immediate_class_type(tp)) {
+    a_class_symbol_supplement_ptr  cssp = class_symbol_supp(symbol_for(tp));
+    if (cssp != NULL && has_nontrivial_destructor(cssp)) {
+      dtor = cssp->destructor->variant.routine.ptr;
+    }  /* if */
+  }  /* if */
+  return dtor;
+}  /* nontrivial_destructor_for_type */
+
+
+static a_boolean partial_destruction_needed(a_type_ptr  tp)
+/*
+Return TRUE if the destruction of a subobject of type tp (possibly an array
+type) that has been initialized as part of the initialization of an enclosing
+object must be registered (see register_partial_destruction), i.e., if
+exceptions can be thrown during constant evaluation and the subobject has a
+nontrivial destructor.
+*/
+{
+  return constexpr_exceptions_enabled &&
+         nontrivial_destructor_for_type(tp) != NULL;
+}  /* partial_destruction_needed */
+
+
+static void process_destructions_work(an_interpreter_state      *ips,
+                                      an_interpreter_work_item  *item)
+/*
+Perform the next visit to the given iwk_destructions work item, which performs
+the destructions on the list that starts with item->il_entry, pushing one
+destructor call per visit.  A control transfer that is pending when the
+destructions start (because they are part of the unwinding for it) is set aside
+while the destructors run, and is reinstated when they have completed.  If a
+destructor exits by throwing an exception, the remaining destructions are still
+performed, and the exception replaces the transfer set aside (see
+replace_deferred_transfer).  If interpretation fails, the remaining
+destructions are abandoned.
+*/
+{
+  a_destructions_work      *dw = &item->variant.destructions;
+  a_constexpr_destruction  *dlist;
+  a_boolean                result = TRUE;
+  a_boolean                pop_when_done = TRUE;
+
+  if (item->phase == iwp_start) {
+    dw->deferred_transfer = ips->transfer;
+    ips->transfer.kind = ctk_none;
+    dw->curr_destruction = NULL;
+    dw->n_objects_left = 0;
+    item->phase = iwp_1st_resume;
+  } else if (ips->failed ||
+             !replace_deferred_transfer(ips, &dw->deferred_transfer)) {
+    result = FALSE;
+    goto done;
+  }  /* if */
+  while (dw->n_objects_left == 0) {
+    a_type_ptr  tp;
+    dlist = dw->curr_destruction == NULL
+                ? (a_constexpr_destruction*)item->il_entry
+                : dw->curr_destruction->next;
+    if (dlist == NULL) {
+      /* All the destructions have been performed. */
+      ips->transfer = dw->deferred_transfer;
+      result = !transfer_pending(ips);
+      goto done;
+    }  /* if */
+    dw->curr_destruction = dlist;
+    dw->dtor = dlist->dip != NULL
+                 ? dlist->dip->destructor
+                 : nontrivial_destructor_for_type(dlist->type);
+    dw->next_obj = dlist->sub_obj;
+    dw->n_objects_left = 1;
+    dw->elem_size = 0;
+    tp = dlist->type;
+    if (type_is(tp, tk_array)) {
+      /* The elements of an array are destroyed in reverse order. */
+      dw->n_objects_left = (int)num_array_elements(tp);
+      tp = skip_typerefs(underlying_array_element_type(tp));
+      dw->elem_size = value_bytes_for_type(ips, tp, &result);
+      check_assertion(result);
+      if (dw->n_objects_left > 0) {
+        dw->next_obj += (a_byte_count)(dw->n_objects_left-1)*dw->elem_size;
+      }  /* if */
+    }  /* if */
+  }  /* while */
+  dlist = dw->curr_destruction;
+  /* The type of a registered object is its dynamic type, so no virtual
+     dispatch is needed (and none is possible for a base class subobject of an
+     object under construction). */
+  push_dtor_work(ips, dw->dtor, dlist->pos, dw->next_obj, dlist->complete_obj,
+                 /*nonvirtual=*/TRUE);
+  dw->n_objects_left -= 1;
+  if (dw->n_objects_left > 0) dw->next_obj -= dw->elem_size;
+  pop_when_done = FALSE;
+done:
+  end_work_visit(ips, result, pop_when_done);
+}  /* process_destructions_work */
+
+
+static void check_exception_escape(an_interpreter_state  *ips,
+                                   a_routine_ptr         callee)
+/*
+The interpretation of a call to callee is completing.  If it exits by throwing
+an exception although callee is non-throwing, std::terminate is called (N5054
+[except.handle]): Report that, and end the propagation of the exception, so
+that the interpretation fails.
+*/
+{
+  if (ips->transfer.kind == ctk_throw && !ips->failed &&
+      is_non_throwing_routine(callee)) {
+    info_with_pos_sym(ec_constexpr_exception_escapes_nonthrowing,
+                      &ips->transfer.exception->position, symbol_for(callee),
+                      ips);
+    ips->transfer.kind = ctk_none;
+    ips->failed = TRUE;
+  }  /* if */
+}  /* check_exception_escape */
+
+
+static a_boolean routine_body_completed(an_interpreter_state  *ips,
+                                        a_routine_ptr         callee)
+/*
+The body of callee, which was pushed as a work item, has just been interpreted.
+Complete a pending return statement, and return TRUE if the body completed
+normally or through such a return statement.  An exception that escapes from a
+non-throwing callee is reported (see check_exception_escape).
 */
 {
   if (ips->transfer.kind == ctk_return) {
     ips->transfer.kind = ctk_none;
   }  /* if */
+  check_exception_escape(ips, callee);
   return work_completed_normally(ips);
 }  /* routine_body_completed */
+
+
+static INLINE void push_routine_body_work(an_interpreter_state  *ips,
+                                          a_scope_ptr           routine_scope)
+/*
+Push the work item for the body of the routine whose scope is routine_scope.
+If exceptions can be thrown during constant evaluation and the body is a
+function-try-block, that is the try-block itself, so that its handlers apply
+(for a constructor, the caller handles the handlers instead, since the
+mem-initializers are part of the try-block).
+*/
+{
+  a_statement_ptr  body = routine_scope->assoc_block;
+
+  if (body->kind == stmk_try_block && constexpr_exceptions_enabled) {
+    push_stmt_work(ips, body);
+  } else {
+    push_block_work(ips, function_body_block(routine_scope), routine_scope);
+  }  /* if */
+}  /* push_routine_body_work */
 
 
 static void process_expr_work(an_interpreter_state      *ips,
@@ -6368,6 +6831,9 @@ item itself stays valid across such pushes.
     case iwk_block:
       process_block_work(ips, item);
       break;
+    case iwk_destructions:
+      process_destructions_work(ips, item);
+      break;
     default_is_unexpected();
   }  /* switch */
 }  /* process_work_item */
@@ -6390,8 +6856,11 @@ the unwinding for that transfer) is set aside during the interpretation of the
 pushed items.  If they complete normally, it is reinstated, and TRUE is
 returned.  If they initiate a control transfer of their own that is not
 completed within them, FALSE is returned with that transfer pending, and it
-replaces the one set aside.  If they fail, FALSE is returned with no transfer
-pending.
+replaces the one set aside (see replace_deferred_transfer, which also covers
+the case of an exception that escapes during the unwinding for another
+exception).  If they fail, FALSE is returned with no transfer pending.  An
+exception that escapes from the outermost work (i.e., when base is the floor of
+the work stack) cannot be caught, which is a failure.
 */
 {
   a_work_stack        *stack = ips->work_stack;
@@ -6412,14 +6881,26 @@ pending.
       process_work_item(ips, item);
     }  /* if */
   }  /* while */
+  if (!ips->failed && ips->transfer.kind == ctk_throw &&
+      base == stack->floor) {
+    /* There is no enclosing work that could catch the exception. */
+    a_constexpr_exception_ptr  exc = ips->transfer.exception;
+    info_with_pos_type(ec_constexpr_uncaught_exception, &exc->position,
+                       exc->type, ips);
+    ips->failed = TRUE;
+  }  /* if */
   if (ips->failed) {
     ips->transfer.kind = ctk_none;
     result = FALSE;
-  } else if (!transfer_pending(ips)) {
-    ips->transfer = saved_transfer;
-    result = TRUE;
   } else {
-    result = FALSE;
+    result = !transfer_pending(ips);
+    if (replace_deferred_transfer(ips, &saved_transfer)) {
+      ips->transfer = saved_transfer;
+    } else {
+      result = FALSE;
+      /* An std::terminate failure is propagated through the caller's failure
+         path. */
+    }  /* if */
   }  /* if */
   ips->failed = saved_failed;
   return result;
@@ -6804,6 +7285,18 @@ ips->map, or a constructor frame provides *this.
 }  /* unknown_object_is_mapped */
 
 
+static a_boolean register_partial_destruction(
+                                           an_interpreter_state  *ips,
+                                           a_type_ptr            tp,
+                                           a_byte                *sub_obj,
+                                           a_byte                *complete_obj,
+                                           a_source_position     *pos);
+
+static a_boolean end_partial_construction(
+                                    an_interpreter_state     *ips,
+                                    a_constexpr_destruction  *saved_dlist,
+                                    a_boolean                result);
+
 static a_boolean extract_value_from_constant(
                                an_interpreter_state       *ips,
                                a_constant_ptr             con,
@@ -6820,6 +7313,8 @@ by implied_src.
   a_byte     *value = result_cap.address,
              *complete_object = result_cap.complete_object;
   a_boolean  result = TRUE;
+  a_constexpr_destruction
+             *saved_dlist = ips->storage_stack.destructions;
 
   if (con->implicit_cast) {
     if (con->is_reinterpret_cast &&
@@ -7280,7 +7775,9 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
           a_type_ptr           etp = tp->variant.array.element_type;
           a_constexpr_address  elem_dst = result_cap, implied_elem_src,
                                *p_implied_elem_src = NULL;
+          a_boolean            register_elems;
           etp = skip_typerefs(etp);
+          register_elems = partial_destruction_needed(etp);
           n_elems = tp->variant.array.variant.number_of_elements;
           elem_size = value_bytes_for_type(ips, etp, &result);
           if (!result) break;
@@ -7352,6 +7849,15 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
               }  /* if */
               elem_con = elem_con->next;
               mark_subobject_initialized(elem_dst.address, complete_object);
+              if (register_elems) {
+                a_targ_size_t  j;
+                for (j = 0; j<repeat && result; ++j) {
+                  result = register_partial_destruction(
+                                 ips, etp, elem_dst.address+j*elem_size,
+                                 complete_object, constant_pos(con, ips));
+                }  /* for */
+                if (!result) break;
+              }  /* if */
             }  /* if */
             k += repeat;
             elem_dst.address += repeat*elem_size;
@@ -7405,6 +7911,13 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
                                      complete_object);
             }  /* if */
             mark_subobject_initialized(sub_addr.address, complete_object);
+            if (partial_destruction_needed(bcp->type) &&
+                !register_partial_destruction(ips, bcp->type, sub_addr.address,
+                                              complete_object,
+                                              constant_pos(con, ips))) {
+              do_constexpr_fail(result);
+              break;
+            }  /* if */
             bcp = bcp->next;
           }  /* for */
           if (!result) break;
@@ -7484,6 +7997,12 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
                 }  /* if */
                 mark_subobject_initialized(dst_addr.address, complete_object);
                 elem_con = elem_con->next;
+                if (partial_destruction_needed(ftp) &&
+                    !register_partial_destruction(ips, ftp, dst_addr.address,
+                                                  complete_object,
+                                                  constant_pos(con, ips))) {
+                  do_constexpr_fail(result);
+                }  /* if */
               }  /* if */
               if (this_bytes != NULL) {
                 /* Unmap "this" (possibly restoring a previously active
@@ -7661,6 +8180,8 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
           a_byte_count         elem_size;
           a_constexpr_address  elem_addr = result_cap, implied_elem_src,
                                *p_implied_elem_src = NULL;
+          a_boolean            register_elems =
+                                             partial_destruction_needed(etp);
           n_elems = con->variant.init_repeat.count;
           elem_size = value_bytes_for_type(ips, etp, &result);
           if (!result) break;
@@ -7676,6 +8197,13 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
               break;
             }  /* if */
             mark_subobject_initialized(elem_addr.address, complete_object);
+            if (register_elems &&
+                !register_partial_destruction(ips, etp, elem_addr.address,
+                                              complete_object,
+                                              constant_pos(con, ips))) {
+              do_constexpr_fail(result);
+              break;
+            }  /* if */
             k  += 1;
             elem_addr.address += elem_size;
             if (implied_src != NULL) implied_elem_src.address += elem_size;
@@ -7700,6 +8228,9 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
       }
   }  /* switch */
 done:
+  if (constant_is(con, ck_aggregate) || constant_is(con, ck_init_repeat)) {
+    result = end_partial_construction(ips, saved_dlist, result);
+  }  /* if */
   return result;
 }  /* extract_value_from_constant */
 
@@ -8047,6 +8578,8 @@ accordingly.  Associate diagnostics with the given position.
   a_constexpr_address  *src_addr;
   a_byte_count         n_lvalue_bytes;
   a_type_ptr           tp = skip_typerefs(array_expr->type), elem_type;
+  a_constexpr_destruction
+                       *saved_dlist = ips->storage_stack.destructions;
 
   if (!array_expr->is_lvalue && !array_expr->is_xvalue) {
     /* The array to copy may be an rvalue temporary.  By setting the is_lvalue
@@ -8100,8 +8633,13 @@ accordingly.  Associate diagnostics with the given position.
       src_addr->variant.base_address = src_addr->address;
     }  /* if */
     a_constexpr_address  dst_addr = cap;
+    a_boolean            register_elems =
+                                       partial_destruction_needed(elem_type);
     for (k = 0; k<length; ++k) {
-      if (!do_constexpr_ctor(ips, &dip_copy, pos, dst_addr, src_addr)) {
+      if (!do_constexpr_ctor(ips, &dip_copy, pos, dst_addr, src_addr) ||
+          (register_elems &&
+           !register_partial_destruction(ips, elem_type, dst_addr.address,
+                                         dst_addr.complete_object, pos))) {
         do_constexpr_fail(result);
         goto done;
       } else {
@@ -8111,6 +8649,9 @@ accordingly.  Associate diagnostics with the given position.
     }  /* for */
   }  /* if */
 done:
+  /* If the copy of an element exits by throwing an exception, the elements
+     already copied are destroyed. */
+  result = end_partial_construction(ips, saved_dlist, result);
   if (clear_lvalue) {
     array_expr->is_lvalue = FALSE;
   }  /* if */
@@ -8187,17 +8728,19 @@ stored at complete_obj.  Diagnostics should be associated with pos by default.
 
 
 static a_boolean register_extended_destruction(
-                                          an_interpreter_state  *ips,
-                                          a_dynamic_init_ptr    dip,
-                                          a_type                *type,
-                                          a_byte                *sub_obj,
-                                          a_byte                *complete_obj,
-                                          a_source_position     *pos)
+                                    an_interpreter_state   *ips,
+                                    a_storage_stack_state  *extension_state,
+                                    a_dynamic_init_ptr     dip,
+                                    a_type                 *type,
+                                    a_byte                 *sub_obj,
+                                    a_byte                 *complete_obj,
+                                    a_source_position      *pos)
 /*
-Register a destruction to be performed when the "extension" storage stack
-state is released.  dip describes the destruction, which is for an object of
-the given type stored at address sub_obj (part of the complete object stored
-at complete_obj).  Diagnostics should be associated with pos by default.
+Register a destruction to be performed when the "extension" storage stack state
+extension_state (in which the lifetime-extended object was allocated) is
+released.  dip describes the destruction, which is for an object of the given
+type stored at address sub_obj (part of the complete object stored at
+complete_obj).  Diagnostics should be associated with pos by default.
 */
 {
   a_boolean  result = TRUE;
@@ -8209,21 +8752,114 @@ at complete_obj).  Diagnostics should be associated with pos by default.
     /* Register the destruction in the extension storage stack state. */
     a_byte                   *d_bytes;
     a_constexpr_destruction  *destruction;
-    result = alloc_bytes(ips, ips->extension_state,
+    result = alloc_bytes(ips, extension_state,
                          sizeof(a_constexpr_destruction), d_bytes);
     if (result) {
       destruction = (a_constexpr_destruction*)d_bytes;
-      destruction->next = ips->extension_state->destructions;
+      destruction->next = extension_state->destructions;
       destruction->dip = dip;
       destruction->type = type;
       destruction->sub_obj = sub_obj;
       destruction->complete_obj = complete_obj;
       destruction->pos = pos;
-      ips->extension_state->destructions = destruction;
+      extension_state->destructions = destruction;
     }  /* if */
   }  /* if */
   return result;
 }  /* register_extended_destruction */
+
+
+static a_boolean register_partial_destruction(
+                                           an_interpreter_state  *ips,
+                                           a_type_ptr            tp,
+                                           a_byte                *sub_obj,
+                                           a_byte                *complete_obj,
+                                           a_source_position     *pos)
+/*
+The subobject of type tp (possibly an array type) located at sub_obj (within
+complete_obj) has just been initialized as part of the initialization of an
+enclosing object, and the caller has determined that its destruction must be
+registered (see partial_destruction_needed).  Register it: The destruction is
+performed if the initialization of the enclosing object exits by throwing an
+exception (see detach_partial_destructions).  Return FALSE if the registration
+fails.
+*/
+{
+  a_boolean  result = TRUE;
+  a_byte     *d_bytes;
+
+  if (alloc_stack_bytes(ips, sizeof(a_constexpr_destruction), d_bytes)) {
+    a_constexpr_destruction  *destruction = (a_constexpr_destruction*)d_bytes;
+    destruction->next = ips->storage_stack.destructions;
+    destruction->dip = NULL;
+    destruction->type = skip_typerefs(tp);
+    destruction->sub_obj = sub_obj;
+    destruction->complete_obj = complete_obj;
+    destruction->pos = pos;
+    ips->storage_stack.destructions = destruction;
+  } else {
+    result = FALSE;
+  }  /* if */
+  return result;
+}  /* register_partial_destruction */
+
+
+static a_constexpr_destruction *detach_partial_destructions(
+                                    an_interpreter_state     *ips,
+                                    a_constexpr_destruction  *saved_dlist)
+/*
+The initialization of an object, during which the destructions of its
+initialized subobjects were registered (by register_partial_destruction) ahead
+of the entry saved_dlist of the list of destructions, has ended.  Remove those
+registrations from the list (other destructions that were registered meanwhile,
+such as those of lifetime-extended temporaries, stay), and return them as a
+list of their own, in the order in which they are to be performed.
+*/
+{
+  a_constexpr_destruction  *partial = NULL, **p_tail = &partial,
+                           **p_dlist = &ips->storage_stack.destructions;
+
+  while (*p_dlist != saved_dlist) {
+    a_constexpr_destruction  *dlist = *p_dlist;
+    if (dlist->dip == NULL) {
+      *p_dlist = dlist->next;
+      *p_tail = dlist;
+      p_tail = &dlist->next;
+    } else {
+      p_dlist = &dlist->next;
+    }  /* if */
+  }  /* while */
+  *p_tail = NULL;
+  return partial;
+}  /* detach_partial_destructions */
+
+
+static a_boolean end_partial_construction(
+                                    an_interpreter_state     *ips,
+                                    a_constexpr_destruction  *saved_dlist,
+                                    a_boolean                result)
+/*
+The initialization of an object (not interpreted as a work item), which
+registered the destructions of its initialized subobjects ahead of the entry
+saved_dlist of the list of destructions, has ended with the given result.  Drop
+those registrations.  If the initialization exits by throwing an exception,
+perform the registered destructions first (in the reverse order of the
+initializations), while the exception propagates.  Return result, which is
+FALSE in that case.
+*/
+{
+  a_constexpr_destruction  *partial;
+
+  if (ips->storage_stack.destructions != saved_dlist) {
+    partial = detach_partial_destructions(ips, saved_dlist);
+    if (partial != NULL && !result && ips->transfer.kind == ctk_throw) {
+      an_interpreter_work_item  *base = ips->work_stack->top;
+      push_destructions_work(ips, partial);
+      (void)run_pushed_work(ips, base);
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* end_partial_construction */
 
 
 static a_boolean do_constexpr_init_variable(an_interpreter_state   *ips,
@@ -8433,7 +9069,7 @@ iteration (see eval_loop_test).  expr_type is skip_typerefs(expr->type).
             }  /* if */
           }  /* if */
         }  /* for */
-      } else if (init->kind == (a_statement_kind)stmk_expr) {
+      } else if (init->kind == stmk_expr) {
         result = do_constexpr_statement(ips, init);
       } else {
         unexpected_condition();
@@ -8565,6 +9201,519 @@ be called for the local static variables associated with constructs like
 }  /* init_static_variables */
 
 
+static a_constexpr_allocation_ptr do_constexpr_dynamic_alloc(
+                                           an_interpreter_state  *ips,
+                                           a_type_ptr            elem_tp,
+                                           a_byte_count          alloc_length,
+                                           a_boolean             is_array,
+                                           a_source_position     *diag_pos,
+                                           a_constexpr_address   *cap,
+                                           a_byte_count          *p_elem_size);
+
+
+static a_constexpr_exception_ptr create_exception(
+                                              an_interpreter_state  *ips,
+                                              a_type_ptr            type,
+                                              a_routine_ptr         dtor,
+                                              a_source_position     *pos)
+/*
+Create an exception whose object, of the given type, is about to be initialized
+by the throw-expression at pos.  dtor is the destructor that destroys the
+exception object, or NULL if none is needed.  The storage for the exception
+object is allocated, but the object is not initialized.  Return NULL (with a
+diagnostic recorded) if that allocation fails.
+*/
+{
+  a_constexpr_exception_ptr   exc = NULL;
+  a_constexpr_allocation_ptr  saved_allocations = ips->dyn_allocations;
+  a_constexpr_allocation_ptr  alloc;
+  a_constexpr_address         cap;
+  a_byte_count                elem_size;
+
+  type = skip_typerefs(type);
+  /* Keep the allocation off the list of dynamic allocations. */
+  ips->dyn_allocations = NULL;
+  alloc = do_constexpr_dynamic_alloc(ips, type, 1, /*is_array=*/FALSE, pos,
+                                     &cap, &elem_size);
+  ips->dyn_allocations = saved_allocations;
+  if (alloc != NULL) {
+    exc = (a_constexpr_exception_ptr)malloc_for_interpreter(
+                                           (sizeof_t)sizeof(*exc));
+    exc->allocation = alloc;
+    exc->type = type;
+    exc->address = cap;
+    exc->destructor = dtor;
+    exc->position = *pos;
+    exc->handler_count = 0;
+    exc->is_initialized = FALSE;
+    exc->throw_count = 0;
+    exc->prev = NULL;
+    exc->next = ips->exceptions;
+    if (ips->exceptions != NULL) ips->exceptions->prev = exc;
+    ips->exceptions = exc;
+  }  /* if */
+  return exc;
+}  /* create_exception */
+
+
+static void start_throw(an_interpreter_state       *ips,
+                        a_constexpr_exception_ptr  exc)
+/*
+Start throwing the exception exc, whose object has been initialized (or which
+is being rethrown).
+*/
+{
+  ips->transfer.kind = ctk_throw;
+  ips->transfer.exception = exc;
+  exc->throw_count += 1;
+}  /* start_throw */
+
+
+static a_boolean release_exception_if_unused(an_interpreter_state       *ips,
+                                             a_constexpr_exception_ptr  exc,
+                                             a_boolean           may_propagate)
+/*
+If the exception exc is no longer used -- i.e., no handler is active for it and
+it is not being thrown -- destroy the exception object and release the
+exception.  A control transfer that is pending is preserved.  Return FALSE if
+the destruction fails or exits by throwing an exception.  In the latter case,
+if may_propagate is TRUE and the pending control transfer (if any) is not a
+throw, the new exception replaces that transfer and is left pending; otherwise,
+std::terminate is called (an exception that escapes from a destructor during
+stack unwinding), which is a failure.
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (exc->handler_count == 0 && exc->throw_count == 0) {
+    if (exc->is_initialized && exc->destructor != NULL) {
+      a_control_transfer  saved_transfer = ips->transfer;
+      ips->transfer.kind = ctk_none;
+      if (do_constexpr_dtor(ips, exc->destructor, &exc->position,
+                            exc->address.address,
+                            exc->address.complete_object,
+                            /*nonvirtual=*/TRUE)) {
+        ips->transfer = saved_transfer;
+      } else {
+        if (transfer_pending(ips) &&
+            (!may_propagate || saved_transfer.kind == ctk_throw)) {
+          info_with_pos(ec_constexpr_exception_from_exception_dtor,
+                        &ips->transfer.exception->position, ips);
+          ips->transfer.kind = ctk_none;
+        }  /* if */
+        result = FALSE;
+      }  /* if */
+    }  /* if */
+    free_exception(ips, exc);
+  }  /* if */
+  return result;
+}  /* release_exception_if_unused */
+
+
+/*
+The counts of an exception, as saved by save_exception_state.
+*/
+typedef struct a_saved_exception_counts {
+  unsigned int	handler_count;
+  unsigned int	throw_count;
+} a_saved_exception_counts;
+
+/*
+The state of the exceptions of an interpreter state, as saved by
+save_exception_state.
+*/
+typedef struct a_saved_exception_state {
+  a_constexpr_exception_ptr
+		exceptions;
+			/* The list of exceptions when the state was saved.
+			   Exceptions created later precede it on the list. */
+  a_saved_exception_counts
+		*counts;
+			/* The counts of each exception on that list (in list
+			   order), or NULL if the list is empty. */
+  a_handled_exception_ptr
+		handled_exceptions;
+			/* The stack of handled exceptions. */
+} a_saved_exception_state;
+
+
+static a_boolean save_exception_state(an_interpreter_state     *ips,
+                                      a_saved_exception_state  *saved)
+/*
+An evaluation whose failure is ignored (e.g., that of an assumption expression)
+is about to start: Save the state of the exceptions in *saved.  The evaluation
+runs with side effects disabled, so the only exceptions that code outside of it
+can refer to are the ones that exist now.  The counts of those exceptions are
+saved in the storage stack (and so they are released along with the storage of
+the enclosing full-expression or scope).  Return FALSE if that storage cannot
+be allocated.
+*/
+{
+  a_boolean                  result = TRUE;
+  a_constexpr_exception_ptr  exc;
+  a_byte_count               n_exceptions = 0;
+
+  saved->exceptions = ips->exceptions;
+  saved->handled_exceptions = ips->handled_exceptions;
+  saved->counts = NULL;
+  for (exc = ips->exceptions; exc != NULL; exc = exc->next) {
+    n_exceptions += 1;
+  }  /* for */
+  if (n_exceptions != 0) {
+    a_byte  *counts_bytes;
+    if (!alloc_stack_bytes(ips,
+                           n_exceptions*(a_byte_count)
+                                         sizeof(a_saved_exception_counts),
+                           counts_bytes)) {
+      result = FALSE;
+    } else {
+      a_saved_exception_counts  *cp;
+      saved->counts = (a_saved_exception_counts*)counts_bytes;
+      for (exc = ips->exceptions, cp = saved->counts; exc != NULL;
+           exc = exc->next, ++cp) {
+        cp->handler_count = exc->handler_count;
+        cp->throw_count = exc->throw_count;
+      }  /* for */
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* save_exception_state */
+
+
+static void restore_exception_state(an_interpreter_state     *ips,
+                                    a_saved_exception_state  *saved)
+/*
+The evaluation for which save_exception_state saved *saved did not complete
+normally, and that is ignored: Cancel the control transfer (if any) that exits
+from it, and undo its effects on the exceptions.  The exceptions it created are
+released without destroying their objects (just like the other objects it did
+not destroy because it failed), and the counts of the exceptions that existed
+before it are restored (a throw of such an exception that was in progress when
+it failed, for example, has ended).
+*/
+{
+  a_constexpr_exception_ptr  exc;
+  a_saved_exception_counts   *cp;
+
+  ips->transfer.kind = ctk_none;
+  while (ips->exceptions != saved->exceptions) {
+    free_exception(ips, ips->exceptions);
+  }  /* while */
+  for (exc = ips->exceptions, cp = saved->counts; exc != NULL;
+       exc = exc->next, ++cp) {
+    exc->handler_count = cp->handler_count;
+    exc->throw_count = cp->throw_count;
+  }  /* for */
+  ips->handled_exceptions = saved->handled_exceptions;
+  ips->entering_handler = NULL;
+}  /* restore_exception_state */
+
+
+static a_boolean is_null_constexpr_address(a_constexpr_address  *cap)
+/*
+Return TRUE if *cap is a null pointer value (which is represented either
+without any address or as a null integer constant).
+*/
+{
+  return cap->address == NULL &&
+         (!is_runtime_data_address(cap) ||
+          (constant_is(cap->variant.addr_con, ck_integer) &&
+           is_zero_int(&cap->variant.addr_con->variant.integer_value)));
+}  /* is_null_constexpr_address */
+
+
+static a_handler_ptr find_matching_handler(a_handler_ptr              handlers,
+                                           a_constexpr_exception_ptr  exc)
+/*
+Return the first of the given list of handlers that matches the exception exc,
+or NULL if there is none.
+*/
+{
+  a_handler_ptr     handler;
+  a_base_class_ptr  bcp;
+
+  for (handler = handlers; handler != NULL; handler = handler->next) {
+    if (handler->parameter == NULL) {
+      /* "catch (...)". */
+      break;
+    } else if (exception_matches_handler(exc->type, handler->parameter->type,
+                                         &bcp)) {
+      break;
+    }  /* if */
+  }  /* for */
+  return handler;
+}  /* find_matching_handler */
+
+
+/* Defined later in this file. */
+static a_constant_ptr make_interpreter_copy_of_constant(
+                                                   an_interpreter_state  *ips,
+                                                   a_constant_ptr        con);
+
+
+static a_boolean convert_exception_pointer(an_interpreter_state  *ips,
+                                           a_type_ptr            ptp,
+                                           a_type_ptr            etp,
+                                           a_constexpr_address   *src,
+                                           a_base_class_ptr      bcp,
+                                           a_byte_count          offset,
+                                           a_byte                *storage,
+                                           a_source_position     *pos)
+/*
+Initialize the pointer or pointer-to-member of type ptp at storage (a complete
+object) from the exception object at *src, which has type etp (a pointer or
+pointer-to-member type that matches ptp, or std::nullptr_t).  If bcp is
+non-NULL, the (non-null) pointer is converted to point to that base class
+subobject, which is at the given offset in the interpreter's layout.  Return
+TRUE if successful.
+*/
+{
+  a_boolean            result = TRUE;
+  a_constexpr_address  *cap = (a_constexpr_address*)storage;
+
+  if (is_ptr_to_member_type(ptp)) {
+    a_constexpr_ptr_to_mem  *pm = (a_constexpr_ptr_to_mem*)storage;
+    if (is_nullptr_type(etp)) {
+      pm->subtract_adjustment = 0;
+      pm->this_class_adjustment = 0;
+      if (is_function_type(ptp->variant.ptr_to_member.type)) {
+        pm->is_ptr_to_mem_function = TRUE;
+        pm->variant.routine = NULL;
+      } else {
+        pm->is_ptr_to_mem_function = FALSE;
+        pm->variant.field = NULL;
+      }  /* if */
+    } else {
+      /* A qualification conversion or a function pointer conversion, which do
+         not change the representation. */
+      (void)memcpy((a_byte*)pm, src->address, sizeof(*pm));
+    }  /* if */
+  } else if (is_nullptr_type(etp)) {
+    clear_address(cap, (a_byte*)NULL);
+  } else {
+    (void)memcpy((a_byte*)cap, src->address, sizeof(*cap));
+    copy_address_structures(cap);
+    if (bcp == NULL) {
+      /* No adjustment needed. */
+    } else if (is_runtime_data_address(cap)) {
+      /* Fold the conversion of the address constant (as for
+         eok_base_class_cast). */
+      a_constant_ptr  new_con = local_constant(),
+                      addr_con = cap->variant.addr_con;
+      a_boolean       nonconstant;
+      an_error_code   err_code;
+      addr_con = make_interpreter_copy_of_constant(ips, addr_con);
+      addr_con->expr = NULL;
+      fold_base_class_cast(addr_con, bcp, type_pointed_to(ptp), new_con,
+                           /*check_cast_access=*/FALSE,
+                           /*check_ambiguity=*/FALSE,
+                           /*is_implicit_cast=*/TRUE,
+                           /*is_object_pointer=*/TRUE,
+                           /*omit_back_expr=*/TRUE, &nonconstant, pos,
+                           &err_code);
+      if (nonconstant || err_code != ec_no_error) {
+        info_with_pos(unknown_object_access_error(cap), pos, ips);
+        do_constexpr_fail(result);
+      } else {
+        cap->variant.addr_con = make_interpreter_copy_of_constant(ips,
+                                                                  new_con);
+      }  /* if */
+      release_local_constant(&new_con);
+    } else if (cap->address != NULL) {
+      cap->address += offset;
+      cap->flags &= (unsigned char)~CA_ARRAY_ELEMENT;
+    }  /* if */
+  }  /* if */
+  if (result) mark_complete_object_initialized(storage);
+  return result;
+}  /* convert_exception_pointer */
+
+
+static a_boolean init_handler_parameter(an_interpreter_state       *ips,
+                                        a_handler_ptr              handler,
+                                        a_constexpr_exception_ptr  exc)
+/*
+The compound statement of the given handler, which caught the exception exc, is
+starting.  Initialize the handler parameter (if any) from the exception object,
+and return TRUE if successful.  An exception that escapes from that
+initialization causes std::terminate to be called (N5054 [except.throw]), which
+is reported as a failure.
+*/
+{
+  a_boolean          result = TRUE;
+  a_variable_ptr     param = handler->parameter;
+  a_source_position  *pos = &handler->catch_position;
+
+  if (param != NULL) {
+    a_type_ptr           ptp = skip_typerefs(param->type);
+    a_type_ptr           etp = exc->type;
+    a_base_class_ptr     bcp;
+    a_byte_count         offset = 0;
+    a_byte               *storage;
+    a_constexpr_address  src = exc->address;
+    (void)exception_matches_handler(etp, ptp, &bcp);
+    if (bcp != NULL && is_pointer_type(etp) &&
+        is_null_constexpr_address((a_constexpr_address*)src.address)) {
+      /* A null pointer is converted to a null pointer, without any adjustment
+         (even for a virtual base class). */
+      bcp = NULL;
+    }  /* if */
+    if (bcp != NULL) {
+      a_derivation_step_ptr  dsp = bcp->derivation->path;
+      for (; dsp != NULL; dsp = dsp->next) {
+        if (dsp->base_class->is_virtual) {
+          info_with_pos_type(ec_constexpr_virtual_base, pos,
+                             dsp->base_class->type, ips);
+          do_constexpr_fail(result);
+          goto done;
+        }  /* if */
+      }  /* for */
+      /* Ensure the derived class has been laid out (a pointer can be thrown
+         without any object of that class having been created). */
+      (void)f_value_bytes_for_type(ips, bcp->derived_class, &result);
+      if (!result) goto done;
+      offset = compute_interpreter_base_offset(bcp, (a_base_class_ptr*)NULL);
+    }  /* if */
+    get_stack_bytes(ips, param, storage);
+    if (storage == NULL) {
+      storage = do_constexpr_alloc_variable(ips, param, &result);
+      if (!result) goto done;
+    }  /* if */
+    if (is_any_reference_type(ptp)) {
+      /* Bind the reference to the exception object (or to its base class
+         subobject). */
+      a_type_ptr           rtp = skip_typerefs(type_pointed_to(ptp));
+      a_constexpr_address  *cap = (a_constexpr_address*)storage;
+      if ((is_pointer_type(rtp) || is_ptr_to_member_type(rtp)) &&
+          !identical_types(rtp, etp)) {
+        /* A reference to a pointer that needs a conversion from the exception
+           object is bound to a temporary holding the converted value, which
+           lives until the handler exits. */
+        a_byte        *tmp;
+        a_byte_count  tmp_size = value_bytes_for_type(ips, rtp, &result);
+        if (!result ||
+            !alloc_complete_object(ips, tmp_size, rtp, tmp) ||
+            !convert_exception_pointer(ips, rtp, etp, &src, bcp, offset,
+                                       tmp, pos)) {
+          do_constexpr_fail(result);
+        } else {
+          set_active_address(ips, cap, tmp, tmp);
+          mark_complete_object_initialized(storage);
+        }  /* if */
+        goto done;
+      }  /* if */
+      *cap = src;
+      cap->address += offset;
+      mark_complete_object_initialized(storage);
+    } else if (is_immediate_class_type(ptp)) {
+      /* Copy-initialize the parameter from the exception object (or from its
+         base class subobject), using the constructor that the dynamic
+         initialization of the handler designates. */
+      a_dynamic_init_ptr     dip = handler->dynamic_init;
+      a_storage_stack_state  saved_stack_for_full_expr;
+      a_byte_count           var_size = value_bytes_for_type(ips, ptp,
+                                                             &result);
+      a_constexpr_address    dst_addr;
+      do_host_alignment(&var_size);
+      set_active_address(ips, &dst_addr, storage, storage);
+      dst_addr.alloc_seq_number =
+                      ((a_var_postfix*)(storage+var_size))->alloc_seq_number;
+      src.address += offset;
+      if (dip == NULL || dip->kind == dik_bitwise_copy) {
+        /* A trivial copy. */
+        if (constexpr_copy_object(ips, ptp, pos, src.address,
+                                  src.complete_object, storage, storage)) {
+          mark_complete_object_initialized(storage);
+        } else {
+          do_constexpr_fail(result);
+        }  /* if */
+        goto done;
+      }  /* if */
+      save_storage_stack(ips, saved_stack_for_full_expr);
+      if (!do_constexpr_dynamic_init(ips, dip, pos, dst_addr, &src)) {
+        do_constexpr_fail(result);
+      }  /* if */
+      restore_storage_stack(ips, saved_stack_for_full_expr, result);
+      if (!result && transfer_pending(ips)) {
+        info_with_pos(ec_constexpr_exception_in_handler_init,
+                      &ips->transfer.exception->position, ips);
+        ips->transfer.kind = ctk_none;
+      } else if (result && dip->destructor != NULL) {
+        result = register_destruction(ips, dip, ptp, storage, storage, pos);
+      }  /* if */
+    } else if ((is_pointer_type(ptp) &&
+                (is_nullptr_type(etp) || is_pointer_type(etp))) ||
+               (is_ptr_to_member_type(ptp) &&
+                (is_nullptr_type(etp) || is_ptr_to_member_type(etp)))) {
+      if (!convert_exception_pointer(ips, ptp, etp, &src, bcp, offset,
+                                     storage, pos)) {
+        do_constexpr_fail(result);
+      }  /* if */
+    } else if (identical_types(ptp, etp)) {
+      if (constexpr_copy_object(ips, ptp, pos, src.address,
+                                src.complete_object, storage, storage)) {
+        mark_complete_object_initialized(storage);
+      } else {
+        do_constexpr_fail(result);
+      }  /* if */
+    } else {
+      info_with_pos(ec_constexpr_expression_cannot_be_interpreted, pos, ips);
+      do_constexpr_fail(result);
+    }  /* if */
+  }  /* if */
+done:
+  return result;
+}  /* init_handler_parameter */
+
+
+static void enter_handler(an_interpreter_state  *ips,
+                          a_handler_ptr         handler,
+                          a_handled_exception   *handled)
+/*
+The exception that is being thrown is caught by the given handler.  Activate
+the handler, using *handled as its entry on the stack of handled exceptions,
+and push the work item for its compound statement (the start of which
+initializes the handler parameter, after which the exception is no longer being
+thrown).
+*/
+{
+  a_constexpr_exception_ptr  exc = ips->transfer.exception;
+  a_statement_ptr            handler_block = handler->statement;
+
+  ips->transfer.kind = ctk_none;
+  exc->handler_count += 1;
+  handled->exception = exc;
+  handled->prev = ips->handled_exceptions;
+  ips->handled_exceptions = handled;
+  ips->entering_handler = handler;
+  push_block_work(ips, handler_block,
+                  handler_block->variant.block.extra_info->assoc_scope);
+}  /* enter_handler */
+
+
+static a_boolean leave_handler(an_interpreter_state  *ips,
+                               a_handled_exception   *handled)
+/*
+The compound statement of the handler activated by enter_handler (with the
+entry *handled) has completed: The handler is no longer active.  Return FALSE
+if the release of the caught exception fails or exits by throwing an exception
+(see release_exception_if_unused): Unless the handler itself exited by throwing
+an exception, that exception propagates from the handler.
+*/
+{
+  a_constexpr_exception_ptr  exc = handled->exception;
+  a_boolean                  result = TRUE;
+
+  ips->handled_exceptions = handled->prev;
+  exc->handler_count -= 1;
+  if (!ips->failed &&
+      !release_exception_if_unused(ips, exc, /*may_propagate=*/TRUE)) {
+    result = FALSE;
+  }  /* if */
+  return result;
+}  /* leave_handler */
+
+
 static a_statement_ptr substatement_leading_to_switch_entry(
                                                   an_interpreter_state  *ips,
                                                   a_statement_ptr       stmt)
@@ -8667,6 +9816,16 @@ statement that is or contains that label.
         }  /* if */
       }  /* if */
     }  /* if */
+    if (ips->entering_handler != NULL &&
+        block_stmt == ips->entering_handler->statement) {
+      /* This is the compound statement of a handler that caught an exception.
+         Initialize the handler parameter, which activates the handler. */
+      a_handler_ptr              handler = ips->entering_handler;
+      a_constexpr_exception_ptr  exc = ips->handled_exceptions->exception;
+      ips->entering_handler = NULL;
+      if (result) result = init_handler_parameter(ips, handler, exc);
+      exc->throw_count -= 1;
+    }  /* if */
     if (result && ips->switch_entry != NULL) {
       stmt = substatement_leading_to_switch_entry(ips, block_stmt);
       if (stmt == NULL) {
@@ -8678,6 +9837,13 @@ statement that is or contains that label.
     item->variant.block.has_local_storage = local_storage;
     item->variant.block.next_stmt = stmt;
     item->phase = iwp_1st_resume;
+  } else if (item->phase == iwp_2nd_resume) {
+    /* The destructions for the local objects of the block have been
+       performed. */
+    if (!ips->failed) {
+      rewind_storage_stack(ips, item->variant.block.saved_stack);
+    }  /* if */
+    goto done;
   } else {
     local_storage = item->variant.block.has_local_storage;
   }  /* if */
@@ -8697,7 +9863,7 @@ statement that is or contains that label.
                               result || (transfer_pending(ips) &&
                                          ips->transfer.kind != ctk_throw);
     for (; vp != NULL; vp = vp->next) {
-      if (skip_typerefs(vp->type)->kind == (a_type_kind)tk_pointer) {
+      if (skip_typerefs(vp->type)->kind == tk_pointer) {
         a_byte  *var_bytes;
         get_stack_bytes(ips, vp, var_bytes);
         if (var_bytes != NULL && vars_initialized &&
@@ -8715,7 +9881,15 @@ statement that is or contains that label.
       }  /* if */
       do_constexpr_unmap_variable(ips, vp);
     }  /* for */
-    restore_storage_stack(ips, item->variant.block.saved_stack, result);
+    if (result || (!ips->failed && transfer_pending(ips))) {
+      if (ips->storage_stack.destructions != NULL) {
+        item->phase = iwp_2nd_resume;
+        push_destructions_work(ips, ips->storage_stack.destructions);
+        pop_when_done = FALSE;
+        goto done;
+      }  /* if */
+      rewind_storage_stack(ips, item->variant.block.saved_stack);
+    }  /* if */
   }  /* if */
 done:
   end_work_visit(ips, result, pop_when_done);
@@ -8768,11 +9942,11 @@ static void end_cond_var_iteration(an_interpreter_state  *ips,
                                    a_stmt_work           *sw,
                                    a_boolean             *p_result)
 /*
-An iteration of a while-statement or a for-statement whose loop test declares
-a condition variable, or of a range-based for-statement, has ended: Destroy
-the condition variable or the variable of the for-range-declaration (if it
-was initialized), by restoring sw->cond_iter_stack.  Set *p_result to FALSE if
-that fails.
+An iteration of a while-statement or a for-statement whose loop test declares a
+condition variable, or of a range-based for-statement, has ended: Destroy the
+condition variable or the variable of the for-range-declaration (if it was
+initialized), by restoring sw->cond_iter_stack.  Set *p_result to FALSE if that
+fails or exits by throwing an exception.
 */
 {
   if (sw->cond_iter_saved) {
@@ -8982,7 +10156,7 @@ increment expression.  Return TRUE if successful.
   if (!result) goto done;
   result = alloc_complete_object(ips, n_bytes, tp, sw->incr_value);
   if (!result) goto done;
-  if (vp[0]->init_kind != (an_init_kind)initk_dynamic ||
+  if (vp[0]->init_kind != initk_dynamic ||
       vp[0]->initializer.dynamic == NULL) {
     /* This is possible in some error situations. */
     do_constexpr_fail(result);
@@ -9234,11 +10408,14 @@ evaluates to false.
     a_boolean            saved_side_effects_disabled =
                                                    ips->side_effects_disabled;
     a_diagnostic_ptr     dp = ips->diag_list.tail;
+    a_saved_exception_state
+                         saved_exception_state;
 
     ips->side_effects_disabled = TRUE;
     check_assertion(ap->kind == ak_assume && aap->kind == aak_expression);
     expr = expr_node_from_attribute_arg(aap);
-    if (expr == NULL || is_error_type(expr->type)) {
+    if (expr == NULL || is_error_type(expr->type) ||
+        !save_exception_state(ips, &saved_exception_state)) {
       do_constexpr_fail(result);
     } else if (eval_bool_assertion(ips, expr, &assertion_value)) {
       if (!assertion_value) {
@@ -9253,7 +10430,10 @@ evaluates to false.
       }  /* if */
     } else {
       /* Failing to evaluate the assumption expression doesn't cause the
-         constant evaluation to fail. */
+         constant evaluation to fail, and the notes recorded for that failure
+         do not apply. */
+      restore_exception_state(ips, &saved_exception_state);
+      truncate_more_info_list(&ips->diag_list, dp);
     }  /* if */
     ips->side_effects_disabled = saved_side_effects_disabled;
   }  /* if */
@@ -9612,13 +10792,22 @@ transfer, or perform their cleanup and let it propagate further.
         goto done;
       }
     case stmk_try_block:
-      { a_block_ptr  block;
-        a_statement_ptr  try_stmt = stmt->variant.try_block->statement;
-        block = try_stmt->variant.block.extra_info;
-        item->kind = iwk_block;
-        item->phase = iwp_start;
-        item->il_entry = try_stmt;
-        item->variant.block.scope = block->assoc_scope;
+      { a_statement_ptr  try_stmt = stmt->variant.try_block->statement;
+        a_block_ptr      block = try_stmt->variant.block.extra_info;
+        if (!constexpr_exceptions_enabled) {
+          /* No exception can be thrown during constant evaluation, so the
+             handlers are never reached: Interpret the compound statement in
+             place of the try-block. */
+          item->kind = iwk_block;
+          item->phase = iwp_start;
+          item->il_entry = try_stmt;
+          item->variant.block.scope = block->assoc_scope;
+        } else {
+          sw->handled.exception = NULL;
+          item->needs_cleanup = TRUE;
+          item->phase = iwp_1st_resume;
+          push_block_work(ips, try_stmt, block->assoc_scope);
+        }  /* if */
         pop_when_done = FALSE;
         goto done;
       }
@@ -9958,6 +11147,27 @@ range_based_for_cleanup:
       if (sw->has_cond_var) {
         do_constexpr_condition_cleanup(ips, expr);
         do_constexpr_condition_dealloc(ips, expr, &sw->saved_stack, &result);
+      }  /* if */
+      break;
+    case stmk_try_block:
+      if (item->phase == iwp_1st_resume) {
+        /* The compound statement has completed.  If it exited by throwing an
+           exception, look for a handler that catches it. */
+        if (!ips->failed && ips->transfer.kind == ctk_throw) {
+          a_constexpr_exception_ptr  exc = ips->transfer.exception;
+          a_handler_ptr              handler;
+          handler = find_matching_handler(stmt->variant.try_block->handlers,
+                                          exc);
+          if (handler != NULL) {
+            enter_handler(ips, handler, &sw->handled);
+            item->phase = iwp_2nd_resume;
+            pop_when_done = FALSE;
+            goto done;
+          }  /* if */
+        }  /* if */
+      } else {
+        /* The compound statement of the handler has completed. */
+        if (!leave_handler(ips, &sw->handled)) result = FALSE;
       }  /* if */
       break;
     default:
@@ -12456,6 +13666,8 @@ to FALSE and the reason for the failure is recorded in *ips.
              unsuccessful, we can still continue interpretation because no
              side-effects took place. */
           a_boolean     saved_side_effects_disabled, saved_suspend_diag_list;
+          a_saved_exception_state
+                        saved_exception_state;
           a_type_ptr    arg_type = skip_typerefs(args->type);
           a_byte_count  n_bytes = expr_result_size(ips, args, arg_type,
                                                    p_result);
@@ -12464,11 +13676,16 @@ to FALSE and the reason for the failure is recorded in *ips.
           ips->side_effects_disabled = TRUE;
           saved_suspend_diag_list = ips->suspend_diag_list;
           ips->suspend_diag_list = TRUE;
-          if (alloc_complete_object(ips, n_bytes, arg_type, arg1_bytes) &&
-              do_constexpr_expression(ips, args, arg1_bytes, arg1_bytes)) {
+          if (!save_exception_state(ips, &saved_exception_state)) {
+            *(an_integer_value*)result_storage = zero_int;
+          } else if (alloc_complete_object(ips, n_bytes, arg_type,
+                                           arg1_bytes) &&
+                     do_constexpr_expression(ips, args, arg1_bytes,
+                                             arg1_bytes)) {
             *(an_integer_value*)result_storage = one_int;
           } else {
             *(an_integer_value*)result_storage = zero_int;
+            restore_exception_state(ips, &saved_exception_state);
           }  /* if */
           ips->side_effects_disabled = saved_side_effects_disabled;
           ips->suspend_diag_list = saved_suspend_diag_list;
@@ -13173,13 +14390,15 @@ to FALSE and the reason for the failure is recorded in *ips.
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
 
 static INLINE a_boolean run_function_body(an_interpreter_state  *ips,
-                                          a_scope_ptr           callee_scope)
+                                          a_routine_ptr         callee)
 /*
-The given scope is a function scope.  Execute its associated compound
-statement, and return TRUE if it completed normally or through a return
-statement.  A control transfer that is pending on entry is preserved.
+Execute the compound statement of the body of callee, and return TRUE if it
+completed normally or through a return statement.  An exception that escapes
+from a non-throwing callee is reported (see check_exception_escape).  A control
+transfer that is pending on entry is preserved.
 */
 {
+  a_scope_ptr         callee_scope = scope_for_routine(callee);
   a_control_transfer  saved_transfer = ips->transfer;
   a_boolean           result;
 
@@ -13190,6 +14409,8 @@ statement.  A control transfer that is pending on entry is preserved.
     ips->transfer.kind = ctk_none;
     result = TRUE;
   }  /* if */
+  check_exception_escape(ips, callee);
+  if (ips->failed) result = FALSE;
   if (result) ips->transfer = saved_transfer;
   return result;
 }  /* run_function_body */
@@ -22079,8 +23300,9 @@ done:
 static void report_leftover_allocations(an_interpreter_state  *ips)
 /*
 Interpretation is mostly completed and the caller has determined that some
-dynamic allocations have not been freed.  Record a diagnostic that explains
-the missing allocation.
+dynamic allocations have not been freed or that some exception objects have not
+been destroyed (see has_leftover_allocations).  Record a diagnostic that
+explains the missing deallocation.
 */
 {
   int32_t  count = 0;
@@ -22526,7 +23748,7 @@ See do_constexpr_std_allocator_allocate for the meaning of the parameters.
   } else {
     valid_placement_new_address = cap->address;
     valid_placement_new_type = skip_typerefs(tap->variant.type);
-    result = run_function_body(ips, scope_for_routine(callee));
+    result = run_function_body(ips, callee);
     valid_placement_new_type = NULL;
   }  /* if */
   return result;
@@ -23178,7 +24400,7 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
   a_boolean               is_member_call;
 
   if (item->phase != iwp_start) {
-    result = routine_body_completed(ips);
+    result = routine_body_completed(ips, cw->callee);
     finish_call_work(ips, item, result);
     goto done;
   }  /* if */
@@ -23463,7 +24685,9 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
       do_constexpr_fail(result);
       goto done;
     }  /* if */
-    if (!callee->is_constexpr) {
+    if (!callee->is_constexpr && !callee->is_constexpr_intrinsic) {
+      /* (Some intrinsics need not be declared constexpr; see
+         check_for_constexpr_intrinsic.) */
       info_with_pos_sym(ec_constexpr_call_to_nonconstexpr_function,
                         expr_pos(callee_node, ips), symbol_for(callee), ips);
       do_constexpr_fail(result);
@@ -23616,7 +24840,7 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
     } else {
       item->needs_cleanup = TRUE;
       item->phase = iwp_1st_resume;
-      push_block_work(ips, function_body_block(callee_scope), callee_scope);
+      push_routine_body_work(ips, callee_scope);
       pop_when_done = FALSE;
     }  /* if */
     goto done;
@@ -23730,13 +24954,41 @@ to 10 nested anonymous unions.
 }  /* anon_union_field_is_active_field */
 
 
+static a_boolean register_subobject_destruction(
+                                           an_interpreter_state  *ips,
+                                           a_dynamic_init_ptr    dip,
+                                           a_type_ptr            tp,
+                                           a_byte                *subobj,
+                                           a_byte                *complete_obj,
+                                           a_source_position     *pos)
+/*
+The subobject of type tp located at subobj (within complete_obj) has just been
+initialized by dip, as part of the construction of an enclosing object.  If the
+subobject has to be destroyed, register its destruction (see
+register_partial_destruction).  Return FALSE if the registration fails.
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (dip != NULL && dip->destructor != NULL &&
+      partial_destruction_needed(tp)) {
+    result = register_partial_destruction(ips, tp, subobj, complete_obj, pos);
+  }  /* if */
+  return result;
+}  /* register_subobject_destruction */
+
+
 static void process_ctor_work(an_interpreter_state      *ips,
                               an_interpreter_work_item  *item)
 /*
 Perform the next visit to the given iwk_ctor work item.  The iwp_start visit
 evaluates the arguments and maps the parameters, the iwp_1st_resume visits
 interpret the mem-initializers one at a time, and the iwp_2nd_resume visit runs
-after the constructor body has been interpreted.
+after the constructor body has been interpreted.  If the construction exits by
+throwing an exception, the iwp_3rd_resume visit runs after the destructions of
+the constructed subobjects and enters the matching handler of a
+function-try-block (if any), and the iwp_4th_resume visit runs after the
+compound statement of that handler.
 */
 {
   an_init_work              *iw = &item->variant.init;
@@ -23755,7 +25007,11 @@ after the constructor body has been interpreted.
   }  /* if */
   callee = dip->variant.constructor.ptr;
   if (item->phase == iwp_2nd_resume) {
-    result = routine_body_completed(ips);
+    result = routine_body_completed(ips, callee);
+    goto apply_cleanup;
+  } else if (item->phase == iwp_3rd_resume ||
+             item->phase == iwp_4th_resume) {
+    result = work_completed_normally(ips);
     goto apply_cleanup;
   }  /* if */
   if (item->phase == iwp_1st_resume) {
@@ -24023,6 +25279,10 @@ after the constructor body has been interpreted.
     iw->up_front_cost = up_front_cost;
     iw->alloc_seq_number = alloc_seq_number;
     iw->subobject = NULL;
+    iw->sub_dip = NULL;
+    iw->sub_type = NULL;
+    iw->saved_destructions = ips->storage_stack.destructions;
+    iw->handled.exception = NULL;
     item->needs_cleanup = TRUE;
     item->phase = iwp_1st_resume;
     goto continue_mem_inits;
@@ -24056,6 +25316,9 @@ continue_mem_inits:
     if (iw->subobject != NULL) {
       if (result) {
         mark_subobject_initialized(iw->subobject, complete_object);
+        result = register_subobject_destruction(ips, iw->sub_dip,
+                                                iw->sub_type, iw->subobject,
+                                                complete_object, pos);
       }  /* if */
       iw->subobject = NULL;
     }  /* if */
@@ -24149,8 +25412,13 @@ continue_mem_inits:
         }  /* if */
         mark_complete_class_object_if_needed(tp, dst_addr.address);
       } else if (ctor_init->kind == cik_delegation) {
+        /* If the body of a delegating constructor exits by throwing an
+           exception, the object constructed by the target constructor is
+           destroyed (N5054 [except.ctor]). */
         iw->next_ctor_init = NULL;
-        iw->subobject = NULL;
+        iw->subobject = result_storage;
+        iw->sub_dip = ctor_init->initializer;
+        iw->sub_type = class_type;
         push_dyn_init_work(ips, ctor_init->initializer, pos, cap,
                            /*implied_src=*/NULL);
         pop_when_done = FALSE;
@@ -24212,6 +25480,8 @@ continue_mem_inits:
             adjusted_src_addr.address += offset;
             iw->next_ctor_init = ctor_init->next;
             iw->subobject = dst_addr.address;
+            iw->sub_dip = sub_dip;
+            iw->sub_type = tp;
             push_ctor_work(ips, sub_dip,
                            &callee->source_corresp.decl_position,
                            dst_addr, &adjusted_src_addr);
@@ -24245,6 +25515,8 @@ continue_mem_inits:
           }  /* if */
           iw->next_ctor_init = ctor_init->next;
           iw->subobject = dst_addr.address;
+          iw->sub_dip = sub_dip;
+          iw->sub_type = tp;
           push_dyn_init_work(ips, sub_dip,
                              &callee->source_corresp.decl_position,
                              dst_addr, src_addr);
@@ -24253,9 +25525,15 @@ continue_mem_inits:
           goto done;
         }  /* if */
       }  /* if */
+      if (result) {
+        result = register_subobject_destruction(ips, sub_dip, tp,
+                                                dst_addr.address,
+                                                complete_object, pos);
+      }  /* if */
       if (copied_variant_path) {
         release_variant_path_if_needed(&dst_addr);
       }  /* if */
+      if (!result) break;
     }  /* for */
     if (!result) goto apply_cleanup;
     mark_subobject_initialized(result_storage, complete_object);
@@ -24272,10 +25550,56 @@ apply_cleanup:
     a_byte           **p_arg_ptr = (a_byte**)iw->arg_ptrs+1;
     a_byte_count     *arg_size = (a_byte_count*)iw->arg_sizes;
     an_expr_node_ptr args = dip->variant.constructor.args;
+    a_statement_ptr  body = callee_scope->assoc_block;
 
+    if ((item->phase == iwp_1st_resume || item->phase == iwp_2nd_resume) &&
+        !ips->failed) {
+      /* The construction has ended.  The destructions registered for the
+         constructed subobjects are no longer needed, unless the constructor
+         exits by throwing an exception: They are then performed (before a
+         handler of a function-try-block is entered). */
+      a_constexpr_destruction  *partial;
+      partial = detach_partial_destructions(ips, iw->saved_destructions);
+      item->phase = iwp_3rd_resume;
+      if (!result && ips->transfer.kind == ctk_throw && partial != NULL) {
+        push_destructions_work(ips, partial);
+        pop_when_done = FALSE;
+        goto done;
+      }  /* if */
+    }  /* if */
+    if (item->phase == iwp_3rd_resume) {
+      if (body->kind == stmk_try_block && !ips->failed &&
+          ips->transfer.kind == ctk_throw) {
+        /* Look for a handler of the function-try-block that catches the
+           exception. */
+        a_handler_ptr  handler;
+        handler = find_matching_handler(body->variant.try_block->handlers,
+                                        ips->transfer.exception);
+        if (handler != NULL) {
+          /* The subobjects have been destroyed, so referring to one in the
+             handler is not a constant expression (N5054 [except.handle]). */
+          if (!mark_whole_subobject_uninitialized(ips, cap.address,
+                                                  parent_class_of(callee),
+                                                  cap.complete_object)) {
+            ips->transfer.kind = ctk_none;
+            result = FALSE;
+          } else {
+            enter_handler(ips, handler, &iw->handled);
+            item->phase = iwp_4th_resume;
+            pop_when_done = FALSE;
+            goto done;
+          }  /* if */
+        }  /* if */
+      }  /* if */
+    } else if (item->phase == iwp_4th_resume) {
+      /* The compound statement of the handler has completed (normally by
+         rethrowing the exception). */
+      if (!leave_handler(ips, &iw->handled)) result = FALSE;
+    }  /* if */
     /* A failure recorded in "result" above has not reached ips->failed yet,
        so both have to be consulted here. */
     if (!work_completed_normally(ips)) result = FALSE;
+    check_exception_escape(ips, callee);
     this_var = callee_scope->variant.routine.this_param_variable;
     if (result) note_routine_interpreted(callee);
     release_address_structures_for_args(args, p_arg_ptr);
@@ -24317,8 +25641,12 @@ static void process_dtor_work(an_interpreter_state      *ips,
                               an_interpreter_work_item  *item)
 /*
 Perform the next visit to the given iwk_dtor work item.  The iwp_start visit
-maps the "this" parameter and pushes the top-level block of the destructor;
-the iwp_1st_resume visit destroys the subobjects and undoes that mapping.
+maps the "this" parameter and pushes the top-level block of the destructor.
+The iwp_1st_resume visit and the iwp_2nd_resume visits that follow push the
+destructor calls for the subobjects, one at a time.  If the destruction then
+exits by throwing an exception that a handler of a function-try-block catches,
+the compound statement of that handler is pushed, and the iwp_3rd_resume visit
+runs after it.  The last visit undoes the mapping.
 */
 {
   a_dtor_work        *dw = &item->variant.dtor;
@@ -24441,67 +25769,120 @@ the iwp_1st_resume visit destroys the subobjects and undoes that mapping.
     dw->alloc_seq_number = alloc_seq_number;
     item->needs_cleanup = TRUE;
     item->phase = iwp_1st_resume;
+    /* If the body is a function-try-block, only its compound statement is
+       pushed: Its handlers also apply to the destructions of the subobjects,
+       so they are handled below. */
     push_block_work(ips, function_body_block(callee_scope), callee_scope);
     pop_when_done = FALSE;
     goto done;
   }  /* if */
 apply_cleanup:
   {
-    a_scope_ptr             callee_scope = scope_for_routine(callee);
-    a_type_ptr              class_type = parent_class_of(callee);
-    a_constructor_init_ptr  dtor_init;
+    a_scope_ptr      callee_scope = scope_for_routine(callee);
+    a_type_ptr       class_type = parent_class_of(callee);
+    a_statement_ptr  body = callee_scope->assoc_block;
 
-    result = routine_body_completed(ips);
-    /* Run the "constructor initializers" that describe subobject
-       destructions. */
-    unmark_complete_object_initialized(complete_object);
-    dtor_init = callee_scope->variant.routine.constructor_inits;
-    for (; dtor_init != NULL; dtor_init = dtor_init->next) {
-      a_byte_count        offset, elem_size = 0;
-      a_dynamic_init_ptr  sub_dip;
-      int                 n;
-      a_byte              *sub_bytes;
+    if (item->phase == iwp_3rd_resume) {
+      /* The compound statement of a handler of the function-try-block has
+         completed (by a return statement, or by rethrowing the exception). */
+      if (!leave_handler(ips, &dw->handled)) result = FALSE;
+      if (!routine_body_completed(ips, callee)) result = FALSE;
+      goto finish;
+    } else if (item->phase == iwp_1st_resume) {
+      /* The destructor body has been interpreted.  Unless that failed, the
+         subobjects are destroyed next (even if the body exited by throwing an
+         exception, which is set aside meanwhile: It may still be caught by a
+         handler of a function-try-block). */
+      if (ips->transfer.kind == ctk_return) ips->transfer.kind = ctk_none;
+      if (ips->failed) {
+        result = FALSE;
+        goto finish;
+      }  /* if */
+      dw->deferred_transfer = ips->transfer;
+      ips->transfer.kind = ctk_none;
+      unmark_complete_object_initialized(complete_object);
+      dw->next_dtor_init = callee_scope->variant.routine.constructor_inits;
+      dw->n_subobjects_left = 0;
+      item->phase = iwp_2nd_resume;
+    } else {
+      /* A subobject destructor has been interpreted. */
+      if (ips->failed ||
+          !replace_deferred_transfer(ips, &dw->deferred_transfer)) {
+        result = FALSE;
+        goto finish;
+      }  /* if */
+      mark_subobject_uninitialized(dw->next_sub_bytes, complete_object);
+      dw->n_subobjects_left -= 1;
+      if (dw->n_subobjects_left > 0) dw->next_sub_bytes -= dw->elem_size;
+    }  /* if */
+    /* Run the "constructor initializers" that describe subobject destructions,
+       one subobject per visit. */
+    while (dw->n_subobjects_left == 0) {
+      a_constructor_init_ptr  dtor_init = dw->next_dtor_init;
+      a_byte_count            offset;
+      if (dtor_init == NULL) {
+        /* All subobjects have been destroyed. */
+        ips->transfer = dw->deferred_transfer;
+        if (!mark_whole_subobject_uninitialized(ips, result_storage,
+                                                class_type,
+                                                complete_object)) {
+          ips->transfer.kind = ctk_none;
+          result = FALSE;
+          goto finish;
+        }  /* if */
+        if (body->kind == stmk_try_block &&
+            ips->transfer.kind == ctk_throw) {
+          /* Look for a handler of the function-try-block that catches the
+             exception. */
+          a_handler_ptr  handler;
+          handler = find_matching_handler(body->variant.try_block->handlers,
+                                          ips->transfer.exception);
+          if (handler != NULL) {
+            enter_handler(ips, handler, &dw->handled);
+            item->phase = iwp_3rd_resume;
+            pop_when_done = FALSE;
+            goto done;
+          }  /* if */
+        }  /* if */
+        result = !transfer_pending(ips);
+        check_exception_escape(ips, callee);
+        goto finish;
+      }  /* if */
+      dw->next_dtor_init = dtor_init->next;
+      dw->n_subobjects_left = 1;
+      dw->elem_size = 0;
       if (dtor_init->kind == cik_field) {
         a_field_ptr  fp = dtor_init->variant.field;
         a_type_ptr   ftp = skip_typerefs(fp->type);
         if (type_is(ftp, tk_array)) {
-          n = (int)num_array_elements(ftp);
+          dw->n_subobjects_left = (int)num_array_elements(ftp);
           ftp = skip_typerefs(underlying_array_element_type(ftp));
-          elem_size = value_bytes_for_type(ips, ftp, &result);
-        } else {
-          n = 1;
+          dw->elem_size = value_bytes_for_type(ips, ftp, &result);
         }  /* if */
         get_mapped_byte_count(&persistent_map, fp, offset);
-        sub_dip = dtor_init->initializer;
         if (type_is(class_type, tk_union)) {
           /* Clear the active field for the enclosing union. */
           *(a_field_ptr*)result_storage = NULL;
         }  /* if */
       } else {
         a_base_class_ptr  bcp = dtor_init->variant.base_class;
-        n = 1;
         get_mapped_byte_count(&persistent_map, bcp, offset);
-        sub_dip = dtor_init->initializer;
       }  /* if */
-      /* The elements of an array are destroyed in reverse order. */
-      for (int k = n; k > 0; --k) {
-        sub_bytes = result_storage+offset+(a_byte_count)(k-1)*elem_size;
-        /* Clear the derivation/active-field state. */
-        *(void**)sub_bytes = NULL;
-        if (!do_constexpr_dtor(ips, sub_dip->destructor, pos, sub_bytes,
-                               complete_object, /*nonvirtual=*/TRUE)) {
-          do_constexpr_fail(result);
-          break;
-        } else {
-          mark_subobject_uninitialized(sub_bytes, complete_object);
-        }  /* if */
-      }  /* for */
-    }  /* for */
-    if (!mark_whole_subobject_uninitialized(ips, result_storage, class_type,
-                                            complete_object)) {
-      result = FALSE;
-      goto done;
-    }  /* if */
+      dw->sub_dip = dtor_init->initializer;
+      dw->next_sub_bytes = result_storage+offset;
+      if (dw->n_subobjects_left > 1) {
+        /* The elements of an array are destroyed in reverse order. */
+        dw->next_sub_bytes +=
+               (a_byte_count)(dw->n_subobjects_left-1)*dw->elem_size;
+      }  /* if */
+    }  /* while */
+    /* Clear the derivation/active-field state. */
+    *(void**)dw->next_sub_bytes = NULL;
+    push_dtor_work(ips, dw->sub_dip->destructor, pos, dw->next_sub_bytes,
+                   complete_object, /*nonvirtual=*/TRUE);
+    pop_when_done = FALSE;
+    goto done;
+finish:
     if (result) note_routine_interpreted(callee);
     pop_call_frame(ips);
     unmap_or_restore_param(ips, dw->this_var, dw->this_bytes,
@@ -25724,9 +27105,11 @@ closure object is placed at the location indicated by dst_addr.
     result = extract_value_from_constant(
                                     ips, dip->variant.constant.ptr, dst_addr);
   } else {
+    a_constexpr_destruction  *saved_dlist = ips->storage_stack.destructions;
     cp = dip->variant.constant.ptr;
     /* Initialize each field of the closure object from the corresponding
-       capture. */
+       capture.  If the initialization of one exits by throwing an exception,
+       the fields already initialized are destroyed. */
     for (cap = lambda->capture_list,
                               field_con = cp->variant.aggregate.first_constant;
          result && cap != NULL && field_con != NULL;
@@ -25924,10 +27307,16 @@ closure object is placed at the location indicated by dst_addr.
           }  /* if */
         }  /* if */
       }  /* if */
+      if (result && partial_destruction_needed(ftp) &&
+          !register_partial_destruction(ips, ftp, sub_bytes, complete_object,
+                                        pos)) {
+        result = FALSE;
+      }  /* if */
     }  /* for */
     /* Make sure we either bailed out because of an error or handled all
        the captured values. */
     check_assertion(!result || (cap == NULL && field_con == NULL));
+    result = end_partial_construction(ips, saved_dlist, result);
   }  /* if */
   mark_subobject_initialized(result_storage, complete_object);
   return result;
@@ -26686,7 +28075,8 @@ Evaluate the given new-expression.
   a_constexpr_address          *cap;
   a_type_ptr                   type = skip_typerefs(ndsp->type), elem_type;
   an_expr_node_ptr             length_expr = ndsp->number_of_elements;
-  a_constexpr_allocation_ptr   allocation;
+  a_constexpr_allocation_ptr   allocation = NULL;
+  a_constexpr_destruction      *saved_dlist = ips->storage_stack.destructions;
 
   if (!ips->is_constant_evaluated || !constexpr_dynamic_alloc_enabled) {
     /* Don't attempt to evaluate a new-expression if a constant result is not
@@ -26807,6 +28197,8 @@ Evaluate the given new-expression.
     a_constexpr_address  elem_cap = *cap;
     a_byte               *elem = cap->address,
                          *complete_obj = cap->complete_object;
+    a_boolean            register_elems =
+                                       partial_destruction_needed(elem_type);
     if (dyn_init_is(dip, dik_constant) ||
         dyn_init_is(dip, dik_nonconstant_aggregate)) {
       a_constant_ptr  init_cp = dip->variant.constant.ptr;
@@ -26880,6 +28272,13 @@ Evaluate the given new-expression.
               }  /* if */
               mark_complete_class_object_if_needed(elem_type, elem);
               mark_subobject_initialized(elem, complete_obj);
+              if (register_elems &&
+                  !register_partial_destruction(ips, elem_type, elem,
+                                                complete_obj,
+                                                &expr->position)) {
+                result = FALSE;
+                goto done;
+              }  /* if */
             }  /* for */
           } else {
             /* String literal case. */
@@ -26925,11 +28324,25 @@ Evaluate the given new-expression.
         }  /* if */
       }  /* if */
       mark_subobject_initialized(elem, complete_obj);
+      if (is_array && register_elems &&
+          !register_partial_destruction(ips, elem_type, elem, complete_obj,
+                                        &expr->position)) {
+        result = FALSE;
+        break;
+      }  /* if */
     }  /* for */
   } else if (alloc_length != 0) {
     mark_complete_class_object_if_needed(elem_type, cap->complete_object);
   }  /* if */
 done:
+  if (allocation != NULL) {
+    result = end_partial_construction(ips, saved_dlist, result);
+    if (!result && ips->transfer.kind == ctk_throw) {
+      /* The initialization exits by throwing an exception: The deallocation
+         function is called (N5054 [expr.new]). */
+      free_allocation(ips, allocation);
+    }  /* if */
+  }  /* if */
   return result;
 }  /* do_constexpr_new */
 
@@ -26948,7 +28361,9 @@ Evaluate the given delete-expression.
   a_byte                       *ptr_bytes, *obj_bytes;
   a_constexpr_address          *cap;
   a_constexpr_allocation       *allocation;
+  a_control_transfer           deferred_transfer;
 
+  deferred_transfer.kind = ctk_none;
   if (!ips->is_constant_evaluated || !constexpr_dynamic_alloc_enabled ||
       !type_is(ptr_tp, tk_pointer)) {
     /* Don't attempt to evaluate a delete-expression if a constant result is
@@ -27041,7 +28456,14 @@ Evaluate the given delete-expression.
            do_constexpr_dtor will need it for the virtual function dispatch. */
         a_byte  *obj = ndsp->array_delete ? elem : cap->address;
         if (!do_constexpr_dtor(ips, dip->destructor, &expr->position,
-                               obj, arr, nonvirtual)) {
+                               obj, arr, nonvirtual) &&
+            (!transfer_pending(ips) ||
+             !replace_deferred_transfer(ips, &deferred_transfer))) {
+          /* The destruction failed, or a second destructor exited by throwing
+             an exception (see replace_deferred_transfer).  The exception from
+             the first is set aside while the remaining elements are destroyed,
+             and the storage is deallocated in any case (N5054
+             [expr.delete]). */
           result = FALSE;
           goto done;
         }  /* if */
@@ -27061,6 +28483,12 @@ Evaluate the given delete-expression.
     }  /* if */
   }  /* if */
   free_allocation(ips, allocation);
+  if (deferred_transfer.kind != ctk_none) {
+    /* A destructor exited by throwing an exception, which propagates from the
+       delete-expression. */
+    ips->transfer = deferred_transfer;
+    result = FALSE;
+  }  /* if */
 done:
   return result;
 }  /* do_constexpr_delete */
@@ -32792,12 +34220,15 @@ the value representation of the integer value.
         an_alloc_seq_number  alloc_seq_number;
         a_byte_count         prefix_size;
         a_boolean            temp_lifetime;
+        a_storage_stack_state
+                             *extension_state = NULL;
         if (phase != iwp_start) {
           result = work_completed_normally(ips);
           tmp_bytes = ew->temp_storage;
           tmp_complete_obj = ew->temp_complete_object;
           dip = ew->temp_init;
           temp_lifetime = ew->temp_lifetime;
+          extension_state = ew->temp_extension_state;
           goto finish_temp_init;
         }  /* if */
         if (C_mode()) {
@@ -32826,14 +34257,10 @@ the value representation of the integer value.
                 break;
               }  /* if */
               alloc_seq_number = ips->extension_state->alloc_seq();
-              if (dip->destructor != NULL &&
-                  !register_extended_destruction(ips, dip, tp,
-                                                 tmp_bytes+prefix_size,
-                                                 tmp_bytes+prefix_size,
-                                                 &expr->position)) {
-                result = FALSE;
-                break;
-              }  /* if */
+              /* The destruction is registered once the initialization has
+                 completed (if it exits by throwing an exception, the lifetime
+                 of the temporary never began). */
+              extension_state = ips->extension_state;
               ips->extension_state = NULL;
             } else {
               /* If we're processing the initializer of a static-lifetime
@@ -32897,6 +34324,7 @@ the value representation of the integer value.
           ew->temp_complete_object = tmp_complete_obj;
           ew->temp_init = dip;
           ew->temp_lifetime = temp_lifetime;
+          ew->temp_extension_state = extension_state;
           work_item->phase = iwp_1st_resume;
           push_dyn_init_work(ips, dip, &expr->position, dst_addr,
                              /*implied_src=*/NULL);
@@ -32914,9 +34342,16 @@ finish_temp_init:
         } else {
           mark_subobject_initialized(tmp_bytes, tmp_complete_obj);
         }  /* if */
-        if (result && dip->destructor != NULL && temp_lifetime) {
-          result = register_destruction(ips, dip, tp, tmp_bytes,
-                                        tmp_complete_obj, &expr->position);
+        if (result && dip->destructor != NULL) {
+          if (temp_lifetime) {
+            result = register_destruction(ips, dip, tp, tmp_bytes,
+                                          tmp_complete_obj, &expr->position);
+          } else if (extension_state != NULL) {
+            result = register_extended_destruction(ips, extension_state, dip,
+                                                   tp, tmp_bytes,
+                                                   tmp_complete_obj,
+                                                   &expr->position);
+          }  /* if */
         }  /* if */
       }
       break;
@@ -33120,6 +34555,55 @@ finish_temp_init:
       }
       break;
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
+    case enk_throw:
+      if (!constexpr_exceptions_enabled) {
+        do_constexpr_fail(result);
+        info_with_pos(ec_constexpr_expression_cannot_be_interpreted,
+                      &expr->position, ips);
+      } else if (phase != iwp_start) {
+        /* The initialization of the exception object has completed. */
+        a_constexpr_exception_ptr  exc = ew->exception;
+        if (work_completed_normally(ips)) {
+          if (!is_immediate_class_type(exc->type)) {
+            mark_subobject_initialized(exc->address.address,
+                                       exc->address.complete_object);
+            mark_complete_object_initialized(exc->address.address);
+          }  /* if */
+          exc->is_initialized = TRUE;
+          start_throw(ips, exc);
+        } else {
+          /* The initialization failed or exited by throwing another exception,
+             which propagates instead. */
+          free_exception(ips, exc);
+        }  /* if */
+        result = FALSE;
+      } else if (expr->variant.throw_info == NULL) {
+        /* A rethrow: Throw the exception that is being handled again. */
+        if (ips->handled_exceptions == NULL) {
+          do_constexpr_fail(result);
+          info_with_pos(ec_constexpr_rethrow_without_exception,
+                        &expr->position, ips);
+        } else {
+          start_throw(ips, ips->handled_exceptions->exception);
+          result = FALSE;
+        }  /* if */
+      } else {
+        a_throw_supplement_ptr     tsp = expr->variant.throw_info;
+        a_constexpr_exception_ptr  exc;
+        exc = create_exception(ips, tsp->type, tsp->destructor,
+                               &expr->position);
+        if (exc == NULL || tsp->dynamic_init == NULL) {
+          do_constexpr_fail(result);
+        } else {
+          ew->exception = exc;
+          work_item->needs_cleanup = TRUE;
+          work_item->phase = iwp_1st_resume;
+          push_dyn_init_work(ips, tsp->dynamic_init, &expr->position,
+                             exc->address, /*implied_src=*/NULL);
+          pop_when_done = FALSE;
+        }  /* if */
+      }  /* if */
+      break;
     case enk_error:
       ips->input_error = TRUE;
       FALLTHROUGH
@@ -34295,7 +35779,7 @@ to a prvalue (without changing expr itself).
            temporaries yet.  If we do have a full expression, ensure that the
            destruction interpretation succeeds. */
         result = FALSE;
-      } else if (ips->dyn_allocations != NULL &&
+      } else if (has_leftover_allocations(ips) &&
                  !ips->permit_leftover_dyn_alloc) {
         /* Leftover dynamic allocations are always invalid in this case. */
         report_leftover_allocations(ips);
@@ -34579,7 +36063,8 @@ can only be TRUE if the called function is "consteval").
     } else if (ips.storage_stack.destructions != NULL &&
                !perform_destructions(&ips)) {
       result = FALSE;
-    } else if (ips.dyn_allocations != NULL && !ips.permit_leftover_dyn_alloc) {
+    } else if (has_leftover_allocations(&ips) &&
+               !ips.permit_leftover_dyn_alloc) {
       /* Leftover dynamic allocations are always invalid in this case. */
       report_leftover_allocations(&ips);
       do_constexpr_fail(result);
@@ -34869,7 +36354,7 @@ if the caller has determined that reinterpret_cast expressions can be folded
           dip->variant.constant.non_constant = FALSE;
         }  /* if */
         result = FALSE;
-      } else if (ips.dyn_allocations != NULL &&
+      } else if (has_leftover_allocations(&ips) &&
                  !ips.permit_leftover_dyn_alloc) {
         /* Leftover dynamic allocations are always invalid in this case. */
         report_leftover_allocations(&ips);
@@ -35011,7 +36496,8 @@ position associated with the call.
          only, and therefore it is safe to attempt the destruction of
          temporaries in that case. */
       result = FALSE;
-    } else if (ips.dyn_allocations != NULL && !ips.permit_leftover_dyn_alloc) {
+    } else if (has_leftover_allocations(&ips) &&
+               !ips.permit_leftover_dyn_alloc) {
       /* Leftover dynamic allocations are always invalid in this case. */
       report_leftover_allocations(&ips);
       do_constexpr_fail(result);
@@ -35020,8 +36506,8 @@ position associated with the call.
          constant, so that copy_interpreter_object_to_constant can turn that
          address back into a ck_address constant entry if needed. */
       a_constant_ptr  this_con = local_constant();
-      clear_constant(this_con, (a_constant_repr_kind)ck_address);
-      this_con->variant.address.kind = (an_address_base_kind)abk_variable;
+      clear_constant(this_con, ck_address);
+      this_con->variant.address.kind = abk_variable;
       if (dip->variable != NULL) {
         this_con->variant.address.variant.variable = dip->variable;
       }  /* if */
@@ -35043,7 +36529,7 @@ position associated with the call.
          only, and therefore it is safe to attempt the destruction of
          temporaries in that case. */
       result = FALSE;
-    } else if (result && ips.dyn_allocations != NULL &&
+    } else if (result && has_leftover_allocations(&ips) &&
                !ips.permit_leftover_dyn_alloc) {
       report_leftover_allocations(&ips);
       do_constexpr_fail(result);

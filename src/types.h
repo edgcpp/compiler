@@ -1637,6 +1637,9 @@ typedef struct a_std_conv_descr {
   (memzero((char*)(p_std_conv), sizeof(a_std_conv_descr)))
 
 
+extern a_boolean exception_matches_handler(a_type_ptr        exception_type,
+                                           a_type_ptr        handler_type,
+                                           a_base_class_ptr  *p_base_class);
 extern a_boolean is_nothrow_spec(an_exception_specification_ptr  esp);
 extern a_boolean is_nothrow_type(a_type_ptr  type);
 extern a_boolean is_non_throwing_routine(a_routine_ptr rp);

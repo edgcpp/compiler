@@ -3016,6 +3016,11 @@ EXTERN_THREAD a_boolean
 		pack_indexing_enabled;
 			/* TRUE if C++26 pack indexing is supported. */
 
+EXTERN_THREAD a_boolean
+		constexpr_exceptions_enabled;
+			/* TRUE if exceptions can be thrown and caught during
+			   constant evaluation (a C++26 feature). */
+
 /*
 Macro that determines whether CTAD for alias templates should be accepted.
 Alias-template CTAD is a standard feature in C++20 mode (and the global
