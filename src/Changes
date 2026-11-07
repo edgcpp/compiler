@@ -1,5 +1,70 @@
 Version 7.1
 
+11/6/26  [GH #370]
+C++26: comparison between two arrays is not allowed
+
+A comparison between two arrays using an equality or relational operator is
+deprecated in C++20 and not allowed in C++26 (P2865).  The front end did not
+diagnose it.  It is now a warning in C++20 and C++23, and an error in C++26
+(only a warning when emulating GCC versions before 15 or Clang versions before
+20, which do the same).  Before C++20 it is a remark (a warning when
+emulating Clang 20 or later, which warns by default).  This includes class
+operands that are converted to arrays by a conversion function.  For
+example, with --c++26:
+
+  int a[2], b[2];
+  bool x = a == b;      // Now an error.
+  bool y = a == &b[0];  // Okay: one operand is a pointer.
+  struct C { using A = int[2]; operator A &() const; } c;
+  bool z = c == c;      // Now an error.
+
+
+11/6/26  [GH #484]
+Lookup in default template arguments during partial specialization rescans
+
+When a template argument list was checked during the rescan of a partial
+specialization (e.g., when matching a partial specialization that uses
+void_t), a default template argument of a class or variable template
+named in that list was substituted in the context of the partial
+specialization rather than that of the class or variable template.  Names
+declared after the partial specialization but before the class or variable
+template were therefore not found, and the substitution was wrongly
+considered to fail.  (This only occurred when dependent name processing was
+done, so Microsoft permissive mode was not affected unless --dep_name was
+specified.)  That is now fixed.  For example, with --c++17:
+
+  template<class...> using void_t = void;
+  template<class, template<class...> class TT, class... P>
+  constexpr bool ok_impl = false;
+  template<template<class...> class TT, class... P>
+  constexpr bool ok_impl<void_t<TT<P...>>, TT, P...> = true;
+  namespace lib { template<class T> T&& declval() noexcept; }
+  template<class T, class = decltype(&lib::declval<T&>())> struct A {};
+  struct V {};
+  static_assert(ok_impl<void, A, V>, "");  // Previously failed.
+
+
+11/6/26  [GH #489]
+Template-dependent variable template-ids in C++03 constant expressions
+
+In C++03 GNU and Clang modes, where variable templates are accepted as an
+extension, a variable template-id with template-dependent template arguments
+was rejected as nonconstant where a constant expression is required (e.g., as
+a template argument, an array bound, or an enumerator value).  That is now
+fixed.  Such a reference to a constant variable template is treated as a
+value-dependent constant, and its value is checked when the template is
+instantiated.  For example, with --g++ --c++03:
+
+  template <class T> const bool is_fp = false;
+  template <> const bool is_fp<float> = true;
+  template <bool B> struct integral_constant {
+    static const bool value = B;
+  };
+  template <class T>
+  struct is_floating_point
+    : integral_constant<is_fp<T> > {};  // Previously an error.
+
+
 11/4/26  [GH #224]
 Constant evaluation of GNU vector objects
 
