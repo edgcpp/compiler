@@ -33,6 +33,7 @@ exprutil.c -- Expression scanning utility routines.
 #include "lower_il.h"
 #endif /* DO_IL_LOWERING */
 #include "statements.h"
+#include "modules.h"
 #if USE_X86_FUNCTION_MULTIVERSIONING
 #include "sys_predef.h"
 #endif /* USE_X86_FUNCTION_MULTIVERSIONING */
@@ -18189,11 +18190,12 @@ reference entry, or is NULL if none is needed.
       if (tip != NULL) {
         a_symbol_ptr  tsym;
         tsym = prototype_template_if_template_symbol(tip->template_sym);
-        if (tsym->defined) {
+        if (tsym->defined ||
+            has_pending_template_definition_from_module(
+                                                    routine->assoc_template)) {
           could_be_instantiated = TRUE;
         }  /* if */
-      } else if (routine_sym->variant.routine.ptr
-                            ->friend_defined_in_instantiation) {
+      } else if (routine->friend_defined_in_instantiation) {
         could_be_instantiated = TRUE;
       }  /* if */
       if (!could_be_instantiated) {
