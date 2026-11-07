@@ -11780,11 +11780,15 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
           /* Allow conversion between pointers where type qualifiers are
              being added at levels other than the first, e.g.,
              "int **" -> "const int * const *".  These are the const-safe
-             cases.  This is an extension in C mode. */
+             cases.  In C mode, this is an extension, and a diagnostic is
+             issued since the types pointed to are not "compatible". */
           okay = TRUE;
           std_conv->nontrivial_conversion = FALSE;
           std_conv->type_qualifiers_added = qualifiers_added;
           std_conv->warning_suggested = warning_suggested;
+          if (C_mode() && warning_suggested == ec_no_error) {
+            std_conv->warning_suggested = default_warning_code;
+          }  /* if */
           qualifiers_checked = TRUE;
         } else if ((!suppress_extensions || any_cfront_mode()) &&
                     same_type_with_added_qualifiers(
