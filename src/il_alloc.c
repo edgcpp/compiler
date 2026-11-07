@@ -2157,6 +2157,7 @@ to default values.
       pte->variant.typeref.explicit_memory_attribute_made_implicit = FALSE;
 #endif /* NEAR_AND_FAR_ALLOWED */
       pte->variant.typeref.has_variably_modified_type = FALSE;
+      pte->variant.typeref.typeof_operand_pending = FALSE;
 #if LOWER_VARIABLE_LENGTH_ARRAYS
       pte->variant.typeref.is_lowered_variably_modified_type = FALSE;
 #endif /* LOWER_VARIABLE_LENGTH_ARRAYS */

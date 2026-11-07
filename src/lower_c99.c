@@ -433,6 +433,10 @@ variables also make indexing into the VLA arrays more efficient.
   an_expr_node_ptr  inits = NULL, accums = NULL;
   a_type_ptr        ptrdiff_type = integer_type(targ_ptrdiff_t_int_kind);
 
+  inits = take_typeof_operands(tp);
+  if (inits != NULL) {
+    lower_any_expr(inits);
+  }  /* if */
   /* There may be multiple multilevel VLA components in a type.  For example:
        int (*const (a[n][n]))[m][m];
      The outer loop deals with that possibility. */
@@ -699,6 +703,11 @@ memory for it.
 */
 {
   a_variable_ptr  vla_var;
+  an_expr_node_ptr  type_inits;
+  a_type_ptr       declared_type = stmt->variant.vla.is_typedef_decl ?
+          stmt->variant.vla.variant.typedef_type->variant.typeref.type :
+          stmt->variant.vla.variant.variable->type;
+  type_inits = lower_vla_dimensions(declared_type);
 
   if (stmt->variant.vla.is_typedef_decl) {
     vla_var = NULL;
@@ -709,6 +718,10 @@ memory for it.
   /* If necessary, allocate storage for the variable. */
   if (vla_var != NULL && vla_var->is_vla) {
     stmt->expr = make_vla_allocation_expr(vla_var);
+  }  /* if */
+  if (type_inits != NULL) {
+    stmt->expr = stmt->expr == NULL ? type_inits :
+                                      make_comma_node(type_inits, stmt->expr);
   }  /* if */
   if (stmt->expr == NULL) {
     /* This may happen for simple VLA typedefs.  Create a dummy expression. */

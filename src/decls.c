@@ -22602,6 +22602,23 @@ parameters are scanned by scan_a_template_parameter_declaration.
          recent (GNU C/C++ 3.1 and later) behavior. */
       scan_gnu_declarator_attributes(dps);
 #endif /* GNU_EXTENSIONS_ALLOWED */
+      if (C_mode() && is_variably_modified_type(dps->specifiers_type) &&
+          is_typeref_kind(
+                    skip_typerefs_not_typedefs_or_type_operators(
+                                                        dps->specifiers_type),
+                    trk_is_typeof_with_expression)) {
+        a_type_ptr  typeof_type =
+                    skip_typerefs_not_typedefs_or_type_operators(
+                                                        dps->specifiers_type);
+        an_expr_node_ptr  expr = decltype_arg(typeof_type);
+        if (expr != NULL) {
+          a_statement_ptr  stmt = add_statement_at_stmt_pos(
+                                  stmk_expr,
+                                  &pos_curr_token);
+          stmt->expr = copy_expr_tree(expr, CE_NO_OPTIONS);
+          set_expr_result_not_used(stmt->expr);
+        }  /* if */
+      }  /* if */
     }  /* if */
     add_stop_token(tok_comma);
     dps->need_comma_remove_stop_token = TRUE;
