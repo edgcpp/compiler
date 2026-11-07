@@ -11678,6 +11678,7 @@ to it.
   pesep->enclosing_packs_reset = FALSE;
   pesep->preserve_deduced_packs = FALSE;
   pesep->contains_pack_reference = FALSE;
+  pesep->recorded_pack_expansion = FALSE;
   return pesep;
 }  /* alloc_pack_expansion_stack_entry */
 
@@ -13754,6 +13755,12 @@ pack-index scanner.
          values for both T and U. */
       reset_enclosing_pack_values();
       pesep->enclosing_packs_reset = TRUE;
+      if (claim_pack_index || !pedp->is_pack_index) {
+        /* An earlier scan recorded a pack here, even if lookup now yields
+           substituted symbols.  Pack-index descriptors belong to their
+           operand scanner, not an enclosing list-level context. */
+        pesep->recorded_pack_expansion = TRUE;
+      }  /* if */
     }  /* if */
     /* Allocate an expansion descriptor for this stack entry. */
     pesep->expansion_descr = alloc_pack_expansion_descr();
@@ -14202,11 +14209,11 @@ effect and returns NULL.
           result_pedp = pedp;
         }  /* if */
       } else {
-        /* There were no packs referenced.  This is not a pack expansion.
-           If a pack expansion ("...") has been seen, issue an error that
-           no packs were encountered. */
+        /* No packs were referenced.  Diagnose an ellipsis unless an
+           earlier scan recorded a pack expansion for this context. */
         if (pedp->ellipsis_seen &&
-            !pesep->expansion_with_no_packs_diagnostic_issued) {
+            !pesep->expansion_with_no_packs_diagnostic_issued &&
+            !pesep->recorded_pack_expansion) {
           pos_error(ec_expansion_contains_no_packs,
                     &pedp->ellipsis_position);
         }  /* if */
@@ -14532,7 +14539,8 @@ a_boolean any_packs_referenced(void)
 Return TRUE if the current pack expansion context contains any pack
 references (including those from an enclosing pack context) and we are in
 a template definition context.  See any_packs_referenced_in_curr_context
-for more information.
+for more information.  recorded_pack_expansion is not considered here
+because it describes only the context on the top of the stack.
 */
 {
   a_boolean	result = FALSE;
@@ -14558,7 +14566,9 @@ references and we are in a template definition context.  This differs
 from any_packs_referenced in that this will only be TRUE if the
 context on the top of the pack expansion stack contains a pack reference
 while any_packs_referenced will be TRUE if the reference was in an
-enclosing context.
+enclosing context.  This is also TRUE when an earlier scan recorded a
+pack expansion for the context even though the current scan records no
+pack references (see recorded_pack_expansion).
 */
 {
   a_boolean	result = FALSE;
@@ -14566,12 +14576,15 @@ enclosing context.
   /* In a prototype instantiation context expansion_descr->packs_referenced
      will be NULL but contains_pack_reference could be TRUE.  In a real
      instantiation expansion_descr->packs_referenced might be TRUE but
-     contains_pack_reference will be FALSE. */
+     contains_pack_reference will be FALSE.  recorded_pack_expansion is
+     TRUE when an earlier scan recorded a pack expansion but the current
+     scan records no pack references. */
   if (pack_expansion_stack != NULL &&
       !pack_expansion_stack->is_suppression) {
     a_pack_expansion_stack_entry_ptr	pesep = pack_expansion_stack;
     result = pesep->expansion_descr->packs_referenced != NULL ||
-             pesep->contains_pack_reference;
+             pesep->contains_pack_reference ||
+             pesep->recorded_pack_expansion;
   }  /* if */
   return result;
 }  /* any_packs_referenced_in_curr_context */
