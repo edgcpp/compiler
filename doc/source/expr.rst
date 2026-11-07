@@ -2207,6 +2207,18 @@ in C++14, but not C++11).  It also removes C++11 structural constraints for
 ``constexpr`` functions and constructors (e.g., it allows multiple statements
 in definitions).
 
+The global variable ``constexpr_exceptions_enabled`` is TRUE when exceptions
+can be thrown and caught during constant evaluation (a C++26 feature; it can
+also be controlled with ``--set_flag`` and ``--clear_flag`` options naming
+``constexpr_exceptions``, and it is FALSE whenever ``exceptions_enabled`` is
+FALSE).  The interpreter then evaluates ``throw`` expressions and ``try``
+blocks: A thrown exception unwinds the interpreted evaluation, destroying
+objects along the way, until a matching handler is found.  An exception that
+is not caught within the evaluation, or that causes ``std::terminate`` to be
+called, makes the interpretation fail.  The section "Control Transfers and
+Exceptions" in the comments at the start of ``interpret.c`` describes the
+implementation.
+
 To avoid burdening the IL or the rest of the front end, the interpreter does
 not record state information in the IL or other front end structures.  Instead,
 it maintains its own data structures linked to the IL through efficient hash

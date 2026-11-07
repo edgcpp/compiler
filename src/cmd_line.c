@@ -154,6 +154,12 @@ STATIC_THREAD a_boolean
                            value of FALSE. */
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+STATIC_THREAD a_boolean
+		constexpr_exceptions_flag_used;
+			/* TRUE if constexpr_exceptions_enabled was set or
+			   cleared by a --set_flag or --clear_flag option, so
+			   that the language mode does not determine it. */
+
 
 static void add_config_dependent_option_description(
 				an_option_kind		kind,
@@ -2546,6 +2552,7 @@ STATIC_THREAD a_flag_name
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */
   { "extended_float_types", &extended_float_types },
   { "use_predefined_macro_file", &use_predefined_macro_file },
+  { "constexpr_exceptions", &constexpr_exceptions_enabled },
   { NULL, NULL }  /* must be last */
 };
 
@@ -2569,6 +2576,9 @@ be given to the flag.
     str_command_line_error(ec_cl_invalid_flag_name, flag_name);
   }  /* if */
   *flag_var = value;
+  if (flag_var == &constexpr_exceptions_enabled) {
+    constexpr_exceptions_flag_used = TRUE;
+  }  /* if */
 }  /* set_flag_value */
 
 
@@ -4449,6 +4459,9 @@ default mode (e.g., exception handling).
     embed_enabled = TRUE;
     struct_binding_packs_enabled = TRUE;
     pack_indexing_enabled = TRUE;
+    if (!constexpr_exceptions_flag_used) {
+      constexpr_exceptions_enabled = TRUE;
+    }  /* if */
   }  /* if */
   /* Disable "false" as a null pointer constant in C++11 mode (as per Core
      issue 903). */
@@ -12387,6 +12400,17 @@ enable_microsoft_mode:
     }  /* if */
     nonclass_prototype_instantiations = TRUE;
   }  /* if */
+  if (!exceptions_enabled) {
+    /* Exceptions cannot be thrown during constant evaluation if they cannot be
+       thrown at all. */
+    constexpr_exceptions_enabled = FALSE;
+  }  /* if */
+  if (constexpr_exceptions_enabled) {
+    /* Catching exceptions during constant evaluation requires try-blocks in
+       constexpr functions (e.g., with --set_flag=constexpr_exceptions in
+       C++17 mode). */
+    constexpr_try_enabled = TRUE;
+  }  /* if */
   if (lambdas_enabled) {
     /* If lambdas are allowed, enable local types as template arguments too. */
     local_types_as_template_args_enabled = TRUE;
@@ -13862,6 +13886,8 @@ variables declared in cmd_line.h.
   embed_enabled = FALSE;
   struct_binding_packs_enabled = FALSE;
   pack_indexing_enabled = FALSE;
+  constexpr_exceptions_enabled = FALSE;
+  constexpr_exceptions_flag_used = FALSE;
 }  /* cmd_line_static_var_init */
 
 

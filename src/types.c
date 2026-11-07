@@ -10430,6 +10430,34 @@ value of the expression they are equivalent.
 }  /* same_type_with_added_qualifiers */
 
 
+static a_base_class_ptr unambiguous_public_base_class(
+                                                  a_type_ptr  derived_class,
+                                                  a_type_ptr  base_class)
+/*
+If the class base_class is an unambiguous and public base class of the class
+derived_class, return the base class entry for it.  Otherwise, return NULL.
+*/
+{
+  a_base_class_ptr             bcp;
+  a_base_class_derivation_ptr  preferred_derivation;
+
+  bcp = find_base_class_of(derived_class, base_class);
+  if (bcp != NULL) {
+    if (bcp->ambiguous) {
+      bcp = NULL;
+    } else {
+      /* Be sure bcp points to a public base class of derived_class. */
+      preferred_derivation = preferred_derivation_of(bcp);
+      if (access_to_end_of_path(as_public, preferred_derivation->path,
+                                preferred_derivation) != as_public) {
+        bcp = NULL;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  return bcp;
+}  /* unambiguous_public_base_class */
+
+
 static a_boolean type_is_catchable_by_handler_for_other_type(
                                                       a_type_ptr  type,
                                                       a_type_ptr  other_type)
@@ -10439,8 +10467,6 @@ handler-parameter is of type "other_type".
 */
 {
   a_boolean                    match;
-  a_base_class_ptr             bcp;
-  a_base_class_derivation_ptr  preferred_derivation;
 
   /* Return TRUE if the types are identical. */
   match = identical_types(type, other_type);
@@ -10454,24 +10480,96 @@ handler-parameter is of type "other_type".
     }  /* if */
     type = skip_typerefs(type);
     other_type = skip_typerefs(other_type);
-    if (is_immediate_class_type(type) && is_immediate_class_type(other_type)) {
-      /* bcp will come back non-NULL if type is a base class of other_type. */
-      bcp = find_base_class_of(other_type, type);
-      /* now be sure bcp is unambiguous and public. */
-      if (bcp != NULL && !bcp->ambiguous) {
-        /* Be sure bcp points to a public base class of other_type. */
-        preferred_derivation = preferred_derivation_of(bcp);
-        if (access_to_end_of_path((an_access_specifier)as_public,
-                                  preferred_derivation->path,
-                                  preferred_derivation) ==
-                                             (an_access_specifier)as_public) {
+    if (is_immediate_class_type(type) && is_immediate_class_type(other_type) &&
+        unambiguous_public_base_class(other_type, type) != NULL) {
+      match = TRUE;
+    }  /* if */
+  }  /* if */
+  return match;
+}  /* type_is_catchable_by_handler_for_other_type */
+
+
+a_boolean exception_matches_handler(a_type_ptr        exception_type,
+                                    a_type_ptr        handler_type,
+                                    a_base_class_ptr  *p_base_class)
+/*
+Return TRUE if a handler whose exception-declaration has type handler_type
+matches an exception object of type exception_type (N5054 [except.handle]).  If
+the match involves a conversion to a base class (of the exception object
+itself, or of the class that the pointer that is the exception object points
+to), the entry for that base class of the derived class is returned in
+*p_base_class; otherwise, *p_base_class is set to NULL.
+*/
+{
+  a_boolean   match = FALSE;
+  a_boolean   by_value_or_const_ref = TRUE;
+  a_type_ptr  etp = skip_typerefs(exception_type);
+  a_type_ptr  htp = skip_typerefs(handler_type);
+
+  *p_base_class = NULL;
+  if (is_any_reference_type(htp)) {
+    htp = type_pointed_to(htp);
+    by_value_or_const_ref = is_const_qualified_type(htp) &&
+                            !is_volatile_qualified_type(htp);
+    htp = skip_typerefs(htp);
+  }  /* if */
+  if (identical_types(etp, htp)) {
+    match = TRUE;
+  } else if (is_immediate_class_type(etp) && is_immediate_class_type(htp)) {
+    /* A handler for a public and unambiguous base class. */
+    *p_base_class = unambiguous_public_base_class(etp, htp);
+    match = (*p_base_class != NULL);
+  } else if (!by_value_or_const_ref) {
+    /* The conversions below do not apply. */
+  } else if (is_pointer_type(htp) || is_ptr_to_member_type(htp)) {
+    if (is_nullptr_type(etp)) {
+      match = TRUE;
+    } else if (is_ptr_to_member_type(htp) && is_ptr_to_member_type(etp)) {
+      /* A qualification conversion or a function pointer conversion. */
+      match = (identical_types(pm_class_type(etp), pm_class_type(htp)) &&
+               qualification_conversion_possible(pm_member_type(etp),
+                                                 pm_member_type(htp),
+                                                 (a_boolean*)NULL,
+                                                 (an_error_code*)NULL,
+                                                 /*ignore_underlying_type=*/
+                                                 FALSE)) ||
+              (is_function_type(pm_member_type(etp)) &&
+               identical_types(
+                         function_type_without_noexcept_exception_spec(etp),
+                         htp));
+    } else if (is_pointer_type(htp) && is_pointer_type(etp)) {
+      a_type_ptr  esub = type_pointed_to(etp);
+      a_type_ptr  hsub = type_pointed_to(htp);
+      if (qualification_conversion_possible(esub, hsub, (a_boolean*)NULL,
+                                            (an_error_code*)NULL,
+                                            /*ignore_underlying_type=*/
+                                            FALSE)) {
+        match = TRUE;
+      } else if (is_function_type(esub)) {
+        /* A function pointer conversion. */
+        match = is_function_type(hsub) &&
+                identical_types(
+                        function_type_without_noexcept_exception_spec(esub),
+                        hsub);
+      } else if (!any_qualifier_in_set_missing(get_type_qualifiers(hsub),
+                                               get_type_qualifiers(esub))) {
+        /* A standard pointer conversion (to a pointer to void or to a pointer
+           to a public and unambiguous base class), possibly combined with a
+           qualification conversion. */
+        esub = skip_typerefs(esub);
+        hsub = skip_typerefs(hsub);
+        if (is_void_type(hsub)) {
           match = TRUE;
+        } else if (is_immediate_class_type(esub) &&
+                   is_immediate_class_type(hsub)) {
+          *p_base_class = unambiguous_public_base_class(esub, hsub);
+          match = (*p_base_class != NULL);
         }  /* if */
       }  /* if */
     }  /* if */
   }  /* if */
   return match;
-}  /* type_is_catchable_by_handler_for_other_type */
+}  /* exception_matches_handler */
 
 
 a_boolean is_nothrow_spec(an_exception_specification_ptr  esp)
