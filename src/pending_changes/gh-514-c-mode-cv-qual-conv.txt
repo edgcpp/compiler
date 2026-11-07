@@ -1,0 +1,14 @@
+[GH #514]
+C: pointer conversions adding qualifiers below the first level
+
+In C, the front end accepted an implicit conversion between pointer types
+that adds type qualifiers below the first level, such as "int **" to
+"const int *const *", without a diagnostic.  Such a conversion is valid in
+C++, but in C the types pointed to are not compatible, so it violates a
+constraint and requires a diagnostic (C23 6.5.17.2).  A warning is now
+issued; the conversion is still accepted.  For example:
+
+  void f(int **p) {
+    const int *const *q;
+    q = p;  // Now a warning.
+  }
