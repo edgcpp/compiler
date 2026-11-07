@@ -20662,7 +20662,18 @@ must be unsigned.
   a_constant_ptr smallest, largest;
   size_t         bits_needed, bits_needed_largest, bits_needed_smallest;
   a_constant_ptr enum_con;
+  a_boolean      fixed_underlying_type =
+                     bit_field_type->variant.integer.has_explicit_enum_base ||
+                     integer_type_is_scoped_enum(bit_field_type);
 
+  if (fixed_underlying_type) {
+    /* The enum has a fixed underlying type (an explicit enum base, or a
+       scoped enum), so the bit field has the signedness of that type,
+       regardless of the values of the enumeration constants.  A bool
+       underlying type is treated as unsigned. */
+    use_signed = !enum_has_bool_underlying_type(bit_field_type) &&
+                 int_type_is_signed(bit_field_type);
+  }  /* if */
   enum_con = enum_constants(bit_field_type);
   if (enum_con == NULL) {
     /* There are no enumeration constants, so no bits are needed to
@@ -20689,7 +20700,7 @@ must be unsigned.
                         bits_required_to_represent_integer_constant(largest);
     /* See if the smallest value is negative. */
     smallest_is_negative = (sign_of_integer_constant(smallest) < 0);
-    if (targ_enum_bit_fields_are_always_unsigned) {
+    if (targ_enum_bit_fields_are_always_unsigned && !fixed_underlying_type) {
       /* Enum bit fields are always unsigned (many ABIs require this). */
       use_signed = FALSE;
       bits_needed = bits_needed_largest;
@@ -20699,7 +20710,9 @@ must be unsigned.
          for efficiency reasons: if the enum values just fit in the bit
          field size, an unsigned field might be necessary even though a 
          signed type was a good choice for the enum type. */
-      if (smallest_is_negative) {
+      if (fixed_underlying_type) {
+        /* The signedness was determined above from the underlying type. */
+      } else if (smallest_is_negative) {
         /* Some enum values are negative, so a signed type is required.
            The enum type must already be signed. */
         use_signed = TRUE;
@@ -20734,16 +20747,10 @@ must be unsigned.
       pos_warning(ec_enum_bit_field_too_small, &error_position);
     }  /* if */
     if (targ_enum_bit_fields_are_always_unsigned && smallest_is_negative &&
-        !bit_field_type->variant.integer.has_explicit_enum_base) {
+        !fixed_underlying_type) {
       type_warning(ec_unsigned_enum_bit_field_with_signed_enumerator,
                    bit_field_type);
     }  /* if */
-  }  /* if */
-  if (bit_field_type->variant.integer.has_explicit_enum_base) {
-    /* For an explicit underlying type, ignore the constants and just rely on
-       the underlying type.  (We still potentially issue a warning above,
-       however.) */
-    use_signed = int_type_is_signed(bit_field_type);
   }  /* if */
   *need_signed_type = use_signed;
 }  /* check_enum_type_for_bit_field */

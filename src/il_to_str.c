@@ -2391,11 +2391,13 @@ by octl.
              back end.  Specifically:
                - don't generate enums when generating pcc mode
                - don't generate enums with an explicit underlying type
+               - don't generate scoped enums (their underlying type is fixed)
                - don't generate empty enums (valid in C++, but not in C)
              In these cases, the underlying integer type is used instead. */
           !(is_for_c_gen_be(octl) &&
             (octl->gen_pcc_code ||
              type->variant.integer.has_explicit_enum_base ||
+             type->variant.integer.is_scoped_enum ||
              enum_constants(type) == NULL))) {
         /* Output a reference to the enum type. */
         form_tag_reference(type, octl);
