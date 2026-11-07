@@ -173,14 +173,6 @@ fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                            ^
           detected during instantiation of class "cwg329::A<T> [with T=int]" at line 453
 
-"Test_name.c", line 467: warning: a value of type "cwg330::P" (aka "int *(*)[3]") cannot be assigned to an entity of type "cwg330::Q" (aka "const int *const (*)[3]")
-      q = p; // ok
-        ^
-
-"Test_name.c", line 468: warning: a value of type "cwg330::P" (aka "int *(*)[3]") cannot be assigned to an entity of type "cwg330::Q2" (aka "const cwg330::Qinner *")
-      q2 = p; // ok
-         ^
-
 "Test_name.c", line 469: error: a value of type "cwg330::P" (aka "int *(*)[3]") cannot be assigned to an entity of type "cwg330::R" (aka "const int *const (*)[4]")
       r = p;
         ^
@@ -779,7 +771,7 @@ fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                                               ^
           detected during instantiation of "void cwg345::f(T) [with T=cwg345::A]" at line 753
 
-"Test_name.c", line 787: warning: return value type does not match the function type
+"Test_name.c", line 787: error: return value type does not match the function type
         return p;
                ^
           detected during instantiation of "cwg349::A::operator T ***() [with T=const int]" at line 796
@@ -832,4 +824,4 @@ fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     extern WithoutLinkage5 withoutLinkage5;
                            ^
 
-157 errors detected in the compilation of "Test_name.c".
+158 errors detected in the compilation of "Test_name.c".

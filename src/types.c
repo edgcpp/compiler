@@ -10989,16 +10989,17 @@ weird Microsoft-mode handling of the __unaligned and __restrict qualifiers).
         }  /* if */
         dest_type = pm_member_type(dest_type);
         source_type = pm_member_type(source_type);
-      } else if (!gpp_version_is(<80000) && !clang_mode &&
-                 !ms_version_is(>= 1914) &&
+      } else if (!gpp_version_is(<80000) && !clang_version_is(<70000) &&
+                 !ms_version_is(<1914) &&
                  is_array(source_type) && is_array(dest_type)) {
         /* N4261 reworked qualification conversions to include arrays (thereby
-           resolving Core issue 330).  GCC versions prior to 8.x, Clang, and
-           (some versions of) MSVC do not appear to implement that yet.
-           P0338R4 (in C++20) adjusted this further to allow conversions from
-           arrays with known bounds to arrays with unknown bounds. */
+           resolving Core issue 330).  Older emulated compilers do not
+           implement that.  P0388R4 (in C++20) adjusted this further to allow
+           conversions from arrays with known bounds to arrays with unknown
+           bounds. */
         if (!identical_array_type_level(source_type, dest_type) &&
-            !(cpp20_mode && !has_unknown_specified_bound(dest_type) &&
+            !(cpp20_mode && !clang_version_is(<140000) &&
+              !has_unknown_specified_bound(dest_type) &&
               dest_type->variant.array.variant.number_of_elements == 0)) {
           same = FALSE;
           break;
@@ -11384,6 +11385,7 @@ conversion in C++/CLI because it drops gc-ness of an interior_ptr.
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+
 a_boolean impl_pointer_conversion(
                          a_type_ptr           source_type,
                          a_boolean            source_is_constant,
@@ -11689,6 +11691,7 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
           std_conv->warning_suggested = warning_suggested;
           qualifiers_checked = TRUE;
         } else if ((!suppress_extensions || any_cfront_mode()) &&
+                   !gpp_mode &&
                     same_type_with_added_qualifiers(
                            source_type_pointed_to,
                            dest_type_pointed_to,
@@ -11700,7 +11703,9 @@ operators), 3.3.15 (?: operator), and 3.3.16.1 (simple assignment).
              "int **" -> "const int **".  This is similar to the qualification
              conversion that is checked above, except that a few additional
              cases are accepted.  These are cases that are not const-safe,
-             so a warning is issued in most modes.  This is an extension. */
+             so a warning is issued in most modes.  This is an extension,
+             which is not provided in GNU and Clang modes since GCC and Clang
+             reject such conversions. */
           okay = TRUE;
           std_conv->nontrivial_conversion = FALSE;
           std_conv->type_qualifiers_added = qualifiers_added;

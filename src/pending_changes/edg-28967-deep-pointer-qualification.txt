@@ -1,0 +1,16 @@
+[GH #455]
+GNU/Clang compatibility: unsafe multilevel pointer qualification conversions
+
+In GNU and Clang C++ modes, an implicit conversion between multilevel pointer
+types that adds const below the first level without adding it at every
+intermediate level (e.g., "char **" to "const char **") was accepted with a
+warning.  Such a conversion is not const-safe and is not a valid qualification
+conversion; GCC and Clang reject it.  It is now an error.  The qualification
+conversion changes for EDGcpfe/18553 are now also enabled for Clang 7.x and
+later, and the version check for MSVC 19.14 and later has been corrected.
+Conversions to arrays of unknown bound remain disabled for Clang versions
+before 14.  For example, with --g++:
+
+  void f(char **p) {
+    const char **q = p;  // Now an error.
+  }

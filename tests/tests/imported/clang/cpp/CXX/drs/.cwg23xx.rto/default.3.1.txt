@@ -37,11 +37,7 @@ fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     int *const *const &f2() { return p; }
                                      ^
 
-"Test_name.c", line 261: warning: return value type does not match the function type
-    const int **const &f4() { return p; }
-                                     ^
-
-"Test_name.c", line 261: warning: returning reference to local temporary
+"Test_name.c", line 261: error: return value type does not match the function type
     const int **const &f4() { return p; }
                                      ^
 
@@ -96,4 +92,4 @@ fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   const A a;
           ^
 
-15 errors detected in the compilation of "Test_name.c".
+16 errors detected in the compilation of "Test_name.c".
