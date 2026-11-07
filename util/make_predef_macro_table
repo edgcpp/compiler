@@ -78,10 +78,48 @@ get_predefined_macros()
   echo  >>info.tmp
   if [ $result -eq 0 ] ; then
     $cmd $extra_opts -E -dM $file >$output
+    add_flt_eval_method $cmd $output $file
   else
     echo "make_predef_macro_table: $cmd returned a non-zero status."
     echo "make_predef_macro_table: $header omitted."
     touch $output
+  fi
+}
+
+#
+# Clang 13 and later implement __FLT_EVAL_METHOD__ as a builtin macro rather
+# than a predefined one (its value can be changed within a translation unit
+# by "#pragma clang fp eval_method"), so -dM does not list it.  The front end
+# does not define it either, so without an entry in predefined_macros.txt,
+# FLT_EVAL_METHOD from <float.h> expands to an undeclared identifier.  This
+# affects clang on all hosts, not just macOS.
+#
+# When the macro is missing from the -dM output, preprocess the macro name to
+# get its value and add a definition for it.  The value is target-dependent
+# (e.g., 2 with "-m32 -mno-sse"), so it is computed with the same options as
+# the -dM run rather than assumed to be 0.  The temporary file has the same
+# suffix as the -dM input, so the value is computed in the same language
+# mode.  If the compiler does not define the macro at all, the name comes back
+# unchanged and nothing is added.
+#
+# The test is on the -dM output rather than on --clang because on macOS the
+# default gcc and g++ commands are Apple clang, so a GNU table made there with
+# the default commands needs this too.  GCC always lists __FLT_EVAL_METHOD__
+# in its -dM output (as does clang before version 13), so for those compilers
+# the grep finds it and the table is left exactly as -dM produced it.
+#
+add_flt_eval_method()
+{
+  fem_cmd=$1
+  fem_output=$2
+  fem_file=fem.${3##*.}
+  if ! grep "^#define __FLT_EVAL_METHOD__ " $fem_output >/dev/null ; then
+    echo "__FLT_EVAL_METHOD__" >$fem_file
+    fem_value=`$fem_cmd $extra_opts -E -P $fem_file | sed -e "/^ *$/d"`
+    if [ -n "$fem_value" ] && [ "$fem_value" != "__FLT_EVAL_METHOD__" ] ; then
+      echo "#define __FLT_EVAL_METHOD__ $fem_value" >>$fem_output
+    fi
+    rm -f $fem_file
   fi
 }
 
@@ -140,6 +178,9 @@ delete_unneeded_entries()
   unneeded="$unneeded __STDC_NO_VLA__"
   unneeded="$unneeded __STDC_UTF_16__"
   unneeded="$unneeded __STDC_UTF_32__"
+  unneeded="$unneeded __STDC_EMBED_NOT_FOUND__"
+  unneeded="$unneeded __STDC_EMBED_FOUND__"
+  unneeded="$unneeded __STDC_EMBED_EMPTY__"
   unneeded="$unneeded __STDCPP_THREADS__"
   unneeded="$unneeded __STDCPP_DEFAULT_NEW_ALIGNMENT__"
   unneeded="$unneeded __GXX_RTTI"
