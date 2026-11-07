@@ -950,6 +950,21 @@ struct an_ifc_encoded_edg_extension_type_offset : Implicit_numeric_entry<
 };  /* an_ifc_encoded_edg_extension_type_offset */
 
 
+enum an_ifc_encoded_edg_float_type_sort_0_44 : uint32_t;
+using an_ifc_encoded_edg_float_type_sort_storage = uint32_t;
+
+
+/*
+The universal representation for an IFC EncodedEdgFloatTypeSort.
+*/
+struct an_ifc_encoded_edg_float_type_sort : Implicit_numeric_entry<
+                                  an_ifc_encoded_edg_float_type_sort_storage> {
+  using storage_type = an_ifc_encoded_edg_float_type_sort_storage;
+  using base_type = Implicit_numeric_entry<storage_type>;
+  using base_type::Implicit_numeric_entry;
+};  /* an_ifc_encoded_edg_float_type_sort */
+
+
 enum an_ifc_encoded_edg_heap_complex_token_offset_0_43 : uint32_t;
 using an_ifc_encoded_edg_heap_complex_token_offset_storage = uint32_t;
 
@@ -3242,6 +3257,28 @@ enum an_ifc_edg_expr_sort : uint32_t {
 };  /* an_ifc_edg_expr_sort */
 
 
+enum an_ifc_edg_float_type_sort_0_44 : uint32_t {
+  ifc_0_44_efts_float16      = 0,
+  ifc_0_44_efts_fp16         = 1,
+  ifc_0_44_efts_float32x     = 2,
+  ifc_0_44_efts_float64x     = 3,
+  ifc_0_44_efts_float80      = 4,
+  ifc_0_44_efts_float128     = 5,
+  ifc_0_44_efts_std_bfloat16 = 6
+};  /* an_ifc_edg_float_type_sort_0_44 */
+
+
+enum an_ifc_edg_float_type_sort : uint32_t {
+  ifc_efts_float128,
+  ifc_efts_float16,
+  ifc_efts_float32x,
+  ifc_efts_float64x,
+  ifc_efts_float80,
+  ifc_efts_fp16,
+  ifc_efts_std_bfloat16
+};  /* an_ifc_edg_float_type_sort */
+
+
 enum an_ifc_edg_template_argument_sort_0_43 : uint32_t {
   ifc_0_43_etas_edg_template_argument_type     = 0,
   ifc_0_43_etas_edg_template_argument_non_type = 1,
@@ -3261,7 +3298,14 @@ enum an_ifc_edg_type_sort_0_43 : uint32_t {
 };  /* an_ifc_edg_type_sort_0_43 */
 
 
+enum an_ifc_edg_type_sort_0_44 : uint32_t {
+  ifc_0_44_ets_edg_type_substituted = 0,
+  ifc_0_44_ets_edg_type_float       = 1
+};  /* an_ifc_edg_type_sort_0_44 */
+
+
 enum an_ifc_edg_type_sort : uint32_t {
+  ifc_ets_edg_type_float,
   ifc_ets_edg_type_substituted
 };  /* an_ifc_edg_type_sort */
 
@@ -6011,6 +6055,7 @@ two instances are equivalent, return FALSE; otherwise return TRUE.
 
 
 enum an_ifc_edg_type_index_0_43 : uint32_t {};
+enum an_ifc_edg_type_index_0_44 : uint32_t {};
 
 
 /*
@@ -10957,6 +11002,14 @@ struct an_ifc_edg_extension_expr :
   |-------|--------------|---------|------|
   | value | EdgTypeIndex | 0.43    | 4    |
   |-------|--------------|---------|------|
+
+  |---------------------------------------|
+  |   EdgExtensionType - 0.44 (4 bytes)   |
+  |-------|--------------|---------|------|
+  | Name  | Type         | Version | Size |
+  |-------|--------------|---------|------|
+  | value | EdgTypeIndex | 0.44    | 4    |
+  |-------|--------------|---------|------|
 */
 enum an_ifc_edg_extension_type_part : uint8_t {};
 using an_ifc_edg_extension_type_storage = an_ifc_edg_extension_type_part[4];
@@ -11435,6 +11488,36 @@ struct an_ifc_edg_trait_function_definition :
   using base_type = Byte_buffer_entry<storage_type>;
   using base_type::Byte_buffer_entry;
 };  /* an_ifc_edg_trait_function_definition */
+
+
+/*
+  |------------------------------------------|
+  |      EdgTypeFloat - 0.44 (4 bytes)       |
+  |------|------------------|---------|------|
+  | Name | Type             | Version | Size |
+  |------|------------------|---------|------|
+  | kind | EdgFloatTypeSort | 0.44    | 4    |
+  |------|------------------|---------|------|
+*/
+enum an_ifc_edg_type_float_part : uint8_t {};
+using an_ifc_edg_type_float_storage = an_ifc_edg_type_float_part[4];
+#if USE_MMAP_FOR_MODULES
+using an_ifc_edg_type_float_bytes = const an_ifc_edg_type_float_storage*;
+#else /* !USE_MMAP_FOR_MODULES */
+using an_ifc_edg_type_float_bytes = an_ifc_edg_type_float_storage;
+#endif /* USE_MMAP_FOR_MODULES */
+/*
+The universal representation of an IFC EdgTypeFloat node.
+
+The representation is declared as a derived struct of Byte_buffer_entry rather
+than simply an alias of the instantiation to improve the debugger experience.
+*/
+struct an_ifc_edg_type_float :
+                             Byte_buffer_entry<an_ifc_edg_type_float_storage> {
+  using storage_type = an_ifc_edg_type_float_storage;
+  using base_type = Byte_buffer_entry<storage_type>;
+  using base_type::Byte_buffer_entry;
+};  /* an_ifc_edg_type_float */
 
 
 /*
@@ -23163,6 +23246,7 @@ enum an_ifc_partition_kind : uint32_t {
   ifc_pk_edg_token_complex_textual,
   ifc_pk_edg_trait_class_template_definition,
   ifc_pk_edg_trait_function_definition,
+  ifc_pk_edg_type_float,
   ifc_pk_edg_type_substitued,
   ifc_pk_msvc_trait_decl_attrs,
   ifc_pk_msvc_trait_named_function_parameters,
@@ -23485,7 +23569,7 @@ enum an_ifc_partition_kind : uint32_t {
 };  /* an_ifc_partition_kind */
 
 
-#define IFC_PARTITION_COUNT 337
+#define IFC_PARTITION_COUNT 338
 
 /*
 A method for mapping partition names to an_ifc_partition_kind values.  Used
@@ -23522,6 +23606,7 @@ EXTERN an_ifc_partition_map ifc_partition_map[IFC_PARTITION_COUNT]
   { ".edg.trait.class-template-definition",
                                   ifc_pk_edg_trait_class_template_definition },
   { ".edg.trait.function-definition", ifc_pk_edg_trait_function_definition },
+  { ".edg.type.float", ifc_pk_edg_type_float },
   { ".edg.type.substitued", ifc_pk_edg_type_substitued },
   { ".msvc.trait.decl-attrs", ifc_pk_msvc_trait_decl_attrs },
   { ".msvc.trait.named-function-parameters",

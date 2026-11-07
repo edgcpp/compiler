@@ -10070,7 +10070,7 @@ class CPPCodeGen:
     spec_output_stream = split_output_stream.get_tmpl_spec()
 
     split_output_stream.write(COPYRIGHT_NOTICE)
-    split_output_stream.write('\n')
+    split_output_stream.write('\n\n')
     type_output_stream.write(TYPE_FILE_HEADER)
     decl_output_stream.write(DECL_FILE_HEADER)
     def_output_stream.write(DEF_FILE_HEADER)
@@ -10256,8 +10256,6 @@ class CPPCodeGen:
         '\n#endif /* !STANDALONE_UTILITY_PROGRAM */\n'
       )
 
-    split_output_stream.write('\n')
-    split_output_stream.write(COPYRIGHT_NOTICE)
     split_output_stream.write('\n')
 
 class IFCTextOffsetToNameIndex:

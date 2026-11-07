@@ -6660,6 +6660,34 @@ diagnostic textual representation.
 }  /* db_node */
 
 
+void db_node(const an_ifc_edg_type_float &universal, unsigned indent)
+/*
+Given the universal representation of EdgTypeFloat, print a diagnostic textual
+representation with the given indent.
+*/
+{
+  if (has_ifc_kind(universal)) {
+    an_ifc_edg_float_type_sort field = get_ifc_kind(universal);
+
+    db_print_indent(indent);
+    fprintf(f_debug, "kind: %s\n", str_for(field));
+  }  /* if */
+}  /* db_node */
+
+
+void db_node(const an_ifc_edg_type_float &universal)
+/*
+Given the universal representation of EdgTypeFloat, print a diagnostic textual
+representation.
+*/
+{
+  fprintf(f_debug, "================================= ");
+  fprintf(f_debug, "EdgTypeFloat ");
+  fprintf(f_debug, "=================================\n");
+  db_node(universal, 0);
+}  /* db_node */
+
+
 void db_node(const an_ifc_edg_type_substituted &universal, unsigned indent)
 /*
 Given the universal representation of EdgTypeSubstituted, print a diagnostic
@@ -23200,6 +23228,13 @@ associated node.
 {
   if (validate(idx)) {
     switch (idx.sort) {
+      case ifc_ets_edg_type_float:
+        { an_ifc_edg_type_float universal;
+
+          construct_node_prechecked(&universal, idx);
+          db_node(universal);
+        }
+        break;
       case ifc_ets_edg_type_substituted:
         { an_ifc_edg_type_substituted universal;
 
