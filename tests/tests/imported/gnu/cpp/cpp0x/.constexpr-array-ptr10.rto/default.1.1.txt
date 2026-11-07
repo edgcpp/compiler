@@ -55,14 +55,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   constexpr bool b13 = 0 >= p0;   // { dg-error "24:ordered comparison" }
                          ^
 
-"Test_name.c", line 58: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 59: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wextra"
-              ^
-
 "Test_name.c", line 62: error: expression must have a constant value
   constexpr bool b0  = p0;        // { dg-error "not a constant expression" }
                        ^
@@ -161,22 +153,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   constexpr bool b12 = 0 >  p0; // { dg-error "ordered comparison" }
                          ^
 
-"Test_name.c", line 79: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
-
-"Test_name.c", line 89: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 91: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wextra"
-              ^
-
-"Test_name.c", line 94: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Waddress"
-              ^
-
 "Test_name.c", line 96: error: expression must have a constant value
   constexpr bool b0  = p1;        // { dg-error "not a constant expression" }
                        ^
@@ -246,10 +222,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
 "Test_name.c", line 106: note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
   constexpr bool b13 = 0 >= p1;   // { dg-error "ordered comparison" }
                          ^
-
-"Test_name.c", line 114: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
 
 "Test_name.c", line 21: warning: variable "A::b0" was declared but never referenced
   constexpr bool b0  = p0;        // { dg-warning "address of .A::i." }
