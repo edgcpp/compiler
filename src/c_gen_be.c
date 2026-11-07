@@ -10851,12 +10851,19 @@ if this routine has a body (dump nothing if it has no body).
   a_boolean       is_marked_weak = FALSE;
   a_boolean       thread_local_init_case = FALSE;
   a_boolean       for_inlining_only;
+  a_boolean       inline_only_defn = FALSE;
+  a_boolean       need_gnu_inline_attr = FALSE;
 
   if (c99_mode && rout->definition_for_inlining_only &&
-      !gcc_version_is(< 50000)) {
+      !gcc_version_is(< 50000)
+#if GNU_EXTENSIONS_ALLOWED
+      && !rout->gnu_c89_inline
+#endif /* GNU_EXTENSIONS_ALLOWED */
+                              ) {
     /* This is a C99 "inline definition", so we must suppress the "extern"
        keyword to avoid turning it into an external definition.  (gcc did
-       not support C99 inline semantics until version 5.1.0.) */
+       not support C99 inline semantics until version 5.1.0.  A routine with
+       the gnu_inline attribute follows the GNU C89 rules instead.) */
     for_inlining_only = TRUE;
   } else {
     for_inlining_only = FALSE;
@@ -10881,8 +10888,29 @@ if this routine has a body (dump nothing if it has no body).
          provided only for the purpose of inlining -- "extern inline".
          Put out the definition in that case. */
       has_defn = TRUE;
+      inline_only_defn = TRUE;
       if (!for_inlining_only) {
         storage_class = (a_storage_class)sc_extern;
+        /* "extern inline" is a definition only for inlining under the GNU
+           C89 rules, but an external definition under the C99 rules (used
+           by gcc in C99 modes since 4.3, and by default since 5.1), so
+           request the former with the gnu_inline attribute.  As in
+           form_routine_attributes, omit it for gcc before 4.2, which does
+           not recognize it but always follows the GNU C89 rules. */
+        need_gnu_inline_attr = TRUE;
+#if GCC_IS_GENERATED_CODE_TARGET
+        if (gcc_is_generated_code_target &&
+            gnu_target_version_number < 40200) {
+          need_gnu_inline_attr = FALSE;
+        }  /* if */
+#endif /* GCC_IS_GENERATED_CODE_TARGET */
+#if GNU_EXTENSIONS_ALLOWED
+        if (rout->gnu_c89_inline) {
+          /* form_routine_attributes already puts out the gnu_inline
+             attribute for this routine. */
+          need_gnu_inline_attr = FALSE;
+        }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED */
       }  /* if */
     }  /* if */
   }  /* if */
@@ -11145,13 +11173,17 @@ declare_routine:
       /* gcc will be used to compile this generated code, so we know how to
          indicate an inline function. */
       /* gcc ignores __inline__ on functions with ellipses, so don't
-         mark such functions as inline.  Recent versions of gcc issue an
-         error for a function marked both inline and weak, so don't mark a
-         weak function as inline, either. */
-      if (!f_skip_typerefs(rout->type)->variant.routine.extra_info->
-                                                                has_ellipsis &&
+         mark such functions as inline, except for a definition only for
+         inlining, which would otherwise be an external definition.  Recent
+         versions of gcc issue an error for a function marked both inline and
+         weak, so don't mark a weak function as inline, either. */
+      if ((!rout_type_supp(f_skip_typerefs(rout->type))->has_ellipsis ||
+           inline_only_defn) &&
           !is_marked_weak) {
         write_tok_str("__inline__ ");
+        if (need_gnu_inline_attr) {
+          write_tok_str("__attribute__((__gnu_inline__)) ");
+        }  /* if */
       }  /* if */
     }  /* if */
 #if GNU_EXTENSIONS_ALLOWED && !LOWER_IFUNC
