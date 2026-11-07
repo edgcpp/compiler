@@ -1,0 +1,17 @@
+[GH #516]
+GNU C: typeof operands of variably modified type were not evaluated
+
+When the operand of a GNU C typeof (or C23 typeof) operator has a variably
+modified type, the operand must be evaluated.  The front end treated it as
+unevaluated, so its side effects were lost.  The operand is now evaluated
+once where the declaration, cast, compound literal, va_arg, or sizeof of a
+variable-length array type appears.  As in GCC 17, it is evaluated once per
+declaration rather than once per declarator, and it is not evaluated again
+when a typedef for the type is used.  If the type's array bounds also have
+side effects, side effects in the operand outside those bounds can still be
+lost.  For example, with --gnu_version:
+
+  int n = 1, a[8];
+  void f(void) {
+    typeof (++n, (int (*)[n])a) p, q;  // n is now 2.
+  }
