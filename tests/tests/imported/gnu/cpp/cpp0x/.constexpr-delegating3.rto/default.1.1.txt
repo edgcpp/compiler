@@ -1,9 +1,9 @@
 fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++11 Test_name.c
-"Test_name.c", line 12: error: static assertion failed with ""
+"Test_name.c", line 12: error: expression must have a constant value
   static_assert(test(0).m == 0, "");
-  ^
-"Test_name.c", line 12: note: the final comparison was -48039863565308959547770532813896688677 == 0
+                ^
+"Test_name.c", line 12: note: access to uninitialized object
   static_assert(test(0).m == 0, "");
-                          ^
+                       ^
 
 1 error detected in the compilation of "Test_name.c".

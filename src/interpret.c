@@ -7483,6 +7483,22 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
                   unmap_stack_bytes(ips, dst_addr.address);
                 }  /* if */
                 mark_subobject_initialized(dst_addr.address, complete_object);
+#if GNU_VECTOR_TYPES_ALLOWED
+                if (type_is(ftp, tk_vector)) {
+                  /* A vector element can be accessed by itself (e.g., by
+                     subscripting the member), so mark each element
+                     initialized. */
+                  a_type_ptr     etp = skip_typerefs(
+                                           ftp->variant.vector.element_type);
+                  a_targ_size_t  k, n_elems = num_vector_elements(ftp);
+                  a_byte_count   elem_size = value_bytes_for_type(ips, etp,
+                                                                  &result);
+                  for (k = 0; result && k<n_elems; k += 1) {
+                    mark_subobject_initialized(dst_addr.address+k*elem_size,
+                                               complete_object);
+                  }  /* for */
+                }  /* if */
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
                 elem_con = elem_con->next;
               }  /* if */
               if (this_bytes != NULL) {
@@ -23985,10 +24001,21 @@ after the constructor body has been interpreted.
       p_arg_ptr += 1;
       arg_size += 1;
     }  /* for */
-    if (dip->variant.constructor.value_initialization) {
-      /* If this is for value initialization, clear the storage first.
-         Do not, however, overwrite the first word (which may record the
-         inheritance hierarchy). */
+    if (!dip->variant.constructor.value_initialization) {
+      /* Nothing to do. */
+    } else if (!type_has_user_provided_default_constructor(class_type)) {
+      /* Value initialization of a class without a user-provided default
+         constructor zero-initializes the object before calling the
+         constructor, which need not initialize every subobject (e.g., a
+         member of a class whose implicit default constructor calls a
+         user-provided base class constructor).  Mark the subobjects as
+         initialized, so that reading them is valid. */
+      init_subobject_to_zero(ips, result_storage, class_type,
+                             complete_object);
+    } else {
+      /* Otherwise, the object is not zero-initialized, but clear the
+         storage anyway.  Do not, however, overwrite the first word (which
+         may record the inheritance hierarchy). */
       a_byte_count  n_class_bytes;
       a_boolean     dummy = TRUE;
       n_class_bytes = f_value_bytes_for_type(ips, class_type, &dummy);
@@ -32204,7 +32231,7 @@ the value representation of the integer value.
             break;
 #if GNU_VECTOR_TYPES_ALLOWED
           case eok_vector_subscript:
-            /* The first operand is a vector (lvalue or rvalue), and the
+            /* The first operand is a vector (glvalue or prvalue), and the
                second operand is an integer. */
             { a_host_large_integer len = (a_host_large_integer)
                                               num_vector_elements(opnd1_type);
@@ -32223,7 +32250,7 @@ the value representation of the integer value.
               etp = skip_typerefs(opnd1_type->variant.vector.element_type);
               esize = value_bytes_for_type(ips, etp, &result);
               if (!result) break;
-              if (opnd1->is_lvalue) {
+              if (opnd1->is_lvalue || opnd1->is_xvalue) {
                 a_constexpr_address
                              result_addr = *(a_constexpr_address*)opnd1_value;
                 result_addr.address += host_int_val*esize;
@@ -32250,8 +32277,9 @@ the value representation of the integer value.
                 result_addr = *(a_constexpr_address*)opnd1_value;
               } else {
                 /* The first operand is a class rvalue: Create an address for
-                   it. */
-                mark_complete_object_initialized(opnd1_value);
+                   it.  Do not mark the object as fully initialized: since
+                   C++20, a constexpr constructor can leave members
+                   uninitialized, and reading those must be diagnosed. */
                 clear_address(&result_addr, opnd1_value);
                 result_addr.alloc_seq_number = ips->storage_stack.alloc_seq();
               }  /* if */
@@ -32375,8 +32403,9 @@ the value representation of the integer value.
                 result_addr = *(a_constexpr_address*)opnd1_value;
               } else {
                 /* The first operand is a class rvalue: Create an address for
-                   it. */
-                mark_complete_object_initialized(opnd1_value);
+                   it.  Do not mark the object as fully initialized: since
+                   C++20, a constexpr constructor can leave members
+                   uninitialized, and reading those must be diagnosed. */
                 clear_address(&result_addr, opnd1_value);
                 result_addr.alloc_seq_number = ips->storage_stack.alloc_seq();
               }  /* if */

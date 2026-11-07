@@ -4317,7 +4317,9 @@ default mode (e.g., exception handling).
     if (!option_kind_used[(int)optk_digit_separators]) {
       digit_separators_enabled = TRUE;
     }  /* if */
-    if (rvalue_references_enabled && !gpp_mode && !clang_mode) {
+    if (rvalue_references_enabled &&
+        !gpp_version_is(<90000) && !clangcpp_version_is(<40000)) {
+      /* A field selection on a class prvalue is an xvalue (CWG 616). */
       selection_from_prvalue_is_xvalue = TRUE;
     }  /* if */
     relaxed_constexpr_enabled = TRUE;
