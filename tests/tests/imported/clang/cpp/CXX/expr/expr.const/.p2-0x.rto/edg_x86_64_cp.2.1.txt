@@ -476,7 +476,7 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 495: error: expression must have a constant value
     constexpr const std::type_info &ti1 = typeid(*p); // expected-error {{must be initialized by a constant expression}} cxx11-note {{typeid applied to expression of polymorphic type 'S'}} cxx20-note {{dereferencing a null pointer}}
                                           ^
-"Test_name.c", line 495: note: attempt to access run-time storage
+"Test_name.c", line 495: note: operation not allowed on null pointer
     constexpr const std::type_info &ti1 = typeid(*p); // expected-error {{must be initialized by a constant expression}} cxx11-note {{typeid applied to expression of polymorphic type 'S'}} cxx20-note {{dereferencing a null pointer}}
                                           ^
 

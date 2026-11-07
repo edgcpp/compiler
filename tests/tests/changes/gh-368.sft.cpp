@@ -14,6 +14,26 @@ namespace std {
     constexpr virtual ~exception() noexcept {}
     constexpr virtual const char* what() const noexcept { return "exc"; }
   };
+  class bad_cast : public exception {
+  public:
+    constexpr bad_cast() noexcept {}
+    constexpr const char* what() const noexcept override { return "bc"; }
+  };
+  class bad_typeid : public exception {
+  public:
+    constexpr bad_typeid() noexcept {}
+    constexpr const char* what() const noexcept override { return "bt"; }
+  };
+  class bad_alloc : public exception {
+  public:
+    constexpr bad_alloc() noexcept {}
+  };
+  class bad_array_new_length : public bad_alloc {
+  public:
+    constexpr bad_array_new_length() noexcept {}
+    constexpr const char* what() const noexcept override { return "banl"; }
+  };
+  int uncaught_exceptions() noexcept;
 }
 
 constexpr bool eq(const char* a, const char* b) {
@@ -382,6 +402,21 @@ namespace unwinding {
     return 0;
   }
   static_assert(throwing_copy() == 3);
+
+  constexpr int uncaught() {
+    struct U {
+      int* out;
+      constexpr ~U() { *out = std::uncaught_exceptions(); }
+    };
+    int during = -1, before = std::uncaught_exceptions();
+    try {
+      U u{&during};
+      throw 1;
+    } catch (int) {
+      return before * 100 + during * 10 + std::uncaught_exceptions();
+    }
+  }
+  static_assert(uncaught() == 10);
 }
 
 namespace function_try_blocks {
@@ -620,6 +655,49 @@ namespace partial_construction {
   static_assert(extended_temp() == 1);
 }
 
+namespace library {
+  struct B { virtual ~B() = default; };
+  struct D1 : B {};
+  struct D2 : B {};
+
+  constexpr int bad_cast() {
+    D1 d;
+    B& b = d;
+    try {
+      D2& d2 = dynamic_cast<D2&>(b);
+      return 1;
+    } catch (const std::bad_cast& e) {
+      return eq(e.what(), "bc") ? 2 : 3;
+    }
+  }
+  static_assert(bad_cast() == 2);
+
+  constexpr int bad_typeid(B* p) {
+    try {
+      (void)typeid(*p);
+      return 1;
+    } catch (const std::exception& e) {
+      return eq(e.what(), "bt") ? 2 : 3;
+    }
+  }
+  static_assert(bad_typeid(nullptr) == 2);
+
+  constexpr int bad_array_new_length(int n) {
+    try {
+      int* p = new int[n]{1, 2, 3};
+      delete[] p;
+      return 1;
+    } catch (const std::bad_array_new_length& e) {
+      return eq(e.what(), "banl") ? 2 : 3;
+    } catch (const std::bad_alloc&) {
+      return 4;
+    }
+  }
+  static_assert(bad_array_new_length(3) == 1);
+  static_assert(bad_array_new_length(2) == 2);
+  static_assert(bad_array_new_length(-1) == 2);
+}
+
 namespace ignored_evaluations {
   // An exception thrown by an assumption expression (which is not evaluated
   // at run time) does not propagate.
@@ -632,7 +710,7 @@ namespace ignored_evaluations {
       throw 5;
     } catch (int i) {
       [[assume((throw, true))]];
-      return i;
+      return i + std::uncaught_exceptions();
     }
   }
   static_assert(assume_rethrows() == 5);
@@ -651,7 +729,7 @@ namespace ignored_evaluations {
       throw 6;
     } catch (int i) {
       [[assume(fails_in_handler())]];
-      return i;
+      return i + std::uncaught_exceptions();
     }
   }
   static_assert(assume_fails() == 6);

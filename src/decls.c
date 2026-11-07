@@ -10585,6 +10585,15 @@ skip_overloading:;
         locator->symbol_header->has_intrinsic_name) {
       check_for_constexpr_intrinsic(routine_ptr, locator->symbol_header);
     }  /* if */
+  } else if (!redeclaration && innermost_function_scope == NULL &&
+             constexpr_exceptions_enabled &&
+             locator->symbol_header != NULL &&
+             locator->symbol_header->has_intrinsic_name) {
+    /* Some library functions that can be evaluated during constant evaluation
+       are not necessarily declared constexpr (e.g., the GCC C++ standard
+       library, as of GCC 16, does not declare std::current_exception
+       constexpr).  See check_for_constexpr_intrinsic. */
+    check_for_constexpr_intrinsic(routine_ptr, locator->symbol_header);
   }  /* if */
 #if GNU_EXTENSIONS_ALLOWED
   if (gcc_pragma_options_stack != NULL && !func_info->is_main_function) {

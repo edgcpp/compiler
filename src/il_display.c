@@ -3575,6 +3575,12 @@ Print the name of a special function kind.
     case sfk_builtin_operator_delete:
                                 s = "sfk_builtin_operator_delete";
                                                                break;
+    case sfk_builtin_current_exception:
+                                s = "sfk_builtin_current_exception";
+                                                               break;
+    case sfk_builtin_uncaught_exceptions:
+                                s = "sfk_builtin_uncaught_exceptions";
+                                                               break;
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
     default:                     s = "**BAD SPECIAL FUNCTION KIND**";
   }  /* switch */
