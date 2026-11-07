@@ -19,7 +19,7 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     const int ci = 0;
               ^
 
-"SemaCXX/reinterpret-cast.cpp", line 45: warning: conversion from pointer to smaller integer
+"SemaCXX/reinterpret-cast.cpp", line 45: error: invalid type conversion
     (void)reinterpret_cast<char>(fnp);
           ^
 
@@ -147,4 +147,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     const int data[size];
                         ^
 
-15 errors detected in the compilation of "Test_name.c".
+16 errors detected in the compilation of "Test_name.c".

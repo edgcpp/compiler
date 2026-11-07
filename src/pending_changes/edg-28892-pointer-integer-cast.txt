@@ -1,0 +1,13 @@
+[GH #454]
+GNU C++ mode: casts of pointers to integer types that are too small
+
+In GNU C++ mode (including Clang mode), a cast of a pointer to an integer type
+too small to hold all of its bits was accepted with a warning.  GCC 4.0 and
+later, and Clang, reject such casts, and the standard requires a diagnostic.
+They are now errors, except when emulating GCC versions before 4.0, which
+accepted them with a warning.  For example, with --g++ on a target with 64-bit
+pointers:
+
+  unsigned char narrow(void *p) {
+    return reinterpret_cast<unsigned char>(p);  // Now an error.
+  }
