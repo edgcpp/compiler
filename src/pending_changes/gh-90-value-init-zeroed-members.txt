@@ -1,0 +1,12 @@
+[GH #90]
+Constexpr reads of zero-initialized members after value initialization
+
+Value initialization of a class without a user-provided default constructor
+zero-initializes the object before calling the constructor.  During
+constant evaluation, the zeroed members were not treated as initialized, so
+reading one that the constructor does not set was rejected.  For example,
+with --c++20:
+
+  struct A { constexpr A() {} int x; };
+  struct B : A { int y; };
+  static_assert(B().x == 0);  // Previously rejected.
