@@ -97,7 +97,7 @@ that `cmake` can be found, test for `ninja`, build a native version of the C++
 `dev_tools`, verify EDG Python tools and libraries can be found, and install
 git hooks used for project development.
 
-It should then be possible to follow the build proceedure above with the
+It should then be possible to follow the build procedure above with the
 `linux-gcc-debug` preset, and perform the equivalent process to
 `edg-docker-test` (from the EDG project directory):
 
@@ -133,7 +133,7 @@ that `cmake` can be found, test for `ninja`, build a native version of the C++
 `dev_tools`, verify EDG Python tools and libraries can be found, and install
 git hooks used for project development.
 
-It should then be possible to follow the build proceedure above with the
+It should then be possible to follow the build procedure above with the
 `macos-arm-clang-debug` preset, and perform something roughly equivalent to the
 `edg-docker-test` process (from the EDG project directory):
 
