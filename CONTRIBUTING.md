@@ -55,7 +55,7 @@ We would *greatly* appreciate:
 ## :bulb:         - Requesting Features
 
 If you've got an idea for a feature or improvement to the front end, please
-start a GitHub Discussion about your idea.  If there's consensus amoung the
+start a GitHub Discussion about your idea.  If there's consensus among the
 maintainers of the relevant area that the idea is something we would like to
 move forward with, an issue will be opened following the forum discussion.
 
@@ -66,7 +66,7 @@ move forward with, an issue will be opened following the forum discussion.
 > We do accept AI-assisted contributions.  However, you must understand
 > these contributions and be prepared to explain them to the extent that you
 > can defend design decisions.  The compiler project is a composition of many
-> complex components and applications; continuity of maintaince requires
+> complex components and applications; continuity of maintenance requires
 > continuity of understanding.
 >
 > Thank you for your understanding and cooperation.
@@ -79,7 +79,7 @@ All pull request will be reviewed, with priority given to those filed against
 an open issue.  Before starting new work it's best to review the status of
 existing issues and discussion (it's possible someone is already working on
 the item or that there has been significant discussion about the desired
-implementation characeristics).
+implementation characteristics).
 
 ### Checklist for Success
 
