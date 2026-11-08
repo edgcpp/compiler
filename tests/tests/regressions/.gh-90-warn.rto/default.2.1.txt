@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=2 --c++20 --g++ --gnu_version=150000 Test_name.c
+"Test_name.c", line 13: warning: returning reference to local temporary
+  const int &f1() { return A().b; }                            // Warning.
+                           ^
+
+"Test_name.c", line 14: warning: returning pointer to local temporary
+  const int *f2() { return &static_cast<const int &>(A().b); } // Warning.
+                           ^
+
+"Test_name.c", line 15: warning: returning reference to local temporary
+  int &&f3() { return static_cast<A &&>(A()).b; }              // Warning.
+                      ^
+
