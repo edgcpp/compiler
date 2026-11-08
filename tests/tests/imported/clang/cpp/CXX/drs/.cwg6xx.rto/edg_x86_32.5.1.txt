@@ -47,18 +47,6 @@ fe_only -DTEST_NUMBER=5 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       const std::type_info &an2 = typeid(n + 1);
                             ^
 
-"Test_name.c", line 213: error: invalid redeclaration of type name "cwg616::T" (declared at line 212)
-    using T = decltype((static_cast<S&&>(s).n));
-          ^
-
-"Test_name.c", line 214: error: invalid redeclaration of type name "cwg616::T" (declared at line 213)
-    using T = decltype((f().n));
-          ^
-
-"Test_name.c", line 215: error: invalid redeclaration of type name "cwg616::T" (declared at line 214)
-    using T = decltype(S().*&S::n);
-          ^
-
 "Test_name.c", line 246: error: incomplete type "int []" is not allowed
       sizeof(x);
             ^
@@ -616,4 +604,4 @@ At end of source: error: expected a "}"
     constexpr int c = true || f();
                   ^
 
-103 errors detected in the compilation of "Test_name.c".
+100 errors detected in the compilation of "Test_name.c".
