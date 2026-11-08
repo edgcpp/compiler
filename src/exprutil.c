@@ -25482,9 +25482,12 @@ underlying entity is a temporary, return *is_temp set to TRUE.
     tblock.process_expr = examine_expr_for_auto_object;
     tblock.follow_addressing_path = TRUE;
     /* A pointer into a prvalue.field xvalue (CWG 616) addresses a
-       subobject of the class prvalue. */
+       subobject of the class prvalue, which is a temporary even when it
+       is not represented by an explicit temporary (e.g., for a trivially
+       destructible class). */
     tblock.follow_class_rvalue_addressing_path =
                                          selection_from_prvalue_is_xvalue;
+    tblock.look_for_temporaries = selection_from_prvalue_is_xvalue;
     traverse_expr(expr, &tblock);
     is_addr_of_auto = tblock.result;
     *is_temp = tblock.is_temp;  

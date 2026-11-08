@@ -1742,7 +1742,8 @@ EXTERN_THREAD a_boolean
 EXTERN_THREAD a_boolean
 		selection_from_prvalue_is_xvalue;
 			/* TRUE if a field selection on a prvalue class object
-			   produces an xvalue (C++14 / CWG 616).  When FALSE,
+			   produces an xvalue (C++14 / CWG 616; GCC 9 and
+			   Clang 4 also apply it in C++11 mode).  When FALSE,
 			   the selection is a prvalue. */
 
 EXTERN_THREAD a_boolean
