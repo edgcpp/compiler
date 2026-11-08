@@ -4887,6 +4887,36 @@ object) is initialized.
 }  /* subobject_is_initialized */
 
 
+#if GNU_VECTOR_TYPES_ALLOWED
+static a_boolean vector_elements_are_initialized(
+                                          an_interpreter_state  *ips,
+                                          a_type_ptr            tp,
+                                          a_constexpr_address   *cap)
+/*
+Return TRUE if each element of the vector of type tp at the address described
+by *cap is initialized (or if the enclosing complete object is fully
+initialized).  The elements of a vector are tracked individually, so a whole
+vector value can only be read if none of them is uninitialized.
+*/
+{
+  a_boolean  result = TRUE;
+
+  if (!complete_object_is_initialized(cap->complete_object)) {
+    a_type_ptr     etp = skip_typerefs(tp->variant.vector.element_type);
+    a_targ_size_t  k, n_elems = num_vector_elements(tp);
+    a_byte_count   elem_size = value_bytes_for_type(ips, etp, &result);
+    for (k = 0; result && k<n_elems; k += 1) {
+      if (!subobject_is_initialized(cap->address+k*elem_size,
+                                    cap->complete_object)) {
+        result = FALSE;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  return result;
+}  /* vector_elements_are_initialized */
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
+
+
 static a_boolean mark_mutable_members_not_initialized(
                                           an_interpreter_state  *ips,
                                           a_byte                *subobj,
@@ -7488,15 +7518,8 @@ END_DISABLE_GCC_WARNING_STR_OVERFLOW
                   /* A vector element can be accessed by itself (e.g., by
                      subscripting the member), so mark each element
                      initialized. */
-                  a_type_ptr     etp = skip_typerefs(
-                                           ftp->variant.vector.element_type);
-                  a_targ_size_t  k, n_elems = num_vector_elements(ftp);
-                  a_byte_count   elem_size = value_bytes_for_type(ips, etp,
-                                                                  &result);
-                  for (k = 0; result && k<n_elems; k += 1) {
-                    mark_subobject_initialized(dst_addr.address+k*elem_size,
-                                               complete_object);
-                  }  /* for */
+                  mark_whole_subobject_initialized(ips, dst_addr.address, ftp,
+                                                   complete_object);
                 }  /* if */
 #endif /* GNU_VECTOR_TYPES_ALLOWED */
                 elem_con = elem_con->next;
@@ -7834,6 +7857,25 @@ any subobject that is not initialized (the diagnostic is associated with pos).
         }  /* if */
       }
       break;
+#if GNU_VECTOR_TYPES_ALLOWED
+    case tk_vector:
+      { /* The elements of a vector are tracked individually: Handle each
+           element after the first (which shares the address of the vector
+           and was handled above). */
+        a_type_ptr      etp = skip_typerefs(tp->variant.vector.element_type);
+        a_targ_size_t   k, n_elems = num_vector_elements(tp);
+        a_byte_count    elem_size = value_bytes_for_type(ips, etp, &result);
+        for (k = 1; result && k<n_elems; ++k) {
+          if (subobject_is_initialized(src_bytes+k*elem_size, complete_src)) {
+            mark_subobject_initialized(dst_bytes+k*elem_size, complete_dst);
+          } else {
+            do_constexpr_fail(result);
+            info_with_pos(ec_object_not_initialized, pos, ips);
+          }  /* if */
+        }  /* for */
+      }
+      break;
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
     default:
       /* Nothing more to do. */
       break;
@@ -25492,6 +25534,14 @@ conversion to an rvalue is forced externally.
   } else if (!is_initialized(cap) && !is_immediate_class_type(tp)) {
     do_constexpr_fail(result);
     info_with_pos(ec_object_not_initialized, &expr->position, ips);
+#if GNU_VECTOR_TYPES_ALLOWED
+  } else if (type_is(tp, tk_vector) &&
+             !vector_elements_are_initialized(ips, tp, cap)) {
+    /* A whole vector is read, but some of its elements are not
+       initialized. */
+    do_constexpr_fail(result);
+    info_with_pos(ec_object_not_initialized, &expr->position, ips);
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
   } else if (is_variant_path(cap) &&
              !check_variant_path(ips, cap, &expr->position)) {
     /* An attempt to dereference an inactive variant path. */
@@ -33158,6 +33208,16 @@ finish_temp_init:
                     &expr->position, ips);
   }  /* switch */
 done:
+#if GNU_VECTOR_TYPES_ALLOWED
+  if (pop_when_done && result && type_is(tp, tk_vector) &&
+      !is_glvalue_node(expr)) {
+    /* The whole vector value has been stored, and its elements can be
+       accessed individually (e.g., by subscripting an lvalue for it), so
+       mark each of them initialized. */
+    mark_whole_subobject_initialized(ips, result_storage, tp,
+                                     complete_object);
+  }  /* if */
+#endif /* GNU_VECTOR_TYPES_ALLOWED */
   end_work_visit(ips, result, pop_when_done);
 #undef SET_result_val_from_operand_address
 #undef CHECK_int_range

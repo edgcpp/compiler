@@ -1,6 +1,5 @@
 //type:fp
-//options_all:--c++14
-//options::--g++ --gnu_version=150000:--clang --clang_version=190100
+//options:--c++14:--c++14 --g++ --gnu_version=150000:--c++14 --clang --clang_version=190100:--c++11 --g++ --gnu_version=90000:--c++11 --clang --clang_version=40000
 template <class T> struct is_xvalue { static const bool value = false; };
 template <class T> struct is_xvalue<T &&> { static const bool value = true; };
 struct A { int b; };

@@ -1,12 +1,4 @@
 fe_only -DTEST_NUMBER=3 --clang -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 --c++ Test_name.c
-"Test_name.c", line 44: warning: variable "p" was set but never used
-    int *p = (1 ? (struct X){ 0 } : f()).a; // expected-warning {{temporary whose address is used as value of local variable 'p' will be destroyed at the end of the full-expression}}
-         ^
-
-"Test_name.c", line 45: warning: variable "r" was declared but never referenced
-    int *r = (1 ? (union U){ 0 } : g()).a;  // expected-warning {{temporary whose address is used as value of local variable 'r' will be destroyed at the end of the full-expression}}
-         ^
-
 "Test_name.c", line 64: warning: variable "p" was set but never used
     int *p = ((void)0, x).a; // c-warning {{temporary whose address is used as value of local variable 'p' will be destroyed at the end of the full-expression}}
          ^

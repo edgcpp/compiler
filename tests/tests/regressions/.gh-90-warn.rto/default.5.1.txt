@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=5 --c++11 --g++ --gnu_version=150000 Test_name.c
+"Test_name.c", line 12: warning: returning reference to local temporary
+  const int &f1() { return A().b; }                            // Warning.
+                           ^
+
+"Test_name.c", line 13: warning: returning pointer to local temporary
+  const int *f2() { return &static_cast<const int &>(A().b); } // Warning.
+                           ^
+
+"Test_name.c", line 14: warning: returning reference to local temporary
+  int &&f3() { return static_cast<A &&>(A()).b; }              // Warning.
+                      ^
+
+"Test_name.c", line 27: warning: returning pointer to local temporary
+  const int *f4() { return &static_cast<const int &>(make().b); } // Warning.
+                           ^
+
+"Test_name.c", line 28: warning: returning pointer to local temporary
+  const int *f5() { return make().arr; }         // Warning (not with GCC 8).
+                           ^
+
+"Test_name.c", line 29: warning: returning pointer to local temporary
+  const int *f6() { return &make().arr[1]; }     // Warning (not with GCC 8).
+                           ^
+
