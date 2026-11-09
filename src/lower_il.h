@@ -220,6 +220,13 @@ typedef struct an_init_pos_descr {
 			   to indicate that the derived class is a complete
 			   object, which allows more efficient addressing of
 			   virtual base classes. */
+  a_byte_boolean
+		not_this_candidate;
+			/* TRUE while an explicitly specified element of the
+			   aggregate that begins at this position is being
+			   lowered.  Such an element cannot refer to that
+			   aggregate through an implicit "this" (see
+			   lower_param_ref). */
   a_type_ptr	base_type;
 			/* Base entity type. */
   an_init_pos_modifier_ptr
@@ -1199,6 +1206,12 @@ extern void set_curr_cleanup_state_to_latest_initialization(void);
 extern void turn_statement_into_block(a_statement_ptr        statement,
                                       an_insert_location_ptr insert_location,
                                       a_statement_ptr        *orig_statement);
+
+extern void turn_statement_into_block_transferring_pragma(
+                                        a_statement_ptr        statement,
+                                        an_insert_location_ptr insert_location,
+                                        a_statement_ptr        *orig_statement,
+                                        a_scope_ptr            scope);
 
 extern void put_block_around_try_block(a_statement_ptr        statement,
                                        an_insert_location_ptr insert_location,

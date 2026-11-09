@@ -749,23 +749,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   static_assert( requires {{ &f } -> C;} ); // expected-error {{reference to overloaded function could not be resolved;}}
   ^
 
-"Test_name.c", line 1692: error: the deduced placeholder type "GH170856::absolute_zero" failed the type constraint
-  consteval PointOriginFor<R{}> auto default_point_origin(R) {
-            ^
-"Test_name.c", line 1681: note: concept is false for arguments "<struct GH170856::<unnamed>, GH170856::<unnamed>{{{}}}>"
-  concept PointOriginFor = QuantitySpecOf<decltype(QS), T::_quantity_spec_>;
-                           ^
-"Test_name.c", line 1679: note: concept is false for arguments "<const struct GH170856::<unnamed>>"
-  concept QuantitySpecOf = QuantitySpec<decltype(QS)>;
-                           ^
-"Test_name.c", line 1677: note: atomic constraint evaluates to false
-  concept QuantitySpec = __is_convertible(T*, quantity_spec_interface_base*);
-                         ^
-          detected during:
-            instantiation of "GH170856::PointOriginFor<...> auto GH170856::default_point_origin(R) [with R=struct GH170856::<unnamed>]" at line 1697
-            instantiation of class "GH170856::point_<R> [with R=struct GH170856::<unnamed>]" at line 1705
-            instantiation of "GH170856::point_<decltype(<expression>)> GH170856::point [with R=GH170856::<unnamed>{{}}]" at line 1705
-
 "Test_name.c", line 41: error: a requires-clause is not allowed here (not a templated function)
       ([] () requires C<Ts> {} ()); // expected-error {{expression contains unexpanded parameter pack 'Ts'}}
              ^
@@ -1000,4 +983,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       F* f = l; // expected-error {{no viable conversion from}}
          ^
 
-145 errors detected in the compilation of "Test_name.c".
+144 errors detected in the compilation of "Test_name.c".

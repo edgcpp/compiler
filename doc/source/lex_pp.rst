@@ -466,7 +466,7 @@ stack.
 Reusable and nonreusable token caches may be freely intermixed; template
 instantiations may occur while scanning tokens from a cache and a template
 instantiation will usually create new caches, as needed, when doing
-look-aheads, as described earlier.
+look-ahead, as described earlier.
 
 Source Positions
 ----------------

@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Check a range of commits against the commit policy: the message (see
+edgchanges.check_commit_message), and no merge commits.
+
+The arguments are handed to git log, so any revision range it accepts works:
+
+  edg-check-commit-messages origin/main..HEAD
+  edg-check-commit-messages main HEAD ^origin/main
+
+A merge commit is a violation by itself; --allow-merges (for forks that use
+merge commits) skips merge commits instead, message and all.
+
+Only commits with a violation are reported.  The exit status is 1 if any
+commit was reported, and 0 otherwise.
+'''
+
+import argparse
+import shutil
+import subprocess
+import sys
+
+from typing import List, NamedTuple, Optional
+
+import edgchanges
+import edgutil
+
+TOOL_PATH_GIT = shutil.which('git')
+
+Commit = NamedTuple(
+  'Commit',
+  [('hash', str), ('is_merge', bool), ('message', str)]
+)
+
+def _list_commits(log_args: List[str]) -> List[Commit]:
+  '''Return the commits git rev-list selects.
+
+  Commit messages are arbitrary bytes, so nothing here depends on their
+  content: rev-list (hashes only) feeds cat-file --batch, which gives the size
+  of each object it prints.'''
+  assert TOOL_PATH_GIT is not None
+  rev_list_proc = subprocess.Popen(
+    [TOOL_PATH_GIT, 'rev-list', *log_args],
+    stdout = subprocess.PIPE,
+    stderr = subprocess.PIPE
+  )
+  cat_file_proc = subprocess.Popen(
+    [TOOL_PATH_GIT, 'cat-file', '--batch'],
+    stdin = rev_list_proc.stdout,
+    stdout = subprocess.PIPE,
+    stderr = subprocess.PIPE
+  )
+  # Leave the pipe to cat-file, so rev-list sees SIGPIPE if it exits early.
+  assert rev_list_proc.stdout is not None
+  rev_list_proc.stdout.close()
+  data, cat_file_stderr = cat_file_proc.communicate()
+  assert rev_list_proc.stderr is not None
+  rev_list_stderr = rev_list_proc.stderr.read()
+  rev_list_proc.stderr.close()
+
+  for returncode, stderr in (
+    (rev_list_proc.wait(), rev_list_stderr),
+    (cat_file_proc.returncode, cat_file_stderr)
+  ):
+    if returncode != 0:
+      raise RuntimeError(stderr.decode('utf-8', errors = 'replace').strip())
+
+  commits = []
+  position = 0
+  while position < len(data):
+    line_end = data.index(b'\n', position)
+    header = data[position:line_end].split()
+    if len(header) != 3 or header[1] != b'commit':
+      raise RuntimeError(f"unexpected object: {data[position:line_end]!r}")
+    content_start = line_end + 1
+    content_end = content_start + int(header[2])
+    # The message follows the first blank line, after the headers.
+    headers, _, message = (
+      data[content_start:content_end].partition(b'\n\n')
+    )
+    parent_count = sum(
+      1 for line in headers.split(b'\n') if line.startswith(b'parent ')
+    )
+    commits.append(
+      Commit(
+        header[0].decode(),
+        parent_count > 1,
+        message.decode('utf-8', errors = 'replace')
+      )
+    )
+    position = content_end + 1
+  return commits
+
+def check_commits(log_args: List[str], *, allow_merges: bool) -> int:
+  '''Report each commit selected by log_args that violates the policy; return
+  the number of such commits.'''
+  violations = 0
+  for commit in _list_commits(log_args):
+    if commit.is_merge and allow_merges:
+      continue
+
+    problem: Optional[str]
+    if commit.is_merge:
+      problem = 'merge commits are not allowed'
+    else:
+      problem = edgchanges.check_commit_message(commit.message)
+    if problem is not None:
+      print(f"{commit.hash[:12]} {commit.message.partition(chr(10))[0]}")
+      print(f"  {problem}")
+      violations += 1
+  return violations
+
+def _parse_args() -> argparse.Namespace:
+  parser = argparse.ArgumentParser(
+    description = (
+      'Report the commits in a range that violate the commit policy '
+      '(message format, no merge commits).'
+    )
+  )
+  parser.add_argument(
+    '--allow-merges',
+    action = 'store_true',
+    help = 'permit merge commits (and skip them) instead of reporting them'
+  )
+  parser.add_argument(
+    'log_args',
+    nargs = '+',
+    metavar = 'GIT_LOG_ARG',
+    help = 'arguments for git log, e.g. a range such as origin/main..HEAD'
+  )
+  return parser.parse_args()
+
+def main() -> int:
+  args = _parse_args()
+  if TOOL_PATH_GIT is None:
+    edgutil.eprint('error: git not found')
+    return 1
+
+  try:
+    violations = check_commits(
+      args.log_args,
+      allow_merges = args.allow_merges
+    )
+  except RuntimeError as ex:
+    edgutil.eprint(f"error: {ex}")
+    return 1
+  return 1 if violations != 0 else 0
+
+if __name__ == '__main__':
+  sys.exit(main())

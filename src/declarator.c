@@ -3329,6 +3329,13 @@ an error if a default argument expression is encountered.
                      *new_type_ptr, (a_routine_ptr)NULL);
     scope_stack_top().decl_parse_state = state;
     must_pop_function_prototype_scope = !state->for_requires_expr_params;
+    if (state->for_requires_expr_params && is_template_dependent_context()) {
+      /* Like its requirements (see scan_requires_expr), the parameter
+         declarations of a requires-expression in a template-dependent
+         context undergo substitution: Make sure the rescan information
+         needed for that is recorded. */
+      scope_stack_top().in_template_deduction_context = TRUE;
+    }  /* if */
     if (is_constructor && is_template_dependent_context()) {
       /* A constructor in a template-dependent context may be used for
          deduction even if it isn't a template itself, because of C++17

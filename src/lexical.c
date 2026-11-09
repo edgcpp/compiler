@@ -19599,56 +19599,244 @@ when suppress_warning is TRUE.
 }  /* flush_to_end_of_source */
 
 
+static INLINE void flush_statement_header()
+/*
+Flush the parenthesized header of a statement such as "while", "for",
+"switch" or "catch".  The current token is the token after the keyword (and
+after any "co_await"), which should be the opening parenthesis.  On return,
+the current token is the token following the closing parenthesis (e.g., the
+start of the controlled substatement).
+
+Note: The caller is responsible for having set flushing_tokens to TRUE.
+*/
+{
+  if (curr_token == tok_lparen) {
+    flush_until_matching_token_full(/*limit_flush=*/FALSE);
+    if (curr_token != tok_end_of_source) {
+      /* Skip the closing parenthesis. */
+      (void)get_token();
+    }  /* if */
+  } else {
+    pos_error(ec_exp_lparen, &error_position);
+  }  /* if */
+}  /* flush_statement_header */
+
+
+static void flush_one_statement()
+/*
+Flush the tokens of exactly one statement.  The current token is the first
+token of the statement.
+
+On return, the current token is the last token of the statement.  It is left
+unconsumed so that the caller can fetch the next token after leaving the
+flushing lexical state, which preserves pragma state (see
+flush_if_or_else_statement).
+
+Note: The caller is responsible for having set flushing_tokens to TRUE.
+*/
+{
+  /* Note this routine is recursive because many statements have substatements,
+     e.g., "while (a) while (b) { }" is a single statement. */
+  /* Skip a leading attribute-specifier-seq. */
+  while (curr_token == tok_lbracket && next_token() == tok_lbracket) {
+    flush_until_matching_token_full(/*limit_flush=*/FALSE);
+    (void)get_token();
+  }  /* while */
+  /* Skip the "template" of a C++26 "template for" expansion statement.  The
+     rest of the statement is scanned like an ordinary "for" statement. */
+  if (curr_token == tok_template && next_token() == tok_for) {
+    (void)get_token();
+  }  /* if */
+  switch (curr_token) {
+    case tok_lbrace:
+      /* Compound statement. */
+      flush_until_matching_token_full(/*limit_flush=*/FALSE);
+      break;
+    case tok_if:
+      /* Special handling is needed for nested "if" statements so that
+         substatements that are "else if" statements are handled properly. */
+      (void)get_token();
+      if (curr_token == tok_not && next_token() == tok_consteval) {
+        /* Skip the "not" token only if it is followed by "consteval". */
+        (void)get_token();
+      }  /* if */
+      if (curr_token == tok_consteval) {
+        (void)get_token();
+      } else {
+        if (curr_token == tok_constexpr) (void)get_token();
+        if (curr_token == tok_lparen) {
+          flush_until_matching_token_full(/*limit_flush=*/FALSE);
+          (void)get_token();
+        } else {
+          pos_error(ec_exp_lparen, &error_position);
+        }  /* if */
+      }  /* if */
+      flush_one_statement();
+      if (next_token() == tok_else) {
+        /* Consume the final token of the statement skipped by
+           flush_one_statement. */
+        (void)get_token();
+        /* Consume the "else". */
+        (void)get_token();
+        flush_one_statement();
+      }  /* if */
+      break;
+    case tok_while:
+    case tok_switch:
+#if MICROSOFT_EXTENSIONS_ALLOWED
+    case tok_for_each:
+#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+      /* The controlled substatement is a statement in its own right. */
+      (void)get_token();
+      flush_statement_header();
+      flush_one_statement();
+      break;
+#if UPC_EXTENSIONS_ALLOWED
+    case tok_upc_forall:
+      /* The upc_forall statement is similar to the standard for statement. */
+      FALLTHROUGH
+#endif /* UPC_EXTENSIONS_ALLOWED */
+    case tok_for:
+      /* For statement and range-based for statement, which may have a
+         "co_await" between the "for" and the opening parenthesis. */
+      (void)get_token();
+      if (curr_token == tok_coroutine_await) (void)get_token();
+      flush_statement_header();
+      flush_one_statement();
+      break;
+    case tok_do:
+      /* "do statement while ( expression ) ;" */
+      (void)get_token();
+      flush_one_statement();
+      if (next_token() == tok_while) {
+        /* Consume the final token of the statement skipped by
+           flush_one_statement. */
+        (void)get_token();
+        /* Consume the "while". */
+        (void)get_token();
+        /* Leaves the current token on the ";" following the ")". */
+        flush_statement_header();
+      }  /* if */
+      break;
+    case tok_try:
+      /* "try compound-statement handler-seq" */
+      (void)get_token();
+      if (curr_token == tok_lbrace) {
+        flush_until_matching_token_full(/*limit_flush=*/FALSE);
+      }  /* if */
+      while (next_token() == tok_catch) {
+        /* Consume the final token of the preceding compound statement (the
+           "try" block or the previous handler). */
+        (void)get_token();
+        /* Consume the "catch". */
+        (void)get_token();
+        flush_statement_header();
+        if (curr_token == tok_lbrace) {
+          flush_until_matching_token_full(/*limit_flush=*/FALSE);
+        }  /* if */
+      }  /* while */
+      break;
+#if MICROSOFT_EXTENSIONS_ALLOWED
+    case tok_microsoft_try:
+      /* "__try compound-statement __except ( expression ) compound-statement"
+         or "__try compound-statement __finally compound-statement". */
+      (void)get_token();
+      if (curr_token == tok_lbrace) {
+        flush_until_matching_token_full(/*limit_flush=*/FALSE);
+      }  /* if */
+      if (next_token() == tok_except) {
+        /* Consume the final token of the "__try" compound statement. */
+        (void)get_token();
+        /* Consume the "__except". */
+        (void)get_token();
+        flush_statement_header();
+      } else if (next_token() == tok_finally) {
+        /* Consume the final token of the "__try" compound statement. */
+        (void)get_token();
+        /* Consume the "__finally". */
+        (void)get_token();
+      }  /* if */
+      if (curr_token == tok_lbrace) {
+        flush_until_matching_token_full(/*limit_flush=*/FALSE);
+      }  /* if */
+      break;
+#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
+    case tok_case: {
+      /* A case label labels the statement that follows it.  Skip to the
+         ":", allowing for conditional expressions in the case value. */
+      unsigned long  quest_mark_count = 0;
+      (void)get_token();
+      while (curr_token != tok_end_of_source && curr_token != tok_semicolon &&
+             curr_token != tok_rbrace &&
+             (curr_token != tok_colon || quest_mark_count != 0)) {
+        if (curr_token == tok_quest_mark) {
+          quest_mark_count++;
+        } else if (curr_token == tok_colon) {
+          quest_mark_count--;
+        } else if (curr_token == tok_lparen || curr_token == tok_lbracket ||
+                   curr_token == tok_lbrace) {
+          flush_until_matching_token_full(/*limit_flush=*/FALSE);
+        }  /* if */
+        (void)get_token();
+      }  /* while */
+      if (curr_token == tok_colon) {
+        (void)get_token();
+        flush_one_statement();
+      }  /* if */
+      break;
+    }
+    case tok_default:
+      /* "default :" labels the statement that follows it. */
+      if (next_token() == tok_colon) {
+        (void)get_token();
+        (void)get_token();
+        flush_one_statement();
+      }  /* if */
+      break;
+    case tok_identifier:
+      if (next_token() == tok_colon) {
+        /* A label definition labels the statement that follows it. */
+        (void)get_token();
+        (void)get_token();
+        flush_one_statement();
+        break;
+      }  /* if */
+      /* Otherwise this is an expression or declaration statement. */
+      FALLTHROUGH
+    default:
+      { /* An expression statement, declaration, jump statement, empty
+           statement, etc.  Such statements end at the first ";" that isn't
+           nested within parentheses, brackets or braces.  Initialize a local
+           stop token set.  Also stop on right brace and end of source for
+           error cases. */
+        a_token_set_array  stop_tokens;
+        clear_token_set_array(stop_tokens);
+        incr_token_set_array_element(stop_tokens, tok_end_of_source);
+        incr_token_set_array_element(stop_tokens, tok_rbrace);
+        incr_token_set_array_element(stop_tokens, tok_semicolon);
+        flush_tokens_with_stop_tokens_and_warning_flag(
+                                                    stop_tokens,
+                                                    /*suppress_warning=*/TRUE);
+      }
+      break;
+  }  /* switch */
+}  /* flush_one_statement */
+
+
 void flush_if_or_else_statement(void)
 /*
 Flush tokens of a dependent statement of an "if" or "else" statement.
-The current token is the token after the "if" or "else" keyword.
+The current token is the token after the "if" or "else" keyword.  Exactly one
+statement is flushed, so for an unbraced dependent statement such as
+"if constexpr (c) while (a) while (b) { } return;", the "return" is not
+flushed.  On return the current token is the first token after the statement.
 */
 {
-  /* Special handling is needed for nested "if" statements so that
-     substatements that are "else if" statements are handled properly. */
-  if (curr_token == tok_if) {
-    (void)get_token();
-    if (curr_token == tok_not && next_token() == tok_consteval) {
-      /* Skip the "not" token only if it is followed by "consteval". */
-      (void)get_token();
-    }  /* if */
-    if (curr_token == tok_consteval) {
-      (void)get_token();
-    } else {
-      if (curr_token == tok_constexpr) (void)get_token();
-      if (curr_token == tok_lparen) {
-        flush_until_matching_token_full(/*limit_flush=*/FALSE);
-        (void)get_token();
-      } else {
-        pos_error(ec_exp_lparen, &error_position);
-      }  /* if */
-    }  /* if */
-    flush_if_or_else_statement();
-    if (curr_token == tok_else) {
-      (void)get_token();
-      flush_if_or_else_statement();
-    }  /* if */
-  } else {
-    push_lexical_state_stack();
-    curr_lexical_state_stack_entry->flushing_tokens = TRUE;
-    /* If we found a left brace, skip the compound statement. */
-    if (curr_token == tok_lbrace) {
-      flush_until_matching_token_full(/*limit_flush=*/FALSE);
-    } else {
-      /* Initialize a local stop token set.  Also stop on right brace and end
-         of source for error cases. */
-      a_token_set_array  stop_tokens;
-      clear_token_set_array(stop_tokens);
-      incr_token_set_array_element(stop_tokens, tok_end_of_source);
-      incr_token_set_array_element(stop_tokens, tok_rbrace);
-      incr_token_set_array_element(stop_tokens, tok_semicolon);
-      flush_tokens_with_stop_tokens_and_warning_flag(stop_tokens,
-                                                    /*suppress_warning=*/TRUE);
-    }  /* if */
-    pop_lexical_state_stack();
-    if (curr_token != tok_end_of_source) (void)get_token();
-  }  /* if */
+  push_lexical_state_stack();
+  curr_lexical_state_stack_entry->flushing_tokens = TRUE;
+  flush_one_statement();
+  pop_lexical_state_stack();
+  if (curr_token != tok_end_of_source) (void)get_token();
 }  /* flush_if_or_else_statement */
 
 

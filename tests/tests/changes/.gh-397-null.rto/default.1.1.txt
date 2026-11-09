@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --g++ --c++20 Test_name.c
+"Test_name.c", line 21: error: expression must have a constant value
+  constexpr int v = g();  // Error: null pointer argument (previously crashed).
+                    ^
+"Test_name.c", line 19: note: attempt to dereference a null pointer
+    return __builtin_memcmp(rp.p(), (const X*)&s.z, sizeof(X));
+                            ^
+
+"Test_name.c", line 21: warning: variable "v" was declared but never referenced
+  constexpr int v = g();  // Error: null pointer argument (previously crashed).
+                ^
+
+1 error detected in the compilation of "Test_name.c".

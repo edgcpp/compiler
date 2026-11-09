@@ -30,7 +30,7 @@ RUN /edg/setup-scripts/run-all.sh
 COPY docker-tools/* /edg/docker-tools/
 
 # Install native tools.
-COPY --from=edgcpp/legacy-native-tools:latest \
+COPY --from=ghcr.io/edgcpp/legacy-native-tools:latest \
   /edg/native-tools \
   /edg/native-tools
 

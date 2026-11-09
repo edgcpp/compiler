@@ -2878,6 +2878,7 @@ default values.
   tblock->complete_object_type = NULL;
   tblock->call_case = FALSE;
   tblock->is_temp = FALSE;
+  tblock->look_for_temporaries = FALSE;
 #if HANDLE_VIRTUAL_BASES_IN_COMPLETE_CTOR_DTORS
   tblock->orig_params = NULL;
   tblock->new_params = NULL;
@@ -3408,8 +3409,10 @@ Tips for proper use of the follow_addressing_path mode:
           traverse_expr(operand1, tblock);
           break;
         case eok_array_to_pointer:
-          /* Array-to-pointer decay.  Watch out for the array prvalue case. */
-          if (is_glvalue_node(operand1)) {
+          /* Array-to-pointer decay.  Watch out for the array prvalue case,
+             which is followed only when looking for temporaries (e.g., for
+             the "A{1, 2}" in "A{1, 2}[0]"). */
+          if (is_glvalue_node(operand1) || tblock->look_for_temporaries) {
             traverse_expr(operand1, tblock);
           }  /* if */
           break;

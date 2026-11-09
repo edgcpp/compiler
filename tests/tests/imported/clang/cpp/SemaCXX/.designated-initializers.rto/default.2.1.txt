@@ -1,4 +1,17 @@
 fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++11 Test_name.c
+"Test_name.c", line 48: error: no instance of constructor "Reorder::X::X" matches the argument list
+    foo n = {.y = 4, .x = 5};
+                           ^
+"Test_name.c", line 37: note: number of parameters of function "Reorder::X::X(const Reorder::X &)" does not match the call
+    struct X {
+           ^
+"Test_name.c", line 37: note: number of parameters of function "Reorder::X::X(Reorder::X &&)" does not match the call
+    struct X {
+           ^
+"Test_name.c", line 38: note: number of parameters of function "Reorder::X::X(int)" does not match the call
+      X(int n);
+      ^
+
 "Test_name.c", line 48: warning: out-of-order initializers are nonstandard in C++
     foo n = {.y = 4, .x = 5};
                       ^
@@ -35,6 +48,10 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     S s1 = {
       ^
 
+"Test_name.c", line 90: error: variable "Reorder3::s2" has an uninitialized const or reference member
+    S s2 = {
+      ^
+
 "Test_name.c", line 94: warning: out-of-order initializers are nonstandard in C++
       .b = s3.a, .a = 1,
                   ^
@@ -42,6 +59,20 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 93: error: variable "Reorder3::s3" has an uninitialized const or reference member
     S s3 = {
       ^
+
+"Test_name.c", line 101: error: a class or namespace qualified name is required
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                              ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [1]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=1]" at line 119
+
+"Test_name.c", line 101: error: expected a ";"
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                               ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [1]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=1]" at line 119
 
 "Test_name.c", line 117: warning: out-of-order initializers are nonstandard in C++
       .a = 1,
@@ -65,10 +96,6 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
             instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [2]]" at line 105
             instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=2]" at line 124
 
-"Test_name.c", line 127: warning: out-of-order initializers are nonstandard in C++
-      .a = 1
-       ^
-
 "Test_name.c", line 101: error: a class or namespace qualified name is required
     template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
                                                               ^
@@ -83,13 +110,59 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
             instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [3]]" at line 105
             instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=3]" at line 128
 
+"Test_name.c", line 127: warning: out-of-order initializers are nonstandard in C++
+      .a = 1
+       ^
+
+"Test_name.c", line 101: error: a class or namespace qualified name is required
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                              ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [4]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=4]" at line 132
+
+"Test_name.c", line 101: error: expected a ";"
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                               ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [4]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=4]" at line 132
+
 "Test_name.c", line 135: warning: out-of-order initializers are nonstandard in C++
       .a = 1,
        ^
 
+"Test_name.c", line 101: error: a class or namespace qualified name is required
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                              ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [6]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=6]" at line 142
+
+"Test_name.c", line 101: error: expected a ";"
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                               ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [6]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=6]" at line 142
+
 "Test_name.c", line 141: warning: out-of-order initializers are nonstandard in C++
       .e = {4, 4}
        ^
+
+"Test_name.c", line 101: error: a class or namespace qualified name is required
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                              ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [7]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=7]" at line 148
+
+"Test_name.c", line 101: error: expected a ";"
+    template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
+                                                               ^
+          detected during:
+            instantiation of class "NoCheckingFilledHoles::Error<T> [with T=int [7]]" at line 105
+            instantiation of "NoCheckingFilledHoles::DefaultInitIsError<N>::DefaultInitIsError(NoCheckingFilledHoles::Error<int [N]>) [with N=7]" at line 148
 
 "Test_name.c", line 101: error: a class or namespace qualified name is required
     template<typename T> struct Error { using type = typename T::type; }; // expected-error 3{{'::'}}
@@ -119,4 +192,4 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                                        ^
           detected during instantiation of "void Bar<T>::Test() [with T=bool]" at line 33
 
-11 errors detected in the compilation of "Test_name.c".
+21 errors detected in the compilation of "Test_name.c".

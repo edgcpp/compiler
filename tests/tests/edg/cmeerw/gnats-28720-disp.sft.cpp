@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20 --clang_version 220100
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^file-scope (base-class@|base-class-derivation@|routine@.*\\n  decl_position|variable@|variable-template-info@)/' | grep -E -e '^(template_info|type|derived_class|direct|direct_base_number|is_virtual|derivation|path|access|is_pack|is_pack_element|storage_class|template_arg_list|  base_class|  name|  pack exp placeholder|  type|  is_pack_element|  is_pack|  explicitly_specified):' -e '^file-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (base-class@|base-class-derivation@|routine@.*\n  decl_position|variable@|variable-template-info@)/' | grep -E -e '^(template_info|type|derived_class|direct|direct_base_number|is_virtual|derivation|path|access|is_pack|is_pack_element|storage_class|template_arg_list|  base_class|  name|  pack exp placeholder|  type|  is_pack_element|  is_pack|  explicitly_specified):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename ... Ts>
 int f_pack();

@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=2 --c++11 --clang --clang_version=190000 Test_name.c
+"Test_name.c", line 9: warning: statement may not appear in a constexpr constructor
+      if (sizeof(Tp) == 0) {}
+      ^
+
+"Test_name.c", line 29: warning: statement may not appear in a constexpr function
+    if (sizeof(T) == 0) {}
+    ^
+

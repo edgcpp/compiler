@@ -51,8 +51,17 @@ BUILDABLE_IMAGES = (
   'native-tools',
   'legacy-native-tools',
   'softfloat',
-  'ci-runner'
+  'ci-runner',
+  'acknowledg-forge'
 )
+
+# The registry namespace EDG images are published under (the GitHub
+# organization's container registry).
+IMAGE_NAMESPACE = 'ghcr.io/edgcpp'
+
+def get_image_repository(image_name: str) -> str:
+  '''Return the registry repository an internal image is published to.'''
+  return f"{IMAGE_NAMESPACE}/{image_name}"
 
 def get_docker_file_dir(image_name: str) -> Path:
   '''Return the expected directory of the Dockerfile for an image name.'''
@@ -86,11 +95,12 @@ def get_latest_image_tag(image_name: str, *,
   their pinned name If you want the generic latest tag, use respect_pins =
   False.  The default value is controlled by use_image_pinning(), for uses
   that expect a particular format, the caller should explicitly specify.'''
+  repository = get_image_repository(image_name)
   if respect_pins and image_name in IMAGE_PINS:
     # This is an officially maintained image synchronized between developers.
-    return f"docker.io/edgcpp/{image_name}@sha256:{IMAGE_PINS[image_name]}"
+    return f"{repository}@sha256:{IMAGE_PINS[image_name]}"
   else:
-    return f"docker.io/edgcpp/{image_name}:latest"
+    return f"{repository}:latest"
 
 def has_image_tagged(image_name: str) -> bool:
   '''Return TRUE if there is a docker image already build on this system.'''
@@ -241,7 +251,18 @@ def _check_parents(mapped_dirs: List[Path], workspace_dir: Path) -> None:
   This can be valid (from a Docker perspective), but it's an advanced use case
   and can be a dangerous mistake (so we don't permit it).
   '''
+  # Resolve the workspace so that a relative path cannot bypass the drive
+  # comparison below (and "normcase" so that Windows drive letters that
+  # differ only in case compare equal).
+  workspace_dir = workspace_dir.resolve()
+  workspace_drive = os.path.normcase(os.path.splitdrive(str(workspace_dir))[0])
   for mapped_dir in mapped_dirs:
+    mapped_drive = os.path.normcase(os.path.splitdrive(str(mapped_dir))[0])
+    if mapped_drive != workspace_drive:
+      # The two paths are on different drives (which can only happen on
+      # Windows), so neither path can contain the other and the check below
+      # does not apply.
+      continue
     common_dir = Path(os.path.commonpath([mapped_dir, workspace_dir]))
     if common_dir == workspace_dir:
       print('Current workspace is the parent of a mapped dir:')
@@ -373,6 +394,10 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
     'run',
     # Automatically destroy the container when its task is done.
     '--rm',
+    # Don't persist the container's output; it is already streamed to the
+    # attached terminal.
+    '--log-driver',
+    'none',
     # The container needs privileges for various things, e.g. setarch
     '--privileged',
     # Set a sane hostname.
@@ -390,7 +415,7 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
     f"EDG_USER_NAME={render_user_name()}"
   ]
 
-  if os.isatty(sys.stdin.fileno()):
+  if edgutil.is_interactive_terminal():
     # Make the container interactive.
     docker_args.append('-it')
   else:
@@ -428,16 +453,7 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
   if 'EDG_BASE' in os.environ:
     container_workspace_dir = PurePosixPath('/', 'edg', 'workspace')
     host_base_path = Path(os.environ['EDG_BASE'])
-    # Path.is_relative_to is 3.9+.
-    if sys.version_info >= (3, 9):
-      base_is_relative = host_base_path.is_relative_to(workspace_dir)
-    else:
-      try:
-        host_base_path.relative_to(workspace_dir)
-        base_is_relative = True
-      except ValueError:
-        base_is_relative = False
-    if base_is_relative:
+    if edgutil.is_path_relative_to(host_base_path, workspace_dir):
       rel_base_path = host_base_path.relative_to(workspace_dir)
       base_path = container_workspace_dir.joinpath(rel_base_path)
       _add_env_value(docker_args, 'EDG_BASE', str(base_path))
@@ -482,13 +498,15 @@ def exec_docker_cmd(image_name: str, workspace_dir: Path,
 
   if platform.system() == 'Windows':
     # Windows does not properly handle the execvp. Instead, keep this process
-    # around, and simply forward on stdin, stdout, and stderr.
-    subprocess.run(
+    # around, and simply forward on stdin, stdout, and stderr.  Forward the
+    # exit status of the container so that callers observe failures.
+    completed_proc = subprocess.run(
       docker_args,
       stdin = sys.stdin,
       stdout = sys.stdout,
       stderr = sys.stderr
     )
+    sys.exit(completed_proc.returncode)
   else:
     # Execute the docker command, replacing the current process.
     os.execvp('docker', docker_args)

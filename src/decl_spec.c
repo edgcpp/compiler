@@ -152,7 +152,7 @@ string that is returned.
     /* Error. */
     syntax_error(ec_bad_uuid_string);
   } else if (is_error_constant(&const_for_curr_token)) {
-    /* We encountered a misformed string literal.  An error should
+    /* We encountered a malformed string literal.  An error should
        have been issued already. */
     check_assertion(is_at_least_one_error());
   } else {

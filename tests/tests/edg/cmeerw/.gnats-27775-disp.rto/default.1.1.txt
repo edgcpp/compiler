@@ -1,2 +1,229 @@
 fe_only -DTEST_NUMBER=1 --c++26 --no_il_lower --il_display Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope variable#1
+  name:                  file-scope id-name#1: "t0"
+  enclosing_routine:     file-scope routine#1: f
+next:                    file-scope variable#2: tx
+type:                    file-scope type#1: <unnamed#1>
+container:               file-scope variable#3
+storage_class:           sc_static
+init_kind:               initk_none
+
+file-scope variable#2
+  name:                  file-scope id-name#2: "tx"
+  enclosing_routine:     file-scope routine#1: f
+next:                    file-scope variable#4: tl
+type:                    file-scope type#1: <unnamed#1>
+container:               file-scope variable#3
+storage_class:           sc_static
+is_pack:                 TRUE
+init_kind:               initk_none
+
+file-scope variable#4
+  name:                  file-scope id-name#3: "tl"
+  enclosing_routine:     file-scope routine#1: f
+next:                    NULL
+type:                    file-scope type#1: <unnamed#1>
+container:               file-scope variable#3
+storage_class:           sc_static
+init_kind:               initk_none
+
+file-scope variable#3
+  enclosing_routine:     file-scope routine#1: f
+next:                    file-scope variable#1: t0
+type:                    file-scope type#2: auto
+bindings:                file-scope variable#1
+                         file-scope variable#2
+                         file-scope variable#4
+storage_class:           sc_static
+init_kind:               initk_function_local
+
+file-scope variable#5
+  name:                  file-scope id-name#1: "t0"
+  enclosing_routine:     file-scope routine#2: f
+next:                    file-scope variable#6: tx
+type:                    file-scope type#3: char
+container:               file-scope variable#7
+storage_class:           sc_static
+init_kind:               initk_binding
+
+file-scope variable#8
+  name:                  file-scope id-name#2: "tx"
+  enclosing_routine:     file-scope routine#2: f
+next:                    file-scope variable#9: tx
+type:                    file-scope type#4: int
+container:               file-scope variable#7
+storage_class:           sc_static
+is_pack_element:         TRUE
+init_kind:               initk_binding
+
+file-scope variable#9
+  name:                  file-scope id-name#2: "tx"
+  enclosing_routine:     file-scope routine#2: f
+next:                    NULL
+type:                    file-scope type#4: int
+container:               file-scope variable#7
+storage_class:           sc_static
+is_pack_element:         TRUE
+init_kind:               initk_binding
+
+file-scope variable#10
+  name:                  file-scope id-name#3: "tl"
+  enclosing_routine:     file-scope routine#2: f
+next:                    file-scope variable#8: tx
+type:                    file-scope type#5: long
+container:               file-scope variable#7
+storage_class:           sc_static
+init_kind:               initk_binding
+
+file-scope variable#7
+  enclosing_routine:     file-scope routine#2: f
+next:                    file-scope variable#5: t0
+type:                    file-scope type#6: C
+bindings:                file-scope variable#5
+                         file-scope variable#8
+                         file-scope variable#9
+                         file-scope variable#10
+storage_class:           sc_static
+init_kind:               initk_function_local
+
+file-scope variable#6
+  name:                  file-scope id-name#2: "tx"
+  enclosing_routine:     file-scope routine#2: f
+next:                    file-scope variable#10: tl
+type:                    file-scope type#7: auto
+container:               file-scope variable#7
+storage_class:           sc_static
+is_pack:                 TRUE
+init_kind:               initk_none
+
+func-scope variable#11
+  name:                  func-scope id-name#4: "t"
+  enclosing_routine:     file-scope routine#1: f
+next:                    func-scope variable#12: c
+type:                    file-scope type#8: T#(1,1)
+storage_class:           sc_auto
+init_kind:               initk_none
+
+func-scope variable#12
+  name:                  func-scope id-name#5: "c"
+  enclosing_routine:     file-scope routine#1: f
+next:                    NULL
+type:                    file-scope type#6: C
+storage_class:           sc_auto
+init_kind:               initk_none
+
+func-scope variable#13
+  name:                  func-scope id-name#6: "c0"
+  enclosing_routine:     file-scope routine#1: f
+next:                    func-scope variable#14: cx
+type:                    file-scope type#3: char
+container:               func-scope variable#15
+storage_class:           sc_auto
+init_kind:               initk_binding
+
+func-scope variable#14
+  name:                  func-scope id-name#7: "cx"
+  enclosing_routine:     file-scope routine#1: f
+next:                    func-scope variable#16: cl
+type:                    file-scope type#1: <unnamed#1>
+container:               func-scope variable#15
+storage_class:           sc_auto
+is_pack:                 TRUE
+init_kind:               initk_none
+
+func-scope variable#16
+  name:                  func-scope id-name#8: "cl"
+  enclosing_routine:     file-scope routine#1: f
+next:                    NULL
+type:                    file-scope type#5: long
+container:               func-scope variable#15
+storage_class:           sc_auto
+init_kind:               initk_binding
+
+func-scope variable#15
+  enclosing_routine:     file-scope routine#1: f
+next:                    func-scope variable#13: c0
+type:                    file-scope type#6: C
+bindings:                func-scope variable#13
+                         func-scope variable#14
+                         func-scope variable#16
+storage_class:           sc_auto
+init_kind:               initk_dynamic
+dynamic:                 func-scope dynamic-init#1
+
+func-scope variable#17
+  name:                  func-scope id-name#4: "t"
+  enclosing_routine:     file-scope routine#2: f
+next:                    func-scope variable#18: c
+type:                    file-scope type#6: C
+storage_class:           sc_auto
+init_kind:               initk_none
+
+func-scope variable#18
+  name:                  func-scope id-name#5: "c"
+  enclosing_routine:     file-scope routine#2: f
+next:                    NULL
+type:                    file-scope type#6: C
+storage_class:           sc_auto
+init_kind:               initk_none
+
+func-scope variable#19
+  name:                  func-scope id-name#6: "c0"
+  enclosing_routine:     file-scope routine#2: f
+next:                    func-scope variable#20: cx
+type:                    file-scope type#3: char
+container:               func-scope variable#21
+storage_class:           sc_auto
+init_kind:               initk_binding
+
+func-scope variable#22
+  name:                  func-scope id-name#7: "cx"
+  enclosing_routine:     file-scope routine#2: f
+next:                    func-scope variable#23: cx
+type:                    file-scope type#4: int
+container:               func-scope variable#21
+storage_class:           sc_auto
+is_pack_element:         TRUE
+init_kind:               initk_binding
+
+func-scope variable#23
+  name:                  func-scope id-name#7: "cx"
+  enclosing_routine:     file-scope routine#2: f
+next:                    NULL
+type:                    file-scope type#4: int
+container:               func-scope variable#21
+storage_class:           sc_auto
+is_pack_element:         TRUE
+init_kind:               initk_binding
+
+func-scope variable#24
+  name:                  func-scope id-name#8: "cl"
+  enclosing_routine:     file-scope routine#2: f
+next:                    func-scope variable#22: cx
+type:                    file-scope type#5: long
+container:               func-scope variable#21
+storage_class:           sc_auto
+init_kind:               initk_binding
+
+func-scope variable#21
+  enclosing_routine:     file-scope routine#2: f
+next:                    func-scope variable#19: c0
+type:                    file-scope type#6: C
+bindings:                func-scope variable#19
+                         func-scope variable#22
+                         func-scope variable#23
+                         func-scope variable#24
+storage_class:           sc_auto
+init_kind:               initk_dynamic
+dynamic:                 func-scope dynamic-init#2
+
+func-scope variable#20
+  name:                  func-scope id-name#7: "cx"
+  enclosing_routine:     file-scope routine#2: f
+next:                    func-scope variable#24: cl
+type:                    file-scope type#9: auto
+container:               func-scope variable#21
+storage_class:           sc_auto
+is_pack:                 TRUE
+init_kind:               initk_none
+

@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^(file|func)-scope (constant@|expr-node@.*\\nkind: +enk_(routine|constant)|type@.*\\nkind: +(is_alias|is_decltype|template_arg_list)|routine@.*\\nis_template_function:|name-qualifier@)/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(is_class|qualifier\.class_type|position[.]seq|name|kind|routine|constant|con|qualifier|num_template_arguments|arg_list|template_arg_list|orig_template_arg_list|typeref_type|  name|  type|  constant|  explicitly_specified|  decl_position[.]seq|is_template_id|is_global_qualified_name):' -e '^ +(FALSE|TRUE)' -e '^(file|func)-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^(file|func)-scope (constant@|expr-node@.*\nkind: +enk_(routine|constant)|type@.*\nkind: +(is_alias|is_decltype|template_arg_list)|routine@.*\nis_template_function:|name-qualifier@)/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(is_class|qualifier.class_type|position[.]seq|name|kind|routine|constant|con|qualifier|num_template_arguments|arg_list|template_arg_list|orig_template_arg_list|typeref_type|  name|  type|  constant|  explicitly_specified|  decl_position[.]seq|is_template_id|is_global_qualified_name):' -e '^ +(FALSE|TRUE)' -e '^(file|func)-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename T, typename U = T>
 int fn();

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++23 Test_name.c
+"Test_name.c", line 27: error: incomplete type "void" is not allowed
+    auto v1 = void();
+         ^
+
+"Test_name.c", line 28: error: incomplete type "void" is not allowed
+    decltype(auto) v2 = void();
+                   ^
+
+"Test_name.c", line 29: error: incomplete type "Incomplete" is not allowed
+    auto v3 = getIncomplete();
+         ^
+
+"Test_name.c", line 30: error: incomplete type "void" is not allowed
+    auto opts = Args{}.parse();
+         ^
+
+"Test_name.c", line 32: error: cannot deduce "auto" type
+    auto *v4 = void();
+    ^
+
+"Test_name.c", line 33: error: cannot deduce "auto" type
+    auto *v5 = 1;
+    ^
+
+"Test_name.c", line 34: error: cannot deduce "auto" type
+    auto *p = g();
+    ^
+
+7 errors detected in the compilation of "Test_name.c".

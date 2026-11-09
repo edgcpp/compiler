@@ -3899,8 +3899,10 @@ a routine.
    (con)->variant.address.offset == 0 && !(con)->implicit_cast)
 
 extern
-a_type_ptr make_class_template_placeholder(struct a_symbol   *class_template,
-                                           a_source_position *pos);
+a_type_ptr make_class_template_placeholder(
+                                    struct a_symbol   *class_template,
+                                    a_source_position *pos,
+                                    struct a_symbol   *bound_template = NULL);
 
 extern a_type_ptr make_auto_type(a_source_position *pos,
                                  a_boolean         is_decltype_auto);

@@ -1,2 +1,308 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 --clang_version 220100 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope base-class-derivation#1
+direct:                  TRUE
+path:                    
+  base_class:            file-scope base-class#1: __builtin_dedup_pack<Ts#(1,1)...> (in D<Ts#(1,1)...>)
+access:                  as_public
+
+file-scope base-class#1
+type:                    file-scope type#1: __builtin_dedup_pack<Ts#(1,1)...>
+derived_class:           file-scope type#2: D<Ts#(1,1)...>
+direct:                  TRUE
+direct_base_number:      1
+is_virtual:              FALSE
+derivation:              file-scope base-class-derivation#1
+
+file-scope routine#1
+  name:                  file-scope id-name#1: "operator="
+type:                    file-scope type#3: B<1> &(const B<1> &)
+storage_class:           sc_extern
+
+file-scope routine#2
+  name:                  file-scope id-name#1: "operator="
+type:                    file-scope type#4: B<1> &(B<1> &&)
+storage_class:           sc_extern
+
+file-scope routine#3
+  name:                  file-scope id-name#1: "operator="
+type:                    file-scope type#5: B<2> &(const B<2> &)
+storage_class:           sc_extern
+
+file-scope routine#4
+  name:                  file-scope id-name#1: "operator="
+type:                    file-scope type#6: B<2> &(B<2> &&)
+storage_class:           sc_extern
+
+file-scope base-class-derivation#2
+direct:                  TRUE
+path:                    
+  base_class:            file-scope base-class#2: B<1> (in D<B<1>, B<1>, B<2>, B<2>>)
+access:                  as_public
+
+file-scope base-class#2
+type:                    file-scope type#7: B<1>
+derived_class:           file-scope type#8: D<B<1>, B<1>, B<2>, B<2>>
+direct:                  TRUE
+direct_base_number:      1
+is_virtual:              FALSE
+derivation:              file-scope base-class-derivation#2
+
+file-scope base-class-derivation#3
+direct:                  TRUE
+path:                    
+  base_class:            file-scope base-class#3: B<2> (in D<B<1>, B<1>, B<2>, B<2>>)
+access:                  as_public
+
+file-scope base-class#3
+type:                    file-scope type#9: B<2>
+derived_class:           file-scope type#8: D<B<1>, B<1>, B<2>, B<2>>
+direct:                  TRUE
+direct_base_number:      2
+is_virtual:              FALSE
+derivation:              file-scope base-class-derivation#3
+
+file-scope routine#5
+  name:                  file-scope id-name#1: "operator="
+type:                    file-scope type#10: D<B<1>, B<1>, B<2>, B<2>> &(const D<B<1>, B<1>, B<2>, B<2>> &)
+storage_class:           sc_extern
+
+file-scope routine#6
+  name:                  file-scope id-name#1: "operator="
+type:                    file-scope type#11: D<B<1>, B<1>, B<2>, B<2>> &(D<B<1>, B<1>, B<2>, B<2>> &&)
+storage_class:           sc_extern
+
+file-scope variable-template-info#1
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#12: Ts#(1,1)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope variable#1
+  name:                  file-scope id-name#2: "v_pack"
+type:                    file-scope type#13: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#1
+
+file-scope variable-template-info#2
+template_arg_list:       
+  type:                  file-scope type#14: T1#(1,1)
+  type:                  file-scope type#15: T2#(1,2)
+  pack exp placeholder:  
+  type:                  file-scope type#16: Ts#(1,3)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope variable#2
+  name:                  file-scope id-name#3: "v_nonpack"
+type:                    file-scope type#13: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#2
+
+file-scope variable-template-info#3
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#17: Ts#(1,1)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope variable#3
+  name:                  file-scope id-name#4: "v1"
+type:                    file-scope type#13: int
+storage_class:           sc_unspecified
+template_info:           file-scope variable-template-info#3
+
+file-scope variable-template-info#4
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#18: Ts#(1,1)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope variable#4
+  name:                  file-scope id-name#5: "v2"
+type:                    file-scope type#13: int
+storage_class:           sc_unspecified
+template_info:           file-scope variable-template-info#4
+
+file-scope variable-template-info#5
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#19: __builtin_dedup_pack<Ts#(1,1)...>
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope variable#5
+  name:                  file-scope id-name#2: "v_pack"
+type:                    file-scope type#20: <unnamed#1>
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#5
+
+file-scope variable-template-info#6
+template_arg_list:       
+  type:                  file-scope type#19: __builtin_dedup_pack<Ts#(1,1)...>
+  explicitly_specified:  TRUE
+  is_pack:               TRUE
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+
+file-scope variable#6
+  name:                  file-scope id-name#3: "v_nonpack"
+type:                    file-scope type#20: <unnamed#1>
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#6
+
+file-scope variable#7
+  name:                  file-scope id-name#6: "i"
+type:                    file-scope type#13: int
+storage_class:           sc_unspecified
+
+file-scope variable-template-info#7
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#13: int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#21: INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#22: const INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#23: const int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#24: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope variable#8
+  name:                  file-scope id-name#4: "v1"
+type:                    file-scope type#13: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#7
+
+file-scope variable-template-info#8
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#13: int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#21: INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#22: const INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#23: const int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#24: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope variable#9
+  name:                  file-scope id-name#5: "v2"
+type:                    file-scope type#13: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#8
+
+file-scope variable-template-info#9
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#13: int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#22: const INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#24: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope variable#10
+  name:                  file-scope id-name#2: "v_pack"
+type:                    file-scope type#13: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#9
+
+file-scope variable-template-info#10
+template_arg_list:       
+  type:                  file-scope type#13: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#22: const INT
+  explicitly_specified:  TRUE
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#24: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope variable#11
+  name:                  file-scope id-name#3: "v_nonpack"
+type:                    file-scope type#13: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#10
+
+file-scope variable#12
+  name:                  file-scope id-name#7: "d"
+type:                    file-scope type#8: D<B<1>, B<1>, B<2>, B<2>>
+storage_class:           sc_unspecified
+
+file-scope routine#7
+  name:                  file-scope id-name#8: "f_pack"
+type:                    file-scope type#25: int ()
+storage_class:           sc_extern
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#26: Ts#(1,1)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope routine#8
+  name:                  file-scope id-name#9: "f_nonpack"
+type:                    file-scope type#27: int ()
+storage_class:           sc_extern
+template_arg_list:       
+  type:                  file-scope type#28: T1#(1,1)
+  type:                  file-scope type#29: T2#(1,2)
+  pack exp placeholder:  
+  type:                  file-scope type#30: Ts#(1,3)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope routine#9
+  name:                  file-scope id-name#8: "f_pack"
+type:                    file-scope type#31: int ()
+storage_class:           sc_extern
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#13: int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#22: const INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#24: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope routine#10
+  name:                  file-scope id-name#9: "f_nonpack"
+type:                    file-scope type#32: int ()
+storage_class:           sc_extern
+template_arg_list:       
+  type:                  file-scope type#13: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#22: const INT
+  explicitly_specified:  TRUE
+  pack exp placeholder:  
+  type:                  file-scope type#24: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+

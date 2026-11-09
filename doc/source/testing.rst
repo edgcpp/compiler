@@ -245,6 +245,19 @@ IFC file should be force-generated for (this is unusual).  These module
 source files are compiled under the ``--module_internal_partition`` flag to
 generate both an IFC and a ``.obj`` file.
 
+Note that when testing modules in a compiler emulation mode (e.g., with
+``--gnu_version=150100`` added to ``//options_all:``), the ``--modules``
+option must also be specified:  emulation modes disable the module keywords
+by default to match the emulated compiler (no version of g++ enables them
+without ``-fmodules-ts``).  For example:
+
+.. code:: text
+
+  //options_all:--c++20 --gnu_version=150100 --modules
+
+See the ``modules/eifc/modules/import-function-gnu`` and
+``modules/eifc/modules/export-float16-gnu`` tests for examples.
+
 If ``//script:`` is specified, that script is executed instead of any other
 commands.  In general, the test type does not matter for script files except
 for checking the return code.  For example, a ``cp`` test will expect a zero
@@ -628,6 +641,11 @@ The process for using re-record mode is something akin to the following:
 4. Rerecord the tests that need to be updated (e.g,
    ``edgy -W regressions/foo.sft.cpp``)
 
+When re-recording multiple configurations, the default configuration's
+expectations are updated first.  The expectations of the other configurations
+are then recorded as their differences from the default configuration's (see
+`Expectation Inheritance`_).
+
 No Expectations Mode
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -892,6 +910,30 @@ used with a comma-separated list of configurations, e.g.:
 This will run the regression test suite, in both the ``edg_x86_64`` and
 ``edg_x86_64_cp`` configurations (which is also the default as edgy is
 typically configured).
+
+Expectation Inheritance
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Test output recordings and test expectations are both inherited from the
+default configuration (``edg_x86_64`` unless ``RUN_TEST_DEFAULT_CONFIG`` says
+otherwise).  For expectations, each configuration other than the default
+configuration starts from the default configuration's expectations
+(``tests/expectations/<default>/<suite>.log``), and its own expectations file
+(``tests/expectations/<config>/<suite>.log``) only needs to hold the
+differences.  For each test (and test case):
+
+* a line in the configuration's own file is the expectation, otherwise
+* a line in the default configuration's file is the expectation, otherwise
+* the test is expected to pass.
+
+As the absence of a line means the default configuration's expectation applies,
+a configuration that passes a test that the default configuration fails
+records an explicit ``PASS`` line (e.g.,
+``regressions/foo.sft.cpp:fp:-DTEST_NUMBER=1:PASS:``) to say so.  Lines in a
+configuration's own file that are the same as the default configuration's
+are redundant, and are removed the next time the configuration is re-recorded.
+A configuration with an empty (or missing) expectations file expects exactly
+what the default configuration does.
 
 edg-run-test
 ------------

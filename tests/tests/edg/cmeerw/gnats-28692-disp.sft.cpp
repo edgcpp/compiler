@@ -1,6 +1,6 @@
 //type:fp
 //options:--c++11 --gn 150200 --no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^file-scope (type@.*\\nkind: +(name_qualifier|is_alias|tk_struct)|class-type-supplement@|name-qualifier@)/' | grep -E -e '^(  name|  type|  constant|  is_pack|  is_pack_element|  explicitly_specified|kind|typeref_type|template_arg_list|extra_info|is_class|qualifier[.]class_type:):' -e '^file-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (type@.*\nkind: +(name_qualifier|is_alias|tk_struct)|class-type-supplement@|name-qualifier@)/' | grep -E -e '^(  name|  type|  constant|  is_pack|  is_pack_element|  explicitly_specified|kind|typeref_type|template_arg_list|extra_info|is_class|qualifier[.]class_type:):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<int ... Is>
 struct C {

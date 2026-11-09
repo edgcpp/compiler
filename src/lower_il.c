@@ -15971,6 +15971,73 @@ lowering).  Note that eok_class_rvalue_adjust operations are not modified here
 }  /* remove_qualifiers_from_expr_type_if_needed */
 
 
+static a_boolean replace_param_ref_with_aggregate_this(
+                                         an_expr_node_ptr expr,
+                                         a_boolean        candidates_only)
+/*
+expr is an enk_param_ref node that represents "this" while lowering an
+aggregate constant.  Go backwards through aggregate_this_stack, the stack of
+nested potential "this" pointers, looking for the innermost entry that
+matches the type of expr.  If candidates_only is TRUE, skip the entries
+whose not_this_candidate flag is set (see
+lower_dynamic_init_aggregate_constant).  If an entry is found, replace expr
+by an expression that points to the beginning of that aggregate and return
+TRUE; otherwise, return FALSE.  Note that the code below is inefficient in
+that it creates an expression representation for the initialization position
+description just to find out its type (and discards expression trees that
+don't match), but the type is difficult to determine (because of potential
+modifiers) and this case doesn't occur frequently.
+*/
+{
+  a_boolean             found = FALSE;
+  an_expr_node_ptr      new_expr = NULL;
+  an_init_pos_descr_ptr ipdp;
+  a_type_ptr            new_type,
+                        old_type= skip_typerefs(type_pointed_to(expr->type));
+
+  for (ipdp = aggregate_this_stack; ipdp != NULL; ipdp = ipdp->next) {
+    a_type_ptr subobj_type;
+    if (candidates_only && ipdp->not_this_candidate) {
+      /* An explicitly specified element of this aggregate is being lowered,
+         so this aggregate is not what "this" refers to. */
+      continue;
+    }  /* if */
+    new_expr = make_address_of_init_entity_node(ipdp,
+                                                /*using_as_dest=*/FALSE);
+    new_type = skip_typerefs(type_pointed_to(new_expr->type));
+    if (identical_types_ignoring_qualifiers(new_type, old_type) ||
+        (aggregate_classes_can_have_bases &&
+         !class_type_supp(old_type)->is_lambda_closure_class &&
+         !class_type_supp(new_type)->is_lambda_closure_class &&
+         (subobj_type = subobject_for_class(old_type),
+          identical_types_ignoring_qualifiers(new_type, subobj_type)))) {
+      found = TRUE;
+      new_expr = add_cast_if_necessary(new_expr, expr->type);
+      overwrite_node(expr, new_expr);
+      break;
+    } else if (aggregate_classes_can_have_bases &&
+               ipdp->base_class_subobject) {
+      /* See if this initialization position has been modified to point
+         to a subobject base class.  If so, temporarily remove the modifier
+         to see if the non-modified type is the "this" type that we're
+         looking for. */
+      an_init_pos_modifier_ptr save_modifiers = ipdp->modifiers;
+      ipdp->modifiers = NULL;
+      new_expr = make_address_of_init_entity_node(ipdp,
+                                                  /*using_as_dest=*/FALSE);
+      new_type = type_pointed_to(new_expr->type);
+      ipdp->modifiers = save_modifiers;
+      if (identical_types_ignoring_qualifiers(new_type, old_type)) {
+        found = TRUE;
+        overwrite_node(expr, new_expr);
+        break;
+      }  /* if */
+    }  /* if */
+  }  /* for */
+  return found;
+}  /* replace_param_ref_with_aggregate_this */
+
+
 static void lower_param_ref(an_expr_node_ptr expr)
 /*
 The front end uses enk_param_refs to represent "this" in two particular
@@ -16001,6 +16068,13 @@ as in this case:
   } a;
 
 If we're in a non-constant aggregate initialization, search for that first.
+Several nested aggregates can have the type of "this", as in:
+
+  struct Y { unsigned k; unsigned n = Y{2, k}.n; };
+
+where "k" refers to the Y being initialized, not to the temporary
+initialized by "Y{2, k}".  The aggregates for which an explicitly specified
+element is being lowered are therefore skipped.
 */
 {
   a_boolean found = FALSE;
@@ -16008,53 +16082,12 @@ If we're in a non-constant aggregate initialization, search for that first.
   check_assertion(expr->kind == (an_expr_node_kind)enk_param_ref &&
                   expr->variant.param_ref.param_num == 0);
   if (aggregate_this_stack != NULL) {
-    /* We must be lowering an aggregate constant; go backwards through the
-       stack of nested potential "this" pointers looking for one that matches
-       the type of the enk_param_ref node (there can only be one) and
-       create an expression that points to the beginning of that aggregate.
-       Note that the code below is inefficient in that it creates an
-       expression representation for the initialization position description
-       just to find out its type (and discards expression trees that don't
-       match), but the type is difficult to determine (because of potential
-       modifiers) and this case doesn't occur frequently. */
-    an_expr_node_ptr      new_expr = NULL;
-    an_init_pos_descr_ptr ipdp;
-    a_type_ptr            new_type,
-                          old_type= skip_typerefs(type_pointed_to(expr->type));
-    for (ipdp = aggregate_this_stack; ipdp != NULL; ipdp = ipdp->next) {
-      a_type_ptr subobj_type;
-      new_expr = make_address_of_init_entity_node(ipdp,
-                                                  /*using_as_dest=*/FALSE);
-      new_type = skip_typerefs(type_pointed_to(new_expr->type));
-      if (identical_types_ignoring_qualifiers(new_type, old_type) ||
-          (aggregate_classes_can_have_bases &&
-           !class_type_supp(old_type)->is_lambda_closure_class &&
-           !class_type_supp(new_type)->is_lambda_closure_class &&
-           (subobj_type = subobject_for_class(old_type),
-            identical_types_ignoring_qualifiers(new_type, subobj_type)))) {
-        found = TRUE;
-        new_expr = add_cast_if_necessary(new_expr, expr->type);
-        overwrite_node(expr, new_expr);
-        break;
-      } else if (aggregate_classes_can_have_bases &&
-                 ipdp->base_class_subobject) {
-        /* See if this initialization position has been modified to point
-           to a subobject base class.  If so, temporarily remove the modifier
-           to see if the non-modified type is the "this" type that we're
-           looking for. */
-        an_init_pos_modifier_ptr save_modifiers = ipdp->modifiers;
-        ipdp->modifiers = NULL;
-        new_expr = make_address_of_init_entity_node(ipdp,
-                                                    /*using_as_dest=*/FALSE);
-        new_type = type_pointed_to(new_expr->type);
-        ipdp->modifiers = save_modifiers;
-        if (identical_types_ignoring_qualifiers(new_type, old_type)) {
-          found = TRUE;
-          overwrite_node(expr, new_expr);
-          break;
-        }  /* if */
-      }  /* if */
-    }  /* for */
+    /* We must be lowering an aggregate constant.  If no candidate aggregate
+       matches, fall back on all the aggregates on the stack. */
+    found = replace_param_ref_with_aggregate_this(expr,
+                                                  /*candidates_only=*/TRUE) ||
+            replace_param_ref_with_aggregate_this(expr,
+                                                  /*candidates_only=*/FALSE);
   }  /* if */
   if (!found) {
     if (ctor_init_this != NULL) {
@@ -18407,7 +18440,7 @@ the try-block has been rewritten).
 }  /* put_block_around_try_block */
 
 
-static void turn_statement_into_block_transferring_pragma(
+void turn_statement_into_block_transferring_pragma(
                                         a_statement_ptr        statement,
                                         an_insert_location_ptr insert_location,
                                         a_statement_ptr        *orig_statement,
@@ -19288,12 +19321,27 @@ Lower an stmk_return statement.
   }  /* if */
   if (any_cleanup_on_return) {
     /* Generate any cleanup actions required on exit from the routine. */
-    if (make_block) {
-      /* Turn the return into a block so that code can be inserted
-         in front of the return. */
-      turn_branch_into_block(statement, &insert_location, &return_statement);
-    }  /* if */
-    gen_cleanup_actions(innermost_function_scope->lifetime, &insert_location);
+    { Value_saver<a_source_position> saved_code_pos(&code_pos_for_lowering);
+      Value_saver<a_source_position> saved_error_position(&error_position);
+
+      if (statement->compiler_generated && statement->position.seq == 0) {
+        a_statement_ptr assoc_block = innermost_function_scope->assoc_block;
+        if (assoc_block != NULL &&
+            assoc_block->kind == stmk_block &&
+            assoc_block->variant.block.extra_info->final_position.seq != 0) {
+          code_pos_for_lowering = assoc_block->variant.block.extra_info
+                                                             ->final_position;
+          error_position = code_pos_for_lowering;
+        }  /* if */
+      }  /* if */
+      if (make_block) {
+        /* Turn the return into a block so that code can be inserted
+           in front of the return. */
+        turn_branch_into_block(statement, &insert_location, &return_statement);
+      }  /* if */
+      gen_cleanup_actions(innermost_function_scope->lifetime,
+                          &insert_location);
+    }
     reset_cleanup_state_at_transfer_of_control(return_statement, statement);
   }  /* if */
   /* Maintain a list of all returns in the routine so that epilogue code
@@ -19748,9 +19796,12 @@ If the "for" statement has an associated "break" label, lower it also.
       break_label_stmt->next = NULL;
     }  /* if */
     /* Put a block statement around the for-loop and attach the scope
-       to that block. */
+       to that block.  Any pragmas attached to the for-loop (e.g., a
+       "#pragma GCC unroll") stay with the for-loop. */
     block_stmt = for_stmt;
-    turn_statement_into_block(for_stmt, &insert_location, &for_stmt);
+    turn_statement_into_block_transferring_pragma(for_stmt, &insert_location,
+                                                  &for_stmt,
+                                                  curr_context->scope);
     if (break_label_stmt != NULL) {
       /* Re-attach the break label after the "for" statement entry. */
       check_assertion(for_stmt->next == NULL);
@@ -19780,7 +19831,10 @@ If the "for" statement has an associated "break" label, lower it also.
       /* Put a block around the for loop if we didn't previously. */
       if (block_stmt == NULL) {
         block_stmt = for_stmt;
-        turn_statement_into_block(for_stmt, &insert_location, &for_stmt);
+        turn_statement_into_block_transferring_pragma(for_stmt,
+                                                      &insert_location,
+                                                      &for_stmt,
+                                                      curr_context->scope);
       }  /* if */
       reinsert_for_loop_initialization(init_stmt, &insert_location);
     }  /* if */
@@ -19880,11 +19934,14 @@ Notes:
   push_context(&range_based_for_context, range_based_for_scope,
                (an_object_lifetime_ptr)NULL);
   /* Put a block statement around the range-based-for and attach the
-     range_based_for scope to that block.  Note that any pragmas attached to
-     the range-based-for statement will now be associated with the block. */
+     range_based_for scope to that block.  Any pragmas attached to the
+     range-based-for statement (e.g., a "#pragma GCC unroll") stay with the
+     statement, which becomes the lowered "for" loop. */
   outer_block = range_based_for_stmt;
-  turn_statement_into_block(range_based_for_stmt, &outer_insert_location,
-                            &range_based_for_stmt);
+  turn_statement_into_block_transferring_pragma(range_based_for_stmt,
+                                                &outer_insert_location,
+                                                &range_based_for_stmt,
+                                                curr_context->scope);
   outer_block->variant.block.extra_info->assoc_scope = range_based_for_scope;
   range_based_for_scope->assoc_block = outer_block;
   if (range_based_for_scope->lifetime != NULL) {

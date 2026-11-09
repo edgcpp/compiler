@@ -67,6 +67,26 @@ fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     volatile int g(
     ^
 
+"SemaCXX/deprecated.cpp", line 256: warning: comparison between two arrays compares their addresses
+    bool b1 = arr1 == arr2;
+                   ^
+
+"SemaCXX/deprecated.cpp", line 258: warning: comparison between two arrays compares their addresses
+    bool b2 = arr1 < arr2;
+                   ^
+
+"SemaCXX/deprecated.cpp", line 261: warning: comparison between two arrays compares their addresses
+    bool b3 = arr1 == arr3;
+                   ^
+
+"SemaCXX/deprecated.cpp", line 262: warning: comparison between two arrays compares their addresses
+    bool b4 = arr1 < arr3;
+                   ^
+
+"SemaCXX/deprecated.cpp", line 268: warning: comparison between two arrays compares their addresses
+    bool b6 = arr1 == f();
+                   ^
+
 "SemaCXX/deprecated.cpp", line 280: warning: parameter "x" was set but never used
   [[deprecated]] void f2([[deprecated]] int x) {
                                             ^

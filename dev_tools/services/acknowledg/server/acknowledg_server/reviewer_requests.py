@@ -14,7 +14,11 @@ from typing import List, Optional
 
 from serde import serde  # type: ignore[import-not-found]
 
-from edgacknowledg import ALLOWED_REVIEWER_REQUEST_TAGS, RequestTags
+from edgacknowledg import (
+  ALLOWED_REVIEWER_REQUEST_TAGS,
+  MAX_SOURCE_RANGE_CONTEXT,
+  RequestTags
+)
 
 @serde(deny_unknown_fields = True)
 class EmptyRequest:
@@ -33,9 +37,25 @@ class BenchId:
 
 @serde(deny_unknown_fields = True)
 class ShowTestSourceRequest:
-  '''Request to display a test's primary source or an associated file.'''
+  '''Request to display a test's primary source or an associated file.
+
+  ``line`` and ``context`` (both or neither) restrict the reply to the lines
+  ``line - context`` through ``line + context`` (``line`` is 1-based).
+  '''
   id: str
   assoc_file: Optional[str] = None
+  line: Optional[int] = None
+  context: Optional[int] = None
+
+  def is_valid_range(self) -> bool:
+    if self.line is None and self.context is None:
+      return True
+    # Exact type checks: ``bool`` is an ``int`` subclass, so pyserde's
+    # strict mode lets ``true`` through as 1.
+    return (
+      type(self.line) is int and type(self.context) is int and
+      self.line >= 1 and 0 <= self.context <= MAX_SOURCE_RANGE_CONTEXT
+    )
 
 @serde(deny_unknown_fields = True)
 class ShowCurrDiffRequest:

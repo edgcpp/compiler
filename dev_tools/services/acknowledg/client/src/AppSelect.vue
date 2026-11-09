@@ -184,6 +184,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp' ||
         event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
+      // Enter opens the list; keep it from the review views' shortcut.
+      event.stopPropagation()
       openList()
     }
   }
@@ -217,6 +219,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     }
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
+      event.stopPropagation()
       if (activeIndex.value >= 0) {
         selectIndex(activeIndex.value)
         triggerRef.value?.focus()

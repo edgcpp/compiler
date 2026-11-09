@@ -7,25 +7,76 @@
 #
 #   edg-docker-test --posture=extensive --non-interactive
 #
-# inside the edgcpp/ci-runner image. Jobs are staged so GitHub can schedule
-# them in parallel, with each test leg waiting only on its own build (and the
-# shared timestamp, which runs alongside the builds):
+# inside the ghcr.io/edgcpp/ci-runner image. Each toolchain runs
+# ci-toolchain.yml, which builds its preset (twice: instrumented, for the
+# tests, and uninstrumented, for the test cache key) and then runs one test
+# leg per configuration; a test leg waits only on its own toolchain's builds:
 #
-#   prepare ───────────────┬──► test-gcc  ──┐
-#   build-gcc ─────────────┘                ├──► publish (on failure)
-#   prepare ───────────────┬──► test-i686 ──┘
-#   build-i686 ────────────┘
+#   prepare ─┬─► linux-gcc-debug:      build, hash ─► Test ×2 ─┬─► publish (on failure)
+#            └─► linux-i686-gcc-debug: build, hash ─► Test ×2 ─┴─► coverage
+#   bench (pull requests only; independent)
+#
+# The prepare job computes the shared run timestamp and test-input hash that
+# the toolchains take as inputs. Test legs report as "<preset> / Test
+# <config>" (e.g., "linux-gcc-debug / Test edg_x86_64").
 #
 # A shared run timestamp keeps results under the same tests/runs/<timestamp>/
 # tree; the publish job republishes failure artifacts from all test legs.
+#
+# The builds set EDG_BUILD_IDENTIFIER so that identical sources produce
+# byte-identical build products. Each test leg keys a cache entry on the
+# SHA-256 of the products of its toolchain's uninstrumented build (which
+# leaves out line numbers, so that changes that merely move code don't change
+# the key; see the hash job in ci-toolchain.yml), the test files its
+# configuration can read (edg-test-inputs-hash, so re-recording a test for
+# one configuration doesn't invalidate the others), and the git trees of the
+# other inputs it reads from the checkout (bases/, include_c++/,
+# util/eccp.sh, and the workflow files, computed once by the prepare job).
+# When a leg passes, it saves that entry; a later run on the same ref (a
+# re-run, or a push that leaves the build products and test inputs
+# unchanged) restores it and skips edgy, and so reports no coverage (the
+# earlier run's coverage could point at lines that have since moved).
+# Scheduled and manual runs reuse nothing (see reuse_results).
+# actions/cache scopes entries to the ref that saved them (plus the default
+# branch), so one pull request can never vouch for another's build. The
+# merge queue's entries are saved again for main by promote-test-cache.yml
+# once the commit they tested lands, so later pull requests can reuse them.
+#
+# The bench job runs the cachegrind benchmarks the way
+# `edg-docker-bench --posture=release` does and uploads them as bench-results
+# (c/ and cpp/ runs, for comparison against the checked-in
+# benchmarks/baselines/project/release-{c,cpp}).
+#
+# The debug builds are instrumented for gcov (EDG_CPFE_USE_GCOV) and ship
+# their .gcno files with the build products. Each test leg turns the .gcda
+# files its run produces into a gcovr JSON report for src/; the coverage job
+# merges the reports of the test legs that ran and uploads one report to
+# Codecov (see .github/codecov.yml), which compares nothing and posts
+# nothing on pull requests; a pull request links to its report through a
+# "coverage" commit status. The nightly scheduled run tests every leg, so it
+# gives main complete coverage. The coverage steps never fail the run; only
+# edgy's results do.
 
 name: Build & Test CI
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+  merge_group:
+  # The nightly run tests every leg (no reused results), for complete
+  # coverage of main.
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+env:
+  GCOVR_VERSION: '8.7'
 
 jobs:
   prepare:
@@ -34,6 +85,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       run_timestamp: ${{ steps.timestamp.outputs.run_timestamp }}
+      test_inputs: ${{ steps.test-inputs.outputs.test_inputs }}
     steps:
       - name: Declare shared edgy run timestamp
         id: timestamp
@@ -41,232 +93,67 @@ jobs:
           # Match edgutil.RUN_TIMESTAMP_FORMAT (%Y.%m.%d-%H.%M.%S).
           echo "run_timestamp=$(date -u +'%Y.%m.%d-%H.%M.%S')" >> "${GITHUB_OUTPUT}"
 
-  build-gcc:
-    name: Build linux-gcc-debug
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    container:
-      image: docker.io/edgcpp/ci-runner:latest
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
+      # Only the git trees are needed, so skip blobs and most of the
+      # working tree.
+      - name: Check out repository metadata
         uses: actions/checkout@v7
-
-      - name: Configure linux-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --preset linux-gcc-debug
-
-      - name: Build linux-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
-        run: cmake --build build/gcc
-
-      # Runtime layout only: environment.sh / eccp need bin/, lib/, and the
-      # per-target lib_linux_* / lib_win* dirs (eccp rewrites ECCP_LIBDIR to
-      # lib_<target>). lib_src is build-only and omitted.
-      - name: Upload build products
-        uses: actions/upload-artifact@v7
         with:
-          name: build-linux-gcc-debug
-          path: |
-            build/gcc/bin
-            build/gcc/lib
-            build/gcc/lib_linux_*
-            build/gcc/lib_win*
-            build/gcc/environment.sh
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 6
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: .github
 
-  build-i686:
-    name: Build linux-i686-gcc-debug
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    container:
-      image: docker.io/edgcpp/ci-runner:latest
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
+      - name: Hash test inputs
+        id: test-inputs
+        run: |
+          # What the test legs read from the checkout, other than the build
+          # products and tests/ (which each leg hashes per configuration):
+          # EDG_BASE (whose include/ is include_c++/) and eccp. The workflow
+          # files cover the container image and the edgy options; edgy and
+          # the other tools come from that image, not from dev_tools/.
+          hash="$(git rev-parse HEAD:bases HEAD:include_c++ \
+                    HEAD:util/eccp.sh \
+                    HEAD:.github/workflows/build-and-test-ci.yml \
+                    HEAD:.github/workflows/ci-toolchain.yml |
+                  sha256sum | cut -c1-64)"
+          echo "test_inputs=${hash}" >> "${GITHUB_OUTPUT}"
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Configure linux-i686-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --preset linux-i686-gcc-debug
-
-      - name: Build linux-i686-gcc-debug
-        env:
-          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc-i686
-        run: cmake --build build/gcc-i686
-
-      - name: Upload build products
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-linux-i686-gcc-debug
-          path: |
-            build/gcc-i686/bin
-            build/gcc-i686/lib
-            build/gcc-i686/lib_linux_*
-            build/gcc-i686/lib_win*
-            build/gcc-i686/environment.sh
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 6
-
-  test-gcc:
-    name: Test ${{ matrix.config }}
-    needs:
-      - prepare
-      - build-gcc
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
+  # Each toolchain builds its preset and then tests each of its
+  # configurations (see ci-toolchain.yml), so its test legs wait only on its
+  # own build. The legs report as "<preset> / Test <config>".
+  toolchain:
+    name: ${{ matrix.preset }}
+    needs: prepare
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - edg_x86_64
-          - edg_x86_64_cp
-    container:
-      image: docker.io/edgcpp/ci-runner:latest
-      # Required for setarch ... -R (disable ASLR) used by the test harness.
-      options: --privileged
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Download linux-gcc-debug build
-        uses: actions/download-artifact@v7
-        with:
-          name: build-linux-gcc-debug
-          # upload-artifact strips the shared build/gcc/ prefix, leaving
-          # bin/, lib/, and environment.sh at the artifact root.
-          path: build/gcc
-
-      - name: Restore execute bits on build binaries
-        run: |
-          # Artifact round-trip does not reliably preserve +x.
-          chmod -R a+x build/gcc/bin
-
-      - name: Run edgy (${{ matrix.config }})
-        env:
-          RUN_TIMESTAMP: ${{ needs.prepare.outputs.run_timestamp }}
-          CONFIG: ${{ matrix.config }}
-        run: |
-          mkdir -p .tmp
-          cat > .tmp/extensive-ci-edg-base.sh <<EOF
-          export EDG_BASE="${GITHUB_WORKSPACE}/bases/docker/dev-env/gcc"
-          EOF
-
-          cat > .tmp/extensive-ci.edgivk <<EOF
-          prefix_source TEST_${CONFIG} build/gcc/environment.sh
-          prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
-          exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
-          EOF
-
-          edg-prefix-env-loader .tmp/extensive-ci.edgivk
-
-      - name: Upload partial elist, elog, and .rt.tar.gz results
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: test-results-${{ matrix.config }}
-          path: |
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elist
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elog
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.rt.tar.gz
-          if-no-files-found: warn
-          retention-days: 1
-
-  test-i686:
-    name: Test ${{ matrix.config }}
-    needs:
-      - prepare
-      - build-i686
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - edg_x86_32
-          - edg_x86_32_cp
-    container:
-      image: docker.io/edgcpp/ci-runner:latest
-      # Required for setarch ... -R (disable ASLR) used by the test harness.
-      options: --privileged
-    defaults:
-      run:
-        shell: edg-container-exec "bash -eo pipefail {0}"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Download linux-i686-gcc-debug build
-        uses: actions/download-artifact@v7
-        with:
-          name: build-linux-i686-gcc-debug
-          # upload-artifact strips the shared build/gcc-i686/ prefix, leaving
-          # bin/, lib/, and environment.sh at the artifact root.
-          path: build/gcc-i686
-
-      - name: Restore execute bits on build binaries
-        run: |
-          # Artifact round-trip does not reliably preserve +x.
-          chmod -R a+x build/gcc-i686/bin
-
-      - name: Run edgy (${{ matrix.config }})
-        env:
-          RUN_TIMESTAMP: ${{ needs.prepare.outputs.run_timestamp }}
-          CONFIG: ${{ matrix.config }}
-        run: |
-          mkdir -p .tmp
-          cat > .tmp/extensive-ci-edg-base.sh <<EOF
-          export EDG_BASE="${GITHUB_WORKSPACE}/bases/docker/dev-env/gcc-i686"
-          EOF
-
-          cat > .tmp/extensive-ci.edgivk <<EOF
-          prefix_source TEST_${CONFIG} build/gcc-i686/environment.sh
-          prefix_source TEST_${CONFIG} .tmp/extensive-ci-edg-base.sh
-          exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
-          EOF
-
-          edg-prefix-env-loader .tmp/extensive-ci.edgivk
-
-      - name: Upload partial elist, elog, and .rt.tar.gz results
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: test-results-${{ matrix.config }}
-          path: |
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elist
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.elog
-            tests/runs/${{ needs.prepare.outputs.run_timestamp }}/**/*.rt.tar.gz
-          if-no-files-found: warn
-          retention-days: 1
+        include:
+          - preset: linux-gcc-debug
+            build_dir: build/gcc
+            base: gcc
+            configs: '["edg_x86_64", "edg_x86_64_cp"]'
+          - preset: linux-i686-gcc-debug
+            build_dir: build/gcc-i686
+            base: gcc-i686
+            configs: '["edg_x86_32", "edg_x86_32_cp"]'
+    uses: ./.github/workflows/ci-toolchain.yml
+    with:
+      preset: ${{ matrix.preset }}
+      build_dir: ${{ matrix.build_dir }}
+      base: ${{ matrix.base }}
+      configs: ${{ matrix.configs }}
+      run_timestamp: ${{ needs.prepare.outputs.run_timestamp }}
+      test_inputs: ${{ needs.prepare.outputs.test_inputs }}
+      reuse_results: >-
+        ${{ github.event_name == 'pull_request' ||
+            github.event_name == 'merge_group' }}
 
   publish-test-results:
     name: Publish aggregated test results
     needs:
       - prepare
-      - test-gcc
-      - test-i686
+      - toolchain
     # Republish whenever any test leg failed (partial artifacts may exist).
-    if: >-
-      ${{ always() &&
-      (needs.test-gcc.result == 'failure' ||
-       needs.test-i686.result == 'failure') }}
+    if: ${{ always() && needs.toolchain.result == 'failure' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -277,10 +164,210 @@ jobs:
           path: aggregated-test-results
           merge-multiple: true
 
+      # Record which commit was tested so consumers of the artifact (e.g.
+      # acknowledg-forge) can check out the matching tree. For pull requests
+      # this is the merge commit, not the PR head.
+      - name: Record CI metadata
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python3 - > aggregated-test-results/ci-meta.json <<'EOF'
+          import json, os
+          print(json.dumps({
+            'tested_sha': os.environ['TESTED_SHA'],
+            'head_sha': os.environ['HEAD_SHA'],
+            'run_id': int(os.environ['RUN_ID']),
+            'run_attempt': int(os.environ['RUN_ATTEMPT']),
+          }, indent = 2))
+          EOF
+
       - name: Upload elist, elog, and .rt.tar.gz results
         uses: actions/upload-artifact@v7
         with:
           name: test-results-all
           path: aggregated-test-results/
           if-no-files-found: warn
+          retention-days: 14
+
+  coverage:
+    name: Publish coverage to Codecov
+    needs: toolchain
+    # Like publish-test-results, merge whatever the test legs produced,
+    # whether or not their tests passed. The number of configs is not
+    # fixed: every coverage-* artifact is merged into one report and
+    # uploaded once.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      # To link a pull request to its coverage report.
+      statuses: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Download per-config coverage reports
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-*
+          path: coverage
+          merge-multiple: true
+
+      - name: Install gcovr
+        continue-on-error: true
+        run: |
+          python3 -m venv "${RUNNER_TEMP}/gcovr"
+          "${RUNNER_TEMP}/gcovr/bin/pip" install --quiet \
+            "gcovr==${GCOVR_VERSION}"
+
+      - name: Merge coverage reports
+        if: ${{ hashFiles('coverage/*.json') != '' }}
+        continue-on-error: true
+        run: |
+          ls -l coverage
+          "${RUNNER_TEMP}/gcovr/bin/gcovr" \
+            --root . \
+            --merge-mode-functions=separate \
+            --json-add-tracefile 'coverage/*.json' \
+            --cobertura coverage.xml \
+            --print-summary
+
+      # Pull requests from forks have no access to secrets; the Codecov
+      # action then falls back to a tokenless upload, which Codecov accepts
+      # for public repositories.
+      #
+      # The report is complete as generated by gcovr, so skip the CLI's own
+      # gcov run (plugins: noop) and its "file fixes" pass, which opens every
+      # file git tracks and crashes on the dangling symlinks used as test
+      # inputs (e.g. tests/.../embed___has_embed/embed___has_embed.c).
+      #
+      # The report covers the commit tested, which for a pull request is the
+      # merge commit, not the head commit the action would otherwise report
+      # it under, so name the commit explicitly.
+      - name: Upload coverage to Codecov
+        id: upload
+        if: ${{ hashFiles('coverage.xml') != '' }}
+        continue-on-error: true
+        uses: codecov/codecov-action@v7
+        with:
+          override_commit: ${{ github.sha }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          disable_search: true
+          disable_file_fixes: true
+          network_filter: src/
+          plugins: noop
+          fail_ci_if_error: true
+          verbose: true
+
+      # Codecov posts no comment or checks (see .github/codecov.yml), so link
+      # the report from a commit status instead. The report is filed under
+      # the commit tested, but the status goes on the pull request's head
+      # commit, as the pull request shows only that commit's statuses. A pull
+      # request from a fork gets a read-only token and can't set the status;
+      # the job summary has the link either way.
+      - name: Link coverage report
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPLOADED: ${{ steps.upload.outcome == 'success' }}
+          IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
+          TESTED_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ "${UPLOADED}" != true ]; then
+            echo "No coverage report: every test leg reused an earlier" \
+                 "run's results, or coverage failed (see above)." \
+                 >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+          url="https://app.codecov.io/gh/${GITHUB_REPOSITORY}/commit/${TESTED_SHA}"
+          echo "[Coverage report](${url}) of the test legs this run ran" \
+               "(legs that reused earlier results add none)." \
+               >> "${GITHUB_STEP_SUMMARY}"
+          if [ "${IS_PULL_REQUEST}" = true ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+              -f state=success -f context=coverage \
+              -f description='Coverage of the tests this run ran' \
+              -f target_url="${url}" > /dev/null
+          fi
+
+  bench:
+    name: Benchmark linux-gcc-release
+    if: ${{ github.event_name == 'pull_request' }}
+    # Benchmark infrastructure problems shouldn't fail a pull request's CI.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
+    defaults:
+      run:
+        shell: edg-container-exec "bash -eo pipefail {0}"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Configure linux-gcc-release
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+        run: cmake --preset linux-gcc-release
+
+      - name: Build linux-gcc-release
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+        run: cmake --build build/gcc-release --target cpfe cpfe-cp
+
+      - name: Run benchmarks
+        env:
+          EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
+          EDG_BENCH_RUNS_KEPT: '0'
+        run: |
+          # Use the pull request's own benchmark tooling.
+          export PATH="${GITHUB_WORKSPACE}/dev_tools/bin:${PATH}"
+          export PYTHONPATH="${GITHUB_WORKSPACE}/dev_tools/pylibs"
+          mkdir -p bench-results
+          for run in c:bin/cpfe cpp:bin/cpfe-cp; do
+            name="${run%%:*}"
+            binary="${run#*:}"
+            (cd build/gcc-release && source environment.sh &&
+             edg-bench "${binary}")
+            latest="$(ls -1d benchmarks/runs/*/ | sort | tail -n 1)"
+            mv "${latest}" "bench-results/${name}"
+          done
+
+      - name: Record CI metadata
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python3 - > bench-results/ci-meta.json <<'EOF'
+          import json, os
+          print(json.dumps({
+            'tested_sha': os.environ['TESTED_SHA'],
+            'head_sha': os.environ['HEAD_SHA'],
+            'run_id': int(os.environ['RUN_ID']),
+            'run_attempt': int(os.environ['RUN_ATTEMPT']),
+          }, indent = 2))
+          EOF
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v7
+        with:
+          name: bench-results
+          path: bench-results/
+          if-no-files-found: error
           retention-days: 14

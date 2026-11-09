@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Print a SHA-256 digest of the test files a run of one configuration can
+read (see edgtest.inputs), e.g., for a CI cache key:
+
+  edg-test-inputs-hash --config edg_x86_32_cp
+
+The test home is found as for edgy ($EDG_TEST_HOME, or the tests/ directory
+of the enclosing checkout).  Only git trees are read (as of --rev), so
+uncommitted changes are not included.
+'''
+
+import argparse
+import subprocess
+import sys
+
+import edgtest
+import edgutil
+
+from edgtest import inputs
+
+def _parse_args() -> argparse.Namespace:
+  parser = argparse.ArgumentParser(
+    description = (
+      'Print a SHA-256 digest of the test files a run of one configuration '
+      'can read.'
+    )
+  )
+  parser.add_argument(
+    '--config',
+    required = True,
+    help = 'the test configuration (e.g., edg_x86_64)'
+  )
+  parser.add_argument(
+    '--rev',
+    default = 'HEAD',
+    help = 'the git revision to read (default: HEAD)'
+  )
+  return parser.parse_args()
+
+def main() -> int:
+  args = _parse_args()
+  if inputs.TOOL_PATH_GIT is None:
+    edgutil.eprint('error: git not found')
+    return 1
+
+  test_home = edgtest.load_test_home_or_exit()
+  try:
+    print(inputs.hash_test_inputs(test_home, args.config, rev = args.rev))
+  except (OSError, subprocess.CalledProcessError) as ex:
+    edgutil.eprint(f"error: {ex}")
+    return 1
+  return 0
+
+if __name__ == '__main__':
+  sys.exit(main())

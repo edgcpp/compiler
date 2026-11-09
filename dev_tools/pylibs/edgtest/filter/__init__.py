@@ -24,6 +24,33 @@ _LEGACY_TARGET_CONFIGURATION_NAME_REGEX = re.compile(
   re.MULTILINE
 )
 
+def _check_config_enables_macro(config_dump: str, macro: str) -> bool:
+  '''True if the dumped configuration defines macro as enabled (1 or TRUE).
+
+  A macro that the dump reports as "not defined" is treated as disabled.
+  '''
+  return re.search(
+    rf'#define[ \t]+{re.escape(macro)}[ \t]+(1|TRUE)\s',
+    config_dump
+  ) is not None
+
+# Target modes whose command-line options are only accepted by front ends
+# built with the corresponding configuration macro.
+MICROSOFT_MODE = 'microsoft'
+GNU_MODE = 'gnu'
+
+_TARGET_MODE_CONFIG_MACROS = {
+  MICROSOFT_MODE: 'MICROSOFT_EXTENSIONS_ALLOWED',
+  GNU_MODE: 'GNU_EXTENSIONS_ALLOWED'
+}
+
+def _parse_target_modes(config_dump: str) -> FrozenSet[str]:
+  '''Collect the target modes (e.g., MICROSOFT_MODE) this build supports.'''
+  return frozenset(
+    mode for mode, macro in _TARGET_MODE_CONFIG_MACROS.items()
+    if _check_config_enables_macro(config_dump, macro)
+  )
+
 def _parse_target_configurations(config_dump: str) -> FrozenSet[str]:
   '''Collect --target names supported by this front-end build.'''
   targets: Set[str] = set(
@@ -37,11 +64,13 @@ def _parse_target_configurations(config_dump: str) -> FrozenSet[str]:
 class BuildConstants:
   def __init__(self, version: str, build_timestamp: str,
                config_dump: str,
-               target_configurations: FrozenSet[str]) -> None:
+               target_configurations: FrozenSet[str],
+               target_modes: FrozenSet[str]) -> None:
     self.version = version
     self.build_timestamp = build_timestamp
     self.config_dump = config_dump
     self.target_configurations = target_configurations
+    self.target_modes = target_modes
 
 async def load_build_constants(compiler_bin: Path) -> BuildConstants:
   config_dump_proc = await asyncio.create_subprocess_exec(
@@ -71,7 +100,8 @@ async def load_build_constants(compiler_bin: Path) -> BuildConstants:
     version_number,
     build_date,
     config_dump,
-    _parse_target_configurations(config_dump)
+    _parse_target_configurations(config_dump),
+    _parse_target_modes(config_dump)
   )
 
 _REGEX_REPLACEMENTS = {
@@ -160,6 +190,18 @@ class Normalizer:
             'time_of_compilation:     IL BUILD TIME'
           ),
         )
+      # The predefined __DATE__ and __TIME__ macros appear as macro text in
+      # IL displays of configurations that keep predefined macros.
+      self.replacements.extend([
+        (
+          r'#define __DATE__ \\"[A-Z][a-z]{2} [ \d]\d \d{4}\\"',
+          r'#define __DATE__ \"Mmm DD YYYY\"'
+        ),
+        (
+          r'#define __TIME__ \\"\d\d:\d\d:\d\d\\"',
+          r'#define __TIME__ \"HH:MM:SS\"'
+        )
+      ])
 
     replacement_groups = [f"({r})" for r, _ in self.replacements]
     self.normalization_regex = re.compile(f"{'|'.join(replacement_groups)}")

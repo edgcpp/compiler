@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++11:--c++11:--c++11:--c++11
 //options_all:--no_il_lower --il_display
-//filter:awk '/^func-scope expr-node@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -v '^(  start\.|  end\.|expr_range|next:)' | sed -e 's/@[0-9a-f]*//'
+//filter:awk '/^func-scope expr-node@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -v '^(  start.|  end.|expr_range|next:)' | sed -e 's/@[0-9a-f]*//'
 
 template<int I>
 struct B : B<I - 1>

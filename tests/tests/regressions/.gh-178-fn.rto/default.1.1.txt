@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++17 --max_depth_constexpr_call=300 Test_name.c
+"Test_name.c", line 11: error: expression must have a constant value
+  static_assert(f(300) == 300, "");
+                ^
+"Test_name.c", line 11: note: expression not folded to a constant due to excessive constexpr function call complexity
+  static_assert(f(300) == 300, "");
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

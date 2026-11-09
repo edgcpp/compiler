@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^func-scope expr-node@/' | grep -E -e '^(next|type|kind|constant|operation[.]kind|operands|position[.]seq):' -e '^func-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^func-scope expr-node@/' | grep -E -e '^(next|type|kind|constant|operation[.]kind|operands|position[.]seq):' -e '^func-scope ' -e '^$' | edg-enumerate-il-addrs
 
 using INT1 = int;
 using INT2 = int;

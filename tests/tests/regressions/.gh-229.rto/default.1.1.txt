@@ -1,0 +1,13 @@
+cpfe -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 5: warning: statement is unreachable
+    return [] { if constexpr (B) while (false) {} return 1; return 2; }();
+                                                            ^
+
+"Test_name.c", line 38: warning: label "L" was declared but never referenced
+      if constexpr (B) L: while (B) { }
+                       ^
+
+"Test_name.c", line 40: warning: label "x" was declared but never referenced
+      if constexpr (B) x: if (B) while (B) {} else for (;;) {}
+                       ^
+

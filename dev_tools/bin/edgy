@@ -26,6 +26,7 @@ import time
 
 import edgtest
 import edgtest.exec
+import edgtest.expectations
 import edgtest.filter
 import edgutil
 
@@ -85,11 +86,17 @@ class EdgyConfig:
     return [*self.primary_test_suites, *self.secondary_test_suites]
 
 class TestSuiteExpectations:
-  def __init__(self, file_path: Path, modified_time: Optional[float],
-               test_keyed_expectations: Dict[str, List[str]]) -> None:
+  def __init__(self, file_path: Path,
+               test_keyed_expectations: Dict[str, List[str]],
+               parent_file_path: Optional[Path] = None) -> None:
+    # The path of this configuration's own expectations file.
     self.file_path = file_path
-    self.modified_time = modified_time
     self._test_keyed_expectations = test_keyed_expectations
+    # The path of the expectations file this configuration inherits from (that
+    # of the default configuration) or None if it doesn't inherit.  The keyed
+    # expectations are the effective expectations: the parent's with this
+    # configuration's file applied on top.
+    self.parent_file_path = parent_file_path
 
   def __contains__(self, test_relative_path: str) -> bool:
     return test_relative_path in self._test_keyed_expectations
@@ -248,41 +255,98 @@ def load_edgy_config(args: argparse.Namespace, test_home: Path) -> EdgyConfig:
     )
 
     test_suites = config_file_dict.get('test_suites', {})
+    primary_test_suites = test_suites.get('primary', [])
+    secondary_test_suites = test_suites.get('secondary', [])
+    _validate_configured_suites(
+      config_file_path,
+      {'primary': primary_test_suites, 'secondary': secondary_test_suites}
+    )
     config_sets = config_file_dict.get('config_sets', {})
     return EdgyConfig(
       test_home,
       loaded_configs,
       config_sets,
-      test_suites.get('primary', []),
-      test_suites.get('secondary', [])
+      primary_test_suites,
+      secondary_test_suites
     )
+
+def _validate_configured_suites(config_file_path: Path,
+                                test_suites: Dict[str, Any]) -> None:
+  '''Exit unless each list of suites ``config_file_path`` gives is a list of
+  valid names.'''
+  invalid_test_suite_encountered = False
+  for kind, test_suite_names in test_suites.items():
+    if not isinstance(test_suite_names, list):
+      edgutil.eprint(f"Invalid {kind} test suites {test_suite_names!r} in "
+                     f"{config_file_path} (expected a list of names).")
+      invalid_test_suite_encountered = True
+      continue
+    for test_suite in test_suite_names:
+      if not (isinstance(test_suite, str) and
+              edgtest.is_valid_suite_name(test_suite)):
+        edgutil.eprint(f"Invalid test suite name {test_suite!r} in "
+                       f"{config_file_path} (expected 1-64 of A-Z, a-z, "
+                       "0-9, _ and -).")
+        invalid_test_suite_encountered = True
+
+  if invalid_test_suite_encountered:
+    sys.exit(1)
 
 def get_expectation_path(run_config: TestRunConfig,
                          test_suite_name: str) -> Path:
   return Path(run_config.expectations_dir, f"{test_suite_name}.log")
 
-def load_test_suite_expectations(
-                                args: argparse.Namespace,
-                                run_config: TestRunConfig,
-                                test_suite_name: str) -> TestSuiteExpectations:
-  expectations_path = get_expectation_path(run_config, test_suite_name)
-  modified_time = None
-  test_keyed_expectations: Dict[str, List[str]] = {}
+def _read_expectation_lines(expectations_path: Path) -> List[str]:
+  '''Return the lines (with their line endings) of an expectations file.'''
+  with open(expectations_path, 'r') as file_handle:
+    return file_handle.readlines()
 
-  # If the args haven't disabled expectations load the expectations file
-  if not args.no_expectations and expectations_path.exists():
-    modified_time = os.path.getmtime(expectations_path)
-    with open(expectations_path, 'r') as file_handle:
-      for line in file_handle:
-        test_name = line.split(':')[0]
-        if test_name not in test_keyed_expectations:
-          test_keyed_expectations[test_name] = []
-        test_keyed_expectations[test_name].append(line.strip())
+def load_test_suite_expectations(
+                         args: argparse.Namespace,
+                         run_config: TestRunConfig,
+                         test_suite_name: str,
+                         parent_expectations_dir: Optional[Path] = None
+                         ) -> TestSuiteExpectations:
+  expectations_path = get_expectation_path(run_config, test_suite_name)
+  parent_expectations_path = (
+    Path(parent_expectations_dir, f"{test_suite_name}.log")
+    if parent_expectations_dir is not None else None
+  )
+  expectation_lines: List[str] = []
+
+  # If the args haven't disabled expectations load the expectations files.  A
+  # configuration with a parent starts from the parent's expectations and
+  # applies its own on top.
+  if not args.no_expectations:
+    parent_lines: List[str] = []
+    if (parent_expectations_path is not None and
+        parent_expectations_path.exists()):
+      parent_lines = _read_expectation_lines(parent_expectations_path)
+
+    own_lines: List[str] = []
+    if expectations_path.exists():
+      own_lines = _read_expectation_lines(expectations_path)
+
+    if parent_expectations_path is not None:
+      expectation_lines = edgtest.expectations.overlay_expectations(
+        parent_lines,
+        own_lines
+      )
+    else:
+      expectation_lines = own_lines
+
+  test_keyed_expectations: Dict[str, List[str]] = {}
+  for expectation_line in expectation_lines:
+    line = expectation_line.strip()
+    test_name = line.split(':')[0]
+    if test_name not in test_keyed_expectations:
+      test_keyed_expectations[test_name] = []
+    test_keyed_expectations[test_name].append(line)
 
   return TestSuiteExpectations(
     expectations_path,
-    modified_time,
-    test_keyed_expectations
+    test_keyed_expectations,
+    parent_expectations_path
   )
 
 def get_flakey_tests_path(run_config: TestRunConfig,
@@ -313,10 +377,24 @@ def load_test_suite(args: argparse.Namespace, run_config: TestRunConfig,
                     test_home: Path, test_suite_name: str) -> TestSuiteConfig:
   test_suite_dir = test_home / 'tests' / test_suite_name
   env_override = edgtest.load_test_suite_env(test_suite_dir)
+
+  # Configurations other than the default configuration inherit the default
+  # configuration's expectations.
+  parent_config_name = edgtest.runtest.get_parent_config_name(
+    run_config.name,
+    env_override
+  )
+  parent_expectations_dir = None
+  if parent_config_name is not None:
+    parent_expectations_dir = test_home / 'expectations' / parent_config_name
+    if not parent_expectations_dir.is_dir():
+      parent_expectations_dir = None
+
   expectations = load_test_suite_expectations(
     args,
     run_config,
-    test_suite_name
+    test_suite_name,
+    parent_expectations_dir
   )
   flakey_tests = load_test_suite_flakey_tests(
     args,
@@ -473,15 +551,6 @@ class TestSuiteTest:
     # Path.relative_to function seems to be significantly more expensive.
     self._relative_path_str = os.path.relpath(self.path, self.suite.path)
 
-  def get_modified_time(self) -> float:
-    return os.path.getmtime(self.path)
-
-  def was_modified_after_expectations(self) -> bool:
-    expectations_modified_time = self.suite.expectations.modified_time
-    if expectations_modified_time is None:
-      return True
-    return expectations_modified_time < self.get_modified_time()
-
   def is_marked_slow(self) -> bool:
     return self.name.startswith('_')
 
@@ -586,7 +655,7 @@ def _diagnose_bad_expectations_file(file_path: Path) -> None:
       line_ctr += 1
       try:
         parse_test_status(line_text)
-      except:
+      except Exception:
         if len(line_text) != 0:
           edgutil.eprint(
             f"{file_path_str}, line {line_ctr}: "
@@ -613,7 +682,7 @@ def _construct_replay_filters(
     try:
       with open(prev_run.get_log_path(), 'r') as file_handle:
         expectations = test_suite.expectations.all_values()
-        encountered = [line.rstrip() for line in file_handle]
+        encountered = file_handle.readlines()
         status_checker = TestStatusChecker(
           expectations,
           encountered
@@ -627,12 +696,17 @@ def _construct_replay_filters(
         )
         for key in comparison:
           desired_tests.add(parsed_test_status_key_to_name(key))
-    except:
+    except Exception:
       edgutil.eprint(
         f"Failed to compare the previous run of the {test_suite.name} "
         'suite to its expectations.'
       )
-      _diagnose_bad_expectations_file(test_suite.expectations.file_path)
+      for expectations_path in [
+        test_suite.expectations.file_path,
+        test_suite.expectations.parent_file_path
+      ]:
+        if expectations_path is not None and expectations_path.exists():
+          _diagnose_bad_expectations_file(expectations_path)
       _diagnose_bad_expectations_file(prev_run.get_log_path())
       sys.exit(1)
   else:
@@ -645,7 +719,7 @@ def _construct_replay_filters(
           elif (args.replay == 'output-mismatch' and
                 parsed_test_status.is_output_mismatch()):
             desired_tests.add(parsed_test_status_key_to_name(key))
-    except:
+    except Exception:
       edgutil.eprint(
         f"Failed to parse test statuses in previous run of {test_suite.name}."
       )
@@ -856,7 +930,9 @@ def get_latest_replay_number(replay_dir: Path) -> int:
 
 def get_run_dir(test_runs_dir: Path, args: argparse.Namespace,
                 test_suites: List[TestSuiteConfig]) -> Path:
-  if is_replay_run(args):
+  if args.output_directory is not None:
+    return args.output_directory
+  elif is_replay_run(args):
     # This is guaranteed to exist as the checks on test counts prior to calling
     # this function ensure that at least one test from the last run is being
     # replay (so there must be a last run).
@@ -887,6 +963,12 @@ def prepare_for_test_run(test_runs_dir: Path, args: argparse.Namespace,
 
     run_dir.mkdir(parents = True)
 
+    # Let a wrapping tool (e.g. edg-docker-test) learn exactly which directory
+    # this invocation is using, even for replays, without racing other runs.
+    run_dir_file = os.environ.get('EDGY_RUN_DIR_FILE')
+    if run_dir_file:
+      Path(run_dir_file).write_text(f"{run_dir}\n")
+
     setup_cache = RunSetupCache(run_dir)
 
     for test_suite in test_suites:
@@ -903,7 +985,12 @@ def prepare_for_test_run(test_runs_dir: Path, args: argparse.Namespace,
 
       # Set the test suite run as the current run
       test_suite.set_current_run(test_suite_run)
-  except FileExistsError:
+  except FileExistsError as ex:
+    if args.output_directory is not None:
+      # Retrying can't help, as an explicit output directory is never bumped.
+      edgutil.eprint(f"Path already exists: {ex.filename}")
+      sys.exit(1)
+
     # This can happen if edgy is rapidly invoked, just wait a bit and retry (to
     # bump the directory name).
     time.sleep(.5)
@@ -1187,7 +1274,7 @@ class TestStatusChecker:
                 encountered_lines: List[str]) -> Optional['TestStatusChecker']:
     try:
       return TestStatusChecker(expected_lines, encountered_lines)
-    except:
+    except Exception:
       return None
 
   def _get_status_for_comparison(
@@ -1327,20 +1414,6 @@ async def check_expectations(status_reporter: TestStatusReporter,
         *encountered
       )
       problem_detected = True
-
-    # Report if a problematic test was created or updated after the last
-    # expectations update (as it's useful to know that it may be the test
-    # itself that's changed).
-    #
-    # Note this previously was based on the "created time". However on UNIX
-    # this is based on the time the file metadata's last changed. This is
-    # seemingly unreliable as a measure of "creation time" -- at least in the
-    # context of git? -- so modification time is used instead, and we now also
-    # report updates, not just creation.
-    if problem_detected and test.was_modified_after_expectations():
-      status_buffer.print_remark(
-        "Created or updated after last expectations update"
-      )
 
     # Report the debug command if enabled
     is_debugged_failure = problem_detected and status_reporter.debug_failures
@@ -1588,7 +1661,7 @@ class DynamicLoadingTestRunner:
         # Yield back to the event loop to work on other work if possible.
         await asyncio.sleep(0)
       except asyncio.CancelledError:
-        # This task cannot be cancelled; it must complete so that the
+        # This task cannot be canceled; it must complete so that the
         # expectations can be written correctly.
         pass
 
@@ -1830,10 +1903,50 @@ class EdgyRunLogWriter:
     if include_in_list:
       self.write_test_to_list(test, log_name)
 
+def _read_log_lines(file_path: Path) -> List[str]:
+  if not file_path.exists():
+    return []
+  with open(file_path, 'r') as file_handle:
+    return file_handle.readlines()
+
+def _record_expectations(
+        record_jobs: List[Tuple[TestSuiteConfig,
+                                TestSuiteReport,
+                                Path]]) -> None:
+  '''Update the expectations files of the suites of a recording run.
+
+  A suite whose configuration doesn't inherit expectations gets the new suite
+  log as its expectations.  Otherwise only the differences from the
+  expectations of the configuration it inherits from are recorded (including
+  explicit PASS lines for tests that pass where the parent expects a failure).
+  '''
+  # Record the configurations that don't inherit first, so the ones that do see
+  # the updated expectations of the configuration they inherit from.
+  ordered_jobs = sorted(
+    record_jobs,
+    key = lambda job: job[0].expectations.parent_file_path is not None
+  )
+
+  for suite, report, suite_log in ordered_jobs:
+    parent_file_path = suite.expectations.parent_file_path
+    if parent_file_path is None:
+      shutil.copy2(suite_log, suite.expectations.file_path)
+      continue
+
+    # The suite log has the expectations of the tests that weren't executed
+    # (and still exist) and the parent's file has been updated already, so
+    # record the differences between them.
+    delta_lines = edgtest.expectations.compute_expectation_delta(
+      _read_log_lines(parent_file_path),
+      _read_log_lines(suite_log)
+    )
+    write_log_file_from_errors(suite.expectations.file_path, delta_lines)
+
 def generate_logs(args: argparse.Namespace, test_suites: List[TestSuiteConfig],
                   tests: List[TestSuiteTest],
                   skipped_tests: List[TestSuiteTest]) -> None:
   reports = _generate_testing_reports(test_suites, tests, skipped_tests)
+  record_jobs: List[Tuple[TestSuiteConfig, TestSuiteReport, Path]] = []
 
   with OutputFileStack() as output_file_stack:
     for suite, report in reports.items():
@@ -1939,9 +2052,14 @@ def generate_logs(args: argparse.Namespace, test_suites: List[TestSuiteConfig],
         for existing_error in report.inherited_errors:
           print(f"  - {existing_error}")
 
-      # Update expectations automatically when in record mode.
+      # Update expectations automatically when in record mode (after all of the
+      # logs are written, as configurations that inherit expectations are
+      # recorded relative to the expectations of the configuration they
+      # inherit from).
       if args.record_mode:
-        shutil.copy2(suite_log, suite.expectations.file_path)
+        record_jobs.append((suite, report, suite_log))
+
+    _record_expectations(record_jobs)
 
     for file_path, file_handle in output_file_stack.open_files.items():
       # Ignore elist files other than the executed elist outside of verbose
@@ -2100,6 +2218,16 @@ def parse_args() -> argparse.Namespace:
     help = 'override the directory where tests runs are stored'
   )
   parser.add_argument(
+    '--output-directory',
+    dest = 'output_directory',
+    type = Path,
+    help = (
+      'store the output of this run in exactly this directory, in place of a '
+      'new run or replay directory (replays still read the previous run from '
+      'the runs directory, and no old runs are cleaned up)'
+    )
+  )
+  parser.add_argument(
     '--run-timestamp',
     dest = 'test_run_timestamp',
     type = str,
@@ -2185,7 +2313,11 @@ def parse_args() -> argparse.Namespace:
     '--disp-run-dir',
     dest = 'disp_run_dir',
     action = 'store_true',
-    help = 'print the directory where the run output is being stored'
+    help = (
+      'print the directory where the run output is being stored (if '
+      'scripting, prefer setting EDGY_RUN_DIR_FILE to have the run directory '
+      'path written there)'
+    )
   )
   parser.add_argument(
     '-W',
@@ -2355,7 +2487,8 @@ def main() -> None:
 
   generate_logs(args, test_suites, tests, skipped_tests)
   maybe_dump_performance_info(args, tests, multi_config_run = multi_config_run)
-  try_cleanup_test_runs(test_runs_dir, args)
+  if args.output_directory is None:
+    try_cleanup_test_runs(test_runs_dir, args)
   sys.exit(exit_code)
 
 main()

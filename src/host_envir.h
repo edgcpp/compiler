@@ -739,12 +739,22 @@ slower.
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */
 
 /*
-When this flag is TRUE, any prototype instantiations of function definitions
-that are done are included in the IL.  When the flag is FALSE, prototype
-instantiations of function definitions may or may not be done, depending
-on other modes, but the definition generated (if any) will not be included
-in the IL.  If PROTOTYPE_INSTANTIATIONS_IN_IL is already defined, use that
-as the basis of the value for this flag.
+A prototype instantiation results from parsing and analyzing a template
+without substituting actual template argument entities for the formal
+parameters.  This flag should be set to TRUE if such structured but abstract
+representations should be recorded in the IL.  (It is typically not needed
+for direct code generation.)  When this flag is TRUE, any prototype
+instantiations of function definitions that are done are included in the IL.
+When the flag is FALSE, prototype instantiations of function definitions may
+or may not be done, depending on other modes, but the definition generated
+(if any) will not be included in the IL.  It is the default value of the
+variable all_template_info_in_il, except when doing IL lowering, where that
+variable is set from prototype_instantiations_in_il instead.  Note that
+prototype instantiations cannot be generated when doing IL lowering.
+
+This flag replaces the legacy macro PROTOTYPE_INSTANTIATIONS_IN_IL.  If
+PROTOTYPE_INSTANTIATIONS_IN_IL is already defined, use that as the basis of
+the value for this flag; otherwise, the default is FALSE.
 */
 #ifndef ALL_TEMPLATE_INFO_IN_IL
 #ifdef PROTOTYPE_INSTANTIATIONS_IN_IL
@@ -759,13 +769,13 @@ as the basis of the value for this flag.
 #endif /* ifndef ALL_TEMPLATE_INFO_IN_IL */
 
 /*
-A prototype instantiation results from parsing and analyzing a template
-without substituting actual template argument entities for the formal
-parameters.  This flag should be set to TRUE if such structured but abstract
-representations should be recorded in the IL.  (It is typically not needed
-for direct code generation.)  It is the default value of the variable
-prototype_instantiations_in_il.  Note that prototype instantiations cannot
-be generated when doing IL lowering.
+PROTOTYPE_INSTANTIATIONS_IN_IL is the legacy macro for recording prototype
+instantiations in the IL; see ALL_TEMPLATE_INFO_IN_IL above, which is the
+current macro.  If PROTOTYPE_INSTANTIATIONS_IN_IL is defined before
+ALL_TEMPLATE_INFO_IN_IL is set, its value becomes the default for
+ALL_TEMPLATE_INFO_IN_IL.  The default of TRUE supplied here does not affect
+ALL_TEMPLATE_INFO_IN_IL, which has already been set.  This macro is the
+default value of the variable prototype_instantiations_in_il.
 
 This flag must now be set to TRUE.  The flag and the tests that use it
 will be removed at some point.
@@ -2553,12 +2563,6 @@ undefined otherwise.  An example of proper setting is
 
 If only one CPU id is needed, HOSTID should be set, and HOSTID2 should be
 left undefined.
-*/
-
-/*
-The flag DEMO_VERSION_ID can be defined with a string identifying a demo
-version if this is a demo version.  The string is printed on startup with
-the -v option.
 */
 
 /*

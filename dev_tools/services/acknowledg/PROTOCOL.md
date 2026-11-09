@@ -3,7 +3,7 @@
 This document describes the WebSocket protocol used by the AcknowlEDG server,
 the Vue client, and the `edgy-review` / `edg-bench-review` /
 `edg-acknowledg-cli` providers.
-The current protocol revision is **18**.
+The current protocol revision is **20**.
 
 All frames are JSON text. Implementations live in `edgacknowledg`
 (`dev_tools/pylibs/edgacknowledg`) and must stay in sync with the JavaScript
@@ -42,9 +42,10 @@ server's current `r`).
 
 `<uuid>` is the shared review id. `<slug>` selects one section of that kind.
 
-When `EDG_ACKNOWLEDG_API_KEY` is set, `/source`, `/edit`, and `/batch` require
+When the server has an API key configured (a systemd `api-key` credential, or
+else `EDG_ACKNOWLEDG_API_KEY`), `/source`, `/edit`, and `/batch` require
 header `X-AcknowlEDG-API-Key`. The server accepts the WebSocket, then closes
-with code **3000** if the key is missing or wrong. When the env var is unset,
+with code **3000** if the key is missing or wrong. When no key is configured,
 authentication is skipped (local development).
 
 ## Roles and occupancy
@@ -73,26 +74,50 @@ work can flow immediately. Providers may optionally send identity updates at
 any time (on dedicated sockets or nested in `batch.event`):
 
 ```json
-{ "t": "meta.section.name", "r": 18, "v": "<tab label>" }
+{ "t": "meta.section.name", "r": 20, "v": "<tab label>" }
 ```
 
 ```json
-{ "t": "meta.review.name", "r": 18, "v": "<review list title>" }
+{ "t": "meta.review.name", "r": 20, "v": [ <rich name segments> ] }
 ```
 
 ```json
-{ "t": "meta.review.timestamp", "r": 18, "v": "<ISO-8601 datetime>" }
+{ "t": "meta.review.timestamp", "r": 20, "v": "<ISO-8601 datetime>" }
 ```
 
 - `meta.section.name` sets the display name for the section tab (shown in
   `review.connection-state` for sources)
-- `meta.review.name` sets the review list title if the review does not already
-  have one
+- `meta.review.name` sets the review's name, a [rich name](#rich-names), if
+  the review does not already have one
 - `meta.review.timestamp` sets `created_at` if the review does not already have
   one; it must be a parseable ISO-8601 datetime (a trailing `Z` is accepted)
 
 The first accepted `meta.review.name` / `meta.review.timestamp` wins; later
 messages are ignored once those fields are set.
+
+### Rich names
+
+A review's name is rich text: an array of segments, shown in order.
+
+```json
+[
+  { "type": "link", "url": "https://github.com/edgcpp/compiler/pull/329",
+    "text": "edgcpp/compiler#329" },
+  { "type": "text", "text": " CTAD through a template template parameter" }
+]
+```
+
+| Segment | Fields |
+| --- | --- |
+| `text` | `text` |
+| `link` | `url`, and optionally `text` (shown instead of the URL) |
+
+Every field is a non-empty string, and no other fields are allowed. A link's
+`url` must be `http` or `https`; reviewers' browsers open it in a new tab. A
+name has at least one and at most 32 segments, and at most 4096 characters of
+text and URLs in all. The server answers any other `meta.review.name` with
+`invalid` and leaves the name unset; the browser client also renders a link
+with any other URL as text.
 
 ## Section field `s`
 
@@ -159,9 +184,10 @@ Closing `/batch` cancels every subscription for that connection.
 
 | Tag | `v` | When |
 | --- | --- | --- |
-| `invalid` | unused / `null` | Malformed request, bad slug, failed handshake, or unexpected tag |
+| `invalid` | unused / `null`; from a provider, see [Failed requests](#failed-requests) | Malformed request, bad slug, failed handshake, or unexpected tag; from a provider, a reviewer's request it failed |
 | `outdated-proto` | `null` | Peer `r` does not match |
 | `role-occupied` | `null` | Another provider already holds this UUID + slug |
+| `illegal-access` | see [Illegal access](#illegal-access) | A reviewer requested a file outside the section |
 | `test.missing-src` | `null` | Reviewer request needs a test source that is not connected |
 | `test.missing-edit` | `null` | Reviewer request needs a test editor that is not connected |
 | `bench.missing-src` | `null` | Reviewer request needs a bench source that is not connected |
@@ -178,7 +204,7 @@ On connect the server sends a full snapshot, then incremental patches.
 ```json
 {
   "id": "<uuid>",
-  "name": "<title or uuid if unnamed>",
+  "name": [ <rich name segments> ],
   "created_at": "<ISO-8601 or null>",
   "sockets": {
     "reviewer": 0,
@@ -190,9 +216,10 @@ On connect the server sends a full snapshot, then incremental patches.
 }
 ```
 
-`sockets` counts are `0` or `1` for providers (occupied or not) and the
-current reviewer connection count for `reviewer`. The list reports type
-presence, not every section name.
+`name` is the review's [rich name](#rich-names), or its id as a single text
+segment until a `meta.review.name` sets one. `sockets` counts are `0` or `1`
+for providers (occupied or not) and the current reviewer connection count for
+`reviewer`. The list reports type presence, not every section name.
 
 ### `list-reviews-patch`
 
@@ -211,6 +238,7 @@ connection-state updates, forwarded provider replies, or control tags.
 
 ```json
 {
+  "name": [ <rich name segments> ],
   "sources": [
     { "kind": "test" | "bench", "slug": "<slug>", "name": "<section_name>" }
   ],
@@ -220,7 +248,8 @@ connection-state updates, forwarded provider replies, or control tags.
 }
 ```
 
-Only occupied slots are listed.
+`name` is the review's name, as in the review list. Only occupied slots are
+listed.
 
 ### Reviewer requests
 
@@ -238,7 +267,7 @@ adding `reviewer_id` so the reply can be routed back to this reviewer.
 | `test.src.show-diff-curr` | `{ "id", "configs": [string] }` | test source |
 | `test.src.show-output` | string test id | test source |
 | `test.src.list-assoc-files` | string test id | test source |
-| `test.src.show-src` | `{ "id", "assoc_file": string \| null }` | test source |
+| `test.src.show-src` | `{ "id", "assoc_file": string \| null, "line"?: int, "context"?: int }` | test source |
 | `test.edit.update-diff` | `{ "id", "configs": [string] }` | test editor |
 | `bench.src.list-statuses` | empty | bench source |
 | `bench.src.show-annotate` | string bench id | bench source |
@@ -293,6 +322,39 @@ provider slug.
 
 `configs` is present only for test recording updates.
 
+### Illegal access
+
+When a reviewer's request names a file outside the section's tree (or, for
+content that isn't the provider user's own, one reached through a symlink),
+the provider doesn't answer the request. It reports the reviewer instead:
+
+```json
+{ "t": "illegal-access", "r": 20, "v": { "reviewer_id": "<uuid>" } }
+```
+
+The server then closes that reviewer's socket with code **3001**, without
+any message: the reviewer UI never sends such requests, and doesn't reconnect
+by itself. For a reviewer in a `/batch` `review` subscription that is the
+whole `/batch` socket, ending every subscription on it. A provider can only
+report reviewers of its own review.
+
+### Failed requests
+
+When a provider fails to handle a reviewer's request (other than for illegal
+access), it doesn't answer the request either. It tells the reviewer it
+failed, through the server, and keeps serving the section:
+
+```json
+{ "t": "invalid", "r": 20, "v": { "reviewer_id": "<uuid>" } }
+```
+
+The server sends `invalid` to that reviewer alone, with `v` `null` and `s`
+set to the provider's slug. As with illegal access, a provider can only reach
+reviewers of its own review. The server drops a provider's `invalid` whose
+`reviewer_id` is missing or isn't a UUID, without answering it: answering
+with another `invalid` could bounce between the two for as long as the
+section is served.
+
 ### Source `client_response` shapes (reviewer `v`)
 
 Display payloads that carry file text use `content` (string or `null` if
@@ -340,8 +402,17 @@ match the representative.
 **`test.src.list-assoc-files`**
 
 ```json
-{ "id": "<test id>", "files": ["relative/posix/path", "..."] }
+{
+  "id": "<test id>",
+  "files": ["relative/posix/path", "..."],
+  "primary_name": "<name>"
+}
 ```
+
+`primary_name` is the file name the primary source appears under in
+diagnostics (`Test_name.c` unless the test's `//name:` directive overrides it;
+any Unicode name is allowed). The primary file itself is not in `files`; it is
+`assoc_file: null` in `test.src.show-src`.
 
 **`test.src.show-src`**
 
@@ -353,6 +424,14 @@ match the representative.
   "truncated": false
 }
 ```
+
+The request may carry `line` (1-based, ≥ 1) and `context` (0 to 50), both or
+neither (otherwise the server answers `invalid`). Then `content` holds only
+lines `line - context` through `line + context` (clamped to the file, joined
+with `\n`, no trailing newline), `line` and `context` are echoed back so the
+reviewer can match the reply, and the reply adds `first_line` (the 1-based
+number of the first returned line) and `total_lines`. `truncated` is not
+sent. A missing file still yields `content: null`.
 
 **`bench.src.list-statuses`**
 
@@ -393,11 +472,12 @@ match the representative.
 
 | Tag | Direction |
 | --- | --- |
-| `invalid` | server → any |
+| `invalid` | server → any; source/edit → server |
 | `outdated-proto` | server → any |
 | `role-occupied` | server → source/edit (or nested in `batch.event`) |
+| `illegal-access` | source/edit → server |
 | `meta.section.name` | provider → server (optional tab label) |
-| `meta.review.name` | provider → server (optional review title) |
+| `meta.review.name` | provider → server (optional review [rich name](#rich-names)) |
 | `meta.review.timestamp` | provider → server (optional created_at) |
 | `list-reviews` | server → list client |
 | `list-reviews-patch` | server → list client |

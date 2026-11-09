@@ -1536,6 +1536,9 @@ typedef TYPE_FOR_A_SIGNED_INTEGER_VALUE a_signed_integer_value;
 
 /* Minimum and maximum values that can be represented in an_integer_value. */
 #ifndef MAX_INTEGER_VALUE
+#if INT128_EXTENSIONS_ALLOWED
+#define MAX_INTEGER_VALUE ((__int128_t)(~(__uint128_t)0 >> 1))
+#else /* !INT128_EXTENSIONS_ALLOWED */
 #if LONG_LONG_ALLOWED
 #ifdef LLONG_MAX
 #define MAX_INTEGER_VALUE LLONG_MAX
@@ -1545,8 +1548,12 @@ typedef TYPE_FOR_A_SIGNED_INTEGER_VALUE a_signed_integer_value;
 #else /* !LONG_LONG_ALLOWED */
 #define MAX_INTEGER_VALUE LONG_MAX
 #endif /* LONG_LONG_ALLOWED */
+#endif /* INT128_EXTENSIONS_ALLOWED */
 #endif /* ifndef MAX_INTEGER_VALUE */
 #ifndef MIN_INTEGER_VALUE
+#if INT128_EXTENSIONS_ALLOWED
+#define MIN_INTEGER_VALUE (-MAX_INTEGER_VALUE-1)
+#else /* !INT128_EXTENSIONS_ALLOWED */
 #if LONG_LONG_ALLOWED
 #if defined(LLONG_MIN) && LLONG_MIN < LLONG_MAX /*lint !e30*/
 /* The preceding condition detects an incorrect definition of LLONG_MIN
@@ -1558,8 +1565,12 @@ typedef TYPE_FOR_A_SIGNED_INTEGER_VALUE a_signed_integer_value;
 #else /* !LONG_LONG_ALLOWED */
 #define MIN_INTEGER_VALUE LONG_MIN
 #endif /* LONG_LONG_ALLOWED */
+#endif /* INT128_EXTENSIONS_ALLOWED */
 #endif /* ifndef MIN_INTEGER_VALUE */
 #ifndef MAX_UNSIGNED_INTEGER_VALUE
+#if INT128_EXTENSIONS_ALLOWED
+#define MAX_UNSIGNED_INTEGER_VALUE (~(__uint128_t)0)
+#else /* !INT128_EXTENSIONS_ALLOWED */
 #if LONG_LONG_ALLOWED
 #ifdef ULLONG_MAX
 #define MAX_UNSIGNED_INTEGER_VALUE ULLONG_MAX
@@ -1569,6 +1580,7 @@ typedef TYPE_FOR_A_SIGNED_INTEGER_VALUE a_signed_integer_value;
 #else /* !LONG_LONG_ALLOWED */
 #define MAX_UNSIGNED_INTEGER_VALUE ULONG_MAX
 #endif /* LONG_LONG_ALLOWED */
+#endif /* INT128_EXTENSIONS_ALLOWED */
 #endif /* ifndef MAX_UNSIGNED_INTEGER_VALUE */
 #ifndef BITS_IN_AN_INTEGER_VALUE
 #define BITS_IN_AN_INTEGER_VALUE (sizeof(an_integer_value) * CHAR_BIT)

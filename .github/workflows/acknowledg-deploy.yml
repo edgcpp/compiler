@@ -1,0 +1,173 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Build and deploy AcknowlEDG over SSH. Two independent jobs:
+#
+#   client  builds the Vue client and rsyncs the static files into the web
+#           root. Nothing is restarted; browsers pick up the new files once
+#           their caches expire.
+#   server  builds the server wheel, uploads it, and runs
+#           dev_tools/services/acknowledg/server/deploy-remote.sh on the host,
+#           which installs it and restarts the systemd unit only when the
+#           wheel's contents differ from what is already deployed.
+#
+# Host, paths, and credentials come from secrets in the `acknowledg`
+# environment (see dev_tools/services/acknowledg/README.md). The SSH setup
+# writes them into a `Host acknowledg` alias so they never appear on a command
+# line. The public API URL is the ACKNOWLEDG_API_HOST repository variable,
+# shared with acknowledg-forge-deploy.yml.
+
+name: AcknowlEDG Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - dev_tools/services/acknowledg/**
+      - dev_tools/pylibs/edgacknowledg/**
+      # acknowledg-forge is a separate service.
+      - '!dev_tools/pylibs/edgacknowledg/forge/**'
+      - .github/workflows/acknowledg-deploy.yml
+  workflow_dispatch:
+
+concurrency:
+  group: acknowledg-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  ACKNOWLEDG_DIR: dev_tools/services/acknowledg
+
+jobs:
+  client:
+    name: Deploy client
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: acknowledg
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: ${{ env.ACKNOWLEDG_DIR }}/client/package-lock.json
+
+      - name: Build client
+        working-directory: ${{ env.ACKNOWLEDG_DIR }}/client
+        env:
+          VITE_EDG_ACKNOWLEDG_API_HOST: ${{ vars.ACKNOWLEDG_API_HOST }}
+        run: |
+          # The client opens `${VITE_EDG_ACKNOWLEDG_API_HOST}/review`; without
+          # a scheme the browser resolves that relative to the page instead.
+          case "${VITE_EDG_ACKNOWLEDG_API_HOST}" in
+            ws://?*|wss://?*) ;;
+            *)
+              echo '::error::ACKNOWLEDG_API_HOST must be a ws:// or wss:// URL'
+              exit 1
+              ;;
+          esac
+          npm ci
+          npm run build
+
+      - name: Configure SSH
+        env:
+          SSH_HOST: ${{ secrets.ACKNOWLEDG_SSH_HOST }}
+          SSH_USER: ${{ secrets.ACKNOWLEDG_SSH_USER }}
+          SSH_PORT: ${{ secrets.ACKNOWLEDG_SSH_PORT || '22' }}
+          SSH_PRIVATE_KEY: ${{ secrets.ACKNOWLEDG_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.ACKNOWLEDG_SSH_KNOWN_HOSTS }}
+        run: &configure-ssh |
+          install -d -m 700 ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          printf '%s\n' "${SSH_PRIVATE_KEY}" > ~/.ssh/deploy_key
+          printf '%s\n' "${SSH_KNOWN_HOSTS}" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host acknowledg
+            HostName ${SSH_HOST}
+            User ${SSH_USER}
+            Port ${SSH_PORT}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            BatchMode yes
+          EOF
+          chmod 600 ~/.ssh/config ~/.ssh/known_hosts
+
+      - name: Upload client files
+        working-directory: ${{ env.ACKNOWLEDG_DIR }}/client
+        env:
+          CLIENT_PATH: ${{ secrets.ACKNOWLEDG_CLIENT_PATH }}
+        run: |
+          # --delay-updates swaps the new files in at the end of the transfer
+          # and --delete-after removes stale hashed assets only once the new
+          # index.html no longer references them.
+          rsync --recursive --links --compress --checksum --itemize-changes \
+            --delay-updates --delete-after \
+            dist/ "acknowledg:${CLIENT_PATH}/"
+
+  server:
+    name: Deploy server
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: acknowledg
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Build server wheel
+        id: build
+        working-directory: ${{ env.ACKNOWLEDG_DIR }}/server
+        run: |
+          uv build --wheel --out-dir dist
+          wheel=$(ls dist/*.whl)
+          # Fingerprint the wheel by its RECORD, which lists a hash of every
+          # file in it; the zip itself isn't reproducible (timestamps). WHEEL
+          # only names the build backend's version, so leave it out to avoid
+          # restarts when nothing we ship has changed.
+          fingerprint=$(unzip -p "${wheel}" '*.dist-info/RECORD' \
+            | grep -v -E '\.dist-info/(WHEEL|RECORD),' \
+            | sort | sha256sum | cut -d' ' -f1)
+          echo "Built $(basename "${wheel}") with fingerprint ${fingerprint}"
+          echo "wheel=${wheel}" >> "${GITHUB_OUTPUT}"
+          echo "fingerprint=${fingerprint}" >> "${GITHUB_OUTPUT}"
+
+      - name: Configure SSH
+        env:
+          SSH_HOST: ${{ secrets.ACKNOWLEDG_SSH_HOST }}
+          SSH_USER: ${{ secrets.ACKNOWLEDG_SSH_USER }}
+          SSH_PORT: ${{ secrets.ACKNOWLEDG_SSH_PORT || '22' }}
+          SSH_PRIVATE_KEY: ${{ secrets.ACKNOWLEDG_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.ACKNOWLEDG_SSH_KNOWN_HOSTS }}
+        run: *configure-ssh
+
+      - name: Install server
+        working-directory: ${{ env.ACKNOWLEDG_DIR }}/server
+        env:
+          SERVER_PATH: ${{ secrets.ACKNOWLEDG_SERVER_PATH }}
+          SERVICE_NAME: ${{ secrets.ACKNOWLEDG_SERVICE_NAME }}
+          WHEEL: ${{ steps.build.outputs.wheel }}
+          FINGERPRINT: ${{ steps.build.outputs.fingerprint }}
+        run: |
+          wheel_name=$(basename "${WHEEL}")
+          ssh acknowledg "mkdir -p $(printf '%q' "${SERVER_PATH}/incoming")"
+          rsync --checksum "${WHEEL}" "acknowledg:${SERVER_PATH}/incoming/"
+          ssh acknowledg "bash -s -- $(printf '%q ' \
+            "${SERVER_PATH}" "${SERVICE_NAME}" "${wheel_name}" \
+            "${FINGERPRINT}")" < deploy-remote.sh

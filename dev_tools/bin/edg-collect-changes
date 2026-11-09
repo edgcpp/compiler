@@ -1,0 +1,401 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Collect pending Changes entries into a Changes file.
+
+Each Changes file in the tree has a pending_changes/ directory beside it.
+Rather than editing a Changes file directly (which makes every pull request
+conflict with every other), a change adds one *.txt entry there:
+
+  //allowed_words: reflectable memoized
+  [GH #335]
+  Type transformations of qualified function types
+
+  Previously, ...
+
+The leading //key: value directives are optional (//allowed_words: lists
+words the spell check should accept).  Then comes the tag block, one or more
+comma-separated "GH #N" tags in brackets (it may wrap onto several lines), the
+summary line, a blank line, and the description (see edgchanges).
+
+Given a Changes file and its pending_changes/ directory, this tool moves
+every entry into the Changes file, just below the newest "Version x.y" line,
+with the date added in front of the tags.  The entries added in one run are
+ordered by their summary lines.  If the newest version has already been
+released (its header has a date), a new section is opened for the next
+version (--version or --version-from).  A nightly job runs it for each Changes
+file (see .github/workflows/collect-changes.yml).
+
+With --check, the entries are only checked, by running edg-check-file-changes
+on them (format, spelling, typos, line length), the same check the pre-push
+hook does.
+'''
+
+import argparse
+import datetime
+import json
+import re
+import subprocess
+import sys
+import tempfile
+
+import edgchanges
+import edgutil
+
+from pathlib import Path
+from typing import Any, List, Optional, Tuple
+
+PENDING_CHANGES_KEEP_FILE_NAME = '.gitignore'
+
+SEPARATOR_LINE = '-' * edgchanges.MAX_LINE_LENGTH
+NO_CHANGES_LINE = 'No changes.'
+
+# An open version is "Version 7.1"; a released one is
+# "Version 7.0, September 28, 2026".
+VERSION_HEADER_REGEX = re.compile(
+  r'^Version ([0-9]+\.[0-9]+)(, [A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})?$'
+)
+SEPARATOR_REGEX = re.compile(r'^-+$')
+
+def list_pending_dir(pending_dir: Path) -> Tuple[List[Path], List[Path]]:
+  '''Return the entries in pending_dir, and the other files there (apart
+  from the .gitignore that keeps the directory in git).'''
+  fragment_paths = []
+  other_paths = []
+  for path in sorted(pending_dir.iterdir()):
+    if edgchanges.is_fragment_path(str(path)):
+      fragment_paths.append(path)
+    elif path.name != PENDING_CHANGES_KEEP_FILE_NAME:
+      other_paths.append(path)
+  return fragment_paths, other_paths
+
+def _describe_misnamed(path: Path) -> str:
+  return (
+    f"{path}: not a pending Changes entry (entries are named "
+    f"*{edgchanges.FRAGMENT_SUFFIX})"
+  )
+
+def _find_newest_version_header(lines: List[str]) -> Optional[int]:
+  '''Return the index of the newest Version header line.
+
+  Body text can also start with "Version", so a header must be the first line
+  of the file or directly follow a separator line.
+  '''
+  for line_index, line in enumerate(lines):
+    follows_separator = (
+      line_index == 0 or
+      SEPARATOR_REGEX.match(lines[line_index - 1]) is not None
+    )
+    if follows_separator and VERSION_HEADER_REGEX.match(line) is not None:
+      return line_index
+  return None
+
+def read_open_version(changes_path: Path) -> Optional[str]:
+  '''Return the newest version of changes_path if it's still open (i.e., its
+  header has no release date).'''
+  with open(changes_path, 'r', encoding = 'utf-8') as file_handle:
+    lines = file_handle.read().split('\n')
+
+  header_index = _find_newest_version_header(lines)
+  if header_index is None:
+    return None
+  header_match = VERSION_HEADER_REGEX.match(lines[header_index])
+  assert header_match is not None
+  if header_match.group(2) is not None:
+    return None
+  return header_match.group(1)
+
+def insert_entries(changes_text: str,
+                   entries: List[edgchanges.ChangesEntry], date_text: str,
+                   next_version: Optional[str]) -> Tuple[str, List[str]]:
+  '''Insert entries under the newest version of changes_text.
+
+  The entries are added just below the Version line, above the entries
+  already there.  If the newest version is released, a new section for
+  next_version is opened above it instead.
+
+  Returns the new text and the lines of the section as inserted.  Raises
+  ValueError if there's nowhere to put the entries.
+  '''
+  lines = changes_text.split('\n')
+  header_index = _find_newest_version_header(lines)
+  if header_index is None:
+    raise ValueError('no "Version x.y" line found')
+  header_match = VERSION_HEADER_REGEX.match(lines[header_index])
+  assert header_match is not None
+
+  entry_lines: List[str] = []
+  for entry in sorted(entries, key = edgchanges.ChangesEntry.sort_key):
+    entry_lines += entry.format(date_text) + ['', '']
+
+  if header_match.group(2) is None:
+    rest_index = header_index + 1
+    if rest_index < len(lines) and lines[rest_index] == '':
+      rest_index += 1
+    if rest_index < len(lines) and lines[rest_index] == NO_CHANGES_LINE:
+      rest_index += 1
+      while rest_index < len(lines) and lines[rest_index] == '':
+        rest_index += 1
+    inserted_lines = [lines[header_index], ''] + entry_lines
+    new_lines = lines[:header_index] + inserted_lines + lines[rest_index:]
+  else:
+    if next_version is None:
+      raise ValueError(
+        f"the newest version ({header_match.group(1)}) is released; use "
+        '--version or --version-from to open a new one'
+      )
+    inserted_lines = (
+      [f"Version {next_version}", ''] + entry_lines + [SEPARATOR_LINE]
+    )
+    new_lines = (
+      lines[:header_index] + inserted_lines + lines[header_index:]
+    )
+
+  return '\n'.join(new_lines), inserted_lines
+
+def _run_file_checks(fragment_paths: List[Path]) -> Any:
+  '''Run edg-check-file-changes on fragment_paths and return its results.
+
+  The checker wants an old version of each file too; an entry's is ignored,
+  so an empty file stands in.
+  '''
+  check_tool_path = Path(__file__).resolve().parent / 'edg-check-file-changes'
+  with tempfile.TemporaryDirectory() as tmp_dir_str:
+    tmp_dir = Path(tmp_dir_str)
+    empty_file = tmp_dir / 'empty.txt'
+    empty_file.touch()
+    input_spec = {
+      str(path): [str(empty_file), str(path.resolve())]
+      for path in fragment_paths
+    }
+    input_file = tmp_dir / 'input.json'
+    output_file = tmp_dir / 'output.json'
+    with open(input_file, 'w', encoding = 'utf-8') as file_handle:
+      json.dump(input_spec, file_handle)
+
+    # The checker finds each entry's Changes file (for the spell check)
+    # from its key, relative to the working directory, as here.
+    completed_process = subprocess.run(
+      [sys.executable, str(check_tool_path), str(input_file), str(output_file)]
+    )
+    if completed_process.returncode != 0:
+      raise RuntimeError(
+        f"edg-check-file-changes failed (exit {completed_process.returncode})"
+      )
+    with open(output_file, 'r', encoding = 'utf-8') as file_handle:
+      return json.load(file_handle)
+
+def _report_file_check_results(display_path: str, results: Any) -> bool:
+  '''Print the problems edg-check-file-changes found; return True if there
+  were any.'''
+  report_lines = []
+  for line_no, message in results['format_errors']:
+    report_lines.append(
+      f"  {message}" if line_no is None else f"  line {line_no}: {message}"
+    )
+
+  misspellings = results['misspellings']
+  if misspellings is None:
+    report_lines.append(
+      '  spell check failed: aspell not found or missing dictionary'
+    )
+  elif len(misspellings) != 0:
+    report_lines.append('  misspelled words:')
+    report_lines += [f"    - {word}" for word in misspellings]
+    report_lines += [
+      f"    {line}"
+      for line in edgchanges.allowed_words_hint(display_path, misspellings)
+    ]
+
+  if len(results['typos']) != 0:
+    report_lines.append('  typos:')
+    report_lines += [f"    - {typo}" for typo in results['typos']]
+
+  report_lines += edgutil.format_overlong_lines(
+    results['overlong_lines'],
+    '  '
+  )
+
+  if len(report_lines) != 0:
+    print(f"{display_path}:")
+    for line in report_lines:
+      print(line)
+  return len(report_lines) != 0
+
+def check(pending_dir: Path) -> bool:
+  '''Check every entry in pending_dir with edg-check-file-changes; return
+  True if all are good.'''
+  fragment_paths, other_paths = list_pending_dir(pending_dir)
+  for path in other_paths:
+    print(_describe_misnamed(path))
+  if len(fragment_paths) == 0:
+    return len(other_paths) == 0
+
+  all_results = _run_file_checks(fragment_paths)
+  found_problems = len(other_paths) != 0
+  for path in fragment_paths:
+    # edg-check-file-changes leaves out a file it failed on (with a message).
+    if str(path) not in all_results:
+      print(f"{path}: could not be checked")
+      found_problems = True
+    elif _report_file_check_results(str(path), all_results[str(path)]):
+      found_problems = True
+
+  return not found_problems
+
+def collect(changes_path: Path, pending_dir: Path, date: datetime.date,
+            next_version: Optional[str], *, dry_run: bool) -> bool:
+  '''Move the entries in pending_dir into changes_path.
+
+  Malformed entries are reported and left in place; the others are still
+  collected.  Returns True if every entry was collected.  Raises ValueError
+  if changes_path has nowhere to put them.
+  '''
+  fragment_paths, other_paths = list_pending_dir(pending_dir)
+  for path in other_paths:
+    edgutil.eprint(f"warning: {_describe_misnamed(path)}; ignored")
+
+  entries = []
+  errors = []
+  for path in fragment_paths:
+    entry, format_errors = edgchanges.parse_fragment(path)
+    errors += [
+      edgchanges.describe_error(str(path), error) for error in format_errors
+    ]
+    if entry is not None:
+      entries.append(entry)
+  for error in errors:
+    edgutil.eprint(error)
+  if len(errors) != 0:
+    edgutil.eprint('Malformed entries were left in place.')
+  if len(entries) == 0:
+    return len(errors) == 0
+
+  with open(changes_path, 'r', encoding = 'utf-8') as file_handle:
+    changes_text = file_handle.read()
+  try:
+    new_text, inserted_lines = insert_entries(
+      changes_text,
+      entries,
+      edgchanges.format_date(date),
+      next_version
+    )
+  except ValueError as ex:
+    raise ValueError(f"{changes_path}: {ex}")
+
+  if dry_run:
+    print(f"=== {changes_path}")
+    print('\n'.join(inserted_lines))
+  else:
+    # Only drop the entries once they're safely in the Changes file.
+    with open(changes_path, 'w', encoding = 'utf-8',
+              newline = '\n') as file_handle:
+      file_handle.write(new_text)
+    for entry in entries:
+      entry.path.unlink()
+    print(
+      f"{changes_path}: collected {len(entries)} "
+      f"{'entry' if len(entries) == 1 else 'entries'}"
+    )
+
+  return len(errors) == 0
+
+def _parse_date(date_text: str) -> datetime.date:
+  try:
+    return datetime.datetime.strptime(date_text, '%Y-%m-%d').date()
+  except ValueError:
+    raise argparse.ArgumentTypeError(f"not a YYYY-MM-DD date: {date_text}")
+
+def _parse_version(version_text: str) -> str:
+  if re.match(r'^[0-9]+\.[0-9]+$', version_text) is None:
+    raise argparse.ArgumentTypeError(f"not an x.y version: {version_text}")
+  return version_text
+
+def _parse_args() -> argparse.Namespace:
+  parser = argparse.ArgumentParser(
+    description = (
+      'Move the pending entries in a pending_changes/ directory into a '
+      'Changes file.'
+    )
+  )
+  parser.add_argument(
+    'changes_file',
+    type = Path,
+    help = 'the Changes file (e.g. src/Changes)'
+  )
+  parser.add_argument(
+    'pending_dir',
+    type = Path,
+    help = 'its pending entries directory (e.g. src/pending_changes)'
+  )
+  parser.add_argument(
+    '--date',
+    type = _parse_date,
+    default = datetime.date.today(),
+    help = 'the date (YYYY-MM-DD) to give the entries (default: today)'
+  )
+  version_group = parser.add_mutually_exclusive_group()
+  version_group.add_argument(
+    '--version',
+    type = _parse_version,
+    help = (
+      'the version (x.y) of the section to open if the newest version of '
+      'the Changes file is released'
+    )
+  )
+  version_group.add_argument(
+    '--version-from',
+    type = Path,
+    metavar = 'CHANGES_FILE',
+    help = (
+      'like --version, but take the version from the newest (open) version '
+      'of another Changes file'
+    )
+  )
+  mode_group = parser.add_mutually_exclusive_group()
+  mode_group.add_argument(
+    '--check',
+    action = 'store_true',
+    help = 'only check the pending entries (format, spelling, line length)'
+  )
+  mode_group.add_argument(
+    '--dry-run',
+    action = 'store_true',
+    help = 'print the section that would be inserted; change nothing'
+  )
+  return parser.parse_args()
+
+def main() -> int:
+  args = _parse_args()
+
+  if args.check:
+    return 0 if check(args.pending_dir) else 1
+
+  next_version = args.version
+  if args.version_from is not None:
+    next_version = read_open_version(args.version_from)
+    if next_version is None:
+      edgutil.eprint(
+        f"error: {args.version_from}: the newest version is released"
+      )
+      return 1
+
+  try:
+    succeeded = collect(
+      args.changes_file,
+      args.pending_dir,
+      args.date,
+      next_version,
+      dry_run = args.dry_run
+    )
+  except ValueError as ex:
+    edgutil.eprint(f"error: {ex}")
+    return 1
+  return 0 if succeeded else 1
+
+if __name__ == '__main__':
+  sys.exit(main())

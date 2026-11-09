@@ -408,6 +408,11 @@ std_incl=1
 #
 instantiation_mode_specified=0
 #
+# Flag indicating that the --building_runtime option was specified (i.e., the
+# runtime library is being built).
+#
+building_runtime=0
+#
 # Remove #line directives from the generated C
 #
 strip_line_dirs=0
@@ -1947,6 +1952,9 @@ process_option()
         --no_auto_instantiation)
           automatic_instantiation=0
           ;;
+        --building_runtime)
+          building_runtime=1
+          ;;
         -m | --c | --c89 | --c99 | --no_c99 | --c11 | --c18 | --c17 | --c23 | \
         --ms_c11 | --ms_c17 | --ms_c23 | -K | --old_c | --svr4 | --no_svr4 | \
         --gcc | --no_gcc | --upc | --no_upc)
@@ -2551,6 +2559,13 @@ fi
 # If we are in C mode then disable automatic instantiation just for
 # efficiency.
 if [ $c_mode -eq 1 ] ; then
+  automatic_instantiation=0
+fi
+
+# The runtime library is built without automatic instantiation.  (Front ends
+# configured without AUTOMATIC_TEMPLATE_INSTANTIATION do not accept the
+# options the driver would otherwise pass to support it, e.g., --ii_file.)
+if [ $building_runtime -eq 1 ] ; then
   automatic_instantiation=0
 fi
 

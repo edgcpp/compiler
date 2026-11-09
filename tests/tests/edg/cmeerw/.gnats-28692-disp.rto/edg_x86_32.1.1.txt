@@ -1,0 +1,81 @@
+fe_only -DTEST_NUMBER=1 --c++11 --gn 150200 --no_il_lower --il_display Test_name.c
+file-scope class-type-supplement#1
+
+file-scope type#1
+  name:                  file-scope id-name#1: "_IO_FILE"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope class-type-supplement#2
+template_arg_list:       
+  constant:              file-scope constant#1: N
+  type:                  file-scope type#2: T#(1,2)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope type#3
+  name:                  file-scope id-name#2: "__type_pack_element"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#2
+
+file-scope class-type-supplement#3
+
+file-scope type#4
+  name:                  file-scope id-name#3: "D"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#3
+
+file-scope class-type-supplement#4
+template_arg_list:       
+  constant:              file-scope constant#2: Is
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+
+file-scope type#5
+  name:                  file-scope id-name#4: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#4
+
+file-scope class-type-supplement#5
+template_arg_list:       
+  constant:              file-scope constant#3: __integer_pack(I)...
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope type#6
+  name:                  file-scope id-name#4: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#5
+
+file-scope class-type-supplement#6
+
+file-scope type#7
+  name:                  file-scope id-name#3: "D"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#6
+
+file-scope class-type-supplement#7
+template_arg_list:       
+  constant:              file-scope constant#4: 0
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  constant:              file-scope constant#5: 1
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  constant:              file-scope constant#6: 2
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+
+file-scope type#8
+  name:                  file-scope id-name#4: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#7
+
+file-scope type#9
+  name:                  file-scope id-name#5: "A3"
+kind:                    tk_typeref
+typeref_type:            file-scope type#7: C<0, 1, 2>::D
+kind:                    is_alias
+
+file-scope class-type-supplement#8
+

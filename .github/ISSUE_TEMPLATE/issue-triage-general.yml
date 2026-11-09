@@ -1,0 +1,43 @@
+# Mirrors .github/DISCUSSION_TEMPLATE/issue-triage-general.yml: keep the body:
+# sections identical, apart from links to the other form
+# (dev_tools/bin/edg-check-issue-templates checks this).
+name: General issue
+description: Tooling, build, documentation, or other problems not involving compiling source code.
+type: Bug
+body:
+  - type: markdown
+    attributes:
+      value: Please use the [compilation issue triage](https://github.com/edgcpp/compiler/issues/new?template=issue-triage-compilation.yml) for filing issues involving source code compilation (i.e., most issues).
+  - type: textarea
+    attributes:
+      label: Issue Summary
+      description: Provide a high level description of what you believe is going wrong and how it is impacting you.
+      placeholder: |
+        `edg-docker-test` is printing the incorrect host path for some of the log files when run on MacOS Monterey.  This is making it difficult for me to test my changes.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Observed Behavior
+      description: Please provide the behavior observed.
+      placeholder: When I run `edg-docker-test` I see the following log lines printed ... note how the second log is printed with its container path rather than a host path.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: Please provide a description of how you would like things to work.
+      placeholder: All printed paths should be host paths.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Details
+      description: Provide any additional details that you think may be helpful.
+      placeholder: I tried setting EDG_DOCKER_HOST_PATHS to 1 explicity and that did not help.  However, setting EDG_DOCKER_HOST_PATHS to 2 does print the host and container path as expected.  This makes me think the issue is specific to setting EDG_DOCKER_HOST_PATHS to 1.
+  - type: checkboxes
+    attributes:
+      label: "I acknowledge that:"
+      options:
+        - label: I have checked open issues and existing discussions before filing this report.
+          required: true

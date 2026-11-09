@@ -168,10 +168,12 @@ kind entry_kind.
          function-scope memory region kind.  For string entries this can
          happen even when the string is allocated in file-scope memory,
          because strings referenced from a function-scope memory region
-         are numbered as honorary members of that region during IL output. */
+         are numbered as honorary members of that region during IL output.
+         See assign_entry_number for details. */
       if (is_string_entry_kind(entry_kind)) {
-        (void)fprintf(f_display, "**possible non-file-scope ptr** (%p)",
-                      (a_void_ptr)entry_ptr);
+        /* This is usually benign, so omit the pointer value, which would
+           only make the display vary from run to run. */
+        (void)fprintf(f_display, "**possible non-file-scope ptr**");
       } else {
         (void)fprintf(f_display, "**NON FILE SCOPE PTR** (%p)",
                       (a_void_ptr)entry_ptr);

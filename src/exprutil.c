@@ -73,6 +73,9 @@ static a_boolean is_unmodifiable_initonly_field_operand(
 static void mark_init_component_as_permanently_allocated(
                                                        an_init_component *icp);
 static void prep_generic_init_component_list(an_arg_list_elem_ptr list);
+static void make_template_param_object_operand(a_constant_ptr  cp,
+                                               an_operand      *operand,
+                                               a_boolean       copy_constant);
 
 
 /*
@@ -4913,6 +4916,8 @@ in *bound_function_selector.
   an_expr_node_ptr              orig_expr = expr;
   an_expr_node_ptr              expr_copy = NULL;
   a_boolean                     rescanned_case = FALSE;
+  a_boolean                     is_template_param_object = FALSE;
+  a_boolean                     is_template_param_lvalue = FALSE;
   a_constant_ptr                constant = local_constant();
   a_constant_ptr                alloc_con = NULL;
   an_expr_rescan_info_entry_ptr eriep;
@@ -4964,11 +4969,50 @@ in *bound_function_selector.
       /* The operand was already built above. */
     } else {
       if (expr_copy == NULL) {
-        /* The result is a constant, so return a constant operand. */
-        if (alloc_con != NULL) {
-          make_constant_operand(alloc_con, operand);
+        a_constant_ptr  cp = alloc_con != NULL ? alloc_con : constant;
+        if (is_constant_node(expr) &&
+            constant_is(node_constant(expr), ck_template_param) &&
+            tpck_is(node_constant(expr), tpck_param) &&
+            constant_is(cp, ck_aggregate)) {
+          /* A C++20 nontype template parameter of class type has been
+             replaced by its argument value.  As when such a parameter is
+             referenced in an instantiation (see make_sym_constant_operand),
+             the result is an lvalue designating the template parameter
+             object.  That object is identified by the argument value
+             itself, i.e., without the "const" that substitution adds to
+             the value. */
+          if (cp != constant) {
+            /* cp may be the template argument itself (if the argument value
+               was produced by an earlier substitution), so it must not be
+               modified. */
+            copy_constant(cp, constant);
+            cp = constant;
+          }  /* if */
+          if (cp->variant.aggregate.added_const_for_template_param) {
+            cp->type = remove_qualifiers(cp->type, TQ_CONST);
+            cp->variant.aggregate.added_const_for_template_param = FALSE;
+          }  /* if */
+          make_template_param_object_operand(cp, operand,
+                                             /*copy_constant=*/TRUE);
+          is_template_param_object = TRUE;
         } else {
-          make_constant_operand(constant, operand);
+          /* The result is a constant, so return a constant operand. */
+          make_constant_operand(cp, operand);
+          if (constant_is(cp, ck_template_param) &&
+              is_operation_node(orig_expr) &&
+              node_operator_is(orig_expr, eok_lvalue) &&
+              orig_expr->variant.operation.operands == expr) {
+            /* A reference to a C++20 nontype template parameter of class
+               type that is still a template parameter after substitution
+               (e.g., when an enclosing template is instantiated): Keep it
+               an lvalue, as it was originally (see make_sym_constant_operand),
+               so that it can later be identified as an id-expression
+               designating the template parameter object. */
+            change_template_param_constant_operand_to_lvalue(
+                                        operand,
+                                        !is_template_dependent_type(cp->type));
+            is_template_param_lvalue = TRUE;
+          }  /* if */
         }  /* if */
       } else {
         /* Return an expression operand. */
@@ -4991,6 +5035,16 @@ in *bound_function_selector.
     } else {
       /* Normal case: restore everything. */
       restore_operand_info_from_expr_rescan_info_entry(operand, eriep);
+    }  /* if */
+    if ((is_template_param_object || is_template_param_lvalue) &&
+        orig_expr->extra.rescan_info != NULL) {
+      /* The rescan information on the template parameter constant was
+         saved before the reference was identified as an id-expression
+         (possibly parenthesized).  That is recorded on the node that makes
+         the reference an lvalue (see make_sym_constant_operand), and it
+         matters, e.g., for decltype. */
+      restore_operand_id_details(operand,
+                                 &orig_expr->extra.rescan_info->saved_operand);
     }  /* if */
   }  /* if */
   release_local_constant(&constant);
@@ -8467,11 +8521,15 @@ STATIC_THREAD a_template_param_object_map
 			   object. */
 
 static void make_template_param_object_operand(a_constant_ptr  cp,
-                                               an_operand      *operand)
+                                               an_operand      *operand,
+                                               a_boolean       copy_constant)
 /*
 Make operand an lvalue expression operand for the template parameter object
 associated with the constant cp.  If needed, create that object (as a variable
-entry).
+entry).  copy_constant is TRUE if cp is a local constant (rather than an
+allocated IL constant): If the object is created, its value is then a copy of
+cp, including its subconstants (which may be shared with other constants),
+allocated in the file scope memory region.
 */
 {
   a_constant_handle  ch = { cp };
@@ -8480,6 +8538,15 @@ entry).
   if (vp == NULL) {
     a_symbol_ptr  sym = make_template_param_object_sym(&error_position);
     a_type_ptr    vtp = cp->type;
+    if (copy_constant) {
+      a_memory_region_number  region_to_switch_back_to;
+      switch_to_file_scope_region(&region_to_switch_back_to);
+      cp = copy_constant_full(cp, (a_constant *)NULL,
+                              CE_SRC_CONSTANT_IS_NOT_ALLOC_IN_IL);
+      switch_back_to_original_region(region_to_switch_back_to);
+      break_constant_source_corresp(cp);
+      ch.ptr = cp;
+    }  /* if */
     vp = make_variable(vtp, sc_unspecified, DEPTH_OF_FILE_SCOPE);
     vp->is_template_param_object = TRUE;
     vp->is_constexpr = TRUE;
@@ -8490,6 +8557,18 @@ entry).
     template_param_objects->map(ch, vp);
     sym->variant.variable.ptr = vp;
   }  /* if */
+  make_template_param_object_variable_operand(vp, operand);
+}  /* make_template_param_object_operand */
+
+
+void make_template_param_object_variable_operand(a_variable_ptr  vp,
+                                                 an_operand      *operand)
+/*
+Make operand a (const) lvalue expression operand for the template parameter
+object vp.
+*/
+{
+  check_assertion(vp->is_template_param_object);
   /* Making an operand for the object is a use of it and because the object
      is an inline variable its definition must then be emitted here.  The
      usual symbol reference path does not record that because the object is
@@ -8503,7 +8582,7 @@ entry).
   check_assertion(is_expression_operand(operand));
   operand->variant.expression->type = operand->type;
   (void)make_node_from_operand(operand);
-}  /* make_template_param_object_operand */
+}  /* make_template_param_object_variable_operand */
 
 
 void make_sym_constant_operand(a_symbol_ptr sym,
@@ -8541,7 +8620,8 @@ The position of the current token will be used as the operand position.
     /* A C++20 nontype template parameter instantiated with a class type
        constant.  Create a variable operand referring to the underlying
        template parameter object. */
-    make_template_param_object_operand(con_ptr, operand);
+    make_template_param_object_operand(con_ptr, operand,
+                                       /*copy_constant=*/FALSE);
   } else {
     /* Normal (non-reference) case. */
     make_constant_operand(&constant, operand);
@@ -17680,7 +17760,7 @@ be returned for a C mode const variable.
        function-local as well). */
     con_val = initializer_constant(var);
     if (con_val == NULL && gpp_mode &&
-        var->init_kind == (an_init_kind)initk_none &&
+        var->init_kind == initk_none &&
         var->source_corresp.is_class_member &&
         !var->is_member_constant &&
         parent_class_of(var)->variant.class_struct_union.is_nonreal_class &&
@@ -17689,7 +17769,18 @@ be returned for a C mode const variable.
          in-class initializer as a constant-expression during the prototype
          instantiation of its class.  In a real instantiation, the out-of-class
          definition must be present. */
-      con_val = alloc_constant((a_constant_repr_kind)ck_template_param);
+      con_val = alloc_constant(ck_template_param);
+      make_template_param_expr_constant(var_rvalue_expr(var), con_val);
+    } else if (con_val == NULL && !constexpr_enabled && var->is_nonreal &&
+               var->init_kind == initk_none &&
+               var->template_info != NULL &&
+               var->template_info->template_arg_list != NULL) {
+      /* A variable template instance with template-dependent arguments
+         (e.g., "vt<T>" in a template), whose value is not known until
+         instantiation.  A pre-C++11 constant expression (where variable
+         templates are an extension) requires a constant here, so treat
+         the reference as a template-dependent constant. */
+      con_val = alloc_constant(ck_template_param);
       make_template_param_expr_constant(var_rvalue_expr(var), con_val);
     }  /* if */
     if (!C_mode() && !constexpr_enabled && strict_ansi_mode &&
@@ -25174,6 +25265,24 @@ C mode.
 }  /* still_an_lvalue */
 
 
+static void record_local_auto_object(
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called from examine_expr_for_auto_object when the addressing path leads to a
+local variable or parameter.  Normally that ends the traversal.  When
+tblock->look_for_temporaries is TRUE, keep going, so that a temporary on
+another part of the path (e.g., the other operand of a "?" operator) is
+still found and reported instead.
+*/
+{
+  if (!tblock->is_temp) {
+    tblock->result = TRUE;
+    tblock->is_temp = FALSE;
+    if (!tblock->look_for_temporaries) tblock->terminate = TRUE;
+  }  /* if */
+}  /* record_local_auto_object */
+
+
 static void examine_expr_for_auto_object(
                                     an_expr_node_ptr                    expr,
                                     an_expr_or_stmt_traversal_block_ptr tblock)
@@ -25186,9 +25295,11 @@ that identifies an object or a prvalue that is a pointer to an object.
 {
   if (is_glvalue_node(expr) ||
       (tblock->follow_class_rvalue_addressing_path &&
-       is_class_struct_union_type(expr->type))) {
+       is_class_struct_union_type(expr->type)) ||
+      (tblock->look_for_temporaries && is_array_type(expr->type))) {
     /* The expression passed in is a glvalue for an object (or a class
-       prvalue object). */
+       prvalue object, or, when looking for temporaries, an array
+       prvalue). */
     /* Skip some operation nodes (like value casts) that do not affect the
        underlying object. */
     while (is_operation_node(expr)) {
@@ -25217,24 +25328,44 @@ that identifies an object or a prvalue that is a pointer to an object.
            from a scope enclosing a lambda), do not consider it local in this
            context. */
         if (var->source_corresp.enclosing_routine == curr_routine_or_null()) {
-          tblock->result = TRUE;
-          tblock->is_temp = FALSE;
-          tblock->terminate = TRUE;
+          record_local_auto_object(tblock);
         }  /* if */
       }  /* if */
     } else if (node_is(expr, enk_param_ref)) {
       /* An lvalue for a parameter outside an associated function
          definition.  An enk_param_ref for "this" won't get here because
          it's not an lvalue, but the answer would be right even if it did. */
-      tblock->result = TRUE;
-      tblock->is_temp = FALSE;
-      tblock->terminate = TRUE;
+      record_local_auto_object(tblock);
     } else if (node_is(expr, enk_temp_init)) {
       if (!expr->variant.init.dynamic_init->static_temp) {
         /* An lvalue for a nonstatic temporary. */
         tblock->result = TRUE;
         tblock->is_temp = TRUE;
         tblock->terminate = TRUE;
+      }  /* if */
+    } else if (tblock->look_for_temporaries && !is_glvalue_node(expr)) {
+      /* A class or array prvalue (e.g., a function call) on the addressing
+         path, for example the object expression of "f().x": a temporary is
+         materialized for it. */
+      tblock->result = TRUE;
+      tblock->is_temp = TRUE;
+      tblock->terminate = TRUE;
+    } else if (tblock->look_for_temporaries &&
+               is_operation_node(expr) &&
+               node_operator_is(expr, eok_indirect)) {
+      /* A reference bound to an array prvalue (e.g., "A{1, 2}" with "A" an
+         array type) is represented as "*" applied to the decayed array
+         temporary (under an eok_lvalue_adjust, skipped above). */
+      an_expr_node_ptr  ptr = expr->variant.operation.operands;
+      if (is_operation_node(ptr) &&
+          node_operator_is(ptr, eok_array_to_pointer)) {
+        an_expr_node_ptr  array = ptr->variant.operation.operands;
+        if (node_is(array, enk_temp_init) &&
+            !array->variant.init.dynamic_init->static_temp) {
+          tblock->result = TRUE;
+          tblock->is_temp = TRUE;
+          tblock->terminate = TRUE;
+        }  /* if */
       }  /* if */
     }  /* if */
   } else {
@@ -25254,13 +25385,14 @@ that identifies an object or a prvalue that is a pointer to an object.
 }  /* examine_expr_for_auto_object */
 
 
-a_boolean is_glvalue_for_auto_object(an_expr_node_ptr expr,
-                                     a_boolean        *is_temp)
+static a_boolean glvalue_for_auto_object(an_expr_node_ptr expr,
+                                         a_boolean        follow_prvalues,
+                                         a_boolean        *is_temp)
 /*
-Return TRUE if expr is a glvalue whose underlying object is known to
-be an automatic (stack-based) entity.  The safe answer is FALSE.  If the
-underlying entity is a temporary, return *is_temp set to TRUE.  
-is_temp can be NULL if that information is not needed.
+Do the work for is_glvalue_for_auto_object and
+is_glvalue_for_auto_object_or_temp_subobject.  If follow_prvalues is TRUE,
+the traversal continues through class prvalues, so that a subobject of a
+temporary (e.g., "S().x") is found.
 */
 {
   a_boolean is_auto_object = FALSE;
@@ -25271,12 +25403,40 @@ is_temp can be NULL if that information is not needed.
     clear_expr_or_stmt_traversal_block(&tblock);
     tblock.process_expr = examine_expr_for_auto_object;
     tblock.follow_addressing_path = TRUE;
+    tblock.follow_class_rvalue_addressing_path = follow_prvalues;
+    tblock.look_for_temporaries = follow_prvalues;
     traverse_expr(expr, &tblock);
     is_auto_object = tblock.result;
     if (is_temp != NULL) *is_temp = tblock.is_temp;
   }  /* if */
   return is_auto_object;
+}  /* glvalue_for_auto_object */
+
+
+a_boolean is_glvalue_for_auto_object(an_expr_node_ptr expr,
+                                     a_boolean        *is_temp)
+/*
+Return TRUE if expr is a glvalue whose underlying object is known to
+be an automatic (stack-based) entity.  The safe answer is FALSE.  If the
+underlying entity is a temporary, return *is_temp set to TRUE.  
+is_temp can be NULL if that information is not needed.
+*/
+{
+  return glvalue_for_auto_object(expr, /*follow_prvalues=*/FALSE, is_temp);
 }  /* is_glvalue_for_auto_object */
+
+
+a_boolean is_glvalue_for_auto_object_or_temp_subobject(
+                                                   an_expr_node_ptr expr,
+                                                   a_boolean        *is_temp)
+/*
+Like is_glvalue_for_auto_object, but also return TRUE (with *is_temp set to
+TRUE) if expr is a glvalue for a subobject of a class prvalue temporary,
+e.g., "S().x".
+*/
+{
+  return glvalue_for_auto_object(expr, /*follow_prvalues=*/TRUE, is_temp);
+}  /* is_glvalue_for_auto_object_or_temp_subobject */
 
 
 a_boolean is_prvalue_for_auto_object(an_expr_node_ptr expr,
@@ -25546,7 +25706,7 @@ conjunction of two constraints X and Y, if it is at least as constrained as
 each one separately (which matches intuition).  The second rule is similarly
 intuitive: For a disjunction of two constraints X and Y to be at least as
 constrained as a constraint Z, each alternative (X and Y) has to be as
-constrainted as Z.
+constrained as Z.
 
 Consider constraints E1 and E2 expressed through conjunctions (AND) and
 disjunctions (OR) of atomic constraints.  Let E1[k] be the set of all

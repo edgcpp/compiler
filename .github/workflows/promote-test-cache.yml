@@ -1,0 +1,101 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Saves the test cache entries of the merge queue run that tested a commit
+# again for main, once that commit lands there.
+#
+# Each test leg of build-and-test-ci.yml saves a cache entry when it passes,
+# so that a later run whose build products and test inputs are the same can
+# skip its tests. But actions/cache scopes an entry to the ref that saved it
+# (plus the base and default branches), and the merge queue runs on a
+# temporary gh-readonly-queue/... ref that nothing else can see, while
+# nothing runs on main itself. So the merge queue's test legs also publish
+# their records as tested-record-<config> artifacts, and this workflow saves
+# each one under its original key from main, where every pull request can
+# restore it. Only commits that the merge queue tested and that then landed
+# on main are promoted, so one pull request still can't vouch for another's
+# build.
+#
+# A push the merge queue didn't test (e.g., from collect-changes.yml) has no
+# such run and promotes nothing.
+
+name: Promote Test Cache
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  # To find the merge queue run and download its artifacts.
+  actions: read
+
+jobs:
+  find:
+    name: Find merge queue records
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run_id: ${{ steps.find.outputs.run_id }}
+      records: ${{ steps.find.outputs.records }}
+    steps:
+      - name: Find the merge queue run of this commit
+        id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The merge queue fast-forwards main to the commit it tested, so
+          # that run has this push's SHA.
+          run_id="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/build-and-test-ci.yml/runs?event=merge_group&head_sha=${GITHUB_SHA}" \
+            --jq '.workflow_runs[0].id // empty')"
+          records='[]'
+          if [ -n "${run_id}" ]; then
+            records="$(gh api --paginate \
+              "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts" \
+              --jq '.artifacts[] | select(.name | startswith("tested-record-"))
+                      | select(.expired | not) | .name' |
+              jq -cRs 'split("\n") | map(select(. != ""))')"
+          fi
+          echo "Merge queue run: ${run_id:-none}; records: ${records}"
+          echo "run_id=${run_id}" >> "${GITHUB_OUTPUT}"
+          echo "records=${records}" >> "${GITHUB_OUTPUT}"
+
+  promote:
+    name: Promote ${{ matrix.record }}
+    needs: find
+    if: ${{ needs.find.outputs.records != '[]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The test legs' image, so that actions/cache picks the same compression
+    # (part of an entry's version) and the test legs can restore the entry.
+    container:
+      image: ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
+    strategy:
+      fail-fast: false
+      matrix:
+        record: ${{ fromJSON(needs.find.outputs.records) }}
+    steps:
+      - name: Download ${{ matrix.record }}
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ matrix.record }}
+          path: .tmp/tested
+          run-id: ${{ needs.find.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Read the record's cache key
+        id: key
+        shell: bash
+        run: |
+          key="$(python3 -c 'import json, sys
+          print(json.load(sys.stdin)["cache_key"])' < .tmp/tested/ci-meta.json)"
+          echo "key=${key}" >> "${GITHUB_OUTPUT}"
+
+      - name: Save the record for main
+        uses: actions/cache/save@v6
+        with:
+          key: ${{ steps.key.outputs.key }}
+          path: .tmp/tested

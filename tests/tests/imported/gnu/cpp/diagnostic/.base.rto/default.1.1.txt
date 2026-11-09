@@ -3,12 +3,3 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
     D d = {.x=1, .y=2}; // { dg-warning "missing initializer for member .D::B." }
       ^
 
-"Test_name.c", line 16: internal error: assertion failed at: "lower_init.c", line <suppressed> in advance_aggregate_position_to_next_member
-
-    D d = {.x=1, .y=2}; // { dg-warning "missing initializer for member .D::B." }
-        ^
-
-1 catastrophic error detected in the compilation of "Test_name.c".
-Compilation aborted.
-Aborted
-eccp: front end returned an exit status of 134

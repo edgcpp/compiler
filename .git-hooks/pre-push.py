@@ -36,35 +36,75 @@
 import json
 import os
 import platform
-import re
 import shutil
 import subprocess
 import sys
 import tempfile
-
-import edgutil
-
+import time
 from pathlib import Path
 
-if platform.system() == 'Windows':
-  # On Windows we need to use the kernel API to detect if this script is
-  # running in a standalone console window (if so, there will be only one
-  # processes at this point).
-  import ctypes
+# Git invokes this hook with the ambient environment, which does not
+# necessarily have PYTHONPATH configured (e.g., on Windows).  Locate
+# "dev_tools/pylibs" relative to this script so "edgutil" can be imported.
+sys.path.insert(
+  0, str(Path(__file__).resolve().parents[1] / 'dev_tools' / 'pylibs')
+)
 
-  kernel32 = ctypes.WinDLL('kernel32', use_last_error = True)
-  process_array = (ctypes.c_uint * 2)()
-  num_processes = kernel32.GetConsoleProcessList(process_array, 2)
-  if num_processes != 1:
-    # When not running in a standalone console window, the script relaunches
-    # itself to make sure the user has an interactive shell.  Then it forwards
-    # the exit code from the delegate process.
+import edgchanges
+import edgshell
+import edgutil
+
+START_TIME = time.monotonic()
+
+# The push isn't allowed to proceed until the hook has run for this long, so
+# that there's time to read the target of the push and cancel it (e.g., with
+# Ctrl-C) before it happens.
+MIN_RUN_SECONDS = 3.0
+
+def read_push_refs():
+  '''Return the lines git supplied on standard input describing what is to be
+  pushed.  A relaunched delegate (see below) can't read them from standard
+  input, so its parent passes them in the environment.'''
+  if os.environ.get('EDG_PREPUSH_DELEGATE') == '1':
+    refs_text = os.environ.get('EDG_PREPUSH_REFS', '')
+  elif sys.stdin.isatty():
+    # Run by hand rather than by git.
+    refs_text = ''
+  else:
+    refs_text = sys.stdin.read()
+  return refs_text.splitlines()
+
+# Git supplies the remote name and location as arguments (both are the
+# location if the push doesn't use a named remote).  Read the refs before
+# standard input is replaced below.
+PUSH_REMOTE_NAME = sys.argv[1] if len(sys.argv) > 1 else None
+PUSH_REMOTE_LOCATION = sys.argv[2] if len(sys.argv) > 2 else None
+PUSH_REFS = read_push_refs()
+
+if platform.system() == 'Windows':
+  # The standard input of this hook carries the push ref list supplied by
+  # git, so it cannot be used to prompt the user.  When a console is
+  # attached, open the console input device directly ("CONIN$" is the
+  # Windows counterpart of "/dev/tty") so that all prompts and output stay
+  # in the user's current terminal.
+  try:
+    sys.stdin = open('CONIN$', 'r')
+  except OSError:
+    # No console is attached (e.g., a GUI git client or a pseudo terminal
+    # such as mintty).  Relaunch in a standalone console window so that the
+    # user can still respond to interactive prompts.
     delegate_proc = subprocess.run(
       [
         sys.executable,
-        __file__
+        __file__,
+        *sys.argv[1:]
       ],
-      creationflags = subprocess.CREATE_NEW_CONSOLE
+      creationflags = subprocess.CREATE_NEW_CONSOLE,
+      env = {
+        **os.environ,
+        'EDG_PREPUSH_DELEGATE': '1',
+        'EDG_PREPUSH_REFS': '\n'.join(PUSH_REFS)
+      }
     )
     sys.exit(delegate_proc.returncode)
 else:
@@ -88,7 +128,9 @@ EXCLUDES_PATH_PREFIXES = [
   'src/error_msg.txt',
   # Don't check AGENT files.
   'AGENTS.md',
-  '.agents/'
+  '.agents/',
+  # Don't check the spelling allowlist; it is made of words aspell rejects.
+  'dev_tools/spelling_allowlist.json'
 ]
 
 def _is_excluded_file_path(path_str: str) -> bool:
@@ -96,11 +138,32 @@ def _is_excluded_file_path(path_str: str) -> bool:
     path_str.startswith(prefix) for prefix in EXCLUDES_PATH_PREFIXES
   )
 
-COMMIT_SUBJECT_POLICY_REGEX = re.compile(
-  r'^.*\[(GH #[0-9]+|(EDG[cfjp]+fe/([0-9]+))|,)*\].*$'
-)
+def pause_delegate_window() -> None:
+  '''When running as a relaunch delegate, wait for the user before the
+  standalone console window closes so that failure output can be read.'''
+  if os.environ.get('EDG_PREPUSH_DELEGATE') != '1':
+    return
+
+  try:
+    input('Push checks failed; press Enter to close this window. ')
+  except EOFError:
+    pass
 
 TOOL_PATH_GIT = shutil.which('git')
+
+def find_dev_tool(name):
+  '''Return the path of the dev tool called name on PATH, or exit with an
+  error if the environment lacks it (e.g., direnv isn't applied).'''
+  tool_path = shutil.which(name)
+  if tool_path is None:
+    print(
+      f"error: the environment is missing the required tool '{name}'; "
+      'put dev_tools/bin on PATH (e.g., via direnv) and push again.',
+      file = sys.stderr
+    )
+    pause_delegate_window()
+    sys.exit(1)
+  return tool_path
 
 def run_git(args, *, check = True, text = True):
   '''Run a git command and return the completed process.'''
@@ -132,11 +195,43 @@ def git_show_blob(revision_path: str) -> bytes:
     return b''
   return completed_process.stdout
 
+ZERO_OBJECT_NAME_CHARS = set('0')
+
+def describe_push_ref(line):
+  '''Return a description of one of the ref lines git supplies to the hook
+  (<local ref> <local name> <remote ref> <remote name>), or None if line
+  isn't of that form.'''
+  fields = line.split()
+  if len(fields) != 4:
+    return None
+  local_ref, local_name, remote_ref, remote_name = fields
+  if set(local_name) <= ZERO_OBJECT_NAME_CHARS:
+    return f"delete {remote_ref}"
+  description = f"{local_ref} -> {remote_ref}"
+  if set(remote_name) <= ZERO_OBJECT_NAME_CHARS:
+    description += ' (new)'
+  return description
+
+def print_push_target():
+  '''Print where the push is targeted.'''
+  if PUSH_REMOTE_NAME is None:
+    return
+  target = PUSH_REMOTE_NAME
+  if PUSH_REMOTE_LOCATION not in (None, PUSH_REMOTE_NAME):
+    target += f" ({PUSH_REMOTE_LOCATION})"
+  print(f"Pushing to {target}:\n")
+  for line in PUSH_REFS:
+    description = describe_push_ref(line)
+    if description is not None:
+      print(f"  {description}")
+  print('')
+
 class PrePushChecker:
   '''Runs EDG pre-push policy checks against new commits and changed files.'''
 
   def __init__(self):
     self.errors = 0
+    self.abort = False
 
   def confirm_okay(self):
     '''Ask the user whether a policy warning is acceptable.
@@ -159,7 +254,8 @@ class PrePushChecker:
         return
       if response == 'q':
         self.errors = 1
-        sys.exit(1)
+        self.abort = True
+        return
 
       print(
         "Please answer 'y' (to accept), 'n' (to continue check) or "
@@ -168,15 +264,23 @@ class PrePushChecker:
       tries += 1
       if tries >= 10:
         print('Too many attempts.')
-        sys.exit(1)
+        self.errors = 1
+        self.abort = True
+        return
+
+  def reject(self):
+    '''Record a problem that can't be accepted, without asking.'''
+    print('    Not allowed: CI would reject this; fix it and push again.')
+    self.errors = 1
 
   def check_commits(self):
     '''Walk commits until one already on a remote branch is found.
 
     As commits are walked, check to make sure they match formatting guidance.
 
-    Returns the oldest new commit hash, or None if there are no new commits.
-    Exits immediately if a commit subject fails the PR-number policy.
+    Returns the oldest new commit hash, or None if there are no new commits
+    (or if a commit subject fails the PR-number policy, in which case an
+    error is recorded and the check sequence is aborted).
     '''
     first_new_commit = None
 
@@ -195,12 +299,18 @@ class PrePushChecker:
       print_indented(show_output, '  ')
       print('')
 
-      subject = git_output(['show', '--no-patch', '--format=%s', commit])
-      if COMMIT_SUBJECT_POLICY_REGEX.match(subject) is None:
-        print(
-          "  [POLICY] Commit message doesn't contain valid PR number (or [])."
-        )
-        sys.exit(1)
+      # Read bytes: text mode would turn any \r into \n, hiding it from the
+      # check.  Don't strip: that would also remove \r, \x0c, etc. at the ends
+      # of the message.
+      message = run_git(
+        ['show', '--no-patch', '--format=%B', commit], text = False
+      ).stdout.decode('utf-8', errors = 'replace')
+      problem = edgchanges.check_commit_message(message)
+      if problem is not None:
+        print(f"  [POLICY] Commit message: {problem}.")
+        self.errors = 1
+        self.abort = True
+        return None
 
       first_new_commit = commit
 
@@ -212,9 +322,20 @@ class PrePushChecker:
     remote_head = f"{first_new_commit}~1"
     print('Checking changed files:')
 
-    changed_files = git_output(
-      ['diff', '--no-commit-id', '--name-only', '-r', f"{remote_head}..HEAD"]
-    ).splitlines()
+    # Use -z so that git doesn't C-quote paths with unusual characters (e.g.,
+    # non-ASCII ones): the quoted form isn't a usable path.
+    changed_files = [
+      path for path in run_git(
+        ['diff', '--no-commit-id', '--name-only', '-r', '-z',
+         f"{remote_head}..HEAD"]
+      ).stdout.split('\0') if path
+    ]
+
+    # Binary files have no text to check, so don't extract them.  Ask git
+    # rather than sniffing the contents so that .gitattributes is honored.
+    binary_files = edgshell.list_binary_files_in_git_diff(
+      f"{remote_head}..HEAD"
+    )
 
     mono_repo_dir = edgutil.find_mono_repo_or_exit()
     containing_tmp_dir = mono_repo_dir / '.tmp'
@@ -223,6 +344,8 @@ class PrePushChecker:
       input_spec = {}
       for file_path_str in changed_files:
         if _is_excluded_file_path(file_path_str):
+          continue
+        if file_path_str in binary_files:
           continue
 
         file_path = Path(file_path_str)
@@ -258,7 +381,7 @@ class PrePushChecker:
       if use_docker:
         file_change_check_proc = subprocess.run(
           [
-            shutil.which('edg-exec'),
+            find_dev_tool('edg-exec'),
             '--',
             'edg-check-file-changes',
             str(input_file.relative_to(mono_repo_dir).as_posix()),
@@ -270,7 +393,7 @@ class PrePushChecker:
       else:
         file_change_check_proc = subprocess.run(
           [
-            shutil.which('edg-check-file-changes'),
+            find_dev_tool('edg-check-file-changes'),
             str(input_file),
             str(output_file)
           ],
@@ -279,13 +402,38 @@ class PrePushChecker:
         )
 
       if file_change_check_proc.returncode != 0:
-        sys.exit(1)
+        # Record the failure and return (rather than exiting) so that the
+        # status propagates through checker.run() and main(), allowing the
+        # delegate window pause to run.
+        self.errors = 1
+        return
 
       with open(output_file, 'r') as file_handle:
         results = json.load(file_handle)
 
       for file_path_str, file_results in results.items():
+        if self.abort:
+          break
         print(f"  Checking file: {file_path_str}")
+
+        # A pending Changes entry with any of these problems fails the
+        # changes-fragments CI check, so there's no accepting them here.
+        is_changes_entry = edgchanges.is_fragment_path(file_path_str)
+        confirm_okay = (
+          self.reject if is_changes_entry else self.confirm_okay
+        )
+
+        format_errors = [
+          edgchanges.FormatError(*error)
+          for error in file_results['format_errors']
+        ]
+        if len(format_errors) != 0:
+          print('    Badly formatted Changes entry:')
+          for error in format_errors:
+            print(f"    - {edgchanges.describe_error(file_path_str, error)}")
+          confirm_okay()
+          if self.abort:
+            break
 
         misspellings = file_results['misspellings']
         if misspellings is None:
@@ -297,14 +445,24 @@ class PrePushChecker:
           print('    New misspelled words:')
           for misspelling in misspellings:
             print(f"    - {misspelling}")
-          self.confirm_okay()
+          if is_changes_entry:
+            hint_lines = edgchanges.allowed_words_hint(
+              file_path_str,
+              misspellings
+            )
+            print_indented('\n'.join(hint_lines), '    ')
+          confirm_okay()
+          if self.abort:
+            break
 
         typos = file_results['typos']
         if len(typos) != 0:
           print('    New typos:')
           for typo in typos:
             print(f"    - {typo}")
-          self.confirm_okay()
+          confirm_okay()
+          if self.abort:
+            break
 
         coding_errors = file_results['coding_errors']
         if len(coding_errors) != 0:
@@ -313,41 +471,64 @@ class PrePushChecker:
             print(f"    Missing comment on #endif:")
             print_indented('\n'.join(endif_hits), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
           else_hits = coding_errors['missing_elses']
           if len(else_hits) != 0:
             print(f"    Missing comment on #else:")
             print_indented('\n'.join(else_hits), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
           closing_comments = coding_errors['closing_comments']
           if len(closing_comments) != 0:
             print_indented('\n'.join(closing_comments), '    ')
             self.confirm_okay()
+            if self.abort:
+              break
 
         overlong_lines = file_results['overlong_lines']
         if len(overlong_lines) != 0:
-          for line_no, (line_start, lines) in overlong_lines.items():
-            print(f"    Line {line_no} too long:")
-            line_end = line_start + (len(lines) - 1)
-            print(f" {line_start} -> {line_end} ".center(79, '='))
-            for line in lines:
-              print(line, end = '')
-            print('=' * 79)
-          self.confirm_okay()
+          for line in edgutil.format_overlong_lines(overlong_lines, '    '):
+            print(line)
+          confirm_okay()
+          if self.abort:
+            break
 
-  def run(self) -> bool:
-    '''Execute the full pre-push check sequence.'''
+  def run(self) -> int:
+    '''Execute the full pre-push check sequence.  Return the exit status.'''
+    print_push_target()
     first_new_commit = self.check_commits()
 
     # Skip per file checks if we didn't actually detect a new commit.
-    if first_new_commit is not None:
+    if not self.abort and first_new_commit is not None:
       self.check_changed_files(first_new_commit)
 
-    return self.errors == 0
+    return 0 if (self.errors == 0 and not self.abort) else 1
+
+def wait_for_minimum_run_time() -> None:
+  '''Sleep until the hook has been running for MIN_RUN_SECONDS.'''
+  remaining = MIN_RUN_SECONDS - (time.monotonic() - START_TIME)
+  if remaining > 0:
+    print(f"Pushing in {remaining:.0f}s (Ctrl-C to cancel)...")
+    time.sleep(remaining)
+
+def wait_for_minimum_run_time() -> None:
+  '''Sleep until the hook has been running for MIN_RUN_SECONDS.'''
+  remaining = MIN_RUN_SECONDS - (time.monotonic() - START_TIME)
+  if remaining > 0:
+    print(f"Pushing in {remaining:.0f}s (Ctrl-C to cancel)...")
+    time.sleep(remaining)
 
 def main():
   checker = PrePushChecker()
-  sys.exit(0 if checker.run() else 1)
+  returncode = checker.run()
+  if returncode != 0:
+    pause_delegate_window()
+  else:
+    wait_for_minimum_run_time()
+  sys.exit(returncode)
 
 main()

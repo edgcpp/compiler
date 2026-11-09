@@ -2147,6 +2147,10 @@ extern void make_constant_operand(a_constant *constant,
 extern void make_sym_constant_operand(a_symbol_ptr sym,
                                       an_operand   *operand);
 
+extern void make_template_param_object_variable_operand(
+                                                     a_variable_ptr  vp,
+                                                     an_operand      *operand);
+
 extern void make_string_constant_operand(a_constant *constant,
                                          an_operand *operand);
 
@@ -3148,6 +3152,10 @@ extern a_boolean still_an_lvalue(a_type_ptr type_before_cast,
 
 extern a_boolean is_glvalue_for_auto_object(an_expr_node_ptr expr,
                                              a_boolean        *is_temp);
+
+extern a_boolean is_glvalue_for_auto_object_or_temp_subobject(
+                                                   an_expr_node_ptr expr,
+                                                   a_boolean        *is_temp);
 
 extern a_boolean is_prvalue_for_auto_object(an_expr_node_ptr expr,
                                             a_boolean        *is_temp);

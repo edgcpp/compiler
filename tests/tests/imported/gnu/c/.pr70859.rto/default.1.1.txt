@@ -31,6 +31,30 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
     d = __builtin_assume_aligned (p, n, p); /* { dg-error "39:non-integer argument 3 in call" } */
                                  ^
 
+"Test_name.c", line 35: error: type "double" is invalid as an argument for this builtin
+    b = __builtin_add_overflow (n, *d, &r); /* { dg-error "34:argument 2 in call to function" } */
+                                   ^
+
+"Test_name.c", line 36: error: type "double *" is invalid as an argument for this builtin
+    b = __builtin_add_overflow (n, 5, d); /* { dg-error "37:argument 3 in call" } */
+                                      ^
+
+"Test_name.c", line 37: error: type "double" is invalid as an argument for this builtin
+    b = __builtin_sub_overflow (n, *d, &r); /* { dg-error "34:argument 2 in call to function" } */
+                                   ^
+
+"Test_name.c", line 38: error: type "double *" is invalid as an argument for this builtin
+    b = __builtin_sub_overflow (n, 5, d); /* { dg-error "37:argument 3 in call" } */
+                                      ^
+
+"Test_name.c", line 39: error: type "double" is invalid as an argument for this builtin
+    b = __builtin_mul_overflow (n, *d, &r); /* { dg-error "34:argument 2 in call to function" } */
+                                   ^
+
+"Test_name.c", line 40: error: type "double *" is invalid as an argument for this builtin
+    b = __builtin_mul_overflow (n, 5, d); /* { dg-error "37:argument 3 in call" } */
+                                      ^
+
 "Test_name.c", line 46: error: expected an expression
     if (__builtin_constant_p ()) /* { dg-error "7:too few" } */
                               ^
@@ -67,8 +91,16 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -e 200 --no_wrap --no_wrap_diagnost
     if (__builtin_assume_aligned (p, r, p, p)) /* { dg-error "7:too many" } */
                                  ^
 
+"Test_name.c", line 66: error: too few arguments in function call
+    if (__builtin_add_overflow ()) /* { dg-error "7:too few" } */
+                                ^
+
+"Test_name.c", line 68: error: too many arguments in function call
+    if (__builtin_add_overflow (1, 2, 3, &r)) /* { dg-error "7:too many" } */
+                                         ^
+
 "Test_name.c", line 9: warning: variable "b" was set but never used
   __extension__ static _Bool b;
                              ^
 
-16 errors detected in the compilation of "Test_name.c".
+24 errors detected in the compilation of "Test_name.c".

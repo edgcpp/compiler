@@ -4,13 +4,15 @@ version = "2026.09.09.0"
 requires-python = ">=3.11"
 dependencies = [
   "hypercorn",
-  "pyserde>=0.32.2",
+  "pyserde>=0.34.0",
   "quart",
 ]
 
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=84.2.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["acknowledg_server*", "edgacknowledg*"]
+# acknowledg-forge (a separate service) isn't part of the server.
+exclude = ["edgacknowledg.forge*"]

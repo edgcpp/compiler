@@ -1,22 +1,6 @@
 fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --exceptions --exceptions --c++11 Test_name.c
-"Test_name.c", line 25: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f1"
-    }
-    ^
-
-"Test_name.c", line 28: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f2"
-    }
-    ^
-
 "Test_name.c", line 31: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f2_positive"
     } // expected-warning {{non-void function does not return a value}}
-    ^
-
-"Test_name.c", line 34: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f3"
-    }
-    ^
-
-"Test_name.c", line 37: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f4"
-    }
     ^
 
 "Test_name.c", line 36: warning: label "L1" was declared but never referenced
@@ -27,10 +11,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       switch (x) default: L1: L2: case 4: pr6884_abort_struct();
                               ^
 
-"Test_name.c", line 40: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f5"
-    }
-    ^
-
 "Test_name.c", line 39: warning: label "L1" was declared but never referenced
       switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
                           ^
@@ -38,10 +18,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 39: warning: label "L2" was declared but never referenced
       switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
                                 ^
-
-"Test_name.c", line 43: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::f6"
-    }
-    ^
 
 "Test_name.c", line 42: warning: label "L1" was declared but never referenced
       switch (x) default: L1: L2: case 4: { pr6884_abort_struct(); }
@@ -63,24 +39,8 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       switch (x) default: L1: L2: case 4: {
                               ^
 
-"Test_name.c", line 58: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g1"
-    }
-    ^
-
-"Test_name.c", line 62: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g2"
-    }
-    ^
-
 "Test_name.c", line 66: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g2_positive"
     } // expected-warning {{non-void function does not return a value}}
-    ^
-
-"Test_name.c", line 70: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g3"
-    }
-    ^
-
-"Test_name.c", line 74: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g4"
-    }
     ^
 
 "Test_name.c", line 73: warning: label "L1" was declared but never referenced
@@ -91,10 +51,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       switch (x) default: L1: L2: case 4: pr6884_abort_struct();
                               ^
 
-"Test_name.c", line 78: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g5"
-    }
-    ^
-
 "Test_name.c", line 77: warning: label "L1" was declared but never referenced
       switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
                           ^
@@ -102,10 +58,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 77: warning: label "L2" was declared but never referenced
       switch (x) default: L1: { L2: case 4: pr6884_abort_struct(); }
                                 ^
-
-"Test_name.c", line 82: warning: missing return statement at end of non-void function "abort_struct_complex_cfgs::g6"
-    }
-    ^
 
 "Test_name.c", line 81: warning: label "L1" was declared but never referenced
       switch (x) default: L1: L2: case 4: { pr6884_abort_struct(); }
@@ -165,10 +117,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 
 "Test_name.c", line 145: warning: missing return statement at end of non-void function "PR9412_t<type>()"
   } // expected-warning {{non-void function does not return a value}}
-  ^
-
-"Test_name.c", line 162: warning: missing return statement at end of non-void function "testTernaryUnconditionalNoreturn"
-  }
   ^
 
 "Test_name.c", line 166: warning: missing return statement at end of non-void function "testTernaryStaticallyConditionalNoretrunOnTrue"
