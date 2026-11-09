@@ -29,9 +29,26 @@ front end version.  This must be a numeric value.
 #define VERSION_NUMBER_FOR_MACRO 700
 
 /*
-The date and time that this version was built.  These variables will
-be defined when fe_init.c is compiled.
+A string identifying this build of the front end, displayed by --version
+and --dump_configuration and used to identify compatible precompiled
+header files.  If BUILD_IDENTIFIER is defined (as a string literal), it is
+used; otherwise, the date and time at which fe_init.c was compiled are
+used.  Defining BUILD_IDENTIFIER makes it possible to build bit-for-bit
+reproducible executables; builds from different sources should use
+different identifiers so that their precompiled headers are not mistaken
+for each other.
 */
+#ifdef BUILD_IDENTIFIER
+
+EXTERN a_const_char
+		*build_stamp
+#if VAR_INITIALIZERS
+			    = BUILD_IDENTIFIER
+#endif /* VAR_INITIALIZERS */
+                                      ;
+
+#else /* !defined(BUILD_IDENTIFIER) */
+
 #ifndef __DATE__
 #define __DATE__ "[date unknown]"
 #endif /* ifndef __DATE__ */
@@ -47,22 +64,17 @@ be defined when fe_init.c is compiled.
 #endif /* defined(_MSC_VER) */
 
 EXTERN a_const_char
-		*build_date
+		*build_stamp
 #if VAR_INITIALIZERS
-			    = __DATE__
-#endif /* VAR_INITIALIZERS */
-                                      ;
-
-EXTERN a_const_char
-		*build_time
-#if VAR_INITIALIZERS
-			    = __TIME__
+			    = __DATE__ " " __TIME__
 #endif /* VAR_INITIALIZERS */
                                       ;
 
 #ifdef _MSC_VER
 #pragma warning( pop )
 #endif /* defined(_MSC_VER) */
+
+#endif /* ifdef BUILD_IDENTIFIER */
 
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE

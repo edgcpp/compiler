@@ -3319,6 +3319,33 @@ Return TRUE if field second follows field first in the declaration order.
 }  /* fields_are_ordered */
 
 
+static a_boolean field_range_is_designated(a_constant_ptr  aggr_con,
+                                           a_field_ptr     first,
+                                           a_field_ptr     end)
+/*
+Return TRUE if a ck_designator constant in the aggregate constant aggr_con
+designates field first or a field declared between first and end (excluding
+end itself).  That is possible only when out-of-order designators are accepted:
+E.g., in "{ .c = 3, .a = 1, .d = 4 }", c lies between b (the field following
+a) and d.
+*/
+{
+  a_boolean       result = FALSE;
+  a_constant_ptr  con;
+
+  for (con = aggr_con->variant.aggregate.first_constant;
+       con != NULL && !result;
+       con = con->next) {
+    if (constant_is(con, ck_designator) &&
+        con->variant.designator.is_field_designator) {
+      a_field_ptr  fp = con->variant.designator.variant.field;
+      result = fields_are_ordered(first, fp) && !fields_are_ordered(end, fp);
+    }  /* if */
+  }  /* for */
+  return result;
+}  /* field_range_is_designated */
+
+
 static void aggr_init_field_designator(an_init_component_ptr  *p_icp,
                                        a_type_ptr             class_type,
                                        an_init_state          *is,
@@ -3561,18 +3588,23 @@ initialization. */
   }  /* if */
   if (okay) {
     if ((orig_field != *field || *p_bcp != NULL ) &&
-        cpp20_designators_restriction && !is->init_error &&
-        !is->check_validity_only && orig_field != NULL &&
-        !type_is(class_type, tk_union)) {
-    /* C++20 designators can cause base classes and certain members to
-       be skipped. Initialize those members before initializing the
-       designated member. If we found an error, we shouldn't proceed with
-       the initialization of remaining members, as the designators
-       may not be in order.  If orig_field is NULL, we have already
-       initialized all the members and this designator is invalid. It is
-       possible that it has not been diagnosed as invalid yet, so we
-       check orig_field here just in case.  If we're checking validity only,
-       there's no need to initialize the remainder. */
+        !is->init_error && !is->check_validity_only && orig_field != NULL &&
+        !type_is(class_type, tk_union) &&
+        (cpp20_designators_restriction || gpp_version_is(>= 80000) ||
+         (clang_mode && !C_mode() && fields_are_ordered(orig_field, *field) &&
+          !field_range_is_designated(aggr_con, orig_field, *field)))) {
+    /* C++ designators can cause base classes and certain members to
+       be skipped. Initialize those members (e.g., using their default member
+       initializers) before initializing the designated member. If we found
+       an error, we shouldn't proceed with the initialization of remaining
+       members, as the designators may not be in order.  If orig_field is
+       NULL, we have already initialized all the members and this designator
+       is invalid. It is possible that it has not been diagnosed as invalid
+       yet, so we check orig_field here just in case.  If we're checking
+       validity only, there's no need to initialize the remainder.  Clang
+       accepts out-of-order designators (with a warning), so in that mode the
+       skipped members are initialized only if the designator does not go
+       backward and none of them was designated earlier. */
        aggr_init_class_remainder_if_needed(aggr_con, class_type, orig_field,
                                            *p_bcp, is, diag_pos, *field);
        *p_bcp = NULL;
@@ -7476,6 +7508,14 @@ typedef struct a_ctor_init_block {
   a_boolean	out_of_order_diag_issued;
 			/* TRUE if a diagnostic has been issued about
 			   mem-initializers not matching declaration order. */
+  a_constructor_init_ptr
+		first_pending_unresolved_base_init;
+			/* First pending constructor init for a base class
+			   not matched with the base class list.  These entries
+			   occupy the tail of direct_list until the next
+			   mem-initializer for a matched nonvirtual direct
+			   base class is scanned.  NULL if no entries are
+			   pending. */
   a_boolean	pack_expansion_context_started;
 			/* TRUE if begin_potential_pack_expansion_context has
 			   been called for a mem-initializer, and elements
@@ -7565,8 +7605,59 @@ template containing the ctor-initializer is instantiated.
     cibp->end_of_direct_list->next = new_cip;
   }  /* if */
   cibp->end_of_direct_list = new_cip;
+  if (cibp->first_pending_unresolved_base_init == NULL) {
+    cibp->first_pending_unresolved_base_init = new_cip;
+  }  /* if */
   return new_cip;
 }  /* add_new_unresolved_base_ctor_init */
+
+
+static void move_pending_unresolved_base_inits(
+                                          a_ctor_init_block       *cibp,
+                                          a_constructor_init_ptr  explicit_cip)
+/*
+cibp tracks the constructor init entries for the constructor being defined.
+If it has pending entries for unresolved base classes, move them from the tail
+of direct_list to immediately before explicit_cip and clear the pending state.
+explicit_cip is the existing init entry for the matched nonvirtual direct base
+class whose mem-initializer is being scanned.  This preserves the source order
+of the unresolved mem-initializers relative to that mem-initializer.
+*/
+{
+  a_constructor_init_ptr  first_pending =
+                                      cibp->first_pending_unresolved_base_init;
+  a_constructor_init_ptr  last_pending = cibp->end_of_direct_list;
+
+  if (first_pending != NULL) {
+    /* Find the predecessors of the pending tail and explicit_cip. */
+    a_constructor_init_ptr  prev_of_pending = NULL, prev_of_explicit = NULL;
+
+    check_assertion(last_pending != NULL && last_pending->next == NULL);
+    for (a_constructor_init_ptr  cip = cibp->direct_list, prev_cip = NULL;
+         cip != NULL;
+         prev_cip = cip, cip = cip->next) {
+      if (cip == first_pending) {
+        prev_of_pending = prev_cip;
+        break;
+      }  /* if */
+      if (cip == explicit_cip) prev_of_explicit = prev_cip;
+    }  /* for */
+    check_assertion(prev_of_pending != NULL &&
+                    (explicit_cip == cibp->direct_list ||
+                     prev_of_explicit != NULL));
+    /* Remove the pending entries from the end of the list and splice them
+       before explicit_cip. */
+    prev_of_pending->next = NULL;
+    cibp->end_of_direct_list = prev_of_pending;
+    last_pending->next = explicit_cip;
+    if (prev_of_explicit == NULL) {
+      cibp->direct_list = first_pending;
+    } else {
+      prev_of_explicit->next = first_pending;
+    }  /* if */
+    cibp->first_pending_unresolved_base_init = NULL;
+  }  /* if */
+}  /* move_pending_unresolved_base_inits */
 
 
 static a_symbol_ptr look_up_mem_initializer_id(void)
@@ -7935,7 +8026,8 @@ all known yet; it is left unchanged otherwise.
          that only direct and virtual base classes can be specified. */
       bcp = base_classes_of(class_type);
       for (; bcp != NULL; bcp = bcp->next) {
-        if (same_entities(bcp->type, init_type)) {
+        if (identical_types_full(bcp->type, init_type,
+                                 ITF_EXACT_DECLTYPE_EXPR_MATCH_REQUIRED)) {
           if (bcp->direct || bcp->is_virtual) {
             if (found_bcp == NULL) {
               found_bcp = bcp;
@@ -8004,10 +8096,13 @@ all known yet; it is left unchanged otherwise.
       for (; new_cip != NULL; new_cip = new_cip->next) {
         if (new_cip->variant.base_class == bcp) break;
       }  /* for */
-      if (new_cip == NULL && prototype_instantiation) {
-        new_cip = add_new_unresolved_base_ctor_init(cibp,init_type);
-      }
       check_assertion(new_cip != NULL);
+      if (!bcp->is_virtual) {
+        /* Place pending unresolved base initializers before this matched
+           direct-base initializer, following their relative order in the
+           ctor-initializer list. */
+        move_pending_unresolved_base_inits(cibp, new_cip);
+      }  /* if */
       /* new_cip was initially marked as compiler-generated. Reset the
          flag now that it's appeared explicitly in the ctor-initializer
          list. */
@@ -9269,6 +9364,7 @@ initialized.  These are addressed in the course of the processing.
   cib.pending_decltype_pos = null_source_position;
   cib.has_explicit_init = FALSE;
   cib.out_of_order_diag_issued = FALSE;
+  cib.first_pending_unresolved_base_init = NULL;
   cib.pack_expansion_context_started = FALSE;
   if (user_defined && curr_token == tok_colon) {
     /* User-specified initializers are present. */

@@ -583,11 +583,14 @@ static an_expr_node_ptr make_call_node_full(
                                            an_expr_node_ptr   arg_list,
                                            an_expr_node_ptr   return_value,
                                            a_boolean          is_virtual_call,
-                                           an_insert_location *insert_location)
+                                           an_insert_location *insert_location,
+                                           a_source_position  *call_position)
 /*
 Make an expression that calls routine "routine" with arguments "arg_list",
 and return a pointer to it (or to the assignment expression generated if
 return_value is non-NULL).  arg_list is assumed to be lowered already.
+If call_position is non-NULL, it is recorded as the position of the call
+node (otherwise, the call node has no position).
 If return_value is non-NULL, it represents an lvalue to which the return
 value from the call operation will be assigned (otherwise any value returned
 by the call is ignored).  If insert_location is not NULL, an expression
@@ -634,6 +637,7 @@ either make_call_node or make_call_statement is preferred when possible.
   rout_return_type = lowered_return_type_of(routine->type);
   call_node = make_operator_node((an_expr_operator_kind)eok_call,
                                  rout_return_type, rout_node);
+  if (call_position != NULL) call_node->position = *call_position;
   /* If the caller requested that the return value from the call be
      assigned to an lvalue expression, create the assignment expression. */
   if (return_value != NULL) {
@@ -680,7 +684,8 @@ will be attempted.
 
   call_node = make_call_node_full(routine, arg_list, (an_expr_node_ptr)NULL,
                                   /*is_virtual_call=*/FALSE,
-                                  (an_insert_location *)NULL);
+                                  (an_insert_location *)NULL,
+                                  (a_source_position *)NULL);
   check_assertion(call_node != NULL);
   return call_node;
 }  /* make_call_node */
@@ -698,7 +703,8 @@ of the call is assigned.
 */
 {
   (void)make_call_node_full(routine, arg_list, return_value,
-                            /*is_virtual_call=*/FALSE, insert_location);
+                            /*is_virtual_call=*/FALSE, insert_location,
+                            (a_source_position *)NULL);
 }  /* make_call_statement */
 
 
@@ -1126,6 +1132,7 @@ Clear an initialization position description entry to default values.
   ipdp->array_element_sequence    = FALSE;
   ipdp->base_class_subobject      = FALSE;
   ipdp->base_of_complete_object   = FALSE;
+  ipdp->not_this_candidate        = FALSE;
   ipdp->base_type                 = NULL;
   ipdp->modifiers                 = NULL;
   ipdp->array_element_count       = 0;
@@ -5905,7 +5912,8 @@ static void add_destructor_call(
                               an_init_pos_descr_ptr       ipdp,
                               a_boolean                   have_complete_object,
                               ARG_UNUSED an_expr_node_ptr vtt_addr_node,
-                              an_insert_location_ptr      insert_location)
+                              an_insert_location_ptr      insert_location,
+                              a_source_position           *call_position)
 /*
 Make a call statement that invokes the destructor dtor_routine for
 the entity whose position is given by ipdp.  If the entity is a whole array,
@@ -5913,7 +5921,9 @@ destroy all the elements.  have_complete_object is TRUE if the
 entity is a complete object.  vtt_addr_node is an expression for the virtual
 table table address that should be passed to the base class destructor
 (IA-64 ABI only), or NULL if one is not needed.  Insert the statement
-at *insert_location and update *insert_location.  The call generated
+at *insert_location and update *insert_location.  If call_position is
+non-NULL, it is recorded as the position of the call expression (the
+statement gets code_pos_for_lowering regardless).  The call generated
 is not a virtual call even if the destructor is virtual.  Note: this
 routine takes separate dtor_routine and ipdp parameters instead of a
 dynamic init pointer because of the make_destruction_routine case.
@@ -5952,6 +5962,7 @@ dynamic init pointer because of the make_destruction_routine case.
     call_node = make_vec_delete_call(entity_node, num_elem_node,
                                      dtor_addr_node, (a_routine *)NULL,
                                      /*free_storage=*/FALSE);
+    if (call_position != NULL) call_node->position = *call_position;
     /* Make a statement containing the call and insert it at the right
        location. */
     (void)insert_expr_statement_set_pos(call_node, insert_location);
@@ -5978,10 +5989,12 @@ dynamic init pointer because of the make_destruction_routine case.
     }
 #endif /* !IA64_ABI */
     entity_node->next = implied_arg_list;
-    /* Make and insert an expression statement containing the call
-       expression. */
-    make_call_statement(dtor_routine, entity_node, (an_expr_node_ptr)NULL,
-                        insert_location);
+    /* Make the call expression and (because insert_location is non-NULL)
+       insert an expression statement containing it. */
+    (void)make_call_node_full(dtor_routine, entity_node,
+                              (an_expr_node_ptr)NULL,
+                              /*is_virtual_call=*/FALSE, insert_location,
+                              call_position);
   }  /* if */
 }  /* add_destructor_call */
 
@@ -6028,9 +6041,21 @@ and not for constructor_init entries in destructors.
   a_destructible_entity_descr_ptr dedp = dip->destructible_entity_descr;
   an_insert_location              insert_location2;
   an_insert_location_ptr          effective_insert_loc;
+  Value_saver<a_source_position>  saved_error_position(&error_position);
+  a_source_position               *call_position = NULL;
 
   check_assertion(dedp != NULL);
   check_assertion(dip->destructor != NULL);
+  if (dip->variable != NULL &&
+      dip->variable->source_corresp.decl_position.seq != 0) {
+    /* The generated code is attributed to the point of destruction (e.g.,
+       the closing brace of a block; see code_pos_for_lowering), but
+       diagnostics about the destruction are attributed to the declaration
+       of the destroyed variable, which is also where the front end reports
+       problems with its destructor. */
+    call_position = &dip->variable->source_corresp.decl_position;
+    error_position = *call_position;
+  }  /* if */
   /* Set the cleanup state to what it should be after the destruction,
      because as soon as we start the destruction it's the destructor's
      job to deal with partial destruction. */
@@ -6073,7 +6098,8 @@ and not for constructor_init entries in destructors.
                       &dedp->init_pos_descr,
                       /*have_complete_object=*/TRUE,
                       (an_expr_node_ptr)NULL,
-                      effective_insert_loc);
+                      effective_insert_loc,
+                      call_position);
 }  /* gen_one_destruction */
 
 #if VLA_DEALLOCATION_REQUIRED
@@ -6299,6 +6325,18 @@ Pop the top entry from aggregate_this_stack.
   aggregate_this_stack = aggregate_this_stack->next;
   ipdp->next = NULL;
 }  /* pop_aggregate_this */
+
+
+static a_boolean is_anonymous_union_class(a_type_ptr type)
+/*
+Return TRUE if type is the class type of an anonymous union.
+*/
+{
+  type = skip_typerefs(type);
+  return is_immediate_class_type(type) &&
+         class_type_supp(type)->anonymous_union_kind !=
+                                            (an_anonymous_union_kind)auk_none;
+}  /* is_anonymous_union_class */
 
 
 static a_boolean has_aggregate_with_dynamic(a_constant_ptr con)
@@ -6730,6 +6768,17 @@ dealt with).
         ipmp->curr_field = curr_field;
         ipmp->type = curr_field->type;
       }  /* if */
+      /* An implicit "this" in the initializer of an element refers to this
+         aggregate only if the element comes from a default member
+         initializer (i.e., it is implicit); an explicitly specified element
+         refers to the "this" of the enclosing context, as in:
+           struct Y { unsigned k; unsigned n = Y{2, k}.n; };
+         where "k" in "Y{2, k}" designates the outer Y, not the temporary.
+         The default member initializers of the members of an anonymous
+         union refer to the enclosing class, so an anonymous union does not
+         affect the search. */
+      ipdp->not_this_candidate = !con_ptr->implicit_aggr_element &&
+                                 !is_anonymous_union_class(aggr_type);
     }  /* if */
     /* Initialize one member of the aggregate (of type ipmp->type) with
        one constant (con_ptr). */
@@ -7051,7 +7100,10 @@ dealt with).
   if (!aggr_const->is_partially_initialized) {
     (void)recompute_partially_initialized_flag(aggr_const, aggr_type);
   }  /* if */
-  if (!array_or_vector) pop_aggregate_this();
+  if (!array_or_vector) {
+    ipdp->not_this_candidate = FALSE;
+    pop_aggregate_this();
+  }  /* if */
 }  /* lower_dynamic_init_aggregate_constant */
 
 #if USE_PATCH_INIT_STARTUP
@@ -7807,7 +7859,8 @@ is described by ipdp.
   routine = scope->variant.routine.ptr;
   /* Generate the code for the destruction. */
   add_destructor_call(dip->destructor, ipdp, /*have_complete_object=*/TRUE,
-                      (an_expr_node_ptr)NULL, &insert_location);
+                      (an_expr_node_ptr)NULL, &insert_location,
+                      (a_source_position *)NULL);
   /* Mark the variable as referenced from another function. */
   ipdp->variable->referenced_non_locally = TRUE;
   pop_generated_routine_context(scope, region_number, &grcontext);
@@ -11306,7 +11359,8 @@ virtual table table pointer that should be passed to the destructor
                                           /*unreachable=*/FALSE);
   }  /* if */
   add_destructor_call(dip->destructor, ipdp, have_complete_object,
-                      vtt_addr_node, insert_location);
+                      vtt_addr_node, insert_location,
+                      (a_source_position *)NULL);
   error_position = saved_error_position;
 }  /* lower_destructor_dynamic_init */
 
@@ -13023,7 +13077,8 @@ tricks.
   call_node = make_call_node_full(dtor_routine, ptr_node,
                                   (an_expr_node_ptr)NULL,
                                   /*is_virtual_call=*/dtor_routine->is_virtual,
-                                  (an_insert_location *)NULL);
+                                  (an_insert_location *)NULL,
+                                  (a_source_position *)NULL);
   check_assertion(call_node != NULL);
   if (dtor_routine->is_virtual) {
     /* The destructor is virtual, so rewrite the virtual call. */
@@ -15918,7 +15973,8 @@ ABI.
                        var_rvalue_expr(vtt_ptr_var), &insert_location);
   /* Generate the code to call the destructor. */
   add_destructor_call(dtor_routine, &ipd, /*have_complete_object=*/FALSE,
-                      (an_expr_node_ptr)NULL, &insert_location);
+                      (an_expr_node_ptr)NULL, &insert_location,
+                      (a_source_position *)NULL);
   pop_generated_routine_context(scope, region_number, &grcontext);
   return routine;
 }  /* make_subobject_destruction_routine */

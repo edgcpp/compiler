@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=3 --c++11 --clang_version 230100 Test_name.c
+"Test_name.c", line 14: error: incomplete type "void" is not allowed
+    auto v = void();
+         ^
+
+"Test_name.c", line 20: error: incomplete type "void" is not allowed
+    auto v = void();
+         ^
+
+"Test_name.c", line 29: error: incomplete type "Later" is not allowed
+    auto x = later_obj;
+         ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -103,7 +103,7 @@ def _resolve_working_directory(args: argparse.Namespace,
     # Otherwise, calculate a working directory maintaining the same
     # relativity to the root project source directory.
     cwd = Path.cwd()
-    if cwd.is_relative_to(src_dir):
+    if edgutil.is_path_relative_to(cwd, src_dir):
       result_path = result_path.joinpath(cwd.relative_to(src_dir))
 
   return result_path

@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 import asyncio
+import contextlib
 import difflib
 import functools
 import json
@@ -15,9 +16,11 @@ import signal
 import sys
 import tempfile
 import traceback
+import weakref
 
 from datetime import datetime
 from pathlib import Path
+from types import TracebackType
 from typing import (
   Any,
   BinaryIO,
@@ -28,6 +31,8 @@ from typing import (
   List,
   Optional,
   Set,
+  Tuple,
+  Type,
   cast
 )
 
@@ -179,7 +184,10 @@ class CurrentWorkingDirectorySwap:
     os.chdir(self.dest_dir)
     return self
 
-  def __exit__(self, _type, _value, _tb):
+  def __exit__(self,
+               _type: Optional[Type[BaseException]],
+               _value: Optional[BaseException],
+               _tb: Optional[TracebackType]) -> None:
     os.chdir(self.original_cwd)
 
 def eprint(msg: str) -> None:
@@ -188,6 +196,25 @@ def eprint(msg: str) -> None:
 def indent_text_block(text_block: str, n_times: int = 1) -> str:
   indent = '  ' * n_times
   return re.sub(r'^(.)', f"{indent}\\1", text_block, flags = re.MULTILINE)
+
+def format_overlong_lines(overlong_lines: Dict[str, Any],
+                          heading_indent: str = '') -> List[str]:
+  '''Format the overlong_lines result of edg-check-file-changes ({line number:
+  [first context line number, context lines]}) for display.
+
+  Each overlong line gets a heading (indented by heading_indent) and its
+  context between two 79-column rules.  The context isn't indented, so the
+  columns line up with the rules.
+  '''
+  report_lines = []
+  for line_no, (line_start, lines) in sorted(overlong_lines.items(),
+                                             key = lambda item: int(item[0])):
+    line_end = line_start + (len(lines) - 1)
+    report_lines.append(f"{heading_indent}Line {line_no} too long:")
+    report_lines.append(f" {line_start} -> {line_end} ".center(79, '='))
+    report_lines += [line.rstrip('\n') for line in lines]
+    report_lines.append('=' * 79)
+  return report_lines
 
 def is_env_set(env_var: str) -> bool:
   '''Return True if the given environment variable is set to a non-zero
@@ -202,6 +229,36 @@ def is_env_set(env_var: str) -> bool:
 def print_env_var(env_var: str) -> None:
   var_value = os.environ.get(env_var) or ''
   print(f"Using \"{env_var}\": \"{var_value}\"")
+
+def is_interactive_terminal() -> bool:
+  '''Return TRUE if standard input is attached to an interactive terminal.
+
+  On Windows, "os.isatty" (and "sys.stdin.isatty") returns TRUE for some
+  character devices that are not consoles (e.g., "NUL", which is used when
+  a caller passes "subprocess.DEVNULL" as standard input), which would
+  incorrectly request TTY attachment for a container.  A real console
+  handle can be identified by "GetConsoleMode", which fails for all other
+  devices.
+  '''
+  if platform.system() != 'Windows':
+    return os.isatty(sys.stdin.fileno())
+
+  import ctypes
+  import msvcrt
+
+  # Both "WinDLL" and "get_osfhandle" only exist on Windows; the type
+  # ignores cover typechecking on other platforms.
+  kernel32 = ctypes.WinDLL(  # type: ignore[attr-defined]
+                    'kernel32', use_last_error = True)
+  kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+  kernel32.GetConsoleMode.restype = ctypes.c_int
+  stdin_handle = msvcrt.get_osfhandle(  # type: ignore[attr-defined]
+                                    sys.stdin.fileno())
+  console_mode = ctypes.c_uint(0)
+  return bool(kernel32.GetConsoleMode(
+    stdin_handle,
+    ctypes.byref(console_mode)
+  ))
 
 def get_application_files_dir(app_name: str) -> Path:
   platform_name = platform.system()
@@ -269,6 +326,24 @@ def collect_cpp_line_directives(file_path: Path) -> Dict[str, List[str]]:
 
     return directive_map
 
+def split_leading_cpp_line_directives(
+                   lines: List[str]) -> Tuple[Dict[str, List[str]], List[str]]:
+  '''Split the EDG C++ directive block off the start of lines.
+
+  Unlike collect_cpp_line_directives, only the unbroken block of directive
+  lines starting at the very first line is collected, so directive-looking
+  lines later on (e.g., in an example) are left alone.
+
+  Returns the directive map and the lines that follow the block.
+  '''
+  directive_map: Dict[str, List[str]] = {}
+  line_index = 0
+  while (line_index < len(lines) and
+         _collect_directive_line(directive_map, lines[line_index])):
+    line_index += 1
+
+  return directive_map, lines[line_index:]
+
 def replace_cpp_line_directives(file_path: Path,
                                 directive_lines: Iterable[str]) -> None:
   '''Replace the leading EDG C++ directive block in file_path.
@@ -312,27 +387,104 @@ class AsyncLoopFatalError(Exception):
   '''Raised to ask ``run_asyncio_loop`` to cancel remaining tasks and stop.'''
   pass
 
-def get_running_event_loop() -> asyncio.AbstractEventLoop:
-  # asyncio.get_running_loop is 3.7+.
-  if sys.version_info >= (3, 7):
-    return asyncio.get_running_loop()
-  return asyncio.get_event_loop()
+# The helpers below depend on the Python version, which cannot change at run
+# time, so each is declared once per supported API and selected at import.
 
-def _active_asyncio_tasks(
-    loop: asyncio.AbstractEventLoop) -> Set[asyncio.Task]:
-  # In Python 3.7 asyncio.Task.all_tasks was deprecated in favor of
-  # asyncio.all_tasks. This was later removed in 3.9.
-  #
-  # To provide compatibility for both check to see if our python version is
-  # greater than or equal to 3.7, and conditionally enable the new API,
-  # otherwise fallback to the original API.
-  if sys.version_info >= (3, 7):
+if sys.version_info >= (3, 7):
+  def get_running_event_loop() -> asyncio.AbstractEventLoop:
+    '''Return the running event loop (asyncio.get_running_loop is 3.7+).'''
+    return asyncio.get_running_loop()
+else:
+  def get_running_event_loop() -> asyncio.AbstractEventLoop:
+    '''Return the running event loop (asyncio.get_running_loop is 3.7+).'''
+    return asyncio.get_event_loop()
+
+if sys.version_info >= (3, 9):
+  def is_path_relative_to(path: Path, other: Path) -> bool:
+    '''Return whether path is equal to or located under other.'''
+    return path.is_relative_to(other)
+else:
+  def is_path_relative_to(path: Path, other: Path) -> bool:
+    '''Return whether path is equal to or located under other.
+
+    Path.is_relative_to is only available in Python 3.9+.
+    '''
+    try:
+      result = Path(os.path.commonpath([str(path), str(other)])) == other
+    except ValueError:
+      # Mixing absolute and relative paths (or differing drives).
+      result = False
+    return result
+
+if sys.version_info >= (3, 9):
+  async def async_to_thread(func: Callable[..., Any],
+                            *args: Any,
+                            **kwargs: Any) -> Any:
+    '''Run func(*args, **kwargs) in a worker thread and await its result.'''
+    return await asyncio.to_thread(func, *args, **kwargs)
+else:
+  async def async_to_thread(func: Callable[..., Any],
+                            *args: Any,
+                            **kwargs: Any) -> Any:
+    '''Run func(*args, **kwargs) in a worker thread and await its result.
+
+    asyncio.to_thread is only available in Python 3.9+.
+    '''
+    return await get_running_event_loop().run_in_executor(
+      None, functools.partial(func, *args, **kwargs)
+    )
+
+if sys.version_info >= (3, 7):
+  def _active_asyncio_tasks(
+      loop: asyncio.AbstractEventLoop) -> Set[asyncio.Task]:
+    # asyncio.Task.all_tasks was deprecated in 3.7 in favor of
+    # asyncio.all_tasks, and removed in 3.9.
     return asyncio.all_tasks(loop)
-  return asyncio.Task.all_tasks(loop)  # type: ignore[attr-defined]
+else:
+  def _active_asyncio_tasks(
+      loop: asyncio.AbstractEventLoop) -> Set[asyncio.Task]:
+    # Unlike asyncio.all_tasks, Task.all_tasks includes tasks that are done.
+    return {
+      task
+      for task in asyncio.Task.all_tasks(loop)  # type: ignore[attr-defined]
+      if not task.done()
+    }
+
+# The tasks ``_stop_asyncio_loop`` canceled, which ``_finish_asyncio_tasks``
+# doesn't cancel again: that would cut their cleanup short.
+_stopped_asyncio_tasks: 'weakref.WeakSet[asyncio.Task]' = weakref.WeakSet()
 
 def _stop_asyncio_loop(loop: asyncio.AbstractEventLoop) -> None:
+  '''Cancel every task on ``loop``; again, should it be asked again (e.g. a
+  second SIGINT, to cut a stuck cleanup short).
+  '''
   for task in _active_asyncio_tasks(loop):
+    _stopped_asyncio_tasks.add(task)
     task.cancel()
+
+def _finish_asyncio_tasks(loop: asyncio.AbstractEventLoop) -> None:
+  '''Run ``loop`` until every task on it has finished, canceling those
+  ``_stop_asyncio_loop`` hasn't (e.g. those started as others cleaned up),
+  as ``asyncio.run`` does; report what failed other than by being
+  canceled.
+  '''
+  tasks = _active_asyncio_tasks(loop)
+  while tasks:
+    for task in tasks:
+      if task not in _stopped_asyncio_tasks:
+        _stopped_asyncio_tasks.add(task)
+        task.cancel()
+    loop.run_until_complete(
+      asyncio.gather(*tasks, return_exceptions = True)
+    )
+    for task in tasks:
+      if not task.cancelled() and task.exception() is not None:
+        loop.call_exception_handler({
+          'message': 'unhandled exception while stopping the loop',
+          'exception': task.exception(),
+          'task': task,
+        })
+    tasks = _active_asyncio_tasks(loop)
 
 @functools.lru_cache(maxsize = None)
 def lazy_init_event_loop() -> asyncio.AbstractEventLoop:
@@ -370,9 +522,11 @@ def run_asyncio_loop(
   task_consumer is a lambda function consuming the created loop and returning
   the initial async function asyncio.
 
-  If that task raises ``AsyncLoopFatalError``, remaining tasks are cancelled
-  the same way a SIGINT/SIGTERM would cancel them, those cancelled tasks are
-  awaited, and the error is re-raised to the caller.
+  If that task raises ``AsyncLoopFatalError``, remaining tasks are canceled
+  the same way a SIGINT/SIGTERM would cancel them, and the error is
+  re-raised to the caller.  Either way, once stopped, the loop runs until
+  every task has finished (canceling any started meanwhile), so each
+  canceled task's cleanup completes.
 
   Pass ``install_signal_handlers=False`` when the caller already registers
   process-level handlers and must not have them replaced by the event loop.
@@ -388,9 +542,33 @@ def run_asyncio_loop(
       _stop_asyncio_loop(loop)
       raise
 
-  return loop.run_until_complete(
-    asyncio.shield(loop.create_task(run_task_consumer()))
-  )
+  consumer = loop.create_task(run_task_consumer())
+  try:
+    return loop.run_until_complete(consumer)
+  finally:
+    if consumer in _stopped_asyncio_tasks:
+      _finish_asyncio_tasks(loop)
+
+async def async_terminate_within(process: asyncio.subprocess.Process,
+                                 allowance: float) -> int:
+  '''Terminate ``process`` (SIGTERM, so it may clean up, e.g. remove its
+  lock files), killing it should it not exit within ``allowance`` seconds;
+  return its exit status once it has exited.  A process that has already
+  exited is left alone.
+  '''
+  if process.returncode is None:
+    # Raised should asyncio already be done with it (its transport closed).
+    with contextlib.suppress(ProcessLookupError):
+      process.terminate()
+    try:
+      await asyncio.wait_for(process.wait(), allowance)
+    except BaseException as ex:
+      # Out of time, or canceled while waiting: kill it either way.
+      with contextlib.suppress(ProcessLookupError):
+        process.kill()
+      if not isinstance(ex, asyncio.TimeoutError):
+        raise
+  return await process.wait()
 
 def handle_proc_cancel(proc: Optional[asyncio.subprocess.Process]) -> bool:
   '''Terminate the given process prematurely.
@@ -415,7 +593,7 @@ def handle_proc_cancel(proc: Optional[asyncio.subprocess.Process]) -> bool:
 
 class AsyncJobLoop:
   def __init__(self, loop: asyncio.AbstractEventLoop, *, max_jobs: int,
-               max_update_interval = 1) -> None:
+               max_update_interval: float = 1) -> None:
     self.loop = loop
     self.max_jobs = max_jobs
     self.active_tasks: List[asyncio.Task] = []
@@ -534,7 +712,7 @@ class AsyncStatusReporter:
     self._print_status_line()
     sys.stdout.write('\n')
 
-  def print(self, string: str, end = '\n') -> None:
+  def print(self, string: str, end: str = '\n') -> None:
     # Setup to overwrite the status line if one is present. This is
     # particularly important for piped stdout as we don't want to pollute the
     # output stream with a bunch of nonsensical return characters.
@@ -671,29 +849,14 @@ class UnifiedDiffStream:
     self._out_handle = open(self._temp_dir / 'diff', 'w+b')
 
     if _DIFF_CMD is None:
-      # asyncio.to_thread is 3.9+.
-      if sys.version_info >= (3, 9):
-        has_diff = await asyncio.to_thread(
-          _write_unified_diff_with_difflib,
-          self._from_file,
-          self._to_file,
-          self._out_handle,
-          self._from_label,
-          self._to_label
-        )
-      else:
-        loop = get_running_event_loop()
-        has_diff = await loop.run_in_executor(
-          None,
-          functools.partial(
-            _write_unified_diff_with_difflib,
-            self._from_file,
-            self._to_file,
-            self._out_handle,
-            self._from_label,
-            self._to_label
-          )
-        )
+      has_diff = await async_to_thread(
+        _write_unified_diff_with_difflib,
+        self._from_file,
+        self._to_file,
+        self._out_handle,
+        self._from_label,
+        self._to_label
+      )
     else:
       has_diff = await _write_unified_diff_with_diff_cmd(
         self._from_file,

@@ -1,2 +1,61 @@
 fe_only -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope expr-node#1
+type:                    file-scope type#1: bool
+kind:                    enk_constant
+constant:                file-scope constant#1: true
+position.seq:            8
+
+file-scope expr-node#2
+type:                    file-scope type#2: int
+kind:                    enk_constant
+constant:                file-scope constant#2: 2
+position.seq:            10
+
+file-scope expr-node#3
+type:                    file-scope type#3: T#(1,1)
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#2
+position.seq:            10
+
+file-scope expr-node#4
+type:                    file-scope type#1: bool
+is_type_constraint:      TRUE
+kind:                    enk_concept_id
+concept_id.args:         
+  type:                  file-scope type#4: long
+  explicitly_specified:  TRUE
+  constant:              file-scope constant#3: ((T#(1,1))2)
+  explicitly_specified:  TRUE
+position.seq:            10
+
+file-scope expr-node#5
+type:                    file-scope type#1: bool
+kind:                    enk_constant
+constant:                file-scope constant#4: true
+position.seq:            17
+
+file-scope expr-node#6
+type:                    file-scope type#2: int
+kind:                    enk_constant
+constant:                file-scope constant#5: 2
+position.seq:            19
+
+file-scope expr-node#7
+type:                    file-scope type#4: long
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#6
+position.seq:            19
+
+file-scope expr-node#8
+type:                    file-scope type#1: bool
+is_type_constraint:      TRUE
+kind:                    enk_concept_id
+concept_id.args:         
+  type:                  file-scope type#4: long
+  explicitly_specified:  TRUE
+  constant:              file-scope constant#6: 2L
+  explicitly_specified:  TRUE
+position.seq:            19
+

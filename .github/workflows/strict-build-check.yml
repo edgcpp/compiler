@@ -9,10 +9,15 @@
 name: Strict Build Check
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   windows-msvc-release:
@@ -22,6 +27,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Install Ninja
         run: choco install ninja -y
@@ -151,13 +158,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: docker.io/edgcpp/ci-runner:latest
+      image: ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-gcc-release
         env:
@@ -176,13 +185,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: docker.io/edgcpp/ci-runner:latest
+      image: ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-gcc-debug
         env:
@@ -201,13 +212,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: docker.io/edgcpp/ci-runner:latest
+      image: ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-clang-release
         env:
@@ -226,13 +239,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     container:
-      image: docker.io/edgcpp/ci-runner:latest
+      image: ghcr.io/edgcpp/ci-runner@sha256:565d7b6581912008ca91c5dbc940280c6e28a02c8cb6487d88ee5f0d7e8c51d7
     defaults:
       run:
         shell: edg-container-exec "bash -eo pipefail {0}"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Configure linux-clang-debug
         env:

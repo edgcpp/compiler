@@ -11086,20 +11086,26 @@ declare_routine:
                                                (a_storage_class)sc_unspecified,
                           "dump_routine_decl: rout without defn in comdat");
       if (gcc_or_clang_is_generated_code_target
-#if GNU_EXTENSIONS_ALLOWED
-          && !rout->always_inline /* gcc gives an error on weak functions with
-                                     the always_inline attribute (because they
-                                     can change at link time). */
-#if !LOWER_IFUNC
+#if GNU_EXTENSIONS_ALLOWED && !LOWER_IFUNC
           && !rout->is_ifunc    /* gcc doesn't allow ifunc to be weak, so
                                    suppress the weak attribute (though this
                                    may result in multiple-definition errors
                                    in some cases). */
-#endif /* !LOWER_IFUNC */
-#endif /* GNU_EXTENSIONS_ALLOWED */
+#endif /* GNU_EXTENSIONS_ALLOWED && !LOWER_IFUNC */
                             ) {
         /* GCC does not support COMDAT, but it does support weak, which
            provides a sufficient approximation. */
+#if GNU_EXTENSIONS_ALLOWED
+        if (rout->always_inline && gcc_is_generated_code_target) {
+          /* gcc gives an error on calls to a weak function with the
+             always_inline attribute (because the definition could be
+             replaced at link time).  Without the weak attribute each
+             translation unit that defines the routine contains a conflicting
+             external definition of it, so suppress the always_inline
+             attribute instead (Clang accepts both). */
+          rout->always_inline = FALSE;
+        }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED */
         write_tok_str(" __attribute__((__weak__))");
         is_marked_weak = TRUE;
       }  /* if */

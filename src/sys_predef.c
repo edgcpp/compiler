@@ -3091,9 +3091,7 @@ Enter predeclared symbols as required by the implementation.
   if (float16_enabled) {
     (void)enter_predefined_typedef(
                     "_Float16",
-                    ((gnu_version_is(>= 130000) ||
-                      clang_version_is(>= 150000)) ? float_type(fk_std_float16)
-                                                   : float_type(fk_float16)));
+                    float_type(float16_kind()));
   }  /* if */
   if (float80_enabled) {
     (void)enter_predefined_typedef(

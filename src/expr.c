@@ -5931,6 +5931,7 @@ typedef a_routine_ptr a_builtin_call_adjustment_callback(
 static a_builtin_call_adjustment_callback
 		adjust_sync_atomic_builtin,
 		adjust_builtin_zero_non_value_bits,
+		adjust_overflow_builtin,
 		adjust_elementwise_or_reduce_builtin,
 		adjust_type_generic_builtin,
 		adjust_return_type_to_type_of_first_argument,
@@ -6219,6 +6220,14 @@ be called to check and adjust the argument and routine types as needed.
     case bfk_zero_non_value_bits:
       /* Callback will validate arguments. */
       bcap->callback = adjust_builtin_zero_non_value_bits;
+      break;
+    case bfk_add_overflow:
+    case bfk_add_overflow_p:
+    case bfk_sub_overflow:
+    case bfk_sub_overflow_p:
+    case bfk_mul_overflow:
+    case bfk_mul_overflow_p:
+      bcap->callback = adjust_overflow_builtin;
       break;
     case bfk_source_location:
       { /* The source location builtin has been used, require and process the
@@ -6892,6 +6901,85 @@ be a pointer to a complete type and may not be const-qualified.
   }  /* if */
   return routine_from_function_operand(target);
 }  /* adjust_builtin_zero_non_value_bits */
+
+
+static a_routine_ptr adjust_overflow_builtin(
+                  an_operand                           *target,
+                  an_arg_list_elem_ptr                 args,
+                  a_source_position                    *closing_paren_position,
+                  ARG_UNUSED a_builtin_call_adjustment *bcap,
+                  an_expr_node_ptr                     *arg_list)
+/*
+Check the arguments for the generic arithmetic overflow builtin described by
+target.  The operands must be integers or enums (excluding scoped enums in
+Clang mode).  The result must point to a non-const integer, or be an integer
+for the _p form.  GCC excludes bool and enum results; Clang also allows bool
+and unscoped enums.  Use closing_paren_position for missing-argument
+diagnostics.  bcap is unused.  Return the routine to call and set *arg_list to
+the checked argument expressions, or return NULL on error.
+*/
+{
+  a_routine_ptr  rout = routine_from_function_operand(target);
+  a_boolean      err = FALSE;
+  a_boolean      result_is_pointer;
+  int            arg_index = 0;
+
+  *arg_list = NULL;
+  result_is_pointer =
+                   rout->variant.builtin_function_kind != bfk_add_overflow_p &&
+                   rout->variant.builtin_function_kind != bfk_sub_overflow_p &&
+                   rout->variant.builtin_function_kind != bfk_mul_overflow_p;
+  if (args == NULL || args->next == NULL || args->next->next == NULL) {
+    expr_pos_error(ec_too_few_arguments, closing_paren_position);
+    err = TRUE;
+  } else if (args->next->next->next != NULL) {
+    expr_pos_error(ec_too_many_arguments,
+                   init_component_pos(args->next->next->next));
+    err = TRUE;
+  } else {
+    an_arg_list_elem_ptr  arg;
+    for (arg = args; arg != NULL; arg = arg->next, ++arg_index) {
+      an_operand_ptr  operand;
+      a_type_ptr      arg_type;
+
+      operand = operand_of_arg_list_elem(arg);
+      do_operand_transformations(operand, TOPT_NO_OPTIONS);
+      arg_type = skip_typerefs(operand->type);
+      if (is_error_type(arg_type)) {
+        /* An error argument. */
+      } else if (arg_index < 2) {
+        if (!is_integral_or_enum_type(arg_type) ||
+            (clang_mode && is_scoped_enum_type(arg_type))) {
+          expr_pos_ty_error(ec_invalid_type_for_builtin,
+                            init_component_pos(arg), arg_type);
+          err = TRUE;
+        }  /* if */
+      } else {
+        a_type_ptr  result_type = arg_type;
+        if (result_is_pointer && is_pointer_type(arg_type)) {
+          result_type = type_pointed_to(arg_type);
+        }  /* if */
+        if ((result_is_pointer && !is_pointer_type(arg_type)) ||
+            (clang_mode ? !is_integral_or_unscoped_enum_type(result_type) :
+                          (!is_integral_type(result_type) ||
+                           is_enum_type(result_type) ||
+                           is_bool_type(result_type))) ||
+            (result_is_pointer && is_const_qualified_type(result_type))) {
+          expr_pos_ty_error(ec_invalid_type_for_builtin,
+                            init_component_pos(arg), arg_type);
+          err = TRUE;
+        }  /* if */
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  if (err) {
+    rout = NULL;
+  } else {
+    *arg_list = make_expr_list_from_argument_list(
+                                         args, /*dependent_expression=*/FALSE);
+  }  /* if */
+  return rout;
+}  /* adjust_overflow_builtin */
 
 
 static a_boolean convert_to_prvalue_and_check_for_identical_types(
@@ -24228,7 +24316,7 @@ static void deduce_new_array_size(a_new_parse_state  *nps,
                                   a_decl_parse_state *dps)
 /*
 C++20 allows for the deduction of a new array size from the provided braced
-initializer to match direct-initialization behaviour.  For example:
+initializer to match direct-initialization behavior.  For example:
         int foo[]{1,2,3}
         new int[]{1,2,3}
 should both produce a 3-element array of integers, initialized to 1, 2 and 3.
@@ -32399,6 +32487,63 @@ different enum types (or, in C, have different affiliated enum types).
 }  /* diagnose_comparison_if_different_enum_types */
 
 
+static a_boolean is_array_comparison_operand(an_operand *opnd)
+/*
+Return TRUE if opnd, an operand of a built-in equality or relational operator,
+is an array: either it has array type, or it is a class operand that overload
+resolution converted to an array and then to a pointer (e.g., through a
+conversion function returning a reference to an array), possibly followed by
+an implicit qualification conversion.
+*/
+{
+  a_boolean is_array = is_array_type(opnd->type);
+
+  if (!is_array && is_expression_operand(opnd)) {
+    an_expr_node_ptr expr = opnd->variant.expression;
+    /* Skip implicit pointer conversions (e.g., "int *" to "const int *");
+       a cast written in the source ends the search. */
+    while (is_cast_operation_node(expr) && expr->compiler_generated &&
+           is_pointer_type(expr->type)) {
+      expr = expr->variant.operation.operands;
+    }  /* while */
+    is_array = is_operation_node(expr) &&
+               node_operator_is(expr, eok_array_to_pointer);
+  }  /* if */
+  return is_array;
+}  /* is_array_comparison_operand */
+
+
+static void check_for_array_comparison(an_operand         *opnd1,
+                                       an_operand         *opnd2,
+                                       a_source_position  *operator_pos)
+/*
+opnd1 and opnd2 are the operands of a built-in equality or relational
+operator at operator_pos, before the array-to-pointer conversion.  If both
+are arrays, issue a diagnostic: such comparisons are deprecated in C++20 and
+not allowed in C++26 (P2865).  Before C++20, issue a remark (a warning when
+emulating Clang 20 or later, which warns by default).
+*/
+{
+  if (!C_mode() && is_array_comparison_operand(opnd1) &&
+      is_array_comparison_operand(opnd2)) {
+    if (!cpp20_mode) {
+      expr_pos_diagnostic(clangcpp_version_is(>=200000) ? es_warning
+                                                        : es_remark,
+                          ec_array_comparison_compares_addresses,
+                          operator_pos);
+    } else if (cpp26_mode && !gpp_version_is(<150000) &&
+               !clangcpp_version_is(<200000)) {
+      /* GCC 15 and Clang 20 implement P2865.  Earlier versions only issue a
+         deprecation warning. */
+      expr_pos_diagnostic(es_discretionary_error,
+                          ec_array_comparison_not_allowed, operator_pos);
+    } else {
+      expr_pos_warning(ec_array_comparison_deprecated, operator_pos);
+    }  /* if */
+  }  /* if */
+}  /* check_for_array_comparison */
+
+
 static void process_rel_operator(an_operand               *opnd1,
                                  an_operand               *opnd2,
                                  a_token_kind             operator_token,
@@ -32444,6 +32589,7 @@ describe the location of the operator.
   }  /* if */
   if (!processed) {
     /* Non-operator-function cases. */
+    check_for_array_comparison(opnd1, opnd2, operator_pos);
     /* The first operand must be an arithmetic or enum type or a pointer. */
     do_operand_transformations(opnd1, TOPT_NO_OPTIONS);
     opnd1_is_pointer = FALSE;
@@ -32948,6 +33094,7 @@ operator_tsn describe the location of the operator.
   }  /* if */
   if (!processed) {
     /* Non-operator-function cases. */
+    check_for_array_comparison(opnd1, opnd2, operator_pos);
     /* The first operand must be an arithmetic or enum type or a pointer. */
     do_operand_transformations(opnd1, TOPT_NO_OPTIONS);
     if (is_arithmetic_or_enum_type(opnd1->type)) {
@@ -54579,7 +54726,7 @@ is TRUE if the expression is the immediate operand of an "&" operator.
           if (csp != NULL && symbol_is(csp, sk_constant)) {
             make_sym_constant_operand(csp, result);
           } else {
-            make_constant_operand(cp, result);
+            make_template_param_object_variable_operand(var, result);
           }  /* if */
         } else {
           sym = symbol_for(var);

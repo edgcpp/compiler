@@ -1659,7 +1659,7 @@ is set to TRUE.  Note that "err" is not TRUE for an unexpected token kind.
     len = (a_targ_size_t)strlen(src);
   } else if (curr_token == tok_string_literal) {
     if (is_error_constant(&const_for_curr_token)) {
-      /* We encountered a misformed string literal.  An error should
+      /* We encountered a malformed string literal.  An error should
          have been issued already. */
       check_assertion(is_at_least_one_error());
       *err = TRUE;
@@ -1728,7 +1728,7 @@ TRUE.  Note that "err" is not TRUE for an unexpected token kind.
   *err = FALSE;
   if (curr_token == tok_string_literal) {
     if (is_error_constant(&const_for_curr_token)) {
-      /* We encountered a misformed string literal.  An error should
+      /* We encountered a malformed string literal.  An error should
          have been issued already. */
       check_assertion(is_at_least_one_error());
       *err = TRUE;

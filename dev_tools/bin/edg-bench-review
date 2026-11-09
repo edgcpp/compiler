@@ -32,6 +32,7 @@ from edgacknowledg.client.bench import (
   BenchSourceHandler,
   resolve_baseline_dir,
 )
+from edgacknowledg.client.shared import SandboxContext
 from edgacknowledg import IncompatibleProtocolVersion
 from edgutil import eprint
 
@@ -166,14 +167,17 @@ def main() -> None:
     eprint(f"Path does not exist: {run_dir}")
     sys.exit(1)
 
-  baseline_dir = resolve_baseline_dir(bench_home, args.tag)
+  # The run (given with --root, it may lie elsewhere) and the bench home
+  # are all a review may read.
+  context = SandboxContext(bench_home, run_dir)
+  baseline_dir = resolve_baseline_dir(context.subpath(bench_home), args.tag)
   if not baseline_dir.exists():
     eprint(f"Baseline directory does not exist: {baseline_dir}")
     sys.exit(1)
 
   session = BenchReviewSession(
-    bench_home = bench_home,
-    run_dir = run_dir,
+    context = context,
+    run_dir = context.subpath(run_dir),
     baseline_dir = baseline_dir,
     tag = args.tag,
     threshold_slow = args.threshold_slow,
@@ -206,7 +210,7 @@ def main() -> None:
         status_listener = _CliConnectionStatusListener()
       ) as client_session:
         review = await client_session.create_review(
-          run_id, review_name, created_at
+          run_id, [edgacknowledg.rich_text(review_name)], created_at
         )
         await review.add_section(
           BenchSourceHandler(

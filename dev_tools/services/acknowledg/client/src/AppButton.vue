@@ -9,6 +9,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   import { computed } from 'vue'
   import { RouterLink } from 'vue-router'
 
+  // Enter on a focused button or link activates that control.  The review
+  // views also bind Enter on the document (rerecord / update baseline), whose
+  // preventDefault() would otherwise suppress the native click, so every
+  // AppButton stops Enter from reaching it.  Use `bare` for controls with
+  // their own look (e.g. icon buttons) that still need this behavior.
   defineOptions({ inheritAttrs: false })
 
   const props = defineProps({
@@ -18,6 +23,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
       default: null
     },
     disabled: {
+      type: Boolean,
+      default: false
+    },
+    // Omit the shared button chrome; the caller styles the control.
+    bare: {
       type: Boolean,
       default: false
     },
@@ -66,27 +76,27 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   <RouterLink
       v-if="isLink"
       :to="to"
-      class="app-btn"
-      :class="{ 'app-btn-disabled': disabled }"
+      :class="{ 'app-btn': !bare, 'app-btn-disabled': disabled && !bare }"
       :aria-disabled="disabled ? 'true' : undefined"
       :aria-label="ariaLabel"
       :aria-keyshortcuts="keyshortcuts"
       :tabindex="disabled ? -1 : undefined"
       v-bind="$attrs"
-      @click="onClick">
+      @click="onClick"
+      @keydown.enter.stop>
     <slot />
   </RouterLink>
   <button
       v-else
       :type="type"
-      class="app-btn"
-      :class="{ 'app-btn-active': pressed }"
+      :class="{ 'app-btn': !bare, 'app-btn-active': pressed && !bare }"
       :disabled="disabled"
       :aria-pressed="ariaPressed"
       :aria-label="ariaLabel"
       :aria-keyshortcuts="keyshortcuts"
       v-bind="$attrs"
-      @click="onClick">
+      @click="onClick"
+      @keydown.enter.stop>
     <slot />
   </button>
 </template>

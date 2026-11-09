@@ -175,11 +175,13 @@ suppress warnings that might otherwise be issued later.
 
 static void check_reachability_following_expression(an_expr_node_ptr  node)
 /*
-If the indicated expression node represents a throw or a call of a function
+If the indicated expression node represents a throw or calls a function
 that may not return, update the current "reachability" to indicate that the
 code directly following the expression is (or may be) unreachable.
 */
 {
+  a_boolean  does_not_return = FALSE;
+
   if (node->kind == (an_expr_node_kind)enk_object_lifetime) {
     node = node->variant.object_lifetime.expr;
   }  /* if */
@@ -196,29 +198,39 @@ code directly following the expression is (or may be) unreachable.
          (throw c, y)
        but it doesn't seem worth it. */
     set_unreachable(curr_reachability);
-  } else {
-    if (is_call_node(node)) {
-      a_boolean   call_does_not_return = FALSE;
-      a_type_ptr  routine_type;
-      node = node->variant.operation.operands;
-      routine_type = node->type;
-      if (is_pointer_type(routine_type)) {
-        /* Possibly a call through a function pointer. */
-        routine_type = type_pointed_to(routine_type);
-      }  /* if */
-      if (is_function_type(routine_type)) {
-        call_does_not_return = skip_typerefs(routine_type)
-                                       ->variant.routine.extra_info
-                                       ->does_not_return;
-      }  /* if */
-      if (call_does_not_return) {
-        /* The statement is a call of a routine that is marked as not
-           returning.  Treat this like a lint notreached comment -- i.e.,
-           as a hint to the compiler but not something we know for sure. */
-        curr_reachability.reachable_considering_hints = FALSE;
-        curr_reachability.suppress_unreachable_warning = TRUE;
+  } else if (node_is(node, enk_temp_init)) {
+    a_dynamic_init_ptr  dip = node->variant.init.dynamic_init;
+    if (dip) {
+      a_routine_ptr  rp = dip->destructor;
+      if (rp && routine_does_not_return(rp)) {
+        does_not_return = TRUE;
       }  /* if */
     }  /* if */
+    if (dip && dyn_init_is(dip, dik_constructor)) {
+      a_routine_ptr  rp = dip->variant.constructor.ptr;
+      if (rp && routine_does_not_return(rp)) {
+        does_not_return = TRUE;
+      }  /* if */
+    }  /* if */
+  } else if (is_call_node(node)) {
+    a_type_ptr  routine_type;
+    node = node->variant.operation.operands;
+    routine_type = node->type;
+    if (is_pointer_type(routine_type)) {
+      /* Possibly a call through a function pointer. */
+      routine_type = type_pointed_to(routine_type);
+    }  /* if */
+    if (is_function_type(routine_type)) {
+      does_not_return |= skip_typerefs(routine_type)
+                                ->variant.routine.extra_info->does_not_return;
+    }  /* if */
+  }  /* if */
+  if (does_not_return) {
+    /* The statement calls a routine that is marked as not returning.
+       Treat this like a lint notreached comment -- i.e., as a hint
+       to the compiler but not something we know for sure. */
+    curr_reachability.reachable_considering_hints = FALSE;
+    curr_reachability.suppress_unreachable_warning = TRUE;
   }  /* if */
 }  /* check_reachability_following_expression */
 
@@ -2983,6 +2995,7 @@ statement is the top block of a GNU statement expression ({ ... }).
   }  /* if */
   sssep->switch_has_dependent_case
                                = FALSE;
+  sssep->in_switch_condition   = FALSE;
   sssep->contains_user_label   = FALSE;
   sssep->contains_active_switch_case = FALSE;
   sssep->record_declared_entities = FALSE;
@@ -3526,8 +3539,9 @@ static a_struct_stmt_stack_entry_ptr find_enclosing_struct_stmt(
                                                      a_boolean find_loop)
 /*
 Search the structured statement stack from the current entry outward,
-looking for a switch statement (if find_switch is TRUE) or a loop
-statement (while, do, or for; if find_loop is TRUE).  Return a pointer
+looking for a switch statement whose condition is not being scanned (if
+find_switch is TRUE) or a loop statement (while, do, or for; if find_loop is
+TRUE).  Return a pointer
 to the first structured statement stack entry found, or NULL if none 
 was found.
 */
@@ -3540,7 +3554,7 @@ was found.
      the compound statement that defines the function. */
   while (sssep != &struct_stmt_stack[0]) {
     kind = sssep->kind;
-    if (find_switch && kind == ssk_switch) {
+    if (find_switch && kind == ssk_switch && !sssep->in_switch_condition) {
       goto found;
     } else if (find_loop &&
                (kind == ssk_while || kind == ssk_do || kind == ssk_for ||
@@ -4577,7 +4591,9 @@ See also 3.6.4.2.
   (void)required_token(tok_lparen, ec_exp_lparen);
   add_stop_token(tok_rparen);
   /* Scan the "condition", which in C++ may be a condition declaration. */
+  struct_stmt_stack[depth_stmt_stack].in_switch_condition = TRUE;
   scan_condition(sp, &is_condition_decl);
+  struct_stmt_stack[depth_stmt_stack].in_switch_condition = FALSE;
   if (!is_error_node(sp->expr)) {
     /* Issue a remark if the selector is constant. */
     if (is_constant_node(skip_parens(sp->expr))) {
@@ -5409,7 +5425,7 @@ the statement was preceded by the GNU C __extension__ keyword.
   }  /* if */
   if (expr != NULL) {
     sp->expr = expr;
-    /* If the expression is a throw expression or the call of a function that
+    /* If the expression is a throw expression or calls a function that
        is known not to return, the code following is unreachable. */
     check_reachability_following_expression(expr);
   } else {
@@ -8135,6 +8151,10 @@ expr_statement:
     if (current_rp->is_declared_constexpr || current_rp->is_consteval) {
       /* Report an error if the statement is not one that is allowed in a
          constexpr function or constexpr constructor. */
+      an_error_code  err_code =
+                       special_kind_is(current_rp, sfk_constructor) ?
+                                ec_invalid_statement_in_constexpr_constructor :
+                                ec_invalid_statement_in_constexpr_function;
       if (current_rp->is_prototype_instantiation &&
           in_constexpr_body_sev == es_error && !strict_ansi_mode) {
         /* In uninstantiated templates common practice is to either not
@@ -8145,13 +8165,13 @@ expr_statement:
                  current_rp->is_template_function) {
         in_constexpr_body_sev = es_warning;
       }  /* if */
-      pos_diagnostic(in_constexpr_body_sev,
-                     special_kind_is(current_rp, sfk_constructor) ?
-                                ec_invalid_statement_in_constexpr_constructor :
-                                ec_invalid_statement_in_constexpr_function,
-                     &start_pos);
+      pos_diagnostic(in_constexpr_body_sev, err_code, &start_pos);
+      if (is_effective_error(err_code, in_constexpr_body_sev, &start_pos)) {
+        scope_stack[depth_innermost_function_scope].constexpr_ruled_out = TRUE;
+      }  /* if */
+    } else {
+      scope_stack[depth_innermost_function_scope].constexpr_ruled_out = TRUE;
     }  /* if */
-    scope_stack[depth_innermost_function_scope].constexpr_ruled_out = TRUE;
   }  /* if */
   /* Loop if we just got a label and not an actual statement. */
   if (get_another_statement) {

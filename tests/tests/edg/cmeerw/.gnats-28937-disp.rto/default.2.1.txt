@@ -1,2 +1,105 @@
 fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --ms_c++20 --microsoft_version 1950 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope type#1
+  name:                  file-scope id-name#1: "align_val_t"
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+base_type:               file-scope type#2: unsigned long
+
+file-scope type#3
+  name:                  file-scope id-name#2: "g_uint"
+  decl_position.seq:     9
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: unsigned int
+kind:                    is_alias
+
+file-scope type#5
+  name:                  file-scope id-name#3: "E"
+  decl_position.seq:     13
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+enumerator_list_seen:    TRUE
+base_type:               file-scope type#3: first_definition::g_uint
+base_type_position.seq:  13
+
+file-scope type#6
+  name:                  file-scope id-name#4: "ns1_uint"
+  decl_position.seq:     18
+kind:                    tk_typeref
+typeref_type:            file-scope type#3: first_definition::g_uint
+kind:                    is_alias
+
+file-scope type#7
+  name:                  file-scope id-name#5: "ns2_uint"
+  decl_position.seq:     19
+kind:                    tk_typeref
+typeref_type:            file-scope type#3: first_definition::g_uint
+kind:                    is_alias
+
+file-scope type#8
+  name:                  file-scope id-name#2: "g_uint"
+  decl_position.seq:     32
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: unsigned int
+kind:                    is_alias
+
+file-scope type#9
+  name:                  file-scope id-name#4: "ns1_uint"
+  decl_position.seq:     41
+kind:                    tk_typeref
+typeref_type:            file-scope type#8: second_definition::g_uint
+kind:                    is_alias
+
+file-scope type#10
+  name:                  file-scope id-name#5: "ns2_uint"
+  decl_position.seq:     42
+kind:                    tk_typeref
+typeref_type:            file-scope type#8: second_definition::g_uint
+kind:                    is_alias
+
+file-scope type#11
+  name:                  file-scope id-name#3: "E"
+  decl_position.seq:     47
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+enumerator_list_seen:    TRUE
+base_type:               file-scope type#9: second_definition::ns::ns1_uint
+base_type_position.seq:  47
+
+file-scope type#12
+  name:                  file-scope id-name#2: "g_uint"
+  decl_position.seq:     55
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: unsigned int
+kind:                    is_alias
+
+file-scope type#13
+  name:                  file-scope id-name#4: "ns1_uint"
+  decl_position.seq:     64
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: third_definition::g_uint
+kind:                    is_alias
+
+file-scope type#14
+  name:                  file-scope id-name#5: "ns2_uint"
+  decl_position.seq:     65
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: third_definition::g_uint
+kind:                    is_alias
+
+file-scope type#15
+  name:                  file-scope id-name#3: "E"
+  decl_position.seq:     73
+kind:                    tk_integer
+has_explicit_enum_base:  TRUE
+enum_type:               TRUE
+is_scoped_enum:          TRUE
+enumerator_list_seen:    TRUE
+base_type:               file-scope type#14: third_definition::ns::ns2_uint
+base_type_position.seq:  73
+

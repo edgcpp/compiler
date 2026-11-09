@@ -65,7 +65,8 @@ static a_boolean adjust_deduction_pair(
                                     a_template_arg_ptr   template_arg_list,
                                     a_type_ptr           *qc_param_type,
                                     a_type_ptr           *qc_arg_type,
-                                    a_boolean            *consider_nondeduced);
+                                    a_boolean            *consider_nondeduced,
+                                    a_boolean            allow_incomplete_arg);
 static a_boolean check_narrowing_conversion(an_operand  *source_operand,
                                             a_type_ptr  dest_type,
                                             a_boolean   check_enum_target,
@@ -1485,7 +1486,8 @@ from previous arguments; in the standard case, it is always NULL.
                                   (an_operand *)NULL, templ_params,
                                   (a_template_arg *)NULL,
                                   (a_type_ptr*)NULL, (a_type_ptr*)NULL,
-                                  (a_boolean *)NULL) &&
+                                  (a_boolean *)NULL,
+                                  /*allow_incomplete_arg=*/FALSE) &&
             tentatively_matches_template_type(local_arg_type,
                                               local_param_type,
                                               templ_params,
@@ -4272,7 +4274,8 @@ static a_boolean adjust_deduction_pair(
                                      a_template_arg_ptr   template_arg_list,
                                      a_type_ptr           *qc_param_type,
                                      a_type_ptr           *qc_arg_type,
-                                     a_boolean            *consider_nondeduced)
+                                     a_boolean            *consider_nondeduced,
+                                     a_boolean            allow_incomplete_arg)
 /*
 Adjust the types *p_param_type (a parameter type of a function template or a
 type involving the "auto" type specifier) and *p_arg_type (the type of the
@@ -4295,7 +4298,10 @@ are not removed.  If consider_nondeduced is non-NULL and the reason for
 failure is that an indefinite function matches several ways, return
 *consider_nondeduced TRUE.  template_arg_list is used in some nonstandard
 modes to introduce knowledge from previous arguments; in the standard case,
-it is always NULL.
+it is always NULL.  allow_incomplete_arg allows an incomplete argument
+type (including void) to be used for deduction.  It is used for placeholder
+type deduction, where an incomplete type error is diagnosed by the caller
+instead of a deduction failure.
 */
 {
   a_boolean   adjustment_okay = FALSE, indefinite_function_designator = FALSE;
@@ -4399,7 +4405,8 @@ it is always NULL.
          void m() { f(*p); }
     */
     complete_type_is_needed(arg_type);
-    if (is_incomplete_type(arg_type) && !is_managed_nullptr_type(arg_type)) {
+    if (is_incomplete_type(arg_type) && !is_managed_nullptr_type(arg_type) &&
+        !allow_incomplete_arg) {
       /* Although the managed (C++/CLI) nullptr type is incomplete and
          cannot be used as the type of an object, for example, the Microsoft
          compiler allows it as a template argument. */
@@ -4621,7 +4628,8 @@ deduction was successful: some cases are treated as "nondeduced contexts").
                                elem_operand,
                                templ_params, *template_arg_list,
                                &qc_param_type, &qc_arg_type,
-                               &consider_nondeduced)) {
+                               &consider_nondeduced,
+                               /*allow_incomplete_arg=*/FALSE)) {
       if (consider_nondeduced) continue;
       deduction_okay = FALSE;
       break;
@@ -4775,7 +4783,8 @@ deduction succeeds, FALSE if it fails.
     if (!adjust_deduction_pair(&param_type, &arg_type, operand,
                                templ_params, *template_arg_list,
                                &qc_param_type, &qc_arg_type,
-                               &consider_nondeduced)) {
+                               &consider_nondeduced,
+                               /*allow_incomplete_arg=*/FALSE)) {
       if (consider_nondeduced) {
         /* The argument is an indefinite function that can match in more than
            one way.  Keep going without adding anything to the template
@@ -25416,23 +25425,39 @@ non-const to the indicated (rvalue) operand.
 }  /* microsoft_can_bind_ref_to_rvalue */
 
 
-static void check_for_returning_reference_to_local_entity(an_operand *operand)
+static void check_for_returning_reference_to_local_entity(
+                                          an_operand  *operand,
+                                          a_boolean   similar_lvalue_source)
 /*
 operand is the entity being bound to a reference in a return statement.
-Issue a warning if it is a local entity.
+Issue a warning if it is a local entity.  Binding the returned reference to
+a temporary is an error in C++26 (P2748).  similar_lvalue_source is TRUE if
+the original initializer was an lvalue of a type similar to the referenced
+type; the reference should then bind to it directly (Core issue 2352), so
+a temporary found here only gets the warning.
 */
 {
   a_boolean is_temp;
 
   if (is_expression_operand(operand)) {
-    if (is_glvalue_for_auto_object(operand->variant.expression, &is_temp) ||
+    if (is_glvalue_for_auto_object_or_temp_subobject(
+                                    operand->variant.expression, &is_temp) ||
         is_prvalue_for_auto_object(operand->variant.expression, &is_temp)) {
       /* The expression is a glvalue or class prvalue (object) for a local
-         entity.  Use a different message for temporaries and local
-         variables. */
-      expr_pos_warning(is_temp ? ec_return_ref_init_requires_temp :
-                                 ec_returning_ref_to_local_variable,
-                       &operand->position);
+         entity (possibly a subobject of a temporary).  Use a different
+         message for temporaries and local variables. */
+      if (!is_temp) {
+        expr_pos_warning(ec_returning_ref_to_local_variable,
+                         &operand->position);
+      } else if (cpp26_mode && !similar_lvalue_source &&
+                 !gpp_version_is(<140000) && !clangcpp_version_is(<190000)) {
+        /* GCC 14 and Clang 19 implement P2748.  Earlier versions only issue
+           a warning. */
+        expr_pos_error(ec_return_ref_init_requires_temp, &operand->position);
+      } else {
+        expr_pos_warning(ec_return_ref_init_requires_temp,
+                         &operand->position);
+      }  /* if */
     }  /* if */
   }  /* if */
 }  /* check_for_returning_reference_to_local_entity */
@@ -25605,6 +25630,7 @@ the conversion.
   a_boolean    ref_to_const = FALSE;
   a_boolean    ref_to_const_volatile = FALSE;
   a_boolean    operand_was_rvalue, operand_is_function_lvalue;
+  a_boolean    similar_lvalue_source;
   a_boolean    warn = FALSE, template_case = FALSE;
   a_boolean    initializing_variable =
                        (conv_context & CCO_INITIALIZING_VARIABLE) != 0;
@@ -25702,6 +25728,11 @@ the conversion.
   }  /* if */
   base_dest_type = type_pointed_to(dest_type);
   operand_was_rvalue = is_an_rvalue(source_operand);
+  /* An lvalue whose type is similar to the referenced type, e.g., an "int **"
+     lvalue for a "const int *const *const &".  The reference binds directly
+     to it (Core issue 2352). */
+  similar_lvalue_source = !operand_was_rvalue &&
+                          types_are_similar(orig_source_type, base_dest_type);
   operand_is_function_lvalue = is_a_function_designator(source_operand);
   adj_base_dest_type = base_dest_type;
   if (bitwise_assignment_param) {
@@ -26305,9 +26336,14 @@ the conversion.
                                     source_operand,
                                     (conv_context & CCO_STATIC_LIFETIME) != 0);
   } else if ((conv_context & CCO_INITIALIZING_RETURN_VALUE) &&
+             (conv_context & CCO_TYPE_TRAITS_CHECK) == 0 &&
              !template_case) {
-    /* Check for returning a reference to a local entity. */
-    check_for_returning_reference_to_local_entity(source_operand);
+    /* Check for returning a reference to a local entity.  This is not done
+       for the invented function of the is_convertible check: P2748, which
+       makes binding a returned reference to a temporary ill-formed in C++26,
+       does not apply to it. */
+    check_for_returning_reference_to_local_entity(source_operand,
+                                                  similar_lvalue_source);
   }  /* if */
   if (!leave_as_object) {
     /* Final step: add the reference-to to turn the glvalue or class prvalue
@@ -30963,11 +30999,14 @@ set to TRUE and FALSE is returned.
   if (is_template_template_param_symbol(ct_sym)) {
     /* Class template argument deduction for a template template parameter: use
        guides synthesized from the class or alias template argument. */
-    a_symbol_ptr  bound_tttp_arg_sym;
+    a_symbol_ptr  bound_tttp_arg_sym, target_sym;
     a_boolean     is_deducible_template;
 
+    target_sym = placeholder_type->variant.template_param.extra_info
+                                 ->template_symbol;
     bound_tttp_arg_sym = bound_template_template_argument(
-                                               ct_sym, &is_deducible_template);
+                                      target_sym != NULL ? target_sym : ct_sym,
+                                      &is_deducible_template);
     if (bound_tttp_arg_sym == NULL) {
       /* Still dependent. */
       *still_dependent = TRUE;
@@ -30975,7 +31014,10 @@ set to TRUE and FALSE is returned.
       goto done;
     } else if (!is_deducible_template || bound_tttp_arg_sym->is_error) {
       /* Template argument does not name a deducible template. */
-      pos_sy_error(ec_no_class_template_guide, source_pos, bound_tttp_arg_sym);
+      if (expr_error_should_be_issued()) {
+        pos_sy_error(ec_no_class_template_guide, source_pos,
+                     bound_tttp_arg_sym);
+      }  /* if */
       *still_dependent = FALSE;
       result = FALSE;
       goto done;
@@ -31037,7 +31079,9 @@ set to TRUE and FALSE is returned.
     guide_set = ct_tssp->variant.class_template.deduction_guides;
   }  /* if */
   if (guide_set == NULL) {
-    pos_sy_error(ec_no_class_template_guide, source_pos, ct_sym);
+    if (expr_error_should_be_issued()) {
+      pos_sy_error(ec_no_class_template_guide, source_pos, ct_sym);
+    }  /* if */
   } else {
     selected_sym = select_overloaded_function(
                                         guide_set,
@@ -31235,10 +31279,19 @@ TRUE and FALSE is returned.
       /* Adjust the argument and parameter types for deduction.  Some types can
          never succeed:  Issue an error and don't attempt deduction any
          further. */
+      /* GCC and Microsoft don't diagnose incomplete-type errors in template
+         definitions, but for now the only way for us to emulate that is by
+         failing deduction in these cases (which we then allow, see
+         prescan_initializer_for_auto_type_deduction). */
+      a_boolean  allow_incomplete_arg =
+               !((gpp_version_is(any_version) || ms_version_is(any_version)) &&
+                 scope_stack_top().in_prototype_instantiation &&
+                 innermost_function_scope != NULL);
       if (!adjust_deduction_pair(&type, &arg_type, initializer_operand,
                                  templ_param, (a_template_arg *)NULL,
                                  &qc_param_type, &qc_arg_type,
-                                 (a_boolean *)NULL)) {
+                                 (a_boolean *)NULL,
+                                 allow_incomplete_arg)) {
         okay = FALSE;
       } else if (!deduce_from_one_pair(type, arg_type,
                                        qc_param_type, qc_arg_type,

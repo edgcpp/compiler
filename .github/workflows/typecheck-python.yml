@@ -11,10 +11,15 @@
 name: Python Typecheck
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   typecheck:
@@ -42,6 +47,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
         if: ${{ !matrix.use-docker }}

@@ -1,4 +1,116 @@
 fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics --c++20 Test_name.c
+"Test_name.c", line 26: error: expression must have a constant value
+  constexpr bool b01 = (dynamic_cast<D&> ((A&)d), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 26: note: dynamic_cast to subobject of type "D" is invalid (most-derived type is "D")
+  constexpr bool b01 = (dynamic_cast<D&> ((A&)d), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 28: error: expression must have a constant value
+  constexpr bool b02 = (dynamic_cast<D&> ((B&)d), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 28: note: dynamic_cast to subobject of type "D" is invalid (most-derived type is "D")
+  constexpr bool b02 = (dynamic_cast<D&> ((B&)d), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 31: error: expression must have a constant value
+  constexpr bool b03 = (dynamic_cast<C&> ((B&)d), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 31: note: conversion to inaccessible base class "C" is not allowed
+  constexpr bool b03 = (dynamic_cast<C&> ((B&)d), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 35: error: expression must have a constant value
+  constexpr bool b04 = (dynamic_cast<DD&> ((A&)dd), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 35: note: dynamic_cast to subobject of type "DD" is invalid (most-derived type is "DD")
+  constexpr bool b04 = (dynamic_cast<DD&> ((A&)dd), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 37: error: expression must have a constant value
+  constexpr bool b05 = (dynamic_cast<DD&> ((B&)dd), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 37: note: dynamic_cast to subobject of type "DD" is invalid (most-derived type is "DD")
+  constexpr bool b05 = (dynamic_cast<DD&> ((B&)dd), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 41: error: expression must have a constant value
+  constexpr bool b06 = (dynamic_cast<DDD&> ((A&)ddd), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 41: note: dynamic_cast to subobject of type "DDD" is invalid (most-derived type is "DDD")
+  constexpr bool b06 = (dynamic_cast<DDD&> ((A&)ddd), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+  constexpr bool b07 = (dynamic_cast<DDD&> ((B&)ddd), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 43: note: dynamic_cast to subobject of type "DDD" is invalid (most-derived type is "DDD")
+  constexpr bool b07 = (dynamic_cast<DDD&> ((B&)ddd), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 45: error: expression must have a constant value
+  constexpr bool b08 = (dynamic_cast<CCC&> ((B&)ddd), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 45: note: conversion to inaccessible base class "CCC" is not allowed
+  constexpr bool b08 = (dynamic_cast<CCC&> ((B&)ddd), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 55: error: expression must have a constant value
+  constexpr bool b09 = (dynamic_cast<E&> ((A&)(D&)e), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 55: note: dynamic_cast to subobject of type "E" is invalid (most-derived type is "E")
+  constexpr bool b09 = (dynamic_cast<E&> ((A&)(D&)e), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 57: error: expression must have a constant value
+  constexpr bool b10 = (dynamic_cast<E&> ((B&)(D&)e), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 57: note: dynamic_cast to subobject of type "E" is invalid (most-derived type is "E")
+  constexpr bool b10 = (dynamic_cast<E&> ((B&)(D&)e), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 64: error: expression must have a constant value
+  constexpr bool b11 = (dynamic_cast<EE&> ((A&)(D&)ee), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 64: note: dynamic_cast to subobject of type "EE" is invalid (most-derived type is "EE")
+  constexpr bool b11 = (dynamic_cast<EE&> ((A&)(D&)ee), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 66: error: expression must have a constant value
+  constexpr bool b12 = (dynamic_cast<EE&> ((B&)(D&)ee), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 66: note: dynamic_cast to subobject of type "EE" is invalid (most-derived type is "EE")
+  constexpr bool b12 = (dynamic_cast<EE&> ((B&)(D&)ee), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 83: error: expression must have a constant value
+  constexpr bool b13 = (dynamic_cast<XX&>((B&)(CC&)(E&)xx), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 83: note: dynamic_cast to subobject of type "XX" is invalid (most-derived type is "XX")
+  constexpr bool b13 = (dynamic_cast<XX&>((B&)(CC&)(E&)xx), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 87: error: expression must have a constant value
+  constexpr bool b14 = (dynamic_cast<Y&>((B&)y), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 87: note: dynamic_cast to subobject of type "Y" is invalid (most-derived type is "Y")
+  constexpr bool b14 = (dynamic_cast<Y&>((B&)y), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 89: error: expression must have a constant value
+  constexpr bool b15 = (dynamic_cast<Y&>((A&)(B&)y), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 89: note: dynamic_cast to subobject of type "Y" is invalid (most-derived type is "Y")
+  constexpr bool b15 = (dynamic_cast<Y&>((A&)(B&)y), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
+"Test_name.c", line 98: error: expression must have a constant value
+  constexpr bool b16 = (dynamic_cast<CC&> ((B&)(D&)e), true); // { dg-error "reference .dynamic_cast. failed" }
+                       ^
+"Test_name.c", line 98: note: conversion to inaccessible base class "CC" is not allowed
+  constexpr bool b16 = (dynamic_cast<CC&> ((B&)(D&)e), true); // { dg-error "reference .dynamic_cast. failed" }
+                        ^
+
 "Test_name.c", line 103: error: expression must have a constant value
   constexpr bool b17 = (dynamic_cast<J&> ((B&)k), true); // { dg-error "reference .dynamic_cast. failed" }
                        ^
@@ -85,4 +197,4 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   constexpr bool b18 = (dynamic_cast<J&> ((CC&)kk), true); // { dg-error "reference .dynamic_cast. failed" }
                  ^
 
-2 errors detected in the compilation of "Test_name.c".
+18 errors detected in the compilation of "Test_name.c".

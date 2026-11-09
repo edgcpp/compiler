@@ -33,7 +33,10 @@ export const computeMutedHSLStyleForConfig = (configName) => {
   return mutedHslCache[configName]
 }
 
-export const computeGradientStyleForConfigs = (configs, { muted = false } = {}) => {
+export const computeGradientStyleForConfigs = (
+  configs,
+  { muted = false } = {}
+) => {
   if (!configs || configs.length === 0) {
     return muted
       ? 'hsl(0 0% 40% / .6)'

@@ -48,7 +48,9 @@ the host toolchain for normal development; use `edg-exec` /
 [HACKING.md](HACKING.md).
 
 For full recipes (presets, filters, recording), read the project skill
-**edg-cpfe-build-test**. For good/bad commit bisection, read
+**edg-cpfe-build-test**. For macro/build configurations (`.cmakedef`,
+`edg-cmakedef`, `EDG_MACRO_CONF`, presets), read
+**edg-cmakedef-build-config**. For good/bad commit bisection, read
 **edg-cpfe-bisect**.
 
 Agent-friendly defaults:
@@ -57,6 +59,10 @@ Agent-friendly defaults:
 - `edg-docker-test-bisect` — automatic regression/fix bisect (skill
   **edg-cpfe-bisect**;
   [TEST_BISECT.md](dev_annex/tutorials/TEST_BISECT.md)).
+- Temporary files and directories: scratchpad for host-only state,
+  `.tmp/agent-<purpose>` for anything the docker container must see, and
+  `edgy --runs-dir` (not `edg-docker-test`) for ad-hoc runs. See skill
+  **edg-agent-temp-files**.
 
 ## Source overview (`src/`)
 
@@ -86,9 +92,21 @@ Hard always-on reminders (details in the RST / skill):
 
 ## Editing `Changes` files
 
-Any `Changes` changelog in the tree (not only `src/Changes`) must be written
-and kept as **valid UTF-8**. Prefer UTF-8 writes when adding or editing
-entries.
+New changelog entries go in `pending_changes/*.txt` files beside the
+`Changes` file (e.g. `src/pending_changes/gh-123-short-slug.txt`), not
+in the `Changes` file itself: tag block (`[GH #N]`, no date), summary line,
+blank line, description; optional leading `//allowed_words: …` lines accept
+words the spell check rejects (words already in the target `Changes` file
+pass without them). A nightly job runs `edg-collect-changes` to
+date them and move them into `Changes`. Check entries with
+`edg-exec -- edg-collect-changes --check src/Changes src/pending_changes`
+(for the directory in question). Edit a `Changes` file directly
+only to correct an already-collected entry. Details: skill
+**edg-changes-example**.
+
+Any `Changes` changelog in the tree (not only `src/Changes`) and every
+pending entry must be written and kept as **valid UTF-8**. Prefer UTF-8
+writes when adding or editing entries.
 
 Examples that need non-UTF-8 bytes must use `edg-changes-example` (`«HHHH…»`
 markers) and the standard note line — see skill **edg-changes-example**. After
@@ -124,10 +142,13 @@ If an agent does not auto-load skills, open the matching
 | Skill | Path | Load when |
 | --- | --- | --- |
 | `edg-cpfe-build-test` | [`.agents/skills/edg-cpfe-build-test/SKILL.md`](.agents/skills/edg-cpfe-build-test/SKILL.md) | Building, `edg-docker-test`, recording |
+| `edg-agent-temp-files` | [`.agents/skills/edg-agent-temp-files/SKILL.md`](.agents/skills/edg-agent-temp-files/SKILL.md) | Temporary files/dirs, `.tmp/agent-*`, `edg-exec` quoting, ad-hoc `edgy --runs-dir`, scratch test homes |
+| `edg-cmakedef-build-config` | [`.agents/skills/edg-cmakedef-build-config/SKILL.md`](.agents/skills/edg-cmakedef-build-config/SKILL.md) | Macro/build configurations, `.cmakedef` files, `edg-cmakedef`, presets |
 | `edg-cpfe-bisect` | [`.agents/skills/edg-cpfe-bisect/SKILL.md`](.agents/skills/edg-cpfe-bisect/SKILL.md) | Good/bad commit bisect for a test regression or fix |
 | `edg-cpfe-frontend` | [`.agents/skills/edg-cpfe-frontend/SKILL.md`](.agents/skills/edg-cpfe-frontend/SKILL.md) | Editing `src/`, IL/templates/overload, `Changes` |
 | `edg-cpfe-style` | [`.agents/skills/edg-cpfe-style/SKILL.md`](.agents/skills/edg-cpfe-style/SKILL.md) | Front-end coding style (`doc/source/code_style.rst`) |
 | `edg-python-style` | [`.agents/skills/edg-python-style/SKILL.md`](.agents/skills/edg-python-style/SKILL.md) | Python under `dev_tools/` (no formal RST; match in-tree) |
-| `edg-changes-example` | [`.agents/skills/edg-changes-example/SKILL.md`](.agents/skills/edg-changes-example/SKILL.md) | Encoding non-UTF-8 examples in any `Changes` file |
+| `edg-changes-example` | [`.agents/skills/edg-changes-example/SKILL.md`](.agents/skills/edg-changes-example/SKILL.md) | Adding a Changes entry (`pending_changes/`); encoding non-UTF-8 examples in any `Changes` file |
+| `edg-spelling-allowlist` | [`.agents/skills/edg-spelling-allowlist/SKILL.md`](.agents/skills/edg-spelling-allowlist/SKILL.md) | Spell check reports from pre-push or `edg-collect-changes --check`; adding words to `dev_tools/spelling_allowlist.json` |
 | `acknowledg-client` | [`.agents/skills/acknowledg-client/SKILL.md`](.agents/skills/acknowledg-client/SKILL.md) | Batch/Direct client, reconnect, provider CLIs |
 | `acknowledg-bench` | [`.agents/skills/acknowledg-bench/SKILL.md`](.agents/skills/acknowledg-bench/SKILL.md) | `.cgout` / Ir / baselines / bench review |

@@ -100,7 +100,7 @@ def _resolve_test_path(mono_repo_dir: Path, test_path: Path) -> Optional[str]:
     return None
 
   mono_repo_tests_dir = mono_repo_dir / 'tests' / 'tests'
-  if not test_path.is_relative_to(mono_repo_dir):
+  if not edgutil.is_path_relative_to(test_path, mono_repo_dir):
     return None
 
   return str(test_path.relative_to(mono_repo_tests_dir).as_posix())

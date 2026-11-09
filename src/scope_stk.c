@@ -14232,6 +14232,44 @@ effect and returns NULL.
 }  /* end_potential_pack_expansion_context */
 
 
+void discard_pack_references_for_context(
+			a_pack_expansion_stack_entry_ptr	pesep)
+/*
+This is called just before end_potential_pack_expansion_context for a
+potential pack expansion context (described by pesep) that is known not to be
+a pack expansion, but that may contain pack references whose expansion cannot
+be determined.  For example, in
+  template <class... M>
+  void f(M&... m) __attribute__((some_attr(m...)));
+the arguments of the unrecognized attribute are recorded as raw tokens, so it
+is not known whether m is expanded within them.  The pack references recorded
+so far for the context are discarded without any diagnostic, so that
+end_potential_pack_expansion_context neither records a pack expansion, nor
+issues diagnostics for unexpanded packs, nor passes the references on to an
+enclosing context.  pesep can be NULL, in which case nothing is done; nothing
+is done either for suppression, rescan, or real instantiation contexts, in
+which pack references are not recorded.
+*/
+{
+  if (pesep != NULL && !pesep->is_rescan && !pesep->is_suppression &&
+      pesep->instantiation_descr == NULL) {
+    a_pack_expansion_descr_ptr	pedp = pesep->expansion_descr;
+    check_assertion(pesep == pack_expansion_stack);
+    /* The context ends here: Extract its pack references and free them. */
+    pedp->last_token = curr_token_sequence_number;
+    extract_pack_references_for_context(pedp);
+#if DEBUG
+    if (db_flag_is_set("packs") && pedp->packs_referenced != NULL) {
+      fprintf(f_debug, "Discarding the references extracted above\n");
+    }  /* if */
+#endif /* DEBUG */
+    free_list_of_pack_references(pedp->packs_referenced);
+    pedp->packs_referenced = NULL;
+    pesep->contains_pack_reference = FALSE;
+  }  /* if */
+}  /* discard_pack_references_for_context */
+
+
 a_boolean advance_to_next_pack_element(a_pack_expansion_stack_entry_ptr	pesep)
 /*
 This routine is called after end_potential_pack_expansion_context has been

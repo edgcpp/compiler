@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^file-scope (template@|expr-node@)/' | grep -E -e '^(  name|  type|  explicitly_specified|position[.]seq|concept_id[.]args|operation[.]kind|constant|kind|type):' -e '^file-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (template@|expr-node@)/' | grep -E -e '^(  name|  type|  explicitly_specified|position[.]seq|concept_id[.]args|operation[.]kind|constant|kind|type):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename T = int, typename U = T>
 concept C = true;

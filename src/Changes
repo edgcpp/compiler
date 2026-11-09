@@ -1,5 +1,943 @@
 Version 7.1
 
+11/6/26  [GH #370]
+C++26: comparison between two arrays is not allowed
+
+A comparison between two arrays using an equality or relational operator is
+deprecated in C++20 and not allowed in C++26 (P2865).  The front end did not
+diagnose it.  It is now a warning in C++20 and C++23, and an error in C++26
+(only a warning when emulating GCC versions before 15 or Clang versions before
+20, which do the same).  Before C++20 it is a remark (a warning when
+emulating Clang 20 or later, which warns by default).  This includes class
+operands that are converted to arrays by a conversion function.  For
+example, with --c++26:
+
+  int a[2], b[2];
+  bool x = a == b;      // Now an error.
+  bool y = a == &b[0];  // Okay: one operand is a pointer.
+  struct C { using A = int[2]; operator A &() const; } c;
+  bool z = c == c;      // Now an error.
+
+
+11/6/26  [GH #484]
+Lookup in default template arguments during partial specialization rescans
+
+When a template argument list was checked during the rescan of a partial
+specialization (e.g., when matching a partial specialization that uses
+void_t), a default template argument of a class or variable template
+named in that list was substituted in the context of the partial
+specialization rather than that of the class or variable template.  Names
+declared after the partial specialization but before the class or variable
+template were therefore not found, and the substitution was wrongly
+considered to fail.  (This only occurred when dependent name processing was
+done, so Microsoft permissive mode was not affected unless --dep_name was
+specified.)  That is now fixed.  For example, with --c++17:
+
+  template<class...> using void_t = void;
+  template<class, template<class...> class TT, class... P>
+  constexpr bool ok_impl = false;
+  template<template<class...> class TT, class... P>
+  constexpr bool ok_impl<void_t<TT<P...>>, TT, P...> = true;
+  namespace lib { template<class T> T&& declval() noexcept; }
+  template<class T, class = decltype(&lib::declval<T&>())> struct A {};
+  struct V {};
+  static_assert(ok_impl<void, A, V>, "");  // Previously failed.
+
+
+11/6/26  [GH #489]
+Template-dependent variable template-ids in C++03 constant expressions
+
+In C++03 GNU and Clang modes, where variable templates are accepted as an
+extension, a variable template-id with template-dependent template arguments
+was rejected as nonconstant where a constant expression is required (e.g., as
+a template argument, an array bound, or an enumerator value).  That is now
+fixed.  Such a reference to a constant variable template is treated as a
+value-dependent constant, and its value is checked when the template is
+instantiated.  For example, with --g++ --c++03:
+
+  template <class T> const bool is_fp = false;
+  template <> const bool is_fp<float> = true;
+  template <bool B> struct integral_constant {
+    static const bool value = B;
+  };
+  template <class T>
+  struct is_floating_point
+    : integral_constant<is_fp<T> > {};  // Previously an error.
+
+
+11/4/26  [GH #224]
+Constant evaluation of GNU vector objects
+
+The constexpr interpreter tracks the initialization of each element of a GNU
+vector, but did not reserve space for that bookkeeping in complete objects of
+vector type.  Evaluating such an object (e.g., zero-initializing a 64-byte
+vector) could therefore corrupt memory and crash the front end.  In addition,
+initializing (by assignment or as part of aggregate initialization) or
+destroying a whole vector subobject only updated the state of its first
+element, so that reading another element could give a spurious "access to
+uninitialized object" error (or fail to diagnose an access after
+destruction).  For example, with --g++ --c++20:
+
+  typedef char V64 __attribute__((vector_size(64)));
+  typedef int V4 __attribute__((vector_size(16)));
+  int main() {
+    V64 a = V64();  // Could previously crash.
+    return (int)a[0];
+  }
+  struct T { V4 v; };
+  constexpr int f() { T t; t.v = V4{1, 2, 3, 4}; return t.v[3]; }
+  static_assert(f() == 4, "");  // Previously a spurious error.
+
+
+11/3/26  [GH #423]
+Class-type template parameters of enclosing templates in member templates
+
+When an enclosing template (e.g., a class template) was instantiated, a
+reference to one of its nontype template parameters of class type in the
+signature of a member template was replaced by the template parameter
+object.  When the member template's own template arguments were
+substituted, that reference was then treated as a prvalue instead of as a
+const lvalue.  As a result, taking its address caused deduction to fail, and
+other uses (e.g., in a decltype operand) caused a spurious "unexpected
+function type" error.  That is now fixed.  For example, with --c++20:
+
+  struct A { int i = 0; };
+  constexpr A a1{1};
+  template <A V> struct S {
+    template <typename T> static auto f(T t) -> decltype(t, &V);
+    template <typename T> static auto g(T t) -> decltype(t, V);
+  };
+  using R1 = decltype(S<a1>::f(0));  // Previously, no instance matched.
+  using R2 = decltype(S<a1>::g(0));  // Previously, "unexpected function
+                                     // type" error.
+
+
+11/3/26  [GH #462]
+decltype of template parameters in requires-expression parameter types
+
+When a requires-expression appeared in a template other than a concept
+definition (e.g., in a variable template initializer or a function template
+body), decltype applied to a template parameter in the type of one of its
+parameters was not substituted correctly.  The parameter then got an
+unusable type, so that any requirement using it in an operation (e.g., a
+call) was considered unsatisfied.  Similarly, in a member template of a class
+template, decltype applied to a class-type template parameter of the class
+template produced the const type of the template parameter object (rather
+than the declared type of the template parameter) once the class template
+was instantiated.  That is now fixed.  For example, with --c++20:
+
+  struct A { int operator()() { return 0; } };
+  template <auto F>
+  constexpr bool b = requires(decltype(F) f) { f(); };
+  static_assert(b<A{}>);  // Previously failed.
+  template <auto F> struct S {
+    template <int I> static constexpr bool m() {
+      return requires(decltype(F) f) { f(); };
+    }
+  };
+  static_assert(S<A{}>::m<1>());  // Previously failed.
+
+
+10/31/26 [GH #106]
+C++26: returning a reference bound to a temporary is not allowed
+
+A return statement that binds the returned reference to a temporary is not
+allowed in C++26 (P2748).  The front end only issued a warning.  It is now an
+error in C++26 (still a warning when emulating GCC versions before 14 or
+Clang versions before 19, which do the same).  For example, with --c++26:
+
+  struct S { int x; };
+  const int& f() { return 1; }      // Now an error.
+  const int& g() { return S().x; }  // Now an error.
+
+Returning a reference to a member of a temporary, as in g, was previously not
+diagnosed at all in the standard (non-GNU, non-Clang) modes; before C++26 it
+now gets the same warning as the other cases.  The same is true of returning
+a reference to an array temporary or to one of its elements (e.g.,
+"return A{1, 2};" or "return A{1, 2}[0];" with "using A = int[2];") in all
+modes.  Returning a reference to a local variable is still only a warning.
+
+As P2748 specifies, this does not apply to the conversion checked by
+std::is_convertible (e.g., __is_convertible_to(long, const int&) is still
+true).
+
+
+10/30/26 [GH #401]
+break and continue in GNU statement expressions in constant evaluation
+
+In GNU modes, a break or continue statement inside a statement expression
+did not correctly transfer control out of the enclosing full-expression
+during constant evaluation: the evaluation of the enclosing expression
+continued with an indeterminate value for the statement expression, and the
+enclosing loop or switch statement was not exited.  For example, with
+--c++20 --gnu_version 130000:
+
+  constexpr int f(int v) {
+    int n = 0;
+    for (int i = 0; i < 5; ++i) {
+      n += ({ if (i == v) break; i; });
+    }
+    return n;
+  }
+  static_assert(f(3) == 3);  // Previously failed.
+
+This is now fixed.  To that end, the interpretation of control transfers
+(break, continue, and return statements, and the entry of a switch statement
+at a case label) and of loops was reorganized.
+
+
+10/30/26 [GH #421]
+Constant evaluation of virtual calls to an overrider in a derived class
+
+During constant evaluation, a virtual function call did not find the final
+overrider if the class of which it is a member is derived from the class of
+the called function through an intermediate class that does not itself
+override the function: The called function was not replaced.  For example,
+with --c++20:
+
+  struct A { constexpr virtual int f() const { return 1; } };
+  struct NA : A {};
+  struct B : NA { constexpr int f() const override { return 2; } };
+  constexpr int g() { B b; const A* p = &b; return p->f(); }
+  static_assert(g() == 2);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #399]
+Default-initialized local static constexpr variables in constant evaluation
+
+In C++23 mode, a default-initialized local "static constexpr" variable of
+class type caused the constant evaluation of the enclosing function to fail.
+For example, with --c++23:
+
+  struct Q { int q = 1; };
+  constexpr int f() { static constexpr Q q; return q.q; }
+  static_assert(f() == 1);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #398]
+dynamic_cast in constant evaluation requires public base class subobjects
+
+During constant evaluation, the run-time checks of a dynamic_cast did not
+require the operand to point to (or refer to) a public base class subobject
+of the destination object (for a cast to a derived class) or of the most
+derived object (for a cast to a sibling base class, which also requires the
+destination type to be a public base class of the most derived type).
+Instead, the accessibility of the base classes in the context of the cast
+was checked.  For example, with --c++20:
+
+  struct B { virtual void b() {} };
+  struct D : private B {};
+  struct F : D {};
+  constexpr F f;
+  static_assert(dynamic_cast<const D*>((const B*)&f) == nullptr);
+                                              // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #411]
+For loops entered through a case label in constant evaluation
+
+During constant evaluation, when a switch statement transferred control to a
+case label in the body of a for loop that was followed by other statements,
+the loop was not continued after the body completed: The loop condition was
+not evaluated again.  For example, with --c++20:
+
+  constexpr int f(int k) {
+    bool b = false;
+    int z = 0;
+    switch (k) {
+      for (; b;) {
+        return 5;
+      case 1:
+        b = true;
+        z = 9;
+      }
+      return z;
+    }
+    return -1;
+  }
+  static_assert(f(1) == 5);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #434]
+GNU statement expressions and switch statements
+
+In GNU modes, a break statement inside a statement expression that appears as
+the value a switch statement switches on was bound to that switch statement
+instead of (as with GCC and Clang) to the enclosing loop or switch statement.
+Similarly, a case or default label in such a statement expression was
+associated with that switch statement.  For example, with --g++ --c++20:
+
+  int f(int y, bool c) {
+    switch (y) {
+    case 0:
+      switch (({ if (c) break; 1; })) {
+      case 1:
+        return 10;
+      }
+      return 1;
+    }
+    return 2;
+  }
+
+f(0, true) returned 1 instead of 2.  Constant evaluation had the same
+problem, and also let a switch statement complete a break statement executed
+while computing the value it switches on.  This is now fixed.  Such a break
+statement is now diagnosed if there is no enclosing loop or switch
+statement, and such a case or default label now applies to an enclosing
+switch statement (and is diagnosed as a transfer of control into a statement
+expression).
+
+
+10/30/26 [GH #403]
+Lifetime of condition variables in constant evaluation
+
+During constant evaluation, a variable declared in the condition of an if-,
+switch-, while-, or for-statement was destroyed before the substatement
+(and, for a for-statement, the increment expression) was evaluated, instead
+of at the end of the statement (or, for a loop, of the iteration).  The same
+was true for a variable declared in the init-statement of an if- or
+switch-statement.  For example, with --c++20:
+
+  struct S {
+    int* p;
+    constexpr ~S() { *p = *p * 10 + 2; }
+    constexpr explicit operator bool() const { return true; }
+  };
+  constexpr int f() {
+    int n = 0;
+    if (S s{&n}) n = n * 10 + 1;
+    return n;
+  }
+  static_assert(f() == 12);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #404]
+Lifetime of the variable of a range-based for-statement in constant evaluation
+
+During constant evaluation, the variable declared by the for-range-declaration
+of a range-based for-statement was not destroyed at the end of each
+iteration.  For example, with --c++20:
+
+  struct R { int* p; constexpr ~R() { ++*p; } };
+  constexpr int g() {
+    int n = 0;
+    R a[2] = {{&n}, {&n}};
+    for (R r : a) {}
+    return n;
+  }
+  static_assert(g() == 2);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #438]
+Ptr_map::clear did not reset the element count
+
+Ptr_map::clear removed every entry but left the map's element count
+unchanged, so a cleared map reported a stale size and grew its table as
+though the removed entries were still present.  The impact was primarily
+on memory usage (e.g., the map of freed front-end memory after a
+precompiled header is loaded).
+
+
+10/30/26 [GH #426]
+Reproducible builds and generated code
+
+The new configuration macro BUILD_IDENTIFIER (with CMake,
+-DEDG_BUILD_IDENTIFIER=<string>) is a string literal that replaces the
+build date and time in the --version and --dump_configuration output and
+in the precompiled header identification string, so rebuilding the same
+sources produces identical executables.  The runtime library is likewise
+reproducible: its archives are deterministic, and its generated C files no
+longer pass through randomly named temporary directories.
+
+Temporaries in generated C and C++ are now named from a per-file counter
+(e.g., "__T1") rather than from IL addresses, so the output no longer
+varies with address space layout randomization.
+
+DEMO_VERSION_ID has been removed, and the --version copyright line now
+credits contributors.
+
+
+10/30/26 [GH #402]
+Variables declared before a case label in constant evaluation
+
+During constant evaluation, a variable declared (without initializer) after
+one case label of a switch statement and used after a subsequent case label
+was treated as inaccessible when the switch statement transferred control
+to the subsequent label.  The same happened for a variable declared without
+initializer in the init-statement of an if- or for-statement whose
+substatement contains the case label.  For example, with --c++20:
+
+  constexpr int f() {
+    switch (1) {
+      for (int x; ;) {
+      case 1:
+        x = 3;
+        return x;
+      }
+    }
+    return 0;
+  }
+  static_assert(f() == 3);  // Previously failed.
+
+This is now fixed.
+
+
+10/30/26 [GH #431]
+Virtual function instantiation for suppressed class template specializations
+
+Previously, in IA-64 ABI configurations with ABI_COMPATIBILITY_VERSION >= 410,
+defining an inline member function of a class template specialization whose
+instantiation was suppressed could unnecessarily instantiate the class's
+virtual functions.  This no longer occurs when the specialization has external
+linkage and its virtual function table is suppressed.  A GNU "inline template"
+directive still requires the virtual functions.  For example, with
+--c++11 -tused:
+
+  template<int N> struct C {
+    virtual void f() {
+      static_assert(N != 1, "");  // Previously a spurious error, now okay.
+    }
+  };
+  extern template class C<1>;
+  C<1> c;
+
+
+10/29/26 [GH #405]
+A suppressed note of a constant-evaluation error no longer stops the front end
+
+When constant evaluation fails, the front end attaches notes to the error
+"expression must have a constant value": "shift count is too large" (#63),
+"shift count is negative" (#62), "division by zero" (#39) and "integer
+operation result is out of range" (#61) among them.  A note takes the severity
+of its own error number, so when --diag_suppress or a diag_suppress pragma
+named the number of the note, the note had a severity that could not be
+displayed and the front end stopped with an internal error (in the text
+output; the SARIF output listed the suppressed note as a related location):
+
+  constexpr int z = 1 << 32;
+    // --diag_suppress=63: internal error: assertion failed:
+    // determine_severity_code: bad severity
+
+A suppressed note is now left out of the diagnostic, as a suppressed
+diagnostic always is, in the SARIF output too.  The error itself is still
+reported.
+
+
+10/29/26 [GH #174]
+C- and C++-generating back ends: placement of GCC loop pragmas
+
+The GCC loop pragmas "#pragma GCC unroll", "#pragma GCC ivdep", and
+"#pragma GCC novector" were previously recorded in the IL as pragmas of the
+enclosing block and so were emitted by the C-generating back end at the start
+of that block, rather than immediately in front of the loop to which they
+apply.  The back-end compiler then rejected the generated code.  For example:
+
+  void h();
+  void f(char *first, char *last) {
+    h();
+  #pragma GCC unroll 4    // Previously emitted in front of the call of h,
+    while (first != last) // causing a "for, while or do statement expected"
+      ++first;            // error from the back-end compiler.
+  }
+
+In C99 and later modes, the C++-generating back end emitted such a pragma in
+front of the implicit block that surrounds an iteration statement, rather than
+in front of the loop inside it.  A loop pragma that followed an iteration or
+selection statement was emitted inside that statement's implicit block.  In
+both cases, the generated code could not be compiled.
+
+When the loop has attributes (e.g., "[[likely]]"), the C++-generating back
+end now emits the loop pragmas after those attributes when the generated code
+is for GCC, which requires a loop pragma to immediately precede the loop
+keyword, and before them when it is for Clang, which requires that order.
+
+The argument of "#pragma GCC unroll" is now scanned and evaluated as an
+integral constant expression, and its value replaces the original text in the
+generated code.  Previously, the argument was copied unchanged, so one that
+used C++ constructs or template parameters made the generated C code invalid.
+For example:
+
+  template<int N> void g(int *p) {
+  #pragma GCC unroll(N)                  // Now emitted as "unroll 4" in g<4>.
+    for (int i = 0; i < N; ++i) p[i] = 0;
+  }
+  void h(int *p) {
+  #pragma GCC unroll sizeof(decltype(0)) // Now emitted as "unroll 4".
+    for (int i = 0; i < 4; ++i) p[i] = 0;
+    g<4>(p);
+  }
+
+An argument that is negative or not less than 65535 is now diagnosed, as GCC
+does.
+
+
+10/29/26 [GH #414]
+Class-type template parameter objects in function template signatures
+
+A nontype template parameter of class type denotes a template parameter
+object, which is a const lvalue.  When such a parameter was used in the
+signature of a function template, substituting template arguments treated
+it as a prvalue instead.  As a result, decltype applied to the
+parenthesized parameter name produced the class type rather than a const
+lvalue reference to it (causing a spurious "unexpected function type"
+error), member accesses through the parameter had the wrong value category,
+and taking the address of the parameter caused substitution to fail.  That
+is now fixed.  For example, with --c++20:
+
+  struct A { };
+  template <A V> void f(decltype((V)) v) { }
+  template <A V> auto g() -> decltype(&V);
+  void h() {
+    constexpr A a;
+    f<a>(a);  // Previously an "unexpected function type" error.
+    g<a>();   // Previously, no instance of g matched.
+  }
+
+
+10/29/26 [GH #397]
+Constant evaluation of virtual calls to an overrider in a base class
+
+During constant evaluation, a virtual function call whose final overrider is
+a member of an intermediate base class (rather than of the most derived
+class) was evaluated with the complete object as the object expression,
+instead of the base class subobject of which the overrider is a member.  For
+example, with --c++20:
+
+  struct A { constexpr virtual int f() const { return 1; } int a = 1; };
+  struct B : A { constexpr int f() const override { return a + 2; } };
+  struct E { int e = 0; };
+  struct F : E, B {};
+  constexpr int g() { F f; A& r = f; return r.f(); }
+  static_assert(g() == 3);  // Previously failed.
+
+This is now fixed.  In addition, the adjustment of the result of a call to
+an overrider with a covariant return type (e.g., from a pointer to a derived
+class to a pointer to its base class) was computed incorrectly, and was
+applied even to a null pointer result (which could cause the front end to
+crash); this is also fixed.
+
+
+10/29/26 [GH #324]
+Implicit "this" in a default member initializer with a nested aggregate
+
+When the default member initializer of an aggregate class contained an
+aggregate initialization of another object of the same class, an implicit use
+of "this" in the elements of that nested initialization referred to the
+nested object instead of to the object being initialized.  This affected
+initializations that are not folded to constants, such as those in
+new-expressions or return statements.  For example:
+
+  struct Y { unsigned k; unsigned n = Y{2, k}.n; };
+  Y *p = new Y{1};  // p->n is now 1 (previously 2).
+
+This is now fixed.
+
+
+10/29/26 [GH #412]
+Unrecognized attribute with a pack expansion in its arguments
+
+In a variadic template, an unrecognized attribute whose arguments referenced a
+parameter pack (e.g., in a pack expansion) was treated as a pack expansion of
+the attribute as a whole.  As a result, the C++-generating back end could put
+out a spurious "..." after the attribute when generating a template from its
+IL, and instantiations could receive the wrong number of copies of the
+attribute (e.g., one per pack element, or none for an empty pack).  For
+example, in Clang mode:
+
+  template <class... M> struct scoped_lock {
+    scoped_lock(M&... m) __attribute__((acquire_capability(m...))) {}
+  };
+
+could be generated as
+
+  scoped_lock(M &...m) __attribute((acquire_capability(m ... )...)) { }
+
+That is now fixed.
+
+
+10/28/26 [GH #400]
+Order of destruction of array elements in constant evaluation
+
+During constant evaluation, the elements of an array (including an array
+member and an array destroyed by a delete[] expression) were destroyed in
+increasing order of their index instead of in decreasing order.  For
+example, with --c++20:
+
+  struct S {
+    int* log;
+    int id;
+    constexpr ~S() { *log = *log * 10 + id; }
+  };
+  constexpr int f() {
+    int log = 0;
+    {
+      S a[3] = {{&log, 1}, {&log, 2}, {&log, 3}};
+    }
+    return log;
+  }
+  static_assert(f() == 321);  // Previously failed.
+
+This is now fixed.
+
+
+10/27/26 [GH #325]
+GNU/Clang compatibility: argument checking for arithmetic overflow builtins
+
+Previously, calls to __builtin_add_overflow, __builtin_sub_overflow, and
+__builtin_mul_overflow (and their GNU _p forms) could be accepted with invalid
+argument types or an incorrect number of arguments.  These calls are now
+properly diagnosed.  For example, with --gnu_version=150200:
+
+  struct S {};
+  void f(S s, int *p) {
+    __builtin_add_overflow(s, 1, p);  // Previously accepted, now an error.
+  }
+
+
+10/27/26 [GH #356]
+GNU/Clang compatibility: C++11 constexpr templates with non-return statements
+
+When a statement that is not permitted in a C++11 constexpr function or
+constructor was accepted with a warning (for example, in a function or
+constructor template in some GNU or Clang C++11 modes), the function or
+constructor was nevertheless marked as unusable in constant expressions.
+That is now fixed: The function or constructor remains eligible for constant
+evaluation unless the diagnostic is issued as an error.  For example, with
+--c++11 --gnu=150000:
+
+  template<typename T> struct S {
+    T x;
+    constexpr S(T i) : x(i) {
+      if (sizeof(T) == 0) {}  // Warning in C++11 mode.
+    }
+  };
+  constexpr S<int> s(42);  // Previously an error, now okay.
+
+
+10/27/26 [GH #395]
+Internal error in CTAD rescan info for reused specializations
+
+An internal error ("missing default rescan info") could occur when building
+an implicit deduction guide for a constructor whose parameter type is a
+class template specialization with a nontype template argument referring to
+a dependent static data member, if that same specialization was already used
+earlier in the class (e.g., in a member declaration).  For example, with
+--c++17:
+
+  template<int> struct P {};
+  template<typename T> struct A {
+    static constexpr bool b = sizeof(T) == 1;
+    P<b> m;
+    A(T, P<b>);
+  };
+  void g() { A{char{}, {}}; }  // Previously caused an internal error.
+
+
+10/23/26 [GH #327]
+__has_unique_object_representations fixes
+
+A base class that declares no nonstatic data members of its own but inherits
+some (and is therefore not empty) was treated as an empty base class.  Its
+size was then counted as tail padding, so the trait was incorrectly FALSE for
+classes derived from it.  For example, with --c++11:
+
+  struct A { char i; };
+  struct B : A {};
+  struct C : B {};
+  static_assert(__has_unique_object_representations(C), "");  // Previously
+                                                              // failed.
+
+This is now fixed.  In addition:
+
+  - An unnamed bit-field of nonzero width is now treated as padding, as the
+    standard requires, except in g++ modes before 13.1 (other than 10.5,
+    11.4, and 12.3) and in Clang modes before 17.  For example:
+
+      struct S { char a; char : 8; char b; };
+      static_assert(!__has_unique_object_representations(S), "");
+
+  - In a union, an unnamed bit-field overlaps the other members, so the
+    rule above does not apply; as before, a bit-field narrower than the
+    union is treated as padding, except in Clang modes.  Microsoft mode now
+    also does not treat it as padding, matching MSVC.  For example,
+    with --microsoft:
+
+      union U { int x : 3; };
+      static_assert(__has_unique_object_representations(U), "");
+
+  - Volatile-qualified non-class types (e.g., "volatile int") are treated as
+    not having unique object representations only in g++ modes before
+    version 10 (previously this was done for all g++ versions, including
+    Clang modes).
+
+
+10/22/26 [GH #305]
+Attribute namespaces that only start like a known one are not recognized
+
+An attribute namespace was treated as known if it was merely the first part
+of the name of a known namespace; the whole name must now match.
+For example:
+
+  [[cl::x]] int a;    // Warning: attribute namespace "cl" is unrecognized
+  [[g::y]] int b;     // Previously, the namespace was accepted.
+
+
+10/22/26 [GH #183]
+GNU compatibility: "inline" combined with "noinline" on a definition
+
+In GNU and Clang C++ modes, the front end warned that a routine is both
+"inline" and "noinline" when a function definition was declared "inline" and
+had the GNU "noinline" attribute, but GCC accepts that combination silently
+(it is used, e.g., by Boost through "BOOST_NOINLINE inline").  For example:
+
+  inline __attribute__((noinline)) int f(int x) {  // No warning now.
+    return x;
+  }
+
+In C modes, where GCC and Clang warn about the combination in all of those
+cases, the behavior is unchanged.
+
+Also, instantiating a function template (or a member function of a class
+template) that is both "inline" and "noinline" no longer repeats the warning
+"At end of source" for each instance, only the template declarations are
+checked.
+
+
+10/21/26 [GH #335]
+Type transformations of qualified function types
+
+Previously, the __add_lvalue_reference, __add_rvalue_reference, __add_pointer,
+and __decay intrinsics produced incorrect types for function types with cv- or
+ref-qualifiers.  They now leave such types unchanged.  For example, with
+--c++11:
+
+  using F = void() const;
+  using F = __add_pointer(F);  // Previously a spurious error, now okay.
+
+
+10/20/26 [GH #38]
+Integer value limits for a 128-bit host integer representation
+
+When INTEGER_VALUE_REPR_IS_A_HOST_INTEGER is TRUE and __int128 extensions are
+allowed, the integer value types default to the 128-bit types, but
+MAX_INTEGER_VALUE, MIN_INTEGER_VALUE, and MAX_UNSIGNED_INTEGER_VALUE still
+defaulted to 64-bit limits.  As a result, constant arithmetic on __int128
+values that did not fit in 64 bits could be wrongly diagnosed as overflowing.
+For example, with --gnu_version 150200:
+
+  constexpr __int128 s = (__int128)1 << 100;
+  static_assert(s * 4 == ((__int128)1 << 102), "");  // Previously an error.
+
+This is now fixed.
+
+
+10/20/26 [GH #173]
+CTAD through a template template parameter of an alias template
+
+With the changes for EDGcpfe/28857 (in version 6.9), a decltype in an alias
+template that deduces class template arguments through one of the alias
+template's template template parameters could trigger an internal error due to
+a failed assertion in generic_cast_operand, when the alias was used with
+dependent arguments, for example in a requires expression.  For example, with
+--c++20:
+
+  template<typename T> struct S { S(T); };
+  template<template<typename> class TT> using A = decltype(TT(0));
+  template<template<typename> class TT>
+  constexpr bool b = requires { typename A<TT>; };
+  static_assert(b<S>);  // Previously an internal error, now okay.
+
+In addition, deduction now succeeds when the template bound to the template
+template parameter has more parameters (with default arguments or packs) than
+the parameter itself, and a mismatch is now treated as a deduction failure
+rather than an error in contexts where errors are not issued.
+
+
+10/19/26  [GH #218]
+Reachability after a temporary with a "noreturn" constructor or destructor
+
+An expression statement that constructs a temporary of a class type whose
+constructor or destructor is declared "noreturn" was not recognized as not
+returning.  Consequently, a spurious warning could be issued when control
+reached the end of an enclosing "noreturn" or non-void function.  That is now
+fixed.  For example, with --c++11:
+
+  struct A { [[noreturn]] A(); };
+  struct B { [[noreturn]] ~B(); };
+  [[noreturn]] void f() { A{}; }  // Previously warned that f returns.
+  int g() { B{}; }                // Previously warned about missing return.
+
+
+10/15/26  [GH #309]
+Position of (lowered) cleanups at the end of a function body
+
+The cleanup actions (e.g., destructor calls) performed when control reaches
+the end of a function body were attributed to the source position of the
+preceding statement instead of to that of the closing brace of the function
+body.  That is now fixed.  For example:
+
+  int v = 0;
+  struct D { ~D() { v = v + 1; } };
+  void f() {
+    D d;
+    v = 2;
+  }  // The call of d's destructor is now positioned on this line.
+     // Previously it was positioned on the line with "v = 2;" above.
+
+
+10/16/26 [GH #302]
+Incorrect order of base-class initializers in class template
+
+Previously, in the IL for prototype instantiations of class templates,
+base-class mem-initializers with non-type template arguments could appear after
+the initializers for other base classes.  Such initializers are now recorded in
+base-class declaration order when the base class can be identified.
+Initializers for base classes that cannot yet be identified now retain their
+source order relative to the next initializer for an identified nonvirtual
+direct base class.  For example, with --c++11:
+
+  template<int> struct A { };
+  struct B { };
+  template<int N> struct C : A<N>, B {
+    C() : A<N>(), B() { }      // Previously recorded as "B(), A<N>()".
+    C(int) : A<+N>(), B() { }  // Previously recorded as "B(), A<+N>()".
+  };
+
+Both initializer lists are now recorded in the order shown.
+
+
+10/16/26 [GH #229]
+Improper handling of "if constexpr" substatements
+
+Previously, when a substatement of an "if constexpr" was discarded during
+instantiation and was not enclosed in braces, statements following the
+discarded statement could additionally be discarded, e.g.:
+
+  template <bool B> constexpr int f() {
+    return [] {
+        if constexpr (B) while (false) {}
+        return 1; // Previously erroneously discarded when B was false.
+        return 2;
+    }();
+  }
+
+This is now fixed.
+
+
+10/9/26  [GH #260]
+GNU and Clang C++ modes: members skipped by a designated initializer
+
+In GNU C++ modes before C++20 and in all Clang C++ modes, a member that was
+not designated, but that precedes a designated member, was zero-initialized
+instead of being initialized from its default member initializer.  That is
+now fixed.  For example, with --gnu_version=170100:
+
+  struct P { int x = 1, y = 2, z = 3; };
+  P p = { .x = 10, .z = 30 };  // p.y was previously 0.  It is now 2.
+
+
+10/9/26  [GH #27]
+Clearer diagnostic when auto is deduced from an incomplete type
+
+Deducing a plain "auto" (including cv-qualified "auto") from void or another
+incomplete type used to be reported as a deduction failure.  The type is now
+deduced, and the usual incomplete-type diagnostic is issued, as it already
+is for decltype(auto).  For example:
+
+  void g();
+  auto x = g();    // Error: incomplete type "void" is not allowed
+  auto *p = g();   // Error: cannot deduce "auto" type
+
+Forms that are not a plain "auto", such as "auto *", still fail deduction.
+
+
+10/8/26  [GH #178]
+Constexpr call depth limit and calls in arguments
+
+The constexpr interpreter limits the nesting of calls to the value of the
+--max_depth_constexpr_call option by charging each call a large up-front cost
+that is refunded when the call completes.  That cost was charged before the
+arguments of the call were evaluated, so a call appearing in an argument was
+treated as nested in the call to which the argument is passed, even though
+the latter has not yet been entered.  For example, with --c++17 and
+--max_depth_constexpr_call=300:
+
+  constexpr int add(int a, int b) { return a + b; }
+  constexpr int f(int n) { return n == 0 ? 0 : add(1, f(n - 1)); }
+  static_assert(f(256) == 256, "");   // Previously not a constant.
+
+Constructor calls had the same problem.  This is now fixed.
+
+
+10/7/26  [GH #176]
+C-generating back end: always_inline attribute and inlined setjmp calls
+
+When lowering inserts a call of setjmp in a routine that has the GNU
+always_inline attribute, the attribute is removed, because a back end GCC
+compiler gives an error on an always_inline routine that calls setjmp (see
+the entry for EDGcpfe/19110 of 1/10/18).  However, the front end's inliner
+(enabled when MINIMAL_INLINING is TRUE) could also introduce such a call when
+expanding a call of an inline function whose lowered code calls setjmp inside
+the always_inline routine.  The generated C code was then rejected by GCC
+with an error indicating that the always_inline routine can never be inlined.
+For example, with --g++:
+
+  inline void *operator new(decltype(sizeof 0), void *p) noexcept {
+    return p;
+  }
+  inline void operator delete(void *, void *) noexcept {}
+  struct S { S(); };
+  struct Alloc { void construct(S *p) { ::new ((void *)p) S(); } };
+  [[gnu::always_inline]] static inline void make(Alloc &a, S *p) {
+    a.construct(p);   // Previously, GCC gave an error on the generated code.
+  }
+  void f(Alloc &a, S *p) { make(a, p); }
+
+This is now fixed: When GCC is the back end compiler, such calls are now not
+inlined into a routine that has the always_inline attribute.
+
+
+10/7/26  [GH #175]
+C-generating back end: always_inline routines defined in several objects
+
+When a routine placed in a COMDAT group also had the GNU "always_inline"
+attribute, the C-generating back end suppressed the __weak__ attribute that
+it otherwise uses to approximate the COMDAT group (see the entry for
+EDGcpfe/21186 of 5/2/19).  As a result, every object file that defined the
+routine contained a conflicting external definition of it, and linking two
+such object files failed.  For example, with --g++:
+
+  // twice.h
+  [[gnu::always_inline]] inline int twice(int x) { return x + x; }
+
+  // test.cpp
+  #include "twice.h"
+  using fn = int (*)(int);
+  fn other();
+  int main() { return (&twice == other() && twice(1) == 2) ? 0 : 1; }
+
+  // other.cpp
+  #include "twice.h"
+  using fn = int (*)(int);
+  fn other() { return &twice; }   // Linking with test.cpp previously failed.
+
+This is now fixed: When generating code targeting GCC, the C-generating back
+end now preserves the __weak__ attribute and suppresses the __always_inline__
+attribute instead.
+
+
 10/5/26  [GH #195]
 C++-generating back end: dependent multi-dimensional subscripts
 
@@ -20,6 +958,21 @@ C++-generating back end: inaccessible or out-of-scope template arguments
 In certain complex cases, the C++-generating back end could put out a
 template argument that uses an inaccessible or out-of-scope name, making
 the generated code uncompilable.  This is now fixed.
+10/6/26  [GH #203]
+Assertion failure on an empty diag_suppress pragma
+
+A diag_suppress (or similar) pragma with no arguments, or with a trailing
+comma, diagnosed the missing argument and then read past the end of the
+directive.  That, in turn, could lead to an assertion failure in
+process_immediate_pragmas.  For example:
+
+  #pragma diagnostic push
+  #pragma diag_suppress
+  int f() { int a; return a; }
+  #pragma diagnostic pop
+
+That is now fixed: The missing argument is still diagnosed, and the code after
+the pragma is parsed.
 
 
 10/5/26  [GH #213]
@@ -45,6 +998,7 @@ behavior standard-mandated.  It is now the default behavior, except in
 Microsoft mode with microsoft_version < 1951.
 
 
+-------------------------------------------------------------------------------
 Version 7.0, September 28, 2026
 
 9/15/26  [EDGcpfe/28958]
@@ -1598,6 +2552,7 @@ For example, with --c++11:
   C<{}> c0;  // Previously a spurious error, now okay.
 
 
+-------------------------------------------------------------------------------
 Version 6.9, July 20, 2026
 
 7/16/26  [EDGcpfe/28936]
@@ -18174,7 +19129,7 @@ Hang on GCC target pragma with multiple string arguments
 
 Previously, passing multiple string arguments to the GCC target pragma had
 caused the front end to hang.  A change has been made to enable string literal
-concatentation when parsing GCC pragmas so the following is now accepted in
+concatenation when parsing GCC pragmas so the following is now accepted in
 GNU emulation modes:
 
   _Pragma("GCC push_options")
@@ -24396,14 +25351,14 @@ Consider:
     template<class T> X &operator<<(const T &);
   };
   template<typename T, typename U>
-    concept Outable = requires(U &s, T const &x) { s << x; };
+    concept Writable = requires(U &s, T const &x) { s << x; };
   template<typename T>
-    void operator<<(X &x, const T &o) requires (!Outable<T, X>) {
+    void operator<<(X &x, const T &o) requires (!Writable<T, X>) {
     x << 0;  // Error now caught earlier.
   }
 
 This example is ill-formed because the constraint that must be checked for
-the expression x << 0 depends on itself (via the concept Outable, which will
+the expression x << 0 depends on itself (via the concept Writable, which will
 recursively substitute the non-member operator<< candidate).  Previously, the
 front end caught this via a general mechanism that limits the number of
 recursive substitutions.  If the limit is set too high, however, that can
@@ -30780,7 +31735,7 @@ list.  This is now fixed.  For example, with --g++:
 
 
 6/2/21   [EDGcpfe/24389]
-Spurious consteval failure in temmplated contexts
+Spurious consteval failure in templated contexts
 
 Consider:
 
@@ -34417,7 +35372,7 @@ EDGcpfe/15168,EDGcpfe/20235) were enabled in clang mode were not correct.
 As noted in the original description, the feature was supported only in
 C++14 and newer modes and when gnu_version was at least 40900.  In clang
 mode, the restriction to C++14 mode was incorrect, and the dependency on
-gnu_version was unobvious.  The front end has now been changed to enable
+gnu_version was not obvious.  The front end has now been changed to enable
 the feature in clang mode for C++11 and newer modes when clang_version is
 at least 30400, regardless of the value of gnu_version.  For example, with
 --c++11 --clang_version=30400:
@@ -38858,7 +39813,7 @@ C++-generating back end: template arguments involving local types
 
 In C++-generating back end configurations in which
 CLASS_TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS is TRUE, a use of a
-template with a template type argment that is an array, pointer, or
+template with a template type argument that is an array, pointer, or
 reference involving a local type resulted in a generated explicit
 specialization for that template instance in which the template argument
 referred to the local type from a point at which it is not in scope.  This
@@ -40962,7 +41917,7 @@ This is now fixed.
 
 
 3/18/20  [EDGcpfe/22298]
-Coroutines: Adjust behaviour of implicit try/catch block
+Coroutines: Adjust behavior of implicit try/catch block
 
 C++ Committee document P1971R0 changed how a coroutine's implicit try/catch
 block is handled.  The initial suspend point has been moved inside the try
@@ -47234,7 +48189,7 @@ GNU compatibility: Default constructors for classes with const members
 
 GCC versions earlier than 4.9.0 did not implement the requirement that
 constructors for classes with uninitialized const members be defined as
-deleted (see EDGcpfe/14040).  GCC versions 4.9.0 and newer do fulfil this
+deleted (see EDGcpfe/14040).  GCC versions 4.9.0 and newer do fulfill this
 requirement.  Clang always fulfilled this requirement.  For example:
 
   struct A {
@@ -47879,22 +48834,22 @@ expression occurred in a default template argument.  Now fixed.
 
 
 5/16/19  [EDGcpfe/21259]
-Use Berkley SoftFloat library for floating-point arithmetic
+Use Berkeley SoftFloat library for floating-point arithmetic
 
 Previously, the front end could only support floating-point types that were
 also supported by the host compiler (because the front end needs to be able
 to fold floating-point operations at compile time).  A change has been made
-to optionally use the Berkley SoftFloat library to perform all floating-point
+to optionally use the Berkeley SoftFloat library to perform all floating-point
 arithmetic.  This option can be selected by setting the new USE_SOFTFLOAT
 configuration macro to TRUE (the default is FALSE).  In such configurations,
 the build process must be suitably modified to include the SoftFloat headers
 and library.
 
-The front end was tested with Release 3e of the Berkley SoftFloat distribution.
-See http://www.jhauser.us/arithmetic/SoftFloat.html for documentation and
-licensing information.  Performing floating-point operations in software is
-slower than performing them in hardware.  See the SoftFloat documentation for
-details.
+The front end was tested with Release 3e of the Berkeley SoftFloat
+distribution.  See http://www.jhauser.us/arithmetic/SoftFloat.html for
+documentation and licensing information.  Performing floating-point operations
+in software is slower than performing them in hardware.  See the SoftFloat
+documentation for details.
 
 In configurations where USE_SOFTFLOAT is TRUE, USE_HOST_FP_CONVERSION_ROUTINES
 must be set to FALSE (see the Changes entry for EDGcpfe/21236).  This provides
@@ -123228,7 +124183,7 @@ name of a member function.  Now fixed (an error is issued).
 Abort on decltype of nontype template parameter
 
 The front end aborted in decltype_from_operand in expr.c on a use of
-decltype applied to a nontype template parameter identitier.  Now fixed.
+decltype applied to a nontype template parameter identifier.  Now fixed.
 
   template <class U, U I> inline void f() {
     auto x2 = sizeof (decltype(I));  // Formerly caused an abort
@@ -135266,7 +136221,7 @@ numbered N1791).
 Various GNU C features are lowered using C99 lowering.  It was previously
 possible to configure the front end with DO_IL_LOWERING and
 GNU_EXTENSIONS_ALLOWED set to TRUE and DO_C99_IL_LOWERING set to FALSE.
-Ths combination left some IL constructs unlowered, which could result in
+This combination left some IL constructs unlowered, which could result in
 aborts in the C-generating back end.  Attempting to use this configuration
 now results in a build-time error.  (As part of this change, consistency
 checking between DO_C99_IL_LOWERING and other configuration settings has
@@ -139176,7 +140131,7 @@ as a pattern satisfying the operator.
 
 8/23/05  Microsoft compatibility: dropping cv-qualifiers on "?" operator
 
-Microsoft mode nows allows dropping cv-qualifiers (e.g., const) when
+Microsoft mode now allows dropping cv-qualifiers (e.g., const) when
 converting the second or third operand of a "?" operator to the other
 operand type, if the conversion is from derived to base.
 
@@ -139726,7 +140681,7 @@ with external linkage involving class types or enumeration types without
 linkage.  Now such declarations are always diagnosed (an error in strict mode;
 otherwise, a warning for functions or a remark for variables).  For example:
 
-  enum { no, yes } anwer;  // Previously silently accepted; now a diagnostic.
+  enum { no, yes } answer;  // Previously silently accepted; now a diagnostic.
   struct S {
     typedef struct {} *P;
     static P x;  // Previously silently accepted; now a diagnostic.
@@ -142264,7 +143219,7 @@ old-style cast, i.e.,
       Inner2(const Inner1& r = ((Inner1)(s)));
 
 thus triggering the MSVC++ 6.0 bug.  Now, when msvc_is_generated_code_target
-is TRUE and msvc_target_version_number is 1200, the default argment will be
+is TRUE and msvc_target_version_number is 1200, the default argument will be
 generated as a functional cast with no enclosing parentheses:
 
       Inner2(const Inner1& t = Inner1(s));
@@ -142456,7 +143411,7 @@ therefore issues no error on such cases.
   A<int> y;  // I is complete when A<int> instantiation is done
 
 2/8/05   Spurious error on template static data member with dependent
-         parenthesised initializer
+         parenthesized initializer
 
 A spurious error was issued if a template static data member was initialized
 with a parenthesized initializer of the form "T::<name>".  The error would
@@ -143277,7 +144232,7 @@ currently-standard behavior for GNU C++ mode and MSVC++ 7.0.
 
 12/21/04 Microsoft compatibility: mixed void/non-void operands to "?" operator
 
-Microsoft C++ mode nows allows mixed void/non-void operands to the "?"
+Microsoft C++ mode now allows mixed void/non-void operands to the "?"
 operator, with a result type of void.  A previous emulation of this
 feature (see Changes entry of 7/1/96) was found to match the behavior
 of MSVC++ only in C mode and only up to version 6.0, and therefore
@@ -164428,7 +165383,7 @@ an lvalue.  It is now an rvalue.
 
 9/1/00   Abort on array rvalue selected from base class of class rvalue
 
-The front end no longers aborts on passing an array rvalue as
+The front end no longer aborts on passing an array rvalue as
 an argument, when the array rvalue is produced by creating a class
 rvalue and selecting an array member of a base class of that value.
 
@@ -168171,7 +169126,7 @@ line).
 
 11/2/99  Pointer conversions not allowed on nontype template argument
 
-Inplicit null pointer conversions, related-class conversions, and
+Implicit null pointer conversions, related-class conversions, and
 conversions to "void *" are no longer allowed on a nontype template
 argument.  See [temp.arg.nontype] paragraph 5 in the C++ standard.
 
@@ -191080,7 +192035,7 @@ which have been corrected:
   address into the slot of the object address table indexed by the region
   table number (rather than the index number for the object address table).
   By coincidence, the runtime was looking for the conditional flag address
-  in the same wrong place, so the bugs often cancelled out, particularly
+  in the same wrong place, so the bugs often canceled out, particularly
   in small test programs.
 - When destroying unordered temporaries, the values placed in
   __eh_curr_region during the destructions were wrong and would
@@ -193193,7 +194148,7 @@ could result in a compiler abort.  This has been fixed.
     T3<xxx> t3;  // Abort on this line
   };
 
-6/29/94  Overridding the severity of diagnostic messages
+6/29/94  Overriding the severity of diagnostic messages
 
 Command line options have been added that allow a user to override the
 severity of specified diagnostics.  The new severity may only be used to
@@ -193204,7 +194159,7 @@ overriding mechanism.
 
 6/29/94  Option to display error numbers
 
-When using the severity overridding mechanism, it is sometimes helpful to
+When using the severity overriding mechanism, it is sometimes helpful to
 know the error number of a given diagnostic.  The --display_error_number
 command line option causes the error number to be displayed as part of the
 diagnostic output.
@@ -199311,9 +200266,9 @@ issued in strict ANSI mode.
 Now a remark is issued (instead of a warning) on duplicate friend
 declarations.
 
-3/23/93 IL walk routines speeded up
+3/23/93 IL walk routines sped up
 
-The routines that walk the intermediate language tree have been speeded
+The routines that walk the intermediate language tree have been sped
 up.  This was accomplished largely by moving a lot of code from il_walk.c
 out to a new file walk_entry.h, and then compiling it twice with
 different macro settings so as to avoid a lot of extra testing during

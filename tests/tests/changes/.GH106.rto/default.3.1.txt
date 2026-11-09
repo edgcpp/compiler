@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=3 --c++26 --clang_version 190000 Test_name.c
+"Test_name.c", line 11: error: returning reference to local temporary
+  const int& f1() { return 1; }             // Temporary: diagnosed.
+                           ^
+
+"Test_name.c", line 12: error: returning reference to local temporary
+  const int& f2(long l) { return l; }       // Temporary from a conversion.
+                                 ^
+
+"Test_name.c", line 13: error: returning reference to local temporary
+  const int& f3() { return S().x; }         // Member of a temporary.
+                           ^
+
+"Test_name.c", line 14: error: returning reference to local temporary
+  int&& f4() { return 1; }                  // Rvalue reference to a temporary.
+                      ^
+
+"Test_name.c", line 15: warning: returning reference to local variable
+  const int& f5() { int i = 0; return i; }  // Local variable: only a warning.
+                                      ^
+
+"Test_name.c", line 17: error: returning reference to local temporary
+  const int& f7() { return make().x; }      // Member of a call's result.
+                           ^
+
+"Test_name.c", line 19: error: returning reference to local temporary
+    return b ? static_cast<int&&>(i) : S().x;
+           ^
+
+"Test_name.c", line 22: error: returning reference to local temporary
+  A&& f9() { return A{1, 2}; }              // Array temporary.
+                    ^
+
+"Test_name.c", line 23: error: returning reference to local temporary
+  const A& f10() { return A{1, 2}; }        // Array temporary.
+                          ^
+
+"Test_name.c", line 24: error: returning reference to local temporary
+  const int& f11() { return A{1, 2}[0]; }   // Element of an array temporary.
+                            ^
+
+"Test_name.c", line 25: error: returning reference to local temporary
+  const int& f12(int n) { return A{n, 2}[1]; }
+                                 ^
+
+"Test_name.c", line 26: error: returning reference to local temporary
+  const int& f13() { return 0[A{1, 2}]; }
+                            ^
+
+"Test_name.c", line 31: warning: returning reference to local temporary
+  const int *const *const &f6() { return pp; }
+                                         ^
+
+11 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Check that the issue forms and the discussion forms match.
+
+Every form in .github/DISCUSSION_TEMPLATE has a twin of the same name in
+.github/ISSUE_TEMPLATE, so contributors who can file issues use the same form
+as everyone else. GitHub can't share one file between the two (issue forms
+need name/description keys discussion forms don't allow), so the two copies
+are kept by hand and this checks that their body: sections are identical,
+apart from links to the other forms (a discussion category in one, an issue
+form in the other).
+'''
+
+import argparse
+import difflib
+import re
+import sys
+
+from pathlib import Path
+from typing import List, Optional
+
+REPOSITORY_URL = 'https://github.com/edgcpp/compiler'
+
+# Links to another form, which differ between the twins by design.
+FORM_LINK_PATTERNS = [
+  re.compile(re.escape(REPOSITORY_URL) +
+             r'/discussions/categories/([A-Za-z0-9_-]+)'),
+  re.compile(re.escape(REPOSITORY_URL) +
+             r'/issues/new\?template=([A-Za-z0-9_-]+)\.yml'),
+]
+
+# Files in ISSUE_TEMPLATE that aren't forms.
+NON_FORMS = {'config.yml'}
+
+# Top-level keys an issue form requires before its body.
+ISSUE_FORM_KEYS = ['name', 'description']
+
+
+def form_body(path: Path) -> Optional[List[str]]:
+  '''Return the lines from the body: key on, with form links normalized.'''
+  lines = path.read_text(encoding = 'utf-8').splitlines(keepends = True)
+  for index, line in enumerate(lines):
+    if line.startswith('body:'):
+      body = lines[index:]
+      for pattern in FORM_LINK_PATTERNS:
+        body = [pattern.sub(r'<form \1>', text) for text in body]
+      return body
+  return None
+
+
+def missing_issue_form_keys(path: Path) -> List[str]:
+  '''Return the required top-level keys path lacks before its body.'''
+  header = []
+  for line in path.read_text(encoding = 'utf-8').splitlines():
+    if line.startswith('body:'):
+      break
+    header.append(line)
+  return [
+    key for key in ISSUE_FORM_KEYS
+    if not any(line.startswith(key + ':') for line in header)
+  ]
+
+
+def main() -> int:
+  parser = argparse.ArgumentParser(description = __doc__.splitlines()[0])
+  parser.add_argument(
+    '--github-dir',
+    type = Path,
+    default = Path(__file__).resolve().parents[2] / '.github',
+    help = 'the .github directory to check (default: this repository\'s)'
+  )
+  args = parser.parse_args()
+
+  discussion_dir = args.github_dir / 'DISCUSSION_TEMPLATE'
+  issue_dir = args.github_dir / 'ISSUE_TEMPLATE'
+  discussion_forms = {path.name for path in discussion_dir.glob('*.yml')}
+  issue_forms = {
+    path.name for path in issue_dir.glob('*.yml')
+    if path.name not in NON_FORMS
+  }
+
+  errors = 0
+  for name in sorted(discussion_forms - issue_forms):
+    print(f"error: {discussion_dir / name} has no twin in {issue_dir}",
+          file = sys.stderr)
+    errors += 1
+  for name in sorted(issue_forms - discussion_forms):
+    print(f"error: {issue_dir / name} has no twin in {discussion_dir}",
+          file = sys.stderr)
+    errors += 1
+
+  for name in sorted(discussion_forms & issue_forms):
+    discussion_form = discussion_dir / name
+    issue_form = issue_dir / name
+    missing = missing_issue_form_keys(issue_form)
+    if len(missing) != 0:
+      print(f"error: {issue_form} lacks the top-level key(s) "
+            f"{', '.join(missing)}", file = sys.stderr)
+      errors += 1
+    discussion_body = form_body(discussion_form)
+    issue_body = form_body(issue_form)
+    if discussion_body is None or issue_body is None:
+      for path, body in ((discussion_form, discussion_body),
+                         (issue_form, issue_body)):
+        if body is None:
+          print(f"error: {path} has no body: key", file = sys.stderr)
+          errors += 1
+      continue
+    if discussion_body != issue_body:
+      print(f"error: the body: sections of {discussion_form} and "
+            f"{issue_form} differ:", file = sys.stderr)
+      sys.stderr.writelines(difflib.unified_diff(
+        discussion_body,
+        issue_body,
+        fromfile = str(discussion_form),
+        tofile = str(issue_form)
+      ))
+      errors += 1
+
+  if errors != 0:
+    return 1
+  print(f"{len(discussion_forms & issue_forms)} form(s) match.")
+  return 0
+
+
+if __name__ == '__main__':
+  sys.exit(main())

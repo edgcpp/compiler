@@ -111,6 +111,10 @@ extern void lower_try_block(
 extern an_expr_node_ptr make_internal_try_expr(an_expr_node_ptr try_expr,
                                                an_expr_node_ptr catch_expr);
 
+#if DO_FULL_PORTABLE_EH_LOWERING
+extern a_boolean is_eh_setjmp_routine(a_routine_ptr routine);
+#endif /* DO_FULL_PORTABLE_EH_LOWERING */
+
 #if !DO_FULL_PORTABLE_EH_LOWERING
 extern an_expr_node_ptr make_thrown_object_address_node(void);
 #endif /* !DO_FULL_PORTABLE_EH_LOWERING */

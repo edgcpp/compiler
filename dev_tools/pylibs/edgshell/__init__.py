@@ -18,16 +18,21 @@ import uuid
 import edgutil
 
 from pathlib import Path, PurePath
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Set
 
 TOOL_PATH_GIT = edgutil.RequiredToolPath('git')
 
-def read_process_output(args: List[str], *, cwd = None) -> str:
-  '''A simplified function for running a process and grabbing the output.'''
+def read_process_output(args: List[str], *, cwd = None,
+                        stderr = subprocess.STDOUT) -> str:
+  '''A simplified function for running a process and grabbing the output.
+
+  By default, the output includes what the process writes to standard error.
+  Pass another value (e.g., subprocess.DEVNULL) to keep it out of the output
+  when the output is going to be parsed.'''
   completed_process = subprocess.run(
     args,
     stdout = subprocess.PIPE,
-    stderr = subprocess.STDOUT,
+    stderr = stderr,
     cwd = cwd,
     check = True
   )
@@ -342,6 +347,41 @@ def list_files_in_git_revision(commit: str, *,
   file_list = output.split('\n')
   file_list = [f for f in file_list if len(f) > 0]
   return file_list
+
+def list_binary_files_in_git_diff(revision_range: str, *,
+                                  cwd: Optional[Path] = None) -> Set[str]:
+  '''Return the paths git treats as binary in the diff of revision_range.
+
+  Git decides by the content of the file (a NUL byte near its start) and by
+  the .gitattributes of its path.  A file git treats as binary has "-" for
+  both of its counts in "git diff --numstat".
+
+  This is a best effort to avoid checking files that have no text.  If git
+  fails, return the empty set (quietly) rather than failing the caller.
+  '''
+  try:
+    output = read_process_output(
+      [
+        str(TOOL_PATH_GIT),
+        'diff',
+        '--numstat',
+        '-z',
+        '--no-renames',
+        revision_range
+      ],
+      cwd = cwd,
+      # Diagnostics (e.g., about .gitattributes) would corrupt the records.
+      stderr = subprocess.DEVNULL
+    )
+  except subprocess.CalledProcessError:
+    return set()
+  binary_files = set()
+  for entry in output.split('\0'):
+    added, _, rest = entry.partition('\t')
+    deleted, _, path = rest.partition('\t')
+    if added == '-' and deleted == '-' and path:
+      binary_files.add(path)
+  return binary_files
 
 def list_tags_in_repo(*, cwd: Optional[Path] = None) -> List[str]:
   output = read_process_output(

@@ -30,7 +30,9 @@ From `edgacknowledg.client` (`__all__`):
 - `ConnectionStatusListener` — `connected` / `attempting_reconnect` /
   `disconnected`
 - `ReviewClient` (structural **Protocol**): `review_id`, `name`, `timestamp`,
-  `sections()`, `add_section` / `remove_section`
+  `sections()`, `add_section` / `remove_section`. `name` is a `RichName`
+  (segments built with `rich_text` / `rich_link` from `edgacknowledg`; see
+  PROTOCOL.md "Rich names"); a plain title is `[rich_text(title)]`
 - URL/env helpers: `add_endpoint_arguments`, `form_section_http_url`,
   `default_*` host/port helpers
 - Shared: `BackgroundWorkerPool`, errors
@@ -78,6 +80,17 @@ async for websocket in ResilientWebsocket(...):
 Auth header: `X-AcknowlEDG-API-Key` (never put the key in query strings).
 `RoleOccupied`: discard that handler / stop reconnecting that section; keep
 other sections running.
+
+Batch subscribe / unsubscribe answers are not timed: the server answers at
+once, and a lost connection (keepalive pings notice) fails what is pending
+as `NotConnectedError`; `add_section` keeps the section registered, and the
+next session restores it.
+
+`IncompatibleProtocolVersion` carries the peer's `revision` (the server's
+`outdated-proto` says its own) and `peer_is_newer`. It stops a session;
+`BatchClient(wait_for_server_update=True)` instead waits out an older
+server, reconnecting every `SERVER_UPDATE_RETRY_S` (5 s) with its sections
+still registered. A newer server still stops it: the client must be updated.
 
 ## Batch subscription maps
 

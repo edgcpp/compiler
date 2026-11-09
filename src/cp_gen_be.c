@@ -8305,6 +8305,25 @@ one step instead of class-by-class, return TRUE.
 }  /* pm_cast_is_unambiguous */
 
 
+static a_constant_ptr first_explicit_aggr_constant(a_constant_ptr con)
+/*
+con is NULL or a constant in the list of an aggregate constant.  Return the
+first constant in that list, starting with con, that is not an implicit
+initializer for a base class or member (such initializers do not appear in
+the generated source), or NULL if there is none.
+*/
+{
+  while (con != NULL &&
+         (con->constant_for_base_class_from_constexpr_folding ||
+          con->implicit_aggr_element ||
+          (constant_is(con, ck_dynamic_init) &&
+           is_default_dynamic_init(con->variant.dynamic_init.ptr)))) {
+    con = con->next;
+  }  /* while */
+  return con;
+}  /* first_explicit_aggr_constant */
+
+
 static void gen_designator(a_constant_ptr con,
                            a_field_ptr    *field,
                            a_constant_ptr *p_eff_con,
@@ -8388,12 +8407,13 @@ brace/parenthesis delimiters around it should be suppressed.
     if (!eff_con->explicit_braces_on_aggregate &&
         !eff_con->explicit_parentheses_on_aggregate &&
         !eff_con->explicit_cast_applied) {
+      a_constant_ptr  first_con = eff_con->variant.aggregate.first_constant;
+      first_con = first_explicit_aggr_constant(first_con);
       *suppress_delims = TRUE;
-      if (eff_con->variant.aggregate.first_constant != NULL &&
-          constant_is(eff_con->variant.aggregate.first_constant,
-                      ck_designator)) {
+      if (first_con != NULL && constant_is(first_con, ck_designator)) {
         /* Do not close the designator if another one will follow
-           immediately. */
+           immediately (i.e., a chained designator, possibly preceded by
+           implicit initializers for the members it skips). */
         close = FALSE;
       }  /* if */
     }  /* if */
@@ -8603,13 +8623,7 @@ which constant is the value.
     /* Loop through the list of initializer constants. */
     /* First, skip over any implicit initializers for base classes and
        initial members; they shouldn't appear in the generated source. */
-    for (sub_con = first_con;
-         sub_con != NULL &&
-                (sub_con->constant_for_base_class_from_constexpr_folding ||
-                 sub_con->implicit_aggr_element ||
-                 (sub_con->kind == (a_constant_repr_kind)ck_dynamic_init &&
-                  is_default_dynamic_init(sub_con->variant.dynamic_init.ptr)));
-         sub_con = sub_con->next) {}
+    sub_con = first_explicit_aggr_constant(first_con);
     if (sub_con != NULL &&
         sub_con->kind == (a_constant_repr_kind)ck_init_repeat) {
       /* A ck_init_repeat constant is used to do default initialization
@@ -20514,17 +20528,13 @@ Generate one of the predefined UPC pragmas.
 
 #endif /* UPC_EXTENSIONS_ALLOWED */
 
-static void gen_pragma(void)
+static void gen_pragma_entry(a_pragma_ptr pp)
 /*
-Generate a declaration for a pragma.  The current source sequence entry
-is the one associated with the pragma.
+Generate a declaration for the pragma pp.
 */
 {
-  a_pragma_ptr pp = ss_entry_ptr(curr_source_sequence_entry, a_pragma_ptr);
   a_boolean    saved_suppress_line_breaking = octl.suppress_line_breaking;
 
-  /* Advance past the source sequence entry for the pragma. */
-  adv_curr_source_sequence_entry();
   /* Ignore this entry if told to do so. */
   if (!pp->ignore_in_back_end) {
     octl.suppress_line_breaking = TRUE;
@@ -20598,7 +20608,64 @@ is the one associated with the pragma.
     }  /* if */
     octl.suppress_line_breaking = saved_suppress_line_breaking;
   }  /* if */
+}  /* gen_pragma_entry */
+
+
+static void gen_pragma(void)
+/*
+Generate a declaration for a pragma.  The current source sequence entry
+is the one associated with the pragma.
+*/
+{
+  a_pragma_ptr pp = ss_entry_ptr(curr_source_sequence_entry, a_pragma_ptr);
+
+  /* Advance past the source sequence entry for the pragma. */
+  adv_curr_source_sequence_entry();
+#if GNU_EXTENSIONS_ALLOWED
+  if (pp->kind == pk_gcc_next_statement) {
+    /* A GCC loop pragma (e.g., "#pragma GCC unroll") is generated in front
+       of the statement to which it is bound (see gen_gcc_statement_pragmas)
+       instead. */
+  } else
+#endif /* GNU_EXTENSIONS_ALLOWED */
+  /* Do not insert code here. */
+  {
+    gen_pragma_entry(pp);
+  }
 }  /* gen_pragma */
+
+
+#if GNU_EXTENSIONS_ALLOWED
+
+static void gen_gcc_statement_pragmas(a_statement_ptr statement)
+/*
+Generate any GCC loop pragmas (e.g., "#pragma GCC unroll") that are bound to
+the given statement.  These must be next to the statement (see
+gen_statement_full for their order relative to its attributes), so they are
+generated here rather than at their source sequence entries (see gen_pragma).
+*/
+{
+  if (!statement->has_associated_pragma) {
+    /* No pragmas are bound to the statement. */
+  } else if (innermost_function_scope == NULL ||
+             in_file_scope(statement)) {
+    /* The pragmas are on the list of a file or namespace scope, which
+       find_assoc_pragma locates through the front end's scope stack.  That
+       stack is no longer valid here. */
+  } else {
+    a_pragma_ptr pp = NULL;
+    while ((pp = find_assoc_pragma((char *)statement, iek_statement,
+                                   innermost_function_scope, pp)) != NULL) {
+      if (pp->kind == pk_gcc_next_statement) {
+        gen_pragma_entry(pp);
+        /* Resume the output at the position of the statement. */
+        set_output_position(&statement->position);
+      }  /* if */
+    }  /* while */
+  }  /* if */
+}  /* gen_gcc_statement_pragmas */
+
+#endif /* GNU_EXTENSIONS_ALLOWED */
 
 
 static void write_tok_str_if_nonnull(a_const_char *str)
@@ -22455,7 +22522,20 @@ one that yields the value) of a statement expression.
     /* Adjust the output position to match the statement position. */
     set_output_position(&statement->position);
   }  /* if */
+#if GNU_EXTENSIONS_ALLOWED
+  /* Generate any GCC loop pragmas bound to the statement.  Clang requires
+     them to precede the attributes of the loop, but GCC requires them to
+     follow those attributes (e.g., "[[likely]] #pragma GCC unroll 4 for"). */
+  if (clang_is_generated_code_target) {
+    gen_gcc_statement_pragmas(statement);
+  }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED */
   gen_attributes(statement->attributes, al_prefix, /*primary_only=*/FALSE);
+#if GNU_EXTENSIONS_ALLOWED
+  if (!clang_is_generated_code_target) {
+    gen_gcc_statement_pragmas(statement);
+  }  /* if */
+#endif /* GNU_EXTENSIONS_ALLOWED */
   switch (kind) {
     case stmk_empty:
       write_tok_ch(';');

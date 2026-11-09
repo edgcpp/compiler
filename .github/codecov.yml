@@ -1,0 +1,55 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Codecov configuration (https://docs.codecov.com/docs/codecov-yaml).
+# The coverage job of .github/workflows/build-and-test-ci.yml merges the
+# reports of the test legs that ran and uploads them as a single report, so
+# no upload count needs to be configured here.
+#
+# Only the nightly scheduled run on main tests every leg; other runs skip
+# the legs whose results they can reuse, so their reports cover only part of
+# the tests. Codecov therefore compares nothing: no comment, no status
+# checks, and no annotations of uncovered lines. A pull request links to its
+# report through the "coverage" commit status that the coverage job sets.
+
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  precision: 2
+  round: down
+  range: "20...80"
+  status:
+    project: off
+    patch: off
+    changes: off
+
+comment: false
+
+github_checks:
+  annotations: false
+
+# Only src/ is reported (see the gcovr --filter in build-and-test-ci.yml);
+# keep the rest of the tree out of Codecov's view even if a report includes
+# it.
+ignore:
+  - "benchmarks/**"
+  - "dev_tools/**"
+  - "tests/**"
+  - "util/**"
+  # Sources produced by dev_tools/bin/gen-ifc-map.
+  - '^src/ifc_map\.h$'
+  - '^src/ifc_map_functions\.c$'
+  - '^src/ifc_map_functions\.h$'
+  - '^src/ifc_map_functions_acc\.c$'
+  - '^src/ifc_map_functions_dbg\.c$'
+  - '^src/ifc_map_functions_mut\.c$'
+  - '^src/ifc_map_functions_val\.c$'
+  - '^src/ifc_modules_inst\.h$'
+  - '^src/ifc_modules_spec\.h$'
+  # Large generated data tables.
+  - '^src/unicode_name_fsm\.c$'
+  - '^src/builtin_defs\.h$'
+  - '^src/builtin_kinds\.h$'

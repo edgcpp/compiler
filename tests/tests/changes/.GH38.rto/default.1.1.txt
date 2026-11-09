@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --gnu_version 150200 Test_name.c
+"Test_name.c", line 23: error: expression must have a constant value
+  static_assert(max + 1 != 0, "");   // Error: overflow
+                ^
+"Test_name.c", line 23: note: value exceeds range of "__int128"
+  static_assert(max + 1 != 0, "");   // Error: overflow
+                    ^
+
+"Test_name.c", line 24: error: expression must have a constant value
+  static_assert(min / -1 != 0, "");  // Error: overflow
+                ^
+"Test_name.c", line 24: note: integer operation result is out of range
+  static_assert(min / -1 != 0, "");  // Error: overflow
+                    ^
+
+"Test_name.c", line 25: error: expression must have a constant value
+  static_assert(max * 2 != 0, "");   // Error: overflow
+                ^
+"Test_name.c", line 25: note: value exceeds range of "__int128"
+  static_assert(max * 2 != 0, "");   // Error: overflow
+                    ^
+
+"Test_name.c", line 26: error: expression must have a constant value
+  static_assert(min * 2 != 0, "");   // Error: overflow
+                ^
+"Test_name.c", line 26: note: value exceeds range of "__int128"
+  static_assert(min * 2 != 0, "");   // Error: overflow
+                    ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -3262,6 +3262,31 @@ only, only preprocessing immediate pragmas are actually processed.
   }  /* if */
 }  /* record_pragma */
 
+#if GNU_EXTENSIONS_ALLOWED
+
+static a_boolean is_gcc_loop_pragma_name(a_const_char *ptr)
+/*
+Return TRUE if the characters at ptr are the name of one of the "GCC" pragmas
+that must immediately precede, and apply to a loop statement.
+Currently supported: "unroll", "ivdep", and "novector".
+*/
+{
+  static a_const_char *const loop_pragma_names[] = {
+    "unroll", "ivdep", "novector"
+  };
+  a_boolean is_loop_pragma = FALSE;
+
+  for (a_const_char *name : loop_pragma_names) {
+    size_t len = strlen(name);
+    if (strncmp(ptr, name, len) == 0 && !is_id_char[ptr[len]-CHAR_MIN]) {
+      is_loop_pragma = TRUE;
+      break;
+    }  /* if */
+  }  /* for */
+  return is_loop_pragma;
+}  /* is_gcc_loop_pragma_name */
+
+#endif /* GNU_EXTENSIONS_ALLOWED */
 
 a_pragma_kind_description_ptr look_up_pragma_id(
 					a_source_position	*id_position)
@@ -3297,8 +3322,8 @@ The position of the pragma ID is returned in id_position;
       if (curr_id_matches_pragma_id(pkdp->kind)) {
 #if GNU_EXTENSIONS_ALLOWED
         /* We found a match.  If we're processing a GCC pragma, see if we
-           should treat it as an immediate pragma or a next_token pragma
-           based on the token that follows "GCC". */
+           should treat it as an immediate pragma, a next_token pragma, or
+           a next_statement pragma based on the token that follows "GCC". */
         if (pkdp->kind == (a_pragma_kind)pk_gcc_immediate) {
           /* We want to look ahead to see if "diagnostic" is next, but
              being that we're in a preprocessing directive, next_token
@@ -3311,6 +3336,10 @@ The position of the pragma ID is returned in id_position;
             /* Treat all "GCC diagnostic" pragmas as next_token. */
             pkdp = pkdp->next;
             check_assertion(pkdp->kind == (a_pragma_kind)pk_gcc_next_token);
+          } else if (is_gcc_loop_pragma_name(curr_char_loc)) {
+            /* Bind the GCC loop pragmas to the statement that follows. */
+            pkdp = pragma_description_for_pragma_kind[
+                                                   (int)pk_gcc_next_statement];
           }  /* if */
 #if GNU_VECTOR_TYPES_ALLOWED && BUILTIN_FUNCTIONS_ENABLED
         } else if (pkdp->kind == pk_clang_riscv) {
@@ -4316,6 +4345,64 @@ Process a "#pragma GCC ..." construct.
     il_pragma_entry->variant.gcc = ppp->variant.gcc;
   }  /* if */
 }  /* gcc_pragma */
+
+
+void gcc_next_statement_pragma(a_pending_pragma_ptr        ppp,
+                               ARG_UNUSED a_symbol_ptr     sym_ptr,
+                               a_statement_ptr             stmt_ptr)
+/*
+Process a "#pragma GCC unroll", "#pragma GCC ivdep", or "#pragma GCC novector"
+construct that is bound to the statement stmt_ptr, and record an IL entry for
+it.  The argument of "#pragma GCC unroll" is an integral constant expression
+that may use C++ constructs (e.g., "sizeof(decltype(0))") or template
+parameters, neither of which can be passed through to the generated code, so
+we evaluate here.
+*/
+{
+  begin_rescan_of_pragma_tokens(ppp);
+  check_assertion(curr_token == tok_identifier);
+  if (strcmp(locator_for_curr_id.symbol_header->identifier, "unroll") == 0) {
+    a_constant_ptr     con = local_constant();
+    a_source_position  arg_pos;
+    a_boolean          err = FALSE;
+
+    /* Bypass "unroll". */
+    (void)get_token();
+    arg_pos = pos_curr_token;
+    scan_integral_constant_expression(con);
+    if (is_error_constant(con)) {
+      expect_error();
+      err = TRUE;
+    } else if (constant_is(con, ck_template_param)) {
+      /* The value depends on a template parameter.  Keep the pragma text
+         as written. */
+    } else if (!constant_is(con, ck_integer)) {
+      pos_error(ec_exp_int_constant, &arg_pos);
+      err = TRUE;
+    } else {
+      a_boolean            ovflo = FALSE;
+      a_host_large_integer value = value_of_integer_constant(con, &ovflo);
+      /* GCC requires a value in the range of unsigned short, excluding
+         USHRT_MAX. */
+      if (ovflo || value < 0 || value >= 65535) {
+        pos_error(ec_bad_gcc_unroll_pragma_value, &arg_pos);
+        err = TRUE;
+      } else {
+        a_number_buffer text("GCC unroll ", value);
+        ppp->pragma_text = copy_string_to_region(file_scope_region_number,
+                                                 text.as_temp_characters());
+      }  /* if */
+    }  /* if */
+    release_local_constant(&con);
+    if (!err && curr_token != tok_end_of_source) {
+      pos_warning(ec_extra_text_in_pp_directive, &pos_curr_token);
+    }  /* if */
+  }  /* if */
+  /* "GCC ivdep" and "GCC novector" take no arguments.  Any diagnostic
+     needed for "GCC unroll" has already been issued. */
+  wrapup_rescan_of_pragma_tokens(/*error_in_pragma=*/TRUE);
+  create_il_entry_for_pragma(ppp, (a_symbol_ptr)NULL, stmt_ptr);
+}  /* gcc_next_statement_pragma */
 
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if UPC_EXTENSIONS_ALLOWED

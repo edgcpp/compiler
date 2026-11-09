@@ -57,14 +57,18 @@ pushd bin/ > /dev/null
   check_types_strict edg-bench-run-delta
   check_types_strict edg-bench-run-save
   check_types edg-cmakedef
+  check_types_strict edg-check-commit-messages
+  check_types_strict edg-collect-changes
   check_types_strict edg-docker-bench
   check_types_strict edg-docker-test
   check_types edg-examine-test
   check_types edg-exec
   check_types edg-modify-test
   check_types_strict edg-pack-cpfe-ce
+  check_types_strict edg-rematerialize-test-run
   check_types_strict edg-run-test
   check_types edg-scrape-compiler
+  check_types_strict edg-test-inputs-hash
   check_types_strict edg-test-run-diff
   check_types_strict edg-test-run-sonar
   check_types edg-walk-tests
@@ -94,6 +98,9 @@ pushd pylibs/ > /dev/null
   pushd edgbench/ > /dev/null
     check_types_strict __init__.py
   popd > /dev/null
+  pushd edgchanges/ > /dev/null
+    check_types_strict __init__.py
+  popd > /dev/null
   pushd edgcppgen/ > /dev/null
     check_types __init__.py
   popd > /dev/null
@@ -115,8 +122,14 @@ pushd pylibs/ > /dev/null
   pushd edgshell/ > /dev/null
     check_types __init__.py
   popd > /dev/null
+  pushd edgspelling/ > /dev/null
+    check_types_strict __init__.py
+  popd > /dev/null
   pushd edgtest/ > /dev/null
     check_types_strict __init__.py
+    pushd inputs/ > /dev/null
+      check_types_strict __init__.py
+    popd > /dev/null
     pushd runtest/ > /dev/null
       check_types_strict __init__.py
     popd > /dev/null
@@ -125,7 +138,7 @@ pushd pylibs/ > /dev/null
     check_types __init__.py
   popd > /dev/null
   pushd edgutil/ > /dev/null
-    check_types __init__.py
+    check_types_strict __init__.py
   popd > /dev/null
 popd > /dev/null
 

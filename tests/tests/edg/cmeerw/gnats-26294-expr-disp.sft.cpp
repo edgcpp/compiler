@@ -1,7 +1,7 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\\n\\n' '/^file-scope (expr-node@|name-qualifier@|class-type-supplement@|variable@|type@.*\\nkind: +(tk_class|tk_struct|tk_template_param|template_arg_list|name_qualifier|is_decltype))/' | grep -E -e '^(  name|  type|  explicitly_specified|constant|position[.]seq|is_class|qualifier[.]class_type|expr|operands|variable|field|operation[.]kind|previous_qualifier|qualifier|extra_info|kind|type|declared_type|typeref_type|template_arg_list):' -e '^file-scope ' -e '^$' | enumerate_addrs
+//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (expr-node@|name-qualifier@|class-type-supplement@|variable@|type@.*\nkind: +(tk_class|tk_struct|tk_template_param|template_arg_list|name_qualifier|is_decltype))/' | grep -E -e '^(  name|  type|  explicitly_specified|constant|position[.]seq|is_class|qualifier[.]class_type|expr|operands|variable|field|operation[.]kind|previous_qualifier|qualifier|extra_info|kind|type|declared_type|typeref_type|template_arg_list):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
 
 template<typename T = int, typename U = T>
 struct A

@@ -607,6 +607,15 @@ and defaults that many configuration macros have).  The
 ``--dump_configuration`` command-line option provides a convenient display of
 all configuration macros and their settings.
 
+By default, the ``--version`` and ``--dump_configuration`` output (and the
+string that identifies precompiled header files) includes the date and time the
+front end was built, so no two builds produce identical executables.  Defining
+the configuration macro ``BUILD_IDENTIFIER`` as a string literal (with CMake,
+``-DEDG_BUILD_IDENTIFIER=``\ *string*) replaces the date and time with that
+string, making the build reproducible.  Builds of different sources should use
+different identifiers so their precompiled headers aren't mistaken for each
+other.
+
 A non-legacy target configuration is most easily generated as a derivative from
 an existing legacy target configuration using the ``--dump_legacy_as_target``
 command-line option.  This option takes a target configuration name and

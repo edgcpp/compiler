@@ -1096,7 +1096,7 @@ namespace.  If non-zero, length represents the number of characters in name
     length = strlen(name);
   }  /* if */
   for (np = valid_attribute_namespaces; *np != NULL; np++) {
-    if (strncmp(*np, name, length) == 0) {
+    if (strncmp(*np, name, length) == 0 && (*np)[length] == '\0') {
       result = TRUE;
       break;
     }  /* if */
@@ -2632,12 +2632,15 @@ that appeared in a previous "using" prefix.  Can return NULL on error.
       { a_pack_expansion_descr_ptr pedep;
         if (pesep != NULL &&
             (*p_attribute == NULL || is_unrecognized_attr(*p_attribute))) {
-          /* For an unknown attribute, we do not know if packs encountered
-             within the attribute arguments were expanded within the pack or
-             should be expanded with the attribute as a whole.  By recording
-             the presence of an ellipsis, we avoid spurious diagnostics. */
-          record_pack_expansion_ellipsis_position(&pos_curr_token);
-          pesep->expansion_with_no_packs_diagnostic_issued = TRUE;
+          /* An unknown attribute's arguments are raw tokens, in which packs
+             may already be expanded (e.g., "attr(args...)"). */
+          if (curr_token == tok_ellipsis) {
+            /* A pack expansion, but packs in raw tokens may go undetected. */
+            suppress_expansion_with_no_packs_diagnostic(pesep);
+          } else {
+            /* Not a pack expansion. */
+            discard_pack_references_for_context(pesep);
+          }  /* if */
         }  /* if */
         pedep = end_potential_pack_expansion_context(pesep,
                                                      /*is_declarator=*/FALSE);
@@ -6059,6 +6062,37 @@ that entity.
 
 #endif /* GNU_NAKED_ATTRIBUTE_ALLOWED || MICROSOFT_EXTENSIONS_ALLOWED */
 
+static a_boolean gnu_accepts_noinline_on_inline_routine(an_attribute_ptr  ap)
+/*
+ap is a GNU "noinline" attribute being applied to an inline routine.  Return
+TRUE if GCC accepts that combination silently in the context of ap. For
+example:
+
+  inline __attribute__((noinline)) int f() { return 0; }  // No warning.
+
+This idiom is used to ensure a noinline function in a header file does not
+cause linker errors.  GCC in C mode will warn on this while it does not in C++.
+*/
+{
+  a_boolean           result = FALSE;
+  a_decl_parse_state  *dps = (a_decl_parse_state*)ap->assoc_info;
+
+  if (!C_mode()) {
+    if (dps == NULL) {
+      /* The attribute is not being applied as part of a declaration, which
+         means it is being copied to a template instance. */
+      result = TRUE;
+    } else {
+      result = ap->on_primary_declaration &&
+               (dps->dso_flags &
+                     (DSO_INLINE | DSO_CONSTEXPR | DSO_CONSTEVAL)) != 0 &&
+               !dps->inline_on_earlier_decl;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* gnu_accepts_noinline_on_inline_routine */
+
+
 static char* apply_noinline_attr(an_attribute_ptr  ap,
                                  char              *entity,
                                  an_il_entry_kind  entity_kind)
@@ -6069,15 +6103,16 @@ and return the entity.
 {
   if (entity_kind == iek_routine) {
     a_routine_ptr  rp = (a_routine_ptr)entity;
+    a_boolean      has_always_inline = FALSE;
+#if GNU_EXTENSIONS_ALLOWED
+    has_always_inline = find_attribute(ak_always_inline,
+                                       rp->source_corresp.attributes) != NULL;
+#endif /* GNU_EXTENSIONS_ALLOWED */
     rp->never_inline = TRUE;
     if (rp->is_inline && is_gcc_attribute(ap) &&
         (!rp->source_corresp.is_class_member ||
-         rp->defined_outside_of_parent
-#if GNU_EXTENSIONS_ALLOWED
-         || find_attribute(ak_always_inline, rp->source_corresp.attributes)
-                                                                    != NULL
-#endif /* GNU_EXTENSIONS_ALLOWED */
-                                                                           )) {
+         rp->defined_outside_of_parent || has_always_inline) &&
+        (has_always_inline || !gnu_accepts_noinline_on_inline_routine(ap))) {
       pos_warning(ec_inline_gnu_noinline_conflict, &ap->position);
     }  /* if */
   } else {

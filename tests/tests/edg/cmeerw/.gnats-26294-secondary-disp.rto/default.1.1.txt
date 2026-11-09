@@ -1,2 +1,99 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: T#(1,1)
+
+file-scope type#2
+  name:                  file-scope id-name#1: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#1
+
+file-scope type#3
+  name:                  file-scope id-name#2: "type"
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: int
+kind:                    is_alias
+
+file-scope type#5
+kind:                    tk_routine
+return_type:             file-scope type#6: B::D &
+param_type_list:         file-scope param-type#1
+assoc_routine:           file-scope routine#1: operator=
+this_class:              file-scope type#7: B::D
+
+file-scope type#8
+kind:                    tk_routine
+return_type:             file-scope type#6: B::D &
+param_type_list:         file-scope param-type#2
+assoc_routine:           file-scope routine#2: operator=
+this_class:              file-scope type#7: B::D
+
+file-scope class-type-supplement#2
+
+file-scope type#7
+  name:                  file-scope id-name#3: "D"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#2
+
+file-scope type#9
+  name:                  file-scope id-name#4: "I"
+kind:                    tk_typeref
+typeref_type:            file-scope type#3: B::D::type
+kind:                    is_alias
+
+file-scope type#10
+kind:                    tk_routine
+return_type:             file-scope type#11: C<B::I> &
+param_type_list:         file-scope param-type#3
+assoc_routine:           file-scope routine#3: operator=
+this_class:              file-scope type#12: C<B::I>
+
+file-scope type#13
+kind:                    tk_routine
+return_type:             file-scope type#11: C<B::I> &
+param_type_list:         file-scope param-type#4
+assoc_routine:           file-scope routine#4: operator=
+this_class:              file-scope type#12: C<B::I>
+
+file-scope class-type-supplement#3
+template_arg_list:       
+  type:                  file-scope type#9: B::I
+  explicitly_specified:  TRUE
+
+file-scope type#12
+  name:                  file-scope id-name#1: "C"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#3
+
+file-scope type#14
+kind:                    tk_routine
+return_type:             file-scope type#12: C<B::I>
+param_type_list:         file-scope param-type#5
+assoc_routine:           file-scope routine#5: f
+this_class:              file-scope type#15: B
+
+file-scope routine#5
+  name:                  file-scope id-name#5: "f"
+type:                    file-scope type#14: C<B::I> (int *)
+
+file-scope type#16
+kind:                    tk_routine
+return_type:             file-scope type#17: B &
+param_type_list:         file-scope param-type#6
+assoc_routine:           file-scope routine#6: operator=
+this_class:              file-scope type#15: B
+
+file-scope type#18
+kind:                    tk_routine
+return_type:             file-scope type#17: B &
+param_type_list:         file-scope param-type#7
+assoc_routine:           file-scope routine#7: operator=
+this_class:              file-scope type#15: B
+
+file-scope class-type-supplement#4
+
+file-scope type#15
+  name:                  file-scope id-name#6: "B"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#4
+

@@ -6,9 +6,9 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
             instantiation of "auto A<<unnamed>>::run(F, R, T) [with <unnamed>=0, F=J::K, R=int, T=int]" at line 14
             instantiation of "auto foo(F, T) [with F=J::K, T=int]" at line 36
 
-"Test_name.c", line 36: error: cannot deduce "auto" type
+"Test_name.c", line 36: error: incomplete type "void" is not allowed
     auto u =[&](L) { auto t = foo (J::K (), 0); }; // { dg-error "25:incomplete|void" }
-                     ^
+                          ^
           detected during instantiation of "void F<C>::bar(const F<C>::G &) [with C=C]" 
 
 2 errors detected in the compilation of "Test_name.c".

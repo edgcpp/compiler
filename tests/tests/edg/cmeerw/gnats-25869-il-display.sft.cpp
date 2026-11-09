@@ -1,6 +1,6 @@
 //type:fp
 //options:--c++17 --no_il_lowering --il_display
-//filter:grep -E " file-scope type@[0-9a-f]*: E<\\(\\(bool\\)\\(V<" | sed -e 's/@[0-9a-f]*:/:/'
+//filter:grep -E " file-scope type@[0-9a-f]*: E<\(\(bool\)\(V<" | sed -e 's/@[0-9a-f]*:/:/'
 
 template<bool, typename T = void>
 struct E

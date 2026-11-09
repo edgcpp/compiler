@@ -13,23 +13,9 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "SemaCXX/constant-expression-cxx2a.cpp", line 176: error: static assertion failed
     static_assert(d.ba == 'B');
     ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 176: note: the final comparison was 65 == 66
+"SemaCXX/constant-expression-cxx2a.cpp", line 176: note: the final comparison was 68 == 66
     static_assert(d.ba == 'B');
                        ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 181: error: static assertion failed
-    static_assert(a.f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 181: note: the final comparison was 65 == 68
-    static_assert(a.f() == 'D');
-                        ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 182: error: static assertion failed
-    static_assert(b.f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 182: note: the final comparison was 66 == 68
-    static_assert(b.f() == 'D');
-                        ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 186: error: expression must have a constant value
     static_assert(d_not_constexpr.f() == 'D');
@@ -47,94 +33,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       constexpr virtual const D *f() const { return &this->d; }
                                  ^
           detected during instantiation of class "Virtual::Covariant3<T> [with T=Virtual::C]" at line 203
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 207: warning: integer conversion resulted in a change of sign
-    static_assert(cb1->f()->a == 'A');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 207: error: static assertion failed
-    static_assert(cb1->f()->a == 'A');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 207: note: the final comparison was 0 == 65
-    static_assert(cb1->f()->a == 'A');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 208: error: static assertion failed
-    static_assert(cb1->f() == (B*)&cb.d);
-    ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 209: error: static assertion failed
-    static_assert(cb1->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 209: note: the final comparison was 65 == 68
-    static_assert(cb1->f()->f() == 'D');
-                                ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 210: warning: integer conversion resulted in a change of sign
-    static_assert(cb2->f()->b == 'B');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 210: error: static assertion failed
-    static_assert(cb2->f()->b == 'B');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 210: note: the final comparison was VALUE == 66
-    static_assert(cb2->f()->b == 'B');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 211: error: static assertion failed
-    static_assert(cb2->f() == &cb.d);
-    ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 212: error: static assertion failed
-    static_assert(cb2->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 212: note: the final comparison was 66 == 68
-    static_assert(cb2->f()->f() == 'D');
-                                ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 216: warning: integer conversion resulted in a change of sign
-    static_assert(cc1->f()->a == 'A');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 216: error: static assertion failed
-    static_assert(cc1->f()->a == 'A');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 216: note: the final comparison was 0 == 65
-    static_assert(cc1->f()->a == 'A');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 217: error: static assertion failed
-    static_assert(cc1->f() == (C*)&cc.d);
-    ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 218: error: static assertion failed
-    static_assert(cc1->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 218: note: the final comparison was 65 == 68
-    static_assert(cc1->f()->f() == 'D');
-                                ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 219: warning: integer conversion resulted in a change of sign
-    static_assert(cc2->f()->c == 'C');
-                  ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 219: error: static assertion failed
-    static_assert(cc2->f()->c == 'C');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 219: note: the final comparison was 0 == 67
-    static_assert(cc2->f()->c == 'C');
-                              ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 220: error: static assertion failed
-    static_assert(cc2->f() == &cc.d);
-    ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 221: error: static assertion failed
-    static_assert(cc2->f()->f() == 'D');
-    ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 221: note: the final comparison was 67 == 68
-    static_assert(cc2->f()->f() == 'D');
-                                ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 232: error: initialization is not constant
     constexpr PureVirtualCall pure_virtual_call;
@@ -156,19 +54,19 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     constexpr int d_a = (dynamic_cast<const A&>(static_cast<const D&>(g)), 0);
                          ^
 
-"SemaCXX/constant-expression-cxx2a.cpp", line 264: error: expression must have a constant value
-    static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
-                  ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 264: note: base class "DynamicCast::A" is ambiguous
-    static_assert(&dynamic_cast<A&>((B&)g) == &(A&)(B&)g);
-                   ^
-
 "SemaCXX/constant-expression-cxx2a.cpp", line 267: error: expression must have a constant value
     static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g);
                   ^
 "SemaCXX/constant-expression-cxx2a.cpp", line 267: note: base class "DynamicCast::A" is ambiguous
     static_assert(&dynamic_cast<A&>((D&)g) == &(A&)(B&)g);
                    ^
+
+"SemaCXX/constant-expression-cxx2a.cpp", line 274: error: expression must have a constant value
+    constexpr int e_f = (dynamic_cast<F&>((E&)g), 0);
+                        ^
+"SemaCXX/constant-expression-cxx2a.cpp", line 274: note: conversion to inaccessible base class "DynamicCast::F" is not allowed
+    constexpr int e_f = (dynamic_cast<F&>((E&)g), 0);
+                         ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 278: error: expression must have a constant value
     constexpr int b_e = (dynamic_cast<E&>((B&)g), 0);
@@ -364,20 +262,6 @@ Note: access to uninitialized object
     }
     ^
 
-"SemaCXX/constant-expression-cxx2a.cpp", line 609: error: expression must have a constant value
-    constexpr int s1 = switch_var(1);
-                       ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 601: note: attempt to access run-time storage
-        a = n;
-          ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 610: error: expression must have a constant value
-    constexpr int s2 = switch_var(2);
-                       ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 605: note: attempt to access run-time storage
-        a = n;
-          ^
-
 "SemaCXX/constant-expression-cxx2a.cpp", line 615: warning: statement is unreachable
         if (int n; false) {
         ^
@@ -385,13 +269,6 @@ Note: access to uninitialized object
 "SemaCXX/constant-expression-cxx2a.cpp", line 623: warning: missing return statement at end of non-void function "Uninit::switch_into_init_stmt"
     }
     ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 624: error: expression must have a constant value
-    static_assert(switch_into_init_stmt());
-                  ^
-"SemaCXX/constant-expression-cxx2a.cpp", line 618: note: attempt to access run-time storage
-            n = m = 1;
-                  ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 685: error: expression must have a constant value
     static_assert(dtor_calls_dtor());
@@ -409,10 +286,6 @@ Note: access to uninitialized object
 "SemaCXX/constant-expression-cxx2a.cpp", line 689: warning: local class member function "Indestructible::~Indestructible" requires a definition
         constexpr ~Indestructible();
                   ^
-
-"SemaCXX/constant-expression-cxx2a.cpp", line 732: error: static assertion failed
-    static_assert(check_abnormal_termination());
-    ^
 
 "SemaCXX/constant-expression-cxx2a.cpp", line 752: error: expression must have a constant value
       new int;

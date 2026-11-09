@@ -1,0 +1,33 @@
+fe_only -DTEST_NUMBER=1 Test_name.c
+"Test_name.c", line 9: warning: expected an error number or error tag
+  #pragma diag_suppress
+                       ^
+
+"Test_name.c", line 13: warning: variable "a" is used before its value is set
+    return a;
+           ^
+
+"Test_name.c", line 20: warning: variable "b" is used before its value is set
+    return b;
+           ^
+
+"Test_name.c", line 23: warning: expected an error number or error tag
+  #pragma diag_suppress =
+                         ^
+
+"Test_name.c", line 27: warning: variable "c" is used before its value is set
+    return c;
+           ^
+
+"Test_name.c", line 30: warning: expected an error number or error tag
+  #pragma diag_suppress 123,
+                            ^
+
+"Test_name.c", line 34: warning: variable "d" is used before its value is set
+    return d;
+           ^
+
+"Test_name.c", line 41: warning: variable "e" is used before its value is set
+    return e;
+           ^
+

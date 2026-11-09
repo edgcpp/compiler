@@ -1,4 +1,16 @@
 fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++20 Test_name.c
+"Test_name.c", line 21: warning: comparison between two arrays is deprecated
+    bool h() { return a == b; } // expected-warning {{array comparison always evaluates to false}} expected-warning {{deprecated}}
+                        ^
+
+"Test_name.c", line 24: warning: comparison between two arrays is deprecated
+      return a == c; // expected-warning {{array comparison always evaluates to false}} expected-warning {{deprecated}}
+               ^
+
+"Test_name.c", line 30: warning: comparison between two arrays is deprecated
+  bool k = NA::x == NB::x; // expected-warning {{self-comparison always evaluates to true}} expected-warning {{deprecated}}
+                 ^
+
 "Test_name.c", line 53: warning: statement is unreachable
       return static_field == static_field;  // expected-warning {{self-comparison always evaluates to true}}
       ^
@@ -38,6 +50,10 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 87: warning: statement is unreachable
     return s1.array == s1.array;  // expected-warning {{self-comparison always evaluates to true}} expected-warning {{deprecated}}
     ^
+
+"Test_name.c", line 87: warning: comparison between two arrays is deprecated
+    return s1.array == s1.array;  // expected-warning {{self-comparison always evaluates to true}} expected-warning {{deprecated}}
+                    ^
 
 "Test_name.c", line 88: warning: statement is unreachable
     return t.s.static_field == S::static_field;  // expected-warning {{self-comparison always evaluates to true}}
@@ -102,6 +118,10 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 108: warning: statement is unreachable
     return s2.array == s1.array; // FIXME: This always evaluates to false. expected-warning {{deprecated}}
     ^
+
+"Test_name.c", line 108: warning: comparison between two arrays is deprecated
+    return s2.array == s1.array; // FIXME: This always evaluates to false. expected-warning {{deprecated}}
+                    ^
 
 "Test_name.c", line 109: warning: statement is unreachable
     return s2.array[0] == s1.array[0];

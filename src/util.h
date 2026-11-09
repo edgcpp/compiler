@@ -5763,6 +5763,7 @@ Remove all entries in the Ptr_map.
       construct(&table[k]);
     }  /* if */
   }  /* for */
+  this->n_elements = 0;
 }  /* Ptr_map::clear */
 
 

@@ -8,6 +8,7 @@
 import argparse
 import asyncio
 import os
+import traceback
 import uuid
 
 from types import TracebackType
@@ -32,9 +33,11 @@ except ImportError:
 from websockets import ConnectionClosed
 
 from edgacknowledg import (
+  PROTOCOL_REVISION,
   IncompatibleProtocolVersion,
   ProtocolMessage,
   RequestTags,
+  RichName,
   RoleOccupied,
   batch_event_message,
   decode_response,
@@ -45,10 +48,12 @@ from edgacknowledg import (
 )
 from edgacknowledg.client.shared import (
   BackgroundWorkerPool,
+  Channel,
+  IllegalFileAccessError,
   ReviewClientHandler,
   announce_section,
 )
-from edgutil import get_running_event_loop
+from edgutil import eprint, get_running_event_loop
 from edgacknowledg.client.websocket import (
   ConnectionStatusListener,
   DEFAULT_OPEN_TIMEOUT_S,
@@ -176,6 +181,9 @@ DEFAULT_UI_PORT = 5173
 DEFAULT_REMOTE_API_PORT = 80
 DEFAULT_REMOTE_UI_PORT = 80
 
+# How often a batch session waiting for its server to be updated (see
+# ``BatchClient``) tries it again.
+SERVER_UPDATE_RETRY_S = 5.0
 
 def default_api_host() -> str:
   '''Return ``EDG_ACKNOWLEDG_API_HOST``, or ``DEFAULT_API_HOST``.'''
@@ -285,7 +293,7 @@ if Protocol is not None:
     def review_id(self) -> uuid.UUID: ...
 
     @property
-    def name(self) -> str: ...
+    def name(self) -> RichName: ...
 
     @property
     def timestamp(self) -> str: ...
@@ -304,7 +312,7 @@ class _ClientReview:
 
   def __init__(self,
                review_id: uuid.UUID,
-               name: str,
+               name: RichName,
                timestamp: str) -> None:
     self._review_id = review_id
     self._name = name
@@ -316,7 +324,7 @@ class _ClientReview:
     return self._review_id
 
   @property
-  def name(self) -> str:
+  def name(self) -> RichName:
     return self._name
 
   @property
@@ -377,13 +385,71 @@ class _DirectChannel:
     await self._websocket.send(encode_message(msg))
 
 
+async def _send_reply_best_effort(channel: Channel,
+                                  reply: ProtocolMessage) -> None:
+  '''Send ``reply`` to a failed request, ignoring any failure but a lost
+  connection (which the caller handles).
+  '''
+  try:
+    await channel.send(reply)
+  except (ConnectionClosed, NotConnectedError):
+    raise
+  except Exception:
+    pass
+
+
+async def _reply_to_failed_request(channel: Channel,
+                                   handler: ReviewClientHandler,
+                                   error: BaseException) -> None:
+  '''Tell the reviewer whose request failed with ``error`` (the handler
+  records them on it, in ``reviewer_id``) that it did, through the server,
+  and log why. With no reviewer to tell, it is only logged: the server
+  could forward the reply to no one.
+
+  The section keeps serving afterwards: one bad request (which a reviewer
+  can trigger) shouldn't take the whole section down.
+  '''
+  eprint(
+    f"Request to section {handler.subscription_type}/{handler.slug} failed:"
+  )
+  traceback.print_exc()
+  reviewer_id = getattr(error, 'reviewer_id', None)
+  if reviewer_id is not None:
+    await _send_reply_best_effort(channel, message(
+      RequestTags.INVALID_REQUEST,
+      value = {'reviewer_id': reviewer_id}
+    ))
+
+
+async def _report_illegal_access(channel: Channel,
+                                 handler: ReviewClientHandler,
+                                 error: IllegalFileAccessError) -> None:
+  '''Report the reviewer whose request asked for a file outside the
+  section, so the server drops their connection. The section keeps serving
+  everyone else.
+  '''
+  if error.reviewer_id is None:
+    # Not traced to a reviewer; just a failed request.
+    await _reply_to_failed_request(channel, handler, error)
+  else:
+    eprint(
+      f"Reviewer {error.reviewer_id} of section "
+      f"{handler.subscription_type}/{handler.slug} requested a file outside "
+      f"it; having the server disconnect them: {error}"
+    )
+    await _send_reply_best_effort(channel, message(
+      RequestTags.ILLEGAL_ACCESS,
+      value = {'reviewer_id': error.reviewer_id}
+    ))
+
+
 class _BatchClientReview:
   '''A review served over a ``BatchClientSession`` ``/batch`` connection.'''
 
   def __init__(self,
                client: 'BatchClientSession',
                review_id: uuid.UUID,
-               name: str,
+               name: RichName,
                timestamp: str) -> None:
     self._client = client
     self._review = _ClientReview(review_id, name, timestamp)
@@ -395,7 +461,7 @@ class _BatchClientReview:
     return self._review.review_id
 
   @property
-  def name(self) -> str:
+  def name(self) -> RichName:
     return self._review.name
 
   @property
@@ -406,20 +472,33 @@ class _BatchClientReview:
     return self._review.sections()
 
   async def add_section(self, handler: ReviewClientHandler) -> None:
-    '''Register handler and subscribe it on the batch socket.'''
-    self._review.register_handler(handler)
-    try:
-      await self.subscribe_section(handler)
-    except Exception:
-      self._review.discard_handler(handler)
-      raise
+    '''Register handler and subscribe it on the batch socket; while not
+    connected, it is subscribed once the session (re)connects, with every
+    other registered section.
+    '''
+    # Serialized with reconnect restores so a section added mid-restore is
+    # subscribed exactly once.
+    async with self._client._subscriptions_lock:
+      self._review.register_handler(handler)
+      # Not connected (sending would wait for it): the next session's
+      # restore subscribes it.
+      if self._client._session_ready.is_set():
+        try:
+          await self.subscribe_section(handler)
+        except NotConnectedError:
+          pass
+        except BaseException:
+          # Failed or canceled: not added.
+          self._review.discard_handler(handler)
+          raise
 
   async def remove_section(self, handler: ReviewClientHandler) -> None:
     '''Unsubscribe, then unregister.'''
-    if handler not in self._review.sections():
-      raise SectionNotRegisteredError(handler.slug)
-    await self.unsubscribe_section(handler)
-    self._review.discard_handler(handler)
+    async with self._client._subscriptions_lock:
+      if handler not in self._review.sections():
+        raise SectionNotRegisteredError(handler.slug)
+      await self.unsubscribe_section(handler)
+      self._review.discard_handler(handler)
 
   async def _run_handler_loop(self,
                               channel: _SubscriptionChannel,
@@ -437,12 +516,10 @@ class _BatchClientReview:
         except IncompatibleProtocolVersion as ex:
           self._client.abort(ex)
           raise
-        except Exception:
-          try:
-            await channel.send(message(RequestTags.INVALID_REQUEST))
-          except Exception:
-            pass
-          raise
+        except IllegalFileAccessError as ex:
+          await _report_illegal_access(channel, handler, ex)
+        except Exception as ex:
+          await _reply_to_failed_request(channel, handler, ex)
     finally:
       self._client._inbounds.pop(channel.subscription_id, None)
       self._subscription_tasks.pop(channel.subscription_id, None)
@@ -463,9 +540,24 @@ class _BatchClientReview:
         pass
 
   async def _restore_subscriptions(self) -> None:
-    '''Re-subscribe every registered section on a fresh batch socket.'''
+    '''Re-subscribe every registered section on a fresh batch socket.
+
+    Sections already subscribed on this socket are skipped, and one section
+    failing to subscribe doesn't keep the rest from being restored.
+    '''
     for handler in self._review.sections():
-      await self.subscribe_section(handler)
+      if id(handler) in self._subscriptions:
+        continue
+      try:
+        await self.subscribe_section(handler)
+      except (ConnectionClosed, NotConnectedError, asyncio.CancelledError):
+        raise
+      except Exception:
+        eprint(
+          f"Failed to restore section "
+          f"{handler.subscription_type}/{handler.slug}:"
+        )
+        traceback.print_exc()
 
   async def subscribe_section(self, handler: ReviewClientHandler) -> None:
     handler_key = id(handler)
@@ -480,8 +572,14 @@ class _BatchClientReview:
       'type': handler.subscription_type,
       'slug': handler.slug,
     })
-    channel = self._client._make_channel(subscription_id)
-    await announce_section(channel, handler, self._review)
+    try:
+      channel = self._client._make_channel(subscription_id)
+      await announce_section(channel, handler, self._review)
+    except BaseException:
+      # Failed or canceled: claimed by no one.  Shielded, so being
+      # canceled again can't keep the release from being sent.
+      await asyncio.shield(self._client._release(subscription_id))
+      raise
     loop = get_running_event_loop()
     task = loop.create_task(self._run_handler_loop(channel, handler))
     self._subscription_tasks[subscription_id] = task
@@ -545,19 +643,18 @@ class _DirectClientReview:
   def __init__(self,
                client: 'DirectClientSession',
                review_id: uuid.UUID,
-               name: str,
+               name: RichName,
                timestamp: str) -> None:
     self._client = client
     self._review = _ClientReview(review_id, name, timestamp)
     self._section_tasks: Dict[int, asyncio.Task] = {}
-    self._section_first_ready: Dict[int, asyncio.Event] = {}
 
   @property
   def review_id(self) -> uuid.UUID:
     return self._review.review_id
 
   @property
-  def name(self) -> str:
+  def name(self) -> RichName:
     return self._review.name
 
   @property
@@ -572,7 +669,8 @@ class _DirectClientReview:
     self._review.register_handler(handler)
     try:
       await self.subscribe_section(handler)
-    except Exception:
+    except BaseException:
+      # Failed or canceled: not added.
       self._review.discard_handler(handler)
       raise
 
@@ -592,17 +690,10 @@ class _DirectClientReview:
       except (RoleOccupied, ConnectionClosed, asyncio.CancelledError,
               IncompatibleProtocolVersion):
         raise
-      except Exception:
-        try:
-          await channel.send(message(RequestTags.INVALID_REQUEST))
-        except Exception:
-          pass
-        raise
-
-  def _signal_section_ready(self, handler_key: int) -> None:
-    ready = self._section_first_ready.get(handler_key)
-    if ready is not None and not ready.is_set():
-      ready.set()
+      except IllegalFileAccessError as ex:
+        await _report_illegal_access(channel, handler, ex)
+      except Exception as ex:
+        await _reply_to_failed_request(channel, handler, ex)
 
   async def _section_connection_loop(self,
                                      handler: ReviewClientHandler) -> None:
@@ -625,34 +716,33 @@ class _DirectClientReview:
       open_timeout = self._client._open_timeout,
       status_listener = self._client._status_fan_in
     )
-    try:
-      async for websocket in resilient:
-        if (self._client._closed or
-            handler_key not in self._section_tasks):
-          break
+    async for websocket in resilient:
+      if (self._client._closed or
+          handler_key not in self._section_tasks):
+        break
 
-        channel = _DirectChannel(websocket)
-        try:
-          await announce_section(channel, handler, self._review)
-          self._signal_section_ready(handler_key)
-          await self._run_handler_loop(handler, channel)
-        except RoleOccupied:
-          self._section_tasks.pop(handler_key, None)
-          self._review.discard_handler(handler)
-          break
-        except IncompatibleProtocolVersion as ex:
-          self._client.abort(ex)
-          break
-        except ConnectionClosed:
-          continue
+      channel = _DirectChannel(websocket)
+      try:
+        await announce_section(channel, handler, self._review)
+        await self._run_handler_loop(handler, channel)
+      except RoleOccupied:
+        self._section_tasks.pop(handler_key, None)
+        self._review.discard_handler(handler)
+        break
+      except IncompatibleProtocolVersion as ex:
+        self._client.abort(ex)
+        break
+      except ConnectionClosed:
+        continue
 
-        if (self._client._closed or
-            handler_key not in self._section_tasks):
-          break
-    finally:
-      self._signal_section_ready(handler_key)
+      if (self._client._closed or
+          handler_key not in self._section_tasks):
+        break
 
   async def subscribe_section(self, handler: ReviewClientHandler) -> None:
+    '''Start keeping a socket for handler's section; as with a batch
+    session that isn't connected, it is served once that socket connects.
+    '''
     self._client._require_connected()
     handler_key = id(handler)
     if handler_key in self._section_tasks:
@@ -661,29 +751,15 @@ class _DirectClientReview:
         handler.subscription_type
       )
 
-    ready = asyncio.Event()
-    self._section_first_ready[handler_key] = ready
     loop = get_running_event_loop()
     # Register the key before starting so the loop treats this section as
     # wanted; unsubscribe pops the key to stop reconnecting.
     task = loop.create_task(self._section_connection_loop(handler))
     self._section_tasks[handler_key] = task
-    try:
-      await ready.wait()
-      if handler_key not in self._section_tasks:
-        raise NotConnectedError(
-          f"section failed to connect: "
-          f"{handler.subscription_type}/{handler.slug}"
-        )
-    finally:
-      self._section_first_ready.pop(handler_key, None)
 
   async def unsubscribe_section(self, handler: ReviewClientHandler) -> None:
     handler_key = id(handler)
     task = self._section_tasks.pop(handler_key, None)
-    ready = self._section_first_ready.pop(handler_key, None)
-    if ready is not None and not ready.is_set():
-      ready.set()
     if task is not None:
       task.cancel()
       try:
@@ -699,7 +775,12 @@ class BatchClient:
 
   ``async with BatchClient(...) as session`` starts the connection and yields
   a ``BatchClientSession``. The ``with`` block waits until ``session.stop()``
-  unless cancelled or an exception is raised.
+  unless canceled or an exception is raised.
+
+  A server speaking another protocol revision stops the session; with
+  ``wait_for_server_update``, one speaking an older one doesn't: the
+  session reconnects every ``SERVER_UPDATE_RETRY_S`` seconds, its sections
+  still registered, until the server is updated.
   '''
 
   def __init__(self, *,
@@ -707,13 +788,15 @@ class BatchClient:
                api_port: int,
                api_key: Optional[str] = None,
                open_timeout: Optional[float] = DEFAULT_OPEN_TIMEOUT_S,
-               status_listener: Optional[ConnectionStatusListener] = None
+               status_listener: Optional[ConnectionStatusListener] = None,
+               wait_for_server_update: bool = False
                ) -> None:
     self._api_host = api_host
     self._api_port = api_port
     self._api_key = api_key
     self._open_timeout = open_timeout
     self._status_listener = status_listener
+    self._wait_for_server_update = wait_for_server_update
     self._session: Optional['BatchClientSession'] = None
 
   async def __aenter__(self) -> 'BatchClientSession':
@@ -722,7 +805,8 @@ class BatchClient:
       api_host = self._api_host,
       api_port = self._api_port,
       api_key = self._api_key,
-      open_timeout = self._open_timeout
+      open_timeout = self._open_timeout,
+      wait_for_server_update = self._wait_for_server_update
     )
     await self._session.start()
     return self._session
@@ -754,12 +838,14 @@ class BatchClientSession:
                api_host: str,
                api_port: int,
                api_key: Optional[str],
-               open_timeout: Optional[float]) -> None:
+               open_timeout: Optional[float],
+               wait_for_server_update: bool = False) -> None:
     self._status_listener = status_listener
     self._api_host = api_host
     self._api_port = api_port
     self._api_key = api_key
     self._open_timeout = open_timeout
+    self._wait_for_server_update = wait_for_server_update
 
     self._connection: Optional[ResilientWebsocket] = None
     self._connection_task: Optional[asyncio.Task] = None
@@ -775,6 +861,8 @@ class BatchClientSession:
     self._inbounds: Dict[uuid.UUID, asyncio.Queue] = {}
     self._reviews: Dict[uuid.UUID, _BatchClientReview] = {}
     self._session_ready = asyncio.Event()
+    # Held while sections are (re)subscribed or unsubscribed.
+    self._subscriptions_lock = asyncio.Lock()
 
   def abort(self, error: BaseException) -> None:
     '''End the session; ``stopped()`` will raise ``error``.'''
@@ -868,21 +956,39 @@ class BatchClientSession:
 
   async def _restore_subscriptions(self) -> None:
     '''Re-establish every review section on a fresh batch socket.'''
-    for review in list(self._reviews.values()):
-      await review._restore_subscriptions()
+    async with self._subscriptions_lock:
+      for review in list(self._reviews.values()):
+        await review._restore_subscriptions()
 
   async def _connection_loop(self,
                              connection: ResilientWebsocket) -> None:
     '''Reconnect the batch socket; restore sections on each session.'''
+    waiting = False
     async for websocket in connection:
       if self._closed:
         break
       try:
         await self._run_session(websocket)
       except ConnectionClosed:
+        waiting = False
         continue
-      except IncompatibleProtocolVersion:
-        break
+      except IncompatibleProtocolVersion as ex:
+        if not self._waits_for_update(ex):
+          break
+        if not waiting:
+          eprint(f"AcknowlEDG speaks protocol revision {ex.revision!r}, "
+                 f"not {PROTOCOL_REVISION}; retrying every "
+                 f"{SERVER_UPDATE_RETRY_S:g} s until it is updated")
+        waiting = True
+        await asyncio.sleep(SERVER_UPDATE_RETRY_S)
+        continue
+      waiting = False
+
+  def _waits_for_update(self, error: IncompatibleProtocolVersion) -> bool:
+    '''Whether the session outlasts ``error``, waiting for the server to be
+    updated (not this client).
+    '''
+    return self._wait_for_server_update and not error.peer_is_newer
 
   async def _run_session(self, websocket: ClientConnection) -> None:
     '''One live batch connection: restore sections, then demux until close.'''
@@ -894,6 +1000,9 @@ class BatchClientSession:
       try:
         try:
           await self._restore_subscriptions()
+        except NotConnectedError:
+          # Lost while restoring: the receive loop ends with why.
+          pass
         finally:
           # Unblock waiters even if restore partially failed.
           self._session_ready.set()
@@ -931,18 +1040,21 @@ class BatchClientSession:
             subscription_id = uuid.UUID(str(value['subscription_id']))
           except (KeyError, ValueError, TypeError):
             continue
-          # Bind inbound routing before completing the subscribe future so
-          # early batch.event frames are not dropped.
-          if subscription_id not in self._inbounds:
-            self._inbounds[subscription_id] = asyncio.Queue()
           key = (
             str(value.get('id')),
             str(value.get('type')),
             str(value.get('slug', '')),
           )
           future = self._pending_subscribe.pop(key, None)
-          if future is not None and not future.done():
-            future.set_result(value)
+          if future is None or future.done():
+            # Whoever subscribed gave up: claimed by no one.
+            await self._release(subscription_id)
+            continue
+          # Bind inbound routing before completing the subscribe future so
+          # early batch.event frames are not dropped.
+          if subscription_id not in self._inbounds:
+            self._inbounds[subscription_id] = asyncio.Queue()
+          future.set_result(value)
 
         elif tag == RequestTags.BATCH_UNSUBSCRIBE:
           if not isinstance(value, dict):
@@ -968,12 +1080,19 @@ class BatchClientSession:
     except ConnectionClosed:
       raise
     except IncompatibleProtocolVersion as ex:
-      self._fail_pending(ex)
-      self.abort(ex)
+      if not self._waits_for_update(ex):
+        self._fail_pending(ex)
+        self.abort(ex)
+      # Else what is pending fails as for a lost connection (below), its
+      # sections restored once the server is updated.
       raise
     except Exception:
       if not self._closed:
         raise
+    finally:
+      # Nothing pending is answered now; failing it here, not only once the
+      # session ends, also frees restoring sections, which waits on it.
+      self._fail_pending(NotConnectedError('batch connection lost'))
 
   async def _subscribe(self, payload: Dict[str, Any]) -> uuid.UUID:
     key = (
@@ -986,10 +1105,21 @@ class BatchClientSession:
     self._pending_subscribe[key] = future
     try:
       await self._send(message(RequestTags.BATCH_SUBSCRIBE, value = payload))
+      # Untimed: the server answers at once, and losing the connection
+      # (which its keepalive pings notice) fails it.
       echo = await future
-    except Exception:
-      self._pending_subscribe.pop(key, None)
-      if not future.done():
+    except BaseException:
+      # Failed or canceled: no longer awaited.
+      if self._pending_subscribe.get(key) is future:
+        del self._pending_subscribe[key]
+      if (future.done() and not future.cancelled() and
+          future.exception() is None):
+        # Answered all the same: claimed by no one.  Shielded, so being
+        # canceled again can't keep the release from being sent.
+        await asyncio.shield(self._release(
+          uuid.UUID(str(future.result()['subscription_id']))
+        ))
+      elif not future.done():
         future.cancel()
       raise
     subscription_id = uuid.UUID(str(echo['subscription_id']))
@@ -1004,12 +1134,32 @@ class BatchClientSession:
         RequestTags.BATCH_UNSUBSCRIBE,
         value = { 'subscription_id': str(subscription_id) }
       ))
+      # Untimed, as subscribing is.
       await future
-    except Exception:
+    except BaseException:
+      # Failed or canceled: no longer awaited.
       self._pending_unsubscribe.pop(subscription_id, None)
       if not future.done():
         future.cancel()
       raise
+
+  async def _release(self, subscription_id: uuid.UUID) -> None:
+    '''Have the server end a subscription nothing here claimed; its answer
+    isn't awaited (``_recv_loop`` drops it).
+
+    Sent only while connected: the server ends a subscription with its
+    connection, so there's nothing to wait for a reconnect to release.
+    '''
+    self._inbounds.pop(subscription_id, None)
+    connection = self._connection
+    if connection is not None:
+      try:
+        await connection.send_if_connected(encode_message(message(
+          RequestTags.BATCH_UNSUBSCRIBE,
+          value = { 'subscription_id': str(subscription_id) }
+        )))
+      except ConnectionClosed:
+        pass
 
   def _make_channel(self, subscription_id: uuid.UUID) -> _SubscriptionChannel:
     inbound = self._inbounds.setdefault(subscription_id, asyncio.Queue())
@@ -1017,7 +1167,7 @@ class BatchClientSession:
 
   async def create_review(self,
                           review_id: uuid.UUID,
-                          name: str,
+                          name: RichName,
                           timestamp: str) -> ReviewClient:
     '''Construct a review served over this session's batch transport.'''
     if review_id in self._reviews:
@@ -1041,7 +1191,7 @@ class DirectClient:
   '''Async context manager for dedicated ``/source`` and ``/edit`` sessions.
 
   ``async with DirectClient(...) as session`` yields a ``DirectClientSession``.
-  The ``with`` block waits until ``session.stop()`` unless cancelled or an
+  The ``with`` block waits until ``session.stop()`` unless canceled or an
   exception is raised.
   '''
 
@@ -1150,7 +1300,7 @@ class DirectClientSession:
 
   async def create_review(self,
                           review_id: uuid.UUID,
-                          name: str,
+                          name: RichName,
                           timestamp: str) -> ReviewClient:
     '''Construct a review served over this session's direct sockets.'''
     self._require_connected()

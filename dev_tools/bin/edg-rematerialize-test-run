@@ -17,10 +17,11 @@ import tempfile
 
 import edgtest
 import edgtest.exec
+import edgtest.expectations
 import edgutil
 
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Set, Tuple
 from pathlib import Path, PurePosixPath
 
 from edgutil import eprint
@@ -64,7 +65,7 @@ TOOL_PATH_PATCH = edgutil.RequiredToolPath('patch')
 
 def build_diff_files(diff_file: Path,
                      tmp_diffs_dir: Path) -> List[DiffFileDescr]:
-  diff_files = []
+  diff_files: List[DiffFileDescr] = []
 
   with contextlib.ExitStack() as exit_stack:
     diff_file_handle = exit_stack.enter_context(open(diff_file))
@@ -112,8 +113,8 @@ def build_diff_files(diff_file: Path,
 
 class TestChangeState:
   def __init__(self) -> None:
-    self.tests = set()
-    self.configs = set()
+    self.tests: Set[Path] = set()
+    self.configs: Set[str] = set()
 
 def collect_affected_tests(test_home: Path,
                            diff_files: List[DiffFileDescr]) -> TestChangeState:
@@ -121,18 +122,23 @@ def collect_affected_tests(test_home: Path,
 
   tests_dir = test_home / 'tests'
   expectations_dir = test_home / 'expectations'
+  # The test files themselves and the default recordings are what the default
+  # configuration uses.
+  default_config = edgtest.runtest.get_default_config_name()
 
   for diff_file in diff_files:
     file_path = test_home.parent.joinpath(PurePosixPath(diff_file.file_name))
 
-    if file_path.is_relative_to(tests_dir):
+    if edgutil.is_path_relative_to(file_path, tests_dir):
       # A file in a test suite.
       orig_file_path = file_path
 
-      file_extensions = ''.join(file_path.suffixes)
+      # The extensions are listed without their leading '.'.
+      file_extensions = ''.join(file_path.suffixes)[1:]
       if file_extensions in edgtest.DEFAULT_TEST_EXTENSIONS:
         # A test file itself.
         result.tests.add(file_path)
+        result.configs.add(default_config)
         continue
 
       test_file_found = False
@@ -153,19 +159,22 @@ def collect_affected_tests(test_home: Path,
               )
               if candidate_test_file.exists():
                 result.tests.add(candidate_test_file)
-                if orig_file_path.stem != 'default':
-                  result.configs.add(orig_file_path.stem)
+                # Recordings are named <config>.<case>.<command>.txt.
+                recording_config = orig_file_path.name.split('.')[0]
+                if recording_config == 'default':
+                  recording_config = default_config
+                result.configs.add(recording_config)
                 break
             test_file_found = True
           else:
             # Look for all mft files that might be associated with this file.
-            for possible_test in posix_path.iterdir():
-              if possible_test.suffixes[0] == '.mft':
-                result.tests.add(candidate_test_file)
+            for possible_test in file_path.iterdir():
+              if possible_test.suffixes[:1] == ['.mft']:
+                result.tests.add(possible_test)
                 test_file_found = True
         # File not found, move on to the parent.
         file_path = file_path.parent
-    elif (file_path.is_relative_to(expectations_dir) and
+    elif (edgutil.is_path_relative_to(file_path, expectations_dir) and
           file_path.suffix == '.log'):
       config_name = file_path.parent.name
       suite_name = file_path.stem
@@ -194,12 +203,16 @@ async def patch_file(output_dir: Path,
                      input_dir: Path,
                      relative_path: PurePosixPath,
                      diff_file_path: Path) -> bool:
+  output_path = output_dir / relative_path
+  # A new file (e.g. a new test's recording) has no copied directory to be
+  # written into.
+  output_path.parent.mkdir(parents = True, exist_ok = True)
   patch_proc = await asyncio.create_subprocess_exec(
     str(TOOL_PATH_PATCH),
-    str(input_dir.joinpath(relative_path)),
+    str(input_dir / relative_path),
     str(diff_file_path),
     '-o',
-    str(output_dir.joinpath(relative_path)),
+    str(output_path),
     stdout = asyncio.subprocess.DEVNULL
   )
   await patch_proc.wait()
@@ -235,6 +248,9 @@ async def materialize_tests(loop: asyncio.AbstractEventLoop,
 
   # First create a copy of all relevant tests.
   for test in test_change_state.tests:
+    if not test.exists():
+      # A new test; the patch creates all of its files.
+      continue
     relative_dir = test.parent.relative_to(tests_dir)
     edgtest.copy_raw_test_files(test, output_dir.joinpath(relative_dir))
 
@@ -354,11 +370,8 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
 
   while len(test_options) < num_cases:
     # This should only happen in the case of reduction of test cases.
-    # Use 's' (SKIP_TEST) as a placeholder mode.
-    test_options.append((
-      edgtest.runtest.test_type_to_string(edgtest.runtest.TestType.SKIP_TEST),
-      []
-    ))
+    # Use SKIP_TEST as a placeholder mode.
+    test_options.append((edgtest.runtest.TestType.SKIP_TEST, []))
 
   with tempfile.TemporaryDirectory() as tmp_dir_name:
     tmp_dir = Path(tmp_dir_name)
@@ -377,7 +390,7 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
 
       command_metadata = []
       matches_metadata = None
-      any_mismatch = False
+      comparisons: List[edgtest.exec.OutputComparison] = []
 
       for command_number in range(1, num_commands + 1):
         cmd_dir = case_dir / str(command_number)
@@ -411,7 +424,7 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
           await edgtest.exec.check_output_mismatch(
             old_rec,
             body_for_diff,
-            os.environ,
+            dict(os.environ),
             change_diff_path
           )
         )
@@ -429,8 +442,7 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
             'change.diff'
           )
 
-        if output_cmp_result != edgtest.exec.OutputComparison.EQUAL:
-          any_mismatch = True
+        comparisons.append(output_cmp_result)
 
         command_metadata.append({
           'command': command_str,
@@ -473,7 +485,14 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
             'matches',
             'change.diff'
           )
-          any_mismatch = True
+
+        # As edgy compares a case's matches (process_matches_mismatch).
+        if old_matches is None:
+          comparisons.append(edgtest.exec.OutputComparison.PREV_MISSING)
+        elif matches_diff_hash is None:
+          comparisons.append(edgtest.exec.OutputComparison.EQUAL)
+        else:
+          comparisons.append(edgtest.exec.OutputComparison.MISMATCH)
 
         matches_metadata = {'diff_hash': matches_diff_hash}
 
@@ -484,9 +503,13 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
       old_status = get_status_for_test_key(old_expectations, key_str)
       new_status = get_status_for_test_key(new_expectations, key_str)
 
-      # Add the mismatch string if needed.
-      if any_mismatch:
+      # Add the output comparison string as edgy does (e.g. a new test has no
+      # previous output).
+      case_comparison = edgtest.exec.aggregate_output_comparison(comparisons)
+      if case_comparison == edgtest.exec.OutputComparison.MISMATCH:
         new_status = f"{new_status}--OUTPUT MISMATCH"
+      elif case_comparison == edgtest.exec.OutputComparison.PREV_MISSING:
+        new_status = f"{new_status}--NO PREVIOUS OUTPUT"
 
       case_entry = {
         'status': {
@@ -500,15 +523,12 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
         case_entry['matches'] = matches_metadata
       rt_metadata_cases.append(case_entry)
 
-      # Make test status lines.
-      if old_status != 'PASS':
-        test_status_lines.append(
-          f"- {relative_test_path.as_posix()} {test_details}{old_status}:\n"
-        )
-        test_status_lines.append(
-          f"+ {relative_test_path.as_posix()} {test_details}{new_status}:\n"
-        )
-      elif any_mismatch:
+      # Make test status lines (for the tests whose status changed).
+      if old_status != new_status:
+        if old_status != 'PASS':
+          test_status_lines.append(
+            f"- {relative_test_path.as_posix()} {test_details}{old_status}:\n"
+          )
         test_status_lines.append(
           f"+ {relative_test_path.as_posix()} {test_details}{new_status}:\n"
         )
@@ -516,7 +536,7 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
     if len(rt_metadata_cases) > 0:
       # relative_test_path is already suite/... (relative to test_home/tests),
       # matching live runs that use path relative to top_dir.parent.
-      await asyncio.to_thread(
+      await edgutil.async_to_thread(
         edgtest.runtest.finalize_rt_tar,
         rt_contents,
         rt_metadata_cases,
@@ -527,54 +547,110 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
 
   return test_status_lines
 
-def load_test_suite_expectations(all_expectations: Dict[str, List[str]],
-                                 suite_file: Path) -> None:
+def read_suite_expectation_lines(suite_file: Path) -> List[str]:
+  if not suite_file.exists():
+    return []
   with open(suite_file, 'r') as file_handle:
-    for line in file_handle:
-      test_name = f"{suite_file.stem}/{line.split(':')[0]}"
-      if test_name not in all_expectations:
-        all_expectations[test_name] = []
-      all_expectations[test_name].append(line.strip())
+    return file_handle.readlines()
+
+def load_test_suite_expectations(all_expectations: Dict[str, List[str]],
+                                 suite_name: str, expectations_dir: Path,
+                                 parent_expectations_dir: Optional[Path]
+                                 ) -> None:
+  '''Load the aggregate expectations of a suite.
+
+  A configuration that inherits expectations has the parent configuration's
+  expectations with its own applied on top, so its file's lines are resolved
+  into concrete expectations here.
+  '''
+  suite_file_name = f"{suite_name}.log"
+  lines = read_suite_expectation_lines(expectations_dir / suite_file_name)
+  if parent_expectations_dir is not None:
+    lines = edgtest.expectations.overlay_expectations(
+      read_suite_expectation_lines(parent_expectations_dir / suite_file_name),
+      lines
+    )
+
+  for expectation_line in lines:
+    line = expectation_line.strip()
+    test_name = f"{suite_name}/{line.split(':')[0]}"
+    if test_name not in all_expectations:
+      all_expectations[test_name] = []
+    all_expectations[test_name].append(line)
 
 async def simulate_config_testing(
                            loop: asyncio.AbstractEventLoop,
                            test_home: Path, new_run_dir: Path,
                            patched_tests_dir: Path, config: str,
                            diff_files: List[DiffFileDescr],
-                           tests: List[Path]) -> None:
+                           tests: Iterable[Path]) -> None:
   subtasks = []
 
   config_run_dir = new_run_dir / config
   config_run_dir.mkdir()
 
-  old_expectations = {}
-  new_expectations = {}
+  # Configurations other than the default configuration inherit the default
+  # configuration's expectations, so the default configuration's files (and the
+  # changes to them) are part of what the configuration's expectations are.
+  parent_config = edgtest.runtest.get_parent_config_name(config)
+  if (parent_config is not None and
+      not (test_home / 'expectations' / parent_config).is_dir()):
+    parent_config = None
+
+  old_expectations: Dict[str, List[str]] = {}
+  new_expectations: Dict[str, List[str]] = {}
   with tempfile.TemporaryDirectory() as tmp_dir:
-    src_expectations = test_home / 'expectations' / config
-    dst_expectations = Path(tmp_dir, 'expectations', config)
-    dst_expectations.mkdir(parents = True)
+    configs_to_load = [config]
+    if parent_config is not None:
+      configs_to_load.append(parent_config)
 
-    # Load the old expectations and copy the files to the tmp directory
-    # (important so that expectations files that weren't modified are still
-    # loaded and files that were modified are present to be patched).
-    for suite_file in src_expectations.iterdir():
-      load_test_suite_expectations(old_expectations, suite_file)
+    suite_names = set()
+    for config_to_load in configs_to_load:
+      src_expectations = test_home / 'expectations' / config_to_load
+      dst_expectations = Path(tmp_dir, 'expectations', config_to_load)
+      dst_expectations.mkdir(parents = True)
 
-      shutil.copy2(suite_file, dst_expectations / suite_file.name)
+      # Copy the files to the tmp directory (important so that expectations
+      # files that weren't modified are still loaded and files that were
+      # modified are present to be patched).
+      for suite_file in src_expectations.iterdir():
+        suite_names.add(suite_file.stem)
+        shutil.copy2(suite_file, dst_expectations / suite_file.name)
 
-    # Overwrite/patch any modified expectations files.
-    await patch_files_with_prefix(
-      loop,
-      dst_expectations,
-      src_expectations,
-      f"tests/expectations/{config}/",
-      diff_files
-    )
+      # Overwrite/patch any modified expectations files.
+      await patch_files_with_prefix(
+        loop,
+        dst_expectations,
+        src_expectations,
+        f"tests/expectations/{config_to_load}/",
+        diff_files
+      )
 
-    # Load the new expectations.
-    for suite_file in dst_expectations.iterdir():
-      load_test_suite_expectations(new_expectations, suite_file)
+    # Load the old expectations (from the repository) and the new expectations
+    # (from the patched copies).
+    old_expectations_dir = test_home / 'expectations'
+    new_expectations_dir = Path(tmp_dir, 'expectations')
+    old_parent_dir = None
+    new_parent_dir = None
+    if parent_config is not None:
+      old_parent_dir = old_expectations_dir / parent_config
+      new_parent_dir = new_expectations_dir / parent_config
 
+    for suite_name in suite_names:
+      load_test_suite_expectations(
+        old_expectations,
+        suite_name,
+        old_expectations_dir / config,
+        old_parent_dir
+      )
+      load_test_suite_expectations(
+        new_expectations,
+        suite_name,
+        new_expectations_dir / config,
+        new_parent_dir
+      )
+
+  tests = sorted(tests)
   for test_path in tests:
     rel_test_path_str = str(
       test_path.relative_to(test_home / 'tests')
@@ -596,6 +672,19 @@ async def simulate_config_testing(
     for test_status_lines in tests_status_lines:
       for status_line in test_status_lines:
         file_handle.write(status_line)
+
+  # As edgy does, list the tests whose status changed (by their path relative
+  # to the tests directory, which is where their .rt.tar files are in the
+  # configuration's run directory) so edgy-review and others can find them.
+  changed_tests = [
+    test_path.relative_to(test_home / 'tests').as_posix()
+    for test_path, test_status_lines in zip(tests, tests_status_lines)
+    if len(test_status_lines) > 0
+  ]
+  if len(changed_tests) > 0:
+    with open(config_run_dir / 'changes.elist', 'w') as file_handle:
+      for changed_test in changed_tests:
+        file_handle.write(f"{changed_test}\n")
 
 async def simulate_testing(loop: asyncio.AbstractEventLoop,
                            test_home: Path, new_run_dir: Path,

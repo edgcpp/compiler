@@ -3580,6 +3580,22 @@ typeref entries representing typedefs or type operators.
 
 #if !STANDALONE_UTILITY_PROGRAM
 
+static a_type_ptr add_pointer_to_type(a_type_ptr tp)
+/*
+Apply the transformation corresponding to std::add_pointer_t to tp and return
+the resulting type.
+*/
+{
+  if (is_referenceable_type(tp) || is_void_type(tp)) {
+    if (is_reference_type(tp)) {
+      tp = type_pointed_to(tp);
+    }  /* if */
+    tp = make_pointer_type(tp);
+  }  /* if */
+  return tp;
+}  /* add_pointer_to_type */
+
+
 a_type_ptr apply_type_transforming_intrinsic(
                             a_type_ptr             tp,
                             a_typeref_kind         kind,
@@ -3641,10 +3657,7 @@ diagnostic in error cases.  error_pos is the position to use for diagnostics
       result = remove_qualifiers(tp, TQ_VOLATILE);
       break;
     case trk_add_pointer:
-      if (is_reference_type(tp)) {
-        tp = type_pointed_to(tp);
-      }  /* if */
-      result = make_pointer_type(tp);
+      result = add_pointer_to_type(tp);
       break;
     case trk_remove_pointer:
       if (is_pointer_type(tp)) {
@@ -3824,7 +3837,7 @@ Return TRUE if the given type is a referenceable type [defns.referenceable].
 {
   tp = skip_typerefs(tp);
   return is_object_type(tp) || is_reference_ptr(tp) ||
-         (is_function(tp) && !is_qualified_type(tp));
+         (is_function(tp) && !is_qualified_function_type(tp));
 }  /* is_referenceable_type */
 
 
@@ -4080,7 +4093,7 @@ Apply the transformation corresponding to std::decay_t.
   if (is_array_type(tp)) {
     tp = make_pointer_type(array_element_type(tp));
   } else if (is_function_type(tp)) {
-    tp = make_pointer_type(tp);
+    tp = add_pointer_to_type(tp);
   } else {
     tp = remove_qualifiers(tp, TQ_CONST | TQ_VOLATILE | TQ_RESTRICT);
   }  /* if */

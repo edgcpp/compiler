@@ -1,0 +1,20 @@
+version: 2
+
+multi-ecosystem-groups:
+  dev-tools:
+    schedule:
+      interval: "weekly"
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/dev_tools/services/acknowledg/client"
+    patterns: ["*"]
+    multi-ecosystem-group: "dev-tools"
+
+  - package-ecosystem: "uv"
+    directories:
+      - "/dev_tools/services/acknowledg/server"
+      - "/dev_tools/services/acknowledg-forge/github"
+      - "/dev_tools/services/acknowledg-forge/gitlab"
+    patterns: ["*"]
+    multi-ecosystem-group: "dev-tools"

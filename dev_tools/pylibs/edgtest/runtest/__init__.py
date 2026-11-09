@@ -25,9 +25,9 @@ import edgutil
 
 from enum import IntEnum
 from collections import OrderedDict
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import (
-  Any, Callable, Dict, Iterator, List, Mapping, NamedTuple, Optional,
+  Any, Callable, Dict, IO, Iterator, List, Mapping, NamedTuple, Optional,
   Pattern, Set, Tuple, cast
 )
 
@@ -36,6 +36,19 @@ def get_default_config_name(env: Optional[Dict[str, str]] = None) -> str:
   if 'RUN_TEST_DEFAULT_CONFIG' in env_to_use:
     return env_to_use['RUN_TEST_DEFAULT_CONFIG']
   return 'edg_x86_64'
+
+def get_parent_config_name(
+                       config_name: str,
+                       env: Optional[Dict[str, str]] = None) -> Optional[str]:
+  '''Return the configuration config_name inherits expectations from.
+
+  This is the default configuration, or None for the default configuration
+  itself.
+  '''
+  default_config_name = get_default_config_name(env)
+  if config_name == default_config_name:
+    return None
+  return default_config_name
 
 def get_recording_possible_names(test_suite_env: Dict[str, str],
                                  case_number: int,
@@ -70,7 +83,7 @@ def get_matches_possible_names(test_suite_env: Dict[str, str],
   results.append(f"default.{case_number}.matches.txt")
   return results
 
-def get_bare_name(test_file_path: Path) -> str:
+def get_bare_name(test_file_path: PurePath) -> str:
   '''Return the test name without the file extension.'''
   return test_file_path.name.split('.')[0]
 
@@ -1245,7 +1258,7 @@ def finalize_rt_tar(contents: RtTarContents,
   per-case matches diff_hash values.
 
   Callers that need to keep an asyncio event loop responsive should run this
-  via ``asyncio.to_thread``.
+  via ``edgutil.async_to_thread``.
   '''
   diff_hashes: List[str] = []
   for case in cases:
@@ -1268,12 +1281,35 @@ def finalize_rt_tar(contents: RtTarContents,
   }
   contents.pack(metadata, dest_path)
 
+class RunTestOutputLinkError(ValueError):
+  '''Raised when a run artifact member that is read is a link.'''
+
+def _extract_tar_member(tar: tarfile.TarFile,
+                        member_name: str) -> IO[bytes]:
+  '''Open a run artifact member, which must be a regular file.
+
+  tarfile resolves a symlink or hard link member to another member of the
+  archive (never the file system), but links have no place in a run
+  artifact, may alias members, and can form cycles that exhaust the stack;
+  so they're refused (RunTestOutputLinkError) rather than followed.
+  '''
+  try:
+    member = tar.getmember(member_name)
+  except KeyError:
+    raise FileNotFoundError(member_name) from None
+  if member.issym() or member.islnk():
+    raise RunTestOutputLinkError(
+      f"{member_name} is a link to {member.linkname}"
+    )
+  extracted = tar.extractfile(member)
+  if extracted is None:
+    raise FileNotFoundError(member_name)
+  return extracted
+
 def _read_tar_lines_member(tar: tarfile.TarFile,
                            member_name: str) -> List[str]:
   '''Read a tar member as a list of lines (keepends=True).'''
-  extracted = tar.extractfile(member_name)
-  if extracted is None:
-    raise FileNotFoundError(member_name)
+  extracted = _extract_tar_member(tar, member_name)
   with io.TextIOWrapper(
     extracted,
     encoding = 'utf-8',
@@ -1316,9 +1352,7 @@ class RunTestOutput:
   @property
   def metadata(self) -> Dict[str, Any]:
     if self._metadata is None:
-      extracted = self._require_tar().extractfile('metadata.json')
-      if extracted is None:
-        raise FileNotFoundError('metadata.json')
+      extracted = _extract_tar_member(self._require_tar(), 'metadata.json')
       with io.TextIOWrapper(
         extracted,
         encoding = 'utf-8',
@@ -1347,9 +1381,7 @@ class RunTestOutput:
                              dest: Path) -> None:
     '''Stream cases/<N>/<C>/output.txt to dest.'''
     member = f"cases/{case_number}/{command_number}/output.txt"
-    extracted = self._require_tar().extractfile(member)
-    if extracted is None:
-      raise FileNotFoundError(member)
+    extracted = _extract_tar_member(self._require_tar(), member)
     with open(dest, 'wb') as out_handle:
       shutil.copyfileobj(extracted, out_handle)
 
@@ -1372,9 +1404,7 @@ class RunTestOutput:
   def extract_case_matches(self, case_number: int, dest: Path) -> None:
     '''Stream cases/<N>/matches/output.txt to dest.'''
     member = f"cases/{case_number}/matches/output.txt"
-    extracted = self._require_tar().extractfile(member)
-    if extracted is None:
-      raise FileNotFoundError(member)
+    extracted = _extract_tar_member(self._require_tar(), member)
     with open(dest, 'wb') as out_handle:
       shutil.copyfileobj(extracted, out_handle)
 

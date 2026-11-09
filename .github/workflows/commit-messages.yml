@@ -1,0 +1,72 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Check the messages of every pull request's commits and of every merge queue
+# entry with edg-check-commit-messages (the same policy the pre-push hook
+# applies, from edgchanges).  Only commits with a violation are reported.
+#
+# A pull request is checked from its base commit to its head commit, and a
+# merge queue entry from the branch it is merged into to its tip (so the
+# commits the queue creates are checked too).  Commits land on main only
+# through the merge queue, so pushes to main are not checked again.
+#
+# The checker and the commits come from one checkout of github.sha, the same
+# commit GitHub loads this workflow from.  For a pull request that is the merge
+# commit, so the checker is there even if the pull request's branch predates
+# it.
+#
+# Merge commits are rejected too.  A fork that wants them sets the repository
+# variable ALLOW_MERGE_COMMITS to 'true' (Settings > Secrets and variables >
+# Actions > Variables).
+
+name: Commit Messages
+
+on:
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check-commit-messages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/dev_tools/pylibs
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          # The checker is pull-request code; keep the token away from it.
+          # Nothing here needs authenticated git.
+          persist-credentials: false
+          fetch-depth: 0
+          # Only commit messages are read, so skip the blobs and check out
+          # just the checker.
+          filter: blob:none
+          sparse-checkout: dev_tools
+          ref: ${{ github.sha }}
+
+      - name: Check commit messages
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          QUEUE_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          QUEUE_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+          ALLOW_MERGE_COMMITS: ${{ vars.ALLOW_MERGE_COMMITS }}
+        run: |
+          if [[ "${EVENT_NAME}" == pull_request ]]; then
+            range=("${PR_BASE_SHA}..${PR_HEAD_SHA}")
+          else
+            range=("${QUEUE_BASE_SHA}..${QUEUE_HEAD_SHA}")
+          fi
+          options=()
+          if [[ "${ALLOW_MERGE_COMMITS}" == true ]]; then
+            options+=(--allow-merges)
+          fi
+          dev_tools/bin/edg-check-commit-messages "${options[@]}" "${range[@]}"
