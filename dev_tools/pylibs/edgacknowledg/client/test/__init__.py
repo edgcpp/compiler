@@ -55,6 +55,16 @@ _StatusDict = Dict[str, Dict[str, Any]]
 __all__ = ['IllegalFileAccessError']
 
 
+def _run_test_output(
+    path: Path, max_rt_entries: Optional[int],
+    max_rt_member_bytes: Optional[int]) -> edgtest.runtest.RunTestOutput:
+  return edgtest.runtest.RunTestOutput(
+    path,
+    max_entries = max_rt_entries,
+    max_member_bytes = max_rt_member_bytes
+  )
+
+
 def _rt_path_for(config_dir: ConfinedPath, test_id: str) -> ConfinedPath:
   return config_dir / str(PurePosixPath(test_id).with_suffix(
     edgtest.runtest.RUN_TEST_OUTPUT_SUFFIX
@@ -62,7 +72,9 @@ def _rt_path_for(config_dir: ConfinedPath, test_id: str) -> ConfinedPath:
 
 
 def _create_status_dict(elog_file_paths: List[ConfinedPath], *,
-                        is_multi_config_run: bool) -> _StatusDict:
+                        is_multi_config_run: bool,
+                        max_rt_entries: Optional[int],
+                        max_rt_member_bytes: Optional[int]) -> _StatusDict:
   # test_id -> config_name -> combined_diff_hash.
   pending: Dict[str, Dict[str, str]] = {}
   lines_by_test_config: Dict[str, Dict[str, List[Dict[str, str]]]] = {}
@@ -85,7 +97,11 @@ def _create_status_dict(elog_file_paths: List[ConfinedPath], *,
         if config_name not in pending[key]:
           rt_file_path = _rt_path_for(elog_file_path.parent, key)
           pending[key][config_name] = (
-            edgtest.runtest.grouping_combined_diff_hash(rt_file_path.path)
+            edgtest.runtest.grouping_combined_diff_hash(
+              rt_file_path.path,
+              max_entries = max_rt_entries,
+              max_member_bytes = max_rt_member_bytes
+            )
           )
           lines_by_test_config[key][config_name] = []
 
@@ -183,7 +199,9 @@ async def run_test_source_handler(channel: Channel,
                                   context: SandboxContext,
                                   test_home: ConfinedPath,
                                   run_dir: ConfinedPath,
-                                  changes_files: Dict[str, ConfinedPath]
+                                  changes_files: Dict[str, ConfinedPath], *,
+                                  max_rt_entries: Optional[int] = None,
+                                  max_rt_member_bytes: Optional[int] = None
                                   ) -> None:
   '''Handle one test source request on ``channel``. Every file is reached
   from ``test_home`` or ``run_dir``, so it can't leave them, and commands
@@ -222,7 +240,9 @@ async def run_test_source_handler(channel: Channel,
             'name': 'Changes List',
             'statuses': _create_status_dict(
               _matching_change_files(changes_files, 'changes.elog'),
-              is_multi_config_run = is_multi_config_run
+              is_multi_config_run = is_multi_config_run,
+              max_rt_entries = max_rt_entries,
+              max_rt_member_bytes = max_rt_member_bytes
             )
           }
         )
@@ -237,7 +257,9 @@ async def run_test_source_handler(channel: Channel,
               'name': 'Regressions List',
               'statuses': _create_status_dict(
                 regress_files,
-                is_multi_config_run = is_multi_config_run
+                is_multi_config_run = is_multi_config_run,
+                max_rt_entries = max_rt_entries,
+                max_rt_member_bytes = max_rt_member_bytes
               )
             }
           )
@@ -252,7 +274,9 @@ async def run_test_source_handler(channel: Channel,
               'name': 'Improvements List',
               'statuses': _create_status_dict(
                 improve_files,
-                is_multi_config_run = is_multi_config_run
+                is_multi_config_run = is_multi_config_run,
+                max_rt_entries = max_rt_entries,
+                max_rt_member_bytes = max_rt_member_bytes
               )
             }
           )
@@ -314,7 +338,8 @@ async def run_test_source_handler(channel: Channel,
             tmp_dir = Path(tmp_dir_name)
             entries: List[Tuple[Dict[str, Any], List[str]]] = []
 
-            with edgtest.runtest.RunTestOutput(case_rt_path.path) as rt_output:
+            with _run_test_output(case_rt_path.path, max_rt_entries,
+                                  max_rt_member_bytes) as rt_output:
               for case_number, case in enumerate(
                 rt_output.metadata.get('cases', []),
                 start = 1
@@ -413,14 +438,16 @@ async def run_test_source_handler(channel: Channel,
             )
 
         if request_tag == RequestTags.TEST_SHOW_DIFF:
-          with edgtest.runtest.RunTestOutput(rt_file_path.path) as rt_output:
+          with _run_test_output(rt_file_path.path, max_rt_entries,
+                                max_rt_member_bytes) as rt_output:
             static_text = ''.join(rt_output.combined_static_diff())
           client_response = {
             'id': configured_test_id,
             **trunc_display_content(static_text)
           }
         elif request_tag == RequestTags.TEST_SHOW_RAW_OUTPUT:
-          with edgtest.runtest.RunTestOutput(rt_file_path.path) as rt_output:
+          with _run_test_output(rt_file_path.path, max_rt_entries,
+                                max_rt_member_bytes) as rt_output:
             raw_output = ''.join(rt_output.combined_raw_output())
           client_response = {
             'id': configured_test_id,
@@ -602,7 +629,9 @@ class TestSourceHandler:
                slug: str,
                context: SandboxContext,
                test_home: ConfinedPath,
-               root: ConfinedPath) -> None:
+               root: ConfinedPath, *,
+               max_rt_entries: Optional[int] = None,
+               max_rt_member_bytes: Optional[int] = None) -> None:
     '''Requests reach files only through ``test_home`` and the run
     directory ``root``, and run commands in ``context``.
     '''
@@ -611,6 +640,8 @@ class TestSourceHandler:
     self._context = context
     self._test_home = test_home
     self._root = root
+    self._max_rt_entries = max_rt_entries
+    self._max_rt_member_bytes = max_rt_member_bytes
 
   def _changes_files(self) -> Dict[str, ConfinedPath]:
     '''Each configuration's changes file in the run, found now.'''
@@ -638,7 +669,9 @@ class TestSourceHandler:
       self._context,
       self._test_home,
       self._root,
-      await edgutil.async_to_thread(self._changes_files)
+      await edgutil.async_to_thread(self._changes_files),
+      max_rt_entries = self._max_rt_entries,
+      max_rt_member_bytes = self._max_rt_member_bytes
     )
 
 async def handle_test_edit_request(

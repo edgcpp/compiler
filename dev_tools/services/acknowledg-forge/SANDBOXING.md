@@ -279,7 +279,7 @@ sequenceDiagram
   Note over S: check out its merge-base,<br/>symlinks as plain files
   Note over S: check_plain_tree(worktree)
   S->>F: download the CI artifact (size-capped)
-  Note over S: extract it: no links, no escaping paths,<br/>inner tarballs size-capped
+  Note over S: extract it: no links or escaping paths,<br/>stored inner tarballs size-capped
   S->>B: edg-rematerialize-test-run diff
   Note over B: worktree read-only,<br/>build-staging writable,<br/>time-limited
   B-->>S: output, exit status
@@ -512,9 +512,9 @@ them. Several layers keep the service from reading through one:
   writes, which also may not hold hard links.
 - The section's directories, including the bench baselines a pull request
   supplies, must be real directories.
-- CI artifacts may not contain links or escaping paths, nor may the
-  `.rt.tar.gz` files inside them. Reading those tarballs later refuses link
-  members as well.
+- CI artifact ZIPs may not contain links or escaping paths. When a reviewer
+  opens a `.rt.tar.gz` file inside one, its entries are checked for links
+  and devices, excessive counts, and oversized members.
 - The handlers open files through `ConfinedPath`, which opens each path
   component with `O_NOFOLLOW` relative to the last, so a symlink anywhere
   on the way is refused, even one created after a check. A refused path
@@ -525,8 +525,10 @@ them. Several layers keep the service from reading through one:
 
 | Resource | Limit |
 | --- | --- |
-| Artifact download | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_BYTES` (256 MiB), also counting the decompressed size of inner tarballs |
-| Artifact entries | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` (500,000), counting inner tarballs' too; and its zip's central directory, `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` (64 MiB), checked before zipfile reads it |
+| Artifact download | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_BYTES` (256 MiB) |
+| Extracted artifact | `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` (2 GiB), counting the stored size of inner tarballs, not their unextracted contents |
+| Artifact entries | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` (500,000) for ZIP entries, 10,000 per inner tarball when opened; and its zip's central directory, `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` (64 MiB), checked before zipfile reads it |
+| Inner tarball member | 64 MiB per member when a reviewer opens a tarball |
 | A pull request's diff of `tests/` | `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` (64 MiB) |
 | A review worktree's sparse-checkout patterns | `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` (20,000) |
 | A file read for a reviewer | 64 MiB; a larger one fails the request |

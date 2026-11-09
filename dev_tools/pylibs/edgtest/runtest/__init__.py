@@ -958,12 +958,18 @@ def _unlink_missing_ok(path: Path) -> None:
   elif path.exists():
     path.unlink()
 
-def read_combined_diff_hash(rt_file_path: Path) -> Optional[str]:
+def read_combined_diff_hash(rt_file_path: Path, *,
+                            max_entries: Optional[int] = None,
+                            max_member_bytes: Optional[int] = None
+                            ) -> Optional[str]:
   '''Return metadata.combined_diff_hash, or None when there is no diff.'''
-  with RunTestOutput(rt_file_path) as rt_output:
+  with RunTestOutput(rt_file_path, max_entries = max_entries,
+                     max_member_bytes = max_member_bytes) as rt_output:
     return rt_output.metadata.get('combined_diff_hash')
 
-def grouping_combined_diff_hash(rt_file_path: Path) -> str:
+def grouping_combined_diff_hash(rt_file_path: Path, *,
+                                max_entries: Optional[int] = None,
+                                max_member_bytes: Optional[int] = None) -> str:
   '''Return a combined diff hash suitable for grouping configs.
 
   Missing .rt.tar files use the sentinel "missing". Archives with no
@@ -971,7 +977,10 @@ def grouping_combined_diff_hash(rt_file_path: Path) -> str:
   '''
   if not rt_file_path.exists():
     return 'missing'
-  combined = read_combined_diff_hash(rt_file_path)
+  combined = read_combined_diff_hash(
+    rt_file_path, max_entries = max_entries,
+    max_member_bytes = max_member_bytes
+  )
   if combined is None:
     return hash_diff_bytes(b'')
   return combined
@@ -1320,8 +1329,11 @@ def _read_tar_lines_member(tar: tarfile.TarFile,
 class RunTestOutput:
   '''Context manager for reading a structured .rt.tar run artifact once.'''
 
-  def __init__(self, path: Path) -> None:
+  def __init__(self, path: Path, *, max_entries: Optional[int] = None,
+               max_member_bytes: Optional[int] = None) -> None:
     self.path = path
+    self._max_entries = max_entries
+    self._max_member_bytes = max_member_bytes
     self._tar: Optional[tarfile.TarFile] = None
     self._metadata: Optional[Dict[str, Any]] = None
     self._member_names: Optional[Set[str]] = None
@@ -1332,6 +1344,22 @@ class RunTestOutput:
       'r:gz' if RT_TAR_GZ_SUPPORTED else 'r',
       format = tarfile.PAX_FORMAT
     )
+    try:
+      if self._max_entries is not None or self._max_member_bytes is not None:
+        for count, member in enumerate(self._tar, start = 1):
+          if self._max_entries is not None and count > self._max_entries:
+            raise ValueError('run artifact has too many entries')
+          if not (member.isfile() or member.isdir()):
+            raise RunTestOutputLinkError(
+              f"{member.name} is a link or device"
+            )
+          if (self._max_member_bytes is not None and
+              member.size > self._max_member_bytes):
+            raise ValueError(f"run artifact member {member.name} is too large")
+    except BaseException:
+      self._tar.close()
+      self._tar = None
+      raise
     return self
 
   def __exit__(self, _type: Any, _value: Any, _tb: Any) -> None:

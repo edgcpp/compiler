@@ -17,6 +17,9 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+import edgtest
+
+from edgacknowledg.client.test import _run_test_output
 from edgacknowledg.forge import processor
 from edgacknowledg.forge.processor import _changes_test_ids, _read_ci_metadata
 from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
@@ -75,7 +78,7 @@ def test_extract_caps_total_size(tmp_path: Path) -> None:
     extract_artifact(archive, destination, max_bytes = 10_000)
 
 
-def test_extract_caps_inner_tarballs(tmp_path: Path) -> None:
+def test_extract_counts_inner_tarballs_compressed_size(tmp_path: Path) -> None:
   payload = io.BytesIO()
   with tarfile.open(fileobj = payload, mode = 'w:gz') as tarball:
     data = b'0' * 100_000
@@ -85,8 +88,47 @@ def test_extract_caps_inner_tarballs(tmp_path: Path) -> None:
   archive = _zip(tmp_path / 'a.zip', {'cfg/t.rt.tar.gz': payload.getvalue()})
   destination = tmp_path / 'out'
   destination.mkdir()
-  with pytest.raises(UnsafeArchiveError):
-    extract_artifact(archive, destination, max_bytes = 10_000)
+  compressed_size = len(payload.getvalue())
+  extract_artifact(archive, destination, max_bytes = compressed_size)
+  assert (destination / 'cfg' / 't.rt.tar.gz').read_bytes() == payload.getvalue()
+
+  smaller = tmp_path / 'smaller'
+  smaller.mkdir()
+  with pytest.raises(UnsafeArchiveError,
+                     match = 'artifact exceeds the extracted size limit'):
+    extract_artifact(archive, smaller, max_bytes = compressed_size - 1)
+
+
+def test_run_output_checks_inner_members_on_read(tmp_path: Path) -> None:
+  path = tmp_path / 'a.rt.tar.gz'
+  with tarfile.open(path, 'w:gz') as archive:
+    archive.addfile(tarfile.TarInfo('a.txt'), io.BytesIO())
+    archive.addfile(tarfile.TarInfo('b.txt'), io.BytesIO())
+  with _run_test_output(path, None, None) as output:
+    assert output.member_names == {'a.txt', 'b.txt'}
+  with pytest.raises(ValueError, match = 'too many entries'):
+    with _run_test_output(path, 1, None):
+      pass
+  with pytest.raises(ValueError, match = 'too many entries'):
+    with edgtest.runtest.RunTestOutput(path, max_entries = 1):
+      pass
+
+  with tarfile.open(path, 'w:gz') as archive:
+    member = tarfile.TarInfo('a.txt')
+    member.size = 100
+    archive.addfile(member, io.BytesIO(b'x' * 100))
+  with pytest.raises(ValueError, match = 'too large'):
+    with edgtest.runtest.RunTestOutput(path, max_member_bytes = 10):
+      pass
+
+  with tarfile.open(path, 'w:gz') as archive:
+    member = tarfile.TarInfo('a.txt')
+    member.type = tarfile.SYMTYPE
+    member.linkname = 'elsewhere'
+    archive.addfile(member)
+  with pytest.raises(edgtest.runtest.RunTestOutputLinkError):
+    with edgtest.runtest.RunTestOutput(path, max_entries = 2):
+      pass
 
 
 def test_extract_caps_entries(tmp_path: Path) -> None:
@@ -101,7 +143,7 @@ def test_extract_caps_entries(tmp_path: Path) -> None:
       max_entries = 3
     )
 
-  # Inner tarballs' entries count too.
+  # Inner tarballs' entries are checked when opened for review.
   payload = io.BytesIO()
   with tarfile.open(fileobj = payload, mode = 'w:gz') as tarball:
     for n in range(2):
@@ -112,13 +154,12 @@ def test_extract_caps_entries(tmp_path: Path) -> None:
   })
   destination = tmp_path / 'out2'
   destination.mkdir()
-  with pytest.raises(UnsafeArchiveError, match = 'more than 3 entries'):
-    extract_artifact(
-      archive,
-      destination,
-      max_bytes = 10_000,
-      max_entries = 3
-    )
+  extract_artifact(
+    archive,
+    destination,
+    max_bytes = 10_000,
+    max_entries = 3
+  )
 
 
 def test_extract_caps_the_central_directory(tmp_path: Path) -> None:
