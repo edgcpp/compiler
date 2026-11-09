@@ -26902,8 +26902,10 @@ Evaluate the given new-expression.
               a_constant_ptr  cp = init_cp->variant.aggregate.first_constant;
               for (; cp != NULL; cp = cp->next) ++n_init_elems;
             } else {
-              /* ck_string case. */
-              n_init_elems = init_cp->variant.string.length;
+              /* ck_string case (whose length is in bytes). */
+              a_type_ptr  etp = skip_typerefs(
+                                         init_tp->variant.array.element_type);
+              n_init_elems = init_cp->variant.string.length / etp->size;
             }  /* if */
             if (n_init_elems > orig_alloc_length) {
               info_with_pos_num(ec_constexpr_alloc_too_small,

@@ -1,0 +1,15 @@
+[GH #501]
+Array new with a wide string literal initializer in constant evaluation
+
+During constant evaluation, the initializer of an array new-expression that is
+a string literal of a character type wider than one byte (e.g., wchar_t) was
+treated as having as many elements as the literal has bytes, so a large enough
+array could be diagnosed as too small for it.  For example:
+
+  constexpr int f(int n) {
+    auto p = new wchar_t[n]{L"ab"};
+    int r = p[1];
+    delete[] p;
+    return r;
+  }
+  static_assert(f(3) == L'b');  // Previously an error; now okay.

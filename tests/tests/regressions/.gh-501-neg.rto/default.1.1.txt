@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
+"Test_name.c", line 11: error: expression must have a constant value
+  static_assert(g(2) == L'b');  // Error: too few elements for the initializer.
+                ^
+"Test_name.c", line 6: note: number of dynamically-allocated elements (2) too small for initializer
+    auto p = new wchar_t[n]{L"ab"};
+                         ^
+
+1 error detected in the compilation of "Test_name.c".
