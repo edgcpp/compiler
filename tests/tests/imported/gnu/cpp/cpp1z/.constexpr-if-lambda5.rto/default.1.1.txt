@@ -2,10 +2,14 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
 "Test_name.c", line 10: warning: expression has no effect
         (..., ts);
               ^
-          detected during instantiation of "void f(Ts...) [with Ts=<int, char>]" at line 16
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 12
+            instantiation of "void f(Ts...) [with Ts=<int, char>]" at line 16
 
 "Test_name.c", line 10: warning: expression has no effect
         (..., ts);
         ^
-          detected during instantiation of "void f(Ts...) [with Ts=<int, char>]" at line 16
+          detected during:
+            instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 12
+            instantiation of "void f(Ts...) [with Ts=<int, char>]" at line 16
 

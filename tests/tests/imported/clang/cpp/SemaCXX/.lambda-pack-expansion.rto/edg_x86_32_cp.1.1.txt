@@ -78,14 +78,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
             instantiation of function "lambda []()->void [with Ts=<int, int>]" at line 55
             instantiation of "void GH63677::f<<unnamed>>() [with <unnamed>=int]" at line 58
 
-"Test_name.c", line 130: error: template template parameter "<error>" is not compatible with template template parameter "<unnamed>"
-          baz<TTPs>;
-              ^
-          detected during instantiation of "void GH112352::S::foldExpr2<TTPs...>() [with TTPs=<>]" at line 139
-
-"Test_name.c", line 131: error: too many arguments for template template parameter "TTPs"
-          TTPs<int> D;
-               ^
-          detected during instantiation of "void GH112352::S::foldExpr2<TTPs...>() [with TTPs=<>]" at line 139
-
-9 errors detected in the compilation of "Test_name.c".
+7 errors detected in the compilation of "Test_name.c".

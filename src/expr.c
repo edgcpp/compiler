@@ -1454,6 +1454,11 @@ changed below to be TRUE for certain kinds of expressions and/or contexts.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   if (suppress_warning) {
     /* The caller has requested that warnings be suppressed. */
+  } else if (in_generic_lambda_in_real_instantiation()) {
+    /* A hybrid expansion can collapse to an expression with no effect in
+       this prototype instantiation.  Wait for the real instantiation rather
+       than diagnosing that transient form. */
+    suppress_warning = TRUE;
   } else if (expr_stack->is_type_operator_arg_expression) {
     /* decltype expressions are sometimes written to check SFINAE
        conditions, so do not warn inside them. */
