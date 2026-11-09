@@ -2632,6 +2632,8 @@ extern void end_prescan_context(
 	a_boolean		saved_in_disambiguation,
 	a_boolean		saved_source_sequence_entries_disallowed);
 
+extern a_boolean in_generic_lambda_in_real_instantiation(void);
+
 extern a_boolean in_generic_lambda_in_prototype_instantiation(void);
 
 extern a_routine_ptr enclosing_nonlambda_routine_for_lambda_class(

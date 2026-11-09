@@ -12548,7 +12548,7 @@ have a pack expansion so that it can be expanded in a rescan context.
 }  /* add_pack_expansion_descr_to_prototype_arg */
 
 
-static a_boolean in_generic_lambda_in_real_instantiation(void)
+a_boolean in_generic_lambda_in_real_instantiation(void)
 /*
 Return TRUE if we are in the definition of a generic lambda that is nested
 inside a real instantiation.  In such contexts, a kind of "hybrid expansion"
@@ -12836,6 +12836,11 @@ lengths) *err is set to TRUE, FALSE otherwise.
           /* Got an expansion from an enclosing real instantiation and an
              unexpanded pack from a nested generic lambda. */
           has_hybrid_pack_expansion = TRUE;
+          if (elements_for_pack == 0) {
+            /* An empty enclosing pack makes the expansion empty even if an
+               unexpanded pack from the lambda was encountered first. */
+            elements = 0;
+          }  /* if */
         } else if (!is_rescan) {
           pos_st2_error(ec_pack_length_mismatch, &prp->position,
                         prp->symbol->header->identifier,
