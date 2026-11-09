@@ -33,7 +33,6 @@ import secrets
 import shutil
 import stat
 import struct
-import tarfile
 import urllib.parse
 import zipfile
 
@@ -348,22 +347,6 @@ def _central_directory_size(zip_path: Path) -> Optional[int]:
   return directory_size
 
 
-def _check_inner_tarball(path: Path, budget: _Budget) -> None:
-  '''Charge a (gzipped) tarball's decompressed size and entries to
-  ``budget``; reviewers' requests decompress these, so they're
-  bombs-in-waiting otherwise.
-  '''
-  try:
-    with tarfile.open(path, 'r:*') as archive:
-      for member in archive:
-        budget.count_entry()
-        if not (member.isfile() or member.isdir()):
-          raise UnsafeArchiveError(f"{path.name} contains a link or device")
-        budget.spend(member.size)
-  except tarfile.TarError as ex:
-    raise UnsafeArchiveError(f"{path.name} is not a valid tarball") from ex
-
-
 def extract_artifact(
       zip_path: Path, destination: Path, *, max_bytes: int,
       max_entries: int = DEFAULT_MAX_ARTIFACT_ENTRIES,
@@ -372,8 +355,8 @@ def extract_artifact(
 
   Rejects absolute or escaping paths and symlinks, and a zip whose central
   directory is over ``max_directory_bytes``, and stops once more than
-  ``max_bytes`` would be written, or ``max_entries`` entries made (counting
-  inner tarballs' contents too).
+  ``max_bytes`` would be written, or ``max_entries`` zip entries made.
+  Inner tarballs are checked when opened by a reviewer.
   '''
   directory_size = _central_directory_size(zip_path)
   if directory_size is not None and directory_size > max_directory_bytes:
@@ -382,7 +365,6 @@ def extract_artifact(
       f"({ENV_PREFIX}MAX_ARTIFACT_DIRECTORY_BYTES)"
     )
   budget = _Budget(max_bytes, max_entries)
-  tarballs = []
   try:
     with zipfile.ZipFile(zip_path) as archive:
       for info in archive.infolist():
@@ -407,13 +389,8 @@ def extract_artifact(
               break
             budget.spend(len(chunk))
             sink.write(chunk)
-        if target.name.endswith(('.tar.gz', '.tgz', '.tar')):
-          tarballs.append(target)
   except zipfile.BadZipFile as ex:
     raise UnsafeArchiveError('artifact is not a valid zip archive') from ex
-
-  for tarball in tarballs:
-    _check_inner_tarball(tarball, budget)
 
 
 class Workspaces:

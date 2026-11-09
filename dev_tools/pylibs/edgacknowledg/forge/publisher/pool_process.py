@@ -51,6 +51,8 @@ _log = logging.getLogger('edgacknowledg.forge.publisher.pool_process')
 # Parallel cg_annotate runs in one process (it answers one request at a
 # time, so this only matters to a request running several).
 _BENCH_WORKERS = 2
+_MAX_RT_ENTRIES = 10_000
+_MAX_RT_MEMBER_BYTES = 64 * 1024 * 1024
 
 
 def build_handler(section: SectionRecord,
@@ -67,7 +69,9 @@ def build_handler(section: SectionRecord,
       section.slug,
       context,
       context.subpath(section.home),
-      context.subpath(section.root)
+      context.subpath(section.root),
+      max_rt_entries = _MAX_RT_ENTRIES,
+      max_rt_member_bytes = _MAX_RT_MEMBER_BYTES
     )
   if section.kind == KIND_BENCH:
     session = BenchReviewSession(

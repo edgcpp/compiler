@@ -34,10 +34,10 @@ DEFAULT_MAX_PATTERNS = 20_000
 # The largest diff (of tests/, in bytes) a pull request may have: it is
 # held in memory, and copied and split into lines more than once.
 DEFAULT_MAX_DIFF_BYTES = 64 * 1024 * 1024
-# The most entries an artifact may have (its zip's, and its tarballs'
-# together), and the largest its zip's central directory may be: zipfile
-# reads all of that directory into memory, before we can count. CI's test
-# results reach about 170,000 entries, of about 106 bytes each there.
+# The most entries an artifact zip may have, and the largest its central
+# directory may be: zipfile reads all of that directory into memory, before
+# we can count. CI's test results reach about 170,000 entries, of about 106
+# bytes each there.
 DEFAULT_MAX_ARTIFACT_ENTRIES = 500_000
 DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES = 64 * 1024 * 1024
 

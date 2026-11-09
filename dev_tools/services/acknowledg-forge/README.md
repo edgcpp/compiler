@@ -111,8 +111,8 @@ from the environment variable shown as a fallback.
 | `ACKNOWLEDG_FORGE_COMMENTS` | `0` | `1` enables comments (needs the forge token) |
 | `ACKNOWLEDG_FORGE_SETTLE_TIMEOUT` | `7200` | Seconds after a push to stop waiting for CI before commenting |
 | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_BYTES` | 256 MiB | Largest artifact download |
-| `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` | 2 GiB | Largest extracted artifact (including inner tarballs) |
-| `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` | `500000` | Most entries in an artifact (including inner tarballs'). CI's test results reach about 170,000 |
+| `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` | 2 GiB | Largest extracted artifact (including stored, compressed inner tarballs, but not their unextracted contents) |
+| `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` | `500000` | Most ZIP entries in an artifact. Inner tarballs are checked when read |
 | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` | 64 MiB | Largest artifact zip central directory, which is read into memory whole (about 106 bytes per entry in CI's test results) |
 | `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` | 64 MiB | Largest diff of a pull request's `tests/`, which is held in memory and copied more than once: raising it may need a higher `mem_limit` for the service ([`compose.yaml`](compose.yaml)) |
 | `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` | `20000` | Most sparse-checkout patterns in a review's worktree (up to two per test). Checking out takes time proportional to patterns times paths |

@@ -19,6 +19,7 @@ import urllib.request
 import uuid
 
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, AsyncIterator, Callable, Optional
 
 import pytest
@@ -36,6 +37,7 @@ from edgacknowledg import (
   rich_link,
   rich_text,
 )
+from edgacknowledg.client.shared import SandboxContext
 from edgacknowledg.forge import serving
 from edgacknowledg.forge.db import (
   ForgeStore,
@@ -51,6 +53,7 @@ from edgacknowledg.forge.publisher import (
   review_identity,
 )
 from edgacknowledg.forge.publisher.client import PublisherClient
+from edgacknowledg.forge.publisher.pool_process import build_handler
 from edgacknowledg.forge.publisher.protocol import (
   MESSAGE_LIMIT,
   decode_review,
@@ -172,6 +175,34 @@ def _empty_sync() -> dict[str, Any]:
     'review': encode_review(ReviewIdentity(uuid.uuid4(), NAME, '')),
     'sections': [],
   }
+
+
+async def test_sync_does_not_send_rt_limits(tmp_path: Path,
+                                           store: ForgeStore,
+                                           monkeypatch: pytest.MonkeyPatch
+                                           ) -> None:
+  reviews, section = _layout(tmp_path)
+  publisher = _client('ws://127.0.0.1:1', reviews, store,
+                      api_port = 1)
+  requests: list[dict[str, Any]] = []
+
+  async def capture(request: dict[str, Any]) -> None:
+    requests.append(request)
+
+  monkeypatch.setattr(publisher, '_request', capture)
+  await publisher._sync(ReviewIdentity(uuid.uuid4(), NAME, ''), [section])
+  details = requests[0]['sections'][0]['details']
+  assert details == section.details
+
+
+def test_pool_uses_fixed_rt_limits(tmp_path: Path) -> None:
+  _, section = _layout(tmp_path)
+  sandbox = SimpleNamespace(
+    context_for = lambda home: SandboxContext(home)
+  )
+  handler = build_handler(section, sandbox, None)
+  assert handler._max_rt_entries == 10_000
+  assert handler._max_rt_member_bytes == 64 * 1024 * 1024
 
 
 async def _wait_for(condition: Callable[[], bool]) -> None:
