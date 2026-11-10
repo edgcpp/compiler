@@ -1,0 +1,36 @@
+[GH #344]
+Explicit conversion functions and list-initialization of references
+
+When a reference is list-initialized from an element whose type is not
+reference-related to the referenced type, a temporary is created and the
+reference is bound to that temporary.  The resolution of Core issue 2267
+clarified that this temporary is copy-list-initialized even when the reference
+itself is direct-list-initialized, so explicit conversion functions cannot be
+used to initialize it.  The front end nevertheless accepted them, even for
+copy-list-initialization (including when passing an argument).  That is now
+fixed.  For example:
+
+  struct A { explicit operator int() const; } a;
+  struct B { explicit operator int&&(); };
+  void f(int&&);
+  int &&r1{a};      // Now an error.
+  int &&r2{B{}};    // Now an error.
+  int &&r3 = {a};   // Now an error in all modes.
+  void g() {
+    f({a});         // Now an error in all modes.
+  }
+
+The change for EDGcpfe/23402 (in version 6.2) implemented the resolution of
+Core issue 2267 for initializations with parentheses (e.g., "int &&r(a);"),
+but not for list-initializations.  Those were still governed by the change for
+EDGcpfe/21369 (in version 5.1), which allowed explicit conversion functions to
+initialize the temporary in every list-initialization of a reference (to
+accept cases like r2 above).  That allowance is now limited to the emulation
+modes described below.
+
+Because Clang, GCC before version 9, and Microsoft C++ in permissive mode
+(and before version 19.29 also in non-permissive mode) accept the
+direct-list-initialization cases, those are still accepted in the
+corresponding emulation modes.  GCC 14 and later accept them only when the
+conversion function returns a reference (like r2 above), and so does the
+front end when emulating those versions.
