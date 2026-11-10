@@ -123,6 +123,10 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       int copyList4 = {n}; // expected-error {{no viable conversion}}
                        ^
 
+"Test_name.c", line 201: error: no suitable conversion function from "NotBool" to "const bool" exists
+      const bool &copyList6 = {n}; // expected-error {{no viable conversion}}
+                               ^
+
 "Test_name.c", line 203: error: no suitable conversion function from "NotBool" to "const int" exists
       const int &copyList8 = {n}; // expected-error {{no viable conversion}}
                               ^
@@ -171,4 +175,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
         switch(EC){}
                ^
 
-30 errors detected in the compilation of "Test_name.c".
+31 errors detected in the compilation of "Test_name.c".

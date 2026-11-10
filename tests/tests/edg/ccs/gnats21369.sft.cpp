@@ -1,5 +1,5 @@
 //type:cp
-//options_all:--c++11
+//options_all:--c++11 --gnu=80000
 
 struct A {
   explicit operator int() { return int{}; }

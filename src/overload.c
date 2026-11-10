@@ -16401,7 +16401,10 @@ not_direct_binding_case:
         }  /* if */
       } else if (conv_context & CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS) {
         /* We've been told specifically to allow explicit conversion
-           functions. */
+           functions (possibly only those that return a reference). */
+        if (conv_context & CCO_EXPLICIT_CONV_FUNCTIONS_RETURN_REF) {
+          require_reference_return = TRUE;
+        }  /* if */
       } else {
         goto reject_function;
       }  /* if */
@@ -28193,6 +28196,32 @@ will be an lvalue instead of the usual prvalue.
            in reproducing the source when the cp_gen_be is used. */
         rmake_lvalue_temp = TRUE;
       }  /* if */
+      if (is_direct_init &&
+          (clang_version_is(any_version) || gnu_version_is(<90000) ||
+           ms_version_is(<1929) ||
+           (ms_version_is(any_version) && ms_permissive))) {
+        /* Core issue 2267 clarified that the temporary is copy-list-
+           initialized even when the reference is direct-list-initialized,
+           and so explicit conversion functions cannot be used to initialize
+           it.  For example:
+              struct A { explicit operator int(); } a;
+              int &&r{a};  // Error.
+           Clang, g++ before version 9, and MSVC in permissive mode (and
+           before version 19.29 also in non-permissive mode) accept such
+           cases, though. */
+        rconv_context |= CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS;
+      } else if (is_direct_init && gnu_version_is(>= 140000)) {
+        /* g++ 14 and later bind the reference directly to the result of a
+           conversion function that returns a reference (a proposed resolution
+           of Core issue 1996), and that binding may use an explicit conversion
+           function:
+              struct B { explicit operator int&&(); };
+              int &&r{B{}};  // Okay with g++ 14.
+           Approximate that by allowing such conversion functions for the
+           initialization of the temporary. */
+        rconv_context |= CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS |
+                         CCO_EXPLICIT_CONV_FUNCTIONS_RETURN_REF;
+      }  /* if */
       /* The cost of a reference initialization in overload resolution is the
          cost of the underlying initialization of the temporary, so pass
          arg_match down to the next level.  See below for class cases. */
@@ -28201,7 +28230,7 @@ will be an lvalue instead of the usual prvalue.
                             /*is_direct_init=*/FALSE,
                             /*check_narrowing=*/TRUE,
                             /*warning_on_narrowing=*/FALSE,
-                            rconv_context | CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS,
+                            rconv_context,
                             /*fill_in_dtor=*/TRUE,
                             /*force_temp=*/TRUE,
                             rmake_lvalue_temp,

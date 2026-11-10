@@ -356,9 +356,21 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   int ai01 = {A<true>()}; // expected-error {{no viable conversion}}
               ^
 
+"Test_name.c", line 258: error: no suitable conversion function from "conversion::A<true>" to "const int" exists
+  const int& ai11 = {A<true>()}; // expected-error {{no viable conversion}}
+                     ^
+
+"Test_name.c", line 259: error: no suitable conversion function from "conversion::A<true>" to "int" exists
+  int&& ai31 = {A<true>()}; // expected-error {{no viable conversion}}
+                ^
+
 "Test_name.c", line 260: error: no suitable conversion function from "conversion::A<true>" to "int" exists
   int ai41 = {A_true}; // expected-error {{no viable conversion}}
               ^
+
+"Test_name.c", line 261: error: no suitable conversion function from "conversion::A<true>" to "const int" exists
+  const int& ai51 = {A_true}; // expected-error {{no viable conversion}}
+                     ^
 
 "Test_name.c", line 296: warning: 'explicit(bool)' is a C++20 feature
     explicit(enable_ifv<is_same<B, T2>::value, a>::value)
@@ -815,4 +827,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     explicit(1L) S(char, char, char);
     ^
 
-118 errors detected in the compilation of "Test_name.c".
+121 errors detected in the compilation of "Test_name.c".

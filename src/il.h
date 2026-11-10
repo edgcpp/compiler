@@ -2823,6 +2823,10 @@ typedef int a_conv_context_set;
 #define CCO_FORCE_DEPENDENCE ((a_conv_context_set)0x20000000)
 			/* TRUE if overload resolution should treat the call
 			   as dependent in any case. */
+#define CCO_EXPLICIT_CONV_FUNCTIONS_RETURN_REF ((a_conv_context_set)0x40000000)
+			/* Used with CCO_ALLOW_EXPLICIT_CONV_FUNCTIONS to
+			   restrict the explicit conversion functions allowed
+			   to those that return a reference. */
 
 
 /*
