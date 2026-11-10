@@ -13490,6 +13490,39 @@ template within a real instantiation of a class.
 }  /* is_alias_prototype_in_real_instantiation */
 
 
+static a_boolean has_unbound_template_pack(a_pack_expansion_descr_ptr pedp)
+/*
+Return TRUE if the expansion described by pedp references a template parameter
+pack not found in the current or enclosing instantiations.  A pack found with
+no argument elements is bound and does not cause TRUE to be returned.
+*/
+{
+  a_boolean             result = FALSE;
+  a_pack_reference_ptr  prp;
+  a_template_param_ptr  templ_param_list;
+  a_template_arg_ptr    templ_arg_list;
+
+  get_curr_template_params_and_args(&templ_param_list, &templ_arg_list);
+  for (prp = pedp->packs_referenced; prp != NULL; prp = prp->next) {
+    if (prp->kind == prk_template_param) {
+      uint32_t              elements;
+      a_template_param_ptr  tpp;
+      a_boolean             found;
+
+      (void)find_template_arg_for_pack(templ_param_list, templ_arg_list,
+                                       prp->symbol, &elements, &tpp, &found,
+                                       /*is_rescan=*/FALSE,
+                                       /*is_deduction=*/FALSE);
+      if (!found) {
+        result = TRUE;
+        break;
+      }  /* if */
+    }  /* if */
+  }  /* for */
+  return result;
+}  /* has_unbound_template_pack */
+
+
 static a_boolean is_pack_instantiation_context(
 				a_pack_expansion_descr_ptr	*p_pedp)
 /*
@@ -13502,7 +13535,8 @@ Something is treated as an instantiation context if:
     only uses enclosing packs (e.g., the declaration of a member template
     in the instantiation of an enclosing class template).
   - We are in a generic lambda prototype instantiation inside some real
-    enclosing instantiation.
+    enclosing instantiation and have arguments for all referenced template
+    parameter packs.
   - We have real template arguments for all referenced packs.
 
 In such contexts, return TRUE.  If we found a pack expansion, set *p_pedp
@@ -13527,7 +13561,9 @@ that *p_pedp is set even when FALSE is returned.
       result = TRUE;
     } else if (pedp->uses_any_enclosing_packs &&
                in_generic_lambda_in_real_instantiation()) {
-      result = TRUE;
+      /* A nested lambda's template parameter defaults can reference packs
+         whose prototype arguments have not been created yet. */
+      result = !has_unbound_template_pack(pedp);
     } else if (pedp->uses_only_enclosing_packs) {
       a_pack_reference_ptr      prp;
       a_template_nesting_depth  max_pack_depth = NO_NESTING_DEPTH;
