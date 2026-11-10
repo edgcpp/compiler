@@ -1072,8 +1072,8 @@ the alignment of the class being laid out (as recorded in lob) as needed.
        !targ_zero_width_bit_field_affects_struct_alignment) ||
       (union_case && !targ_bit_field_affects_union_alignment) ||
       (!targ_unnamed_bit_field_affects_struct_alignment &&
-       field->source_corresp.assoc_info ==
-                                       (char *)get_unnamed_field_symbol())) {
+       symbol_for(field) != NULL &&
+       is_unnamed_field_symbol(symbol_for(field)))) {
     /* Various cases where the bit field does not affect the alignment of the
        parent type:
          - zero-length bit fields when

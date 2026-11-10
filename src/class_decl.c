@@ -21533,11 +21533,12 @@ be entered.
   /* Copy the type (which may have been changed by apply_bit_field_size) into
      the field entry. */
   field->type = member_type;
-  /* For an unnamed bit field, do not create the field symbol. */
+  /* For an unnamed bit field, create an unnamed field symbol that is not
+     entered in the symbol table. */
   if (unnamed_field && decl_info->is_bit_field) {
-    /* All field entries for an unnamed bit field share the same symbol.  It is
-       used for easy identification. */
-    field->source_corresp.assoc_info = (char *)get_unnamed_field_symbol();
+    member_sym = make_unnamed_field_symbol(&locator->source_position);
+    member_sym->variant.field.ptr = field;
+    field->source_corresp.assoc_info = (char *)member_sym;
     /* Update the source correspondence information manually -- there's no
        symbol. */
     field->source_corresp.decl_position = locator->source_position;
@@ -21633,7 +21634,9 @@ be entered.
     /* Fields of closure types may be declared "on the fly" (in the case of
        implicit captures), and are not subject to pragmas in any case.
        However, we do want to record the declaration of init-capture fields. */
-  } else if (member_sym != NULL && !decl_info->is_anonymous_union) {
+  } else if (member_sym != NULL && !decl_info->is_anonymous_union &&
+             !is_unnamed_field_symbol(member_sym)) {
+    /* (The declaration of an unnamed bit-field was recorded above.) */
     record_symbol_declaration(SRK_DECLARATION | SRK_DEFINITION, member_sym,
                               &locator->source_position,
                               decl_state->source_sequence_entry);
