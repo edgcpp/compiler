@@ -1,5 +1,77 @@
 Version 7.1
 
+11/9/26  [GH #90]
+Constexpr reads of zero-initialized members after value initialization
+
+Value initialization of a class without a user-provided default constructor
+zero-initializes the object before calling the constructor.  During
+constant evaluation, the zeroed members were not treated as initialized, so
+reading one that the constructor does not set was rejected.  For example,
+with --c++20:
+
+  struct A { constexpr A() {} int x; };
+  struct B : A { int y; };
+  static_assert(B().x == 0);  // Previously rejected.
+
+
+11/9/26  [GH #90]
+GNU and Clang C++ modes: lifetime extension through a member of a temporary
+
+When emulating GCC 9 or later or Clang 4 or later (in C++11 and later
+modes), selecting a member of a class prvalue now produces an xvalue (Core
+issue 616), as it already did in standard C++14 and later modes.  Binding a
+reference to the member now extends the lifetime of the whole temporary.
+For example, with --g++ --gnu_version=150000:
+
+  struct A { int b; ~A(); };
+  const int &r = A().b;  // A() was previously destroyed here.
+
+Returning a pointer into a member of a class prvalue is now diagnosed also
+when the class is trivially destructible.  For example, with --c++20:
+
+  struct T { int b; int arr[2]; };
+  T make();
+  const int *f() { return &make().arr[1]; }  // Warning.
+
+Constant evaluation also no longer treats every member of a class prvalue
+as initialized when one is selected with "." or ".*".  Since C++20, a
+constexpr constructor can leave members uninitialized, and reading such a
+member is now diagnosed instead of producing an indeterminate value.  For
+example, with --c++20:
+
+  struct W { int n; constexpr W() {} };
+  static_assert(W().n == 0);  // Error: n is uninitialized.
+
+Constant evaluation now also marks each element of a GNU vector as
+initialized when a whole vector value is stored (e.g., by a mem-initializer),
+and copies the state of each element when an object containing a vector is
+copied.  Subscripting such a vector could previously give a spurious "access
+to uninitialized object" error.  Conversely, reading or copying a whole
+vector subobject now requires each of its elements to be initialized.  For
+example, with --g++ --c++20:
+
+  typedef int V4 __attribute__((vector_size(16)));
+  struct Y { V4 v; constexpr Y(V4 a) : v(a) {} };
+  constexpr int f() { V4 a = {1, 2, 3, 4}; Y y(a); return y.v[3]; }
+  static_assert(f() == 4, "");  // Previously rejected.
+
+
+11/9/26  [GH #491]
+Spurious error for pack expansions in nested generic lambdas
+
+Previously, valid pack expansions (including sizeof... and fold expressions) in
+nested generic lambdas (for example, in default arguments or exception
+specifications) could be rejected during instantiation with spurious missing
+parameter pack errors.  For example, with --c++14 -tused:
+
+  int f() {
+    auto g = [](auto... x) {
+      return [](auto, int n = sizeof...(x)) { return n; }(0);
+    };
+    return g(1, 2);  // Previously a spurious error, now okay.
+  }
+
+
 11/6/26  [GH #370]
 C++26: comparison between two arrays is not allowed
 
