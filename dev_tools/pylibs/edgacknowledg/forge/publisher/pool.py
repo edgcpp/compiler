@@ -29,9 +29,12 @@ pool process (``pool_process``):
   answered (its process stays busy with it until then), and the answer
   dropped.
 
-Messages on a channel are JSON objects, one per line: a process first says
-``{"ready": true}``; then the server sends ``{"id", "section": ...,
-"request": ...}``, and the process answers ``{"id", "replies": [...]}``,
+The tools runner URL is passed on each process's command line using
+``--tools-service-url``, including ephemeral local runner addresses.
+Messages on the channel are JSON objects, one per line: a process first
+says ``{"ready": true}``, then the server sends
+``{"id", "section": ..., "request": ...}``, and the process answers
+``{"id", "replies": [...]}``,
 plus ``"error": "illegal-access" | "failed"`` (and ``"message"``,
 ``"reviewer_id"``) if the handler raised; an answer to another id means
 the two lost track, and the process is replaced. A process that exits
@@ -60,7 +63,7 @@ from edgacknowledg.client.shared import (
   IllegalFileAccessError,
   reviewer_of,
 )
-from edgacknowledg.forge.config import ENV_PREFIX
+from edgacknowledg.forge.config import SETTINGS_VARIABLE, settings_path
 from edgacknowledg.forge.db import SectionRecord
 from edgacknowledg.forge.publisher import SUBSCRIPTION_TYPES
 from edgacknowledg.forge.publisher.protocol import (
@@ -111,17 +114,15 @@ def python_paths() -> list[Path]:
   return result
 
 
-def _process_env(tools_service_url: str) -> dict[str, str]:
-  '''A pool process's whole environment: nothing of the server's but
-  ``PATH``, and the tools runner to use.
-  '''
+def _process_env() -> dict[str, str]:
+  '''The worker gets a settings path, never credentials or overrides.'''
   return {
     'PATH': os.environ.get('PATH', '/usr/local/bin:/usr/bin:/bin'),
     'HOME': '/tmp',
     'PYTHONUTF8': '1',
     'PYTHONDONTWRITEBYTECODE': '1',
     'PYTHONPATH': os.pathsep.join(str(path) for path in python_paths()),
-    f"{ENV_PREFIX}TOOLS_SERVICE_URL": tools_service_url,
+    SETTINGS_VARIABLE: str(settings_path()),
   }
 
 
@@ -350,9 +351,14 @@ class ProcessPool:
     parent_end, process_end = socket.socketpair()
     try:
       process = await asyncio.create_subprocess_exec(
-        sys.executable, '-m', POOL_PROCESS_MODULE, str(process_end.fileno()),
+        sys.executable,
+        '-m',
+        POOL_PROCESS_MODULE,
+        str(process_end.fileno()),
+        '--tools-service-url',
+        self._tools_service_url,
         stdin = asyncio.subprocess.DEVNULL,
-        env = _process_env(self._tools_service_url),
+        env = _process_env(),
         pass_fds = (process_end.fileno(),),
         start_new_session = True
       )
@@ -368,8 +374,10 @@ class ProcessPool:
         sock = parent_end,
         limit = MESSAGE_LIMIT
       )
-      ready = await asyncio.wait_for(slot.messages.readline(),
-                                     _READY_TIMEOUT_S)
+      ready = await asyncio.wait_for(
+        slot.messages.readline(),
+        _READY_TIMEOUT_S
+      )
     except asyncio.TimeoutError:
       ready = b''
     except BaseException:

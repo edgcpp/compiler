@@ -13,9 +13,9 @@ GitLab specifics:
 
 - Repositories are project paths ('group/project').
 - CI artifacts belong to jobs, so an artifact name (e.g.
-  ``ACKNOWLEDG_FORGE_TEST_ARTIFACT``) names the *job* whose artifacts
+  ``test_artifact``) names the *job* whose artifacts
   archive holds the results.
-- ``ACKNOWLEDG_FORGE_CI_WORKFLOW`` names the pipeline to track (its
+- ``ci_workflow`` names the pipeline to track (its
   ``workflow:name``), or '*' for the newest pipeline of any name.
 '''
 

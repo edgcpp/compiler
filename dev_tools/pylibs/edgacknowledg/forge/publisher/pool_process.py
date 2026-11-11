@@ -11,14 +11,13 @@ For each request it builds the section's handler (the stock providers from
 ``edgacknowledg.client``), has it answer the request, and drops it. The
 handlers read pull request content without following links, only under the
 section's tree, and run their commands (ifc-dump, cg_annotate) in the
-tools runner that ``ACKNOWLEDG_FORGE_TOOLS_SERVICE_URL`` names.
+tools runner named by its ``--tools-service-url`` argument.
 '''
 
 import argparse
 import asyncio
 import json
 import logging
-import os
 import socket
 
 from pathlib import Path
@@ -32,7 +31,11 @@ from edgacknowledg.client.shared import (
   ReviewClientHandler,
 )
 from edgacknowledg.client.test import TestSourceHandler
-from edgacknowledg.forge.config import ENV_PREFIX
+from edgacknowledg.forge.config import (
+  ConfigError,
+  ForgeServiceConfig,
+  check_service_url,
+)
 from edgacknowledg.forge.db import SectionRecord
 from edgacknowledg.forge.publisher import (
   KIND_BENCH,
@@ -51,13 +54,12 @@ _log = logging.getLogger('edgacknowledg.forge.publisher.pool_process')
 # Parallel cg_annotate runs in one process (it answers one request at a
 # time, so this only matters to a request running several).
 _BENCH_WORKERS = 2
-_MAX_RT_ENTRIES = 10_000
-_MAX_RT_MEMBER_BYTES = 64 * 1024 * 1024
 
 
 def build_handler(section: SectionRecord,
                   sandbox: Sandbox,
-                  bench_workers: BackgroundWorkerPool) -> ReviewClientHandler:
+                  bench_workers: BackgroundWorkerPool,
+                  config: ForgeServiceConfig) -> ReviewClientHandler:
   '''The stock handler serving ``section``. Files are read without following
   links, and commands run on reviewers' behalf (ifc-dump, cg_annotate) only
   see the review trees, read-only.
@@ -70,8 +72,8 @@ def build_handler(section: SectionRecord,
       context,
       context.subpath(section.home),
       context.subpath(section.root),
-      max_rt_entries = _MAX_RT_ENTRIES,
-      max_rt_member_bytes = _MAX_RT_MEMBER_BYTES
+      max_rt_entries = config.max_rt_entries,
+      max_rt_member_bytes = config.max_rt_member_bytes
     )
   if section.kind == KIND_BENCH:
     session = BenchReviewSession(
@@ -105,12 +107,13 @@ class _OneRequestChannel:
 
 async def answer(request: dict[str, Any],
                  sandbox: Sandbox,
-                 bench_workers: BackgroundWorkerPool) -> dict[str, Any]:
+                 bench_workers: BackgroundWorkerPool,
+                 config: ForgeServiceConfig) -> dict[str, Any]:
   '''Answer one request from the server.'''
   channel = _OneRequestChannel(request['request'])
   try:
     section = decode_section(request['section'])
-    handler = build_handler(section, sandbox, bench_workers)
+    handler = build_handler(section, sandbox, bench_workers, config)
     await handler.handle_request(channel)  # type: ignore[arg-type]
   except IllegalFileAccessError as ex:
     return {
@@ -129,7 +132,7 @@ async def answer(request: dict[str, Any],
   return {'replies': channel.replies}
 
 
-async def _run(channel_fd: int) -> None:
+async def _run(channel_fd: int, tools_service_url: str) -> None:
   sock = socket.socket(fileno = channel_fd)
   # Commands run for reviewers must not reach the server.
   sock.set_inheritable(False)
@@ -137,11 +140,12 @@ async def _run(channel_fd: int) -> None:
     sock = sock,
     limit = MESSAGE_LIMIT
   )
+  # One snapshot for this worker's lifetime.
+  config = ForgeServiceConfig.from_file()
   bench_workers = BackgroundWorkerPool(_BENCH_WORKERS)
   # One connection to the tools runner, for every command this process
   # runs.
-  async with RunnerClient(
-      os.environ.get(f"{ENV_PREFIX}TOOLS_SERVICE_URL", '')) as tools:
+  async with RunnerClient(tools_service_url) as tools:
     sandbox = Sandbox(tools = tools)
     try:
       channel.write(b'{"ready": true}\n')
@@ -151,7 +155,7 @@ async def _run(channel_fd: int) -> None:
         if line == b'':
           return
         request = json.loads(line)
-        reply = await answer(request, sandbox, bench_workers)
+        reply = await answer(request, sandbox, bench_workers, config)
         # Which request it answers.
         reply['id'] = request.get('id')
         channel.write((json.dumps(reply) + '\n').encode())
@@ -169,13 +173,24 @@ def main() -> None:
     type = int,
     help = 'the inherited socket to the server'
   )
+  parser.add_argument(
+    '--tools-service-url',
+    required = True,
+    help = 'the tools runner server (ws://)'
+  )
   args = parser.parse_args()
   logging.basicConfig(
     level = logging.INFO,
     format = '%(levelname)s %(name)s (pool process): %(message)s'
   )
   try:
-    asyncio.run(_run(args.channel_fd))
+    tools_service_url = check_service_url(
+      args.tools_service_url,
+      '--tools-service-url'
+    )
+    asyncio.run(_run(args.channel_fd, tools_service_url))
+  except ConfigError as ex:
+    parser.error(str(ex))
   except KeyboardInterrupt:
     pass
 

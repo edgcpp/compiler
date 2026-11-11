@@ -39,6 +39,10 @@ from edgacknowledg import (
 )
 from edgacknowledg.client.shared import SandboxContext
 from edgacknowledg.forge import serving
+from edgacknowledg.forge.config import (
+  ForgeServiceConfig,
+  SqliteDatabaseConfig,
+)
 from edgacknowledg.forge.db import (
   ForgeStore,
   PullRequestRecord,
@@ -47,23 +51,28 @@ from edgacknowledg.forge.db import (
 from edgacknowledg.forge.ingest import utc_now
 from edgacknowledg.forge.local import LocalDeployment, local_deployment
 from edgacknowledg.forge.publisher import (
+  KIND_BENCH,
   KIND_TEST_CHANGES,
+  KIND_TEST_FAILURES,
   TITLE_ELLIPSIS,
   ReviewIdentity,
   review_identity,
 )
 from edgacknowledg.forge.publisher.client import PublisherClient
+from edgacknowledg.forge.publisher.pool import _process_env
 from edgacknowledg.forge.publisher.pool_process import build_handler
 from edgacknowledg.forge.publisher.protocol import (
   MESSAGE_LIMIT,
   decode_review,
+  decode_section,
   encode_review,
+  encode_section,
 )
 from edgacknowledg.forge.publisher.server import create_publisher
 from edgacknowledg.forge.sandbox_client import ServiceUnavailableError
 from edgacknowledg.forge.serving import HEALTH_PATH, Listening
 
-from conftest import make_tools_dir, pull_request_info
+from conftest import make_tools_dir, pull_request_info, write_settings
 from fakes import REPOSITORY, FakeForge
 from test_acknowledg_integration import (
   Server,
@@ -177,32 +186,115 @@ def _empty_sync() -> dict[str, Any]:
   }
 
 
-async def test_sync_does_not_send_rt_limits(tmp_path: Path,
-                                           store: ForgeStore,
-                                           monkeypatch: pytest.MonkeyPatch
-                                           ) -> None:
+@pytest.mark.parametrize(
+  'kind',
+  [KIND_TEST_CHANGES, KIND_TEST_FAILURES]
+)
+async def test_sync_sends_empty_test_variant(tmp_path: Path,
+                                             store: ForgeStore,
+                                             monkeypatch: pytest.MonkeyPatch,
+                                             kind: str) -> None:
   reviews, section = _layout(tmp_path)
-  publisher = _client('ws://127.0.0.1:1', reviews, store,
-                      api_port = 1)
+  details = {
+    'run_dir': str(section.root),
+    'tests': ['suite/a.sft.cpp'],
+    'tested_sha': 'a' * 40,
+    'max_rt_entries': 12,
+    'max_rt_member_bytes': 1024,
+  }
+  section = dataclasses.replace(
+    section,
+    kind = kind,
+    details = details
+  )
+  publisher = _client(
+    'ws://127.0.0.1:1',
+    reviews,
+    store,
+    api_port = 1
+  )
   requests: list[dict[str, Any]] = []
 
   async def capture(request: dict[str, Any]) -> None:
     requests.append(request)
 
   monkeypatch.setattr(publisher, '_request', capture)
-  await publisher._sync(ReviewIdentity(uuid.uuid4(), NAME, ''), [section])
-  details = requests[0]['sections'][0]['details']
-  assert details == section.details
+  await publisher._sync(
+    ReviewIdentity(uuid.uuid4(), NAME, ''),
+    [section]
+  )
+  encoded = requests[0]['sections'][0]
+  assert 'details' not in encoded
+  assert encoded['variant'] == {}
+  assert all(key not in encoded for key in details)
+  assert decode_section(encoded).details == {}
+  assert section.details == details
 
 
-def test_pool_uses_fixed_rt_limits(tmp_path: Path) -> None:
+def test_bench_section_protocol(tmp_path: Path) -> None:
   _, section = _layout(tmp_path)
+  baseline = tmp_path / 'benchmarks' / 'baselines' / 'project' / 'release-c'
+  tag = 'release-c'
+  section = dataclasses.replace(
+    section,
+    kind = KIND_BENCH,
+    details = {
+      'run_dir': str(section.root),
+      'baseline_dir': str(baseline),
+      'tag': tag,
+    }
+  )
+  encoded = encode_section(section)
+  assert 'details' not in encoded
+  assert 'run_dir' not in encoded
+  assert 'baseline_dir' not in encoded
+  assert 'tag' not in encoded
+  assert encoded['variant'] == {
+    'baseline_dir': str(baseline),
+    'tag': tag,
+  }
+  decoded = decode_section(encoded)
+  assert decoded.details == {
+    'baseline_dir': str(baseline),
+    'tag': tag,
+  }
+  assert decoded.root == section.root
+  assert decoded.home == section.home
+
+
+def test_pool_uses_configured_rt_limits(tmp_path: Path,
+                                        monkeypatch: pytest.MonkeyPatch
+                                        ) -> None:
+  settings = tmp_path / 'settings.toml'
+  write_settings(settings, {
+    'home': str(tmp_path / 'home'),
+    'tools_dir': str(make_tools_dir(tmp_path / 'tools')),
+    'repositories': [REPOSITORY],
+    'max_rt_entries': 12,
+    'max_rt_member_bytes': 1024,
+  })
+  monkeypatch.setenv('ACKNOWLEDG_FORGE_SETTINGS_FILE', str(settings))
+  # The pool's sanitized environment must retain the file's location.
+  worker_env = _process_env()
+  assert worker_env['ACKNOWLEDG_FORGE_SETTINGS_FILE'] == str(settings)
+  _, section = _layout(tmp_path)
+  section = dataclasses.replace(
+    section, details = {
+      'max_rt_entries': 999_999,
+      'max_rt_member_bytes': 999_999,
+    }
+  )
   sandbox = SimpleNamespace(
     context_for = lambda home: SandboxContext(home)
   )
-  handler = build_handler(section, sandbox, None)
-  assert handler._max_rt_entries == 10_000
-  assert handler._max_rt_member_bytes == 64 * 1024 * 1024
+  handler = build_handler(
+    section,
+    sandbox,
+    None,
+    ForgeServiceConfig.from_file()
+  )
+  assert handler._max_rt_entries == 12
+  assert handler._max_rt_member_bytes == 1024
 
 
 async def _wait_for(condition: Callable[[], bool]) -> None:
@@ -304,9 +396,16 @@ async def test_connecting_leaves_out_what_is_too_big(
     store: ForgeStore) -> None:
   local, reviews, section = deployment
   # First: the server would close the connection over it, every time.
-  too_big = await _store(store, 1, [
-    dataclasses.replace(section, details = {'tests': ['x' * MESSAGE_LIMIT]})
-  ])
+  too_big = await _store(
+    store,
+    1,
+    [
+      dataclasses.replace(
+        section,
+        name = 'x' * MESSAGE_LIMIT
+      )
+    ]
+  )
   served = await _store(store, 2, [section])
   for record in await store.open_pull_requests(FakeForge.name):
     await store.mark_processed(record.id, record.generation)
@@ -407,7 +506,9 @@ async def test_a_new_service_drops_what_it_does_not_store(
   # The publisher still serves it, until a service whose database doesn't
   # store it connects.
   await _wait_for_sources(server.port, review_id, ['test-changes'])
-  other_store = await ForgeStore.open('sqlite+aiosqlite://')
+  other_store = await ForgeStore.open(
+    SqliteDatabaseConfig(path = Path(':memory:'))
+  )
   later = _client(local.publisher_service_url, reviews, other_store,
                   api_port = server.port)
   later.start()

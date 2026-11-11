@@ -47,6 +47,7 @@ import posixpath
 import shlex
 import shutil
 import signal
+import sys
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -58,6 +59,7 @@ from quart import Blueprint, websocket
 from quart.wrappers import Websocket
 
 from edgacknowledg.forge import serving
+from edgacknowledg.forge.config import ConfigError, ForgeServiceConfig
 from edgacknowledg.forge.runner.roles import ROLES, RunnerPolicy
 
 _log = logging.getLogger('edgacknowledg.forge.runner.server')
@@ -362,14 +364,8 @@ def main(role: str) -> None:
     description = f"Serve the {role} runner: run its allowed commands for "
                   f"its client."
   )
-  parser.add_argument(
-    '--home',
-    type = Path,
-    required = True,
-    help = "the deployment's state directory, as mounted (only the "
-           "role's part of it need be)"
-  )
-  parser.add_argument('--tools-dir', type = Path, required = True)
+  # The deployment's wiring, which compose.yaml sets: never the shared
+  # settings, which could otherwise widen a listener to other networks.
   parser.add_argument(
     '--host',
     default = '127.0.0.1',
@@ -388,10 +384,12 @@ def main(role: str) -> None:
     level = logging.INFO,
     format = '%(levelname)s %(name)s: %(message)s'
   )
-  policy = ROLES[role](
-    home = args.home.absolute(),
-    tools_dir = args.tools_dir.absolute()
-  )
+  try:
+    config = ForgeServiceConfig.from_file()
+  except ConfigError as ex:
+    print(f"configuration error: {ex}", file = sys.stderr)
+    sys.exit(2)
+  policy = ROLES[role](home = config.home, tools_dir = config.tools_dir)
   try:
     asyncio.run(serving.serve(
       create_runner(policy, container = args.container),

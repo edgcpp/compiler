@@ -78,9 +78,8 @@ BENCH_SECTIONS = (
 
 CI_METADATA_FILE = 'ci-meta.json'
 # The largest that file may be, and the most (in bytes) the changes.elist
-# files of a failures artifact may hold, and their test ids take as JSON:
-# they are kept in its section's details, which go to the publisher in one
-# message.
+# files of a failures artifact may hold, and their test ids take as JSON
+# in the database's section bookkeeping.
 MAX_CI_METADATA_BYTES = 64 * 1024
 MAX_TEST_IDS_BYTES = 4 * 1024 * 1024
 # The longest test id taken from CI (a path within a suite); a longer line

@@ -283,6 +283,13 @@ def test_rematerialize_refuses_huge_expectation_lines(tmp_path: Path) -> None:
 
 async def test_curr_diff_is_shown_and_compared(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+  # Emulate a non-UTF-8 locale for text reads without an explicit encoding.
+  def locale_open(file: Any, mode: str = 'r', **kwargs: Any) -> Any:
+    if 'b' not in mode:
+      kwargs.setdefault('encoding', 'ascii')
+    return open(file, mode, **kwargs)
+
+  monkeypatch.setattr(test_provider, 'open', locale_open, raising = False)
   result, run_dir = _rematerialize_change(tmp_path, {
     'tests/tests/suite/.a.rto/default.1.1.txt': (
       'cpfe -DTEST_NUMBER=1 Test_name.c\nnew output\n'
@@ -329,7 +336,8 @@ async def test_curr_diff_is_shown_and_compared(
   # configurations (the other uses the default recording).
   recordings = run_dir / 'patched-tests' / 'suite' / '.a.rto'
   (recordings / 'default.1.1.txt').write_text(
-    'cpfe -DTEST_NUMBER=1 Test_name.c\nnewer output\n'
+    'cpfe -DTEST_NUMBER=1 Test_name.c\nnewer café output\n',
+    encoding = 'utf-8'
   )
   response = await show_curr_diff()
   assert response['content'] == (
@@ -337,7 +345,7 @@ async def test_curr_diff_is_shown_and_compared(
     '+++ Observed Output\n'
     '# cpfe -DTEST_NUMBER=1 Test_name.c\n'
     '@@ -1 +1 @@\n'
-    '-newer output\n'
+    '-newer café output\n'
     '+new output\n'
   )
   assert 'divergent_configs' not in response
@@ -347,7 +355,7 @@ async def test_curr_diff_is_shown_and_compared(
     'cpfe -DTEST_NUMBER=1 Test_name.c\nnew output\n'
   )
   response = await show_curr_diff()
-  assert '-newer output\n+new output' in response['content']
+  assert '-newer café output\n+new output' in response['content']
   assert response['divergent_configs'] == ['edg_x86_64_cp']
 
   compared: list[Path] = []

@@ -16,7 +16,7 @@ import tarfile
 import zipfile
 
 from pathlib import Path
-from typing import AsyncIterator, Iterator, Optional
+from typing import Any, AsyncIterator, Iterator, Optional
 
 import pytest
 import pytest_asyncio
@@ -32,8 +32,13 @@ from edgacknowledg.forge import (
   PullRequestState,
 )
 from edgacknowledg.forge.announcer import Announcer
-from edgacknowledg.forge.config import ForgeServiceConfig
-from edgacknowledg.forge.db import ForgeStore
+from edgacknowledg.forge.config import (
+  DatabaseConfig,
+  ForgeCredentials,
+  ForgeServiceConfig,
+  SqliteDatabaseConfig,
+)
+from edgacknowledg.forge.db import ForgeStore, create_database_engine
 from edgacknowledg.forge.ingest import Ingestor
 from edgacknowledg.forge.local import local_runner
 from edgacknowledg.forge.poller import sync_all
@@ -232,7 +237,7 @@ def make_tools_dir(path: Path) -> Path:
 
 # The builder runner the local_builder fixture serves for the test, which
 # make_config points configurations at.
-_BUILDER_SERVICE_URL = 'ACKNOWLEDG_FORGE_BUILDER_SERVICE_URL'
+_builder_service_url: Optional[str] = None
 # The test's other clients of that runner (each Harness's), which
 # local_builder closes before it stops the runner: the runner's shutdown
 # waits for their connections.
@@ -248,33 +253,65 @@ async def local_builder(tmp_path: Path,
   own without containers; the containers are tested on their own
   (test_containers.py).
   '''
+  global _builder_service_url
+  # Test controls are read at collection, never application settings.
+  for name in tuple(os.environ):
+    if name.startswith('ACKNOWLEDG_FORGE_TEST_'):
+      monkeypatch.delenv(name)
+  settings = tmp_path / 'settings.toml'
+  write_settings(settings, {
+    'home': str(tmp_path / 'home'),
+    'tools_dir': str(make_tools_dir(tmp_path / 'tools')),
+    'repositories': [REPOSITORY],
+    'unsandboxed': True,
+  })
+  monkeypatch.setenv('ACKNOWLEDG_FORGE_SETTINGS_FILE', str(settings))
   async with local_runner(
       'builder',
       home = tmp_path / 'home',
       tools_dir = make_tools_dir(tmp_path / 'tools')) as client:
-    monkeypatch.setenv(_BUILDER_SERVICE_URL, client.url)
+    _builder_service_url = client.url
     try:
       yield client
     finally:
+      _builder_service_url = None
       while len(_builder_clients) != 0:
         await _builder_clients.pop().close()
 
 
-def make_config(home: Path, **overrides: str) -> ForgeServiceConfig:
-  environ = {
-    'ACKNOWLEDG_FORGE_HOME': str(home),
-    'ACKNOWLEDG_FORGE_TOOLS_DIR': str(make_tools_dir(home.parent / 'tools')),
-    'ACKNOWLEDG_FORGE_REPOSITORIES': REPOSITORY,
-    'ACKNOWLEDG_FORGE_CI_WORKFLOW': 'ci.yml',
-    'ACKNOWLEDG_FORGE_COMMENTS': '1',
-    'ACKNOWLEDG_FORGE_UNSANDBOXED': '1',
+def write_settings(path: Path, values: dict[str, Any]) -> None:
+  def encode(value: Any) -> str:
+    if isinstance(value, dict):
+      return '{' + ', '.join(
+        f"{json.dumps(key)} = {encode(item)}" for key, item in value.items()
+        if item is not None
+      ) + '}'
+    return json.dumps(value)
+
+  path.write_text(''.join(
+    f"{key} = {encode(value)}\n"
+    for key, value in values.items() if value is not None
+  ), encoding = 'utf-8')
+
+
+def make_config(home: Path, **overrides: Any) -> ForgeServiceConfig:
+  values: dict[str, Any] = {
+    'home': str(home),
+    'tools_dir': str(make_tools_dir(home.parent / 'tools')),
+    'repositories': [REPOSITORY],
+    'ci_workflow': 'ci.yml',
+    'comments': True,
+    'unsandboxed': True,
   }
-  if _BUILDER_SERVICE_URL in os.environ:
-    environ[_BUILDER_SERVICE_URL] = os.environ[_BUILDER_SERVICE_URL]
-  environ.update(
-    {f"ACKNOWLEDG_FORGE_{key}": value for key, value in overrides.items()}
-  )
-  return ForgeServiceConfig.from_environment(environ)
+  # The wiring comes from the command line, as compose.yaml sets it.
+  wiring = {'builder_service_url': _builder_service_url}
+  for key in ('service_bind', 'builder_service_url', 'publisher_service_url'):
+    if key in overrides:
+      wiring[key] = overrides.pop(key)
+  values.update(overrides)
+  path = home.parent / 'service-settings.toml'
+  write_settings(path, values)
+  return ForgeServiceConfig.from_file(path).with_wiring(**wiring)
 
 
 class Harness:
@@ -381,34 +418,57 @@ def forge(origin: Origin) -> FakeForge:
   return FakeForge(origin.path)
 
 
-# Set to run the database tests against another database (e.g.
-# postgresql+asyncpg://...); its schema is reset after each test.
-TEST_DATABASE_URL = os.environ.get('ACKNOWLEDG_FORGE_TEST_DATABASE_URL')
+# Capture test controls before local_builder removes them from worker envs.
+_TEST_SETTINGS = os.environ.get('ACKNOWLEDG_FORGE_TEST_SETTINGS')
+_TEST_CREDENTIALS_DIRECTORY = os.environ.get(
+  'ACKNOWLEDG_FORGE_TEST_CREDENTIALS_DIRECTORY'
+)
 
 
-async def _reset_database(url: str) -> None:
+def _database_settings(
+          filename: Optional[str],
+          directory: Optional[str]) -> tuple[DatabaseConfig, ForgeCredentials]:
+  if filename is None:
+    return SqliteDatabaseConfig(path = Path(':memory:')), ForgeCredentials()
+  config = ForgeServiceConfig.from_file(Path(filename))
+  credentials = ForgeCredentials.from_directory(
+    Path(directory) if directory is not None else None
+  )
+  return config.database, credentials
+
+
+async def _reset_database(config: DatabaseConfig, *,
+                          password: Optional[str] = None) -> None:
   from sqlalchemy import text
-  from sqlalchemy.ext.asyncio import create_async_engine
 
   from edgacknowledg.forge.db.models import Base
 
-  engine = create_async_engine(url)
-  async with engine.begin() as connection:
-    await connection.run_sync(Base.metadata.drop_all)
-    await connection.execute(text('DROP TABLE IF EXISTS alembic_version'))
-  await engine.dispose()
+  engine = create_database_engine(config, password = password)
+  try:
+    async with engine.begin() as connection:
+      await connection.run_sync(Base.metadata.drop_all)
+      await connection.execute(text('DROP TABLE IF EXISTS alembic_version'))
+  finally:
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture
 async def store() -> AsyncIterator[ForgeStore]:
-  url = TEST_DATABASE_URL or 'sqlite+aiosqlite://'
-  if TEST_DATABASE_URL:
-    await _reset_database(url)
-  store = await ForgeStore.open(url)
-  yield store
-  await store.aclose()
-  if TEST_DATABASE_URL:
-    await _reset_database(url)
+  database, credentials = _database_settings(
+    _TEST_SETTINGS,
+    _TEST_CREDENTIALS_DIRECTORY
+  )
+  password = credentials.database_password
+  external = _TEST_SETTINGS is not None
+  if external:
+    await _reset_database(database, password = password)
+  store = await ForgeStore.open(database, password = password)
+  try:
+    yield store
+  finally:
+    await store.aclose()
+    if external:
+      await _reset_database(database, password = password)
 
 
 @pytest.fixture

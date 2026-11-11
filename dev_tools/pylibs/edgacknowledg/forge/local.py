@@ -3,7 +3,7 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''Without containers (``ACKNOWLEDG_FORGE_UNSANDBOXED=1``, for local
+'''Without containers (``unsandboxed = true``, for local
 development only): the servers the builder, tools, and publisher containers
 run, served from the service's own process instead.
 
@@ -27,6 +27,10 @@ from typing import AsyncIterator
 from quart import Blueprint
 
 from edgacknowledg.forge import serving
+from edgacknowledg.forge.publisher.pool import (
+  DEFAULT_PROCESSES,
+  DEFAULT_REQUEST_TIMEOUT_S,
+)
 from edgacknowledg.forge.publisher.protocol import MESSAGE_LIMIT
 from edgacknowledg.forge.publisher.server import create_publisher
 from edgacknowledg.forge.runner.client import RunnerClient
@@ -70,11 +74,17 @@ async def local_runner(role: str,
 
 
 @contextlib.asynccontextmanager
-async def local_deployment(*,
-                           home: Path,
-                           tools_dir: Path) -> AsyncIterator[LocalDeployment]:
+async def local_deployment(
+                    *,
+                    home: Path,
+                    tools_dir: Path,
+                    processes: int = DEFAULT_PROCESSES,
+                    request_timeout: float = DEFAULT_REQUEST_TIMEOUT_S
+                    ) -> AsyncIterator[LocalDeployment]:
   '''Serve the builder and tools runner servers and the publisher server
-  for the deployment in ``home``, until the context exits.
+  (with ``processes`` pool processes, each given ``request_timeout``
+  seconds a request) for the deployment in ``home``, until the context
+  exits.
   '''
   async with contextlib.AsyncExitStack() as stack:
     builder = await stack.enter_async_context(
@@ -84,10 +94,16 @@ async def local_deployment(*,
       local_runner('tools', home = home, tools_dir = tools_dir)
     )
     # Its pool runs while it serves.
-    listening = await stack.enter_async_context(_serving(
-      create_publisher(tools_service_url = tools.url),
-      MESSAGE_LIMIT
-    ))
+    listening = await stack.enter_async_context(
+      _serving(
+        create_publisher(
+          tools_service_url = tools.url,
+          processes = processes,
+          request_timeout = request_timeout
+        ),
+        MESSAGE_LIMIT
+      )
+    )
     yield LocalDeployment(
       builder = builder,
       tools = tools,

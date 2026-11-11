@@ -18,19 +18,25 @@ A forge service supplies its ``Forge`` (and optionally ``ForgeWebhooks`` and
   enabled, the webhook receiver (``webhooks``) and its event worker.
 '''
 
+import argparse
 import asyncio
 import contextlib
 import logging
+import os
 import signal
 import sys
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable, Optional
 
 from edgacknowledg.forge import Forge, ForgeCommenter, ForgeWebhooks, serving
 from edgacknowledg.forge.announcer import Announcer
-from edgacknowledg.forge.config import ConfigError, ForgeServiceConfig
-from edgacknowledg.forge.db import ForgeStore
+from edgacknowledg.forge.config import (
+  ConfigError, ForgeCredentials, ForgeServiceConfig,
+  check_credential_transport,
+)
+from edgacknowledg.forge.db import DatabaseConfigError, ForgeStore
 from edgacknowledg.forge.ingest import Ingestor
 from edgacknowledg.forge.local import local_deployment
 from edgacknowledg.forge.poller import run_poller
@@ -56,16 +62,27 @@ class ForgeComponents:
 
 
 async def run_service(config: ForgeServiceConfig,
+                      credentials: ForgeCredentials,
                       components: ForgeComponents) -> None:
+  if not config.unsandboxed and (
+      config.builder_service_url is None or
+      config.publisher_service_url is None):
+    raise ConfigError(
+      '--builder-service-url and --publisher-service-url are required unless '
+      'unsandboxed is true'
+    )
+  if config.webhooks and config.service_bind is None:
+    raise ConfigError('webhooks requires --service-bind')
+  check_credential_transport(config, credentials)
   if config.webhooks and components.webhooks is None:
     raise ConfigError(
-      'ACKNOWLEDG_FORGE_WEBHOOKS is set, but webhooks are not configured '
-      '(is the webhook secret set?)'
+      'webhooks is enabled, but webhooks are not configured (is the webhook '
+      'secret set?)'
     )
   if config.comments and components.commenter is None:
     raise ConfigError(
-      'ACKNOWLEDG_FORGE_COMMENTS is set, but commenting is not configured '
-      '(is the forge token set?)'
+      'comments is enabled, but commenting is not configured (is the forge '
+      'token set?)'
     )
 
   config.home.mkdir(parents = True, exist_ok = True)
@@ -74,7 +91,11 @@ async def run_service(config: ForgeServiceConfig,
       _log.warning('running without containers: nothing confines what reads '
                    'pull requests; for local development only')
       local = await stack.enter_async_context(
-        local_deployment(home = config.home, tools_dir = config.tools_dir)
+        local_deployment(
+          home = config.home, tools_dir = config.tools_dir,
+          processes = config.publisher_processes,
+          request_timeout = config.publisher_request_timeout
+        )
       )
       builder = local.builder
       publisher_service_url = local.publisher_service_url
@@ -85,14 +106,14 @@ async def run_service(config: ForgeServiceConfig,
         RunnerClient(config.builder_service_url)
       )
       publisher_service_url = config.publisher_service_url
-      if len(config.environment_secrets) != 0:
-        _log.warning('secrets come from the environment (%s); use '
-                     'credentials in production',
-                     ', '.join(config.environment_secrets))
-    await _run_components(config, components, builder, publisher_service_url)
+    await _run_components(
+      config, credentials, components, builder,
+      publisher_service_url
+    )
 
 
 async def _run_components(config: ForgeServiceConfig,
+                          credentials: ForgeCredentials,
                           components: ForgeComponents,
                           builder: RunnerClient,
                           publisher_service_url: str) -> None:
@@ -100,7 +121,9 @@ async def _run_components(config: ForgeServiceConfig,
   sandbox = Sandbox(builder = builder)
   await sandbox.check()
 
-  store = await ForgeStore.open(config.database_url)
+  store = await ForgeStore.open(
+    config.database, password = credentials.database_password
+  )
   try:
     wake = asyncio.Event()
     ingestor = Ingestor(store, forge, config, wake = wake)
@@ -114,7 +137,7 @@ async def _run_components(config: ForgeServiceConfig,
       url = publisher_service_url,
       api_host = config.acknowledg_api_host,
       api_port = config.acknowledg_api_port,
-      api_key = config.acknowledg_api_key,
+      api_key = credentials.acknowledg_api_key,
       ui_host = config.acknowledg_ui_host,
       ui_port = config.acknowledg_ui_port,
       reviews_dir = workspaces.reviews_dir,
@@ -174,18 +197,50 @@ async def _run_components(config: ForgeServiceConfig,
     await store.aclose()
 
 
-def main(build: Callable[[ForgeServiceConfig], ForgeComponents]) -> None:
+def main(build: Callable[[ForgeServiceConfig, ForgeCredentials],
+                         ForgeComponents]) -> None:
   '''Entry point for a forge service: read the configuration, build the
-  forge components with ``build``, and run until SIGINT/SIGTERM.
+  forge components with ``build(config, credentials)``, and run until
+  SIGINT/SIGTERM.
+
+  The command line carries the deployment's wiring (compose.yaml sets it),
+  which the shared settings can't.
   '''
+  parser = argparse.ArgumentParser(
+    description = 'Serve pull requests to AcknowlEDG; settings come from '
+                  'the TOML file ACKNOWLEDG_FORGE_SETTINGS_FILE names.'
+  )
+  parser.add_argument(
+    '--service-bind',
+    metavar = 'HOST:PORT',
+    help = 'serve health checks (and webhooks, if enabled) here; in a '
+           'container, on its frontend network only'
+  )
+  parser.add_argument(
+    '--builder-service-url', metavar = 'URL',
+    help = "the builder's runner server (ws://)"
+  )
+  parser.add_argument(
+    '--publisher-service-url', metavar = 'URL',
+    help = 'the publisher server (ws://)'
+  )
+  args = parser.parse_args()
   logging.basicConfig(
     level = logging.INFO,
     format = '%(levelname)s %(name)s: %(message)s'
   )
   logging.getLogger('alembic').setLevel(logging.WARNING)
   try:
-    config = ForgeServiceConfig.from_environment()
-    components = build(config)
+    directory = os.environ.get('CREDENTIALS_DIRECTORY')
+    config = ForgeServiceConfig.from_file().with_wiring(
+      service_bind = args.service_bind,
+      builder_service_url = args.builder_service_url,
+      publisher_service_url = args.publisher_service_url
+    )
+    credentials = ForgeCredentials.from_directory(
+      Path(directory) if directory else None
+    )
+    components = build(config, credentials)
   except ConfigError as ex:
     print(f"configuration error: {ex}", file = sys.stderr)
     sys.exit(2)
@@ -197,12 +252,12 @@ def main(build: Callable[[ForgeServiceConfig], ForgeComponents]) -> None:
     for signal_number in (signal.SIGINT, signal.SIGTERM):
       loop.add_signal_handler(signal_number, task.cancel)
     try:
-      await run_service(config, components)
+      await run_service(config, credentials, components)
     except asyncio.CancelledError:
       _log.info('shutting down')
 
   try:
     asyncio.run(run())
-  except (ConfigError, SandboxUnavailableError) as ex:
+  except (ConfigError, DatabaseConfigError, SandboxUnavailableError) as ex:
     print(f"error: {ex}", file = sys.stderr)
     sys.exit(2)
