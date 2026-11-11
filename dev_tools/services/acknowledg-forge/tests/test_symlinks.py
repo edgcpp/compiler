@@ -173,7 +173,7 @@ async def test_links_in_sandbox_output_are_not_served(tmp_path: Path,
   config = make_config(tmp_path / 'home')
   # A rematerializer that (as a patch applying a symlink diff could) leaves
   # a link to a service file in its output.
-  (config.tools_dir / 'bin' / 'edg-rematerialize-test-run').write_text(
+  (tmp_path / 'tools' / 'bin' / 'edg-rematerialize-test-run').write_text(
     STUB_REMATERIALIZE +
     f"os.symlink({str(secret)!r}, config_dir / 'changes.elog')\n"
   )

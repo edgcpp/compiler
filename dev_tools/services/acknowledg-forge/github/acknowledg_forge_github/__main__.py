@@ -6,7 +6,7 @@
 '''Run acknowledg-forge against GitHub (configuration: see README.md).'''
 
 from edgacknowledg.forge import service
-from edgacknowledg.forge.config import ForgeServiceConfig
+from edgacknowledg.forge.config import ForgeCredentials, ForgeServiceConfig
 
 from acknowledg_forge_github import (
   DEFAULT_API_URL,
@@ -17,18 +17,19 @@ from acknowledg_forge_github import (
 )
 
 
-def build(config: ForgeServiceConfig) -> service.ForgeComponents:
+def build(config: ForgeServiceConfig,
+           credentials: ForgeCredentials) -> service.ForgeComponents:
   client = GitHubClient(
     api_url = config.api_url or DEFAULT_API_URL,
-    token = config.forge_token
+    token = credentials.forge_token
   )
   return service.ForgeComponents(
     forge = GitHubForge(client, workflow = config.ci_workflow),
     webhooks = (
-      GitHubWebhooks(config.webhook_secret) if config.webhook_secret
+      GitHubWebhooks(credentials.webhook_secret) if credentials.webhook_secret
       else None
     ),
-    commenter = GitHubCommenter(client) if config.forge_token else None,
+    commenter = GitHubCommenter(client) if credentials.forge_token else None,
   )
 
 

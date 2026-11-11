@@ -5,8 +5,7 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
-# Run acknowledg-forge-github for local development. Configuration comes
-# from the environment (see ../README.md); at least ACKNOWLEDG_FORGE_HOME and
-# ACKNOWLEDG_FORGE_REPOSITORIES must be set.
+# Run acknowledg-forge-github with ACKNOWLEDG_FORGE_SETTINGS_FILE naming
+# its TOML configuration and CREDENTIALS_DIRECTORY naming its credentials.
 
 exec uv run acknowledg-forge-github "$@"

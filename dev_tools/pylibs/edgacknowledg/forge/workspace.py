@@ -51,7 +51,6 @@ from edgacknowledg.forge.config import (
   DEFAULT_MAX_ARTIFACT_ENTRIES,
   DEFAULT_MAX_DIFF_BYTES,
   DEFAULT_MAX_PATTERNS,
-  ENV_PREFIX,
 )
 from edgacknowledg.forge.runner.roles import BUILD_STAGING_DIR, REVIEWS_DIR
 from edgtest.runtest import get_bare_name
@@ -153,7 +152,7 @@ def _add_patterns(patterns: dict[str, None],
   if len(patterns) > max_patterns:
     raise WorkspaceError(
       f"more than {max_patterns} sparse-checkout patterns (too many tests; "
-      f"{ENV_PREFIX}MAX_SPARSE_PATTERNS)"
+      f"max_sparse_patterns)"
     )
 
 
@@ -333,7 +332,7 @@ class _Budget:
     except BudgetExceeded as ex:
       raise UnsafeArchiveError(
         f"artifact has more than {self.entry_budget.limit} entries "
-        f"({ENV_PREFIX}MAX_ARTIFACT_ENTRIES)"
+        f"(max_artifact_entries)"
       ) from ex
 
 
@@ -379,7 +378,7 @@ def extract_artifact(
   if directory_size is not None and directory_size > max_directory_bytes:
     raise UnsafeArchiveError(
       f"artifact's central directory is over {max_directory_bytes} bytes "
-      f"({ENV_PREFIX}MAX_ARTIFACT_DIRECTORY_BYTES)"
+      f"(max_artifact_directory_bytes)"
     )
   budget = _Budget(max_bytes, max_entries)
   try:
@@ -669,7 +668,7 @@ class Workspaces:
       except _OutputTooLarge:
         raise WorkspaceError(
           f"the diff is over {self._max_diff_bytes} bytes "
-          f"({ENV_PREFIX}MAX_DIFF_BYTES)"
+          f"(max_diff_bytes)"
         ) from None
 
   async def checkout(self,
