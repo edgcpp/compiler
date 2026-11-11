@@ -78,9 +78,8 @@ BENCH_SECTIONS = (
 
 CI_METADATA_FILE = 'ci-meta.json'
 # The largest that file may be, and the most (in bytes) the changes.elist
-# files of a failures artifact may hold, and their test ids take as JSON:
-# they are kept in its section's details, which go to the publisher in one
-# message.
+# files of a failures artifact may hold, and their test ids take as JSON
+# in the database's section bookkeeping.
 MAX_CI_METADATA_BYTES = 64 * 1024
 MAX_TEST_IDS_BYTES = 4 * 1024 * 1024
 # The longest test id taken from CI (a path within a suite); a longer line
@@ -191,11 +190,11 @@ class _StagedArtifact:
 class Processor:
   '''Reconciles pull requests and announces changes (if enabled).'''
 
-  def __init__(self,
-               *,
+  def __init__(self, *,
                store: ForgeStore,
                forge: Forge,
                config: ForgeServiceConfig,
+               tools_dir: Path,
                workspaces: Workspaces,
                sandbox: Sandbox,
                publisher: Publisher,
@@ -205,6 +204,7 @@ class Processor:
     self._store = store
     self._forge = forge
     self._config = config
+    self._tools_dir = tools_dir
     self._workspaces = workspaces
     self._sandbox = sandbox
     self._publisher = publisher
@@ -479,7 +479,7 @@ class Processor:
         result = await self._sandbox.run(
           [
             'python3',
-            str(self._config.tools_dir / 'bin' / 'edg-rematerialize-test-run'),
+            str(self._tools_dir / 'bin' / 'edg-rematerialize-test-run'),
             '--runs-dir',
             str(staging),
             '--run-timestamp',

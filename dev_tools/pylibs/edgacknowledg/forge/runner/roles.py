@@ -80,7 +80,7 @@ REVIEWS_DIR = 'reviews'
 BUILD_STAGING_DIR = 'build-staging'
 
 # Seconds a command may run at most, by role (the service's own limits, e.g.
-# ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT, apply below these).
+# rematerialize_timeout, apply below these).
 BUILD_MAX_TIMEOUT_S = 60 * 60.0
 TOOLS_MAX_TIMEOUT_S = 120.0
 

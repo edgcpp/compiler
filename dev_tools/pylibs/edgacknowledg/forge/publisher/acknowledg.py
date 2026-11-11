@@ -154,7 +154,8 @@ class _Published:
       if (wanted is not None and still_registered and
           wanted.name == current.record.name and
           wanted.source_key == current.record.source_key and
-          wanted.root == current.record.root):
+          wanted.root == current.record.root and
+          wanted.details == current.record.details):
         continue
       if still_registered:
         await client_review.remove_section(current.handler)

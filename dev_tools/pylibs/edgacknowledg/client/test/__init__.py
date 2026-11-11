@@ -446,7 +446,13 @@ async def run_test_source_handler(channel: Channel,
                 edgtest.runtest.iter_collapsed_case_diff_pieces(
                   [
                     (entry,
-                     functools.partial(open, path, 'r', errors = 'replace'))
+                     functools.partial(
+                       open,
+                       path,
+                       'r',
+                       encoding = 'utf-8',
+                       errors = 'replace'
+                     ))
                     for entry, path in entries
                   ],
                   edgutil.MAX_LINE_CHARS

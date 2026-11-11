@@ -6,7 +6,7 @@
 '''Run acknowledg-forge against GitLab (configuration: see README.md).'''
 
 from edgacknowledg.forge import service
-from edgacknowledg.forge.config import ForgeServiceConfig
+from edgacknowledg.forge.config import ForgeCredentials, ForgeServiceConfig
 
 from acknowledg_forge_gitlab import (
   DEFAULT_API_URL,
@@ -17,10 +17,11 @@ from acknowledg_forge_gitlab import (
 )
 
 
-def build(config: ForgeServiceConfig) -> service.ForgeComponents:
+def build(config: ForgeServiceConfig,
+           credentials: ForgeCredentials) -> service.ForgeComponents:
   client = GitLabClient(
     api_url = config.api_url or DEFAULT_API_URL,
-    token = config.forge_token
+    token = credentials.forge_token
   )
   return service.ForgeComponents(
     forge = GitLabForge(
@@ -29,10 +30,10 @@ def build(config: ForgeServiceConfig) -> service.ForgeComponents:
       artifact_jobs = (config.test_artifact, config.bench_artifact)
     ),
     webhooks = (
-      GitLabWebhooks(config.webhook_secret) if config.webhook_secret
+      GitLabWebhooks(credentials.webhook_secret) if credentials.webhook_secret
       else None
     ),
-    commenter = GitLabCommenter(client) if config.forge_token else None,
+    commenter = GitLabCommenter(client) if credentials.forge_token else None,
   )
 
 

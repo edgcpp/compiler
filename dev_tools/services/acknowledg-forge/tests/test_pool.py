@@ -11,6 +11,8 @@ import asyncio
 import errno
 import os
 import signal
+import socket
+import sys
 import time
 import uuid
 
@@ -81,6 +83,48 @@ async def env(tmp_path: Path) -> AsyncIterator[_Env]:
   async with local_runner('tools', home = home,
                           tools_dir = tools_dir) as tools:
     yield _Env(section, tools)
+
+
+async def test_worker_is_ready_without_bootstrap(env: _Env) -> None:
+  parent_end, worker_end = socket.socketpair()
+  process = None
+  channel = None
+  try:
+    process = await asyncio.create_subprocess_exec(
+      sys.executable,
+      '-m',
+      pool_module.POOL_PROCESS_MODULE,
+      str(worker_end.fileno()),
+      '--tools-service-url',
+      env.tools.url,
+      stdin = asyncio.subprocess.DEVNULL,
+      env = pool_module._process_env(),
+      pass_fds = (worker_end.fileno(),)
+    )
+    worker_end.close()
+    messages, channel = await asyncio.open_unix_connection(
+      sock = parent_end
+    )
+    # No parent message is sent before the worker reports readiness.
+    ready = await asyncio.wait_for(
+      messages.readline(),
+      10
+    )
+    assert ready == b'{"ready": true}\n'
+  finally:
+    worker_end.close()
+    if channel is not None:
+      channel.close()
+      await channel.wait_closed()
+    else:
+      parent_end.close()
+    if process is not None:
+      try:
+        await asyncio.wait_for(process.wait(), 10)
+      except asyncio.TimeoutError:
+        process.kill()
+        await process.wait()
+        raise
 
 
 @pytest_asyncio.fixture

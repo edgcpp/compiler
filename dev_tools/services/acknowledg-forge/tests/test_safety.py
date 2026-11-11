@@ -22,6 +22,7 @@ import edgutil
 
 from edgacknowledg.client.test import _run_test_output
 from edgacknowledg.forge import workspace
+
 from edgacknowledg.forge import processor
 from edgacknowledg.forge.processor import _changes_test_ids, _read_ci_metadata
 from edgacknowledg.forge.sandbox import Sandbox, SandboxUnavailableError
@@ -98,7 +99,9 @@ def test_extract_counts_inner_tarballs_compressed_size(tmp_path: Path) -> None:
   destination.mkdir()
   compressed_size = len(payload.getvalue())
   extract_artifact(archive, destination, max_bytes = compressed_size)
-  assert (destination / 'cfg' / 't.rt.tar.gz').read_bytes() == payload.getvalue()
+  assert (
+    (destination / 'cfg' / 't.rt.tar.gz').read_bytes() == payload.getvalue()
+  )
 
   smaller = tmp_path / 'smaller'
   smaller.mkdir()
@@ -479,7 +482,7 @@ async def test_diffs_are_written_as_they_come(tmp_path: Path,
   workspaces = Workspaces(tmp_path / 'home', forge, max_diff_bytes = 1024)
   with pytest.raises(
     WorkspaceError,
-    match = r'over 1024 bytes \(ACKNOWLEDG_FORGE_MAX_DIFF_BYTES\)'
+    match = r'over 1024 bytes \(max_diff_bytes\)'
   ):
     with (tmp_path / 'too-long.diff').open('xb') as handle:
       await workspaces.diff(
