@@ -54859,8 +54859,10 @@ is TRUE if the expression is the immediate operand of an "&" operator.
             }  /* if */
           } else if (is_nontype_template_param_symbol(fund_sym)) {
             /* A dependent construct.  Represent it generically with a
-               tpck_template_ref constant. */
-            expl_templ_arg_list =
+               tpck_template_ref constant.  Leave expl_templ_arg_list
+               unsubstituted, since scan_identifier will also substitute
+               it. */
+            a_template_arg_ptr  subst_templ_arg_list =
               copy_template_arg_list_with_substitution_rebuilding_arg_operands(
                                              fund_sym, expl_templ_arg_list,
                                              (a_template_param_ptr)NULL,
@@ -54875,7 +54877,7 @@ is TRUE if the expression is the immediate operand of an "&" operator.
               con->variant.template_param.variant.template_ref.con =
                                                          sym->variant.constant;
               con->variant.template_param.variant.template_ref.arg_list =
-                                                           expl_templ_arg_list;
+                                                          subst_templ_arg_list;
               con->type = type_of_unknown_templ_param_nontype;
               sym = alloc_symbol(sk_constant, sym->header,
                                  &sym->decl_position);
