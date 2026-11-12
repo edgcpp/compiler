@@ -1,0 +1,18 @@
+[GH #532]
+Alias template CTAD with a template-id in a constructor noexcept specification
+
+Class template argument deduction through an alias template could crash
+when the noexcept specification of a constructor template of the underlying
+class template called a member function template with the constructor's
+template parameter pack as explicit template arguments, e.g. aliases of
+std::tuple with libstdc++.  The explicit template arguments were substituted
+twice.  For example, with --c++20:
+
+  template<typename... E> struct S {
+    template<typename... U> static constexpr bool n() { return true; }
+    S(const E&...) {}
+    template<typename... U> S(U&&...) noexcept(n<U...>()) {}
+  };
+  template<typename X, typename T> struct F {};
+  template<typename X, typename... T> using A = S<F<X, T>...>;
+  A a{F<int, int>{}};
