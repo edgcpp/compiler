@@ -27437,8 +27437,20 @@ a reused value, if any, in the iwp_1st_resume visit.
   switch (dip->kind) {
     case dik_constant:
     case dik_nonconstant_aggregate:
-      result = extract_value_from_constant(ips, dip->variant.constant.ptr,
-                                           dst_addr, implied_src);
+      { a_constant_ptr  cp = dip->variant.constant.ptr;
+        result = extract_value_from_constant(ips, cp, dst_addr, implied_src);
+        if (constant_is(cp, ck_string)) {
+          /* The ck_string contents were copied to the array being initialized.
+             Undo the mapping of the array storage to the ck_string entry
+             since it is not a persistent association (the storage may be
+             initialized again, e.g., in the next iteration of a loop). */
+          a_byte  *mapped;
+          get_stack_bytes(ips, dst_addr.address, mapped);
+          if (mapped == (a_byte*)cp) {
+            unmap_stack_bytes(ips, dst_addr.address);
+          }  /* if */
+        }  /* if */
+      }
       break;
     case dik_lambda:
       if (constexpr_lambdas_enabled) {
