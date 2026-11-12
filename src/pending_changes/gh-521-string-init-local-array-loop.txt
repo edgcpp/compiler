@@ -1,0 +1,18 @@
+[GH #521]
+Constant evaluation of repeated initializations of an array from a string
+
+When constant evaluation initialized a local array from a string literal, it
+left the storage of the array associated with the string literal.  If the same
+storage was initialized again (e.g., in the next iteration of a loop), the
+front end could fail with the internal error "duplicate map key in
+interpreter".  For example:
+
+  constexpr int f() {
+    int r = 0;
+    for (int i = 0; i < 2; ++i) {
+      char a[2] = "a";
+      r += a[0];
+    }
+    return r;
+  }
+  static_assert(f() == 2*'a');  // Previously an internal error.
