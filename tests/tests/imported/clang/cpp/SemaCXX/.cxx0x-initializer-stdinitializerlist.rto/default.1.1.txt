@@ -112,7 +112,7 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 314: error: expression must have a constant value
     constexpr int k = f( // expected-error {{must be initialized by a constant expression}}
                       ^
-"Test_name.c", line 317: note: cannot call non-constexpr function "TemporaryInitListSourceRange_PR22367::A::A(std::initializer_list<int>)" (declared at line 311)
+"Test_name.c", line 317: note: cannot call non-constexpr function "std::initializer_list<_E>::initializer_list(const _E *, std::size_t) [with _E=int]" (declared at line 34)
         std::initializer_list // expected-note {{constructor}}
         ^
 

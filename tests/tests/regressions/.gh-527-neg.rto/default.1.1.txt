@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 17: error: expression must have a constant value
+  static_assert(f(1) == 0);  // Error: S::S(int) is not constexpr.
+                ^
+"Test_name.c", line 13: note: cannot call non-constexpr function "S::S(int)" (declared at line 8)
+    try { S(h(n)); } catch (int i) { return i; }
+          ^
+
+"Test_name.c", line 25: error: expression must have a constant value
+  static_assert(g() == 0);  // Error: *p is not a constant.
+                ^
+"Test_name.c", line 22: note: attempt to access run-time storage
+    S(h(*p));
+        ^
+
+2 errors detected in the compilation of "Test_name.c".
