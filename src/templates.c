@@ -45648,6 +45648,10 @@ On success, return the symbol for the new guide; otherwise return NULL.
     a_routine_ptr         rout;
     a_ctws_state          ctws_state;
     a_boolean             copy_error = FALSE;
+    /* ctws_state.alias_parameter_pack_mapping points to one of these and is
+       still used for the requires clauses after the block below. */
+    Dyn_array<a_template_param_ptr>
+                          pack_mapping, alias_pack_mapping;
 
     if (guide_template_params != NULL) {
       a_symbol_ptr          class_sym = symbol_for(ret_type)
@@ -45659,8 +45663,6 @@ On success, return the symbol for the new guide; otherwise return NULL.
       a_template_arg_ptr    alias_proto_args;
       size_t                number_of_guide_params = 0;
       Dyn_array<a_boolean>  nondeduced_args, used_parameters;
-      Dyn_array<a_template_param_ptr>
-                            pack_mapping, alias_pack_mapping;
 
       /* Substitute the prototype arguments of the template alias into each of
          the deduced template arguments to record which template parameters of
