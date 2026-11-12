@@ -85,9 +85,9 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 514: error: call to consteval function "GH112677::ConstEval::ConstEval(int)" did not produce a valid constant expression
       TemplateCtor(int arg) : val(arg) {} // expected-note {{undefined constructor 'ConstEval'}}
                                  ^
-"Test_name.c", line 514: note: constexpr function "GH112677::ConstEval::ConstEval(int)" (declared at line 508) is not defined
+"Test_name.c", line 514: note: the value of parameter "arg" (declared at line 514) cannot be used as a constant
       TemplateCtor(int arg) : val(arg) {} // expected-note {{undefined constructor 'ConstEval'}}
-                                 ^
+                                  ^
 
 "Test_name.c", line 520: error: call to consteval function "GH112677::C::C(int) [with Anything=int]" did not produce a valid constant expression
   C c(0); // expected-note{{in implicit initialization for inherited constructor of 'C'}}

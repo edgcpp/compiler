@@ -25681,59 +25681,16 @@ compound statement of that handler.
     goto continue_mem_inits;
   }  /* if */
 
-  /* Retrieve the routine scope, or issue an error. */
   if (callee == NULL) {
     info_with_pos(ec_constexpr_expression_cannot_be_interpreted, pos, ips);
-    do_constexpr_fail(result);
-    goto done;
-  } else if (!callee->is_constexpr) {
-    info_with_pos_sym(ec_constexpr_call_to_nonconstexpr_function,
-                      pos, symbol_for(callee), ips);
-    do_constexpr_fail(result);
-    goto done;
-  }  /* if */
-  if (!callee->defined) {
-    if (has_routine_definition_from_module(callee)) {
-      /* The definition was stored in a module file. */
-      if (!load_routine_definition_from_module(callee)) {
-        ips->input_error = TRUE;
-        do_constexpr_fail(result);
-      }  /* if */
-    } else if ((callee->is_inheriting_ctor || callee->compiler_generated) &&
-               !callee->is_deleted) {
-      force_definition_of_compiler_generated_routine(callee);
-    } else {
-      set_instance_required(symbol_for(callee), TRUE, SIR_CONSTANT_CONTEXT);
-    }  /* if */
-  }  /* if */
-  if (callee->function_def_number == NULL_function_def_number) {
-    info_with_pos_sym(ec_constexpr_function_undefined, pos,
-                      symbol_for(callee), ips);
-    do_constexpr_fail(result);
-    if (callee->is_deleted && ips->is_constant_evaluated) {
-      /* An error has presumably been issued earlier (use of a deleted
-         function).  Treat this as an input error to avoid extraneous
-         diagnostics. */
-      expect_error();
-      ips->input_error = TRUE;
-    }  /* if */
-    goto done;
-  } else if (callee->is_prototype_instantiation) {
-    info_with_pos_sym(ec_constexpr_call_not_interpretable, pos,
-                      symbol_for(callee), ips);
-    do_constexpr_fail(result);
-    goto done;
-  } else if (cost_exceeded(ips)) {
-    report_excessive_cost(ips);
     do_constexpr_fail(result);
     goto done;
   } else {
     a_byte               *result_storage = cap.address;
     a_byte               *complete_object = cap.complete_object;
-    a_scope_ptr          callee_scope = scope_for_routine(callee);
+    a_scope_ptr          callee_scope;
     an_expr_node_ptr     args = dip->variant.constructor.args, arg;
-    a_variable_ptr       params = callee_scope->variant.routine.parameters,
-                         param, this_var;
+    a_variable_ptr       params, param, this_var;
     a_base_class_ptr     bcp;
     a_byte_count         n_args = 1, n_params = 1;
     a_byte_count         *arg_size;
@@ -25741,23 +25698,6 @@ compound statement of that handler.
     an_alloc_seq_number  alloc_seq_number;
     a_type_ptr           class_type = parent_class_of(callee);
     unsigned long        up_front_cost;
-    /* Don't attempt to interpret a non-constexpr function.  The flag
-       scope->is_constexpr_routine is set at the end of a constexpr function
-       definition, so this also prevents the interpretation of a function that
-       is not fully parsed (e.g., requested due to a recursive call in a
-       constexpr function). */
-    if (!callee_scope->is_constexpr_routine) {
-      do_constexpr_fail(result);
-      info_with_pos_sym(ec_constexpr_call_not_interpretable, pos,
-                        symbol_for(callee), ips);
-      goto done;
-    }  /* if */
-    if (class_type->variant.class_struct_union.any_virtual_base_classes) {
-      do_constexpr_fail(result);
-      info_with_pos_type(ec_constexpr_object_with_virtual_base, pos,
-                         class_type, ips);
-      goto done;
-    }  /* if */
     /* Set up arguments, starting with "this" if applicable. */
     /* This process must happen in two phases.  First, the arguments must be
        allocated and evaluated.  Only then can we map parameter variables onto
@@ -25775,17 +25715,9 @@ compound statement of that handler.
       result = FALSE;
       goto done;
     }  /* if */
-    /* Count the parameters (including "this") to make sure there are enough
-       arguments for the parameters. */
-    for (param = params; param != NULL; param = param->next) {
-      n_params += 1;
-    }  /* if */
-    if (n_args < n_params) {
-      info_with_pos(ec_too_few_arguments, pos, ips);
-      do_constexpr_fail(result);
-      goto done;
-    }  /* if */
-    /* Phase 1: Allocate and evaluate the arguments. */
+    /* Phase 1: Allocate and evaluate the arguments.  That precedes the checks
+       of the constructor below: If the evaluation of an argument exits by
+       throwing an exception, the constructor is not invoked. */
     /* The "+1" below is to account for the "this" pointer (handled later). */
     p_arg_ptr = (a_byte**)arg_ptrs+1;
     arg_size = (a_byte_count*)arg_sizes;
@@ -25794,13 +25726,16 @@ compound statement of that handler.
       /* The first non-this argument is implicit (i.e., not represented in
          the IL).  Since it always corresponds to the reference parameter of
          a copy/move constructor, we know it is a constexpr address. */
+      a_type_ptr    routine_type = skip_typerefs(callee->type);
+      a_type_ptr    param_type = routine_type->variant.routine.extra_info->
+                                                       param_type_list->type;
       a_byte_count  n_bytes = sizeof(a_constexpr_address);
       a_byte        *arg_bytes;
       do_host_alignment(&n_bytes);
       *arg_size = n_bytes;
       arg_size += 1;
       n_bytes += sizeof(a_var_postfix);
-      if (!alloc_complete_object(ips, n_bytes, params->type, arg_bytes)) {
+      if (!alloc_complete_object(ips, n_bytes, param_type, arg_bytes)) {
         goto done;
       }  /* if */
       *(a_constexpr_address*)arg_bytes = *implied_src;
@@ -25863,6 +25798,79 @@ compound statement of that handler.
         goto done;
       }  /* if */
     }  /* for */
+    /* Check that the constructor can be interpreted, and retrieve its routine
+       scope. */
+    if (!callee->is_constexpr) {
+      info_with_pos_sym(ec_constexpr_call_to_nonconstexpr_function,
+                        pos, symbol_for(callee), ips);
+      do_constexpr_fail(result);
+      goto done;
+    }  /* if */
+    if (!callee->defined) {
+      if (has_routine_definition_from_module(callee)) {
+        /* The definition was stored in a module file. */
+        if (!load_routine_definition_from_module(callee)) {
+          ips->input_error = TRUE;
+          do_constexpr_fail(result);
+        }  /* if */
+      } else if ((callee->is_inheriting_ctor || callee->compiler_generated) &&
+                 !callee->is_deleted) {
+        force_definition_of_compiler_generated_routine(callee);
+      } else {
+        set_instance_required(symbol_for(callee), TRUE, SIR_CONSTANT_CONTEXT);
+      }  /* if */
+    }  /* if */
+    if (callee->function_def_number == NULL_function_def_number) {
+      info_with_pos_sym(ec_constexpr_function_undefined, pos,
+                        symbol_for(callee), ips);
+      do_constexpr_fail(result);
+      if (callee->is_deleted && ips->is_constant_evaluated) {
+        /* An error has presumably been issued earlier (use of a deleted
+           function).  Treat this as an input error to avoid extraneous
+           diagnostics. */
+        expect_error();
+        ips->input_error = TRUE;
+      }  /* if */
+      goto done;
+    } else if (callee->is_prototype_instantiation) {
+      info_with_pos_sym(ec_constexpr_call_not_interpretable, pos,
+                        symbol_for(callee), ips);
+      do_constexpr_fail(result);
+      goto done;
+    } else if (cost_exceeded(ips)) {
+      report_excessive_cost(ips);
+      do_constexpr_fail(result);
+      goto done;
+    }  /* if */
+    callee_scope = scope_for_routine(callee);
+    params = callee_scope->variant.routine.parameters;
+    /* Don't attempt to interpret a non-constexpr function.  The flag
+       scope->is_constexpr_routine is set at the end of a constexpr function
+       definition, so this also prevents the interpretation of a function that
+       is not fully parsed (e.g., requested due to a recursive call in a
+       constexpr function). */
+    if (!callee_scope->is_constexpr_routine) {
+      do_constexpr_fail(result);
+      info_with_pos_sym(ec_constexpr_call_not_interpretable, pos,
+                        symbol_for(callee), ips);
+      goto done;
+    }  /* if */
+    if (class_type->variant.class_struct_union.any_virtual_base_classes) {
+      do_constexpr_fail(result);
+      info_with_pos_type(ec_constexpr_object_with_virtual_base, pos,
+                         class_type, ips);
+      goto done;
+    }  /* if */
+    /* Count the parameters (including "this") to make sure there are enough
+       arguments for the parameters. */
+    for (param = params; param != NULL; param = param->next) {
+      n_params += 1;
+    }  /* if */
+    if (n_args < n_params) {
+      info_with_pos(ec_too_few_arguments, pos, ips);
+      do_constexpr_fail(result);
+      goto done;
+    }  /* if */
     /* Phase 2: Map the parameters to the arguments. */
     /* Associate with the parameter variables a new allocation number.  For
        ordinary calls, we just use the allocation number about to be created
