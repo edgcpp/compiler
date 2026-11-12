@@ -41,6 +41,10 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       case __builtin_constant_p(true) ? (long unsigned int)&x : 0:;
                                         ^
 
+"SemaCXX/constant-expression-cxx11.cpp", line 127: error: expression must have a constant value
+  constexpr int &Recurse3 = Recurse2;
+                            ^
+
 "SemaCXX/constant-expression-cxx11.cpp", line 168: error: expression must have a constant value
   static_assert(F(4, k) == 3, "");
                 ^
@@ -1473,10 +1477,6 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "SemaCXX/constant-expression-cxx11.cpp", line 2410: note: integer operation result is out of range
     constexpr int *p = (&n + 1) + (unsigned __int128)-1;
                                 ^
-
-"SemaCXX/constant-expression-cxx11.cpp", line 2411: error: expected a ")"
-    constexpr int *q = (&n + 1) - (unsigned __int128)-1;
-                                            ^
 
 Error limit reached.
 200 errors detected in the compilation of "Test_name.c".

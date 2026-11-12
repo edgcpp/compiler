@@ -6135,7 +6135,10 @@ returned set to TRUE.
                     below. */
                  !(static_lifetime &&
                    !dps->init_state.initializer_must_be_constant &&
-                   constant_addresses_local_var(folded_con))) {
+                   constant_addresses_local_var(folded_con)) &&
+                 /* The unspecified object of a reference or "this" whose
+                    value is not known (P2280R4) has no constant address. */
+                 !constant_addresses_unknown_object(folded_con)) {
         if (is_error_constant(folded_con)) {
           init_err = TRUE;
         } else if (static_lifetime &&
