@@ -1,5 +1,107 @@
 Version 7.1
 
+11/12/26 [GH #368]
+C++26: Allowing exception throwing in constant evaluation
+
+P3068R6 is now implemented in C++26 mode, except for its library support:
+Exceptions may be thrown and caught during constant evaluation, provided that
+every exception thrown is also caught (and its exception object destroyed)
+within the same evaluation.  For example, with --c++26:
+
+  constexpr int f(int n) {
+    try {
+      if (n < 0) throw n;
+      return n;
+    } catch (int i) {
+      return -i;
+    }
+  }
+  static_assert(f(-3) == 3);  // Previously an error; now okay.
+
+The feature can be enabled in other modes with
+--set_flag=constexpr_exceptions, and disabled with
+--clear_flag=constexpr_exceptions.  It is always disabled if exceptions are
+disabled.
+
+An exception that is not caught, a rethrow when no exception is being
+handled, and a call to std::terminate (e.g., because an exception escapes from
+a noexcept function) all cause the evaluation to not be constant, with a
+specific diagnostic.
+
+
+11/12/26 [GH #368]
+C++26: Library support for exceptions in constant evaluation
+
+The library support of P3068R6 (as amended by P3842R2) is now implemented in
+C++26 mode (or with --set_flag=constexpr_exceptions): std::rethrow_exception
+can be called during constant evaluation (even if the library declares or
+defines it without "constexpr"), and so can std::exception_ptr operations if
+that class has a single nonstatic data member of pointer type (as in the GCC
+C++ standard library).  For example, with --c++26 and a library that supports
+this:
+
+  #include <exception>
+  constexpr int f() {
+    std::exception_ptr p = std::make_exception_ptr(42);
+    try {
+      std::rethrow_exception(p);
+    } catch (int i) {
+      return i;
+    }
+  }
+  static_assert(f() == 42);  // Previously an error; now okay.
+
+std::current_exception and std::uncaught_exceptions are not constexpr
+functions (P3842R2), so calls to them are still not constant expressions.
+However, in g++ modes with gnu_version >= 160000, the builtins
+__builtin_eh_ptr_adjust_ref, __builtin_current_exception, and
+__builtin_uncaught_exceptions are now supported, including during constant
+evaluation.  The GCC C++ standard library uses the first two to implement
+std::exception_ptr and std::make_exception_ptr.
+
+In addition, a dynamic_cast to a reference type that fails, typeid applied to
+a null glvalue, and an array new-expression with an invalid number of elements
+now throw std::bad_cast, std::bad_typeid, and std::bad_array_new_length,
+respectively, during constant evaluation, provided that the definition of the
+corresponding class is available and it has a constexpr default constructor.
+Otherwise, those cases are diagnosed as before.
+
+An exception object that is still referred to by a std::exception_ptr at the
+end of the evaluation causes the evaluation to not be constant.
+
+
+11/12/26 [GH #500]
+Empty enclosing packs in generic lambdas
+
+A pack expansion in a generic lambda nested in a template instantiation could
+produce an error node in the IL when it referenced a lambda parameter pack
+before an empty enclosing parameter pack.  Empty enclosing packs are now
+handled correctly regardless of the order of the pack references.  Spurious
+warnings from prototype instantiations in such cases are also suppressed.  For
+example, with --c++20 -tused:
+
+  template<int... Is> void f() {
+    []<int... Js>() { ((Js * Is) * ... * 1); };
+  }
+  template void f<>();  // Previously produced an error node in the IL.
+
+
+11/12/26 [GH #506]
+Pack expansions in nested generic-lambda template default arguments
+
+A default template argument of a nested generic lambda could be rejected when a
+pack expansion involving an enclosing pack was incorrectly treated as empty
+before the lambda's template arguments were available.  Such defaults now
+remain dependent until instantiation.  For example, with --c++20 -tused:
+
+  template<int... Is> void f() {
+    [](auto) {
+      []<int... Js, typename U = int[((Js * Is) * ... * 1) - 2]>() {};
+    };
+  }
+  template void f<2>();  // Previously a spurious array bound error, now okay.
+
+
 11/10/26 [GH #501]
 Array new with a wide string literal initializer in constant evaluation
 
