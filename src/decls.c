@@ -17888,8 +17888,8 @@ issue an error.
 #endif /* GNU_EXTENSIONS_ALLOWED */
 #if DECL_MODIFIERS_IN_USE
 
-static void check_variable_decl_modifiers(a_variable_ptr      var_ptr,
-                                          a_decl_parse_state  *dps)
+void check_variable_decl_modifiers(a_variable_ptr      var_ptr,
+                                   a_decl_parse_state  *dps)
 /*
 Check that the given variable's initialization (if any) is compatible with the
 declaration modifiers recorded in *dps.

@@ -1,0 +1,23 @@
+[GH #536]
+Instances of "__thread" variable templates are thread-local
+
+An instance of a variable template declared with the GNU "__thread" specifier
+was given static storage duration instead of thread storage duration, so all
+threads shared one object (with no diagnostic).  Such instances are now
+thread-local, like instances of "thread_local" variable templates, and are
+diagnosed like other "__thread" variables when they need dynamic
+initialization or when their address is used as a constant.  For example, with
+--c++17 --g++:
+
+  template<class T> __thread T tv = 10;
+  int *p = &tv<int>;  // Previously the same object in every thread.
+
+  int f();
+  template<class T> __thread T dv = f();
+  int use() { return dv<int>; }  // Now an error.
+
+Also, when generating C23 code (for GCC 15 or later), the C-generating back
+end put out a non-defining declaration of a file-scope "__thread" variable
+before its definition.  For a variable with internal linkage, that
+declaration is itself a definition in C23, and the generated C failed to
+compile.  For example, "static __thread int x = 1;" now compiles.

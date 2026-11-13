@@ -7830,6 +7830,13 @@ expression context) rather than a declaration.
   /* Scan or rescan the declaration of the variable template or static
      data member. */
   scan_template_variable_declaration(tip, var_sym, decl_cache, &dps);
+#if THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED
+  if (is_var_templ_instance && (dps.decl_modifiers.flags & DM_THREAD) != 0) {
+    /* The rescan records "__thread" only in dps (unlike "thread_local", which
+       marks the variable directly), so apply it to the instance here. */
+    var_ptr->decl_modifiers |= DM_THREAD;
+  }  /* if */
+#endif /* THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED */
   if (dps.decltype_auto_specifier_seen) {
     var_ptr->declared_with_decltype_auto = TRUE;
   } else if (dps.auto_type_specifier_seen) {
@@ -8059,6 +8066,11 @@ expression context) rather than a declaration.
       error_position = dps.declarator_pos;
       check_for_missing_initializer(var_sym, var_ptr->type);
     }  /* if */
+  }  /* if */
+  if (is_var_templ_instance) {
+    /* Check the initialization against the modifiers (e.g., a "__thread"
+       instance cannot be dynamically initialized). */
+    check_variable_decl_modifiers(var_ptr, &dps);
   }  /* if */
 #if GNU_EXTENSIONS_ALLOWED && GNU_VISIBILITY_ATTRIBUTE_ALLOWED
   if (var_ptr->ELF_visibility == evk_unspecified) {
@@ -35458,6 +35470,13 @@ that follows.
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
         check_assertion(vp != NULL);
         vp->is_specialized = TRUE;
+#if THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED
+        if (dps->first_decl && symbol_is(sym, sk_variable)) {
+          /* The specialization does not inherit "__thread" from the
+             generated declaration of the instance. */
+          vp->decl_modifiers &= ~DM_THREAD;
+        }  /* if */
+#endif /* THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED */
         if (dps->in_class_scope) {
           vp->is_in_class_specialization = TRUE;
         }  /* if */

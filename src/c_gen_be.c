@@ -9201,6 +9201,26 @@ Generate C for an asm statement or declaration.
 }  /* dump_asm_entry */
 
 
+#if C_GEN_BE_GENERATES_C23
+
+static a_boolean is_thread_local_in_generated_c(a_variable_ptr var_ptr)
+/*
+Return TRUE if var_ptr is put out as a thread-local variable, either because
+it was declared "thread_local" or because it was declared "__thread".
+*/
+{
+  a_boolean  result = var_ptr->is_thread_local;
+
+#if DECL_MODIFIERS_IN_USE && \
+    (MICROSOFT_EXTENSIONS_ALLOWED || THREAD_LOCAL_STORAGE_SPECIFIER_ALLOWED)
+  if ((var_ptr->decl_modifiers & DM_THREAD) != 0) result = TRUE;
+#endif /* DECL_MODIFIERS_IN_USE && (MICROSOFT_EXTENSIONS_ALLOWED || ...) */
+  return result;
+}  /* is_thread_local_in_generated_c */
+
+#endif /* C_GEN_BE_GENERATES_C23 */
+
+
 static void dump_scope_variables(a_scope_ptr scope,
                                  a_boolean   interleave_asm_decls,
                                  a_boolean   dump_vars_without_initializers,
@@ -9255,16 +9275,17 @@ interleaved with the variables.
          definition in another translation unit. */
 #if C_GEN_BE_GENERATES_C23
     } else if (!dump_initializers && scope->kind == sck_file &&
-               var_ptr->is_thread_local &&
+               is_thread_local_in_generated_c(var_ptr) &&
                var_ptr->storage_class != sc_extern) {
       /* In C23, a non-extern file-scope thread_local declaration is always
-         a definition, so we cannot follow the usual pattern of putting out
-         a non-defining declaration followed by the definition. */
+         a definition (GCC treats "__thread" the same way), so we cannot
+         follow the usual pattern of putting out a non-defining declaration
+         followed by the definition. */
 #endif /* C_GEN_BE_GENERATES_C23 */
     } else {
       a_boolean dump_no_init = dump_vars_without_initializers;
 #if C_GEN_BE_GENERATES_C23
-      if (scope->kind == sck_file && var_ptr->is_thread_local) {
+      if (scope->kind == sck_file && is_thread_local_in_generated_c(var_ptr)) {
         /* We skipped the "forward declaration" of thread-local variables,
            so we need to ensure that they are put out in the "definition"
            pass over the variable list. */
