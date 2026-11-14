@@ -1,0 +1,14 @@
+[GH #533]
+Alias template CTAD with a constrained constructor of a variadic class template
+
+Class template argument deduction through an alias template could read freed
+memory, and possibly crash, when a constructor of the underlying class
+template had a parameter pack and a requires clause, e.g. aliases of
+std::tuple with libstdc++.  For example, with --c++20:
+
+  template<typename... E> struct S {
+    static constexpr bool c = true;
+    S(E...) requires c {}
+  };
+  template<typename... T> using A = S<T...>;
+  A a{1};
