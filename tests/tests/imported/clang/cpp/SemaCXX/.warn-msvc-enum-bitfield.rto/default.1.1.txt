@@ -3,6 +3,14 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     struct { E e1 : 1; E e2; F f1 : 1; F f2; } s;
                                                ^
 
+"Test_name.c", line 22: warning: bit field cannot contain all values of the enumerated type
+    struct { E e1 : 1; E e2; F f1 : 1; F f2; } s;
+                    ^
+
+"Test_name.c", line 22: warning: bit field cannot contain all values of the enumerated type
+    struct { E e1 : 1; E e2; F f1 : 1; F f2; } s;
+                                    ^
+
 "Test_name.c", line 22: warning: variable "s" was set but never used
     struct { E e1 : 1; E e2; F f1 : 1; F f2; } s;
                                                ^
