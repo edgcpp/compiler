@@ -1,5 +1,31 @@
 Version 7.1
 
+11/13/26 [GH #520]
+Lowering of <=> and the evaluation of its operands
+
+For floating-point operands, the lowering of <=> for the C-generating back
+end tested the right operand for a NaN before evaluating the left operand,
+using a short-circuit "||".  When the right operand was a NaN, the left
+operand was therefore not evaluated, and its side effects were lost.  Also,
+an operand without side effects could be read by the NaN test before the
+other operand was evaluated, and by the comparisons after it.  If the other
+operand changed it, the result could then be "equivalent" for a NaN.  For
+example, with --c++20:
+
+  #include <compare>
+
+  float x(), y();
+  auto f() { return x() <=> y(); }   // Previously x() was not called when
+                                     // y() returned a NaN.
+
+  float g, h();   // h() modifies g.
+  auto k() { return h() <=> g; }     // Previously could be "equivalent"
+                                     // when h() stores a NaN into g.
+
+Each operand is now evaluated exactly once, and the NaN test and the
+comparisons use the same operand values.
+
+
 11/12/26 [GH #368]
 C++26: Allowing exception throwing in constant evaluation
 
