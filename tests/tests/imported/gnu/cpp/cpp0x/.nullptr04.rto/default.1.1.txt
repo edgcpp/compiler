@@ -7,7 +7,7 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   const int n4 = static_cast<const int>(nullptr); // { dg-error "16:invalid 'static_cast' " }
                  ^
 
-"Test_name.c", line 10: warning: conversion from pointer to smaller integer
+"Test_name.c", line 10: error: invalid type conversion
   const short int n5 = reinterpret_cast<short int>(nullptr); // { dg-error "22:cast from .std::nullptr_t. to .short int. loses precision" "" { target { ! ptr_eq_short } } }
                        ^
 
@@ -19,7 +19,7 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   const int n8 = static_cast<const int>(mynull); // { dg-error "16:invalid 'static_cast' " }
                  ^
 
-"Test_name.c", line 16: warning: conversion from pointer to smaller integer
+"Test_name.c", line 16: error: invalid type conversion
   const short int n9 = reinterpret_cast<short int>(mynull); // { dg-error "22:cast from .std::nullptr_t. to .short int. loses precision" "" { target { ! ptr_eq_short } } }
                        ^
 
@@ -55,4 +55,4 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   const intptr_t n11 = (intptr_t)mynull;
                  ^
 
-2 errors detected in the compilation of "Test_name.c".
+4 errors detected in the compilation of "Test_name.c".
