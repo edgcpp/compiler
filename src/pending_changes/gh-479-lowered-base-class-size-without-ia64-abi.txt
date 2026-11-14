@@ -1,0 +1,18 @@
+[GH #479]
+Lowered layout of Microsoft-mode base classes without the IA-64 ABI
+
+In front ends configured with IA64_ABI set to FALSE, IL lowering did not
+account for the padding at the end of a base class subobject.  In Microsoft
+mode, a base class whose alignment is stricter than the platform default
+can occupy less space as a base class subobject than its full size, so
+later members of the derived class are allocated in what would otherwise be
+its tail padding.  IL lowering nonetheless emitted such a base class as a
+field of the complete base class type, so the C compiler placed the derived
+class members at larger offsets than the front end had computed (e.g., than
+those used for sizeof and offsetof).  Such a base class is now
+lowered to a type-as-subobject whose members are emitted inline, as is done
+for IA-64 ABI configurations.  For example, with --ms_c++20:
+
+  struct B { alignas(16) char arr[2]; };
+  struct D : B { char d; };  // d is at offset 8.
+  void f(D *p) { p->d = 'x'; }  // Previously accessed offset 16.

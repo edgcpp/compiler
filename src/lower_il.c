@@ -1182,20 +1182,19 @@ offset for the field.
   /* Store the base class name. */
   (void)strcpy(name_ptr+prefix_length, temp_name);
   /* Create the field. */
-#if IA64_ABI
   field_ptr = add_field(name_ptr, field_type, field_offset, struct_type,
                         /*for_base_class=*/TRUE);
-  if (targ_reuse_tail_padding && is_immediate_class_type(field_type) &&
+  if (
+#if IA64_ABI
+      targ_reuse_tail_padding &&
+#endif /* IA64_ABI */
+      is_immediate_class_type(field_type) &&
       class_type_supp(field_type)->compiler_generated &&
       (field_type->size % field_type->alignment) != 0) {
     /* There is padding at the end of the base class subobject in which
        derived class members may be allocated. */
     field_ptr->class_subobject_with_tail_padding = TRUE;
   }  /* if */
-#else /* !IA64_ABI */
-  field_ptr = add_field(name_ptr, field_type, field_offset, struct_type,
-                        /*for_base_class=*/TRUE);
-#endif /* IA64_ABI */
   field_ptr->is_lowered_base_class = TRUE;
 }  /* add_base_class_dummy_field */
 
@@ -8534,13 +8533,21 @@ this routine to do a relatively simple copy of all the fields.
 
   ctsp = class_type->variant.class_struct_union.extra_info;
   if ((!class_type->variant.class_struct_union.any_virtual_base_classes
+#if !IA64_ABI
+       /* The size as a base can still be smaller than the size of the class
+          (in Microsoft mode, which ignores some alignment requirements when
+          computing the size of a base class). */
+       && (type_is(class_type, tk_union) ||
+           ctsp->size_without_virtual_base_classes == class_type->size)
+#endif /* !IA64_ABI */
 #if CFRONT_OBJECT_CODE_COMPATIBILITY
-      || !class_has_independently_allocated_virtual_base_classes(class_type)
+      || (class_type->variant.class_struct_union.any_virtual_base_classes &&
+          !class_has_independently_allocated_virtual_base_classes(class_type))
 #endif /* CFRONT_OBJECT_CODE_COMPATIBILITY */
                                                                             )
 #if IA64_ABI
       && (!targ_reuse_tail_padding ||
-          class_type->kind == (a_type_kind)tk_union ||
+          type_is(class_type, tk_union) ||
           ctsp->size_without_virtual_base_classes == class_type->size)
 #endif /* IA64_ABI */
                                                                       ) {
@@ -10020,7 +10027,7 @@ Do IL lowering of the indicated field and everything under it.
     mark_as_visited(field);
     lower_source_correspondence(&field->source_corresp);
     lower_os_type(field->type);
-#if BACK_END_IS_C_GEN_BE && IA64_ABI && MAINTAIN_NEEDED_FLAGS
+#if BACK_END_IS_C_GEN_BE && MAINTAIN_NEEDED_FLAGS
     if (field->class_subobject_with_tail_padding) {
       /* Ensure that the corresponding subobject type definition is not
          removed from the IL, as it will be needed by the C-generating back
@@ -10031,7 +10038,7 @@ Do IL lowering of the indicated field and everything under it.
       class_type_supp(ftp)->subobject_partner->
                        variant.class_struct_union.keep_definition_in_il = TRUE;
     }  /* if */
-#endif /* BACK_END_IS_C_GEN_BE && IA64_ABI && MAINTAIN_NEEDED_FLAGS */
+#endif /* BACK_END_IS_C_GEN_BE && MAINTAIN_NEEDED_FLAGS */
   }  /* if */
 }  /* lower_field */
 
