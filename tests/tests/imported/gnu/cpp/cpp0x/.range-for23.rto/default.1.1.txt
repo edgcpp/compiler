@@ -11,13 +11,9 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
     for (const auto& i, 21)  // { dg-error "has no initializer|expected" }
                         ^
 
-"Test_name.c", line 8: error: expected a ";"
+"Test_name.c", line 8: error: a condition declaration can only declare one variable
     for (const auto& i, 21)  // { dg-error "has no initializer|expected" }
-                          ^
-
-"Test_name.c", line 8: error: expected an expression
-    for (const auto& i, 21)  // { dg-error "has no initializer|expected" }
-                          ^
+                        ^
 
 "Test_name.c", line 8: error: expected a ";"
     for (const auto& i, 21)  // { dg-error "has no initializer|expected" }
@@ -27,4 +23,4 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
       i;
       ^
 
-6 errors detected in the compilation of "Test_name.c".
+5 errors detected in the compilation of "Test_name.c".

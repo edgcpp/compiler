@@ -179,9 +179,9 @@ typedef void a_type_list_processing_routine(a_type_ptr type_list);
 typedef a_type_list_processing_routine *a_type_list_processing_routine_ptr;
 
 extern void process_local_types(
-                   a_scope_ptr                        scope,
-                   a_type_list_processing_routine_ptr list_processing_routine);
-
+         a_scope_ptr                        scope,
+         a_type_list_processing_routine_ptr list_processing_routine,
+         a_boolean                          skip_expansion_prototypes = FALSE);
 
 /*
 Types for expression and statement traversal routines.
@@ -356,6 +356,11 @@ typedef struct an_expr_or_stmt_traversal_block {
 			   including by process_expr, or by traverse_expr on
 			   a type that is not pointed-to directly by the
 			   expression passed to traverse_expr.) */
+  /* Field used by expansion_initializer_is_dependent: */
+  a_boolean	ignore_retained_expansion_operands;
+			/* If TRUE, a generic designator constant and an
+			   overload set retained for target-directed
+			   resolution do not make an expression dependent. */
   /* Fields used by examine_expr_for_unordered_temp_inits: */
   a_boolean	set_unordered_on_dynamic_inits;
 			/* If TRUE, set the "unordered" flag in dynamic

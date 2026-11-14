@@ -320,19 +320,6 @@ declaration, when friend injection is turned off.
   ((sym)->is_invisible && !(sym)->is_class_member)
 
 
-static a_boolean is_non_rescan_prototype_instantiation_context(void)
-/*
-Return TRUE if we are in a template prototype instantiation context, but
-exclude contexts where a member template of a real instantiation of the
-enclosing class or a constraint expression are being rescanned.
-*/
-{
-  return is_prototype_instantiation_context() &&
-         !scope_stack_top().in_concept_rescan &&
-         !is_nested_in_real_instantiation();
-}
-
-
 static void clear_overload_set_traversal_block(
                           a_candidate_function_ptr        *candidate_functions,
                           ARG_UNUSED a_symbol_ptr         *inaccessible_match,
@@ -5217,7 +5204,7 @@ point of call, FALSE otherwise.
       is_nonspecialized_instantiation_context() &&
       (!from_arg_dep_lookup ||
        (defer_function_prototype_instantiations &&
-        is_prototype_instantiation_context() &&
+        is_prototype_instantiation_or_expansion_context() &&
         !(is_namespace_projection &&
           in_generic_lambda_in_class_template_friend()))) &&
       !function_symbol->is_class_member &&
@@ -11521,7 +11508,7 @@ reprocess_with_notes:
       goto in_instantiation;
     }  /* if */
   } else if (do_dependent_name_processing &&
-             is_nonspecialized_instantiation_context()) {
+             is_nondependent_call_reuse_context()) {
     /* In a real (not prototype) instantiation, and doing dependent
        name processing.  Look up this call to see whether it was a
        dependent call in the prototype instantiation.  If it was a
@@ -12008,7 +11995,7 @@ normal_no_function_matches:
   }  /* if */
 have_function:
   if (do_dependent_name_processing &&
-      is_non_rescan_prototype_instantiation_context() &&
+      is_nondependent_call_recording_context() &&
       !dependent_call && do_arg_dep_lookup &&
       !(function_symbol != NULL && is_block_extern_symbol(function_symbol))) {
     /* Record the outcome of overload resolution for a nondependent call
@@ -19629,7 +19616,7 @@ except that it was inaccessible because of hide-by-sig lookup.
     }  /* if */
     /* candidate_functions will contain the list of viable functions. */
     candidate_functions = NULL;
-    if (is_prototype_instantiation_context()) {
+    if (is_prototype_instantiation_or_expansion_context()) {
       /* In a prototype instantiation.  If the operands are dependent,
          the code above should have spotted that and generated a generic
          expression operator.  Note that nonreal instantiations are
@@ -19640,8 +19627,8 @@ except that it was inaccessible because of hide-by-sig lookup.
                           "select_overloaded_operator: dep operand");
 #endif /* EXPENSIVE_CHECKING */
     } else if (do_dependent_name_processing &&
-               is_nonspecialized_instantiation_context()) {
-      /* In a real (not prototype) instantiation, and doing dependent
+               is_nondependent_call_reuse_context()) {
+      /* In a real instantiation or expansion element, and doing dependent
          name processing.  Look up this call to see whether it was a
          dependent call in the prototype instantiation.  If it was a
          nondependent call, it was recorded, along with (usually) the
@@ -20400,7 +20387,7 @@ reprocess_with_notes:
                                          operator_tok_seq_number,
                                          operator_position_2);
           check_assertion(!dependent_call);
-          if (is_non_rescan_prototype_instantiation_context()) {
+          if (is_nondependent_call_recording_context()) {
             /* Make sure this call is treated as a nondependent call in
                a real instantiation. */
             record_nondependent_call((a_symbol_ptr)NULL,
@@ -20672,12 +20659,13 @@ no_applicable_operator_function:
                                candidate_functions->overloaded_function_symbol;
             check_assertion(overloaded_function_symbol != NULL);
             if (do_dependent_name_processing &&
-                is_non_rescan_prototype_instantiation_context()) {
+                operator_tok_seq_number != NO_TOKEN_SEQUENCE_NUMBER &&
+                is_nondependent_call_recording_context()) {
               /* Record the outcome of overload resolution for a nondependent
                  call in a prototype instantiation, excluding rescan contexts.
-                 Dependent calls in such a context don't get here. */
-              check_assertion(!dependent_call &&
-                              operator_tok_seq_number != 0);
+                 Dependent calls in such a context don't get here.  Synthetic
+                 operations have no token position and cannot be replayed. */
+              check_assertion(!dependent_call);
               record_nondependent_call(
                     candidate_functions->best_proj_function_symbol,
                     operator_tok_seq_number, call_depth,
@@ -23418,7 +23406,7 @@ is_transparent.  conv_context describes the context of the conversion.
       an_operand      src_copy, *src_to_test;
       a_boolean       constant_src = FALSE;
       a_constant_ptr  con = local_constant(), con_to_test = NULL;
-      if (!is_prototype_instantiation_context()) {
+      if (!is_prototype_instantiation_or_expansion_context()) {
         force_operand_to_constant_if_possible_full(
                               source_operand, /*is_constant_evaluated=*/TRUE);
       }  /* if */
@@ -24160,7 +24148,7 @@ happen only in C++ mode.
               !expr_stack->template_deduction_context &&
               (microsoft_mode ||
                (gpp_mode &&
-                (is_prototype_instantiation_context() ||
+                (is_prototype_instantiation_or_expansion_context() ||
                  is_nonspecialized_instantiation_context()))) &&
               is_any_reference_type(
                                 il_return_type_of(conversion_routine->type))) {
@@ -25298,7 +25286,7 @@ direct binding is "possible" and not whether it is "valid".
        if the operand has a class type, and using that interpretation
        allows for clearer error messages later. */
     if (!is_class_struct_union_type(unqual_source_type) && !template_case) {
-      if (gpp_mode && is_prototype_instantiation_context()) {
+      if (gpp_mode && is_prototype_instantiation_or_expansion_context()) {
         /* g++ appears to allow such binding in prototype instantiations. */
         template_case = TRUE;
       } else {
@@ -26192,7 +26180,7 @@ the conversion.
                  (microsoft_bugs &&
                   microsoft_can_bind_ref_to_rvalue(source_operand)) ||
                  ((microsoft_mode || gpp_version_is(any_version)) &&
-                  is_prototype_instantiation_context() &&
+                  is_prototype_instantiation_or_expansion_context() &&
                   !expr_stack->template_deduction_context))) {
       /* A temporary cannot be used when binding a reference to non-const,
          except as an anachronism, or in some template contexts in Microsoft
@@ -26299,7 +26287,7 @@ the conversion.
           /* Allowed as an anachronism. */
           an_error_severity severity;
           if ((gpp_version_is(any_version) || microsoft_mode) &&
-              is_prototype_instantiation_context()) {
+              is_prototype_instantiation_or_expansion_context()) {
             /* Do not issue an error in template contexts in GNU and
                Microsoft modes.  E.g., "template<int> int &r = 42;" is accepted
                by GCC and MSVC. */
@@ -28355,7 +28343,7 @@ will be an lvalue instead of the usual prvalue.
     } else {
       force_operand_to_constant_if_possible(&operand);
       if (is_expression_operand(&operand) &&
-          is_prototype_instantiation_context()) {
+          is_prototype_instantiation_or_expansion_context()) {
         /* In prototype instantiation contexts, we allow nonconstant
            expressions.  A diagnostic will most likely be issued if a real
            instantiation is performed. */

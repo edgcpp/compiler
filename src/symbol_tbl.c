@@ -34,6 +34,7 @@ symbol_tbl.c - Symbol table management routines.
 #include "folding.h"
 #include "sys_predef.h"
 #include "interpret.h"
+#include "statements.h"
 
 /* Conditionally open the "edg" namespace. */
 BEGIN_EDG_NAMESPACE
@@ -3388,11 +3389,11 @@ fields, and return a pointer to it.  Reuse a freed entry if possible.
   tdip->template_decl = NULL;
   tdip->name_linkage = (a_name_linkage_kind)nlk_none;
   tdip->n_params = 0;
-  tdip->decl_seq = NO_DECL_SEQUENCE_NUMBER;
-  tdip->nondependent_calls = NULL;
-  tdip->last_entry_added = NULL;
-  tdip->pack_expansions = NULL;
-  tdip->last_pack_expansion = NULL;
+  tdip->definition_info.decl_seq = NO_DECL_SEQUENCE_NUMBER;
+  tdip->definition_info.nondependent_calls = NULL;
+  tdip->definition_info.last_entry_added = NULL;
+  tdip->definition_info.pack_expansions.head =
+                             tdip->definition_info.pack_expansions.tail = NULL;
   tdip->constexpr_if_hash_table = NULL;
   tdip->variable_instance_sym = NULL;
   return tdip;
@@ -3468,26 +3469,38 @@ fields, and return a pointer to it.
 }  /* alloc_nondependent_call_info */
 
 
+a_definition_replay_info_ptr alloc_definition_replay_info(void)
+/*
+Allocate persistent replay state for an expansion definition.  This is front
+end memory, independent of the function IL region containing the statement.
+*/
+{
+  a_definition_replay_info_ptr info =
+                                    alloc_fe_of_type(a_definition_replay_info);
+
+  info->decl_seq = NO_DECL_SEQUENCE_NUMBER;
+  info->nondependent_calls = info->last_entry_added = NULL;
+  info->pack_expansions.head = info->pack_expansions.tail = NULL;
+  return info;
+}  /* alloc_definition_replay_info */
+
+
 a_nondependent_call_info_ptr get_nondependent_call_info(
                                 a_token_sequence_number         tsn,
                                 a_nondependent_call_depth       depth)
 /*
-If "tsn" is the token sequence number of a nondependent call in the
-nondependent call list of the current template, return a pointer to
-the associated information block.  Otherwise (i.e., if the call is
-dependent), return NULL.  The list is maintained in token sequence
-number order, and is pointed to from the template decl info block for
-the template.  The current position on the list is maintained in the
-next_nondependent_call field of the scope stack entry for the innermost
-instantiation scope.  depth is usually zero, but serves as an additional
-position disambiguator on tsn if non-zero.
+Find tsn in the current definition's token-ordered nondependent call records.
+Return NULL if no record exists (e.g., for a dependent call).  Templates and
+expansion bodies use the same persistent records; definition_replay_scope
+selects the independent cursor for this scan.  depth disambiguates calls
+sharing a token position.
 */
 {
   a_scope_stack_entry_ptr	ssep;
   a_nondependent_call_info_ptr	list_ptr, result = NULL;
 
-  check_assertion(depth_innermost_instantiation_scope != NO_SCOPE_DEPTH);
-  ssep = &scope_stack[depth_innermost_instantiation_scope];
+  ssep = definition_replay_scope();
+  check_assertion(ssep != NULL);
   list_ptr = ssep->next_nondependent_call;
   if (list_ptr == NULL) {
     /* There is no list. */
@@ -3564,25 +3577,23 @@ void record_nondependent_call(a_symbol_ptr              symbol,
             /* Defaulted: */  a_boolean                 supplemental,
                               a_boolean                 reversed_opnds)
 /*
-This routine is called within the scope of a template (either a template
-declaration scope or a prototype instantiation) to record the result of
-overload resolution for a nondependent call.  "symbol" is the function symbol
-for the function to be called; it can be NULL for an error case.  "tsn" is a
-token sequence number used to represent this call so that the entry can be
-found during a real instantiation.  depth is usually zero, but serves as an
-additional position disambiguator on tsn if non-zero.  supplemental is TRUE
-if the call was for a C++20 comparison that that required a rewrite in terms
-of a supplemental candidate (e.g., "<" rewritten via a "<=>" candidate).
-reversed_opnds is TRUE if the call is to a C++20 comparison that requires an
-implicit reversal of operands.
+Record the result of overload resolution while checking a template definition
+(an ordinary template or expansion statement body).  "symbol" is the
+function symbol for the function to be called; it can be NULL for an error
+case.  "tsn" is a token sequence number used to represent this call so that
+the entry can be found during a real instantiation.  depth is usually zero,
+but serves as an additional position disambiguator on tsn if non-zero.
+supplemental is TRUE if the call was for a C++20 comparison that required a
+rewrite in terms of a supplemental candidate (e.g., "<" rewritten via a
+"<=>" candidate).  reversed_opnds is TRUE if the call is to a C++20
+comparison that requires an implicit reversal of operands.
 */
 {
-  a_template_decl_info_ptr	tdip;
-  a_nondependent_call_info_ptr	ndcip;
+  a_definition_replay_info_ptr info;
+  a_nondependent_call_info_ptr ndcip;
 
-  /* Get the template declaration information entry associated with the
-     current context. */
-  tdip = get_specified_template_decl_info(/*innermost=*/TRUE);
+  info = definition_recording_scope(/*innermost=*/TRUE)->
+                                                        definition_replay_info;
 #if DEBUG
   if (db_flag_is_set("nondep_call")) {
     fprintf(f_debug, "Recording nondependent call at %ld ", (long)tsn);
@@ -3604,28 +3615,27 @@ implicit reversal of operands.
   /* Add the entry to the appropriate point in the list.  This is usually
      immediately after the last entry added, but in certain cases we need
      to locate the appropriate insertion point. */
-  if (tdip->nondependent_calls == NULL ||
-      tdip->nondependent_calls->token_sequence_number > tsn ||
-      (tdip->nondependent_calls->token_sequence_number == tsn &&
-       tdip->nondependent_calls->depth > depth)) {
-    /* Either the list is entry, or the token sequence number of this entry
-       precedes the previous start of the list. */
-    ndcip->next = tdip->nondependent_calls;
-    if (tdip->nondependent_calls != NULL) {
-      tdip->nondependent_calls->previous = ndcip;
+  if (info->nondependent_calls == NULL ||
+      info->nondependent_calls->token_sequence_number > tsn ||
+      (info->nondependent_calls->token_sequence_number == tsn &&
+       info->nondependent_calls->depth > depth)) {
+    /* Either the list is empty, or this entry precedes its start. */
+    ndcip->next = info->nondependent_calls;
+    if (info->nondependent_calls != NULL) {
+      info->nondependent_calls->previous = ndcip;
     }  /* if */
-    tdip->nondependent_calls = ndcip;
+    info->nondependent_calls = ndcip;
   } else {
     /* The new entry does not go at the start of the list.  See if the
        last_entry_added points to the right insert location. */
     a_nondependent_call_info_ptr	insert_loc;
-    insert_loc = tdip->last_entry_added;
+    insert_loc = info->last_entry_added;
     /* If the token sequence number of the insert location is after the
        desired location, restart the search from the beginning of the list. */
     if (insert_loc->token_sequence_number > tsn ||
         (insert_loc->token_sequence_number == tsn &&
          insert_loc->depth > depth)) {
-      insert_loc = tdip->nondependent_calls;
+      insert_loc = info->nondependent_calls;
     }  /* if */
     /* Find an entry with a token sequence number greater than the one we
        are inserting, or the end of the list.  We are usually at the
@@ -3646,7 +3656,7 @@ implicit reversal of operands.
     }  /* if */
     insert_loc->next = ndcip;
   }  /* if */
-  tdip->last_entry_added = ndcip;
+  info->last_entry_added = ndcip;
 }  /* record_nondependent_call */
 
 
@@ -3656,7 +3666,8 @@ If "sym" is a nested class of a prototype instantiation, create its nonreal
 version.  See create_nonreal_version_of_nested_type for more information.
 */
 {
-  if (sym->is_class_member && is_prototype_instantiation_context()) {
+  if (sym->is_class_member &&
+      is_prototype_instantiation_or_expansion_context()) {
     a_type_ptr	parent_class = sym_parent_class(sym);
     if (parent_class->variant.class_struct_union.is_prototype_instantiation) {
       create_nonreal_version_of_nested_type(sym);
@@ -5361,6 +5372,25 @@ on whether is_tag_sym is FALSE.
 }  /* is_redeclaration_of_enhanced_for_iterator */
 
 
+static a_boolean enclosing_loop_is_expansion_statement(void)
+/*
+Return TRUE if the innermost enclosing loop-like statement is an expansion
+statement.
+*/
+{
+  a_struct_stmt_stack_entry_ptr  sssep;
+  a_boolean                      result = FALSE;
+
+  sssep = find_enclosing_struct_stmt(/*find_switch=*/FALSE,
+                                     /*find_loop=*/TRUE,
+                                     /*stop_at_expansion=*/FALSE);
+  if (sssep != NULL && sssep->kind == ssk_expansion) {
+    result = TRUE;
+  }  /* if */
+  return result;
+}  /* enclosing_loop_is_expansion_statement */
+
+
 static a_boolean is_redeclared_condition_decl_name(
                                              a_symbol_header_ptr  hdr,
                                              a_scope_depth        scope_depth,
@@ -5605,16 +5635,26 @@ symbol must be added to the inactive list.
             redecl_err = TRUE;
           } else if (is_redeclaration_of_enhanced_for_iterator(
                                               hdr_ptr, scope_depth, is_tag)) {
-            /* The name of the iterator variable in a range-based for statement
-               cannot be declared in the outermost loop scope.  E.g.:
+            /* The name of the iterator variable in a range-based for
+               statement (or of the for-range-declaration of an expansion
+               statement) cannot be declared in the outermost loop scope.
+               E.g.:
                  for (int N: vec) { double N = 1.0; }  // Error
             */
             if (!suppress_error) {
-              pos_st_diagnostic(microsoft_mode ?
+              if (enclosing_loop_is_expansion_statement()) {
+                pos_st_diagnostic(
+                                 es_discretionary_error,
+                                 ec_redeclaration_of_expansion_range_decl_name,
+                                 &(sym_ptr->decl_position),
+                                 sym_ptr->header->identifier);
+              } else {
+                pos_st_diagnostic(microsoft_mode ?
                                           es_warning : es_discretionary_error,
-                                ec_redeclaration_of_range_iterator,
-                                &(sym_ptr->decl_position),
-                                sym_ptr->header->identifier);
+                                  ec_redeclaration_of_range_iterator,
+                                  &(sym_ptr->decl_position),
+                                  sym_ptr->header->identifier);
+              }  /* if */
             }  /* if */
           }  /* if */
           if (!suppress_error &&
@@ -5938,7 +5978,9 @@ found, or NULL if no entry is found.
   a_constexpr_if_cache_info_ptr	result = NULL;
   a_template_decl_info_ptr	tdip = NULL;
 
-  if (!inside_local_class) {
+  if (!inside_local_class &&
+      (depth_innermost_instantiation_scope != NO_SCOPE_DEPTH ||
+       depth_template_declaration_scope != NO_SCOPE_DEPTH)) {
     /* The mechanism to find saved constexpr if information can't be used
        for members of local classes because of interactions with a potential
        enclosing cache (when enclosed in a template). */

@@ -32,6 +32,7 @@ statements.c -- Scanning of statements.
 #include "pch.h"
 #include "pragma.h"
 #include "statements.h"
+#include "symbol_ref.h"
 #include "macro.h"
 #include "func_def.h"
 
@@ -548,6 +549,7 @@ dump_control_flow has been enabled at the command line.
     case ssk_do:         str = "do";         break;
     case ssk_for:        str = "for";        break;
     case ssk_range_based_for: str = "range-based-for"; break;
+    case ssk_expansion:  str = "expansion";     break;
     case ssk_try_block:  str = "try_block";  break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case ssk_for_each:   str = "for each";   break;
@@ -1638,6 +1640,9 @@ should be set to TRUE.
         check_assertion(!sssep->for_init);
         head_ptr = &ssp->variant.range_based_for_loop.statement;
         break;
+      case stmk_expansion_statement:
+        head_ptr = &ssp->variant.expansion_statement.statement;
+        break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
       case stmk_for_each:
         head_ptr = &ssp->variant.for_each_loop.statement;
@@ -1889,6 +1894,36 @@ position.  Set the compiler_generated flag as appropriate.
                                        : &pos_curr_token,                    \
                             (compiler_generated))
 
+
+static void add_init_statement_for_variable_dynamic_init(a_variable_ptr  vp)
+/*
+Add an stmk_init statement, at the current point in the current statement
+list, for the dynamic initialization already recorded on the variable vp.
+This is the statement-creation part of what gen_dynamic_initialization does
+for an ordinary local variable initialization (see decl_inits.c).  It is
+used for the per-element copies of the for-range-declaration of an expansion
+statement, whose initializers are bound after their declarations are scanned
+(see set_expansion_element_binding in expr.c).
+*/
+{
+  a_statement_ptr  init_stmt;
+
+  check_assertion(vp->init_kind == initk_dynamic &&
+                  vp->initializer.dynamic != NULL);
+  /* If this dynamic init appears after some executable code in its block,
+     set a flag to that effect in the dynamic init entry (it identifies the
+     initialization as a C++ case). */
+  if (struct_stmt_stack_top().any_exec_statement_seen) {
+    vp->initializer.dynamic->follows_an_exec_statement = TRUE;
+  }  /* if */
+  init_stmt = add_statement_at_stmt_pos(stmk_init,
+                                        &vp->source_corresp.decl_position,
+                                        /*compiler_generated=*/FALSE);
+  init_stmt->variant.dynamic_init = vp->initializer.dynamic;
+  update_init_statement_control_flow(init_stmt);
+}  /* add_init_statement_for_variable_dynamic_init */
+
+
 void update_init_statement_control_flow(a_statement_ptr  sp)
 /*
 An stmk_init or stmk_set_vla_size statement is being added to the IL.  Add
@@ -1998,6 +2033,37 @@ extra care (since it is created after the declaration is fully scanned).
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
 
 
+static a_statement_ptr start_decl_statement(
+                                    an_il_entity_list_entry_ptr *p_entity_list)
+/*
+Add the stmk_decl statement for a declaration statement, record its source
+sequence entry unless entries are disallowed, and arrange for the declared
+entities to be recorded in *p_entity_list, which must be in the caller's
+stack frame.  An entity list already set up by the caller (see
+start_potential_decl_statement) is left in place.  The caller must clear
+record_declared_entities and store the list in the statement.
+*/
+{
+  a_statement_ptr                sp;
+  a_struct_stmt_stack_entry_ptr  sssep = &struct_stmt_stack_top();
+
+  sp = add_statement(stmk_decl, /*compiler_generated=*/FALSE);
+  if (!sssep->record_declared_entities) {
+    /* The caller didn't set up a list to record declared entities.  Do it
+       now. */
+    sssep->record_declared_entities = TRUE;
+    *p_entity_list = NULL;
+    sssep->p_declared_entities = p_entity_list;
+  }  /* if */
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+  if (!source_sequence_entries_disallowed) {
+    record_sse_for_decl_statement(sp);
+  }  /* if */
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+  return sp;
+}  /* start_decl_statement */
+
+
 static void decl_statement(a_boolean  marked_as_gnu_extension,
                            a_boolean  *p_okay_in_constexpr_body)
 /*
@@ -2013,23 +2079,11 @@ body of a constexpr function or constructor.
 {
   a_decl_parse_state             dps;
   a_statement_ptr                sp;
-  a_struct_stmt_stack_entry_ptr  sssep = &struct_stmt_stack_top();
+  a_struct_stmt_stack_entry_ptr  sssep;
   an_il_entity_list_entry_ptr    entity_list;
   a_boolean                      is_static_assert;
 
-  sp = add_statement(stmk_decl, /*compiler_generated=*/FALSE);
-  if (!sssep->record_declared_entities) {
-    /* The caller didn't set up a list to record declared entities.  Do it
-       now. */
-    sssep->record_declared_entities = TRUE;
-    entity_list = NULL;
-    sssep->p_declared_entities = &entity_list;
-  }  /* if */
-#if GENERATE_SOURCE_SEQUENCE_LISTS
-  if (!source_sequence_entries_disallowed) {
-    record_sse_for_decl_statement(sp);
-  }  /* if */
-#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+  sp = start_decl_statement(&entity_list);
   init_decl_parse_state(&dps);
   dps.marked_as_gnu_extension = marked_as_gnu_extension;
   is_static_assert = curr_token == tok_static_assert;
@@ -2147,10 +2201,10 @@ start_potential_decl_statement and reclaim associated unused memory.
 
 static void for_range_declaration(a_decl_parse_state  *dps)
 /*
-Parse the for-range-declaration portion of a range-based-for statement.
-Initialize and update *dps to reflect the declaration state (e.g., dps->sym
-is set to the symbol pointer of the variable just scanned; it may be NULL in
-some error cases).
+Parse the for-range-declaration portion of a range-based-for or expansion
+statement.  Initialize and update *dps to reflect the declaration state
+(e.g., dps->sym is set to the symbol pointer of the variable just scanned;
+it may be NULL in some error cases).
 */
 {
   init_decl_parse_state(dps);
@@ -3534,17 +3588,21 @@ In strict C mode, the variant using "__asm" is accepted.
 }  /* asm_statement */
 
 
-static a_struct_stmt_stack_entry_ptr find_enclosing_struct_stmt(
-                                                     a_boolean find_switch,
-                                                     a_boolean find_loop)
+a_struct_stmt_stack_entry_ptr find_enclosing_struct_stmt(
+                                                   a_boolean find_switch,
+                                                   a_boolean find_loop,
+                                                   a_boolean stop_at_expansion)
 /*
 Search the structured statement stack from the current entry outward,
-looking for a switch statement whose condition is not being scanned (if
-find_switch is TRUE) or a loop statement (while, do, or for; if find_loop is
-TRUE).  Return a pointer
-to the first structured statement stack entry found, or NULL if none 
-was found.
-*/
+looking for a switch statement whose condition is not being scanned
+(if find_switch is TRUE) or a loop statement (while, do, for, or an
+expansion statement; if find_loop is TRUE).
+Return a pointer to the first structured statement stack entry found,
+or NULL if none was found. If stop_at_expansion is TRUE, the search
+stops at an expansion statement entry, which is then returned: The
+body of an expansion statement is control-flow-limited (N5050
+[stmt.expand]/2), so structured statements outside it do not enclose
+statements in the body. */
 {
   a_struct_stmt_stack_entry_ptr sssep;
   a_struct_stmt_kind            kind;
@@ -3556,9 +3614,11 @@ was found.
     kind = sssep->kind;
     if (find_switch && kind == ssk_switch && !sssep->in_switch_condition) {
       goto found;
+    } else if (stop_at_expansion && kind == ssk_expansion) {
+      goto found;
     } else if (find_loop &&
                (kind == ssk_while || kind == ssk_do || kind == ssk_for ||
-                kind == ssk_range_based_for
+                kind == ssk_range_based_for || kind == ssk_expansion
 #if MICROSOFT_EXTENSIONS_ALLOWED
                 || kind == ssk_for_each
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -3578,11 +3638,16 @@ found:
 a_boolean in_switch_statement(void)
 /*
 Returns TRUE if there is an enclosing "switch" statement at the current
-location in the statement stack.
+location in the statement stack, not separated from it by an expansion
+statement.
 */
 {
-  return find_enclosing_struct_stmt(/*find_switch=*/TRUE,
-                                    /*find_loop=*/FALSE) != NULL;
+  a_struct_stmt_stack_entry_ptr  sssep;
+
+  sssep = find_enclosing_struct_stmt(/*find_switch=*/TRUE,
+                                     /*find_loop=*/FALSE,
+                                     /*stop_at_expansion=*/TRUE);
+  return sssep != NULL && sssep->kind == ssk_switch;
 }  /* in_switch_statement */
 
 
@@ -3661,7 +3726,7 @@ block under the "try" in a function try block.
       /* Set appropriate flags in the scope stack entry. */
       kind = struct_stmt_stack[depth_stmt_stack].kind;
       if (kind == ssk_while || kind == ssk_do || kind == ssk_for ||
-          kind == ssk_range_based_for
+          kind == ssk_range_based_for || kind == ssk_expansion
 #if MICROSOFT_EXTENSIONS_ALLOWED
           || kind == ssk_for_each
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -3748,8 +3813,8 @@ the block statement.
 static void dependent_statement(void)
 /*
 Scan the dependent statement of an if, switch, while, do-while, for,
-"for each", or range-based-for statement.  In C++ and C99, such a dependent
-statement implicitly defines a local scope.
+"for each", range-based-for, or expansion statement.  In C++ and C99, such
+a dependent statement implicitly defines a local scope.
 */
 {
   a_boolean         block_added;
@@ -4338,10 +4403,7 @@ The syntax is:
         value_known = FALSE;
         if (!is_template_dependent_context() &&
             expr_error_should_be_issued()) {
-          a_diagnostic_ptr  dp;
-          dp = pos_start_error(ec_expr_not_constant, &expr_pos);
-          add_more_info_list(dp, &diag_list);
-          end_diagnostic(dp);
+          error_with_notes(ec_expr_not_constant, &expr_pos, &diag_list);
         }  /* if */
       }  /* if */
       discard_more_info_list(&diag_list);
@@ -4349,7 +4411,8 @@ The syntax is:
       sssep = &struct_stmt_stack[depth_stmt_stack];
       if (is_template_dependent_context()) {
         sssep->dependent_constexpr_if = !value_known;
-        in_real_instantiation = is_nested_in_real_instantiation();
+        in_real_instantiation = is_nested_in_real_instantiation() ||
+                                 scope_stack_top().in_expansion_element_rescan;
         /* If we are in a (non-prototype) instantiation of an enclosing
            templated entity, the discarded substatement is not instantiated
            (see N4659 [stmt.if]/2). */
@@ -4365,7 +4428,7 @@ The syntax is:
         }  /* if */
       } else {
         check_assertion_or_expect_error(value_known);
-        if (is_real_instantiation_context()) {
+        if (is_real_instantiation_or_expansion_element_context()) {
           /* The discarded substatement is not instantiated. */
           skip_discarded = TRUE;
         }  /* if */
@@ -5929,6 +5992,778 @@ The affinity can be an expression or the keyword "continue".
   db_exit();
 }  /* for_statement */
 
+
+static a_boolean expansion_statement_is_expandable(
+                                       an_expansion_stmt_info_ptr expn_info,
+                                       a_decl_parse_state         *dps,
+                                       a_boolean                  *p_erroneous,
+                                       a_boolean                  *p_deferred)
+/*
+Return TRUE if the expansion statement described by expn_info (with *dps the
+declaration parse state of its for-range-declaration) can be expanded at
+scan time.  The caller must have checked for earlier errors.  The initializer
+must be non-dependent, both token caches must be available, and the statement
+must not be in a dependent context.  *p_erroneous is set if errors were
+detected, and *p_deferred if the expansion must wait for the instantiation of
+an enclosing template.
+*/
+{
+  a_boolean         expandable = TRUE;
+  an_expr_node_ptr  expr;
+
+  *p_erroneous = FALSE;
+  *p_deferred = FALSE;
+  if (expn_info->initializer == NULL && !expn_info->initializer_is_list) {
+    /* An error occurred while scanning the expansion-initializer. */
+    expandable = FALSE;
+    *p_erroneous = TRUE;
+  } else if (dps->declared_storage_class == sc_extern) {
+    /* The (already diagnosed) for-range-declaration has an "extern"
+       storage class: The per-element rescans would match the
+       externally-linked variable instead of declaring a fresh one.  Leave
+       the statement in its prototype form. */
+    expandable = FALSE;
+    *p_erroneous = TRUE;
+  } else if (expn_info->iterator == NULL) {
+    /* An error occurred while scanning the for-range-declaration. */
+    expandable = FALSE;
+    *p_erroneous = TRUE;
+  } else if (expn_info->decl_token_cache == NULL ||
+             expn_info->body_token_cache == NULL) {
+    /* The tokens needed for the rescans are not available (an error must
+       have been diagnosed). */
+    expandable = FALSE;
+    *p_erroneous = TRUE;
+  } else if (is_error_type(expn_info->iterator->type)) {
+    expandable = FALSE;
+    *p_erroneous = TRUE;
+  } else if (struct_stmt_stack_top().contains_user_label) {
+    /* The compound-statement contains an identifier label: That is
+       ill-formed (N5050 [stmt.label]/4) and has already been diagnosed during
+       the prototype scan; the statement is not expanded (a rescan of the
+       compound-statement would duplicate the diagnostics). */
+    expandable = FALSE;
+    *p_erroneous = TRUE;
+  } else if (is_template_dependent_context()) {
+    /* The element types (or the number of elements) are not known yet;
+       defer the expansion to the instantiation of the enclosing template
+       (or leave the statement unexpanded in a prototype instantiation). */
+    expandable = FALSE;
+    *p_deferred = TRUE;
+  } else {
+    for (expr = expn_info->initializer; expr != NULL; expr = expr->next) {
+      if (is_error_node(expr)) {
+        /* An erroneous element: The statement was already diagnosed. */
+        expandable = FALSE;
+        *p_erroneous = TRUE;
+        break;
+      } else if (expansion_initializer_is_dependent(expr)) {
+        /* A dependent element: The number of elements or the element types
+           are not known yet. */
+        expandable = FALSE;
+        *p_deferred = TRUE;
+        break;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  return expandable;
+}  /* expansion_statement_is_expandable */
+
+
+static void expansion_element_binding_declaration(
+                                                a_decl_parse_state *dps,
+                                                a_variable_ptr     *p_variable)
+/*
+Scan the per-element copy of the for-range-declaration of an expansion
+statement (from the declaration token cache) and create the corresponding
+declaration statement in the current (element) statement list.  *dps is
+filled in as by for_range_declaration, and *p_variable is set to point to
+the variable declared (NULL in error cases).  The current token must be
+the first token of the declaration, and the caller must have added
+"tok_colon" as a stop token (so that the declaration scan stops at the
+":" cached after the declaration tokens).
+*/
+{
+  a_statement_ptr                sp;
+  a_struct_stmt_stack_entry_ptr  sssep;
+  an_il_entity_list_entry_ptr    entity_list;
+  a_variable_ptr                 variable = NULL;
+
+  db_enter(3, "expansion_element_binding_declaration");
+  /* Add the declaration statement that holds the declared entity, as
+     decl_statement does.  The structured statement stack entry was pushed
+     just above, so start_decl_statement sets up the entity list here. */
+  sp = start_decl_statement(&entity_list);
+  for_range_declaration(dps);
+  /* Re-load sssep since the call to scan_nonmember_declaration may have
+     caused the statement stack to be reallocated. */
+  sssep = &struct_stmt_stack_top();
+  sssep->record_declared_entities = FALSE;
+  sp->variant.decl.entities = entity_list;
+  if (dps->sym != NULL && symbol_is(dps->sym, sk_variable)) {
+    variable = dps->sym->variant.variable.ptr;
+  }  /* if */
+  *p_variable = variable;
+  db_exit();
+}  /* expansion_element_binding_declaration */
+
+
+
+static an_expr_node_ptr expansion_initializer_expression(
+                                         an_expansion_stmt_info_ptr  expn_info)
+/*
+Return the expression of the expansion-initializer of expn_info with any
+enk_object_lifetime wrappers removed.  The initializer is scanned as a full
+expression, so the underlying expression provides the type as well as the
+position to use for diagnostics and synthesized entities (the wrapper node
+has no position).
+*/
+{
+  return skip_object_lifetimes(expn_info->initializer);
+}  /* expansion_initializer_expression */
+
+
+
+static a_boolean check_expansion_initialization_is_constant(
+                                                 a_variable_ptr     variable,
+                                                 a_source_position  *pos,
+                                                 a_constant_ptr     con,
+                                                 a_diag_list        *diag_list)
+/*
+Evaluate the dynamic initialization of variable as a constant expression,
+reporting the failure if it is not one.  pos is the diagnostic position, con
+is a scratch constant supplied by the caller, and diag_list receives the
+diagnostics.  Return TRUE if the initialization is a constant expression.
+*/
+{
+  a_boolean  result;
+
+  if (interpret_dynamic_init(variable->initializer.dynamic, pos,
+                             variable->type,
+                             /*is_constant_evaluated=*/TRUE,
+                             con, diag_list)) {
+    result = TRUE;
+  } else {
+    error_with_notes(ec_expr_not_constant, pos, diag_list);
+    result = FALSE;
+  }  /* if */
+  return result;
+}  /* check_expansion_initialization_is_constant */
+
+
+static void expand_expansion_statement(
+                                    a_statement_ptr         sp,
+                                    an_expr_node_ptr        element_exprs,
+                                    a_label_ptr             break_label,
+                                    a_reachability_summary  entry_reachability,
+                                    a_boolean               check_constexpr)
+/*
+Do the compile-time expansion of an enumerating expansion statement (N5050
+[stmt.expand]/5.1): Build the block containing one element block per element,
+each holding a per-element copy of the for-range-declaration bound to that
+element followed by a rescan of the compound-statement, and record it in the
+expanded_statement field of the expansion supplement.  element_exprs is the
+chain of per-element expressions.  break_label is the break label for the
+statement, if any; each element gets its own continue label.  check_constexpr
+requests the constant-expression check for a "constexpr" for-range-declaration.
+entry_reachability is the reachability state at entry.  The expansion scope is
+on the scope stack, but the iterator scope is not, so the rescans are not in a
+dependent context.
+*/
+{
+  an_expansion_stmt_info_ptr    expn_info;
+  a_statement_ptr               wrapper, elem_stmt;
+  an_expr_node_ptr              expr;
+  a_targ_size_t                 element_no = 0;
+  an_expansion_element_context  element_context;
+  a_reachability_summary        fallthrough_reachability;
+  a_reachability_summary        exit_reachability;
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+  a_boolean                     saved_global_flag, saved_scope_flag;
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+
+  db_enter(3, "expand_expansion_statement");
+  expn_info = expn_info_of(sp);
+  element_context.position = sp->position;
+  fallthrough_reachability = entry_reachability;
+  set_unreachable(exit_reachability);
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+  /* Suppress source sequence entries duplicated by the rescans, including
+     on the current scope so the per-element scopes inherit the flag. */
+  saved_global_flag = source_sequence_entries_disallowed;
+  saved_scope_flag = scope_stack_top().source_sequence_entries_disallowed;
+  source_sequence_entries_disallowed = TRUE;
+  scope_stack_top().source_sequence_entries_disallowed = TRUE;
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+  /* Allocate the block statement that represents the equivalent
+     compound-statement, and link it under the expansion statement itself
+     (not into the current statement list). */
+  wrapper = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+  wrapper->parent = sp;
+  expn_info->expanded_statement = wrapper;
+  wrapper->variant.block.extra_info->end_of_block_reachable = TRUE;
+  /* Push a structured statement stack entry so that the per-element
+     blocks are added to the wrapper block's statement list. */
+  push_stmt_stack_full(ssk_compound, wrapper, curr_object_lifetime,
+                       /*is_statement_expr=*/FALSE);
+  /* Scan every element as reachable, regardless of earlier elements'
+     control flow. */
+  for (expr = element_exprs; expr != NULL; expr = expr->next) {
+    a_decl_parse_state        dps;
+    a_variable_ptr            variable;
+    a_label_ptr               cont_label;
+    a_control_flow_descr_ptr  cont_statements, brk_statements;
+    a_control_flow_descr_ptr  cfdp;
+    an_expr_node_ptr          binding_expr = expr;
+    a_boolean                 constexpr_failed = FALSE;
+    a_reachability_summary    break_reachability;
+
+    set_unreachable(break_reachability);
+    ++element_no;
+    set_reachable(curr_reachability);
+    /* Start the block statement for this element; it also pushes the scope
+       for the per-element declarations. */
+    elem_stmt = start_block_statement(/*generated_statement=*/TRUE,
+                                      /*is_statement_expr=*/FALSE,
+                                      (an_object_lifetime_ptr)NULL);
+    begin_expansion_element_scan(expn_info);
+    /* Push an ssk_expansion entry so that break and continue statements in
+       the rescanned body resolve to the expansion statement.  A break in
+       the rescanned body shares the already-defined break label; a
+       continue gets a fresh label for this element, defined at the end of
+       the element block. */
+    push_stmt_stack(ssk_expansion, sp, (an_object_lifetime_ptr)NULL);
+    struct_stmt_stack_top().break_label = break_label;
+    /* Direct statements added while this entry is on top (e.g., the body
+       block of the rescanned compound-statement) go to the element block's
+       statement list; add_statement_list would otherwise add them to the
+       prototype statement list (the head for an ssk_expansion entry). */
+    struct_stmt_stack_top().extra_block = elem_stmt;
+    /* Rescan the for-range-declaration tokens and create the declaration
+       statement for the per-element variable. */
+    add_stop_token(tok_colon);
+    rescan_persistent_reusable_cache(expn_info->decl_token_cache);
+    /* Mark the scope for the per-element rescan of the
+       for-range-declaration (see a_scope_stack_entry). */
+    scope_stack_top().in_expansion_range_decl = TRUE;
+    expansion_element_binding_declaration(&dps, &variable);
+    flush_past_token_cache_terminator();
+    remove_stop_token(tok_colon);
+    if (variable != NULL && binding_expr != NULL) {
+      /* Bind the per-element variable (or structured-binding container
+         variable) to this element. */
+      if ((dps.dso_flags & DSO_CONSTEXPR) != 0) {
+        variable->is_constexpr = TRUE;
+      }  /* if */
+      set_expansion_element_binding(
+                        variable, binding_expr,
+                        /*extend_temporaries=*/expn_info->initializer_is_list);
+      /* As for an ordinary initialized declaration, record whether the
+         variable is constant-valued (e.g., so that a constexpr element can
+         be used in constant expressions); this must precede the addition
+         of the stmk_init statement below, which records the (possibly
+         folded) dynamic initialization. */
+      check_constant_valued_variable(&dps);
+      if (check_constexpr &&
+          variable->is_constexpr && !is_error_type(variable->type) &&
+          variable->init_kind == initk_dynamic &&
+          variable->initializer.dynamic != NULL &&
+          initializer_constant(variable) == NULL) {
+        /* The for-range-declaration is declared "constexpr", so the
+           per-element initialization must be a constant expression
+           (N5050 [stmt.expand]/5).  The compiler-generated binding does not
+           go through the ordinary initializer checks, so the check is
+           made here.  (A failed binding has no dynamic initialization
+           and is skipped; an error was already issued.) */
+        a_diag_list        diag_list;
+        a_constant_ptr     folded_con = local_constant();
+        a_source_position  *diag_pos = &variable->source_corresp.decl_position;
+        clear_diag_list(&diag_list);
+        if (!check_expansion_initialization_is_constant(variable, diag_pos,
+                                                        folded_con,
+                                                        &diag_list)) {
+          constexpr_failed = TRUE;
+        }  /* if */
+        discard_more_info_list(&diag_list);
+        release_local_constant(&folded_con);
+      }  /* if */
+      /* As for the prototype for-range-declaration, mark the variable as
+         referenced and having a value set, to avoid spurious warnings.  This
+         must be done before the bindings are defined below
+         (define_struct_bindings records a use of the container). */
+      mark_expansion_variable_used(variable);
+      if (dps.is_struct_binding_decl) {
+        /* Define the structured bindings for the per-element container
+           variable, as is done for the range-based-for. */
+        define_struct_bindings(&dps);
+      }  /* if */
+      if (variable->init_kind == initk_dynamic) {
+        /* Add the stmk_init statement for the initialization, as for an
+           ordinary local variable initialization.  (If the binding above
+           failed, no dynamic initialization was recorded and there is
+           nothing to add.) */
+        add_init_statement_for_variable_dynamic_init(variable);
+      }  /* if */
+      /* Mark the element block scope so that diagnostics issued while the
+         compound-statement is rescanned for this element get a context
+         line identifying the element by number (see error.c). */
+      scope_stack_top().in_expansion_element_body = TRUE;
+      element_context.element_number = element_no;
+      scope_stack_top().expansion_element_context = &element_context;
+    }  /* if */
+    scope_stack_top().in_expansion_range_decl = FALSE;
+    if (!constexpr_failed) {
+      /* Rescan the compound-statement tokens into the element block. */
+      rescan_persistent_reusable_cache(expn_info->body_token_cache);
+      dependent_statement();
+      flush_past_token_cache_terminator();
+      /* Reload the structured statement stack entry pointer (the rescans
+         above may have caused the stack to be reallocated), and take over
+         the label state recorded for this element. */
+      {
+        a_struct_stmt_stack_entry_ptr  expn_sssep = &struct_stmt_stack_top();
+
+        check_assertion(expn_sssep->kind == ssk_expansion);
+        cont_label = expn_sssep->continue_label;
+        cont_statements = expn_sssep->continue_statements;
+        brk_statements = expn_sssep->break_statements;
+        break_reachability = expn_sssep->end_reachable;
+        /* Take the label state off the entry: pop_stmt_stack would
+           otherwise define the (already-defined) break label again,
+           once per element. */
+        expn_sssep->continue_label = NULL;
+        expn_sssep->continue_statements = NULL;
+        expn_sssep->break_label = NULL;
+        expn_sssep->break_statements = NULL;
+      }
+      /* Pop the ssk_expansion entry, so that the continue label is defined at
+         the end of the element block (i.e., where the next element begins). */
+      pop_stmt_stack();
+      if (cont_label != NULL) {
+        define_implicit_label(cont_label, cont_statements);
+      }  /* if */
+      if (break_label != NULL) {
+        /* A break exits the expansion scope as well as the element scope. */
+        an_object_lifetime_ptr  label_olp =
+          innermost_block_object_lifetime(
+                        expn_info->expansion_scope->lifetime->parent_lifetime);
+        for (cfdp = brk_statements; cfdp != NULL;
+             cfdp = cfdp->variant.goto_statement.prev_goto) {
+          a_statement_ptr  goto_stmt = cfdp->variant.goto_statement.ptr;
+          goto_stmt->variant.label.lifetime =
+            common_object_lifetime(
+                                   label_olp,
+                                   goto_stmt->variant.label.lifetime);
+        }  /* for */
+      }  /* if */
+    } else {
+      /* The constexpr element binding failed (an error was already issued).
+         Do not rescan the body for this or any further element: That would
+         repeat the same diagnostic once per element.  The ssk_expansion
+         entry was pushed before the declaration rescan, so pop it now
+         without redefining the shared break label. */
+      struct_stmt_stack_top().break_label = NULL;
+      struct_stmt_stack_top().break_statements = NULL;
+      pop_stmt_stack();
+    }  /* if */
+    finish_block_statement(elem_stmt);
+    /* Elements are checked independently, but only paths falling through
+       earlier elements can reach this element or its breaks. */
+    break_reachability.reachable &= fallthrough_reachability.reachable;
+    break_reachability.reachable_considering_hints &=
+      fallthrough_reachability.reachable_considering_hints;
+    merge_reachability(&break_reachability, &exit_reachability);
+    fallthrough_reachability.reachable &= curr_reachability.reachable;
+    fallthrough_reachability.reachable_considering_hints &=
+      curr_reachability.reachable_considering_hints;
+    fallthrough_reachability.suppress_unreachable_warning |=
+      curr_reachability.suppress_unreachable_warning;
+    if (constexpr_failed) break;
+  }  /* for */
+  wrapper->variant.block.extra_info->end_of_block_reachable =
+    fallthrough_reachability.reachable;
+  merge_reachability(&fallthrough_reachability, &exit_reachability);
+  curr_reachability = exit_reachability;
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+  source_sequence_entries_disallowed = saved_global_flag;
+  scope_stack_top().source_sequence_entries_disallowed = saved_scope_flag;
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+  /* Pop the structured statement stack entry for the wrapper block. */
+  pop_stmt_stack();
+  db_exit();
+}  /* expand_expansion_statement */
+
+
+static void check_expansion_statement(a_statement_ptr    sp,
+                                      a_decl_parse_state *dps,
+                                      a_label_ptr        break_label,
+                                      a_reachability_summary
+                                                         entry_reachability,
+                                      a_boolean          *p_erroneous,
+                                      a_boolean          *p_deferred)
+/*
+Classify the expansion statement sp (*dps is the declaration parse state of
+its for-range-declaration) and, for a non-dependent enumerating expansion,
+do the compile-time expansion.  Dependent cases remain in prototype form.
+break_label and entry_reachability are passed to expand_expansion_statement.
+*p_erroneous and *p_deferred report why the statement was not expanded.
+*/
+{
+  an_expansion_stmt_info_ptr  expn_info = expn_info_of(sp);
+
+  db_enter(3, "check_expansion_statement");
+  if (!*p_erroneous &&
+      expansion_statement_is_expandable(expn_info, dps, p_erroneous,
+                                        p_deferred)) {
+    if (expn_info->initializer_is_list) {
+      /* An enumerating expansion statement (N5050 [stmt.expand]/4.1). */
+      expand_expansion_statement(sp, expn_info->initializer, break_label,
+                                 entry_reachability,
+                                 /*check_constexpr=*/TRUE);
+    } else {
+      /* Only enumerating expansion statements are supported for now. */
+      pos_error(ec_exp_lbrace,
+                &expansion_initializer_expression(expn_info)->position);
+      *p_erroneous = TRUE;
+    }  /* if */
+  }  /* if */
+  db_exit();
+}  /* check_expansion_statement */
+
+
+static void expansion_statement(void)
+/*
+Scan a C++26 expansion statement and add it to the current statement sequence
+(see an_expansion_stmt_info for the syntax and prototype/rescan model).
+check_expansion_statement performs the expansion when possible; erroneous
+and dependent cases retain only the prototype form.  The prototype scan
+reports non-dependent errors; per-element rescans report dependent errors
+with element context lines and retain per-element unused-entity warnings.
+*/
+{
+  a_statement_ptr             sp;
+  an_expansion_stmt_info_ptr  expn_info;
+  a_for_loop_ptr              flip;
+  a_decl_parse_state          dps;
+  a_scope_pointers_block      pointers_block, iterator_pointers_block;
+  a_control_flow_descr_ptr    cfdp;
+  a_label_ptr                 break_label = NULL;
+  a_boolean                   erroneous = FALSE;
+  a_boolean                   deferred = FALSE;
+  a_reachability_summary      entry_reachability;
+  a_token_sequence_number     decl_first_tsn;
+  a_token_kind                separator;
+  a_boolean                   malformed_header = FALSE;
+  a_boolean                   last_token_cached;
+  db_enter(3, "expansion_statement");
+  check_assertion(expansion_statements_allowed);
+  /* In pre-C++26 modes, only GNU C++11 and later modes emulating GCC 16
+     or later accept expansion statements as an extension. */
+  if (!cpp26_mode) {
+    pos_warning(ec_expansion_statements_is_cpp26, &pos_curr_token);
+  }  /* if */
+  /* The for_init_statement scanning routine attaches the initialization to
+     the stmk_for variant of the statement, so start out with an stmk_for
+     statement and change it to an expansion statement later (in the same
+     way as is done in for_statement for a range-based for). */
+  sp = add_statement(stmk_for, /*compiler_generated=*/FALSE);
+  stmt_update_source_sequence_list(sp);
+  /* Do processing required for any pragmas that are bound to the current
+     statement. */
+  process_curr_construct_pragmas((a_symbol_ptr)NULL, sp);
+  /* Push an entry on the structured statement stack. */
+  push_stmt_stack(ssk_expansion, sp, (an_object_lifetime_ptr)NULL);
+  /* Consume the "template" and "for" keywords. */
+  check_assertion(curr_token == tok_template);
+  (void)get_token();
+  check_assertion(curr_token == tok_for);
+  (void)get_token();
+  /* Check for and skip the opening parenthesis. */
+  (void)required_token(tok_lparen, ec_exp_lparen);
+  add_stop_token(tok_rparen);
+  /* An init-statement is present if a ";" appears before the ":" of the
+     header; the scan is also stopped by the ")" so that a malformed header
+     cannot be mistaken for one with an init-statement (see below). */
+  separator = find_for_loop_separator();
+  if (separator == tok_semicolon) {
+    /* An init-statement is present; scan it. */
+    add_stop_token(tok_semicolon);
+    for_init_statement(&pointers_block);
+    remove_stop_token(tok_semicolon);
+    /* The init-statement must be followed by a for-range-declaration and
+       its ":"; verify that the ":" follows (and that the header does not
+       simply end; see below). */
+    separator = find_for_loop_separator();
+  }  /* if */
+  /* Preserve any unreachable state established by the init-statement. */
+  entry_reachability = curr_reachability;
+  if (separator != tok_colon) {
+    /* The header is malformed: There is no ":" before the ")" (or the
+       end of source was reached), e.g., "template for (int i) { }".
+       Flush to the ")" and issue a single "expected a ":"" there; the
+       for-range-declaration and expansion-initializer scans below are
+       skipped (marking the statement erroneous), but the
+       compound-statement is still scanned so scanning can continue
+       normally after the statement. */
+    flush_tokens();
+    syntax_error(ec_exp_colon);
+    malformed_header = TRUE;
+    erroneous = TRUE;   /* Suppresses the warning below. */
+  }  /* if */
+  flip = sp->variant.for_loop.extra_info;
+  set_statement_kind(sp, stmk_expansion_statement);
+  expn_info = expn_info_of(sp);
+  /* Copy any initialization scanned for the init-statement, and the scope
+     containing the init-statement declaration, if any (flip will not be
+     part of the IL). */
+  expn_info->initialization = flip->initialization;
+  expn_info->expansion_scope = flip->for_init_scope;
+  if (expn_info->expansion_scope == NULL) {
+    /* No optional initialization statement was present, so no scope has been
+       created for this statement yet; create the outermost scope. */
+    expn_info->expansion_scope =
+                start_fabricated_block_scope_for_enhanced_for(&pointers_block);
+  }  /* if */
+  scope_stack_top().is_for_init_block = FALSE;
+  /* Record the expansion statement on the scope stack entry of the
+     expansion scope: The entry identifies the statement when pack
+     expansions of the compound-statement are recorded and when they are
+     found again during the per-element rescans (see record_pack_expansion
+     and get_pack_expansion_for_curr_context in scope_stk.c). */
+  scope_stack_top().expansion_statement = sp;
+  /* Push the inner scope before scanning the for-range-declaration. */
+  expn_info->iterator_scope =
+       start_fabricated_block_scope_for_enhanced_for(&iterator_pointers_block);
+  expn_info->iterator_scope->is_expansion_prototype = TRUE;
+  /* Add a control flow entry to represent the expansion block. */
+  cfdp = alloc_control_flow_descr(cfdk_block);
+  cfdp->source_pos = pos_curr_token;
+  cfdp->variant.block.object_lifetime = curr_object_lifetime;
+  add_to_control_flow_descr_list(cfdp);
+  if (!malformed_header) {
+    add_stop_token(tok_colon);
+    /* Scan the for-range-declaration, caching its tokens (including the
+       ":", at which the declaration scan stops) for later rescanning,
+       once per element. */
+    decl_first_tsn = last_token_sequence_number_of_token;
+    begin_caching_fetched_tokens(/*include_curr_token=*/TRUE);
+    /* Mark the scope to indicate that this is the for-range-declaration of
+       an expansion statement (see a_scope_stack_entry). */
+    scope_stack_top().in_expansion_range_decl = TRUE;
+    { a_boolean  saved_prototype =
+                                 scope_stack_top().in_expansion_statement_body;
+      scope_stack_top().in_expansion_statement_body = TRUE;
+      for_range_declaration(&dps);
+      scope_stack_top().in_expansion_statement_body = saved_prototype;
+    }
+    scope_stack_top().in_expansion_range_decl = FALSE;
+    if (expn_info->initialization != NULL && dps.sym != NULL) {
+      /* The name declared by the for-range-declaration is declared in a
+         scope nested inside the scope of the declarations of the
+         init-statement; per N5050 [basic.scope.block]/2, it may not conflict
+         with a name declared in that scope.  (This check is done only for
+         the prototype scan of the declaration, so that the conflict is
+         diagnosed only once.) */
+      a_scope_stack_entry_ptr  pssep = previous_scope_of(&scope_stack_top());
+      a_symbol_ptr             sym;
+      for (sym = (assoc_pointers_block_of(pssep))->symbols;
+           sym != NULL; sym = sym->next_in_scope) {
+        if (sym->header == dps.sym->header &&
+            (is_tag_symbol_kind(sym->kind) ==
+                 is_tag_symbol_kind(dps.sym->kind) ||
+             strict_ansi_mode)) {
+          pos_st_error(ec_redeclaration_of_expansion_init_decl_name,
+                      &dps.sym->decl_position, sym->header->identifier);
+          break;
+        }  /* if */
+      }  /* for */
+    }  /* if */
+    end_caching_fetched_tokens();
+    expn_info->decl_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+    copy_tokens_from_cache(curr_lexical_state_cache(), decl_first_tsn,
+                           last_token_sequence_number_of_token,
+                           /*include_last_token=*/TRUE,
+                           expn_info->decl_token_cache);
+    terminate_token_cache(expn_info->decl_token_cache);
+#if DEBUG
+    if (db_flag_is_set("expansion_stmt")) {
+      db_token_cache(expn_info->decl_token_cache,
+                     "expansion statement for-range-declaration");
+    }  /* if */
+#endif /* DEBUG */
+    if (dps.sym != NULL && symbol_is(dps.sym, sk_variable)) {
+      expn_info->iterator = dps.sym->variant.variable.ptr;
+      if (expn_info->iterator != NULL) {
+        expn_info->iterator->is_enhanced_for_iterator = TRUE;
+        /* Mark the variable so that uses of it in the prototype scan of
+           the compound-statement are treated as value-dependent
+           (N5050 [temp.dep.constexpr]/2.4; the per-element copies declared by
+           the rescans of the declaration are not so marked -- their
+           initializers are bound and fully checked). */
+        expn_info->iterator->is_expansion_iterator = TRUE;
+        if (is_incomplete_array_type(expn_info->iterator->type)) {
+          /* The bound, and hence sizeof the array, is element-dependent. */
+          expn_info->iterator->type = type_of_unknown_templ_param_nontype;
+        }  /* if */
+        /* As for template prototypes, allow a potentially constant-valued
+           iterator to become constant-valued after instantiation. */
+        expn_info->iterator->constant_valued =
+                  is_potentially_constant_valued_variable(expn_info->iterator);
+      }  /* if */
+    }  /* if */
+    /* The entity declared in the for-range-declaration is not used until
+       the expansion is done; mark it as referenced and having a value set,
+       as check_range_based_for_statement does for the range-based-for, to
+       avoid spurious warnings. */
+    if (expn_info->iterator != NULL) {
+      mark_expansion_variable_used(expn_info->iterator);
+    }  /* if */
+    /* Pop the scope to get back to the scope in which the
+       expansion-initializer needs to be scanned.  The scope will be
+       reactivated before the body is scanned. */
+    pop_block_scope(/*is_final_pop=*/FALSE);
+    if (required_token(tok_colon, ec_exp_colon)) {
+      scan_expansion_initializer(sp);
+    } else {
+      /* The ":" is missing, i.e., the header is malformed: The
+         expansion-initializer scan is skipped (its absence marks the
+         statement as erroneous), and required_token has already recovered
+         at the ")". */
+    }  /* if */
+    remove_stop_token(tok_colon);
+  } else {
+    /* The header is malformed (see above): No for-range-declaration was
+       scanned, so the iterator scope is still on top of the scope stack;
+       pop it, and initialize the declaration parse state (otherwise
+       filled in by for_range_declaration). */
+    init_decl_parse_state(&dps);
+    pop_block_scope(/*is_final_pop=*/FALSE);
+  }  /* if */
+  /* Check for and skip the closing parenthesis. */
+  (void)required_token(tok_rparen, ec_exp_rparen);
+  remove_stop_token(tok_rparen);
+  /* Return to the iterator scope for the compound-statement. */
+  push_block_reactivation_scope(expn_info->iterator_scope,
+                                &iterator_pointers_block);
+  begin_expansion_definition_scan(expn_info);
+  if (dps.is_struct_binding_decl) {
+    /* Define the structured bindings of the for-range-declaration, as is
+       done for the range-based-for. */
+    define_struct_bindings(&dps);
+  }  /* if */
+  /* The body must be a compound-statement (N5050 [stmt.expand]); a
+     non-compound statement is accepted as a GNU/Clang-compatible extension,
+     with a warning outside GNU mode (or an error in strict mode).  The body is
+     checked in prototype form only on its initial definition scan, with its
+     tokens cached for the per-element rescans. */
+  if (curr_token != tok_lbrace) {
+    /* A nonstandard extension: A warning (suppressed in the gcc and clang
+       emulation modes), or an error in strict mode. */
+    if (!gnu_mode) {
+      if (strict_ansi_mode) {
+        pos_diagnostic(strict_ansi_error_severity,
+                       ec_nonstd_expansion_stmt_body, &pos_curr_token);
+      } else {
+        pos_warning(ec_nonstd_expansion_stmt_body, &pos_curr_token);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  /* Prescan independently of deferred member bodies and discarded branches.
+     Keep the last body token current until after any prototype replay, so
+     pragmas and macros following the statement are not processed early. */
+  expn_info->body_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+  last_token_cached =
+                  cache_expansion_statement_body(expn_info->body_token_cache);
+  terminate_token_cache(expn_info->body_token_cache);
+  /* A per-element rescan or a replay of an already-checked definition (which
+     scans cached tokens) skips the body; a Microsoft old-style specialization
+     is scanned here for the first time. */
+  if (is_prototype_instantiation_context() ||
+      (!scope_stack_top().in_expansion_element_rescan &&
+       (!is_nonspecialized_instantiation_context() ||
+        get_token_cache_being_scanned().is_empty()))) {
+    rescan_persistent_reusable_cache(expn_info->body_token_cache);
+    dependent_statement();
+    flush_past_token_cache_terminator();
+  } else {
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+    /* A definition that is put out needs the prototype body. */
+    check_assertion_str(source_sequence_entries_disallowed,
+                        "expansion_statement: no prototype body for an "
+                        "instantiated definition");
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+    /* The body was checked in the enclosing definition.  Instantiate it only
+       for actual elements, not with just the enclosing template arguments
+       substituted.  Reserve the shared break label because there is no
+       prototype replay to create it. */
+    struct_stmt_stack_top().break_label = alloc_temp_label();
+    struct_stmt_stack_top().break_label->break_label = TRUE;
+  }  /* if */
+  if (last_token_cached) (void)get_token();
+#if DEBUG
+  if (db_flag_is_set("expansion_stmt")) {
+    db_token_cache(expn_info->body_token_cache, "expansion statement body");
+  }  /* if */
+#endif /* DEBUG */
+  /* Define the "continue" label, if it is needed: A continue in the body jumps
+     to the end of the body (N5050 [stmt.cont]). */
+  define_continue_label();
+  /* If there is a break label, create its associated "definition" (statement)
+     at this point, i.e., after the compound-statement, as is done for a for
+     statement (see the comment there). */
+  { a_struct_stmt_stack_entry_ptr  sssep = &struct_stmt_stack_top();
+    break_label = sssep->break_label;
+    if (break_label != NULL) {
+      a_control_flow_descr_ptr  break_statements = sssep->break_statements;
+      define_implicit_label(break_label, break_statements,
+                            /*add_to_stmt_list=*/FALSE);
+      sssep->break_label = NULL;
+    }  /* if */
+  }
+  /* End the control flow block. */
+  add_to_control_flow_descr_list(alloc_control_flow_descr(cfdk_end_of_block));
+  /* Pop the scopes that have been pushed.  The iterator scope is popped first,
+     so that the expansion (if done below) is not scanned in a dependent
+     context; the expansion scope (containing the init-statement declarations)
+     is kept on the stack for the expansion. */
+  finish_block_scope_for_enhanced_for();
+  /* Classify the expansion statement and do the compile-time expansion
+     for the cases that can be handled at scan time. */
+  check_expansion_statement(sp, &dps, break_label, entry_reachability,
+                            &erroneous, &deferred);
+  if (expn_info->expanded_statement == NULL) {
+    /* The compile-time expansion was not done (an erroneous or deferred case;
+       see check_expansion_statement): The reachability state still reflects
+       the end of the prototype compound-statement (e.g., a "return" in it),
+       but whether the code that follows is reachable depends on the
+       (not-yet-done) expansion; restore the state at entry to the statement to
+       avoid spurious "statement is unreachable" warnings. */
+    curr_reachability = entry_reachability;
+  }  /* if */
+  finish_block_scope_for_enhanced_for();
+  /* Discard prototype exits; curr_reachability includes expanded breaks. */
+  struct_stmt_stack_top().end_reachable = curr_reachability;
+  /* Pop the structured statement stack. */
+  pop_stmt_stack();
+  if (break_label != NULL) {
+    add_statement_list(break_label->exec_stmt, curr_reachability.reachable);
+  }  /* if */
+  /* If a label appeared in the context of the statement that was just
+     terminated, it may be appropriate to push a new object lifetime for the
+     scope being resumed. */
+  reset_curr_block_object_lifetime(sp);
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  sp->end_position = curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+  /* An expansion statement that was not expanded is either erroneous
+     (its problem has been diagnosed; see check_expansion_statement and
+     expansion_statement_is_expandable) or deferred to the instantiation of an
+     enclosing template. */
+  check_assertion(expn_info->expanded_statement != NULL ||
+                  erroneous || deferred);
+  db_exit();
+}  /* expansion_statement */
+
 #if MICROSOFT_EXTENSIONS_ALLOWED
 
 static void for_each_statement(void)
@@ -6616,10 +7451,11 @@ See also 3.6.6.2.
 
   db_enter(3, "continue_statement");
   check_for_unreachable_code();
-  /* See if we are within a loop body (while, do, or for) by looking at the
-     entries in the structured statement stack. */
+  /* See if we are within a loop body (while, do, for, or an expansion
+     statement) by looking at the entries in the structured statement stack. */
   sssep = find_enclosing_struct_stmt(/*find_switch=*/FALSE,
-                                     /*find_loop=*/TRUE);
+                                     /*find_loop=*/TRUE,
+                                     /*stop_at_expansion=*/FALSE);
   if (sssep == NULL) {
     /* No appropriate structured statement was found. */
     pos_error(ec_continue_must_be_in_loop, &error_position);
@@ -6674,6 +7510,10 @@ give the starting and ending positions of the break statement.
     if (sssep->kind == (a_struct_stmt_kind)ssk_switch) {
       dest_label->switch_break_label = TRUE;
     }  /* if */
+  }  /* if */
+  if (sssep->kind == ssk_expansion) {
+    /* A break from an expansion statement also exits the expansion. */
+    merge_reachability(&curr_reachability, &sssep->end_reachable);
   }  /* if */
   /* Allocate the goto statement. */
   sp = add_statement_at_stmt_pos(stmk_goto, pos, /*compiler_generated=*/TRUE);
@@ -6743,10 +7583,12 @@ See also 3.6.6.3.
   db_enter(3, "break_statement");
   start_position = pos_curr_token;
   check_for_unreachable_code();
-  /* See if we are within a loop body (while, do, or for) or a switch
-     by looking at the entries in the structured statement stack. */
+  /* See if we are within a loop body (while, do, for, or an expansion
+     statement) or a switch by looking at the entries in the structured
+     statement stack. */
   sssep = find_enclosing_struct_stmt(/*find_switch=*/TRUE,
-                                     /*find_loop=*/TRUE);
+                                     /*find_loop=*/TRUE,
+                                     /*stop_at_expansion=*/FALSE);
   /* Binding a pragma to a break statement is disallowed.  This is partly
      a consequence of how break statements are implemented -- usually no
      explicit goto is added to the IL (so there's nothing to actually connect
@@ -7497,15 +8339,20 @@ GNU also allows the "case range" form:
   /* See if we are within a switch body by looking at the entries in
      the structured statement stack. */
   sssep = find_enclosing_struct_stmt(/*find_switch=*/TRUE,
-                                     /*find_loop=*/FALSE);
-  if (sssep != NULL) {
+                                     /*find_loop=*/FALSE,
+                                     /*stop_at_expansion=*/TRUE);
+  if (sssep != NULL && sssep->kind != ssk_expansion) {
     /* Assume the case is reachable if the switch is reachable. */
     merge_reachability(&sssep->start_reachable, &curr_reachability);
     switch_type = sssep->type;
     switch_depth = (int)(sssep - struct_stmt_stack);
   } else {
-    /* We are not inside a switch statement. */
-    pos_error(ec_case_label_must_be_in_switch, &error_position);
+    /* We are not inside a switch statement, or we are inside the body of an
+       expansion statement but its innermost enclosing switch statement is
+       outside that body. */
+    pos_error(sssep != NULL ? ec_case_label_in_expansion_stmt
+                            : ec_case_label_must_be_in_switch,
+              &error_position);
     set_reachable(curr_reachability);
     switch_type = error_type();
     switch_depth = 0;
@@ -7593,8 +8440,9 @@ Scan a default case label definition.  The syntax is:
   /* See if we are within a switch body by looking at the entries in
      the structured statement stack. */
   sssep = find_enclosing_struct_stmt(/*find_switch=*/TRUE,
-                                     /*find_loop=*/FALSE);
-  if (sssep != NULL) {
+                                     /*find_loop=*/FALSE,
+                                     /*stop_at_expansion=*/TRUE);
+  if (sssep != NULL && sssep->kind != ssk_expansion) {
     a_statement_ptr          sp;
     a_switch_case_entry_ptr  scep = alloc_switch_case_entry();
     sp = add_statement_at_stmt_pos(stmk_switch_case, &label_position,
@@ -7611,8 +8459,12 @@ Scan a default case label definition.  The syntax is:
     record_switch_case_entry(scep, sssep);
     merge_reachability(&sssep->start_reachable, &curr_reachability);
   }  else {
-    /* We are not inside a switch statement. */
-    pos_error(ec_default_label_must_be_in_switch, &label_position);
+    /* We are not inside a switch statement, or we are inside the body of an
+       expansion statement but its innermost enclosing switch statement is
+       outside that body. */
+    pos_error(sssep != NULL ? ec_case_label_in_expansion_stmt
+                            : ec_default_label_must_be_in_switch,
+              &label_position);
     set_reachable(curr_reachability);
   }  /* if */
   /* Check for and ignore the final colon. */
@@ -7696,6 +8548,18 @@ it is followed by a colon.)
           scope_stack[depth_innermost_function_scope].constexpr_ruled_out =
                                                                           TRUE;
         }  /* if */
+      }  /* if */
+    }  /* if */
+    if (!C_mode()) {
+      /* An identifier label shall not be enclosed by an expansion statement
+         (N5050 [stmt.label]/4). */
+      if (find_enclosing_struct_stmt(/*find_switch=*/FALSE,
+                                     /*find_loop=*/FALSE,
+                                     /*stop_at_expansion=*/TRUE) != NULL) {
+        pos_error(ec_label_in_expansion_statement, &label_pos);
+        /* Avoid cascading diagnostics for a goto that references the
+           ill-formed label. */
+        symbol_for(label)->referenced = TRUE;
       }  /* if */
     }  /* if */
   }  /* if */
@@ -7890,6 +8754,16 @@ rescan_statement:
     case tok_for:
       /* For statement and range-based-for ([stmt.ranged]). */
       for_statement();
+      break;
+    case tok_template:
+      /* "template for" starts a C++26 expansion statement (N5050
+         [stmt.expand]). */
+      if (expansion_statements_allowed && next_token() == tok_for) {
+        expansion_statement();
+        can_appear_in_constexpr_body = TRUE;
+      } else {
+        goto expr_statement;
+      }  /* if */
       break;
 #if MICROSOFT_EXTENSIONS_ALLOWED
     case tok_for_each:

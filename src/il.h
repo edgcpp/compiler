@@ -166,6 +166,7 @@ map_il_type_to_kind(a_label, iek_label)
 map_il_type_to_kind(an_expr_node, iek_expr_node)
 map_il_type_to_kind(a_for_loop, iek_for_loop)
 map_il_type_to_kind(a_range_based_for_loop, iek_range_based_for_loop)
+map_il_type_to_kind(an_expansion_stmt_info, iek_expansion_stmt_info)
 #if MICROSOFT_EXTENSIONS_ALLOWED
 map_il_type_to_kind(a_for_each_loop, iek_for_each_loop)
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -1994,6 +1995,7 @@ extern a_boolean has_statement_expression(an_expr_node_ptr expr);
 
 #if !STANDALONE_UTILITY_PROGRAM
 extern void eliminate_statement_expr_pragmas(an_expr_node_ptr  expr);
+extern void eliminate_statement_pragmas(a_statement_ptr  stmt);
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 extern void eliminate_statement_expr_src_seq_entries(an_expr_node_ptr  expr);
@@ -2001,7 +2003,11 @@ extern void eliminate_statement_expr_src_seq_entries(an_expr_node_ptr  expr);
 extern a_boolean expr_is_dep_static_member_of_current_instantiation(
                                                         an_expr_node_ptr expr);
 
+extern a_boolean has_saved_indefinite_function_operand(an_expr_node_ptr expr);
+
 extern a_boolean expr_is_instantiation_dependent(an_expr_node_ptr expr);
+
+extern a_boolean expansion_initializer_is_dependent(an_expr_node_ptr expr);
 
 extern a_boolean constant_is_instantiation_dependent(a_constant_ptr con);
 
@@ -2291,6 +2297,9 @@ typedef int an_expr_copy_options_set;
 #define CE_CONST_EVAL_SUB_EXPRESSION 0x40000
 			/* TRUE if this copy operation is copying an operand of
 			   an expression in an immediate evaluation context. */
+#define CE_EXTEND_INITIALIZER_TEMPORARIES 0x80000
+			/* Copy expansion initializer temporaries into the
+			   current block lifetime, not expression lifetimes. */
 
 a_constant_ptr copy_constant_full(a_constant_ptr           old_constant,
                                   a_constant_ptr           new_constant,
@@ -2635,6 +2644,11 @@ extern void copy_statement(a_statement *from,
 
 extern void change_statement_into_block(a_statement_ptr statement,
                                         a_statement_ptr *orig_statement);
+
+/*
+Macro to get the supplement of the expansion statement.
+*/
+#define expn_info_of(stmt) ((stmt)->variant.expansion_statement.extra_info)
 
 extern void set_expr_result_not_used(an_expr_node_ptr node);
 
@@ -3142,6 +3156,8 @@ extern void fully_substitute_constant(a_constant_ptr             src_con,
 extern void increment_template_dependent_enum_constant(a_constant_ptr  con);
 
 extern a_boolean is_operator_returning_bool(an_expr_operator_kind op);
+
+extern an_expr_node_ptr skip_object_lifetimes(an_expr_node_ptr  expr);
 
 extern an_expr_node_ptr add_cast(an_expr_node_ptr node,
                                  a_type_ptr       new_type);
