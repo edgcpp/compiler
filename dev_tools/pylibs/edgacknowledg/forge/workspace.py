@@ -26,6 +26,7 @@ Everything taken from a pull request or a CI artifact is untrusted:
 
 import asyncio
 import base64
+import codecs
 import logging
 import os
 import re
@@ -38,18 +39,18 @@ import zipfile
 
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-from typing import Iterable, Optional, Sequence
+from typing import IO, Callable, Iterable, Optional, Sequence
 
 import edgtest
 import edgutil
 
+from edgacknowledg.budget import Budget, BudgetExceeded
 from edgacknowledg.forge import Forge, PullRequestInfo
 from edgacknowledg.forge.config import (
   DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES,
   DEFAULT_MAX_ARTIFACT_ENTRIES,
   DEFAULT_MAX_DIFF_BYTES,
   DEFAULT_MAX_PATTERNS,
-  ENV_PREFIX,
 )
 from edgacknowledg.forge.runner.roles import BUILD_STAGING_DIR, REVIEWS_DIR
 from edgtest.runtest import get_bare_name
@@ -71,6 +72,14 @@ BENCH_BASELINE_PATTERNS = ('/benchmarks/baselines/',)
 # files) before it is killed; well within docker stop's default 10.
 _TERMINATE_ALLOWANCE = 5.0
 
+# The most output a git command run for its result (not one whose output
+# goes to a sink) may have; far more than a rev-parse or for-each-ref of a
+# pull request's refs has.
+_MAX_GIT_OUTPUT_BYTES = 16 * 1024 * 1024
+# How much of a git command's stderr is kept (the rest is read, and
+# dropped): a fetch relays what the remote says, which needn't be short.
+_MAX_GIT_STDERR_BYTES = 64 * 1024
+
 
 class WorkspaceError(Exception):
   '''Raised when a workspace operation fails or input is unsafe.'''
@@ -78,6 +87,10 @@ class WorkspaceError(Exception):
 
 class UnsafeArchiveError(WorkspaceError):
   '''Raised for an artifact that is too large or has unsafe entries.'''
+
+
+class _OutputTooLarge(Exception):
+  '''Raised when a process's output is over its limit (it is stopped).'''
 
 
 @dataclass(frozen = True)
@@ -129,26 +142,40 @@ def _patterns_for_changed_test_file(path: PurePosixPath) -> list[str]:
   return [f"/{_escape_pattern(str(path.parent))}/"]
 
 
-def changed_paths(diff: str) -> list[str]:
-  '''Return the paths a ``git diff --no-renames`` output touches.'''
-  paths = []
-  for line in diff.splitlines():
-    match = _DIFF_HEADER.match(line)
-    if match is not None:
-      paths.append(match.group(1))
-  return paths
+def _add_patterns(patterns: dict[str, None],
+                  more: list[str],
+                  max_patterns: int) -> None:
+  '''Add ``more`` to ``patterns`` (an ordered set), within
+  ``max_patterns``.
+  '''
+  patterns.update(dict.fromkeys(more))
+  if len(patterns) > max_patterns:
+    raise WorkspaceError(
+      f"more than {max_patterns} sparse-checkout patterns (too many tests; "
+      f"max_sparse_patterns)"
+    )
 
 
-def changes_patterns(diff: str,
+def changes_patterns(diff: IO[str],
                      *,
                      max_patterns: int = DEFAULT_MAX_PATTERNS) -> list[str]:
-  '''Sparse-checkout patterns for rematerializing ``diff`` (of tests/) on
-  the base tree: the test home and every affected test; at most
-  ``max_patterns``.
+  '''Sparse-checkout patterns for rematerializing the diff (of tests/) read
+  from ``diff`` on the base tree: the test home and every affected test; at
+  most ``max_patterns``.
   '''
   patterns = dict.fromkeys(_TEST_HOME_PATTERNS)
   current_suite: Optional[str] = None
-  for line in diff.splitlines():
+  limit = edgutil.MAX_LINE_CHARS
+  for piece, at_line_start in edgutil.iter_line_pieces(diff, limit + 1):
+    # Only whole lines within edgutil.MAX_LINE_CHARS matter: no header or
+    # expectation line is longer, and a longer one (e.g. of a recording) is
+    # passed over in pieces, never held whole.
+    if not at_line_start:
+      continue
+    text_length = len(piece) - (1 if piece.endswith('\n') else 0)
+    if text_length > limit:
+      continue
+    line = piece.rstrip('\n')
     match = _DIFF_HEADER.match(line)
     if match is not None:
       path = PurePosixPath(match.group(1))
@@ -196,20 +223,6 @@ def failures_patterns(test_ids: Iterable[str],
       continue
     _add_patterns(patterns, patterns_for_test(test_path), max_patterns)
   return list(patterns)
-
-
-def _add_patterns(patterns: dict[str, None],
-                  more: list[str],
-                  max_patterns: int) -> None:
-  '''Add ``more`` to ``patterns`` (an ordered set), within
-  ``max_patterns``.
-  '''
-  patterns.update(dict.fromkeys(more))
-  if len(patterns) > max_patterns:
-    raise WorkspaceError(
-      f"more than {max_patterns} sparse-checkout patterns (too many tests; "
-      f"{ENV_PREFIX}MAX_SPARSE_PATTERNS)"
-    )
 
 
 def ensure_real_directory(root: Path, relative: PurePosixPath) -> Path:
@@ -302,22 +315,25 @@ def remove_tree(path: Path) -> None:
 class _Budget:
   '''What extracting an artifact may still spend: bytes, and entries.'''
   def __init__(self, max_bytes: int, max_entries: int) -> None:
-    self.bytes = max_bytes
-    self.max_entries = max_entries
-    self.entries = max_entries
+    self.byte_budget = Budget(max_bytes)
+    self.entry_budget = Budget(max_entries)
 
   def spend(self, count: int) -> None:
-    self.bytes -= count
-    if self.bytes < 0:
-      raise UnsafeArchiveError('artifact exceeds the extracted size limit')
+    try:
+      self.byte_budget.spend(count)
+    except BudgetExceeded as ex:
+      raise UnsafeArchiveError(
+        'artifact exceeds the extracted size limit'
+      ) from ex
 
   def count_entry(self) -> None:
-    self.entries -= 1
-    if self.entries < 0:
+    try:
+      self.entry_budget.spend(1)
+    except BudgetExceeded as ex:
       raise UnsafeArchiveError(
-        f"artifact has more than {self.max_entries} entries "
-        f"({ENV_PREFIX}MAX_ARTIFACT_ENTRIES)"
-      )
+        f"artifact has more than {self.entry_budget.limit} entries "
+        f"(max_artifact_entries)"
+      ) from ex
 
 
 def _central_directory_size(zip_path: Path) -> Optional[int]:
@@ -362,7 +378,7 @@ def extract_artifact(
   if directory_size is not None and directory_size > max_directory_bytes:
     raise UnsafeArchiveError(
       f"artifact's central directory is over {max_directory_bytes} bytes "
-      f"({ENV_PREFIX}MAX_ARTIFACT_DIRECTORY_BYTES)"
+      f"(max_artifact_directory_bytes)"
     )
   budget = _Budget(max_bytes, max_entries)
   try:
@@ -455,9 +471,15 @@ class Workspaces:
                 cwd: Optional[Path] = None,
                 stdin: Optional[str] = None,
                 check: bool = True,
-                max_output: Optional[int] = None) -> GitResult:
-    '''Run git; with ``max_output``, its output may be at most that many
-    bytes (it is stopped, and ``WorkspaceError`` raised, beyond).
+                max_output: Optional[int] = None,
+                stdout_sink: Optional[Callable[[bytes], None]] = None
+                ) -> GitResult:
+    '''Run git; with ``stdout_sink``, its output goes there as it comes,
+    rather than into the result, and may be at most ``max_output`` bytes
+    (it is stopped, and ``_OutputTooLarge`` raised, beyond: the caller
+    knows which limit that is). Without, its output goes into the result,
+    and may be at most ``_MAX_GIT_OUTPUT_BYTES`` (``WorkspaceError``
+    beyond). Only the start of its stderr is kept.
     '''
     command = ['git']
     if git_dir is not None:
@@ -474,18 +496,31 @@ class Workspaces:
       cwd = cwd,
       env = self._git_env()
     )
-    if max_output is None:
-      stdout, stderr = await process.communicate(
-        stdin.encode() if stdin is not None else None
-      )
-    else:
-      assert stdin is None
-      bounded = await _communicate_bounded(process, max_output)
-      if bounded is None:
-        raise WorkspaceError(
-          f"git {args[0]}'s output is over {max_output} bytes"
+    stdin_bytes = stdin.encode() if stdin is not None else None
+    if stdout_sink is None:
+      assert max_output is None
+      collected = bytearray()
+      try:
+        stderr = await _communicate_bounded(
+          process,
+          _MAX_GIT_OUTPUT_BYTES,
+          collected.extend,
+          stdin_bytes
         )
-      stdout, stderr = bounded
+      except _OutputTooLarge:
+        raise WorkspaceError(
+          f"git {' '.join(args)} wrote over {_MAX_GIT_OUTPUT_BYTES} bytes"
+        ) from None
+      stdout = bytes(collected)
+    else:
+      assert max_output is not None
+      stderr = await _communicate_bounded(
+        process,
+        max_output,
+        stdout_sink,
+        stdin_bytes
+      )
+      stdout = b''
     assert process.returncode is not None
     result = GitResult(
       process.returncode,
@@ -586,15 +621,55 @@ class Workspaces:
                  repository: str,
                  base: str,
                  head: str,
-                 paths: Sequence[str]) -> str:
+                 paths: Sequence[str],
+                 handle: IO[bytes]) -> None:
+    '''Write the diff of ``paths`` from ``base`` to ``head`` to ``handle``
+    as it comes (it may be large): UTF-8, with what isn't replaced (U+FFFD).
+    '''
+    decoder = codecs.getincrementaldecoder('utf-8')(errors = 'replace')
     async with self.lock(repository):
-      result = await self.git(
-        'diff', '--no-renames', '--no-color', '--no-ext-diff', '--no-textconv',
-        base, head, '--', *paths,
-        git_dir = self.clone_dir(repository),
-        max_output = self._max_diff_bytes
-      )
-      return result.stdout
+      # Decoded and encoded again so that what isn't UTF-8 is replaced:
+      # the builder's edg-rematerialize-test-run (and changes_patterns)
+      # read it as UTF-8 text, and the Changes section's fingerprint
+      # (the file's) stays what it was when the diff was decoded whole.
+      # Incrementally, so a character split between chunks survives.
+
+      written = 0
+
+      def write(chunk: bytes) -> None:
+        nonlocal written
+        decoded = decoder.decode(chunk).encode()
+        written += len(decoded)
+        if written > self._max_diff_bytes:
+          raise _OutputTooLarge()
+        handle.write(decoded)
+
+      try:
+        await self.git(
+          'diff',
+          '--no-renames',
+          '--no-color',
+          '--no-ext-diff',
+          '--no-textconv',
+          base,
+          head,
+          '--',
+          *paths,
+          git_dir = self.clone_dir(repository),
+          max_output = self._max_diff_bytes,
+          stdout_sink = write
+        )
+        # Finish decoding: bytes the decoder still holds (a character the
+        # output ended in the middle of) are written too, replaced.
+        decoded = decoder.decode(b'', final = True).encode()
+        if written + len(decoded) > self._max_diff_bytes:
+          raise _OutputTooLarge()
+        handle.write(decoded)
+      except _OutputTooLarge:
+        raise WorkspaceError(
+          f"the diff is over {self._max_diff_bytes} bytes "
+          f"(max_diff_bytes)"
+        ) from None
 
   async def checkout(self,
                      info: PullRequestInfo,
@@ -678,32 +753,68 @@ class Workspaces:
       await self.git('gc', '--auto', '--quiet', git_dir = clone_dir)
 
 
+async def _read_start(stream: asyncio.StreamReader, keep: int) -> bytes:
+  '''Read ``stream`` to its end; return its first ``keep`` bytes (the rest
+  is dropped as it comes).
+  '''
+  kept = bytearray()
+  while chunk := await stream.read(64 * 1024):
+    kept += chunk[:max(0, keep - len(kept))]
+  return bytes(kept)
+
+
+async def _write_stdin(process: asyncio.subprocess.Process,
+                       data: bytes) -> None:
+  '''Write ``data`` to ``process``'s stdin, then close it.'''
+  assert process.stdin is not None
+  try:
+    process.stdin.write(data)
+    await process.stdin.drain()
+  except (BrokenPipeError, ConnectionResetError):
+    # It exited without reading it all; its exit status tells.
+    pass
+  finally:
+    process.stdin.close()
+
+
 async def _communicate_bounded(process: asyncio.subprocess.Process,
-                               limit: int) -> Optional[tuple[bytes, bytes]]:
-  '''``process``'s output (stdout, stderr), once it exits; ``None``, having
-  stopped it, should its stdout be over ``limit`` bytes. Should this be
-  canceled (or fail), it is stopped too, rather than left writing to a
-  pipe no one reads.
+                               limit: int,
+                               sink: Callable[[bytes], None],
+                               stdin: Optional[bytes] = None) -> bytes:
+  '''Pass ``process``'s stdout to ``sink`` as it comes, in chunks (none held
+  here), having written ``stdin`` (if any) to it; return the start of its
+  stderr (``_MAX_GIT_STDERR_BYTES``) once it exits. Should its stdout be
+  over ``limit`` bytes, it is stopped, and ``_OutputTooLarge`` raised.
+  Should this be canceled (or fail), it is stopped too, rather than left
+  writing to a pipe no one reads.
   '''
   assert process.stdout is not None and process.stderr is not None
-  errors = asyncio.create_task(process.stderr.read())
-  chunks: list[bytes] = []
+  reading_stderr = asyncio.create_task(
+    _read_start(process.stderr, _MAX_GIT_STDERR_BYTES)
+  )
+  writing_stdin = (
+    asyncio.create_task(_write_stdin(process, stdin))
+    if stdin is not None else None
+  )
   size = 0
   try:
     while chunk := await process.stdout.read(64 * 1024):
       size += len(chunk)
       if size > limit:
-        await edgutil.async_terminate_within(process, _TERMINATE_ALLOWANCE)
-        return None
-      chunks.append(chunk)
-    output = b''.join(chunks), await errors
+        raise _OutputTooLarge()
+      sink(chunk)
+    if writing_stdin is not None:
+      await writing_stdin
+    stderr = await reading_stderr
     await process.wait()
-    return output
+    return stderr
   except BaseException:
     await edgutil.async_terminate_within(process, _TERMINATE_ALLOWANCE)
     raise
   finally:
-    errors.cancel()
+    reading_stderr.cancel()
+    if writing_stdin is not None:
+      writing_stdin.cancel()
 
 
 def basic_auth_header(user: str, password: str) -> str:

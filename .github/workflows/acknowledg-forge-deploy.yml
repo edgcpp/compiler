@@ -13,17 +13,15 @@
 #            installed copy of
 #            dev_tools/services/acknowledg-forge/deploy-remote.py, the only
 #            thing the deploy user may run as root) to point the service at
-#            the pushed digest, set its AcknowlEDG API and UI URLs, and
-#            restart it (only if any of those changed)
+#            the pushed digest and restart it when that changes
 #
 # The image is public and holds no credentials or configuration: the publish
 # job has no access to the deployment's secrets. Everything else about the
 # service (its unit, tokens, API key) is configured on the host.
 #
 # Host, user, and SSH credentials come from secrets in the
-# `acknowledg-forge` environment; the public AcknowlEDG URLs come from
-# repository variables shared with acknowledg-deploy.yml (see
-# dev_tools/services/acknowledg-forge/README.md).
+# `acknowledg-forge` environment. Application settings, including public
+# AcknowlEDG endpoints, belong in the host administrator's TOML.
 
 name: acknowledg-forge Deploy
 
@@ -130,11 +128,8 @@ jobs:
         env:
           SERVICE: ${{ secrets.ACKNOWLEDG_FORGE_SERVICE || 'acknowledg-forge-github' }}
           IMAGE: ${{ needs.publish.outputs.image }}
-          API_URL: ${{ vars.ACKNOWLEDG_API_HOST }}
-          UI_URL: ${{ vars.ACKNOWLEDG_UI_HOST }}
         run: |
           # The arguments are deliberately expanded (and quoted) here.
           # shellcheck disable=SC2029
           ssh acknowledg-forge "sudo -n /usr/local/libexec/acknowledg-forge-deploy \
-            $(printf '%q ' "${SERVICE}" "${IMAGE}" "${API_URL}" \
-              "${UI_URL}")"
+            $(printf '%q ' "${SERVICE}" "${IMAGE}")"

@@ -30,10 +30,9 @@
 #   IMAGE            the image, pinned by digest (set by deploy-remote.py)
 #   FORGE_UID/GID    the host account owning STATE_DIR; every container runs
 #                    as it
-#   STATE_DIR        the deployment's state (ACKNOWLEDG_FORGE_HOME)
-#   SETTINGS_FILE    the service's settings (ACKNOWLEDG_FORGE_*)
+#   STATE_DIR        the deployment's state (home)
+#   SETTINGS_FILE    the TOML settings, shared read-only by all containers
 #   CREDENTIALS_DIR  the credentials systemd decrypted (the service's only)
-#   EDG_ACKNOWLEDG_{API,UI}_{HOST,PORT}  AcknowlEDG (set by deploy-remote.py)
 
 name: acknowledg-forge
 
@@ -56,6 +55,14 @@ x-environment: &environment
   HOME: /tmp
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONUTF8: "1"
+  ACKNOWLEDG_FORGE_SETTINGS_FILE: /etc/acknowledg-forge.toml
+
+x-settings: &settings
+  type: bind
+  source: ${SETTINGS_FILE:?}
+  target: /etc/acknowledg-forge.toml
+  read_only: true
+  bind: {create_host_path: false}
 
 x-python: &python /edg/acknowledg-forge/${FORGE:-github}/bin/python
 
@@ -79,23 +86,19 @@ x-healthcheck: &healthcheck
 services:
   service:
     <<: *container
-    command: ["acknowledg-forge-${FORGE:-github}"]
-    env_file:
-      - ${SETTINGS_FILE:?}
+    command:
+      - acknowledg-forge-${FORGE:-github}
+      # The web app: health checks, and webhooks with webhooks = true.
+      # Only on frontend (see networks). The wiring is set here, never in
+      # the shared settings, so the settings can't widen a listener.
+      - --service-bind=service-frontend:2728
+      - --builder-service-url=ws://builder:2730
+      - --publisher-service-url=ws://publisher:2731
     environment:
       <<: *environment
-      ACKNOWLEDG_FORGE_HOME: /var/lib/acknowledg-forge
       CREDENTIALS_DIRECTORY: /run/credentials
-      ACKNOWLEDG_FORGE_BUILDER_SERVICE_URL: ws://builder:2730
-      ACKNOWLEDG_FORGE_PUBLISHER_SERVICE_URL: ws://publisher:2731
-      # The web app: health checks, and webhooks with
-      # ACKNOWLEDG_FORGE_WEBHOOKS=1. Only on frontend (see networks).
-      ACKNOWLEDG_FORGE_SERVICE_BIND: service-frontend:2728
-      EDG_ACKNOWLEDG_API_HOST: ${EDG_ACKNOWLEDG_API_HOST:-localhost}
-      EDG_ACKNOWLEDG_API_PORT: ${EDG_ACKNOWLEDG_API_PORT:-2727}
-      EDG_ACKNOWLEDG_UI_HOST: ${EDG_ACKNOWLEDG_UI_HOST:-localhost}
-      EDG_ACKNOWLEDG_UI_PORT: ${EDG_ACKNOWLEDG_UI_PORT:-5173}
     volumes:
+      - *settings
       # One bind for all of the state, so builds move into reviews by
       # rename. (Missing directories are an error, not created as root.)
       - type: bind
@@ -115,7 +118,7 @@ services:
       # is published.
       - 127.0.0.1:${WEBHOOK_PORT:-2728}:2728
     networks:
-      # The web app binds only here (ACKNOWLEDG_FORGE_SERVICE_BIND).
+      # The web app binds only here (--service-bind).
       frontend:
         aliases: [service-frontend]
       build: {}
@@ -142,8 +145,6 @@ services:
       # A runner server with the builder role (runner.roles: what it
       # allows, as without containers).
       - edgacknowledg.forge.builder
-      - --home=/var/lib/acknowledg-forge
-      - --tools-dir=/edg/tools
       # Its only network is the one it shares with its client.
       - --host=0.0.0.0
       - --port=2730
@@ -151,6 +152,7 @@ services:
     environment:
       <<: *environment
     volumes:
+      - *settings
       - type: bind
         source: ${STATE_DIR:?}/reviews
         target: /var/lib/acknowledg-forge/reviews
@@ -176,14 +178,11 @@ services:
       # runner's).
       - --host=publisher-publish
       - --port=2731
-      # Pool processes answering reviewers, and how long each may take on a
-      # request before it is replaced (the defaults).
-      - --processes=4
-      - --request-timeout=150
+      - --tools-service-url=ws://tools:2732
     environment:
       <<: *environment
-      ACKNOWLEDG_FORGE_TOOLS_SERVICE_URL: ws://tools:2732
     volumes:
+      - *settings
       - type: bind
         source: ${STATE_DIR:?}/reviews
         target: /var/lib/acknowledg-forge/reviews
@@ -215,8 +214,6 @@ services:
       - -m
       # A runner server with the tools role.
       - edgacknowledg.forge.tools
-      - --home=/var/lib/acknowledg-forge
-      - --tools-dir=/edg/tools
       # Its only network is the one it shares with its client.
       - --host=0.0.0.0
       - --port=2732
@@ -224,6 +221,7 @@ services:
     environment:
       <<: *environment
     volumes:
+      - *settings
       - type: bind
         source: ${STATE_DIR:?}/reviews
         target: /var/lib/acknowledg-forge/reviews

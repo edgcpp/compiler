@@ -46,8 +46,5 @@ RUN useradd --create-home --uid 1000 acknowledg && \
     mkdir -p /var/lib/acknowledg-forge && \
     chown acknowledg:acknowledg /var/lib/acknowledg-forge
 
-ENV ACKNOWLEDG_FORGE_TOOLS_DIR=/edg/tools
-ENV ACKNOWLEDG_FORGE_HOME=/var/lib/acknowledg-forge
-
 USER acknowledg
 WORKDIR /var/lib/acknowledg-forge

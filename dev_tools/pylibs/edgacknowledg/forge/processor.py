@@ -20,7 +20,7 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path, PurePosixPath
-from typing import Any, Awaitable, Callable, Iterable, Optional
+from typing import Any, Awaitable, Callable, Iterable, Optional, TypedDict
 
 import edgtest
 import edgutil
@@ -60,6 +60,13 @@ from edgacknowledg.forge.workspace import (
 
 _log = logging.getLogger(__name__)
 
+
+class _TemporaryPathOptions(TypedDict):
+  prefix: str
+  dir: Path
+  suffix: str
+
+
 CHANGES_NAME = 'Test - Changes'
 FAILURES_NAME = 'Test - Failures'
 
@@ -71,11 +78,13 @@ BENCH_SECTIONS = (
 
 CI_METADATA_FILE = 'ci-meta.json'
 # The largest that file may be, and the most (in bytes) the changes.elist
-# files of a failures artifact may hold, and their test ids take as JSON:
-# they are kept in its section's details, which go to the publisher in one
-# message.
+# files of a failures artifact may hold, and their test ids take as JSON
+# in the database's section bookkeeping.
 MAX_CI_METADATA_BYTES = 64 * 1024
 MAX_TEST_IDS_BYTES = 4 * 1024 * 1024
+# The longest test id taken from CI (a path within a suite); a longer line
+# names no test, and is skipped rather than carried along.
+MAX_TEST_ID_CHARS = 4096
 
 # Retries for a failing pull request: 1 min, 2 min, ... up to 1 h; give up
 # after this many attempts until the pull request changes again.
@@ -103,6 +112,11 @@ def _file_sha256(path: Path) -> str:
   return digest.hexdigest()
 
 
+def _diff_patterns(path: Path, max_patterns: int) -> list[str]:
+  with open(path, encoding = 'utf-8') as handle:
+    return changes_patterns(handle, max_patterns = max_patterns)
+
+
 def _reusable(section: Optional[SectionRecord],
               source_key: str) -> Optional[SectionRecord]:
   '''Return ``section`` if it was built from ``source_key`` and its files
@@ -117,7 +131,8 @@ def _reusable(section: Optional[SectionRecord],
 
 def _changes_test_ids(changes_elists: Iterable[Path]) -> list[str]:
   '''The test ids ``changes_elists`` name, within ``MAX_TEST_IDS_BYTES``
-  (together, both as read and as JSON); ``WorkspaceError`` beyond.
+  (together, both as read and as JSON); ``WorkspaceError`` beyond. A line
+  longer than ``MAX_TEST_ID_CHARS`` is skipped.
   '''
   test_ids = []
   remaining = MAX_TEST_IDS_BYTES
@@ -130,7 +145,14 @@ def _changes_test_ids(changes_elists: Iterable[Path]) -> list[str]:
         f"CI's changes.elist files are over {MAX_TEST_IDS_BYTES} bytes"
       )
     text = content.decode('utf-8', errors = 'replace')
-    test_ids += [line.strip() for line in text.splitlines() if line.strip()]
+    for line in text.splitlines():
+      if len(line) > MAX_TEST_ID_CHARS:
+        _log.warning('skipped a changes.elist line of %d characters',
+                     len(line))
+        continue
+      test_id = line.strip()
+      if test_id:
+        test_ids.append(test_id)
   # JSON escapes control and non-ASCII characters (e.g. the U+FFFD of bytes
   # that aren't UTF-8), up to six bytes each.
   if len(json.dumps(test_ids)) > MAX_TEST_IDS_BYTES:
@@ -397,97 +419,120 @@ class Processor:
     if reused is not None:
       return reused
 
-    diff = await self._workspaces.diff(
-      info.repository,
-      merge_base,
-      head_sha,
-      ['tests/']
-    )
-    if diff.strip() == '':
-      return None
-
-    worktree = await self._workspaces.checkout(
-      info,
-      record.review_id,
-      'base',
-      merge_base,
-      changes_patterns(
-        diff,
-        max_patterns = self._config.max_sparse_patterns
-      )
-    )
-    runs_dir = ensure_real_directory(worktree, PurePosixPath('tests', 'runs'))
-    run_dir = runs_dir / f"remat-{_sha256(source_key.encode())[:16]}"
-    remove_tree(run_dir)
-
     # The builder sees the worktree read-only, so it writes elsewhere (on
     # the same file system, for the rename into place).
+    run_name = f"remat-{_sha256(source_key.encode())[:16]}"
     staging_root = ensure_real_directory(
       self._workspaces.build_staging_dir.parent,
       PurePosixPath(self._workspaces.build_staging_dir.name)
     )
-    staging = Path(tempfile.mkdtemp(
-      prefix = f"{record.review_id}-{run_dir.name}-",
-      dir = staging_root
-    ))
+    tmp_dir_opts: _TemporaryPathOptions = {
+      'prefix': f"{record.review_id}-{run_name}-",
+      'dir': staging_root,
+      'suffix': '',
+    }
+    staging = Path(tempfile.mkdtemp(**tmp_dir_opts))
     try:
-      diff_file = staging / 'pull-request.diff'
-      diff_file.write_text(diff, encoding = 'utf-8')
-      timestamp = self._clock().strftime(edgutil.RUN_TIMESTAMP_FORMAT)
-      result = await self._sandbox.run(
-        [
-          'python3',
-          str(self._config.tools_dir / 'bin' / 'edg-rematerialize-test-run'),
-          '--runs-dir', str(staging),
-          '--run-timestamp', timestamp,
-          str(diff_file),
-        ],
-        read_only = [worktree],
-        writable = [staging],
-        env = {'EDG_TEST_HOME': str(worktree / 'tests')},
-        cwd = worktree,
-        timeout = self._config.rematerialize_timeout
-      )
-      if not result.succeeded:
-        reason = 'timed out' if result.timed_out else (
-          f"exited with {result.returncode}"
+      tmp_diff_opts: _TemporaryPathOptions = {
+        **tmp_dir_opts,
+        'suffix': '.diff',
+      }
+      with tempfile.NamedTemporaryFile(**tmp_diff_opts) as diff_handle:
+        # Only ever in this file, never held in memory whole: it may be large.
+        diff_file = Path(diff_handle.name)
+        await self._workspaces.diff(
+          info.repository,
+          merge_base,
+          head_sha,
+          ['tests/'],
+          diff_handle
         )
-        raise ProcessingError(
-          f"edg-rematerialize-test-run {reason}: "
-          f"{result.output.strip()[-2000:]}"
+        diff_handle.flush()
+        if diff_file.stat().st_size == 0:
+          return None
+        patterns = await asyncio.to_thread(
+          _diff_patterns,
+          diff_file,
+          self._config.max_sparse_patterns
         )
-      # The builder saw only pull request content and the frozen tooling,
-      # but what it wrote is read by the service and the publisher server:
-      # it may hold only directories and regular files (no links to service
-      # files).
-      try:
-        await asyncio.to_thread(
-          check_plain_tree,
-          staging,
-          allow_hard_links = False
+
+        worktree = await self._workspaces.checkout(
+          info,
+          record.review_id,
+          'base',
+          merge_base,
+          patterns
         )
-      except WorkspaceError as ex:
-        raise ProcessingError(
-          f"edg-rematerialize-test-run wrote something unsafe: {ex}"
-        ) from ex
-      if len(edgtest.find_changes_files(staging / timestamp)) == 0:
-        _log.warning(
-          '%s#%d: edg-rematerialize-test-run produced no changes.elist; '
-          'not serving %s', info.repository, info.number, CHANGES_NAME
+        # Prepare where the run goes once built: tests/runs/<run name> in the
+        # worktree (through real directories only, not links the pull request
+        # committed), cleared of any earlier attempt so that the staging
+        # directory can be renamed into place.
+        runs_dir = ensure_real_directory(
+          worktree,
+          PurePosixPath('tests', 'runs')
         )
-        remove_tree(staging)
-        return None
+        run_dir = runs_dir / run_name
+        remove_tree(run_dir)
+
+        timestamp = self._clock().strftime(edgutil.RUN_TIMESTAMP_FORMAT)
+        result = await self._sandbox.run(
+          [
+            'python3',
+            str(self._config.tools_dir / 'bin' / 'edg-rematerialize-test-run'),
+            '--runs-dir',
+            str(staging),
+            '--run-timestamp',
+            timestamp,
+            str(diff_file),
+          ],
+          read_only = [worktree],
+          writable = [staging],
+          env = {'EDG_TEST_HOME': str(worktree / 'tests')},
+          cwd = worktree,
+          timeout = self._config.rematerialize_timeout
+        )
+        if not result.succeeded:
+          reason = 'timed out' if result.timed_out else (
+            f"exited with {result.returncode}"
+          )
+          raise ProcessingError(
+            f"edg-rematerialize-test-run {reason}: "
+            f"{result.output.strip()[-2000:]}"
+          )
+        # The builder saw only pull request content and the frozen tooling,
+        # but what it wrote is read by the service and the publisher server:
+        # it may hold only directories and regular files (no links to service
+        # files).
+        try:
+          await asyncio.to_thread(
+            check_plain_tree,
+            staging,
+            allow_hard_links = False
+          )
+        except WorkspaceError as ex:
+          raise ProcessingError(
+            f"edg-rematerialize-test-run wrote something unsafe: {ex}"
+          ) from ex
+        if len(edgtest.find_changes_files(staging / timestamp)) == 0:
+          _log.warning(
+            '%s#%d: edg-rematerialize-test-run produced no changes.elist; '
+            'not serving %s',
+            info.repository,
+            info.number,
+            CHANGES_NAME
+          )
+          return None
+        fingerprint = await asyncio.to_thread(_file_sha256, diff_file)
       staging.rename(run_dir)
-    except BaseException:
+    finally:
       remove_tree(staging)
-      raise
 
     return SectionRecord(
       kind = KIND_TEST_CHANGES,
       name = CHANGES_NAME,
       slug = section_slug(CHANGES_NAME),
       source_key = source_key,
-      content_fingerprint = _sha256(diff.encode()),
+      content_fingerprint = fingerprint,
       root = run_dir / timestamp,
       home = worktree / 'tests',
       details = {'run_dir': str(run_dir)},

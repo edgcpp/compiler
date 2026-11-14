@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Prune a test run down to what a review of it reads, e.g., before CI
+uploads the run:
+
+  edg-prune-test-run tests/runs/<run timestamp>
+
+Reviews of a run read only the .rt.tar files its changes.elist files name.
+The replays directory is removed whole.  In each configuration, a suite
+with no test named there is removed whole (its directory, and its
+suite-<name> logs), as is every suite of a configuration without a
+changes.elist; of the other suites, the .rt.tar files not named there are
+removed.
+'''
+
+import argparse
+import sys
+
+import edgtest
+import edgutil
+
+from pathlib import Path
+
+def _parse_args() -> argparse.Namespace:
+  parser = argparse.ArgumentParser(
+    description = (
+      "Remove the .rt.tar files of a test run that no configuration's "
+      'changes.elist names.'
+    )
+  )
+  parser.add_argument(
+    'run_dir',
+    type = Path,
+    help = 'the run directory (e.g., tests/runs/<run timestamp>)'
+  )
+  return parser.parse_args()
+
+def main() -> int:
+  args = _parse_args()
+  if not args.run_dir.is_dir():
+    edgutil.eprint(f"error: {args.run_dir} is not a directory")
+    return 1
+
+  # Counts: of .rt.tar files kept and removed, and of suites removed.
+  kept, removed, suites = edgtest.prune_run_archives(args.run_dir)
+  print(
+    f"Kept {kept} .rt.tar files named by changes.elist files; removed "
+    f"{removed} others, and {suites} suites with no changes."
+  )
+  return 0
+
+if __name__ == '__main__':
+  sys.exit(main())

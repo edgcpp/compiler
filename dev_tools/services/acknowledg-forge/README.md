@@ -14,7 +14,7 @@ these sections, when they apply:
 
 Optionally, a service account comments on the pull request whenever what's
 served changes in a meaningful way: once the pull request has *settled* (CI for
-its head finished, or `ACKNOWLEDG_FORGE_SETTLE_TIMEOUT` passed), with every
+its head finished, or `settle_timeout` passed), with every
 section that changed in a single comment. Restarts, closing, merging, and
 reopening with the same results post nothing.
 
@@ -29,13 +29,13 @@ reopening with the same results post nothing.
 ```
 
 - **Polling** always runs once at startup (catching up on anything missed
-  while the service was down) and then every `ACKNOWLEDG_FORGE_POLL_INTERVAL`
+  while the service was down) and then every `poll_interval`
   seconds, unless that is `0`.
 - **Webhooks** are optional. A delivery only identifies what may have changed;
   the service re-queries the forge, so polling and webhooks have the same
   effect.
-- **The database** (SQLite by default, PostgreSQL by URL) records each pull
-  request, its latest CI run, and what's served for it. The processor
+- **The database** (SQLite by default, PostgreSQL by configuration) records
+  each pull request, its latest CI run, and what's served for it. The processor
   reconciles each changed pull request: it builds missing or stale sections,
   publishes exactly the sections that apply, and removes everything when the
   pull request closes.
@@ -91,45 +91,136 @@ unprivileged user namespaces, and no AppArmor changes.
 
 ## Configuration
 
-Settings come from the environment. Secrets come from systemd credentials, or
-from the environment variable shown as a fallback.
+Application settings come only from the TOML file named by
+`ACKNOWLEDG_FORGE_SETTINGS_FILE`. Python's built-in `tomllib` reads native
+strings, booleans, numbers, and arrays, without interpolation. Keys are flat,
+lowercase names. `ForgeServiceConfig.from_file()` is the shared loader;
+each service checks the settings required for its role. Unknown keys and
+incorrect types are errors. Relative paths are resolved against the TOML
+file's directory. Database connection components are typed fields in a
+`[database]` table; the database module constructs a SQLAlchemy URL object
+when connecting. Config itself has no SQLAlchemy dependency.
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `ACKNOWLEDG_FORGE_HOME` | (required; image: `/var/lib/acknowledg-forge`) | Storage root for clones, worktrees, and the default database |
-| `ACKNOWLEDG_FORGE_TOOLS_DIR` | (required; image: `/edg/tools`) | A `dev_tools`-style directory (`bin/`, `pylibs/`) with the EDG tooling to run: `edg-rematerialize-test-run`, `ifc-dump` |
-| `ACKNOWLEDG_FORGE_REPOSITORIES` | (required) | Comma-separated repositories: `owner/name` on GitHub, project paths on GitLab |
-| `ACKNOWLEDG_FORGE_DATABASE_URL` | `sqlite+aiosqlite:///$HOME/state.db` | SQLAlchemy async URL, e.g. `postgresql+asyncpg://…` (the image includes the `postgresql` extra). Use the `database-url` credential instead when the URL holds a password |
-| `ACKNOWLEDG_FORGE_BASE_BRANCHES` | `main` | Comma-separated target branches whose pull requests are served |
-| `ACKNOWLEDG_FORGE_API_URL` | github.com / gitlab.com | Forge API URL, e.g. `https://ghe.example/api/v3` or `https://gitlab.example/api/v4` |
-| `ACKNOWLEDG_FORGE_POLL_INTERVAL` | `300` | Seconds between polls; `0` polls only at startup |
-| `ACKNOWLEDG_FORGE_SERVICE_BIND` | (unset; `compose.yaml`: `service-frontend:2728`) | `host:port` to serve the service's web app on, once the service has started: health checks (`GET /healthz`, for the container's healthcheck), and with webhooks, `POST /webhook`. Unset serves nothing |
-| `ACKNOWLEDG_FORGE_WEBHOOKS` | `0` | `1` receives webhooks on the service bind (needs the webhook secret) |
-| `ACKNOWLEDG_FORGE_CI_WORKFLOW` | (unset) | CI to track: the GitHub workflow file (e.g. `build-and-test-ci.yml`), or the GitLab pipeline name (`*` for any). Unset disables CI tracking (and the Failures and Bench sections) |
-| `ACKNOWLEDG_FORGE_TEST_ARTIFACT` | `test-results-all` | Test results artifact (GitLab: job) name |
-| `ACKNOWLEDG_FORGE_BENCH_ARTIFACT` | `bench-results` | Benchmark results artifact (GitLab: job) name |
-| `ACKNOWLEDG_FORGE_COMMENTS` | `0` | `1` enables comments (needs the forge token) |
-| `ACKNOWLEDG_FORGE_SETTLE_TIMEOUT` | `7200` | Seconds after a push to stop waiting for CI before commenting |
-| `ACKNOWLEDG_FORGE_MAX_ARTIFACT_BYTES` | 256 MiB | Largest artifact download |
-| `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` | 2 GiB | Largest extracted artifact (including stored, compressed inner tarballs, but not their unextracted contents) |
-| `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` | `500000` | Most ZIP entries in an artifact. Inner tarballs are checked when read |
-| `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` | 64 MiB | Largest artifact zip central directory, which is read into memory whole (about 106 bytes per entry in CI's test results) |
-| `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` | 64 MiB | Largest diff of a pull request's `tests/`, which is held in memory and copied more than once: raising it may need a higher `mem_limit` for the service ([`compose.yaml`](compose.yaml)) |
-| `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` | `20000` | Most sparse-checkout patterns in a review's worktree (up to two per test). Checking out takes time proportional to patterns times paths |
-| `ACKNOWLEDG_FORGE_MAX_CONCURRENCY` | `2` | Pull requests processed at once |
-| `ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT` | `900` | Seconds `edg-rematerialize-test-run` may run |
-| `ACKNOWLEDG_FORGE_UNSANDBOXED` | `0` | `1` runs without containers: the service serves the runner servers and the publisher server itself, on `127.0.0.1`, where any local process can reach them. **Local development on a single-user machine only.** |
-| `ACKNOWLEDG_FORGE_{BUILDER,PUBLISHER}_SERVICE_URL` | (set by `compose.yaml`) | The builder's runner server and the publisher server; required unless unsandboxed |
-| `ACKNOWLEDG_FORGE_TOOLS_SERVICE_URL` | (set by `compose.yaml`) | The tools runner server, for the publisher server |
-| `EDG_ACKNOWLEDG_API_HOST`, `EDG_ACKNOWLEDG_API_PORT` | `localhost`, `2727` | AcknowlEDG API |
-| `EDG_ACKNOWLEDG_UI_HOST`, `EDG_ACKNOWLEDG_UI_PORT` | `localhost`, `5173` | AcknowlEDG UI, used for links in comments |
+Compose mounts `SETTINGS_FILE` at `/etc/acknowledg-forge.toml`, read-only in
+all four containers. Publisher workers read `max_rt_entries` and
+`max_rt_member_bytes` locally. Section messages use `kind` to discriminate
+a `variant` payload: empty for tests, or the baseline directory and tag for
+benchmarks. Processor bookkeeping stays in the database. Restart the entire
+deployment after changing settings. Secrets are loaded into a separate
+`ForgeCredentials` object from named files in
+`CREDENTIALS_DIRECTORY`, mounted only in the service's container. The TOML
+file is readable in every container, including the builder and tools
+containers that handle pull request content, so it accepts no token or API
+key settings. The `[database]` table accepts only non-secret components;
+the password comes from the `database-password` credential, which only the
+service can read.
 
-| Credential | Fallback variable | Meaning |
+The deployment's wiring is not a setting: which address each server listens
+on, and where the service and publisher find the other servers. That is
+what keeps each server to its one network (see
+[SANDBOXING.md](SANDBOXING.md)), so `compose.yaml` sets it on each
+container's command line, and the TOML rejects it, so a settings change
+can't widen a listener:
+
+| Server | Arguments |
+| --- | --- |
+| Service (`acknowledg-forge-github`, `acknowledg-forge-gitlab`) | `--service-bind=HOST:PORT` (the web app: health checks, and `POST /webhook` with webhooks; unset serves nothing), `--builder-service-url`, `--publisher-service-url` (`ws://`; required unless unsandboxed) |
+| Builder and tools runners (`edgacknowledg.forge.builder`, `.tools`) | `--host` (default `127.0.0.1`), `--port`, `--container` |
+| Publisher (`edgacknowledg.forge.publisher`) | `--host` (default `127.0.0.1`), `--port`, `--tools-service-url` (`ws://`) |
+
+Only `ACKNOWLEDG_FORGE_SETTINGS_FILE` and `CREDENTIALS_DIRECTORY` remain
+application bootstrap environment variables. The host's Compose variables
+(`FORGE`, `IMAGE`, `FORGE_UID`, `FORGE_GID`, `STATE_DIR`, `SETTINGS_FILE`,
+`CREDENTIALS_DIR`, `WEBHOOK_PORT`) still select images, mounts, identities,
+and published ports. Standard runtime variables (`PATH`, `HOME`, `PYTHON*`)
+retain their usual purposes.
+
+Migration is explicit: convert old `KEY=value` files and uppercase TOML
+keys to lowercase TOML with native types; remove all former Forge setting
+and secret environment variables, including `EDG_ACKNOWLEDG_*` endpoint/key
+variables. Forge rejects them with migration guidance. Move secrets into
+credentials, and AcknowlEDG endpoints into the administrator-owned TOML.
+Remove every secret from the old `<service>.settings` file **before**
+converting it or pointing `SETTINGS_FILE` at it: Compose mounts that file
+into all four containers before Forge reads (and rejects) it, whereas the
+old file was only ever the service container's.
+Update the installed Compose file, deploy helper, workflow, configuration,
+and image together. The deploy helper now takes only service and image;
+existing endpoint arguments are rejected. No compatibility fallback or live
+reload is provided.
+
+| TOML key | Default | Meaning |
 | --- | --- | --- |
-| `forge-token` | `ACKNOWLEDG_FORGE_TOKEN` | Forge API token (also used for git) |
-| `webhook-secret` | `ACKNOWLEDG_FORGE_WEBHOOK_SECRET` | Webhook secret; required for webhooks |
-| `database-url` | `ACKNOWLEDG_FORGE_DATABASE_URL` | Database URL, for one holding a password (optional) |
-| `acknowledg-api-key` | `EDG_ACKNOWLEDG_API_KEY` | AcknowlEDG API key, if the server requires one |
+| `home` | (required) | Storage root for clones, worktrees, and the default database |
+| `tools_dir` | (required) | A `dev_tools`-style directory (`bin/`, `pylibs/`) with the EDG tooling to run: `edg-rematerialize-test-run`, `ifc-dump` |
+| `repositories` | (required) | Array of repositories: `owner/name` on GitHub, project paths on GitLab |
+| `database` | SQLite at `<home>/state.db` | Typed connection table; see below |
+| `base_branches` | `["main"]` | Array of target branches whose pull requests are served |
+| `api_url` | github.com / gitlab.com | Forge API URL, e.g. `https://ghe.example/api/v3` or `https://gitlab.example/api/v4`. The forge token is sent here, so it must be `https://` (plain `http://` only to `localhost`), with no credentials, query, or fragment |
+| `poll_interval` | `300` | Seconds between polls; `0` polls only at startup |
+| `webhooks` | `false` | `true` receives webhooks on `--service-bind` (needs the webhook secret) |
+| `ci_workflow` | (omitted) | CI to track: the GitHub workflow file (e.g. `build-and-test-ci.yml`), or the GitLab pipeline name (`*` for any). Omit this key to disable CI tracking (and the Failures and Bench sections) |
+| `test_artifact` | `test-results-all` | Test results artifact (GitLab: job) name |
+| `bench_artifact` | `bench-results` | Benchmark results artifact (GitLab: job) name |
+| `comments` | `false` | `true` enables comments (needs the forge token) |
+| `settle_timeout` | `7200` | Seconds after a push to stop waiting for CI before commenting |
+| `max_artifact_bytes` | 256 MiB | Largest artifact download |
+| `max_extracted_bytes` | 2 GiB | Largest extracted artifact (including stored, compressed inner tarballs, but not their unextracted contents) |
+| `max_artifact_entries` | `500000` | Most ZIP entries in an artifact. Inner tarballs are checked when read |
+| `max_artifact_directory_bytes` | 64 MiB | Largest artifact zip central directory, which is read into memory whole (about 106 bytes per entry in CI's test results) |
+| `max_rt_entries` | `10000` | Most entries in a run tarball opened for a reviewer |
+| `max_rt_member_bytes` | 64 MiB | Largest member of a run tarball opened for a reviewer |
+| `max_diff_bytes` | 512 MiB | Largest diff of a pull request's `tests/`. It is streamed to disk, not held in memory, and kept with the review's rematerialized run; the builder applies all of it within `rematerialize_timeout` |
+| `max_sparse_patterns` | `20000` | Most sparse-checkout patterns in a review's worktree (up to two per test). Checking out takes time proportional to patterns times paths |
+| `max_concurrency` | `2` | Pull requests processed at once |
+| `rematerialize_timeout` | `900` | Seconds `edg-rematerialize-test-run` may run |
+| `unsandboxed` | `false` | `true` runs without containers: the service serves the runner servers and the publisher server itself, on `127.0.0.1`, where any local process can reach them. **Local development on a single-user machine only.** |
+| `acknowledg_api_host`, `acknowledg_api_port` | `localhost`, `2727` | AcknowlEDG API: a host name alone (no scheme, port, or path). Port 443 selects TLS (`wss://`), any other plain `ws://`, so a host other than `localhost` needs its port stated, and the `acknowledg-api-key` credential is only sent to one on 443 |
+| `acknowledg_ui_host`, `acknowledg_ui_port` | `localhost`, `5173` | AcknowlEDG UI, used for links in comments; as for the API, 443 selects `https://`, and a host other than `localhost` needs its port stated |
+| `publisher_processes` | `4` | Publisher worker count |
+| `publisher_request_timeout` | `150` | Seconds per worker request |
+
+| Credential | Meaning |
+| --- | --- |
+| `forge-token` | Forge API token (also used for git) |
+| `webhook-secret` | Webhook secret; required for webhooks |
+| `database-password` | PostgreSQL password; SQLite accepts no password |
+| `acknowledg-api-key` | AcknowlEDG API key, if required |
+
+### Database connection table
+
+Omit `[database]` to use SQLite at `<home>/state.db`. To select another
+SQLite file, append this table after the root settings:
+
+```toml
+[database]
+backend = "sqlite"
+path = "state.db"
+```
+
+An explicit relative path is relative to the TOML file's directory;
+`:memory:` selects an in-memory database. SQLite accepts only `backend`
+and `path`. PostgreSQL has two backends; both require `name` and
+`username`, and default `port` to 5432:
+
+- `backend = "postgresql-unix"` requires `socket_directory`, an absolute
+  path such as `/run/postgresql`. Mount that directory into the service
+  container (see step 6 below). Unix sockets do not use network ports, but
+  PostgreSQL includes the configured `port` in the socket filename:
+  `/run/postgresql/.s.PGSQL.5432` with the defaults. This selects among
+  PostgreSQL instances sharing a socket directory. Peer authentication
+  needs no `database-password` credential. This backend accepts neither
+  `host` nor `require_tls`.
+- `backend = "postgresql-tcp"` requires `host`, a host name or IP address.
+  `require_tls` defaults to `true`, requiring TLS with certificate and
+  hostname verification using the system trust store. Set it to `false`
+  to disable TLS explicitly. This backend accepts no `socket_directory`.
+
+The drivers are fixed to `aiosqlite` and `asyncpg` respectively.
+
+Passwords belong only in the `database-password` credential. Arbitrary
+connection URLs, query mappings, and driver argument mappings are not
+configuration options; supported options must be explicit schema fields.
 
 ### GitHub
 
@@ -141,9 +232,9 @@ from the environment variable shown as a fallback.
   individual events* and clear *Pushes*, which the service ignores; a push
   to a pull request arrives as a *Pull requests* event). Point it at
   `https://<host>/webhook`, typically behind a reverse proxy to
-  `ACKNOWLEDG_FORGE_SERVICE_BIND` (published on the host's `127.0.0.1`;
+  `--service-bind` (published on the host's `127.0.0.1`;
   proxy only `/webhook`).
-- **CI:** set `ACKNOWLEDG_FORGE_CI_WORKFLOW=build-and-test-ci.yml`. Its
+- **CI:** set `ci_workflow = "build-and-test-ci.yml"`. Its
   `publish-test-results` job uploads `test-results-all`, including the
   `ci-meta.json` that records the tested (merge) commit. Benchmark results
   need a CI job uploading `bench-results` (`c/` and `cpp/` runs plus
@@ -155,8 +246,8 @@ from the environment variable shown as a fallback.
   (`read_api` is enough without comments).
 - **Webhook:** use the secret token, with *Merge request events* and
   *Pipeline events*.
-- **CI:** artifacts belong to jobs, so `ACKNOWLEDG_FORGE_TEST_ARTIFACT` and
-  `ACKNOWLEDG_FORGE_BENCH_ARTIFACT` name the jobs whose artifacts archives hold
+- **CI:** artifacts belong to jobs, so `test_artifact` and
+  `bench_artifact` name the jobs whose artifacts archives hold
   the results, laid out like the GitHub artifacts (configurations or
   `c/`/`cpp/` at the top, plus `ci-meta.json`).
 
@@ -237,12 +328,11 @@ URLs is configured here, by the host's administrator. As root:
 
    [Service]
    LoadCredentialEncrypted=forge-token:/etc/credstore.encrypted/acknowledg-forge.forge-token
-   # Webhooks (see step 4); remove to only poll.
+   # Webhooks (see step 4); remove this line when webhooks = false.
    LoadCredentialEncrypted=webhook-secret:/etc/credstore.encrypted/acknowledg-forge.webhook-secret
    #LoadCredentialEncrypted=acknowledg-api-key:/etc/credstore.encrypted/acknowledg-forge.acknowledg-api-key
-   # Optional: a remote PostgreSQL, whose URL (with its password) is a credential
-   # (see step 6).
-   #LoadCredentialEncrypted=database-url:/etc/credstore.encrypted/acknowledg-forge.database-url
+   # Optional: the password for a remote PostgreSQL database (see step 6).
+   #LoadCredentialEncrypted=database-password:/etc/credstore.encrypted/acknowledg-forge.database-password
    # The service container's credentials, in memory; removed on stop.
    RuntimeDirectory=acknowledg-forge-github
    # For STATE_DIR (step 5).
@@ -282,9 +372,9 @@ URLs is configured here, by the host's administrator. As root:
 
    The webhook secret (the same value as in the forge's webhook settings; for
    example, generate one with `openssl rand -hex 32`). Webhooks are optional:
-   to only poll, skip this, and remove the unit's `webhook-secret` line and
-   the settings' `ACKNOWLEDG_FORGE_WEBHOOKS` (step 5), or the service
-   refuses to start:
+   to only poll, skip this, remove the unit's `webhook-secret` line, and set
+   `webhooks = false` in the TOML settings (step 5). Enabling webhooks
+   without the secret prevents the service from starting:
 
    ```
    systemd-ask-password -n 'Webhook secret:' \
@@ -340,22 +430,32 @@ URLs is configured here, by the host's administrator. As root:
    FORGE_GID=<GID>
    # The state directory (step 2).
    STATE_DIR=/var/lib/acknowledg-forge/github
-   SETTINGS_FILE=/etc/acknowledg-forge/acknowledg-forge-github.settings
+   SETTINGS_FILE=/etc/acknowledg-forge/acknowledg-forge-github.toml
    CREDENTIALS_DIR=/run/acknowledg-forge-github/credentials
    # The webhook port on the host's 127.0.0.1, for the reverse proxy.
    WEBHOOK_PORT=2728
    ```
 
-   And the service's settings (see [Configuration](#configuration)) as
-   `/etc/acknowledg-forge/acknowledg-forge-github.settings`, replacing the
+   And the shared TOML settings (see [Configuration](#configuration)) as
+   `/etc/acknowledg-forge/acknowledg-forge-github.toml`, replacing the
    repository:
 
-   ```
-   ACKNOWLEDG_FORGE_REPOSITORIES=<OWNER>/<REPOSITORY>
-   ACKNOWLEDG_FORGE_CI_WORKFLOW=build-and-test-ci.yml
-   ACKNOWLEDG_FORGE_COMMENTS=1
-   # Webhooks (with the webhook secret, step 4); remove to only poll.
-   ACKNOWLEDG_FORGE_WEBHOOKS=1
+   ```toml
+   home = "/var/lib/acknowledg-forge"
+   tools_dir = "/edg/tools"
+   repositories = ["<OWNER>/<REPOSITORY>"]
+   # Your public AcknowlEDG endpoints; port 443 selects TLS.
+   acknowledg_api_host = "acknowledg-api.example"
+   acknowledg_api_port = 443
+   acknowledg_ui_host = "acknowledg.example"
+   acknowledg_ui_port = 443
+   ci_workflow = "build-and-test-ci.yml"
+   comments = true
+   # Webhooks (with the webhook secret, step 4); set to false to only poll.
+   webhooks = true
+   # Optional run tarball limits (the defaults).
+   max_rt_entries = 10000
+   max_rt_member_bytes = 67108864
    ```
 
 6. Optionally, use PostgreSQL instead of the default SQLite database (which
@@ -384,35 +484,45 @@ URLs is configured here, by the host's administrator. As root:
        service:
          volumes:
            - /run/postgresql:/run/postgresql
-         environment:
-           ACKNOWLEDG_FORGE_DATABASE_URL: postgresql+asyncpg://acknowledg-forge@/acknowledg_forge?host=/run/postgresql
      ```
 
-   - If using a a remote PostgreSQL database:
+     Add this table after the root settings in the shared TOML:
+
+     ```toml
+     [database]
+     backend = "postgresql-unix"
+     socket_directory = "/run/postgresql"
+     port = 5432
+     name = "acknowledg_forge"
+     username = "acknowledg-forge"
+     ```
+
+     No database password credential is needed for peer authentication.
+
+   - If using a remote PostgreSQL database:
 
      Create a secure credential using systemd for the database password:
 
      ```
-     systemd-ask-password -n 'Database URL:' \
-       | systemd-creds encrypt --name=database-url - \
-           /etc/credstore.encrypted/acknowledg-forge.database-url
+     systemd-ask-password -n 'Database password:' \
+       | systemd-creds encrypt --name=database-password - \
+           /etc/credstore.encrypted/acknowledg-forge.database-password
      ```
 
-     Then uncomment the unit's `database-url` line in the systemd unit,
-     configure `/etc/acknowledg-forge/acknowledg-forge-github.override.yaml`
-     from the template below, and add `--file
-     /etc/acknowledg-forge/acknowledg-forge-github.override.yaml` after both of
-     the unit's `--file /etc/acknowledg-forge/compose.yaml` lines (in
-     `ExecStart=` and `ExecStop=`):
+     Uncomment the unit's `database-password` credential line, and add the
+     non-secret connection table after the root settings:
 
+     ```toml
+     [database]
+     backend = "postgresql-tcp"
+     host = "db.internal"
+     port = 5432
+     name = "acknowledg_forge"
+     username = "acknowledg_forge"
+     require_tls = true
      ```
-     services:
-       service:
-         volumes:
-           - /run/postgresql:/run/postgresql
-         environment:
-           ACKNOWLEDG_FORGE_DATABASE_URL: postgresql+asyncpg://<ROLE>:<PASSWORD>@<HOST>:<PORT>/<DATABASE>
-     ```
+
+     No PostgreSQL socket mount is needed for a remote database.
 
 7. Start it:
 
@@ -447,17 +557,14 @@ It runs as root on the deploy user's behalf; read it before installing it.
 The helper ([`deploy-remote.py`](deploy-remote.py), which needs only the host's
 `python3`) manages a single root-owned file,
 `/etc/acknowledg-forge/acknowledg-forge-github.deploy.env`, which sets the
-deployment's `IMAGE` and the `EDG_ACKNOWLEDG_{API,UI}_{HOST,PORT}` the
-AcknowlEDG URLs translate to. It pulls the image and drives the service's
-unit.
+deployment's `IMAGE`. Application settings, including AcknowlEDG endpoints,
+are owned by the administrator in TOML. It pulls the image and drives the
+service's unit.
 
 - **Strict arguments:** it accepts only images from
-  `ghcr.io/edgcpp/acknowledg-forge` pinned by digest, `ws(s)://` and
-  `http(s)://` URLs with no path, and a service named `acknowledg-forge-*`.
-  The service picks TLS by port alone, so the helper also rejects URLs it
-  couldn't honor exactly: TLS on a port other than 443, or plain
-  `ws://`/`http://` on 443. A leaked deploy key can therefore only
-  deploy another published image.
+  `ghcr.io/edgcpp/acknowledg-forge` pinned by digest and a service named
+  `acknowledg-forge-*`. A leaked deploy key can only deploy another
+  published image; it cannot change application settings.
 - **What it does:** it pulls the image and restarts the service only if the
   file changed (otherwise it just makes sure the service is running), then
   checks that the service stays up, and removes the repository's other
@@ -479,13 +586,9 @@ environment:
 | `ACKNOWLEDG_FORGE_SSH_KNOWN_HOSTS` | `ssh-keyscan` output for the host |
 | `ACKNOWLEDG_FORGE_SERVICE` | The unit's name (optional; defaults to `acknowledg-forge-github`) |
 
-And these **repository variables** (public, so not secrets; the API URL is
-shared with the AcknowlEDG deploy, which builds the web client with it):
-
-| Variable | Purpose |
-| --- | --- |
-| `ACKNOWLEDG_API_HOST` | Public AcknowlEDG API URL, e.g. `wss://acknowledg-api.example` |
-| `ACKNOWLEDG_UI_HOST` | Public AcknowlEDG UI URL, e.g. `https://acknowledg.example`, for links in comments |
+The Forge deploy no longer reads the `ACKNOWLEDG_API_HOST` or
+`ACKNOWLEDG_UI_HOST` repository variables. Those may still be used by the
+separate AcknowlEDG application deploy.
 
 The host needs Docker Engine 25 or later and Compose 2.20.2 or later (for
 several `--env-file`s, and the healthchecks' `start_interval`), and systemd
@@ -510,7 +613,7 @@ Running the service directly on a host has no sandbox at all: it serves
 its runner servers and the publisher server itself, the same way, but
 commands that read pull request content run beside its credentials. That is
 only for local development (see below), with
-`ACKNOWLEDG_FORGE_UNSANDBOXED=1`.
+`unsandboxed = true`.
 
 ## Development
 
@@ -519,6 +622,34 @@ github/setup-venv.sh            # or gitlab/
 tests/run-tests.sh              # pytest: both services and the shared code
 typecheck.sh                    # mypy, as strict as typecheck-python.sh
 ```
+
+Database tests default to in-memory SQLite. To exercise another database,
+set `ACKNOWLEDG_FORGE_TEST_SETTINGS` to a Forge TOML settings file; the tests
+use its `[database]` table through the application settings loader. For
+example (adjust `tools_dir` to your checkout):
+
+```toml
+home = "/tmp/forge-test"
+tools_dir = "/path/to/compiler/dev_tools"
+repositories = ["edgcpp/compiler"]
+
+[database]
+backend = "postgresql-tcp"
+host = "localhost"
+name = "forge_test"
+username = "forge_test"
+require_tls = true # Set to false for a local plaintext test server.
+```
+
+Use a dedicated test database: its schema is dropped before and after each
+test using the store fixture. If it needs a password, put it in a
+`database-password` credential file and set
+`ACKNOWLEDG_FORGE_TEST_CREDENTIALS_DIRECTORY` to that directory. Both schema
+reset and store connections use the same database settings and credentials,
+including TLS verification. The `postgresql-unix` backend works with the
+same settings as the application and requires no password for peer
+authentication. These test variables replace
+`ACKNOWLEDG_FORGE_TEST_DATABASE_URL`.
 
 To try the service locally against `edgcpp/compiler`:
 
@@ -530,34 +661,33 @@ To try the service locally against `edgcpp/compiler`:
    permissions.
 2. Start the AcknowlEDG server and client
    ([../acknowledg](../acknowledg/README.md)).
-3. Set `ACKNOWLEDG_FORGE_TOKEN` to the token and run `run-dev-oss-repo.sh`:
+3. Run `./run-dev-oss-repo.sh` and enter the fine-grained token at the
+   silent prompt. Alternatively, explicitly choose `./run-dev-oss-repo.sh
+   --use-gh-token` to use `gh auth token`. The CLI token can have broader
+   permissions than this demo needs.
 
-   ```
-   read -rs ACKNOWLEDG_FORGE_TOKEN && export ACKNOWLEDG_FORGE_TOKEN
-   ./run-dev-oss-repo.sh
-   ```
+The Linux Python launcher holds credentials in sealed anonymous `memfd`
+files. Its private temporary credentials directory contains only symlinks
+to `/proc/<launcher-pid>/fd/<fd>`, never credential bytes. The launcher stays
+alive while Forge runs and forwards termination signals. After the first
+signal it allows ten seconds for shutdown, then kills the child process
+group and reaps the child if necessary before removing its temporary state.
+Tokens are absent from child environments, arguments, logs, and generated
+TOML. There is no disk-backed fallback if `memfd` or `/proc` is unavailable.
+Memory can swap, as environment memory can; this does not isolate other
+processes running as the same user.
 
-   (In fish, `read -sx ACKNOWLEDG_FORGE_TOKEN`.) Reading it this way keeps
-   the token out of your shell history.
+The default generated TOML serves `edgcpp/compiler`, unsandboxed, without
+commenting. Its state lives in a temporary directory removed on exit. To
+change settings or preserve state, set `ACKNOWLEDG_FORGE_SETTINGS_FILE` to
+your own TOML with a persistent `home`. To supply existing credentials, set
+`CREDENTIALS_DIRECTORY` to an existing directory containing a nonempty
+`forge-token`; the launcher leaves that directory untouched.
 
-   If `ACKNOWLEDG_FORGE_TOKEN` isn't set, the script falls back to the GitHub
-   CLI's token (`gh auth token`), if you're logged in with `gh auth login`.
-   That's convenient, but the CLI's token usually has far broader scopes
-   (e.g. `repo`, `workflow`) than the script needs, so prefer the
-   fine-grained token.
-
-It serves the pull requests to the local AcknowlEDG, unsandboxed and without
-commenting. Its state is kept in a temporary directory (printed when it
-starts) and removed when it exits.
-
-For anything else, run `github/run-service.sh` with these set:
-
-- `ACKNOWLEDG_FORGE_HOME`;
-- `ACKNOWLEDG_FORGE_REPOSITORIES`;
-- `ACKNOWLEDG_FORGE_TOOLS_DIR` (e.g. this checkout's `dev_tools`);
-- a token.
-
-Outside the containers, also set `ACKNOWLEDG_FORGE_UNSANDBOXED=1`.
+For other development configurations, run `github/run-service.sh` or
+`gitlab/run-service.sh` with `ACKNOWLEDG_FORGE_SETTINGS_FILE` and
+`CREDENTIALS_DIRECTORY`. Set `unsandboxed = true` in TOML when running
+outside containers. Use this mode only on a single-user machine.
 
 Database schema changes go through Alembic. Add a revision under
 `edgacknowledg/forge/db/migrations/versions/` (see `migrations/env.py`).
@@ -568,4 +698,4 @@ Implement `Forge`, and optionally `ForgeWebhooks` and `ForgeCommenter`
 (`edgacknowledg/forge/__init__.py`). `edgacknowledg.forge.http` handles the
 REST plumbing: rate limits, pagination, and credential-free downloads. Then
 add a service directory like `github/`, whose `__main__` passes a
-`build(config)` to `edgacknowledg.forge.service.main`.
+`build(config, credentials)` to `edgacknowledg.forge.service.main`.

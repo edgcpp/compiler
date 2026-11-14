@@ -7,14 +7,18 @@
 
 from edgacknowledg.forge.db.store import (
   AnnouncementRecord,
+  DatabaseConfigError,
   ForgeStore,
   PullRequestRecord,
   SectionRecord,
+  create_database_engine,
 )
 
 __all__ = [
   'AnnouncementRecord',
+  'DatabaseConfigError',
   'ForgeStore',
   'PullRequestRecord',
   'SectionRecord',
+  'create_database_engine',
 ]

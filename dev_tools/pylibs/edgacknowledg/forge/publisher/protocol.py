@@ -23,6 +23,11 @@ time:
 The server answers each ({'ok': true} or {'error': 'failed', 'message'})
 once it has queued what to publish, whether or not it is connected to
 AcknowlEDG: it publishes what is queued once it is.
+
+Section messages contain common fields and a ``variant`` object, with
+``kind`` as its discriminant. Test sections have an empty variant; benchmark
+variants contain ``baseline_dir`` and ``tag``. Database-only bookkeeping
+is never sent. The same encoding is used for requests to publisher workers.
 '''
 
 import uuid
@@ -32,7 +37,7 @@ from typing import Any
 
 from edgacknowledg import is_valid_rich_name
 from edgacknowledg.forge.db import SectionRecord
-from edgacknowledg.forge.publisher import ReviewIdentity
+from edgacknowledg.forge.publisher import KIND_BENCH, ReviewIdentity
 
 # Longest message (a sync of every section of a review is small; this is a
 # sanity limit).
@@ -59,6 +64,12 @@ def decode_review(value: dict[str, Any]) -> ReviewIdentity:
 
 
 def encode_section(section: SectionRecord) -> dict[str, Any]:
+  variant = {}
+  if section.kind == KIND_BENCH:
+    variant = {
+      'baseline_dir': str(section.details['baseline_dir']),
+      'tag': str(section.details['tag']),
+    }
   return {
     'kind': section.kind,
     'name': section.name,
@@ -67,18 +78,28 @@ def encode_section(section: SectionRecord) -> dict[str, Any]:
     'content_fingerprint': section.content_fingerprint,
     'root': str(section.root),
     'home': str(section.home),
-    'details': section.details,
+    'variant': variant,
   }
 
 
 def decode_section(value: dict[str, Any]) -> SectionRecord:
+  kind = str(value['kind'])
+  variant = dict(value['variant'])
+  # SectionRecord also serves the database; only benchmark metadata belongs
+  # in a publisher's copy of its details.
+  details = {}
+  if kind == KIND_BENCH:
+    details = {
+      'baseline_dir': str(variant['baseline_dir']),
+      'tag': str(variant['tag']),
+    }
   return SectionRecord(
-    kind = str(value['kind']),
+    kind = kind,
     name = str(value['name']),
     slug = str(value['slug']),
     source_key = str(value['source_key']),
     content_fingerprint = str(value['content_fingerprint']),
     root = Path(value['root']),
     home = Path(value['home']),
-    details = dict(value['details']),
+    details = details,
   )

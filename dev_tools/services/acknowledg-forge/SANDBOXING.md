@@ -28,7 +28,7 @@ No single mechanism is relied on. In order, from outermost:
    files and networks its role needs. Everything that reads pull request
    content runs outside the service's container, away from its secrets.
 2. **What enters the service.** The EDG tooling comes from a frozen,
-   reviewed copy (`ACKNOWLEDG_FORGE_TOOLS_DIR`; the image embeds one), never
+   reviewed copy (`tools_dir`; the image embeds one), never
    from a pull request. A pull request's diff is only ever input to `patch`.
    Checkouts and artifacts are checked before anything reads them (see
    [Symlinks and links](#symlinks-and-links)).
@@ -153,7 +153,10 @@ All four containers run from the same image and get:
 
 Each mounts only its part of the deployment's state directory, at the same
 path in every container (`/var/lib/acknowledg-forge`), so paths in messages
-need no translation.
+need no translation. All four containers also mount the TOML settings
+file read-only at `/etc/acknowledg-forge.toml`. Publisher pool
+processes read run tarball limits from that file, rather than section
+metadata. Credentials remain mounted only in the service container.
 
 | Container | Runs | Sees | Writes | Networks | Holds |
 | --- | --- | --- | --- | --- | --- |
@@ -168,8 +171,10 @@ need no translation.
   and tools runner can reach nothing but their one client. A listener on a
   container with several networks binds only on its pair's (the publisher
   server on `publish`; the service's web app (health checks and webhooks),
-  with `ACKNOWLEDG_FORGE_SERVICE_BIND=service-frontend:2728`, on
-  `frontend`).
+  with `--service-bind=service-frontend:2728`, on
+  `frontend`). These listen addresses, and the URLs each client uses, are
+  command-line arguments in `compose.yaml`; the shared TOML settings
+  reject them, so a settings change can't widen a listener.
   That is what keeps each server to its one client: the connections carry
   no credentials of their own, so `tests/test_containers.py` checks every
   pairing, and a change to the networks in `compose.yaml` that breaks one
@@ -196,7 +201,7 @@ carry, so commands run concurrently over it. For each, the runner:
 - runs it with a cleared environment (`PATH`, `HOME=/tmp`, `LC_ALL`,
   `PYTHONPATH` for the frozen tools), in a session of its own, and kills
   its process group when it ends, times out (the builder: the service's
-  `ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT`; tools: 2 min), its client
+  `rematerialize_timeout`; tools: 2 min), its client
   cancels it, or the connection goes (which kills every command on it);
 - once no command is running, kills every other process left in the
   container and empties `/tmp`.
@@ -374,8 +379,10 @@ which its event loop never waits on for more than a request's deadline:
 - Each section is registered with a `UnixSocketHandler`, which stands in
   for the section's handler: it passes each request, with the section it
   is for, to the pool, and relays the replies.
-- The pool keeps a fixed number of pool processes (`--processes`, 4), each
-  with one end of a socket pair as its channel. Requests queue, in order;
+- The pool keeps a fixed number of pool processes (`publisher_processes`, 4), each
+  with one end of a socket pair as its channel. Its tools runner URL is
+  passed as `--tools-service-url`; the first channel message is the
+  worker's `ready` response. Requests queue, in order;
   each process has a dispatcher that gives it the next one only once it
   has answered the last, so a process answers one request at a time,
   building the section's handler for it and dropping it afterwards, and a
@@ -383,15 +390,16 @@ which its event loop never waits on for more than a request's deadline:
   its answer carries back; a request abandoned before its turn (as when
   its section is removed) is skipped, and one abandoned while answered
   still keeps its process busy until then, its answer dropped.
-- A request has a deadline (`--request-timeout`, 150 s, longer than the
-  tools runner's 2 min), counted from when its process is given it. A
+- A request has a deadline (`publisher_request_timeout`, 150 s, longer than
+  the tools runner's 2 min), counted from when its process is given it. A
   process that misses it is killed, with whatever it started, and
   replaced; so is one that exits. Either way that request fails, and the
   client library answers the reviewer with its failure reply; a request
   for a file outside the section still gets the reviewer dropped.
 - A process that exits before it is ready has failed to start: the next
   try waits, doubling from 1 s up to 60 s; meanwhile the other processes
-  take the requests, and while none can, requests fail at once. The server doesn't start unless every process does.
+  take the requests, and while none can, requests fail at once. The server
+  doesn't start unless every process does.
 
 The client library answers one request at a time per section, so one
 section's requests occupy at most one process at a time.
@@ -420,7 +428,7 @@ At startup, the service waits until it can reach the builder
 that run a command (`ifc-dump`, `cg_annotate`) need it, so while it can't
 be reached, those wait for it, and everything else is still served.
 
-Without containers (`ACKNOWLEDG_FORGE_UNSANDBOXED=1`, for local
+Without containers (`unsandboxed = true`, for local
 development only), all of this is the same: the service runs the publisher
 server and both runner servers itself (see [Development](#development))
 and reaches them the same way.
@@ -525,28 +533,64 @@ them. Several layers keep the service from reading through one:
 
 | Resource | Limit |
 | --- | --- |
-| Artifact download | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_BYTES` (256 MiB) |
-| Extracted artifact | `ACKNOWLEDG_FORGE_MAX_EXTRACTED_BYTES` (2 GiB), counting the stored size of inner tarballs, not their unextracted contents |
-| Artifact entries | `ACKNOWLEDG_FORGE_MAX_ARTIFACT_ENTRIES` (500,000) for ZIP entries, 10,000 per inner tarball when opened; and its zip's central directory, `ACKNOWLEDG_FORGE_MAX_ARTIFACT_DIRECTORY_BYTES` (64 MiB), checked before zipfile reads it |
-| Inner tarball member | 64 MiB per member when a reviewer opens a tarball |
-| A pull request's diff of `tests/` | `ACKNOWLEDG_FORGE_MAX_DIFF_BYTES` (64 MiB) |
-| A review worktree's sparse-checkout patterns | `ACKNOWLEDG_FORGE_MAX_SPARSE_PATTERNS` (20,000) |
+| Artifact download | `max_artifact_bytes` (256 MiB) |
+| Extracted artifact | `max_extracted_bytes` (2 GiB), counting the stored size of inner tarballs, not their unextracted contents |
+| Artifact entries | `max_artifact_entries` (500,000) for ZIP entries, `max_rt_entries` (10,000) per inner tarball when opened; and its zip's central directory, `max_artifact_directory_bytes` (64 MiB), checked before zipfile reads it |
+| Inner tarball member | `max_rt_member_bytes` (64 MiB) per member when a reviewer opens a tarball |
+| A pull request's diff of `tests/` | `max_diff_bytes` (512 MiB) |
+| A review worktree's sparse-checkout patterns | `max_sparse_patterns` (20,000) |
 | A file read for a reviewer | 64 MiB; a larger one fails the request |
-| A source shown to a reviewer | only as much as can be displayed is read |
+| A source shown to a reviewer | reads stop at the response content limit (8 MiB for ASCII text, counted in characters) plus one read piece, even for an unterminated long line; the response is marked truncated |
 | Each container's `/tmp` | 512 MiB tmpfs; copies made for diffing are streamed there |
-| Build commands | `ACKNOWLEDG_FORGE_REMATERIALIZE_TIMEOUT` (15 min) |
+| Build commands | `rematerialize_timeout` (15 min) |
 | Reviewer commands | 2 min |
 | A reviewer's request | 150 s in a pool process, which is then replaced |
 | Each container | `mem_limit` (the service, builder, and publisher 2 GiB, tools 1 GiB) and 512 processes ([`compose.yaml`](compose.yaml)) |
 
+### Accepted HTTP decompression limitation
+
+REST API responses are limited to 32 MiB, checked after each decoded
+chunk. Artifact downloads also check decoded chunks against their size
+limit. HTTPX decompresses a chunk before either check runs, so these
+checks bound accepted content, not peak decompression memory. A chunk can
+temporarily exceed the limit before the response is rejected.
+
+We trust the configured GitHub or GitLab server, authenticated by TLS, to
+serve ordinary API responses. The service authenticates its requests with
+the forge token; this does not make user-authored comment bodies trusted.
+The REST calls fetch metadata and paginated comments, not file contents or
+diffs. Comment lookup processes one page at a time and stops at the bot's
+marked comment. Large individual pages remain possible, particularly on
+GitLab.
+
+We accept the assumption that exhausting memory before the size check
+would require substantial abuse: enough highly compressible content to
+expand an individual chunk beyond the service's available memory before
+the check can reject the response. This is an operational assumption, not
+a guarantee supplied by authentication or pagination. Bounded
+decompression can be added if this becomes a problem; the deployed
+container memory limit remains the outer bound.
+
 ## Secrets
 
-Secrets belong in systemd credentials, which the host's unit decrypts and
-[`prepare-runtime.sh`](prepare-runtime.sh) hands to the service container
-only, in memory (`/run`), never on disk unencrypted. A secret passed in an
-environment variable is readable from the process's own
-`/proc/self/environ`, so the service warns at startup when sandboxing is on
-and a secret came from the environment.
+Secrets belong in systemd credentials, decrypted in memory (`/run`) and
+handed only to the service by [`prepare-runtime.sh`](prepare-runtime.sh).
+Environment secret fallbacks have been removed. Shared TOML is read-only
+in all four containers, so it accepts no token, API key, or database
+password settings. Its typed `[database]` table contains only non-secret
+connection components; the separate `database-password` credential is
+readable only by the service. Publisher workers receive the settings path,
+without the service's credentials directory.
+
+The AcknowlEDG API key is only sent over TLS (port 443) to a host other
+than `localhost`, and the forge token only to an `https://` `api_url`
+(`http://` to `localhost` only); the service refuses to start otherwise.
+
+For Linux development, the launcher holds credentials in sealed anonymous
+memfds and exposes only symlinks in a private temporary directory. It keeps
+the descriptors open until the service exits; credential bytes never go
+into ordinary temporary files or child-process environments. Memory may
+swap, and unsandboxed development does not isolate same-user processes.
 
 Comments the service posts contain only fixed text, commit hashes, and
 links it generates.
@@ -563,7 +607,7 @@ later, with AppArmor) need no changes, and no AppArmor profile.
 
 ## Development
 
-`ACKNOWLEDG_FORGE_UNSANDBOXED=1` runs without containers, for local
+`unsandboxed = true` runs without containers, for local
 development only. The control flow stays the same: the service serves the
 builder and tools runner servers and the publisher server itself
 (`edgacknowledg.forge.local`), on `127.0.0.1`, and uses them as it uses the

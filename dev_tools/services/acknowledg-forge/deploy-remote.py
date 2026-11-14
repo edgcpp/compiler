@@ -12,20 +12,16 @@ Installed by the host's administrator as a root-owned helper (e.g.
 with sudo, and nothing else as root:
 
   sudo /usr/local/libexec/acknowledg-forge-deploy \\
-    <service> <image@sha256:...> <acknowledg-api-url> <acknowledg-ui-url>
-
-The URLs are the public AcknowlEDG endpoints, e.g. wss://api.example and
-https://ui.example (the same values the web client is built with).
+    <service> <image@sha256:...>
 
 The service is a systemd unit, /etc/systemd/system/<service>.service, that
 runs the Docker Compose deployment (compose.yaml) with the settings in
 CONFIG_DIR, all of which the administrator owns (see README.md), along with
 its credentials. This script only manages one file there,
 <service>.deploy.env, which sets the image (pinned by digest, from
-IMAGE_REPOSITORY only) and the EDG_ACKNOWLEDG_{API,UI}_{HOST,PORT} the URLs
-translate to, and restarts the service only when that file changes. Since
-it runs as root on a caller's behalf, every argument is strictly
-validated.
+IMAGE_REPOSITORY only), and restarts the service only when that file
+changes. Since it runs as root on a caller's behalf, every argument is
+strictly validated.
 
 It uses only the standard library and runs isolated (python3 -I), so
 nothing from the environment or the caller's directory can change it.
@@ -40,14 +36,12 @@ import tempfile
 import time
 
 from pathlib import Path
-from typing import NamedTuple
-from urllib.parse import urlsplit, urlunsplit
 
 # The only repository images may come from.
 IMAGE_REPOSITORY = 'ghcr.io/edgcpp/acknowledg-forge'
 
 # The administrator's deployment configuration: compose.yaml, and each
-# service's <service>.env and <service>.settings.
+# deployment's <service>.env and <service>.toml.
 CONFIG_DIR = Path('/etc/acknowledg-forge')
 # Where the administrator installs each service's unit.
 UNITS_DIR = Path('/etc/systemd/system')
@@ -57,64 +51,10 @@ STARTUP_GRACE_S = 5
 
 _SERVICE_NAME = re.compile(r'acknowledg-forge-[a-z0-9-]+')
 _IMAGE = re.compile(re.escape(IMAGE_REPOSITORY) + r'@sha256:[0-9a-f]{64}')
-_HOST_NAME = re.compile(r'[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?')
-_PORT = re.compile(r'[0-9]{1,5}')
-
-TLS_PORT = 443
 
 
 class DeployError(Exception):
   '''A deployment that can't go ahead; the message says why.'''
-
-
-class Endpoint(NamedTuple):
-  host: str
-  port: int
-
-
-def parse_url(url: str, *, plain: str, tls: str, label: str) -> Endpoint:
-  '''The host and port of ``url``, which must use the ``plain`` or ``tls``
-  scheme (e.g. ws and wss), a host name, an optional port, and no path.
-
-  The service picks TLS by port alone (443), so only URLs it can honor
-  exactly are accepted: TLS on 443 and plain on any other port, never a
-  silent downgrade.
-  '''
-  shape_error = DeployError(
-    f"the AcknowlEDG {label} must be {plain}:// or {tls}:// followed by a "
-    f"host name and optional port, with no path"
-  )
-  # urlsplit quietly drops some characters (tabs, newlines) and empty
-  # parts ('?', '#'); anything it wouldn't reproduce exactly is refused.
-  parts = urlsplit(url)
-  if (url != urlunsplit(parts) or
-      parts.scheme not in (plain, tls) or
-      parts.path not in ('', '/') or
-      parts.query != '' or
-      parts.fragment != ''):
-    raise shape_error
-  host, colon, port_text = parts.netloc.partition(':')
-  if _HOST_NAME.fullmatch(host) is None:
-    raise shape_error
-  if colon != '' and _PORT.fullmatch(port_text) is None:
-    raise shape_error
-
-  is_tls = parts.scheme == tls
-  if colon == '':
-    port = TLS_PORT if is_tls else 80
-  else:
-    port = int(port_text)
-    if not 1 <= port <= 65535:
-      raise DeployError(f"the AcknowlEDG {label} has an invalid port")
-  if is_tls and port != TLS_PORT:
-    raise DeployError(
-      f"the AcknowlEDG {label} can only use {tls}:// on port {TLS_PORT}"
-    )
-  if not is_tls and port == TLS_PORT:
-    raise DeployError(
-      f"the AcknowlEDG {label} must use {tls}:// on port {TLS_PORT}"
-    )
-  return Endpoint(host, port)
 
 
 def check_service(service: str) -> None:
@@ -129,18 +69,12 @@ def check_image(image: str) -> None:
     )
 
 
-def deploy_env_content(image: str, api: Endpoint, ui: Endpoint) -> str:
-  '''The Compose variables pointing the deployment at ``image`` and the
-  AcknowlEDG endpoints.
-  '''
+def deploy_env_content(image: str) -> str:
+  '''Compose's image selection; application settings belong in TOML.'''
   return (
     '# Managed by the acknowledg-forge-deploy workflow; changes are '
     'overwritten.\n'
     f"IMAGE={image}\n"
-    f"EDG_ACKNOWLEDG_API_HOST={api.host}\n"
-    f"EDG_ACKNOWLEDG_API_PORT={api.port}\n"
-    f"EDG_ACKNOWLEDG_UI_HOST={ui.host}\n"
-    f"EDG_ACKNOWLEDG_UI_PORT={ui.port}\n"
   )
 
 
@@ -200,14 +134,11 @@ def remove_old_images(current: str) -> None:
     )
 
 
-def deploy(service: str, image: str, api_url: str, ui_url: str) -> None:
+def deploy(service: str, image: str) -> None:
   if os.geteuid() != 0:
     raise DeployError('must run as root (via sudo)')
   check_service(service)
   check_image(image)
-  api = parse_url(api_url, plain = 'ws', tls = 'wss', label = 'API URL')
-  ui = parse_url(ui_url, plain = 'http', tls = 'https', label = 'UI URL')
-
   unit = UNITS_DIR / f"{service}.service"
   for required in (unit, CONFIG_DIR / 'compose.yaml'):
     if not required.is_file():
@@ -222,7 +153,7 @@ def deploy(service: str, image: str, api_url: str, ui_url: str) -> None:
     )
 
   deploy_env = CONFIG_DIR / f"{service}.deploy.env"
-  changed = write_if_changed(deploy_env, deploy_env_content(image, api, ui))
+  changed = write_if_changed(deploy_env, deploy_env_content(image))
 
   service_unit = f"{service}.service"
   is_active = ['systemctl', 'is-active', '--quiet', service_unit]
@@ -272,24 +203,13 @@ def parse_args() -> argparse.Namespace:
     'image',
     help = f"the image, {IMAGE_REPOSITORY}@sha256:<digest>"
   )
-  parser.add_argument(
-    'api_url',
-    metavar = 'acknowledg-api-url',
-    help = 'the public AcknowlEDG API, ws://<host>[:<port>] or wss://<host>'
-  )
-  parser.add_argument(
-    'ui_url',
-    metavar = 'acknowledg-ui-url',
-    help = 'the public AcknowlEDG UI, http://<host>[:<port>] or '
-           'https://<host>'
-  )
   return parser.parse_args()
 
 
 def main() -> int:
   args = parse_args()
   try:
-    deploy(args.service, args.image, args.api_url, args.ui_url)
+    deploy(args.service, args.image)
   except DeployError as ex:
     print(f"error: {ex}", file = sys.stderr)
     return 1

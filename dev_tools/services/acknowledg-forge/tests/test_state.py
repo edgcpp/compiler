@@ -138,9 +138,14 @@ async def test_publisher_outage_leaves_serving_to_connecting(
   record = await store.find_pull_request('fake', REPOSITORY, 1)
   assert record is not None
   assert not record.is_dirty and record.error_count == 0
-  assert [s.name for s in await store.sections(record.id)] == [
+  sections = await store.sections(record.id)
+  assert [s.name for s in sections] == [
     'Test - Changes'
   ]
+  # The completed run contains only its results, with no temporary diff.
+  [section] = sections
+  assert list(section.root.parent.iterdir()) == [section.root]
+  assert list(harness.workspaces.build_staging_dir.iterdir()) == []
   assert harness.publisher.served_names(record.review_id) == []
 
   harness.publisher.available = True
@@ -254,7 +259,7 @@ async def test_settle_deadline_announces_without_ci(tmp_path: Path,
                                                     forge: FakeForge,
                                                     store: ForgeStore,
                                                     clock: Clock) -> None:
-  config = make_config(tmp_path / 'home', SETTLE_TIMEOUT = '600')
+  config = make_config(tmp_path / 'home', settle_timeout = 600)
   harness = Harness(store, forge, config, clock)
   await harness.start()
   head = origin.push_pull_request(1, PR_FILES)
@@ -273,7 +278,7 @@ async def test_comment_not_duplicated_after_crash(tmp_path: Path,
                                                   forge: FakeForge,
                                                   store: ForgeStore,
                                                   clock: Clock) -> None:
-  config = make_config(tmp_path / 'home', CI_WORKFLOW = '')
+  config = make_config(tmp_path / 'home', ci_workflow = None)
   harness = Harness(store, forge, config, clock)
   await harness.start()
   head = origin.push_pull_request(1, PR_FILES)
@@ -300,7 +305,7 @@ async def test_fresh_database_adopts_existing_pull_requests(
                                                 forge: FakeForge,
                                                 store: ForgeStore,
                                                 clock: Clock) -> None:
-  config = make_config(tmp_path / 'home', CI_WORKFLOW = '')
+  config = make_config(tmp_path / 'home', ci_workflow = None)
   head1 = origin.push_pull_request(1, PR_FILES)
   forge.set_pull_request(pull_request_info(1, head1, origin.main_sha,
                                            clock = clock))
@@ -404,7 +409,7 @@ async def test_webhook_endpoint_verifies_and_queues() -> None:
 
 
 async def test_app_without_webhooks_answers_only_health_checks() -> None:
-  # As the service serves it without ACKNOWLEDG_FORGE_WEBHOOKS.
+  # As the service serves it with webhooks disabled.
   client = create_app().test_client()
   response = await client.get(HEALTH_PATH)
   assert response.status_code == HTTPStatus.OK
@@ -413,24 +418,36 @@ async def test_app_without_webhooks_answers_only_health_checks() -> None:
   assert response.status_code == HTTPStatus.NOT_FOUND
 
 
-def test_webhooks_need_the_service_bind(tmp_path: Path) -> None:
-  config = make_config(tmp_path / 'home', SERVICE_BIND = '127.0.0.1:0',
-                       WEBHOOKS = '1')
+async def test_webhooks_need_the_service_bind(tmp_path: Path) -> None:
+  from edgacknowledg.forge.config import ForgeCredentials
+  from edgacknowledg.forge.service import ForgeComponents, run_service
+
+  config = make_config(
+    tmp_path / 'home', service_bind = '127.0.0.1:0',
+    webhooks = True
+  )
   assert config.service_bind == '127.0.0.1:0' and config.webhooks
-  config = make_config(tmp_path / 'home', SERVICE_BIND = '127.0.0.1:0')
+  config = make_config(tmp_path / 'home', service_bind = '127.0.0.1:0')
   assert not config.webhooks
-  with pytest.raises(ConfigError, match = 'SERVICE_BIND is not'):
-    make_config(tmp_path / 'home', WEBHOOKS = '1')
+  config = make_config(tmp_path / 'home', webhooks = True)
+  with pytest.raises(ConfigError, match = 'webhooks requires --service-bind'):
+    await run_service(
+      config, ForgeCredentials(),
+      ForgeComponents(FakeForge(tmp_path))
+    )
   # The old setting isn't silently ignored.
-  with pytest.raises(ConfigError, match = 'WEBHOOK_BIND is gone'):
-    make_config(tmp_path / 'home', WEBHOOK_BIND = '127.0.0.1:0')
+  with pytest.raises(
+    ConfigError,
+    match = 'unknown or secret setting webhook_bind'
+  ):
+    make_config(tmp_path / 'home', webhook_bind = '127.0.0.1:0')
 
 
 @pytest.mark.parametrize('setting, problem', [
-  ('MAX_DIFF_BYTES', "git diff's output is over 1 bytes"),
-  ('MAX_SPARSE_PATTERNS', 'MAX_SPARSE_PATTERNS'),
-  ('MAX_ARTIFACT_ENTRIES', 'MAX_ARTIFACT_ENTRIES'),
-  ('MAX_ARTIFACT_DIRECTORY_BYTES', 'MAX_ARTIFACT_DIRECTORY_BYTES'),
+  ('max_diff_bytes', 'max_diff_bytes'),
+  ('max_sparse_patterns', 'max_sparse_patterns'),
+  ('max_artifact_entries', 'max_artifact_entries'),
+  ('max_artifact_directory_bytes', 'max_artifact_directory_bytes'),
 ])
 async def test_limits_are_settings(tmp_path: Path,
                                    origin: Origin,
@@ -440,7 +457,7 @@ async def test_limits_are_settings(tmp_path: Path,
                                    setting: str,
                                    problem: str) -> None:
   # A pull request (with CI results) within the defaults...
-  config = make_config(tmp_path / 'home', **{setting: '1'})
+  config = make_config(tmp_path / 'home', **{setting: 1})
   harness = Harness(store, forge, config, clock)
   await harness.start()
   head = origin.push_pull_request(1, PR_FILES)

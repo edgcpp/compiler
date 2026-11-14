@@ -73,8 +73,14 @@ def build_diff_files(diff_file: Path,
     curr_diff_file_descr = None
     diff_file_to_handle = {}
 
-    for line in diff_file_handle:
-      line_match = GIT_DIFF_REGEX.match(line)
+    # Lines are read in bounded pieces so that an enormous one is never held
+    # whole; only a piece that starts a line can be a header, and every piece
+    # is written through unchanged.
+    for line, at_line_start in edgutil.iter_line_pieces(
+      diff_file_handle,
+      edgutil.MAX_LINE_CHARS
+    ):
+      line_match = GIT_DIFF_REGEX.match(line) if at_line_start else None
       if line_match is not None:
         if curr_diff_file_descr is not None:
           # Close the file handle for the previous diff file (if any) to
@@ -180,8 +186,15 @@ def collect_affected_tests(test_home: Path,
       suite_name = file_path.stem
       # An expectations update.
       with open(diff_file.diff_file) as file_handle:
-        for line in file_handle:
-          if line.startswith('---') or line.startswith('+++'):
+        # edgutil.MAX_LINE_CHARS is far more than any genuine expectation
+        # entry needs, so a longer line is refused (as when the file is
+        # read), without being held whole.
+        try:
+          for line in edgutil.iter_limited_lines(
+            file_handle,
+            edgutil.MAX_LINE_CHARS
+          ):
+            if line.startswith('---') or line.startswith('+++'):
               # Do not take in lines like:
               #
               #   --- a/tests/expectations/edg_x86_64_cp/modules.log
@@ -189,13 +202,19 @@ def collect_affected_tests(test_home: Path,
               #
               continue
 
-          if line.startswith('-') or line.startswith('+'):
-            # Do a naive parse to get the test file name.
-            test_file_rel_path = PurePosixPath(line[1:].split(':')[0])
-            result.tests.add(
-              tests_dir.joinpath(suite_name, test_file_rel_path)
-            )
-            result.configs.add(config_name)
+            if line.startswith('-') or line.startswith('+'):
+              # Do a naive parse to get the test file name.
+              test_file_rel_path = PurePosixPath(line[1:].split(':')[0])
+              result.tests.add(
+                tests_dir.joinpath(suite_name, test_file_rel_path)
+              )
+              result.configs.add(config_name)
+        except edgutil.LineTooLongError:
+          eprint(
+            f"{diff_file.file_name}: a changed line is longer than "
+            f"{edgutil.MAX_LINE_CHARS} characters"
+          )
+          sys.exit(1)
 
   return result
 
@@ -548,10 +567,20 @@ async def simulate_test(test_home: Path, config_run_dir: Path,
   return test_status_lines
 
 def read_suite_expectation_lines(suite_file: Path) -> List[str]:
+  '''The lines of ``suite_file`` (none if there is no such file); exits if
+  one is longer than ``edgutil.MAX_LINE_CHARS``, rather than holding it.
+  '''
   if not suite_file.exists():
     return []
-  with open(suite_file, 'r') as file_handle:
-    return file_handle.readlines()
+  try:
+    with open(suite_file, 'r') as file_handle:
+      return list(edgutil.iter_limited_lines(
+        file_handle,
+        edgutil.MAX_LINE_CHARS
+      ))
+  except edgutil.LineTooLongError as ex:
+    eprint(f"{suite_file}: {ex}")
+    sys.exit(1)
 
 def load_test_suite_expectations(all_expectations: Dict[str, List[str]],
                                  suite_name: str, expectations_dir: Path,

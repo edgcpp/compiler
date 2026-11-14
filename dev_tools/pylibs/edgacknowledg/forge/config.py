@@ -3,22 +3,28 @@
 # See https://edgcpp.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-'''acknowledg-forge configuration, read from the environment.'''
+'''Typed TOML settings, command-line wiring, and service-only credentials.'''
 
+import math
 import os
+import re
+import tomllib
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field, fields, replace
 from pathlib import Path
-from typing import Mapping, Optional
-
-from edgacknowledg.client import (
-  default_api_host,
-  default_api_port,
-  default_ui_host,
-  default_ui_port,
-)
+from typing import Any, Mapping, Optional, Sequence
+from urllib.parse import urlsplit
 
 ENV_PREFIX = 'ACKNOWLEDG_FORGE_'
+SETTINGS_VARIABLE = ENV_PREFIX + 'SETTINGS_FILE'
+
+_LEGACY_ENVIRONMENT_VARIABLES = frozenset((
+  'EDG_ACKNOWLEDG_API_HOST',
+  'EDG_ACKNOWLEDG_API_PORT',
+  'EDG_ACKNOWLEDG_UI_HOST',
+  'EDG_ACKNOWLEDG_UI_PORT',
+  'EDG_ACKNOWLEDG_API_KEY',
+))
 
 # The defaults of the limits on what a pull request and its CI artifacts
 # may make the service do (``workspace``), which the settings may raise for
@@ -32,286 +38,456 @@ ENV_PREFIX = 'ACKNOWLEDG_FORGE_'
 # suite's name, is short.
 DEFAULT_MAX_PATTERNS = 20_000
 # The largest diff (of tests/, in bytes) a pull request may have: it is
-# held in memory, and copied and split into lines more than once.
-DEFAULT_MAX_DIFF_BYTES = 64 * 1024 * 1024
+# kept with the review's rematerialized run (on disk, never in memory
+# whole), and the builder applies all of it.
+DEFAULT_MAX_DIFF_BYTES = 512 * 1024 * 1024
 # The most entries an artifact zip may have, and the largest its central
 # directory may be: zipfile reads all of that directory into memory, before
 # we can count. CI's test results reach about 170,000 entries, of about 106
 # bytes each there.
 DEFAULT_MAX_ARTIFACT_ENTRIES = 500_000
 DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES = 64 * 1024 * 1024
+DEFAULT_MAX_RT_ENTRIES = 10_000
+DEFAULT_MAX_RT_MEMBER_BYTES = 64 * 1024 * 1024
 
 
 class ConfigError(Exception):
-  '''Raised for a missing or malformed setting.'''
+  '''Raised for a missing or malformed setting; never includes its value.'''
 
 
-def read_secret(credential_name: str,
-                env_name: str,
-                *,
-                environ: Mapping[str, str] = os.environ) -> Optional[str]:
-  '''Return a secret, preferring a systemd credential over the environment.
-
-  Credentials (``LoadCredential=`` / ``LoadCredentialEncrypted=``) keep the
-  secret out of the process environment; ``env_name`` is the fallback for
-  local development.
-  '''
-  credentials_dir = environ.get('CREDENTIALS_DIRECTORY')
-  if credentials_dir is not None:
-    path = Path(credentials_dir, credential_name)
-    if path.is_file():
-      return path.read_text(encoding = 'utf-8').rstrip('\r\n')
-  return environ.get(env_name)
-
-
-def service_url(name: str,
-               *,
-               environ: Mapping[str, str] = os.environ) -> Optional[str]:
-  '''The URL of the ``name`` service (another container's server) that
-  ``ACKNOWLEDG_FORGE_<name>_SERVICE_URL`` sets, if any.
-  '''
-  url = environ.get(f"{ENV_PREFIX}{name}_SERVICE_URL", '').strip()
-  if url == '':
-    return None
-  if not url.startswith('ws://'):
-    raise ConfigError(f"{ENV_PREFIX}{name}_SERVICE_URL must be a ws:// URL")
-  return url
-
-
-def _environment_secrets(environ: Mapping[str, str],
-                         names: dict[str, str]) -> tuple[str, ...]:
-  '''The variables (of ``names``, credential name -> variable) a secret
-  is actually read from, for lack of a credential.
-  '''
-  credentials_dir = environ.get('CREDENTIALS_DIRECTORY')
-  return tuple(
-    env_name for credential_name, env_name in names.items()
-    if environ.get(env_name) is not None and (
-      credentials_dir is None or
-      not Path(credentials_dir, credential_name).is_file()
-    )
+def check_environment(environ: Mapping[str, str]) -> None:
+  '''Reject removed application variables without disclosing their values.'''
+  removed = sorted(
+    name for name in environ
+    if (
+      name.startswith(ENV_PREFIX) and name != SETTINGS_VARIABLE
+    ) or name in _LEGACY_ENVIRONMENT_VARIABLES
   )
+  if len(removed) != 0:
+    raise ConfigError(
+      'removed environment settings: ' + ', '.join(removed) +
+      '; move application settings to lowercase TOML keys and secrets to '
+      'CREDENTIALS_DIRECTORY'
+    )
+
+
+def settings_path(environ: Optional[Mapping[str, str]] = None) -> Path:
+  environ = os.environ if environ is None else environ
+  check_environment(environ)
+  filename = environ.get(SETTINGS_VARIABLE, '').strip()
+  if not filename:
+    raise ConfigError(f"{SETTINGS_VARIABLE} must name a TOML file")
+  return Path(filename).absolute()
+
+
+def read_secret(name: str, directory: Optional[Path]) -> Optional[str]:
+  '''Read a credential, including a development launcher's memfd link.'''
+  if directory is None:
+    return None
+  try:
+    value = (directory / name).read_text(encoding = 'utf-8').rstrip('\r\n')
+  except FileNotFoundError:
+    return None
+  except (OSError, UnicodeError):
+    raise ConfigError(f"cannot read credential {name}") from None
+  return value or None
+
+
+@dataclass(frozen = True)
+class ForgeCredentials:
+  '''Service-only secrets, kept separate from shared application settings.'''
+  forge_token: Optional[str] = field(default = None, repr = False)
+  webhook_secret: Optional[str] = field(default = None, repr = False)
+  acknowledg_api_key: Optional[str] = field(default = None, repr = False)
+  database_password: Optional[str] = field(default = None, repr = False)
+
+  @classmethod
+  def from_directory(cls, directory: Optional[Path]) -> 'ForgeCredentials':
+    return cls(
+      forge_token = read_secret('forge-token', directory),
+      webhook_secret = read_secret('webhook-secret', directory),
+      acknowledg_api_key = read_secret('acknowledg-api-key', directory),
+      database_password = read_secret('database-password', directory)
+    )
+
+
+def check_service_bind(value: str) -> None:
+  '''Validate the service's host:port listener address.'''
+  host, _, port = value.rpartition(':')
+  if (not host or not port.isascii() or not port.isdecimal() or
+      len(port) > 5 or not 0 <= int(port) <= 65535):
+    raise ConfigError('service_bind must be host:port with a valid port')
+
+
+def check_service_url(value: str, key: str) -> str:
+  '''A container's server: ``ws://`` only, within the deployment.'''
+  url = urlsplit(value)
+  if url.scheme != 'ws' or not url.netloc:
+    raise ConfigError(f"{key} must be a ws:// URL")
+  if url.path not in ('', '/'):
+    raise ConfigError(f"{key} must have an empty path or '/'")
+  return value
+
+
+# A DNS name or IPv4 address, nothing that could change a URL's shape.
+_HOST_NAME = re.compile(r'[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?')
+_LOOPBACK_HOSTS = frozenset(('localhost', '127.0.0.1', '::1'))
+# The AcknowlEDG client selects TLS (wss://, https://) by this port alone.
+TLS_PORT = 443
+
+
+@dataclass(frozen = True)
+class SqliteDatabaseConfig:
+  '''Non-secret SQLite connection settings.'''
+  path: Path
+
+
+@dataclass(frozen = True)
+class PostgresqlUnixDatabaseConfig:
+  '''Non-secret PostgreSQL connection settings for a Unix socket.'''
+  socket_directory: Path
+  name: str
+  username: str
+  port: int = 5432
+
+
+@dataclass(frozen = True)
+class PostgresqlTcpDatabaseConfig:
+  '''Non-secret PostgreSQL connection settings for TCP.'''
+  host: str
+  name: str
+  username: str
+  port: int = 5432
+  require_tls: bool = True
+
+
+DatabaseConfig = (
+  SqliteDatabaseConfig |
+  PostgresqlUnixDatabaseConfig |
+  PostgresqlTcpDatabaseConfig
+)
 
 
 @dataclass(frozen = True)
 class ForgeServiceConfig:
-  '''Settings shared by every forge service.'''
-  # Root for clones, worktrees, and (by default) the database.
+  '''Non-secret application settings shared by the service and workers.'''
   home: Path
-  database_url: str
-  repositories: tuple[str, ...]
-  # Only pull requests targeting these branches are served (e.g. not ones
-  # into feature branches). A pull request retargeted away from them has its
-  # review removed, as if it were closed.
-  base_branches: frozenset[str]
-  # Forge API base URL override (e.g. GitHub Enterprise, self-hosted GitLab).
-  api_url: Optional[str]
-  # Seconds between polls; 0 polls once at startup only.
-  poll_interval: float
-  # 'host:port' to serve the web app (serving) on: health checks, and webhooks
-  # if enabled; None serves none.
-  service_bind: Optional[str]
-  # Whether the web app receives webhooks.
-  webhooks: bool
-  comments: bool
-  # CI workflow (GitHub workflow file or id; GitLab: unused) whose runs are
-  # tracked; None disables CI tracking.
-  ci_workflow: Optional[str]
-  # Seconds to wait for CI before a pull request counts as settled anyway.
-  settle_timeout: float
-  test_artifact: str
-  bench_artifact: str
-  max_artifact_bytes: int
-  max_extracted_bytes: int
-  max_artifact_entries: int
-  max_artifact_directory_bytes: int
-  max_diff_bytes: int
-  max_sparse_patterns: int
-  max_concurrency: int
-  rematerialize_timeout: float
-  unsandboxed: bool
-  # The builder's runner server and the publisher server, in their own
-  # containers (see compose.yaml); required unless unsandboxed.
-  builder_service_url: Optional[str]
-  publisher_service_url: Optional[str]
-  # A dev_tools-style directory (bin/ and pylibs/) with the EDG tooling the
-  # service runs (edg-rematerialize-test-run, ifc-dump): a frozen, reviewed
-  # copy (the container image embeds one), never the pull request's.
   tools_dir: Path
-  forge_token: Optional[str]
-  webhook_secret: Optional[str]
-  acknowledg_api_host: str
-  acknowledg_api_port: int
-  acknowledg_api_key: Optional[str]
-  acknowledg_ui_host: str
-  acknowledg_ui_port: int
-  # Secrets read from environment variables rather than credentials; any
-  # process can read its own initial environment (/proc/self/environ).
-  environment_secrets: tuple[str, ...] = ()
+  repositories: tuple[str, ...]
+  database: DatabaseConfig
+  base_branches: frozenset[str] = frozenset(('main',))
+  api_url: Optional[str] = None
+  poll_interval: float = 300
+  webhooks: bool = False
+  comments: bool = False
+  ci_workflow: Optional[str] = None
+  settle_timeout: float = 2 * 60 * 60
+  test_artifact: str = 'test-results-all'
+  bench_artifact: str = 'bench-results'
+  max_artifact_bytes: int = 256 * 1024 * 1024
+  max_extracted_bytes: int = 2 * 1024 * 1024 * 1024
+  max_artifact_entries: int = DEFAULT_MAX_ARTIFACT_ENTRIES
+  max_artifact_directory_bytes: int = DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES
+  max_rt_entries: int = DEFAULT_MAX_RT_ENTRIES
+  max_rt_member_bytes: int = DEFAULT_MAX_RT_MEMBER_BYTES
+  max_diff_bytes: int = DEFAULT_MAX_DIFF_BYTES
+  max_sparse_patterns: int = DEFAULT_MAX_PATTERNS
+  max_concurrency: int = 2
+  rematerialize_timeout: float = 15 * 60
+  unsandboxed: bool = False
+  publisher_processes: int = 4
+  publisher_request_timeout: float = 150
+  acknowledg_api_host: str = 'localhost'
+  acknowledg_api_port: int = 2727
+  acknowledg_ui_host: str = 'localhost'
+  acknowledg_ui_port: int = 5173
+  # The deployment's wiring, which keeps each server to its one network.
+  # compose.yaml sets it on the service's command line (``with_wiring``);
+  # the TOML can't, so a settings change can't widen a listener.
+  service_bind: Optional[str] = None
+  builder_service_url: Optional[str] = None
+  publisher_service_url: Optional[str] = None
 
-  @classmethod
-  def from_environment(cls,
-                       environ: Mapping[str, str] = os.environ
-                       ) -> 'ForgeServiceConfig':
-    def get(name: str) -> Optional[str]:
-      value = environ.get(ENV_PREFIX + name)
-      if value is None or value.strip() == '':
-        return None
-      return value.strip()
+  @staticmethod
+  def from_file(path: Optional[Path] = None) -> 'ForgeServiceConfig':
+    '''Read typed shared TOML settings without accessing credentials.
 
-    def get_number(name: str, default: float) -> float:
-      value = get(name)
-      if value is None:
-        return default
-      try:
-        number = float(value)
-      except ValueError:
-        raise ConfigError(f"{ENV_PREFIX}{name} must be a number") from None
-      if number < 0:
-        raise ConfigError(f"{ENV_PREFIX}{name} must not be negative")
-      return number
-
-    def get_flag(name: str) -> bool:
-      value = get(name)
-      if value is None:
-        return False
-      if value.lower() in ('1', 'true', 'yes', 'on'):
-        return True
-      if value.lower() in ('0', 'false', 'no', 'off'):
-        return False
-      raise ConfigError(f"{ENV_PREFIX}{name} must be a boolean (1/0)")
-
-    def get_list(name: str) -> tuple[str, ...]:
-      value = get(name)
-      if value is None:
-        return ()
-      return tuple(item.strip() for item in value.split(',') if item.strip())
-
-    home_value = get('HOME')
-    if home_value is None:
-      raise ConfigError(f"{ENV_PREFIX}HOME must be set")
-    home = Path(home_value).absolute()
-
-    repositories = get_list('REPOSITORIES')
-    if len(repositories) == 0:
-      raise ConfigError(f"{ENV_PREFIX}REPOSITORIES must list a repository")
-
-    tools_value = get('TOOLS_DIR')
-    if tools_value is None:
-      raise ConfigError(f"{ENV_PREFIX}TOOLS_DIR must be set")
-    tools_dir = Path(tools_value).absolute()
-    if not (tools_dir / 'bin' / 'edg-rematerialize-test-run').is_file():
+    Each service validates the settings required for its own role.
+    '''
+    path = settings_path() if path is None else path.absolute()
+    try:
+      with path.open('rb') as stream:
+        data = tomllib.load(stream)
+    except (OSError, ValueError):
+      # TOML parser exceptions can quote the input, which may contain secrets.
       raise ConfigError(
-        f"{ENV_PREFIX}TOOLS_DIR ({tools_dir}) has no "
-        f"bin/edg-rematerialize-test-run"
-      )
+        f"cannot read settings {path}: invalid or unreadable TOML"
+      ) from None
+    try:
+      return _decode_settings(data, path)
+    except ConfigError as ex:
+      raise ConfigError(f"{path}: {ex}") from None
 
-    max_concurrency = int(get_number('MAX_CONCURRENCY', 2))
-    if max_concurrency < 1:
-      raise ConfigError(f"{ENV_PREFIX}MAX_CONCURRENCY must be at least 1")
-
-    service_bind = get('SERVICE_BIND')
+  def with_wiring(self, *,
+                  service_bind: Optional[str] = None,
+                  builder_service_url: Optional[str] = None,
+                  publisher_service_url: Optional[str] = None
+                  ) -> 'ForgeServiceConfig':
+    '''These settings with the service's command-line wiring.'''
     if service_bind is not None:
-      host, _, port = service_bind.rpartition(':')
-      if host == '' or not port.isdigit():
-        raise ConfigError(f"{ENV_PREFIX}SERVICE_BIND must be host:port")
-    webhooks = get_flag('WEBHOOKS')
-    if get('WEBHOOK_BIND') is not None:
-      raise ConfigError(
-        f"{ENV_PREFIX}WEBHOOK_BIND is gone: set {ENV_PREFIX}SERVICE_BIND "
-        f"(compose.yaml does) and {ENV_PREFIX}WEBHOOKS=1 instead"
-      )
-    if webhooks and service_bind is None:
-      raise ConfigError(
-        f"{ENV_PREFIX}WEBHOOKS is set, but {ENV_PREFIX}SERVICE_BIND is not"
-      )
-
-    unsandboxed = get_flag('UNSANDBOXED')
-    builder_service_url = service_url('BUILDER', environ = environ)
-    publisher_service_url = service_url('PUBLISHER', environ = environ)
-    if not unsandboxed and (builder_service_url is None or
-                            publisher_service_url is None):
-      raise ConfigError(
-        f"{ENV_PREFIX}BUILDER_SERVICE_URL and "
-        f"{ENV_PREFIX}PUBLISHER_SERVICE_URL must be set, as compose.yaml "
-        f"does; for local development only, set {ENV_PREFIX}UNSANDBOXED=1 "
-        f"instead"
-      )
-
-    return cls(
-      home = home,
-      # A credential, as a remote database's URL holds a password.
-      database_url = (
-        read_secret(
-          'database-url',
-          f"{ENV_PREFIX}DATABASE_URL",
-          environ = environ
-        ) or f"sqlite+aiosqlite:///{home / 'state.db'}"
-      ),
-      repositories = repositories,
-      base_branches = frozenset(get_list('BASE_BRANCHES') or ('main',)),
-      api_url = get('API_URL'),
-      poll_interval = get_number('POLL_INTERVAL', 300),
+      check_service_bind(service_bind)
+    for key, value in (('builder_service_url', builder_service_url),
+                       ('publisher_service_url', publisher_service_url)):
+      if value is not None:
+        check_service_url(value, key)
+    return replace(
+      self,
       service_bind = service_bind,
-      webhooks = webhooks,
-      comments = get_flag('COMMENTS'),
-      ci_workflow = get('CI_WORKFLOW'),
-      settle_timeout = get_number('SETTLE_TIMEOUT', 2 * 60 * 60),
-      test_artifact = get('TEST_ARTIFACT') or 'test-results-all',
-      bench_artifact = get('BENCH_ARTIFACT') or 'bench-results',
-      max_artifact_bytes = int(
-        get_number('MAX_ARTIFACT_BYTES', 256 * 1024 * 1024)
-      ),
-      max_extracted_bytes = int(
-        get_number('MAX_EXTRACTED_BYTES', 2 * 1024 * 1024 * 1024)
-      ),
-      max_artifact_entries = int(
-        get_number('MAX_ARTIFACT_ENTRIES', DEFAULT_MAX_ARTIFACT_ENTRIES)
-      ),
-      max_artifact_directory_bytes = int(get_number(
-        'MAX_ARTIFACT_DIRECTORY_BYTES',
-        DEFAULT_MAX_ARTIFACT_DIRECTORY_BYTES
-      )),
-      max_diff_bytes = int(
-        get_number('MAX_DIFF_BYTES', DEFAULT_MAX_DIFF_BYTES)
-      ),
-      max_sparse_patterns = int(
-        get_number('MAX_SPARSE_PATTERNS', DEFAULT_MAX_PATTERNS)
-      ),
-      max_concurrency = max_concurrency,
-      rematerialize_timeout = get_number('REMATERIALIZE_TIMEOUT', 15 * 60),
-      unsandboxed = unsandboxed,
       builder_service_url = builder_service_url,
-      publisher_service_url = publisher_service_url,
-      tools_dir = tools_dir,
-      forge_token = read_secret(
-        'forge-token',
-        f"{ENV_PREFIX}TOKEN",
-        environ = environ
-      ),
-      webhook_secret = read_secret(
-        'webhook-secret',
-        f"{ENV_PREFIX}WEBHOOK_SECRET",
-        environ = environ
-      ),
-      acknowledg_api_host = default_api_host(),
-      acknowledg_api_port = default_api_port(),
-      acknowledg_api_key = read_secret(
-        'acknowledg-api-key',
-        'EDG_ACKNOWLEDG_API_KEY',
-        environ = environ
-      ),
-      acknowledg_ui_host = default_ui_host(),
-      acknowledg_ui_port = default_ui_port(),
-      # (Not the database URL, which is only a secret if it holds a
-      # password, and then the documentation says to use the credential.)
-      environment_secrets = _environment_secrets(environ, {
-        'forge-token': f"{ENV_PREFIX}TOKEN",
-        'webhook-secret': f"{ENV_PREFIX}WEBHOOK_SECRET",
-        'acknowledg-api-key': 'EDG_ACKNOWLEDG_API_KEY',
-      }),
+      publisher_service_url = publisher_service_url
     )
 
   @property
   def ci_tracked(self) -> bool:
     return self.ci_workflow is not None
+
+
+def check_credential_transport(config: ForgeServiceConfig,
+                               credentials: 'ForgeCredentials') -> None:
+  '''Refuse to send the AcknowlEDG API key off this machine without TLS.'''
+  if (credentials.acknowledg_api_key is not None and
+      config.acknowledg_api_host not in _LOOPBACK_HOSTS and
+      config.acknowledg_api_port != TLS_PORT):
+    raise ConfigError(
+      f"the acknowledg-api-key credential is only sent over TLS: set "
+      f"acknowledg_api_port = {TLS_PORT} for a host other than localhost"
+    )
+
+
+_PATH_KEYS = frozenset(('home', 'tools_dir'))
+_LIST_KEYS = frozenset(('repositories', 'base_branches'))
+_FLAG_KEYS = frozenset(('webhooks', 'comments', 'unsandboxed'))
+_NUMBER_KEYS = frozenset((
+  'poll_interval',
+  'settle_timeout',
+  'rematerialize_timeout',
+  'publisher_request_timeout',
+))
+_INT_KEYS = frozenset((
+  'max_artifact_bytes',
+  'max_extracted_bytes',
+  'max_artifact_entries',
+  'max_artifact_directory_bytes',
+  'max_rt_entries',
+  'max_rt_member_bytes',
+  'max_diff_bytes',
+  'max_sparse_patterns',
+  'max_concurrency',
+  'publisher_processes',
+  'acknowledg_api_port',
+  'acknowledg_ui_port',
+))
+_WIRING_KEYS = frozenset((
+  'service_bind',
+  'builder_service_url',
+  'publisher_service_url',
+))
+# Former wiring settings, now command-line arguments of each server.
+_REMOVED_WIRING_KEYS = frozenset((
+  'builder_bind',
+  'publisher_bind',
+  'tools_bind',
+  'tools_service_url',
+))
+
+
+def _check_api_url(value: str) -> None:
+  '''The forge token is sent here: HTTPS, or HTTP to this machine only.
+
+  Errors never quote the URL, which could hold userinfo.
+  '''
+  try:
+    url = urlsplit(value)
+    hostname = url.hostname
+    has_userinfo = url.username is not None or url.password is not None
+    # Only for its ValueError on a malformed port.
+    _ = url.port
+  except ValueError:
+    raise ConfigError('api_url is not a valid URL') from None
+  if url.scheme not in ('https', 'http') or not hostname:
+    raise ConfigError('api_url must be an https:// URL')
+  if url.scheme == 'http' and hostname not in _LOOPBACK_HOSTS:
+    raise ConfigError(
+      'api_url must use https:// for a host other than localhost'
+    )
+  if has_userinfo or url.query or url.fragment:
+    raise ConfigError(
+      'api_url must not hold credentials, a query, or a fragment; put the '
+      'token in the forge-token credential'
+    )
+
+
+def _decode_settings(data: dict[str, Any], path: Path) -> ForgeServiceConfig:
+  allowed = {f.name for f in fields(ForgeServiceConfig)} - _WIRING_KEYS
+  values: dict[str, Any] = {}
+  for key, value in data.items():
+    if key in _WIRING_KEYS or key in _REMOVED_WIRING_KEYS:
+      raise ConfigError(
+        f"{key} is deployment wiring, set on the command line (compose.yaml), "
+        'not in settings'
+      )
+    if key not in allowed:
+      raise ConfigError(f"unknown or secret setting {key}")
+    if key == 'database':
+      # Decode after home, which supplies SQLite's default path.
+      continue
+    if key in _LIST_KEYS:
+      if (not isinstance(value, list) or
+          not all(isinstance(v, str) and v.strip() for v in value)):
+        raise ConfigError(f"{key} must be an array of nonempty strings")
+      values[key] = (
+        frozenset(value) if key == 'base_branches'
+        else tuple(value)
+      )
+    elif key in _FLAG_KEYS:
+      if type(value) is not bool:
+        raise ConfigError(f"{key} must be a boolean")
+      values[key] = value
+    elif key in _INT_KEYS or key in _NUMBER_KEYS:
+      types = (int,) if key in _INT_KEYS else (int, float)
+      if type(value) not in types or value < 0 or (
+          isinstance(value, float) and not math.isfinite(value)):
+        raise ConfigError(
+          f"{key} must be a nonnegative finite " +
+          ('integer' if key in _INT_KEYS else 'number')
+        )
+      values[key] = value
+    else:
+      if not isinstance(value, str) or not value.strip():
+        raise ConfigError(f"{key} must be a nonempty string")
+      if key in _PATH_KEYS:
+        directory = Path(value)
+        values[key] = (path.parent / directory).absolute()
+      else:
+        values[key] = value
+  for key in ('home', 'tools_dir', 'repositories'):
+    if key not in values or not values[key]:
+      raise ConfigError(f"{key} is required")
+  tool = values['tools_dir'] / 'bin' / 'edg-rematerialize-test-run'
+  if not tool.is_file():
+    raise ConfigError('tools_dir has no bin/edg-rematerialize-test-run')
+  # The local AcknowlEDG's ports are the defaults; any other host needs its
+  # port stated, since the port alone selects TLS (never a silent 80).
+  for kind, local_port in (('api', 2727), ('ui', 5173)):
+    host_key = f"acknowledg_{kind}_host"
+    port_key = f"acknowledg_{kind}_port"
+    host = values.get(host_key, 'localhost')
+    if _HOST_NAME.fullmatch(host) is None:
+      raise ConfigError(
+        f"{host_key} must be a host name, without a scheme, port, or path"
+      )
+    if port_key not in values:
+      if host != 'localhost':
+        raise ConfigError(
+          f"{port_key} is required for a host other than localhost "
+          f"({TLS_PORT} for TLS)"
+        )
+      values[port_key] = local_port
+  if 'api_url' in values:
+    _check_api_url(values['api_url'])
+  values['database'] = _decode_database(
+    data.get('database', {}), path.parent, values['home'] / 'state.db'
+  )
+  config = ForgeServiceConfig(**values)
+  for key in ('max_concurrency', 'publisher_processes'):
+    if getattr(config, key) < 1:
+      raise ConfigError(f"{key} must be at least 1")
+  if config.publisher_request_timeout <= 0:
+    raise ConfigError('publisher_request_timeout must be positive')
+  for key in ('acknowledg_api_port', 'acknowledg_ui_port'):
+    if not 1 <= getattr(config, key) <= 65535:
+      raise ConfigError(f"{key} must be between 1 and 65535")
+  return config
+
+
+def _validate_database_fields(data: dict[str, Any],
+                              keys: Sequence[str]) -> None:
+  for key, value in data.items():
+    if key not in keys:
+      raise ConfigError(f"unknown or unsupported database setting {key}")
+    if key == 'port':
+      if type(value) is not int or not 1 <= value <= 65535:
+        raise ConfigError('database.port must be an integer from 1 to 65535')
+    elif key == 'require_tls':
+      if type(value) is not bool:
+        raise ConfigError('database.require_tls must be a boolean')
+    elif not isinstance(value, str) or not value.strip():
+      raise ConfigError(f"database.{key} must be a nonempty string")
+
+
+def _decode_database(data: Any, directory: Path,
+                      default_path: Path) -> DatabaseConfig:
+  if not isinstance(data, dict):
+    raise ConfigError('database must be a table')
+  backend = data.get('backend', 'sqlite')
+  if backend not in ('sqlite', 'postgresql-unix', 'postgresql-tcp'):
+    raise ConfigError(
+      'database.backend must be sqlite, postgresql-unix, or postgresql-tcp'
+    )
+  if backend == 'sqlite':
+    _validate_database_fields(data, ('backend', 'path'))
+    filename = data.get('path')
+    if filename is None:
+      path = default_path
+    elif filename == ':memory:':
+      path = Path(':memory:')
+    else:
+      path = (directory / filename).absolute()
+    return SqliteDatabaseConfig(path = path)
+  elif backend == 'postgresql-unix':
+    _validate_database_fields(
+      data,
+      (
+        'backend',
+        'socket_directory',
+        'port',
+        'name',
+        'username',
+      )
+    )
+    for key in ('socket_directory', 'name', 'username'):
+      if key not in data:
+        raise ConfigError(f"database.{key} is required for postgresql-unix")
+    socket_directory = Path(data['socket_directory'])
+    if not socket_directory.is_absolute():
+      raise ConfigError('database.socket_directory must be an absolute path')
+    return PostgresqlUnixDatabaseConfig(
+      socket_directory = socket_directory,
+      port = data.get('port', 5432),
+      name = data['name'],
+      username = data['username']
+    )
+  else:
+    _validate_database_fields(
+      data,
+      (
+        'backend',
+        'host',
+        'port',
+        'name',
+        'username',
+        'require_tls',
+      )
+    )
+    for key in ('host', 'name', 'username'):
+      if key not in data:
+        raise ConfigError(f"database.{key} is required for postgresql-tcp")
+    if '/' in data['host']:
+      raise ConfigError('database.host must be a TCP host name or IP address')
+    return PostgresqlTcpDatabaseConfig(
+      host = data['host'],
+      port = data.get('port', 5432),
+      name = data['name'],
+      username = data['username'],
+      require_tls = data.get('require_tls', True)
+    )

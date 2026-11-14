@@ -10,6 +10,7 @@ objects, so nothing lazy-loads outside a session and the rest of the service
 doesn't depend on SQLAlchemy.
 '''
 
+import ssl
 import uuid
 
 from dataclasses import dataclass, field
@@ -18,8 +19,8 @@ from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from sqlalchemy import delete, event, func, select
-from sqlalchemy.engine import Connection, make_url
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.engine import Connection, URL
+from sqlalchemy.exc import ArgumentError, IntegrityError, InvalidRequestError
 from sqlalchemy.ext.asyncio import (
   AsyncEngine,
   AsyncSession,
@@ -36,6 +37,12 @@ from edgacknowledg.forge import (
   PullRequestInfo,
   PullRequestState,
 )
+from edgacknowledg.forge.config import (
+  DatabaseConfig,
+  PostgresqlTcpDatabaseConfig,
+  PostgresqlUnixDatabaseConfig,
+  SqliteDatabaseConfig,
+)
 from edgacknowledg.forge.db.models import (
   Announcement,
   CIRun,
@@ -44,6 +51,10 @@ from edgacknowledg.forge.db.models import (
 )
 
 _MIGRATIONS_DIR = Path(__file__).parent / 'migrations'
+
+
+class DatabaseConfigError(Exception):
+  '''An invalid connection configuration, reported without its values.'''
 
 
 @dataclass(frozen = True)
@@ -184,6 +195,75 @@ def _run_migrations(connection: Connection) -> None:
   command.upgrade(config, 'head')
 
 
+def _configure_sqlite(dbapi_connection: Any, _record: Any) -> None:
+  cursor = dbapi_connection.cursor()
+  cursor.execute('PRAGMA foreign_keys = ON')
+  cursor.execute('PRAGMA journal_mode = WAL')
+  cursor.execute('PRAGMA busy_timeout = 10000')
+  cursor.close()
+
+
+def _sqlite_engine(config: SqliteDatabaseConfig,
+                   password: Optional[str]) -> AsyncEngine:
+  if password is not None:
+    raise DatabaseConfigError('sqlite accepts no database-password credential')
+  url = URL.create('sqlite+aiosqlite', database = str(config.path))
+  options: dict[str, Any] = {}
+  if url.database == ':memory:':
+    # An in-memory database exists per connection; share one.
+    options['poolclass'] = StaticPool
+  engine = create_async_engine(url, **options)
+  event.listen(engine.sync_engine, 'connect', _configure_sqlite)
+  return engine
+
+
+def _postgresql_engine(
+         config: PostgresqlUnixDatabaseConfig | PostgresqlTcpDatabaseConfig, *,
+         host: str,
+         password: Optional[str],
+         tls: ssl.SSLContext | bool) -> AsyncEngine:
+  url = URL.create(
+    'postgresql+asyncpg',
+    host = host,
+    port = config.port,
+    database = config.name,
+    username = config.username,
+    password = password
+  )
+  return create_async_engine(url, connect_args = {'ssl': tls})
+
+
+def create_database_engine(config: DatabaseConfig, *,
+                           password: Optional[str] = None) -> AsyncEngine:
+  '''Build an engine using typed settings and separate credentials.'''
+  try:
+    match config:
+      case SqliteDatabaseConfig():
+        engine = _sqlite_engine(config, password)
+      case PostgresqlUnixDatabaseConfig():
+        engine = _postgresql_engine(
+          config,
+          host = str(config.socket_directory),
+          password = password,
+          tls = False
+        )
+      case PostgresqlTcpDatabaseConfig():
+        engine = _postgresql_engine(
+          config,
+          host = config.host,
+          password = password,
+          tls = ssl.create_default_context() if config.require_tls else False
+        )
+      case _:
+        raise DatabaseConfigError('unsupported database backend')
+  except (ArgumentError, InvalidRequestError, ValueError, ImportError):
+    # SQLAlchemy errors may quote connection details or credentials.
+    raise DatabaseConfigError(
+      'database connection settings are invalid or unsupported'
+    ) from None
+  return engine
+
+
 class ForgeStore:
   '''Async access to the acknowledg-forge database.'''
 
@@ -192,25 +272,10 @@ class ForgeStore:
     self._sessions = async_sessionmaker(engine, expire_on_commit = False)
 
   @classmethod
-  async def open(cls, url: str) -> 'ForgeStore':
-    '''Connect to ``url`` and bring its schema up to date.'''
-    parsed_url = make_url(url)
-    is_sqlite = parsed_url.get_backend_name() == 'sqlite'
-    engine_kwargs: dict[str, Any] = {}
-    if is_sqlite and parsed_url.database in (None, '', ':memory:'):
-      # An in-memory database exists per connection; share one.
-      engine_kwargs['poolclass'] = StaticPool
-    engine = create_async_engine(url, **engine_kwargs)
-
-    if is_sqlite:
-      def configure_sqlite(dbapi_connection: Any, _record: Any) -> None:
-        cursor = dbapi_connection.cursor()
-        cursor.execute('PRAGMA foreign_keys = ON')
-        cursor.execute('PRAGMA journal_mode = WAL')
-        cursor.execute('PRAGMA busy_timeout = 10000')
-        cursor.close()
-
-      event.listen(engine.sync_engine, 'connect', configure_sqlite)
+  async def open(cls, config: DatabaseConfig, *,
+                 password: Optional[str] = None) -> 'ForgeStore':
+    '''Connect using typed settings and a separately supplied password.'''
+    engine = create_database_engine(config, password = password)
 
     async with engine.begin() as connection:
       await connection.run_sync(_run_migrations)

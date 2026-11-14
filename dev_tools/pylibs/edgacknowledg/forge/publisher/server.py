@@ -28,7 +28,6 @@ import argparse
 import asyncio
 import json
 import logging
-import os
 import sys
 import uuid
 
@@ -40,7 +39,11 @@ from quart import Blueprint, websocket
 
 from edgacknowledg import PROTOCOL_REVISION, IncompatibleProtocolVersion
 from edgacknowledg.forge import serving
-from edgacknowledg.forge.config import ENV_PREFIX, ConfigError
+from edgacknowledg.forge.config import (
+  ConfigError,
+  ForgeServiceConfig,
+  check_service_url,
+)
 from edgacknowledg.forge.publisher.acknowledg import (
   Delist,
   Prune,
@@ -213,6 +216,9 @@ def main() -> None:
   parser = argparse.ArgumentParser(
     description = 'Publish for the service, over its connections.'
   )
+  # The deployment's wiring, which compose.yaml sets: never the shared
+  # settings, which could otherwise widen the listener to the tools
+  # runner's network.
   parser.add_argument(
     '--host',
     default = '127.0.0.1',
@@ -221,34 +227,27 @@ def main() -> None:
   )
   parser.add_argument('--port', type = int, required = True)
   parser.add_argument(
-    '--processes',
-    type = int,
-    default = DEFAULT_PROCESSES,
-    help = 'pool processes answering reviewers (default: %(default)s)'
-  )
-  parser.add_argument(
-    '--request-timeout',
-    type = float,
-    default = DEFAULT_REQUEST_TIMEOUT_S,
-    help = 'seconds a pool process may take to answer a request, before '
-           'it is replaced (default: %(default)s)'
+    '--tools-service-url', metavar = 'URL', required = True,
+    help = 'the tools runner server (ws://)'
   )
   args = parser.parse_args()
   logging.basicConfig(
     level = logging.INFO,
     format = '%(levelname)s %(name)s: %(message)s'
   )
-  tools_service_url = os.environ.get(
-    f"{ENV_PREFIX}TOOLS_SERVICE_URL", ''
-  ).strip()
-  if not tools_service_url.startswith('ws://'):
-    print(f"configuration error: {ENV_PREFIX}TOOLS_SERVICE_URL must be a "
-          f"ws:// URL", file = sys.stderr)
+  try:
+    config = ForgeServiceConfig.from_file()
+    tools_service_url = check_service_url(
+      args.tools_service_url,
+      '--tools-service-url'
+    )
+  except ConfigError as ex:
+    print(f"configuration error: {ex}", file = sys.stderr)
     sys.exit(2)
   publisher = create_publisher(
     tools_service_url = tools_service_url,
-    processes = args.processes,
-    request_timeout = args.request_timeout
+    processes = config.publisher_processes,
+    request_timeout = config.publisher_request_timeout
   )
   try:
     asyncio.run(serving.serve(

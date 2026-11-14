@@ -30,6 +30,8 @@ import pytest
 
 from edgacknowledg.forge.sandbox import TMPFS_SIZE
 
+from conftest import write_settings
+
 IMAGE = os.environ.get('ACKNOWLEDG_FORGE_TEST_IMAGE')
 COMPOSE_FILE = Path(__file__).resolve().parent.parent / 'compose.yaml'
 PYTHON = '/edg/acknowledg-forge/github/bin/python'
@@ -106,8 +108,11 @@ def deployment(tmp_path_factory: pytest.TempPathFactory
   credentials = root / 'credentials'
   credentials.mkdir()
   (credentials / 'forge-token').write_text('forge-token-value\n')
-  settings = root / 'settings.env'
-  settings.write_text('ACKNOWLEDG_FORGE_REPOSITORIES=edg/compiler\n')
+  settings = root / 'settings.toml'
+  write_settings(settings, {
+    'home': STATE, 'tools_dir': '/edg/tools',
+    'repositories': ['edg/compiler'], 'max_rt_entries': 12,
+  })
   deployment.env_file.write_text(
     f"IMAGE={IMAGE}\n"
     f"FORGE=github\n"
@@ -127,6 +132,22 @@ def deployment(tmp_path_factory: pytest.TempPathFactory
     logs = deployment.compose('logs', check = False).stdout
     deployment.compose('down', '--volumes', '--timeout', '5', check = False)
     print(logs[-20000:])
+
+
+@pytest.mark.parametrize('container', CONTAINERS)
+def test_settings_are_shared_read_only(deployment: Deployment,
+                                       container: str) -> None:
+  result = deployment.python(
+    container, (
+      'import os; from pathlib import Path; '
+      'from edgacknowledg.forge.config import ForgeServiceConfig; '
+      'assert ForgeServiceConfig.from_file().max_rt_entries == 12; '
+      'Path(os.environ["ACKNOWLEDG_FORGE_SETTINGS_FILE"])'
+      '.write_text("changed")'
+    )
+  )
+  assert result.returncode != 0, result
+  assert 'Read-only file system' in result.stderr, result
 
 
 # What each container is
@@ -211,8 +232,8 @@ def test_networks_pair_containers(deployment: Deployment) -> None:
 
 def test_webhooks_bound_to_the_frontend_reach_only_the_host(
     deployment: Deployment) -> None:
-  # As the service does with ACKNOWLEDG_FORGE_SERVICE_BIND=
-  # service-frontend:2728 (a stand-in server; the service isn't running).
+  # As the service does with --service-bind=service-frontend:2728 (a
+  # stand-in server; the service isn't running).
   deployment.compose(
     'exec', '--detach', 'service', PYTHON, '-m', 'http.server',
     '--bind', 'service-frontend', '--directory', '/tmp', '2728'
