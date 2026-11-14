@@ -55,17 +55,13 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     const auto **fail2(p); // expected-error {{variable 'fail2' with type 'const auto **' has incompatible initializer of type 'int **'}}
           ^
 
-"Test_name.c", line 60: warning: a value of type "int **" cannot be used to initialize an entity of type "const int **"
+"Test_name.c", line 60: error: a value of type "int **" cannot be used to initialize an entity of type "const int **"
     const auto **fail2(p); // expected-error {{variable 'fail2' with type 'const auto **' has incompatible initializer of type 'int **'}}
                        ^
 
 "Test_name.c", line 60: warning: variable "p" is used before its value is set
     const auto **fail2(p); // expected-error {{variable 'fail2' with type 'const auto **' has incompatible initializer of type 'int **'}}
                        ^
-
-"Test_name.c", line 60: warning: variable "fail2" was declared but never referenced
-    const auto **fail2(p); // expected-error {{variable 'fail2' with type 'const auto **' has incompatible initializer of type 'int **'}}
-                 ^
 
 "Test_name.c", line 70: warning: "auto" as a type specifier is nonstandard in this mode
       auto p1 = &S::f;
@@ -123,4 +119,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       int (*funcptr2)(int) = funcptr;
             ^
 
-4 errors detected in the compilation of "Test_name.c".
+5 errors detected in the compilation of "Test_name.c".
