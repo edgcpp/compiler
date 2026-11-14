@@ -10782,6 +10782,12 @@ typedef struct a_type {
 		has_variably_modified_type:1;
 			/* The type referred to is a variably modified type,
 			   i.e., is or contains a VLA type. */
+      a_bit_field
+		typeof_operand_pending:1;
+			/* The typeof operand (in C) has a variably modified
+			   type, so it must be evaluated where this type is
+			   used in an expression (e.g., in a cast).  Set to
+			   FALSE once that evaluation has been emitted. */
 #if LOWER_VARIABLE_LENGTH_ARRAYS
       a_bit_field
 		is_lowered_variably_modified_type:1;

@@ -67,6 +67,10 @@ static void scan_compound_literal(a_type_ptr               *p_literal_type,
                                   an_init_component_ptr    rescan_icp,
                                   an_operand               *result,
                                   a_local_expr_options_set local_options);
+#if DO_IL_LOWERING
+static void evaluate_pending_typeof_operands(a_type_ptr  tp,
+                                             an_operand  *result);
+#endif /* DO_IL_LOWERING */
 static void scan_expr_full(an_operand              *result,
                            an_operand              *bound_function_selector,
                            int                      prec_level,
@@ -4956,6 +4960,9 @@ been scanned: builtin_func represents the reference to the builtin function
   an_expr_node_ptr  node;
   a_type_ptr        type, type_to_cast_to = NULL;
   a_boolean         err = FALSE;
+#if DO_IL_LOWERING
+  a_type_ptr        scanned_type;
+#endif /* DO_IL_LOWERING */
 
   db_enter(4, "scan_va_arg_operator");
   /* va_arg not possible in preprocessing expressions. */
@@ -4994,6 +5001,9 @@ been scanned: builtin_func represents the reference to the builtin function
   /* Scan the type. */
   type_position = pos_curr_token;
   type_name(&type);
+#if DO_IL_LOWERING
+  scanned_type = type;
+#endif /* DO_IL_LOWERING */
   if (is_function_type(type) ||
       is_array_type(type) ||
       is_any_reference_type(type)) {
@@ -5042,6 +5052,9 @@ been scanned: builtin_func represents the reference to the builtin function
     }  /* if */
     make_expression_operand(va_arg_node, result);
   }  /* if */
+#if DO_IL_LOWERING
+  evaluate_pending_typeof_operands(scanned_type, result);
+#endif /* DO_IL_LOWERING */
   rule_out_expr_kinds(ROEK_CONSTANT, result);
   if (builtin_func == NULL) {
 #if EXTRA_SOURCE_POSITIONS_IN_IL
@@ -15341,6 +15354,11 @@ scanned sizeof or __datasizeof expression, and return the result in *result
                              &operand, result);
       operand_was_used = !is_type;
       nonconstant_case = TRUE;
+#if DO_IL_LOWERING
+      if (is_type) {
+        evaluate_pending_typeof_operands(orig_sizeof_type, result);
+      }  /* if */
+#endif /* DO_IL_LOWERING */
     }  /* if */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   } else if (cppcli_enabled && !template_case &&
@@ -19188,6 +19206,76 @@ called from outside of the expression-processing routines.
 }  /* scan_type_returning_type_trait_operator */
 
 
+#if DO_IL_LOWERING
+static an_expr_node_ptr take_typeof_operands(a_type_ptr  tp)
+/*
+tp is a variably modified type used in an expression (e.g., as the type of a
+cast).  Return the operands of any C typeof operators in tp whose evaluation
+is still pending (see typeof_operand_pending), combined with comma operators,
+or NULL if there are none, and mark them as no longer pending.  A typedef in
+tp stops the search: a use of a typedef does not repeat the evaluation of the
+typeof operands in its definition.
+*/
+{
+  an_expr_node_ptr  inits = NULL;
+
+  while (is_variably_modified_type(tp)) {
+    if (tp->kind == (a_type_kind)tk_typeref) {
+      if (typeref_is_typedef(tp)) break;
+      if (tp->variant.typeref.typeof_operand_pending) {
+        an_expr_node_ptr  expr = decltype_arg(tp);
+        check_assertion(expr != NULL);
+        tp->variant.typeref.typeof_operand_pending = FALSE;
+        if (expr->is_lvalue) expr = add_address_of_to_node(expr);
+        inits = inits == NULL ? expr : make_comma_node(inits, expr);
+      }  /* if */
+      tp = tp->variant.typeref.type;
+    } else if (tp->kind == (a_type_kind)tk_pointer) {
+      tp = tp->variant.pointer.type;
+    } else if (tp->kind == (a_type_kind)tk_array) {
+      tp = tp->variant.array.element_type;
+    } else if (tp->kind == (a_type_kind)tk_routine) {
+      tp = tp->variant.routine.return_type;
+    } else {
+      break;
+    }  /* if */
+  }  /* while */
+  return inits;
+}  /* take_typeof_operands */
+
+
+static void evaluate_pending_typeof_operands(a_type_ptr  tp,
+                                             an_operand  *result)
+/*
+tp is a type used by an expression whose value is described by *result:
+The type of a cast, a compound literal, a __builtin_va_arg, or a sizeof
+whose operand has a variable-length array type.  If tp contains C typeof
+operators whose operands are still to be evaluated (see
+typeof_operand_pending), change *result so that those operands are evaluated
+first.  An lvalue result remains an lvalue.
+*/
+{
+  if (C_mode() && !is_error_operand(result) &&
+      is_variably_modified_type(tp)) {
+    an_expr_node_ptr  type_inits = take_typeof_operands(tp);
+    if (type_inits != NULL) {
+      an_expr_node_ptr  node = make_node_from_operand(result);
+      if (node->is_lvalue) {
+        /* Use "*(inits, &result)" to keep the lvalue. */
+        node = add_indirection_to_node(
+                  make_comma_node(type_inits, add_address_of_to_node(node)));
+        make_glvalue_expression_operand(node, result);
+      } else {
+        make_expression_operand(make_comma_node(type_inits, node), result);
+      }  /* if */
+      /* Preserve the execution point before conditional folding. */
+      rule_out_expr_kinds(ROEK_INTEGRAL_CONSTANT, result);
+    }  /* if */
+  }  /* if */
+}  /* evaluate_pending_typeof_operands */
+#endif /* DO_IL_LOWERING */
+
+
 a_type_ptr scan_typeof_operator(a_rescan_control_block      *rcblock,
                                 ARG_UNUSED a_decl_pos_block *decl_pos_block)
 /*
@@ -19234,6 +19322,10 @@ the expression-processing routines.
   an_expr_node_ptr            saved_decltype_rescan_operand = NULL;
   a_boolean                   is_unqual_variant =
                                                curr_token == tok_typeof_unqual;
+#if DO_IL_LOWERING
+  unsigned long               saved_error_count =
+                                           diagnostic_counters.total.errors;
+#endif /* DO_IL_LOWERING */
 
   parens_optional = gpp_mode && gnu_version >= 30400;
   /* Note that, unlike e.g. sizeof, typeof can appear directly in a declarative
@@ -19423,6 +19515,45 @@ the expression-processing routines.
         prep_generic_operand(&operand);
       }  /* if */
       expr = make_node_from_operand(&operand);
+#if DO_IL_LOWERING
+      if (C_mode() && vla_enabled && rcblock == NULL &&
+          is_variably_modified_type(result) &&
+          diagnostic_counters.total.errors == saved_error_count &&
+          node_has_side_effects(expr, (a_boolean *)NULL) &&
+          !type_has_side_effects(result)) {
+        /* The operand has a variably modified type, so it is evaluated
+           (C23 6.7.3.6).  As for sizeof, the expression scanned above (as
+           an unevaluated operand) is kept and evaluated at run time.  This
+           is needed only when the IL is lowered: a back end that generates
+           source (e.g., the C++-generating back end) reproduces the typeof
+           itself, and the compiler of that source evaluates its operand.
+           The dimension expressions of the resulting type are evaluated
+           wherever that type is used, so the operand is evaluated only if
+           it has side effects of its own and those dimensions have none
+           (e.g., "typeof(++n, (int (*)[n])p)"); otherwise the evaluation
+           of a dimension expression would be repeated. */
+        if (saved_expr_stack != NULL) {
+          /* Expression contexts defer evaluation to VLA lowering. */
+          typeof_type->variant.typeref.typeof_operand_pending = TRUE;
+        } else if (depth_stmt_stack >= 0 &&
+                   !scope_is(&scope_stack_top(), sck_func_prototype)) {
+          /* A declaration in a block evaluates the type specifier once,
+             before any declarator bounds or initializers, even if the
+             declaration has several declarators. */
+          a_statement_ptr  stmt = add_statement_at_stmt_pos(
+                                    stmk_expr,
+                                    &operand.position,
+                                    /*compiler_generated=*/TRUE);
+          stmt->expr = expr;
+          set_expr_result_not_used(expr);
+        } else {
+          /* A parameter declaration (or a declaration outside of any
+             function, which is an error for a variably modified type).
+             No statement can be added here, so the operand is not
+             evaluated. */
+        }  /* if */
+      }  /* if */
+#endif /* DO_IL_LOWERING */
       if (!dependent_arg) {
         /* Check for cases where the result type is not dependent but the
            expression is instantiation-dependent. */
@@ -30328,6 +30459,9 @@ indication in *rcblock).  rescan_icp is not freed.
        expression (C99 says the lifetime extends to the end of the block). */
     dip->has_temporary_lifetime = FALSE;
     make_glvalue_expression_operand(expr, result);
+#if DO_IL_LOWERING
+    evaluate_pending_typeof_operands(literal_type, result);
+#endif /* DO_IL_LOWERING */
   }  /* if */
   record_cast_position_in_rescan_info(result,
                                       (an_expr_node_ptr)NULL,
@@ -30514,6 +30648,9 @@ just an expression in parentheses.  Return the scanned expression in
                                               &type_position,
                                               type_cast_to);
         }  /* if */
+#if DO_IL_LOWERING
+        if (!err) evaluate_pending_typeof_operands(type_cast_to, result);
+#endif /* DO_IL_LOWERING */
       }  /* if */
       set_operand_position(result, &start_position, &end_position,
                            &start_position);
