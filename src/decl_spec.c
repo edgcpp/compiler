@@ -7207,6 +7207,7 @@ template.  dsi_flags is the set of input flags passed to decl_specifiers.
     } else if (is_definition) {
       /* An unnamed enum type.  mark_defined can't be called to record the
          declaration, so the subroutines that do so are called directly. */
+      set_decl_sequence_number(tag_sym);
 #if MAINTAIN_CLASS_MEMBER_LIST
       record_class_member_declaration((char*)enum_type, iek_type);
 #endif /* MAINTAIN_CLASS_MEMBER_LIST */

@@ -269,12 +269,6 @@ STATIC_THREAD a_symbol_ptr
 		error_class_template_symbol;
 			/* Pointer to a shared error class template entry. */
 
-STATIC_THREAD a_symbol_ptr
-		unnamed_field_symbol;
-			/* Pointer to "the" unnamed field symbol, which exists
-			   only for the sake of identifying a given field entry
-			   as representing an unnamed field. */
-
 STATIC_THREAD sizeof_t
 		size_of_trans_unit_for_scope;
 			/* Allocated size of the trans_unit_for_scope table. */
@@ -8318,23 +8312,33 @@ Return TRUE if sym represents an unnamed namespace.
 }  /* is_unnamed_namespace_symbol */
 
 
-a_symbol_ptr get_unnamed_field_symbol(void)
+a_symbol_ptr make_unnamed_field_symbol(a_source_position  *pos)
 /*
-Return a pointer to "the" unnamed field symbol, which exists only for the
-sake of identifying a given field entry as representing an unnamed field.
+Create a symbol for an unnamed bit-field.  Do not enter it into the symbol
+table.
 */
 {
+  a_symbol_ptr  sym;
+
   if (unnamed_field_symbol_header == NULL) {
     unnamed_field_symbol_header = alloc_symbol_header();
     set_identifier_for_symbol_header(unnamed_field_symbol_header,
                                      "<unnamed>", 9,
                                      /*is_unnamed=*/TRUE);
-    unnamed_field_symbol = alloc_symbol((a_symbol_kind)sk_field,
-                                        unnamed_field_symbol_header,
-                                        &null_source_position);
   }  /* if */
-  return unnamed_field_symbol;
-}  /* get_unnamed_field_symbol */
+  sym = alloc_symbol(sk_field, unnamed_field_symbol_header, pos);
+  set_decl_sequence_number(sym);
+  return sym;
+}  /* make_unnamed_field_symbol */
+
+
+a_boolean is_unnamed_field_symbol(a_symbol_ptr  sym)
+/*
+Return TRUE if sym represents an unnamed bit-field.
+*/
+{
+  return (sym->header == unnamed_field_symbol_header);
+}  /* is_unnamed_field_symbol */
 
 
 a_symbol_ptr make_unnamed_namespace_symbol(a_source_position  *pos)
@@ -8384,6 +8388,7 @@ into the symbol table.  Each unnamed symbol is given a unique symbol header.
 
   sym = alloc_symbol(kind, make_unnamed_symbol_header(), pos);
   sym->decl_scope = scope_stack[decl_scope_level].number;
+  set_decl_sequence_number(sym);
   return sym;
 }  /* make_unnamed_symbol */
 
@@ -8475,6 +8480,7 @@ parent object" for an anonymous union.  Do not enter it in the symbol table.
   }  /* if */
   sym = alloc_symbol(kind, anonymous_parent_object_symbol_header, pos);
   sym->decl_scope = decl_scope;
+  set_decl_sequence_number(sym);
   db_exit();
   return sym;
 }  /* make_anonymous_parent_object_symbol */
@@ -8693,17 +8699,16 @@ for other entities as long as the namespace is never declared).
   clear_locator(&loc, &null_source_position);
   (void)find_symbol(name, (sizeof_t)strlen(name), &loc);
   /* Allocate the symbol. */
-  *sym = alloc_symbol((a_symbol_kind)sk_namespace, loc.symbol_header,
+  *sym = alloc_symbol(sk_namespace, loc.symbol_header,
                       &null_source_position);
   (*sym)->decl_scope = file_scope_number;
-  if (parent != NULL) {
-    (*sym)->parent.namespace_ptr = parent;
-  }  /* if */
   /* Create the namespace entry and bind it to the symbol. */
   nsp = alloc_namespace(/*is_alias=*/FALSE);
   set_source_corresp(&nsp->source_corresp, *sym);
-  nsp->source_corresp.name_linkage =
-                                  (a_name_linkage_kind)nlk_cplusplus_external;
+  if (parent != NULL) {
+    set_namespace_membership(*sym, &nsp->source_corresp, parent);
+  }  /* if */
+  nsp->source_corresp.name_linkage = nlk_cplusplus_external;
   (*sym)->variant.namespace_info.ptr = nsp;
   /* Add the namespace to the namespaces list for the file scope. */
   add_to_namespaces_list(nsp);
@@ -20125,7 +20130,6 @@ are handled in symbol_tbl_init.)
       pch_saved_var_array_elem(unnamed_namespace_symbol_header),
       pch_saved_var_array_elem(anonymous_parent_object_symbol_header),
       pch_saved_var_array_elem(unnamed_field_symbol_header),
-      pch_saved_var_array_elem(unnamed_field_symbol),
       pch_saved_var_array_elem(global_namespace_list_entry),
       pch_saved_var_array_elem(symbol_for_namespace_std),
       pch_saved_var_array_elem(symbol_for_namespace_std_entered),
@@ -20384,7 +20388,6 @@ of the front end.
   unnamed_namespace_symbol_header = NULL;
   anonymous_parent_object_symbol_header = NULL;
   unnamed_field_symbol_header = NULL;
-  unnamed_field_symbol = NULL;
   size_t_type = NULL;
   ptr_to_const_char_type = NULL;
   dummy_undefined_symbol = NULL;

@@ -8607,6 +8607,12 @@ IA-64 ABI to distinguish function-local entities with the same name.
         goto done;
       }  /* if */
     } else if (sym->kind == (a_symbol_kind)sk_variable) {
+      if (sym->variant.variable.ptr->is_anonymous_parent_object) {
+        /* The symbol of an anonymous union variable is not entered in the
+           symbol table (see decl_anonymous_union_variable), so no
+           discriminator is computed for it. */
+        goto done;
+      }  /* if */
       discriminator = sym->variant.variable.discriminator;
     } else if (is_class_struct_union_symbol(sym) &&
                sym->variant.class_struct_union.extra_info != NULL) {

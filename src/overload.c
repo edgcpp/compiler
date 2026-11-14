@@ -12343,6 +12343,7 @@ compiler_generated is TRUE if the function reference is compiler-generated.
   a_ref_entry_ptr   rep;
   a_boolean         eff_address_taken = address_taken;
   a_boolean         is_qualified_name = FALSE;
+  a_boolean         designated_by_splice = FALSE;
   a_boolean         has_required_ptr_to_member_form = FALSE;
   a_boolean         allow_addr_of_managed_member = FALSE;
   a_source_position *ampersand_position = NULL;
@@ -12351,8 +12352,7 @@ compiler_generated is TRUE if the function reference is compiler-generated.
   a_source_position *id_position;
 
 #if CHECKING
-  if (base_function_symbol->kind != (a_symbol_kind)sk_routine &&
-      base_function_symbol->kind != (a_symbol_kind)sk_member_function) {
+  if (!is_simple_function_symbol(base_function_symbol)) {
     internal_error("overloaded_function_catch_up: bad function_symbol");
   }  /* if */
 #endif /* CHECKING */
@@ -12360,6 +12360,7 @@ compiler_generated is TRUE if the function reference is compiler-generated.
   if (orig_function_operand != NULL) {
     check_assertion(orig_function_operand != operand);
     is_qualified_name = orig_function_operand->is_qualified_name;
+    designated_by_splice = orig_function_operand->designated_by_splice;
     if (orig_function_operand->is_operand_of_address_of) {
       ampersand_position = &orig_function_operand->ampersand_position;
       has_required_ptr_to_member_form =
@@ -12386,10 +12387,8 @@ compiler_generated is TRUE if the function reference is compiler-generated.
      is not evaluated. */
   if (!curr_expr_is_potentially_evaluated()) eff_address_taken = FALSE;
   /* Check ambiguity and access. */
-  if (base_overloaded_function_symbol->kind ==
-                                       (a_symbol_kind)sk_overloaded_function ||
-      base_overloaded_function_symbol->kind ==
-                                       (a_symbol_kind)sk_function_template) {
+  if (symbol_is(base_overloaded_function_symbol, sk_overloaded_function) ||
+      symbol_is(base_overloaded_function_symbol, sk_function_template)) {
     /* Use a special routine for overloaded functions because (a) overloaded
        functions are considered always accessible when checked through the
        normal routine and (b) the projection symbol here may point to the
@@ -12397,6 +12396,7 @@ compiler_generated is TRUE if the function reference is compiler-generated.
        symbol.  Templates are also treated like overloaded functions. */
     make_locator_for_symbol(function_symbol, &function_symbol_locator);
     function_symbol_locator.source_position = *id_position;
+    function_symbol_locator.is_splicer = designated_by_splice;
     expr_overload_check_ambiguity_and_verify_access(&function_symbol_locator,
                                                    overloaded_function_symbol);
   } else {
@@ -12413,6 +12413,7 @@ compiler_generated is TRUE if the function reference is compiler-generated.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     make_locator_for_symbol(sym_to_check, &function_symbol_locator);
     function_symbol_locator.source_position = *id_position;
+    function_symbol_locator.is_splicer = designated_by_splice;
     if (compiler_generated || operator_notation ||
         expr_stack->suppress_diagnostics) {
       /* For ordinary call notation, access was checked when the name was
@@ -12489,7 +12490,8 @@ compiler_generated is TRUE if the function reference is compiler-generated.
                                               overloaded_function_symbol,
                                               function_position,
                                               function_end_position,
-                                              !*access_error_reported,
+                                              !*access_error_reported &&
+                                                !designated_by_splice,
                                               is_qualified_name,
                                               has_required_ptr_to_member_form,
                                               allow_addr_of_managed_member,
@@ -12504,6 +12506,7 @@ compiler_generated is TRUE if the function reference is compiler-generated.
                                            function_position,
                                            function_end_position,
                                            rep, operand);
+          operand->designated_by_splice = designated_by_splice;
 #if MICROSOFT_EXTENSIONS_ALLOWED
           operand->allow_addr_of_managed_member = allow_addr_of_managed_member;
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -13883,7 +13886,9 @@ selector is an object pointer, FALSE if it is an object.
                                          overloaded_function_symbol,
                                          access_error_reported,
                                          /*do_protected_member_check=*/
-                                                                  !is_property,
+                                           !is_property &&
+                                           !function_operand
+                                                        ->designated_by_splice,
                                          &selector_position);
       }  /* if */
     }  /* if */

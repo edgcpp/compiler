@@ -10882,6 +10882,7 @@ handle_vacuous_destructor_call:
   {
     locator->source_position = eriep->saved_operand.position;
   }  /* if */
+  locator->is_splicer = eriep->saved_operand.designated_by_splice;
   /* For a qualified id case, make sure the id is a member of the class
      or one of its base classes. */
   if (need_member_sym_check && !*err && is_qualified) {
@@ -11594,7 +11595,8 @@ make_proxy_type_if_needed:
                        operand_1, is_arrow_operator, member_sym,
                        projection_member_sym,
                        (a_boolean)locator.access_control_error_reported,
-                       /*do_protected_member_check=*/TRUE, &member_position);
+                       /*do_protected_member_check=*/!locator.is_splicer,
+                       &member_position);
           do_field_selection_operation(operand_1, orig_class_struct_union_type,
                                        is_arrow_operator,
                                        /*compiler_generated=*/FALSE,
@@ -11670,7 +11672,7 @@ nonstatic_member_function:
               error_and_make_error_operand(ec_expr_not_constant, result);
             } else {
               if (!force_indefinite_function &&
-                  member_sym->kind == (a_symbol_kind)sk_member_function) {
+                  symbol_is(member_sym, sk_member_function)) {
                 /* For a simple non-overloaded function, adjust the selector
                    to the proper class.  We don't do this for the
                    cases that go through overload resolution, since that
@@ -11680,15 +11682,16 @@ nonstatic_member_function:
                                                  is_arrow_operator,
                                                  member_sym,
                                                  projection_member_sym,
-                                                 (a_boolean)locator.
-                                                 access_control_error_reported,
-                                            /*do_protected_member_check=*/TRUE,
+                                                 (a_boolean)locator
+                                                .access_control_error_reported,
+                                                 /*do_protected_member_check=*/
+                                                 !locator.is_splicer,
                                                  &member_position);
               }  /* if */
               /* Make an operand for the function with the selector bound
                  to it. */
-              if (member_sym->kind == (a_symbol_kind)sk_overloaded_function ||
-                  member_sym->kind == (a_symbol_kind)sk_function_template ||
+              if (symbol_is(member_sym, sk_overloaded_function) ||
+                  symbol_is(member_sym, sk_function_template) ||
                   force_indefinite_function) {
                 /* Overloaded function or member template. */
                 make_indefinite_function_operand(projection_member_sym,
@@ -11713,7 +11716,7 @@ nonstatic_member_function:
                                                                 &end_position),
                                                  rep,
                                                  result);
-                set_operand_name_reference_from_locator(result, &locator);
+                set_operand_id_details_from_locator(result, &locator);
               }  /* if */
               copy_operand(operand_1, bound_function_selector) /*lint !e413*/;
               bind_member_function_operand_to_selector(bound_function_selector,
@@ -11731,7 +11734,7 @@ nonstatic_member_function:
                                                                 &end_position),
                                              rep,
                                              result);
-            set_operand_name_reference_from_locator(result, &locator);
+            set_operand_id_details_from_locator(result, &locator);
 treat_as_static_member:
             result->is_name_followed_by_left_paren =
                                             member_name_followed_by_left_paren;
@@ -41955,6 +41958,7 @@ FIXME: This is currently incomplete.
                                     (a_ref_entry*)NULL,
                                     result);
         result->is_id_expression = TRUE;
+        result->designated_by_splice = TRUE;
       } else if (iek == iek_variable) {
         vp = (a_variable*)rvp->entity.ptr;
 variable_case:
@@ -41977,6 +41981,7 @@ routine_case:
                                       (a_ref_entry*)NULL,
                                       result);
           result->is_id_expression = TRUE;
+          result->designated_by_splice = TRUE;
         } else {
           make_function_designator_operand(symbol_for(rp),
                                            /*is_qualified_name=*/FALSE,
