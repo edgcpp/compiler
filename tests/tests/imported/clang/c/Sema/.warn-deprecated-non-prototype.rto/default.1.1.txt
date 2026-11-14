@@ -3,30 +3,6 @@ fe_only -DTEST_NUMBER=1 --clang -e 200 --no_wrap_diagnostics --clang_version 999
   void blapp() { } // both-error {{conflicting types for 'blapp'}} \
        ^
 
-"Test_name.c", line 68: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 69: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wdeprecated-non-prototype"
-              ^
-
-"Test_name.c", line 71: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
-
-"Test_name.c", line 75: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 76: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wstrict-prototypes"
-              ^
-
-"Test_name.c", line 78: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
-
 "Test_name.c", line 97: warning: variable "f" is used before its value is set
     f(); // OK
     ^
