@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=2 --c++17 --clang --clang_version=190100 Test_name.c
+"Test_name.c", line 11: error: thread-local variable cannot be dynamically initialized
+  template<class T> __thread T dv = f();
+                               ^
+          detected during instantiation of "T dv [with T=int]" at line 13
+
+"Test_name.c", line 12: error: thread-local variable cannot be dynamically initialized
+  template<class T> __thread T ddv;
+                               ^
+          detected during instantiation of "T ddv [with T=N]" at line 13
+
+"Test_name.c", line 17: error: expression must have a constant value
+  constexpr int *q = &av<int>;  // error
+                     ^
+"Test_name.c", line 17: note: a pointer or reference to variable "av<int>" (declared at line 16) cannot be used as a constant
+  constexpr int *q = &av<int>;  // error
+                     ^
+
+3 errors detected in the compilation of "Test_name.c".
