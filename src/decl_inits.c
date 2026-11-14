@@ -4704,12 +4704,27 @@ initializer, already copied and substituted.
   a_routine_ptr          dtor_rp = NULL;
   a_boolean              need_to_free_icp_tree = FALSE;
   a_boolean              saved_reduce_backing_expression_use;
+  an_expr_stack_entry    expr_stack_entry, *saved_expr_stack;
+  a_boolean              full_expression;
 
   check_assertion(rescan_aggr != NULL || curr_token == tok_lbrace ||
                   (dps != NULL &&
                    anything_cached(&dps->prescanned_initializer_cache)));
   saved_reduce_backing_expression_use = reduce_backing_expression_use;
   dtype = skip_typerefs(dtype);
+  is_var_init = dps != NULL && dps->sym != NULL &&
+                variable_for_symbol(dps->sym) != NULL;
+  /* In C++, the elements of a braced aggregate initializer are not separate
+     full-expressions: Temporaries created for them are destroyed when the
+     initialization of the whole aggregate is complete.  GCC versions before
+     12 and MSVC instead destroy them at the end of each element in the
+     initializer of a variable (but not in other contexts, such as
+     mem-initializers and new-expressions). */
+  full_expression = !C_mode() && is->elements_are_full_expressions &&
+                    is_aggregate_type(dtype) &&
+                    !(dps != NULL && dps->is_struct_binding_decl) &&
+                    !(is_var_init &&
+                      (gpp_version_is(<120000) || microsoft_mode));
   if (rescan_aggr != NULL) {
     /* Rescan.  The {...} is provided by the caller in init-component form. */
     icp_tree = rescan_aggr;
@@ -4728,8 +4743,12 @@ initializer, already copied and substituted.
   }  /* if */
   icp = icp_tree;
   check_assertion(icp != NULL && is_braced_init_component(icp));
-  is_var_init = dps != NULL && dps->sym != NULL &&
-                variable_for_symbol(dps->sym) != NULL;
+  if (full_expression) {
+    /* All elements share the lifetime of the complete initialization. */
+    push_expr_stack_for_initializer(&expr_stack_entry, &saved_expr_stack,
+                                    ek_normal,
+                                    /*is_full_expr=*/TRUE, dps, is);
+  }  /* if */
   /* The force_dynamic_init flag only applies to the top-level result. */
   is->force_dynamic_init = FALSE;
   if (is_template_dependent_context() && is_variadic_template_context() &&
@@ -4933,6 +4952,17 @@ initializer, already copied and substituted.
   }  /* if */
   is->no_diagnostics = saved_no_diagnostics;
   reduce_backing_expression_use = saved_reduce_backing_expression_use;
+  if (full_expression) {
+    if (is->init_dip != NULL) {
+      wrap_up_dynamic_init_full_expression(is->init_dip);
+    } else if (is->init_error) {
+      discard_curr_expr_object_lifetime();
+    } else if (is->init_con != NULL) {
+      wrap_up_constant_full_expression(is->init_con);
+    }  /* if */
+    pop_expr_stack_for_initializer(saved_expr_stack,
+                                   /*is_full_expr=*/TRUE, dps, is);
+  }  /* if */
 }  /* braced_initializer */
 
 

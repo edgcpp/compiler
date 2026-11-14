@@ -145,80 +145,6 @@ fe_only -DTEST_NUMBER=10 --clang -tused -e 200 --no_wrap_diagnostics --clang_ver
       check(t.x, "   T", 0);
            ^
 
-"test_passed.cpp", line 4301: error: static assertion failed with ""
-  static_assert(b.a.n == 4300, "");
-  ^
-"test_passed.cpp", line 4301: note: the final comparison was 4201 == 4300
-  static_assert(b.a.n == 4300, "");
-                      ^
-
-"test_passed.cpp", line 4302: error: static assertion failed with ""
-  static_assert(b.a.n2 == 4300, "");
-  ^
-"test_passed.cpp", line 4302: note: the final comparison was 4201 == 4300
-  static_assert(b.a.n2 == 4300, "");
-                       ^
-
-"test_passed.cpp", line 4303: error: static assertion failed with ""
-  static_assert(b.a.info.line() == 4300, "");
-  ^
-"test_passed.cpp", line 4303: note: the final comparison was 4201 == 4300
-  static_assert(b.a.info.line() == 4300, "");
-                                ^
-
-"test_passed.cpp", line 4304: error: static assertion failed
-  static_assert(is_equal(b.a.f, "test_passed.cpp"));
-  ^
-
-"test_passed.cpp", line 4305: error: static assertion failed
-  static_assert(is_equal(b.a.f2, "test_passed.cpp"));
-  ^
-
-"test_passed.cpp", line 4306: error: static assertion failed
-  static_assert(is_equal(b.a.info.file(), "test_passed.cpp"));
-  ^
-
-"test_func_passed.cpp", line 4401: error: static assertion failed with ""
-    static_assert(b.a.n == 4400, "");
-    ^
-"test_func_passed.cpp", line 4401: note: the final comparison was 4201 == 4400
-    static_assert(b.a.n == 4400, "");
-                        ^
-
-"test_func_passed.cpp", line 4402: error: static assertion failed with ""
-    static_assert(b.a.n2 == 4400, "");
-    ^
-"test_func_passed.cpp", line 4402: note: the final comparison was 4201 == 4400
-    static_assert(b.a.n2 == 4400, "");
-                         ^
-
-"test_func_passed.cpp", line 4403: error: static assertion failed with ""
-    static_assert(b.a.info.line() == 4400, "");
-    ^
-"test_func_passed.cpp", line 4403: note: the final comparison was 4201 == 4400
-    static_assert(b.a.info.line() == 4400, "");
-                                  ^
-
-"test_func_passed.cpp", line 4404: error: static assertion failed
-    static_assert(is_equal(b.a.f, "test_func_passed.cpp"));
-    ^
-
-"test_func_passed.cpp", line 4405: error: static assertion failed
-    static_assert(is_equal(b.a.f2, "test_func_passed.cpp"));
-    ^
-
-"test_func_passed.cpp", line 4406: error: static assertion failed
-    static_assert(is_equal(b.a.info.file(), "test_func_passed.cpp"));
-    ^
-
-"test_func_passed.cpp", line 4407: error: static assertion failed
-    static_assert(is_equal(b.a.func, "test_in_func"));
-    ^
-
-"test_func_passed.cpp", line 4408: error: static assertion failed
-    static_assert(is_equal(b.a.func2, "test_in_func"));
-    ^
-
 "test_func_passed.cpp", line 4409: error: static assertion failed
     static_assert(is_equal(b.a.info.function(), "bool test_out_of_line_init::test_in_func()"));
     ^
@@ -286,4 +212,4 @@ fe_only -DTEST_NUMBER=10 --clang -tused -e 200 --no_wrap_diagnostics --clang_ver
         ^
           detected during instantiation of "void test_func::inner::C<Ty>::df<T>(double) [with Ty=test_func::A, T=void]" at line 496
 
-47 errors detected in the compilation of "Test_name.c".
+33 errors detected in the compilation of "Test_name.c".
