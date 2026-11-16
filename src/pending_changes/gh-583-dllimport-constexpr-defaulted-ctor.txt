@@ -1,0 +1,16 @@
+[GH #583]
+Microsoft C++ compatibility: constexpr constructors in dllimport classes
+
+In Microsoft mode, default constructors of dllimport classes with virtual
+functions were incorrectly treated as non-constexpr.  Explicitly constexpr
+defaulted constructors were rejected, and implicitly declared constructors
+could not be used in constant expressions.  Both now satisfy the usual
+constexpr requirements.  For example:
+
+  struct __declspec(dllimport) X {
+    constexpr X() = default;  // Previously an error.  Now okay.
+    virtual ~X();
+  };
+
+GNU and Clang emulation modes likewise no longer treat dllimport as a reason
+to disqualify an implicitly declared default constructor from being constexpr.

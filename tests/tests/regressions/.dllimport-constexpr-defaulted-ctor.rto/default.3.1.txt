@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=3 --c++17 --clang --ms_extensions Test_name.c
+"Test_name.c", line 34: warning: base class dllexport/dllimport specification differs from that of the derived class
+  struct __declspec(dllimport) ImportedInheritedVirtualFunction : Base {
+                                                                  ^
+
+"Test_name.c", line 25: warning: variable "direct" was declared but never referenced
+  constexpr ImportedVirtualFunction direct{};
+                                    ^
+
+"Test_name.c", line 39: warning: variable "inherited" was declared but never referenced
+  constexpr ImportedInheritedVirtualFunction inherited{};
+                                             ^
+
