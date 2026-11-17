@@ -1,0 +1,18 @@
+[GH #507]
+Braced cast to an rvalue reference type that binds to a temporary
+
+A braced functional-notation cast to an rvalue reference type produced an
+lvalue instead of an xvalue when the reference was bound to a temporary,
+i.e., when the element is not reference-related to the referenced type.
+This includes conversion functions, standard conversions, an empty list,
+and a list for an array.  For example:
+
+  struct NE { operator int(); } ne;
+  using R = int&&;
+  using RA = int(&&)[2];
+  int &&a = R{ne};          // Error: an rvalue reference cannot be bound
+                            // to an lvalue.
+  int &&b = R{'a'};         // Same error.
+  int (&&c)[2] = RA{1, 2};  // Same error.
+
+The result of such a cast is now an xvalue.
