@@ -1,4 +1,52 @@
 fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++26 Test_name.c
+"Test_name.c", line 10: warning: omitting the comma before a variadic "..." is deprecated
+  void d(auto......); // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}} \
+                ^
+
+"Test_name.c", line 16: warning: omitting the comma before a variadic "..." is deprecated
+  void f(auto x...); // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+               ^
+
+"Test_name.c", line 19: warning: omitting the comma before a variadic "..." is deprecated
+  void h(auto... x...); // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}} \
+                  ^
+
+"Test_name.c", line 26: warning: omitting the comma before a variadic "..." is deprecated
+  void j(Ts... t...) {}; // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}} \
+                ^
+
+"Test_name.c", line 33: warning: omitting the comma before a variadic "..." is deprecated
+  void l(int...); // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+            ^
+
+"Test_name.c", line 36: warning: omitting the comma before a variadic "..." is deprecated
+  void n(int x...); // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+              ^
+
+"Test_name.c", line 40: warning: omitting the comma before a variadic "..." is deprecated
+    void p(this S...) {} // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+                 ^
+
+"Test_name.c", line 41: warning: omitting the comma before a variadic "..." is deprecated
+    void f(int = {}...); // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+                   ^
+
+"Test_name.c", line 45: warning: omitting the comma before a variadic "..." is deprecated
+  void q(Ts......) {} // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}} \
+              ^
+
+"Test_name.c", line 51: warning: omitting the comma before a variadic "..." is deprecated
+  void r(T...) {} // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+          ^
+
+"Test_name.c", line 53: warning: omitting the comma before a variadic "..." is deprecated
+  auto type_specifier = (void (*)(int...)) nullptr; // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+                                     ^
+
+"Test_name.c", line 55: warning: omitting the comma before a variadic "..." is deprecated
+  auto lambda = [](int...) {}; // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
+                      ^
+
 "Test_name.c", line 57: error: expected an expression
   auto block = ^(int...){}; // expected-warning {{declaration of a variadic function without a comma before '...' is deprecated}}
                ^

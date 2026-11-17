@@ -1,0 +1,77 @@
+fe_only -DTEST_NUMBER=4 --c++26 --clang_v=200100 Test_name.c
+"Test_name.c", line 9: warning: omitting the comma before a variadic "..." is deprecated
+  void a(int...);                 // deprecated
+            ^
+
+"Test_name.c", line 12: warning: omitting the comma before a variadic "..." is deprecated
+  void d(int x...);               // deprecated
+              ^
+
+"Test_name.c", line 13: warning: omitting the comma before a variadic "..." is deprecated
+  void e(int (*)(int...));        // deprecated (nested)
+                    ^
+
+"Test_name.c", line 14: warning: omitting the comma before a variadic "..." is deprecated
+  template<class... T> void f(T......);   // deprecated
+                                  ^
+
+"Test_name.c", line 17: warning: omitting the comma before a variadic "..." is deprecated
+  void i(auto......);             // deprecated
+                ^
+
+"Test_name.c", line 18: warning: omitting the comma before a variadic "..." is deprecated
+  void j(int = 0 ...);            // deprecated
+                 ^
+
+"Test_name.c", line 19: warning: omitting the comma before a variadic "..." is deprecated
+  auto k = [](int...) {};         // deprecated
+                 ^
+
+"Test_name.c", line 20: warning: omitting the comma before a variadic "..." is deprecated
+  using F = void(int...);         // deprecated
+                    ^
+
+"Test_name.c", line 21: warning: omitting the comma before a variadic "..." is deprecated
+  struct S { void m(int...); };   // deprecated
+                       ^
+
+"Test_name.c", line 22: warning: omitting the comma before a variadic "..." is deprecated
+  template<class T> struct X { void m(T...); };  // deprecated
+                                       ^
+
+"Test_name.c", line 25: warning: omitting the comma before a variadic "..." is deprecated
+    void m1(T......);             // deprecated (outer pack expansion)
+                ^
+
+"Test_name.c", line 28: warning: omitting the comma before a variadic "..." is deprecated
+    template<class... U> void m4(U......);  // deprecated
+                                     ^
+
+"Test_name.c", line 29: warning: omitting the comma before a variadic "..." is deprecated
+    void m5(auto......);          // deprecated
+                   ^
+
+"Test_name.c", line 30: warning: omitting the comma before a variadic "..." is deprecated
+    void m6(auto x...);           // deprecated
+                  ^
+
+"Test_name.c", line 31: warning: omitting the comma before a variadic "..." is deprecated
+    static void m7(int...);       // deprecated
+                      ^
+
+"Test_name.c", line 36: warning: omitting the comma before a variadic "..." is deprecated
+  void a3(auto x...);             // deprecated
+                ^
+
+"Test_name.c", line 37: warning: omitting the comma before a variadic "..." is deprecated
+  void a4(auto... x...);          // deprecated
+                   ^
+
+"Test_name.c", line 39: warning: omitting the comma before a variadic "..." is deprecated
+  auto l1 = [](auto......) {};    // deprecated
+                      ^
+
+"Test_name.c", line 41: warning: omitting the comma before a variadic "..." is deprecated
+  auto l3 = [](auto x...) {};     // deprecated
+                     ^
+

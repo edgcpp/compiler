@@ -3120,6 +3120,7 @@ an error if a default argument expression is encountered.
   a_param_id_ptr          last_param_id;
   a_symbol_locator        param_locator;
   a_boolean               done = FALSE, any_params;
+  a_boolean               comma_after_param = FALSE;
 #if MICROSOFT_EXTENSIONS_ALLOWED
   a_boolean               param_array_next = FALSE;
 #if EXTRA_SOURCE_POSITIONS_IN_IL
@@ -4122,6 +4123,7 @@ an error if a default argument expression is encountered.
           pos_error(ec_exp_comma, &pos_curr_token);
           done = FALSE;
         } else {
+          comma_after_param = curr_token == tok_comma;
           done = !loop_token(tok_comma);
         }  /* if */
         remove_stop_token(tok_comma);
@@ -4221,6 +4223,13 @@ an error if a default argument expression is encountered.
             pos_error(ec_bad_asm_func_ellipsis, &ellipsis_pos);
           }  /* if */
 #endif /* ASM_FUNCTION_ALLOWED */
+          if (!comma_after_param && cpp26_mode &&
+              !gpp_version_is(<150000) && !clangcpp_version_is(<200000) &&
+              !is_real_instantiation_context()) {
+            /* An ellipsis without a preceding comma, as in "f(int...)", is
+               deprecated in C++26 (P3176R1). */
+            pos_warning(ec_variadic_comma_omission_deprecated, &ellipsis_pos);
+          }  /* if */
 #if MICROSOFT_EXTENSIONS_ALLOWED
           if (cppcli_enabled && !done &&
               is_type_start(/*is_expr_context=*/FALSE)) {
