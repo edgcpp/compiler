@@ -5,7 +5,9 @@
 // Without parentheses in the IL, the C++-generating back end dropped
 // parentheses that are needed around a co_await or co_yield expression used
 // as an operand, around a co_await operand with lower precedence, and around
-// a comma operand of co_yield.
+// a comma operand of co_yield.  The dependent cases go through the IL (and
+// so need the fix) only when templates are kept in the IL
+// (ALL_TEMPLATE_INFO_IN_IL).
 
 namespace std {
   template<typename = void> struct coroutine_handle;
@@ -45,6 +47,7 @@ struct promise {
   void unhandled_exception();
   task get_return_object();
   awaiter<S> yield_value(S);
+  awaiter<int> yield_value(int);
 };
 struct task { using promise_type = promise; };
 
@@ -67,6 +70,8 @@ task yield_operand() {
 template<typename T>
 task dependent() {
   (co_yield T{}) = 1;
+  int a = (co_yield 1) + 1;
+  int b = (co_yield T{}.m) + 1;
   co_return;
 }
 template task dependent<S>();
