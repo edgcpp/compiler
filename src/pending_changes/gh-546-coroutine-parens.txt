@@ -1,0 +1,13 @@
+[GH #546]
+Parentheses around co_await and co_yield in generated C++
+
+The C++-generating back end could drop parentheses that are needed to keep
+the meaning of co_await and co_yield expressions, so the generated code was
+rejected or had a different meaning.  For example:
+
+  int i = (co_await a).m;         // Was generated as "co_await a.m".
+  co_await (c ? x : y);           // Was generated as "co_await c ? x : y".
+  co_yield (first(), second());   // Was generated as
+                                  // "co_yield first(), second()".
+
+Parentheses are now added where they are needed.

@@ -986,7 +986,7 @@ static constexpr a_byte generated_precedence[(int)eok_last+1] = {
   PREC_POSTFIX,		/* eok_va_start_single_operand */
   PREC_LOWEST,		/* eok_lvalue */
   PREC_PREFIX,		/* eok_await */
-  PREC_PREFIX,		/* eok_yield */
+  PREC_ASSIGNMENT,	/* eok_yield */
   PREC_PRIMARY,		/* eok_splice */
   PREC_LOWEST,		/* eok_error */
   PREC_LOWEST		/* eok_last */
@@ -19959,6 +19959,7 @@ sizeof_cases:
 #endif /* BUILTIN_FUNCTIONS_ENABLED */
     case enk_yield:
       /* yield expression: generate "co_yield <expr>". */
+      if (need_parens) write_tok_ch('(');
       write_tok_str("co_yield ");
       expr = expr->variant.await_info.operand;
       /* Skip nodes implementing the binding of the operand to the call. */
@@ -19989,13 +19990,26 @@ sizeof_cases:
          operand (which corresponds to the actual operand of the yield
          statement). */
       expr = expr->next->next;
-      gen_expression(expr);
+      /* The operand of co_yield is an assignment-expression, so it needs
+         parentheses only if it is a comma operation, e.g.,
+         "co_yield (f(), g())". */
+      gen_expr(expr, parens_may_be_needed(PREC_COMMA, expr),
+               /*obj_expr_of_mfunc_operator=*/FALSE);
+      if (need_parens) write_tok_ch(')');
       break;
     case enk_await:
+      if (need_parens) write_tok_ch('(');
       write_tok_str((msvc_is_generated_code_target &&
                      msvc_target_version_number < 1900) ? "__await "
                                                         : "co_await ");
-      gen_expression(expr->variant.await_info.operand);
+      /* The operand of co_await is a cast-expression, like the operand of
+         a unary operator, so it may need parentheses, e.g.,
+         "co_await (c ? x : y)". */
+      gen_expr(expr->variant.await_info.operand,
+               parens_may_be_needed(PREC_PREFIX,
+                                    expr->variant.await_info.operand),
+               /*obj_expr_of_mfunc_operator=*/FALSE);
+      if (need_parens) write_tok_ch(')');
       break;
     case enk_fold:
       gen_fold_expression(expr);
