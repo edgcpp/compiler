@@ -88,7 +88,6 @@ operation that is in process.
   aaehip->destructor		    = NULL;
   aaehip->delete_routine	    = NULL;
   aaehip->is_two_arg	 	    = FALSE;
-  aaehip->free_array                = NULL;
 }  /* add_vec_new_or_delete_eh_stack_entry */
 #endif /* EXCEPTION_HANDLING */
 
@@ -480,7 +479,6 @@ use.
   if (create_eh_stack_entry) {
     add_vec_new_or_delete_eh_stack_entry(&ehse, &aaehi, /*is_vec_new=*/TRUE);
     aaehi.free_memory_on_cleanup = free_memory_on_cleanup;
-    aaehi.free_array             = free_array;
     aaehi.number_of_elements     = number_of_elements;
     aaehi.element_size           = element_size;
     aaehi.prefix_size            = prefix_size;
@@ -812,7 +810,6 @@ elements will be destroyed and the exception will be rethrown.
     add_vec_new_or_delete_eh_stack_entry(&ehse, &aaehi, 
                                          /*is_vec_new=*/FALSE);
     aaehi.free_memory_on_cleanup = delete_flag;
-    aaehi.free_array             = free_array;
     aaehi.array_ptr              = array_ptr;
     aaehi.number_of_elements     = number_of_elements;
     aaehi.element_size           = element_size;
@@ -1000,6 +997,47 @@ some reason (i.e., overflow, less than zero, too small for initializer list).
 #endif /* ABI_COMPATIBILITY_VERSION >= 406 */
 
 #endif /* defined(__EDG_IA64_ABI) */
+
+#if EXCEPTION_HANDLING
+EXTERN_C void __cleanup_vec_new_or_delete(an_eh_stack_entry_ptr ehsep)
+/*
+Use ehsep to clean up an interrupted array construction or destruction.
+This is kept with the allocating vector routines so that it links
+vec_newdel.o, and hence these definitions of the allocating vector entry
+points, into every program that uses exception handling.
+*/
+{
+  an_array_alloc_eh_info_ptr info = ehsep->variant.array_alloc_eh_info;
+  size_t count;
+  size_t i;
+
+#ifdef __EDG_IA64_ABI
+  if (info->terminate_immediately) {
+    __call_terminate();
+  }  /* if */
+#endif /* defined(__EDG_IA64_ABI) */
+  if (info->is_vec_new) {
+    count = info->elements_processed;
+  } else {
+    count = info->number_of_elements - info->elements_processed;
+  }  /* if */
+  if (info->destructor != NULL) {
+    for (i = count; i != 0; --i) {
+      void *element = (char *)info->array_ptr + (i - 1) * info->element_size;
+#ifndef __EDG_IA64_ABI
+      (*info->destructor)(element, 0x2);
+#else /* defined(__EDG_IA64_ABI) */
+      (*info->destructor)(element);
+#endif /* defined(__EDG_IA64_ABI) */
+    }  /* for */
+  }  /* if */
+  if (info->free_memory_on_cleanup) {
+    free_array(info->array_ptr,
+               info->element_size * info->number_of_elements,
+               info->prefix_size, info->delete_routine, info->is_two_arg);
+  }  /* if */
+}  /* __cleanup_vec_new_or_delete */
+#endif /* EXCEPTION_HANDLING */
 
 #ifndef __EDG_IA64_ABI                                     
 EXTERN_C void _array_pointer_not_from_vec_new()

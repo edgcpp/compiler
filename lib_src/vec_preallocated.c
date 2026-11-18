@@ -41,52 +41,10 @@ than destruction.
   info->destructor = dtor;
   info->delete_routine = NULL;
   info->is_two_arg = FALSE;
-  info->free_array = NULL;
 #ifdef __EDG_IA64_ABI
   info->terminate_immediately = FALSE;
 #endif /* defined(__EDG_IA64_ABI) */
 }  /* add_preallocated_eh_entry */
-
-
-EXTERN_C void __cleanup_vec_new_or_delete(an_eh_stack_entry_ptr ehsep)
-/*
-Use ehsep to clean up an interrupted array construction or destruction.
-Allocated arrays carry their deallocator in the stack entry; preallocated
-arrays do not.
-*/
-{
-  an_array_alloc_eh_info_ptr info = ehsep->variant.array_alloc_eh_info;
-  size_t count;
-  size_t i;
-
-#ifdef __EDG_IA64_ABI
-  if (info->terminate_immediately) {
-    __call_terminate();
-  }  /* if */
-#endif /* defined(__EDG_IA64_ABI) */
-  if (info->is_vec_new) {
-    count = info->elements_processed;
-  } else {
-    count = info->number_of_elements - info->elements_processed;
-  }  /* if */
-  if (info->destructor != NULL) {
-    for (i = count; i != 0; --i) {
-      void *element = (char *)info->array_ptr + (i - 1) * info->element_size;
-#ifndef __EDG_IA64_ABI
-      (*info->destructor)(element, 0x2);
-#else /* defined(__EDG_IA64_ABI) */
-      (*info->destructor)(element);
-#endif /* defined(__EDG_IA64_ABI) */
-    }  /* for */
-  }  /* if */
-  if (info->free_memory_on_cleanup) {
-    check_assertion(info->free_array != NULL);
-    (*info->free_array)(info->array_ptr,
-                        info->element_size * info->number_of_elements,
-                        info->prefix_size, info->delete_routine,
-                        info->is_two_arg);
-  }  /* if */
-}  /* __cleanup_vec_new_or_delete */
 #endif /* EXCEPTION_HANDLING */
 
 

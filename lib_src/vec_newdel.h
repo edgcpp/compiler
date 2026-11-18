@@ -63,9 +63,6 @@ struct an_array_alloc_eh_info {
   a_delete_ptr delete_routine;
                         /* Deallocation routine, or NULL for the default. */
   a_boolean is_two_arg; /* TRUE for a two-argument deallocation routine. */
-  void (*free_array)(void *, size_t, size_t, a_delete_ptr, int);
-                        /* Array deallocator supplied by the allocating
-                           runtime, or NULL for preallocated arrays. */
 #ifdef __EDG_IA64_ABI
   a_boolean terminate_immediately;
                         /* TRUE if a destructor throw requires termination. */

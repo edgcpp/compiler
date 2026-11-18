@@ -1998,11 +1998,14 @@ nonzero.  The loops zero each element first when value-initialization requires
 it.  When construction needs
 exception cleanup, or for other construction cases handled by the runtime,
 the cfront-like ABI calls ``__edg_vec_ctor`` for preallocated storage.
-Array destruction uses ``__edg_vec_dtor``.  These entry points and the
-exception unwinder's array cleanup are implemented separately from the
-allocation-capable vector runtime.  Newly generated calls require a matching
-runtime library; the existing vector entry points remain available for
-previously generated code and dynamic allocation.
+Array destruction uses ``__edg_vec_dtor``.  These entry points are
+implemented separately from the allocation-capable vector runtime, so a
+program that is compiled without exception handling and does not use array
+new does not link that runtime.  With exception handling, the unwinder's
+array cleanup (``__cleanup_vec_new_or_delete``) is part of the allocating
+vector runtime, which is then always linked.  Newly generated calls require a
+matching runtime library; the existing vector entry points remain available
+for previously generated code and dynamic allocation.
 
 The runtime traverses preallocated arrays using byte offsets from the supplied
 address.  For nested arrays, strict ISO C pointer-bounds portability of this
