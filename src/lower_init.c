@@ -5910,7 +5910,11 @@ within the bounds of each array.
   a_statement_ptr               loop_stmt;
   an_expr_node_ptr              args, call, loop_expr, increment_expr;
 
-  pointer_type = make_pointer_type(skip_typerefs(element_type));
+  /* Constructors are called on cv-qualified objects through an unqualified
+     "this" pointer, so traverse the elements with unqualified pointers. */
+  element_type = make_unqualified_type(skip_typerefs(element_type),
+                                       /*unqualify_array_elements=*/TRUE);
+  pointer_type = make_pointer_type(element_type);
   count_type = integer_type(targ_size_t_int_kind);
   helper_routine = make_rout_entry((char *)NULL, sc_static,
                                    void_type(), pointer_type);
@@ -6038,10 +6042,21 @@ must NOT already be lowered (see comment in default_version_of_routine).
 
     num_elem_node = num_elem_node_if_array(ipdp);
     check_assertion(num_elem_node != NULL);
+    if (is_array_type(element_type) &&
+        skip_typerefs(underlying_array_element_type(element_type))->size <=
+                                                                         1) {
+      /* The generated C may represent an empty class as a zero-sized
+         struct, which makes arithmetic on pointers to its subarrays
+         advance by zero bytes.  Traverse the innermost elements
+         instead. */
+      element_type = underlying_array_element_type(element_type);
+    }  /* if */
     helper_routine = array_construction_loop(element_type, ctor_routine,
                                              zero_storage);
-    entity_node = add_cast_if_necessary(entity_node,
-                                       make_pointer_type(element_type));
+    entity_node = add_cast_if_necessary(
+                    entity_node,
+                    helper_routine->type->variant.routine.extra_info->
+                                                     param_type_list->type);
     if (is_array_type(element_type)) {
       num_elem_node = add_cast_if_necessary(
                                            num_elem_node,
