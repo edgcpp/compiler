@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --microsoft --c++14 Test_name.c
+"Test_name.c", line 5: error: default argument is not allowed
+  template < class ... T > void f ( T ... = { noexcept ( } )
+                                          ^
+
+"Test_name.c", line 5: error: expected an expression
+  template < class ... T > void f ( T ... = { noexcept ( } )
+                                                         ^
+
+"Test_name.c", line 5: error: expected a ")"
+  template < class ... T > void f ( T ... = { noexcept ( } )
+                                                         ^
+
+"Test_name.c", line 6: error: expected a ";"
+  friend void A :: ... f ( long ) ;
+  ^
+
+"Test_name.c", line 8: error: expected a type specifier
+  void A :: f ( long AA<)> { }
+                        ^
+
+"Test_name.c", line 8: error: expected a ">"
+  void A :: f ( long AA<)> { }
+                        ^
+
+"Test_name.c", line 8: error: expected a ","
+  void A :: f ( long AA<)> { }
+                     ^
+
+"Test_name.c", line 8: error: expected a "{"
+  void A :: f ( long AA<)> { }
+                         ^
+
+8 errors detected in the compilation of "Test_name.c".

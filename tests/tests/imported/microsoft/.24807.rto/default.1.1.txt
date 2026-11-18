@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 4: error: type name is not allowed
+  void f() { throw _A ( _A <int> ); }
+                        ^
+
+"Test_name.c", line 4: error: no instance of constructor "_A" matches the argument list
+            argument types are: (<error-type>)
+  void f() { throw _A ( _A <int> ); }
+                        ^
+
+"Test_name.c", line 4: error: cannot deduce class template arguments
+  void f() { throw _A ( _A <int> ); }
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

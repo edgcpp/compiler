@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++11 Test_name.c
+"Test_name.c", line 7: error: variable template "A::foo" is not a valid class member template
+      static constexpr bool foo = ns::does_not_exist<int, T>;
+                            ^
+
+"Test_name.c", line 7: error: variable template "A::T" is not a valid class member template
+      static constexpr bool foo = ns::does_not_exist<int, T>;
+                                                          ^
+
+"Test_name.c", line 7: error: a constexpr static data member declaration requires an in-class initializer
+      static constexpr bool foo = ns::does_not_exist<int, T>;
+                                                           ^
+
+"Test_name.c", line 7: error: expected a ";"
+      static constexpr bool foo = ns::does_not_exist<int, T>;
+                                                           ^
+
+4 errors detected in the compilation of "Test_name.c".

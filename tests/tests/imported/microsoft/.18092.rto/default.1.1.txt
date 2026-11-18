@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --microsoft_version 1910 Test_name.c
+"Test_name.c", line 13: error: expression must have a constant value
+  static_assert(S().g(), "");
+                ^
+"Test_name.c", line 11: note: invalid access to member "T::n" in object of complete type "S"
+    return this->*static_cast<int S::*>(&T::n);
+               ^
+
+1 error detected in the compilation of "Test_name.c".

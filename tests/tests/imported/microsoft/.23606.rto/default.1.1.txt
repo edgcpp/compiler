@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --microsoft_v 1928 --concepts Test_name.c
+"Test_name.c", line 9: error: no instance of constructor "X<T>::X [with T=int]" matches the argument list
+            argument types are: (int)
+  X<int> r{ 1 };
+          ^
+"Test_name.c", line 4: note: function "X<T>::X(const X<int> &) [with T=int]" does not match because argument #1 does not match parameter
+  struct X {
+         ^
+"Test_name.c", line 4: note: function "X<T>::X(X<int> &&) [with T=int]" does not match because argument #1 does not match parameter
+  struct X {
+         ^
+"Test_name.c", line 6: note: substituting "<int>" for function template "X<T>::X(U) [with T=int]" failed constraints
+      X(U u) {}
+      ^
+"Test_name.c", line 5: note: atomic constraint evaluates to false
+      template <class U> requires requires { f(U()); }
+                                  ^
+
+1 error detected in the compilation of "Test_name.c".
