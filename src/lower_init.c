@@ -2683,6 +2683,8 @@ NULL until then.
 STATIC_THREAD a_routine_ptr
 		vec_new_routine,
 #if !IA64_ABI
+                vec_preallocated_ctor_routine,
+                vec_preallocated_dtor_routine,
 		vec_new_eh_routine,
 		vec_new_eh_zero_routine,
 		array_new_routine,
@@ -3378,7 +3380,8 @@ static an_expr_node_ptr make_vec_new_call(an_expr_node_ptr     entity_node,
                                           a_routine_ptr        dtor_routine,
                                           a_routine_ptr        new_routine,
                                           a_routine_ptr        delete_routine,
-                                          ARG_UNUSED a_boolean zero_storage)
+                                          ARG_UNUSED a_boolean zero_storage,
+                                          ARG_UNUSED a_boolean fixed_array)
 /*
 Make a call to a runtime routine (__vec_new or __array_new) that will
 allocate an array and call a constructor for each element of the
@@ -3392,8 +3395,7 @@ called, or NULL if no constructor is to be called.  dtor_routine is
 the destructor routine to be called -- this is non-NULL only if there
 is a destructor and if exceptions are enabled (in that case, it may
 be necessary to destroy array elements that were created if a
-throw occurs halfway through the initialization of the array);
-the runtime routine __vec_new_eh is called in that case.  If
+throw occurs halfway through the initialization of the array).  If
 new_routine is non-NULL, it points to an "operator new[]" routine to
 be used to do the allocation; if it is null, the default routine is
 used.  If delete_routine is non-NULL, it points to an "operator
@@ -3404,7 +3406,8 @@ zeroed before the constructor is called, for value-initialization.
 The runtime routine __array_new is called for cases that require a
 special new or delete routine.  This routine is not used for
 placement new cases.  The routines called are different for the
-IA-64 ABI; see comments below.
+IA-64 ABI; see comments below.  fixed_array is TRUE when the caller
+supplies storage for an array that is not dynamically allocated.
 */
 {
   an_expr_node_ptr call_node, arg_expr_list, size_elem_node;
@@ -3497,7 +3500,24 @@ IA-64 ABI; see comments below.
     }  /* if */
 #endif /* IA64_ABI */
 #if !IA64_ABI
-    if (zero_storage) {
+    if (fixed_array) {
+      num_elem_node->next = NULL;
+      num_elem_node = add_cast_if_necessary(num_elem_node, size_t_type);
+      entity_node->next = num_elem_node;
+      num_elem_node->next = size_elem_node;
+      dtor_addr_node = expr_for_pointer_to_destructor(dtor_routine);
+      ctor_addr_node->next = dtor_addr_node;
+      dtor_addr_node->next = node_for_integer_constant(
+                                                   (long)zero_storage, ik_int);
+      call_node = make_prototyped_runtime_call_full(
+                                  "__edg_vec_ctor",
+                                  &vec_preallocated_ctor_routine,
+                                  void_star_type(), void_star_type(),
+                                  size_t_type, size_t_type, make_ctor_type(),
+                                  make_dtor_type(),
+                                  integer_type(ik_int),
+                                  NULL, arg_expr_list);
+    } else if (zero_storage) {
       /* __vec_new_eh_zero call, which zeroes storage before calling the
          constructor, for value-initialization. */
       dtor_addr_node = expr_for_pointer_to_destructor(dtor_routine);
@@ -3834,7 +3854,7 @@ IA-64 ABI, the routines called are different.
   call_node = make_vec_new_call(arg_entity_node, entity_type, num_elem_node, 
                                 ctor_routine, dtor_routine,
                                 (a_routine_ptr)NULL, (a_routine_ptr)NULL,
-                                zero_storage);
+                                zero_storage, /*fixed_array=*/FALSE);
   if (prefix_size_node != NULL) {
     if (targ_use_var_arr_cookies) {
       assign_node = make_comma_node(assign_elem_size_node, assign_node);
@@ -3890,8 +3910,8 @@ static an_expr_node_ptr make_vec_delete_call(
                                           a_routine_ptr    delete_routine,
                                           a_boolean        free_storage)
 /*
-Make a call to a runtime routine (__vec_delete or __array_delete
-for the Cfront-like ABI, __cxa_vec_dtor etc. for the IA-64 ABI)
+Make a call to a runtime routine (__edg_vec_dtor, __vec_delete, or
+__array_delete for the Cfront-like ABI, __cxa_vec_dtor etc. for the IA-64 ABI)
 that will call a destructor for each element of an array and then
 deallocate the array.  entity_node gives the address of the array.
 num_elem_node is an expression giving the number of elements
@@ -3910,6 +3930,7 @@ A pointer to the expression created is returned.
   a_type_ptr       entity_type = entity_node->type;
 #if !IA64_ABI
   an_expr_node_ptr is_two_arg_node, free_storage_node;
+  a_boolean        has_known_count = num_elem_node != NULL;
 #endif /* IA64_ABI */
   an_expr_node_ptr prefix_size_node;
   an_expr_node_ptr orig_entity_node = entity_node;
@@ -3926,7 +3947,18 @@ A pointer to the expression created is returned.
     /* Use the runtime array size from the "new[]". */
     num_elem_node = var_arg_num_elem_node();
   }  /* if */
-  if (delete_routine == NULL || aligned_delete) {
+  if (!free_storage && has_known_count && delete_routine == NULL) {
+    entity_node->next = add_cast_if_necessary(num_elem_node, size_t_type);
+    entity_node->next->next = size_elem_node;
+    size_elem_node->next = add_cast_if_necessary(dtor_addr_node,
+                                                 make_dtor_type());
+    call_node = make_prototyped_runtime_call_full(
+                                 "__edg_vec_dtor",
+                                 &vec_preallocated_dtor_routine,
+                                 void_type(), void_star_type(), size_t_type,
+                                 size_t_type, make_dtor_type(), NULL, NULL,
+                                 NULL, entity_node);
+  } else if (delete_routine == NULL || aligned_delete) {
     /* The call looks like
          __vec_delete(entity_node, num_elems, size_elem, dtor_addr_node,
                       free_storage, 0)
@@ -4218,8 +4250,8 @@ to the expression created is returned.
   /* The call looks like
        __vec_cctor   (entity_node, num_elems, size_elem, cctor_routine,
                       source_node)
-       __vec_cctor_eh(entity_node, num_elems, size_elem, cctor_routine,
-                      source_node, dtor_routine)
+       __edg_vec_cctor(entity_node, num_elems, size_elem, cctor_routine,
+                       source_node, dtor_routine)
   */
   arg_expr_list = entity_node;
   entity_node->next = num_elem_node;
@@ -4230,10 +4262,10 @@ to the expression created is returned.
   source_node = add_cast(source_node, void_star_type());
   func_addr_node->next = source_node;
   if (exceptions_enabled && dtor_routine != NULL) {
-    /* __vec_cctor_eh call, with destructor. */
+    /* Nonallocating copy construction with exception cleanup. */
     dtor_addr_node = expr_for_pointer_to_destructor(dtor_routine);
     source_node->next = dtor_addr_node;
-    call_node = make_prototyped_runtime_call_full("__vec_cctor_eh",
+    call_node = make_prototyped_runtime_call_full("__edg_vec_cctor",
                                                   &vec_cctor_eh_routine,
                                                   void_type(),
                                                   void_star_type(),
@@ -5857,6 +5889,79 @@ primary routine has a definition.
 
 #endif /* IA64_ABI */
 
+static a_routine_ptr array_construction_loop(a_type_ptr    element_type,
+                                             a_routine_ptr ctor_routine,
+                                             a_boolean     zero_storage)
+/*
+Create and return a helper that calls ctor_routine for each element of
+element_type, zeroing it first if zero_storage is TRUE.  For array elements,
+construct each subarray using a separate loop so pointer arithmetic stays
+within the bounds of each array.
+*/
+{
+  a_routine_ptr                 helper_routine, nested_routine;
+  a_routine_type_supplement_ptr rtsp;
+  a_type_ptr                    pointer_type, count_type;
+  a_memory_region_number        il_region;
+  a_scope_ptr                   scope;
+  a_variable_ptr                element_ptr, count_var;
+  a_generated_routine_context   context;
+  an_insert_location            insert_location, loop_insert_location;
+  a_statement_ptr               loop_stmt;
+  an_expr_node_ptr              args, call, loop_expr, increment_expr;
+
+  pointer_type = make_pointer_type(skip_typerefs(element_type));
+  count_type = integer_type(targ_size_t_int_kind);
+  helper_routine = make_rout_entry((char *)NULL, sc_static,
+                                   void_type(), pointer_type);
+  rtsp = helper_routine->type->variant.routine.extra_info;
+  rtsp->param_type_list->next = alloc_param_type(count_type);
+  scope = make_routine_definition(helper_routine, /*make_return=*/TRUE,
+                                  curr_il_region_number, &il_region);
+  push_generated_routine_context(scope, il_region, &context);
+  element_ptr = make_lowered_param_variable(pointer_type);
+  count_var = make_lowered_param_variable(count_type);
+  scope->variant.routine.parameters = element_ptr;
+  element_ptr->next = count_var;
+  set_block_start_insert_location(scope->assoc_block, &insert_location);
+  set_insert_location_mark(&insert_location);
+  insert_pending_stmk_init_statements_at_mark(&insert_location);
+  loop_stmt = alloc_statement(stmk_while, /*compiler_generated=*/TRUE);
+  loop_expr = make_operator_node(eok_post_decr, count_type,
+                                 var_lvalue_expr(count_var));
+  loop_stmt->expr = boolean_controlling_expr(loop_expr);
+  increment_expr = make_operator_node(eok_post_incr, pointer_type,
+                                      var_lvalue_expr(element_ptr));
+  perform_post_pass_on_lowered_expression(increment_expr);
+  loop_stmt->variant.loop_statement = alloc_expr_statement(increment_expr);
+  insert_statement(loop_stmt, &insert_location);
+  set_expr_insert_location(increment_expr, &loop_insert_location);
+  args = var_rvalue_expr(element_ptr);
+  if (is_array_type(element_type)) {
+    a_type_ptr nested_type = array_element_type(element_type);
+    a_targ_size_t count = skip_typerefs(element_type)->
+                                     variant.array.variant.number_of_elements;
+    nested_routine = array_construction_loop(nested_type, ctor_routine,
+                                              zero_storage);
+    args = add_cast_if_necessary(args, make_pointer_type(nested_type));
+    args->next = node_for_host_large_integer((a_host_large_integer)count,
+                                            targ_size_t_int_kind);
+    call = make_call_node(nested_routine, args);
+  } else {
+    if (zero_storage) {
+      insert_call_to_zero_entity(element_type, /*have_complete_object=*/TRUE,
+                                 var_rvalue_expr(element_ptr),
+                                 (an_expr_node_ptr)NULL, (a_targ_size_t)0,
+                                 &loop_insert_location);
+    }  /* if */
+    call = make_call_node(ctor_routine, args);
+  }  /* if */
+  (void)insert_expr_statement(call, &loop_insert_location);
+  pop_generated_routine_context(scope, il_region, &context);
+  return helper_routine;
+}  /* array_construction_loop */
+
+
 static void add_array_constructor_call(
                                    a_dynamic_init_ptr     dip,
                                    an_expr_node_ptr       entity_node,
@@ -5877,6 +5982,7 @@ must NOT already be lowered (see comment in default_version_of_routine).
   a_routine_ptr    ctor_routine, dtor_routine;
   an_expr_node_ptr call_node, num_elem_node;
   a_boolean        zero_storage;
+  a_type_ptr       element_type;
 
 #if CHECKING
   if (dip->kind != (a_dynamic_init_kind)dik_constructor) {
@@ -5910,31 +6016,43 @@ must NOT already be lowered (see comment in default_version_of_routine).
   if (dip->init_expr_lifetime != NULL) {
     unbind_object_lifetime(dip->init_expr_lifetime);
   }  /* if */
+  element_type = type_from_init_pos_descr(ipdp);
   if (source_node != NULL) {
     /* Copy constructor case. */
     check_assertion(!dip->variant.constructor.value_initialization);
     call_node = make_vec_cctor_call(entity_node, source_node, ipdp,
                                     ctor_routine, dtor_routine);
-  } else if (!zero_storage &&
-             (!exceptions_enabled || dtor_routine == NULL)) {
+  } else if ((!exceptions_enabled || dtor_routine == NULL) &&
+             ipdp->num_elem_node == NULL &&
+             (ipdp->variable == NULL || !ipdp->variable->is_vla) &&
+             ipdp->base_type != NULL &&
+             !is_vla_type(ipdp->base_type) &&
+             !(is_array_type(element_type) &&
+               (is_vla_type(element_type) ||
+                is_incomplete_array_type(element_type) ||
+                num_array_elements(element_type) == 0))) {
     /* With exceptions disabled or no destructor to call, construct the
        elements directly without pulling in the allocating vector-new
        runtime. */
-    an_insert_location helper_insert_location;
-    a_variable_ptr     element_ptr;
-    a_type_ptr         element_type = type_pointed_to(entity_node->type);
     a_routine_ptr      helper_routine;
-    an_expr_node_ptr   ctor_call;
 
     num_elem_node = num_elem_node_if_array(ipdp);
     check_assertion(num_elem_node != NULL);
-    helper_routine = helper_routine_to_loop_through_array_elements(
-                                                    element_type, &element_ptr,
-                                                    &helper_insert_location);
-    ctor_call = make_call_node(ctor_routine, var_rvalue_expr(element_ptr));
-    (void)insert_expr_statement(ctor_call, &helper_insert_location);
+    helper_routine = array_construction_loop(element_type, ctor_routine,
+                                             zero_storage);
     entity_node = add_cast_if_necessary(entity_node,
                                        make_pointer_type(element_type));
+    if (is_array_type(element_type)) {
+      num_elem_node = add_cast_if_necessary(
+                                           num_elem_node,
+                                           integer_type(targ_size_t_int_kind));
+      num_elem_node->next = node_for_host_large_integer(
+                 (a_host_large_integer)num_array_elements(element_type),
+                 targ_size_t_int_kind);
+      num_elem_node = make_operator_node(eok_divide,
+                                         integer_type(targ_size_t_int_kind),
+                                         num_elem_node);
+    }  /* if */
     entity_node->next = add_cast_if_necessary(
                                            num_elem_node,
                                            integer_type(targ_size_t_int_kind));
@@ -5950,7 +6068,7 @@ must NOT already be lowered (see comment in default_version_of_routine).
                                   exceptions_enabled ? dtor_routine :
                                                      (a_routine *)NULL,
                                   (a_routine *)NULL, (a_routine *)NULL,
-                                  zero_storage);
+                                  zero_storage, /*fixed_array=*/TRUE);
   }  /* if */
   /* Make a statement containing the call and insert it at the right
      location. */
@@ -6003,11 +6121,10 @@ dynamic init pointer because of the make_destruction_routine case.
   /* Generate code for the destructor call. */
   if (num_elem_node != NULL) {
 #if !IA64_ABI
-    /* default_version_of_routine is not called on purpose; __vec_delete
-       knows about the implicit argument for destructors and generates
-       it automatically. */
+    /* default_version_of_routine is not called on purpose; the array
+       destruction runtime supplies the implicit destructor argument. */
 #endif /* !IA64_ABI */
-    /* Generate the __vec_delete call. */
+    /* Generate the array destruction call. */
     /* Build an expression for the address of the destructor. */
     dtor_addr_node = expr_for_pointer_to_destructor(dtor_routine);
     call_node = make_vec_delete_call(entity_node, num_elem_node,
@@ -12571,7 +12688,7 @@ arrays with class elements.
     vec_new_node = make_vec_new_call(entity_node, ptr_elem_type, num_elem_node,
                                      ctor_routine, dtor_routine,
                                      new_routine, delete_routine,
-                                     zero_storage);
+                                     zero_storage, /*fixed_array=*/FALSE);
 #if ABI_CHANGES_FOR_PLACEMENT_DELETE
   } else {
     /* Placement new.  Construct a call of __placement_array_new. */
@@ -20827,6 +20944,8 @@ Do one-time initialization of static variables declared in lower_init.c.
     STATIC_THREAD a_pch_saved_variable saved_vars[] = {
       pch_saved_var_array_elem(vec_new_routine),
 #if !IA64_ABI
+      pch_saved_var_array_elem(vec_preallocated_ctor_routine),
+      pch_saved_var_array_elem(vec_preallocated_dtor_routine),
       pch_saved_var_array_elem(vec_new_eh_routine),
       pch_saved_var_array_elem(vec_new_eh_zero_routine),
       pch_saved_var_array_elem(array_new_routine),
@@ -20903,6 +21022,8 @@ Do one-time initialization of static variables declared in lower_init.c.
      between translation units. */
   register_trans_unit_variable(vec_new_routine);
 #if !IA64_ABI
+  register_trans_unit_variable(vec_preallocated_ctor_routine);
+  register_trans_unit_variable(vec_preallocated_dtor_routine);
   register_trans_unit_variable(vec_new_eh_routine);
   register_trans_unit_variable(vec_new_eh_zero_routine);
   register_trans_unit_variable(array_new_routine);
@@ -20986,6 +21107,8 @@ for each translation unit.
 {
   vec_new_routine = NULL;
 #if !IA64_ABI
+  vec_preallocated_ctor_routine = NULL;
+  vec_preallocated_dtor_routine = NULL;
   vec_new_eh_routine = NULL;
   vec_new_eh_zero_routine = NULL;
   array_new_routine = NULL;
@@ -21076,4 +21199,3 @@ for each compilation.
 END_EDG_NAMESPACE
 
 #endif /* DO_IL_LOWERING */
-

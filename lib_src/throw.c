@@ -832,9 +832,8 @@ requires cleanup.
             elements = (an_element_count)*element_addr;
          }  /* if */
 #ifndef __EDG_IA64_ABI
-          __vec_delete(obj_addr, (an_element_count_param)elements,
-		       ehasp->element_size, dtor_ptr, /*delete_flag=*/FALSE,
-		       /*unused_arg=*/0);
+          __edg_vec_dtor(obj_addr, (size_t)elements,
+                         ehasp->element_size, dtor_ptr);
 #else /* ifdef __EDG_IA64_ABI */
           ABI_NAMESPACE::__cxa_vec_dtor(obj_addr, elements, 
                                         ehasp->element_size, dtor_ptr);
@@ -2047,4 +2046,3 @@ built without exception handling support.  This version does nothing.
 }  /* __eh_exit_processing */
 
 #endif /* EXCEPTION_HANDLING */
-

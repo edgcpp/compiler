@@ -1992,24 +1992,29 @@ Constructors and Destructors for Arrays
 ---------------------------------------
 
 For construction of an entire (static or automatic) array, lowering generates
-a loop that calls the element constructor when no storage zeroing or exception
-cleanup is needed.  Other construction cases and array destruction call
-runtime routines.  For the cfront-like ABI, ``__vec_new`` or
-``__vec_delete`` are used (see previous section).  The address of the array is
-passed into ``__vec_new``, thus suppressing allocation, and ``0`` for the flag
-``free`` is passed into ``__vec_delete``, thus suppressing freeing of the
-storage.  For the IA-64 ABI, there are specific runtime routines for these
-functions:
+nested loops that call the element constructor when no exception cleanup is
+needed, the array is not variably sized, and nested bounds are known and
+nonzero.  The loops zero each element first when value-initialization requires
+it.  When construction needs
+exception cleanup, or for other construction cases handled by the runtime,
+the cfront-like ABI calls ``__edg_vec_ctor`` for preallocated storage.
+Array destruction uses ``__edg_vec_dtor``.  These entry points and the
+exception unwinder's array cleanup are implemented separately from the
+allocation-capable vector runtime.  Newly generated calls require a matching
+runtime library; the existing vector entry points remain available for
+previously generated code and dynamic allocation.
+
+For the IA-64 ABI, the standard runtime routines for these functions are:
 
   | ``__cxa_vec_ctor(``\ *array, num_elems, elem_size, ctor_routine,*
     *dtor_routine*\ ``)``
   | ``__cxa_vec_dtor(``\ *array, num_elems, elem_size, dtor_routine*\ ``)``
 
 Copying of an entire array using a copy constructor is done in the cfront-like
-ABI by calling ``__vec_cctor``, passing the array address, the number of
-elements, the element size, the address of the routine to call, and the source
-array address.  [#f4]_ In the IA-64 ABI, the runtime routine is
-``__cxa_vec_cctor.``
+ABI by calling ``__vec_cctor``, or ``__edg_vec_cctor`` when exception cleanup
+is needed.  The call passes the array address, the number of elements, the
+element size, the routine to call, and the source array address.  [#f4]_ In
+the IA-64 ABI, the runtime routine is ``__cxa_vec_cctor``.
 
 If the constructor involved has default arguments, a wrapper routine is created
 that requires no arguments other than the "``this``" parameter and calls the
