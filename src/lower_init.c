@@ -10968,6 +10968,8 @@ do_assignment:;
       break;
     case dik_nonconstant_aggregate:
       {
+        an_init_pos_descr     vla_ipd;
+        an_init_pos_descr_ptr agg_ipdp;
         /* Initialization with a nonconstant aggregate constant.  This is
            usually a whole-variable initialization, but can be used in a
            ctor-initializer or lambda capture to iterate over an array
@@ -10976,12 +10978,21 @@ do_assignment:;
           latest_initialization_on_entry = eff_context->latest_initialization;
         }  /* if */
         keep_constant = FALSE;
-        if (dip->is_partially_initialized &&
-            (variable == NULL || !is_vla_type(variable->type))) {
+        agg_ipdp = ipdp;
+        if (variable != NULL && is_vla_type(variable->type)) {
+          /* The back end cannot be relied on to complete the initialization
+             of a VLA: nothing zeroes it if no constant is kept, and zeroing
+             gives the wrong null pointer-to-data-member value for the
+             IA-64 ABI.  Initialize the whole VLA here and assign (rather
+             than keep) the constant parts. */
+          vla_ipd = *ipdp;
+          vla_ipd.assign_constants = TRUE;
+          agg_ipdp = &vla_ipd;
+        }  /* if */
+        if (dip->is_partially_initialized) {
           /* For cases where the initialization only partially covers the
              entity being initialized, initialize the remaining portion
-             of the entity if necessary.  No need to stretch VLA
-             initialization; the back end will do that. */
+             of the entity if necessary. */
           stretch_partial_initialization_if_necessary(dip, ipdp,
                                                       have_complete_object,
                                                       eff_insert_location);
@@ -11016,12 +11027,14 @@ do_assignment:;
                                             copy_node(init_entity_expr));
           insert_expr(master_entry_assignment, eff_insert_location);
         }  /* if */
-        lower_dynamic_init_aggregate_constant(dip->variant.constant.ptr, ipdp,
+        lower_dynamic_init_aggregate_constant(dip->variant.constant.ptr,
+                                              agg_ipdp,
                                               /*dtor_case=*/FALSE, source_desc,
                                               others_follow_in_aggr,
                                               eff_insert_location,
                                               &keep_constant,
                                               options);
+        check_assertion(agg_ipdp == ipdp || !keep_constant);
 do_keep_constant:
         if (keep_constant) {
           /* There is a constant part of the initialization to be kept. */
