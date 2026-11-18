@@ -1552,9 +1552,84 @@ if unreferenced.
       strcmp((name), "__builtin_va_alist") == 0)))
 
 
+static a_boolean has_char_storage(a_variable_ptr variable)
+/*
+Return TRUE if the given variable is an object of an empty class, or an array
+of such objects, whose class is generated as an empty struct (which has size
+zero in GNU C).  Such a variable is given storage of the C++ size of its type
+as an array of char, and references to it convert the address of that storage
+to a pointer to the type of the variable.  Otherwise, writing the bytes of
+the object (e.g., with memcpy) would overwrite other objects.  Parameters,
+whose type determines how they are passed, are handled separately (see
+param_has_char_storage).
+*/
+{
+  a_boolean  result = FALSE;
+  a_type_ptr type = skip_typerefs(variable->type);
+
+  if (!variable->is_parameter && type->size != 0) {
+    if (is_array_type(type) && !is_vla_type(type)) {
+      type = f_skip_typerefs(underlying_array_element_type(type));
+    }  /* if */
+    result = is_class_struct_union_type(type) &&
+             type->generated_as_empty_struct;
+  }  /* if */
+  return result;
+}  /* has_char_storage */
+
+
+static a_boolean param_has_char_storage(a_variable_ptr variable)
+/*
+Return TRUE if the given variable is a parameter passed by value whose type
+is an empty class generated as an empty struct (see has_char_storage).  The
+parameter itself has size zero in GNU C, so the function body declares a
+local array of char of the C++ size of the type (named as the parameter
+with a "__s" suffix; see dump_param_char_storage) and references to the
+parameter use that storage instead.  The value of the parameter need not be
+copied, as an empty class has no state.
+*/
+{
+  a_boolean  result = FALSE;
+  a_type_ptr type = skip_typerefs(variable->type);
+
+  if (variable->is_parameter && !variable->is_this_parameter &&
+      type->size != 0) {
+    result = is_class_struct_union_type(type) &&
+             type->generated_as_empty_struct;
+  }  /* if */
+  return result;
+}  /* param_has_char_storage */
+
+
+static void dump_declared_variable_name(a_variable_ptr variable);
+static void dump_cast_to_pointer_to(a_type_ptr type);
+
 static void dump_variable_name(a_variable_ptr variable)
 /*
-Print the name of the indicated variable.
+Print a reference to the indicated variable.  This is usually just its name;
+see has_char_storage and param_has_char_storage for exceptions.
+*/
+{
+  if (has_char_storage(variable)) {
+    write_tok_str("(*");
+    dump_cast_to_pointer_to(variable->type);
+    dump_declared_variable_name(variable);
+    write_tok_ch(')');
+  } else if (param_has_char_storage(variable)) {
+    write_tok_str("(*");
+    dump_cast_to_pointer_to(variable->type);
+    dump_declared_variable_name(variable);
+    write_str("__s");
+    write_tok_ch(')');
+  } else {
+    dump_declared_variable_name(variable);
+  }  /* if */
+}  /* dump_variable_name */
+
+
+static void dump_declared_variable_name(a_variable_ptr variable)
+/*
+Print the name of the indicated variable, as used in its declaration.
 */
 {
   if (entry_routine_scope != NULL &&
@@ -1651,7 +1726,7 @@ Print the name of the indicated variable.
     /* Nothing special about this case. */
     dump_name(&variable->source_corresp);
   }  /* if */
-}  /* dump_variable_name */
+}  /* dump_declared_variable_name */
 
 
 static void dump_type_name(a_type_ptr type)
@@ -2424,7 +2499,7 @@ name is non-NULL.
   } else if (scp != NULL) {
     /* Write the name. */
     if (var != NULL) {
-      dump_variable_name(var);
+      dump_declared_variable_name(var);
     } else if (field != NULL) {
       dump_field_name(field);
     } else if (rout != NULL && rout->superseded_external) {
@@ -8886,12 +8961,21 @@ parameters.
                                     /*need_leading_space=*/TRUE, &octl)) {
           write_space();
         }  /* if */
-        dump_general_declaration_using_type(var_type,
-                                            &variable->source_corresp,
-                                            variable, NO_ROUTINE, NO_FIELD,
-                                            NO_TEMP, NO_NAME, TQ_NONE,
-                                            suppress_const,
-                                            NO_COUNTER);
+        if (has_char_storage(variable)) {
+          write_tok_str("char ");
+          dump_declared_variable_name(variable);
+          write_tok_ch('[');
+          write_unsigned_num(
+                     (a_host_large_unsigned)skip_typerefs(var_type)->size);
+          write_tok_ch(']');
+        } else {
+          dump_general_declaration_using_type(var_type,
+                                              &variable->source_corresp,
+                                              variable, NO_ROUTINE, NO_FIELD,
+                                              NO_TEMP, NO_NAME, TQ_NONE,
+                                              suppress_const,
+                                              NO_COUNTER);
+        }  /* if */
 #if !C_GEN_BE_GENERATES_ANSI_C
       }  /* if */
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
@@ -8917,7 +9001,11 @@ parameters.
          the size of the executable.  However, do put out definitions
          for template static data members that are arrays, or otherwise
          the template prelinker could loop. */
-      if ((dump_initializers && init_con != NULL) ||
+      if (has_char_storage(variable)) {
+        /* An empty class has no value, so there is nothing to initialize
+           (but a weak variable needs an initializer). */
+        if (force_zeroing_of_comdat_variable) write_tok_str(" = {0}");
+      } else if ((dump_initializers && init_con != NULL) ||
           force_zeroing_of_comdat_variable ||
           (init_kind == (an_init_kind)initk_zero &&
            !variable->suppress_inline_definition &&
@@ -9364,6 +9452,29 @@ issue diagnostics for them (warnings or errors depending on the version).
 
 #endif /* GNU_EXTENSIONS_ALLOWED */
 
+static void dump_param_char_storage(a_scope_ptr scope)
+/*
+Declare the local storage for the parameters of the function whose scope is
+given that are referenced via such storage (see param_has_char_storage).
+*/
+{
+  a_variable_ptr param;
+
+  for (param = scope->variant.routine.parameters; param != NULL;
+       param = param->next) {
+    if (param_has_char_storage(param)) {
+      write_tok_str("auto char ");
+      dump_declared_variable_name(param);
+      write_str("__s");
+      write_tok_ch('[');
+      write_unsigned_num(
+                (a_host_large_unsigned)skip_typerefs(param->type)->size);
+      write_tok_str("];");
+    }  /* if */
+  }  /* for */
+}  /* dump_param_char_storage */
+
+
 static void dump_block_declarations(a_statement_ptr statement)
 /*
 Dump out the declarations (if any) for a block.
@@ -9393,6 +9504,7 @@ Dump out the declarations (if any) for a block.
     dump_local_label_declarations(scope);
 #endif /* GNU_EXTENSIONS_ALLOWED */
     dump_scope_pragmas(scope);
+    if (rout != NULL) dump_param_char_storage(scope);
     dump_scope_variables(scope,
                          /*interleave_asm_decls=*/FALSE,
                          /*dump_vars_without_initializers=*/TRUE,
