@@ -1133,6 +1133,7 @@ Clear an initialization position description entry to default values.
   ipdp->base_class_subobject      = FALSE;
   ipdp->base_of_complete_object   = FALSE;
   ipdp->not_this_candidate        = FALSE;
+  ipdp->assign_constants          = FALSE;
   ipdp->base_type                 = NULL;
   ipdp->modifiers                 = NULL;
   ipdp->array_element_count       = 0;
@@ -7049,7 +7050,7 @@ dealt with).
         } else {
           lower_constant(repeated_con);
         }  /* if */
-        if (ipd.indirect_through_variable ||
+        if (ipd.indirect_through_variable || ipd.assign_constants ||
             con_ptr->variant.init_repeat.count == 0) {
           /* The entity being initialized is not a simple variable, so we
              don't want to keep any part of the initialization as a constant
@@ -7098,7 +7099,10 @@ dealt with).
            in the initialization, but if that's not possible, rewrite the
            initialization with executable statements. */
         mark_as_visited(con_ptr);
-        if (ipd.indirect_through_variable) {
+        if (ipd.assign_constants) {
+          /* The entire array has already been zeroed (see
+             lower_vla_rows_constant_init). */
+        } else if (ipd.indirect_through_variable) {
           insert_call_to_zero_entity(con_ptr->type,
                                      /*have_complete_object=*/TRUE,
                                      make_address_of_init_entity_node(&ipd,
@@ -7126,7 +7130,7 @@ dealt with).
         /* C++ mode. */
         lower_constant(con_ptr);
       }  /* if */
-      if (ipd.indirect_through_variable) {
+      if (ipd.indirect_through_variable || ipd.assign_constants) {
         /* The entity being initialized is not a simple variable, so we
            don't want to keep any part of the initialization as a constant
            aggregate initialization.  This comes up with return value
@@ -10127,6 +10131,51 @@ statement/expression lowering process (mostly by lower_dynamic_init).
 
 #endif /* LOWERING_REMOVES_UNNEEDED_CONSTRUCTIONS_AND_DESTRUCTIONS */
 
+static a_boolean has_variable_length_rows(a_type_ptr type)
+/*
+Return TRUE if type is an array whose element type is a VLA, i.e., an
+array with rows of variable length (e.g., "int[2][n]" or "int[n][n]").
+*/
+{
+  type = skip_typerefs(type);
+  return is_array_type(type) &&
+         is_vla_type(type->variant.array.element_type);
+}  /* has_variable_length_rows */
+
+
+static void lower_vla_rows_constant_init(a_dynamic_init_ptr     dip,
+                                         an_init_pos_descr_ptr  ipdp,
+                                         an_insert_location_ptr
+                                                            insert_location)
+/*
+The dik_constant dynamic initialization dip initializes the entity described
+by ipdp, an array whose rows have variable length (e.g., "int a[2][n] = {
+{1}, {2, 3} };").  The entity is always treated as partially initialized, so
+it has already been zeroed in full (see
+stretch_partial_initialization_if_necessary); insert assignments of the
+individual element values at *insert_location.
+*/
+{
+  a_constant_ptr       con = dip->variant.constant.ptr;
+  an_init_pos_descr    ipd;
+  a_boolean            keep_constant = FALSE;
+
+  check_assertion(dip->is_partially_initialized &&
+                  has_variable_length_rows(type_from_init_pos_descr(ipdp)));
+  if (con->kind == (a_constant_repr_kind)ck_aggregate &&
+      con->variant.aggregate.first_constant != NULL) {
+    ipd = *ipdp;
+    ipd.assign_constants = TRUE;
+    lower_dynamic_init_aggregate_constant(con, &ipd, /*dtor_case=*/FALSE,
+                                          (an_implied_copy_source *)NULL,
+                                          /*others_follow_in_aggr=*/FALSE,
+                                          insert_location, &keep_constant,
+                                          (a_lower_dynamic_init_options_set)0);
+    check_assertion(!keep_constant);
+  }  /* if */
+}  /* lower_vla_rows_constant_init */
+
+
 static void stretch_partial_initialization_if_necessary(
                                    a_dynamic_init_ptr     dip,
                                    an_init_pos_descr_ptr  ipdp,
@@ -10185,12 +10234,30 @@ un-initialized.
     }  /* if */
   }  /* if */
   if (needs_initializing) {
-    insert_call_to_zero_entity(entity_type,
+    a_type_ptr       zero_type = entity_type;
+    an_expr_node_ptr num_elem_node = ipdp->num_elem_node;
+    a_targ_size_t    array_element_count = 0;
+    if (ipdp->array_element_sequence) {
+      /* A sequence of array elements (e.g., the remaining elements of an
+         array with rows of variable length, "A a[2][n] = {{A()}};"): zero
+         that many elements of the sequence element type, as for dik_zero
+         in lower_dynamic_init. */
+      check_assertion(ipdp->array_element_count >= 0);
+      array_element_count = (a_targ_size_t)ipdp->array_element_count;
+      num_elem_node = array_element_count != 0 ? (an_expr_node_ptr)NULL :
+                                                 num_elem_node_if_array(ipdp);
+      zero_type = ipdp->array_element_type;
+    } else if (is_vla_type(entity_type)) {
+      /* insert_call_to_zero_entity gets the number of elements of a VLA
+         from the type itself. */
+      num_elem_node = NULL;
+    }  /* if */
+    insert_call_to_zero_entity(zero_type,
                                have_complete_object,
                                make_address_of_init_entity_node(ipdp,
                                                    /*using_as_dest=*/TRUE),
-                               ipdp->num_elem_node,
-                               (a_targ_size_t)0,
+                               num_elem_node,
+                               array_element_count,
                                insert_location);
   }  /* if */
 }  /* stretch_partial_initialization_if_necessary */
@@ -10672,6 +10739,14 @@ C99 mode for the same reason.
         stretch_partial_initialization_if_necessary(dip, ipdp,
                                                     have_complete_object,
                                                     eff_insert_location);
+      }  /* if */
+      if (has_variable_length_rows(type_from_init_pos_descr(ipdp))) {
+        /* The constant can be neither kept as an initializer nor copied from
+           a static temporary, because its layout differs from that of the
+           entity (whose rows have a length known only at run time); assign
+           its elements individually. */
+        lower_vla_rows_constant_init(dip, ipdp, eff_insert_location);
+        break;
       }  /* if */
       /* For the normal cases, go on and generate an assignment. */
       goto do_assignment;

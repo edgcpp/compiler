@@ -227,6 +227,15 @@ typedef struct an_init_pos_descr {
 			   lowered.  Such an element cannot refer to that
 			   aggregate through an implicit "this" (see
 			   lower_param_ref). */
+  a_byte_boolean
+		assign_constants;
+			/* TRUE if no part of the initialization can be kept
+			   as a constant, so that constants must be assigned
+			   by executable code even though the entity is a
+			   simple variable.  This is the case for an array
+			   with rows of variable length, which can be neither
+			   initialized by a C initializer nor copied from a
+			   static constant. */
   a_type_ptr	base_type;
 			/* Base entity type. */
   an_init_pos_modifier_ptr

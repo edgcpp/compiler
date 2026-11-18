@@ -4578,7 +4578,12 @@ called in C mode.
      handles them correctly.  If they are partially initialized, the
      first member is (at least partially) initialized, which is all we
      need here. */
-  if (is_array_type(type) && contains_ptr_to_data_member(type)) {
+  if (is_vla_type(type)) {
+    /* A constant of VLA type (for an array with rows of variable length)
+       cannot be filled out; the whole entity is set to its zero value
+       before the constant's elements are assigned (see
+       lower_vla_rows_constant_init in lower_init.c). */
+  } else if (is_array_type(type) && contains_ptr_to_data_member(type)) {
     a_targ_size_t elem = 0;
     /* Count the number of elements that have been explicitly
        initialized.  Note that they have previously been run through
